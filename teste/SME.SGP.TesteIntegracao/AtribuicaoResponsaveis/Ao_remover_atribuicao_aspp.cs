@@ -14,7 +14,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public class Ao_remover_atribuicao_aspp_coresso : TesteBase
+    public class Ao_remover_atribuicao_aspp : TesteBase
     {
 
         const string DRE_CODIGO_1 = "1";
@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao
         const string SUPERVISOR_RF_01 = "1";
         const string SUPERVISOR_RF_02 = "2";
         const string SUPERVISOR_RF_03 = "3";
-        public Ao_remover_atribuicao_aspp_coresso(CollectionFixture collectionFixture) : base(collectionFixture) { }
+        public Ao_remover_atribuicao_aspp(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
 
         [Fact]
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao
 
 
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisCoreSSO>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
             var listaAspp = new List<SupervisorEscolasDreDto>();
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao
 
             var dre = "1";
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisCoreSSO>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
             //Act
@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao
 
             var dre = "1";
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisCoreSSO>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
 
