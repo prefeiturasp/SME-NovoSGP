@@ -83,9 +83,6 @@ namespace SME.SGP.Aplicacao
                 listaAsspSemAtribuicao.AddRange(assitenteSocialEscolas);
                 listaAsspSemAtribuicao.AddRange(psicologosEscolas);
                 listaAsspSemAtribuicao.AddRange(psicopedagogosEscolas);
-
-                var teste = supervisoresEscolasDres
-                    .Where(x => x.Tipo != (int)TipoResponsavelAtribuicao.SupervisorEscolar && x.Tipo != (int)TipoResponsavelAtribuicao.PAAI && !supervisoresEol.Select(e => e.UsuarioId.ToString()).Contains(x.SupervisorId));
             }
 
             if (listaAsspSemAtribuicao != null && listaAsspSemAtribuicao.Any())
