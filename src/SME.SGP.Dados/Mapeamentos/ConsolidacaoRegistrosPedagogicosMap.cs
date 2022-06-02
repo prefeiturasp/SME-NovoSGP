@@ -8,7 +8,6 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoRegistrosPedagogicosMap()
         {
             ToTable("consolidacao_registros_pedagogicos");
-            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(a => a.TurmaId).ToColumn("turma_id");
             Map(a => a.AnoLetivo).ToColumn("ano_letivo");
             Map(a => a.ComponenteCurricularId).ToColumn("componente_curricular_id");
