@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
-    public class ServicoEOL : IServicoEol 
+    public class ServicoEOL : IServicoEol
     {
         private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
@@ -1118,7 +1118,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
         }
-        
+
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
         {
             var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
@@ -1142,6 +1142,18 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
 
+            }
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorPerfilDre(Guid perfil, string codigoDre)
+        {
+            var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}/dres/{codigoDre}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }

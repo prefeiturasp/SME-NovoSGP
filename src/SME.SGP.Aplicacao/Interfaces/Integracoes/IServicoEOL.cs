@@ -139,6 +139,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> ListagemTurmasComComponente(string codigoUe, string modalidade, int semestre, string codigoTurma, int anoLetivo, int qtdeRegistos, int qtdeRegistrosIgnorados);
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto);
+        Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorPerfilDre(Guid perfil, string codigoDre);
 
         Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login);
     }
