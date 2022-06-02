@@ -1133,6 +1133,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
         }
 
+
+
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {
             var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}?CodigoDre={filtroFuncionariosDto.CodigoDRE}&CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
@@ -1156,6 +1158,22 @@ namespace SME.SGP.Aplicacao.Integracoes
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionarioCoreSSO(Guid perfil, string codigoDreUe)
+        {
+            var resposta = await httpClient
+                .PostAsync($@"funcionarios/unidade/{codigoDreUe}", new StringContent(JsonConvert.SerializeObject(perfil), Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json));
         }
     }
 }
