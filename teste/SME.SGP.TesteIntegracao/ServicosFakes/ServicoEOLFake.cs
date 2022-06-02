@@ -510,6 +510,26 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             };
         }
 
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionarioCoreSSO(Guid perfil, string codigDre)
+        {
+            return new List<UsuarioEolRetornoDto>{
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="1",
+                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="2",
+                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+            };
+        }
+
         public Task<bool> PodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             throw new NotImplementedException();
