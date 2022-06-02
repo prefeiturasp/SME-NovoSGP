@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel por DRE", LogNivel.Critico, LogContexto.RemoverAtribuicaoReponsavel, ex.Message));
+                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel Supervisor por DRE", LogNivel.Critico, LogContexto.RemoverAtribuicaoReponsavel, ex.Message));
                 return false;
             }
         }
