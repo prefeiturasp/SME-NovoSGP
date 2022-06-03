@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
                     if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                         return true;
                     }
                     else
@@ -83,13 +83,13 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                     return true;
                 }
             }
             else
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                 return true;
             }
         }

@@ -374,7 +374,7 @@ namespace SME.SGP.Worker.RabbitMQ
             if (consumoFilasOptions.Institucional)
             {
                 comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Turma", typeof(IExecutarSincronizacaoInstitucionalTurmaTratarUseCase)));
-                comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new ComandoRabbit("Estrutura Institucional - Excluir Turmas Extintas", typeof(IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase)));
+                comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new ComandoRabbit("Estrutura Institucional - Excluir Turmas Extintas", typeof(IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase)));
             }
         }
 
@@ -549,7 +549,7 @@ namespace SME.SGP.Worker.RabbitMQ
             if (consumoFilasOptions.Frequencia)
                 RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpFrequencia));
 
-            if (consumoFilasOptions.Institucional)
+             if (consumoFilasOptions.Institucional)
                 RegistrarConsumerSgp(consumer, typeof(RotasRabbitSgpInstitucional));
 
             if (consumoFilasOptions.Pendencias)

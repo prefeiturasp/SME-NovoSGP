@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_retornar_false_se_nao_informado_turma()
         {
-            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase>();
 
             var retorno = await useCase.Executar(new MensagemRabbit(""));
 
@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_retornar_true_se_informado_turma()
         {
-            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase>();
 
             var filtro = new FiltroTurmaCodigoTurmaIdDto() { TurmaCodigo = Turma_4A_ANO4_Codigo, TurmaId = 1 };
 
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_retornar_true_quando_excluido_uma_turma()
         {
-            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase>();
 
             await CriarItensBasicos();
 
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_retornar_true_quando_excluido_todas_as_turmas()
         {
-            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase>();
+            var useCase = ServiceProvider.GetService<IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase>();
 
             await CriarItensBasicos();
 
