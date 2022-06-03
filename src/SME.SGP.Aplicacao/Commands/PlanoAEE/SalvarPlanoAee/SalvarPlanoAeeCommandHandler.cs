@@ -15,12 +15,14 @@ namespace SME.SGP.Aplicacao.Commands
 
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao;
+        private readonly IRepositorioUsuarioConsulta repositorioUsuarioConsulta;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
         public SalvarPlanoAeeCommandHandler(
             IRepositorioPlanoAEE repositorioPlanoAEE,
             IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao,
+            IRepositorioUsuarioConsulta repositorioUsuarioConsulta,
             IMediator mediator,
             IUnitOfWork unitOfWork)
         {
@@ -126,10 +128,13 @@ namespace SME.SGP.Aplicacao.Commands
 
         private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
         {
+            var responsavelId = await repositorioUsuarioConsulta.ObterUsuarioIdPorCodigoRfAsync(request.PlanoAEEDto.ResponsavelRF);
+
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
                 planoAEE.TurmaId = request.TurmaId;
+                planoAEE.ResponsavelId = responsavelId;
                 return planoAEE;
             }
 
@@ -140,8 +145,9 @@ namespace SME.SGP.Aplicacao.Commands
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,
-                Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
-            };
+                Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>(),
+                ResponsavelId = responsavelId
+        };
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
