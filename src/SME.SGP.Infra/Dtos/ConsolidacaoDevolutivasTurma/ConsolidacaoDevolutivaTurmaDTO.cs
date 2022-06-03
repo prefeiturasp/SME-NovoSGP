@@ -21,17 +21,21 @@
     {
         public string TurmaId { get; set; }
         public int AnoLetivo { get; set; }
+        public long UeId { get; set; }
+        public long Id { get; set; }
     }
 
     public class FiltroDevolutivaTurmaDTO
     {
         public string TurmaId { get; set; }
         public int AnoLetivo { get; set; }
+        public long UeId { get; set; }
 
-        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo)
+        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo, long ueId)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;
+            UeId = ueId;
         }
     }
 }
