@@ -28,6 +28,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.repositorioPlanoAEEVersao = repositorioPlanoAEEVersao ?? throw new ArgumentNullException(nameof(repositorioPlanoAEEVersao));
+            this.repositorioUsuarioConsulta = repositorioUsuarioConsulta ?? throw new ArgumentNullException(nameof(repositorioUsuarioConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }

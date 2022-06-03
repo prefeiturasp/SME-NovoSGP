@@ -221,7 +221,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
         {
-            throw new NotImplementedException();
+            return ObterAlunosPorTurma("1");
         }
 
         public async Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
