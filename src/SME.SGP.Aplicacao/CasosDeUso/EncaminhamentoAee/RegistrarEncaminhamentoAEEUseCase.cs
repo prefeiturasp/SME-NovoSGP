@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            var alunoEncaminhamentoAEE = await mediator.Send(new ExisteEncaminhamentoAEEPorEstudanteQuery(encaminhamentoAEEDto.AlunoCodigo));
+            var alunoEncaminhamentoAEE = await mediator.Send(new ExisteEncaminhamentoAEEPorEstudanteQuery(encaminhamentoAEEDto.AlunoCodigo, turma.Ue.Id));
             if (alunoEncaminhamentoAEE && encaminhamentoAEEDto.Id == 0)
                 throw new NegocioException("Estudante/Criança já possui encaminhamento AEE em aberto");
 
