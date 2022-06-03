@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             int? mes = null;
             var data = request.DataAula;
             DateTime? dataInicioSemana = null;
-            DateTime? dataFinalSemena = null; 
+            DateTime? dataFimSemana = null; 
 
             if (request.TipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
             {
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 dataInicioSemana = data;
-                dataFinalSemena = data.AddDays(6);
+                dataFimSemana = data.AddDays(6);
             }else if(request.TipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
             {
                 mes = request.DataAula.Month;
@@ -54,13 +54,13 @@ namespace SME.SGP.Aplicacao
                                                                                                                   request.DataAula,
                                                                                                                   mes,
                                                                                                                   dataInicioSemana,
-                                                                                                                  dataFinalSemena));
+                                                                                                                  dataFimSemana));
 
             if (consolidacao == null)
                 return false;
 
             var consolidacaoJaExistente = await mediator.Send(new ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(request.TurmaId, anoLetivo, request.TipoPeriodo, request.DataAula, mes,
-                                                                dataInicioSemana, dataFinalSemena));
+                                                                dataInicioSemana, dataFimSemana));
 
             if (consolidacaoJaExistente != null)
             {
@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                  request.DataAula,
                                                                                                                  (int)request.TipoPeriodo,
                                                                                                                  dataInicioSemana,
-                                                                                                                 dataFinalSemena,
+                                                                                                                 dataFimSemana,
                                                                                                                  mes)) != 0;
             }
 
