@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("A situação do Plano AEE não permite a remoção do responsável");
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
-            planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
+            planoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
             var idEntidadePlanoAEE = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> AtribuidoAoMesmoUsuario(PlanoAEE planoAEE)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            return usuarioId == planoAEE.ResponsavelId;
+            return usuarioId == planoAEE.ResponsavelPaaiId;
         }
 
         private async Task GerarPendenciaPAAI(PlanoAEE plano, Turma turma)
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $@"O Plano AEE {estudanteOuCrianca} {plano.AlunoNome} ({plano.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{plano.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer.
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelId.Value, titulo, descricao, turma.UeId));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, plano.ResponsavelPaaiId.Value, titulo, descricao, turma.UeId));
         }
 
         private async Task ExcluirPendenciaCEFAI(PlanoAEE planoAEE)
