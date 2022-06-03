@@ -30,6 +30,6 @@
         Arquivos = 26,
         WorkerFechamento = 27,
         Pendencia = 28,
-        RemoverAtribuicaoReponsavel = 29
+        AtribuicaoReponsavel = 29
     }
 }

@@ -13,34 +13,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Queries.AtribuicaoDeResponsaveis.ObterSupervisoresPorDreQuery;
 
 namespace SME.SGP.Aplicacao
 {
     public class RemoverAtribuicaoResponsaveisASPPPorDreUseCase : IRemoverAtribuicaoResponsaveisASPPPorDreUseCase
     {
-        private readonly IRepositorioSupervisorEscolaDre _repositorioSupervisorEscolaDre;
-        private readonly IServicoEol _servicoEOL;
-        private readonly IMediator _mediator;
-        public RemoverAtribuicaoResponsaveisASPPPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEol servicoEOL, IMediator mediator)
+        private readonly IServicoEol servicoEOL;
+        private readonly IMediator mediator;
+        public RemoverAtribuicaoResponsaveisASPPPorDreUseCase(IServicoEol servicoEOL, IMediator mediator)
         {
-            _repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre;
-            _servicoEOL = servicoEOL;
-            _mediator = mediator;
+            this.servicoEOL = servicoEOL;
+            this.mediator = mediator;
         }
         public async Task<bool> Executar(MensagemRabbit param)
         {
             try
             {
                 var dre = param.ObterObjetoMensagem<string>();
-                var assitenteSocialEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.AssistenteSocial);
-                var psicologosEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PsicologoEscolar);
-                var psicopedagogosEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.Psicopedagogo);
+                var assitenteSocialEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(dre, TipoResponsavelAtribuicao.AssistenteSocial));
+                var psicologosEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(dre, TipoResponsavelAtribuicao.PsicologoEscolar));
+                var psicoPedagogosEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(dre, TipoResponsavelAtribuicao.Psicopedagogo));
 
                 var funcionariosASPP = new List<SupervisorEscolasDreDto>();
 
                 funcionariosASPP.AddRange(assitenteSocialEscolasDres);
                 funcionariosASPP.AddRange(psicologosEscolasDres);
-                funcionariosASPP.AddRange(psicopedagogosEscolasDres);
+                funcionariosASPP.AddRange(psicoPedagogosEscolasDres);
 
                 if (funcionariosASPP.Any())
                 {
@@ -48,9 +47,9 @@ namespace SME.SGP.Aplicacao
 
                     var supervisoresIds = funcionariosASPP.GroupBy(a => a.SupervisorId).Select(a => a.Key);
 
-                    var funcionariosPsicoloEscolar = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_PSICOLOGO_ESCOLAR, dre);
-                    var funcionariosPsicoPedagogos = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_PSICOPEDAGOGO, dre);
-                    var funcionariosAssistenteSocial = await _servicoEOL.ObterUsuarioFuncionarioCoreSSO(Perfis.PERFIL_ASSISTENTE_SOCIAL, dre);
+                    var funcionariosPsicoloEscolar = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_PSICOLOGO_ESCOLAR, dre));
+                    var funcionariosPsicoPedagogos = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_PSICOPEDAGOGO, dre));
+                    var funcionariosAssistenteSocial = await mediator.Send(new ObterFuncionarioCoreSSOPorPerfilDreQuery(Perfis.PERFIL_ASSISTENTE_SOCIAL, dre));
 
                     funcionarios.AddRange(funcionariosPsicoloEscolar);
                     funcionarios.AddRange(funcionariosPsicoPedagogos);
@@ -67,7 +66,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel do Core SSO (Assistente social, Psicopedagogo, Psicologo) por DRE", LogNivel.Critico, LogContexto.RemoverAtribuicaoReponsavel, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel do Core SSO (Assistente social, Psicopedagogo, Psicologo) por DRE", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, ex.Message));
                 return false;
             }
         }
@@ -96,8 +95,7 @@ namespace SME.SGP.Aplicacao
                         supervisor.Tipo == (int)TipoResponsavelAtribuicao.Psicopedagogo)
                     {
                         var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                        supervisorEntidadeExclusao.Excluir();
-                        _repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
+                        mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
                     }
                 }
             }

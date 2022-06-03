@@ -1148,32 +1148,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorPerfilDre(Guid perfil, string codigoDre)
-        {
-            var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}/dres/{codigoDre}");
 
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
-            }
-            return Enumerable.Empty<UsuarioEolRetornoDto>();
-        }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionarioCoreSSO(Guid perfil, string codigoDreUe)
-        {
-            var resposta = await httpClient
-                .PostAsync($@"funcionarios/unidade/{codigoDreUe}", new StringContent(JsonConvert.SerializeObject(perfil), Encoding.UTF8, "application/json-patch+json"));
 
-            if (!resposta.IsSuccessStatusCode)
-                return null;
-
-            if (resposta.StatusCode == HttpStatusCode.NoContent)
-                return null;
-
-            var json = await resposta.Content.ReadAsStringAsync();
-
-            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json));
-        }
     }
 }

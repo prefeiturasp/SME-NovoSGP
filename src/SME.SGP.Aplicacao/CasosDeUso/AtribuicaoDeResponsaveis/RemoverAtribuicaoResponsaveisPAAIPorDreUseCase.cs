@@ -15,28 +15,24 @@ namespace SME.SGP.Aplicacao
 {
     public class RemoverAtribuicaoResponsaveisPAAIPorDreUseCase : IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase
     {
-        private readonly IRepositorioSupervisorEscolaDre _repositorioSupervisorEscolaDre;
-        private readonly IServicoEol _servicoEOL;
-        private readonly IMediator _mediator;
-        public RemoverAtribuicaoResponsaveisPAAIPorDreUseCase(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre, IServicoEol servicoEol, IMediator mediator)
+        private readonly IMediator mediator;
+        public RemoverAtribuicaoResponsaveisPAAIPorDreUseCase(IMediator mediator)
         {
-            _repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre;
-            _servicoEOL = servicoEol;
-            _mediator = mediator;
+            this.mediator = mediator;
         }
         public async Task<bool> Executar(MensagemRabbit param)
         {
             try
             {
-                var dre = param.ObterObjetoMensagem<string>();
+                var codigoDre = param.ObterObjetoMensagem<string>();
 
-                var paaiEscolasDres = await _repositorioSupervisorEscolaDre.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PAAI);
+                var paaiEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
                 var perfil = Perfis.PERFIL_PAAI;
 
                 if (paaiEscolasDres.Any())
                 {
                     var supervisoresIds = paaiEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
-                    var funcionarios = await _servicoEOL.ObterFuncionariosPorPerfilDre(perfil, dre);
+                    var funcionarios = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(perfil, codigoDre));
 
                     if (funcionarios != null && funcionarios.Any())
                     {
@@ -49,7 +45,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await _mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel PAAI por DRE", LogNivel.Critico, LogContexto.RemoverAtribuicaoReponsavel, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível executar a remoção da atribuição de responsavel PAAI por DRE", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, ex.Message));
                 return false;
             }
         }
@@ -73,8 +69,7 @@ namespace SME.SGP.Aplicacao
                     if (supervisor.Tipo == (int)TipoResponsavelAtribuicao.PAAI)
                     {
                         var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                        supervisorEntidadeExclusao.Excluir();
-                        _repositorioSupervisorEscolaDre.Salvar(supervisorEntidadeExclusao);
+                        mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
                     }
                 }
             }
