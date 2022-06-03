@@ -25,12 +25,12 @@ namespace SME.SGP.Api.Controllers
             if (files != null)
             {
                 var file = files.FirstOrDefault();
+                string urlBase = Request.Host.Value;
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Protocol.Split('/')[0].ToLower()}{ArquivoContants.PastaAquivosTemporaria}", 
+                        $"https://{urlBase}{Request.PathBase}{ArquivoContants.PastaAquivosTemporaria}", 
                         Dominio.TipoArquivo.Editor));
             }
-                
             return BadRequest();
         }
     }
