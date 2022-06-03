@@ -85,8 +85,8 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine(" and cdf.data_aula = @dataAula");
 
             if (tipo == TipoPeriodoDashboardFrequencia.Semanal && dataFimSemana != null && dataInicioSemana != null)
-                query.AppendLine(@" and cdf.data_inicio_semana = @data_inicio_semana
-                                    and cdf.data_fim_semana = @data_fim_semana");
+                query.AppendLine(@" and cdf.data_inicio_semana = @dataInicioSemana
+                                    and cdf.data_fim_semana = @dataFimSemana");
 
             if (tipo == TipoPeriodoDashboardFrequencia.Mensal && mes != null)
                 query.AppendLine(" and cdf.mes = @mes");
