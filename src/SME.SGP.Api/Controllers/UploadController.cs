@@ -27,13 +27,12 @@ namespace SME.SGP.Api.Controllers
                 //Foi adicionado fixo o valor https pois será discutido com a infra o problema de SSL
                 //Depois que corrigir, colocar: {Request.Protocol.Split('/')[0].ToLower()}
                 var file = files.FirstOrDefault();
-                string urlBase = HttpContext.Request.Host.Value;
+                string urlBase = Request.Host.Value;
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
                         $"https://{urlBase}{Request.PathBase}{ArquivoContants.PastaAquivosTemporaria}", 
                         Dominio.TipoArquivo.Editor));
             }
-                
             return BadRequest();
         }
     }
