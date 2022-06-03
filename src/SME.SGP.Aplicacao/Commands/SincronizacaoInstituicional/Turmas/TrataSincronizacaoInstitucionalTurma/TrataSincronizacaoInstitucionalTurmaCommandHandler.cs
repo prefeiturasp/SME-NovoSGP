@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
                     if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
-                        await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                         return true;
                     }
                     else
@@ -83,13 +83,13 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                     return true;
                 }
             }
             else
             {
-                await ExcluirTurnaAsync(turma.Codigo.ToString(), turmaSgpId);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
                 return true;
             }
         }
@@ -144,8 +144,5 @@ namespace SME.SGP.Aplicacao
             }
             return true;
         }
-
-        private async Task ExcluirTurnaAsync(string turmaCodigo, long turmaId)
-            => await repositorioTurma.ExcluirTurmaExtintaAsync(turmaCodigo, turmaId);
     }
 }

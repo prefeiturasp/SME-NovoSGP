@@ -373,7 +373,10 @@ namespace SME.SGP.Worker.RabbitMQ
             }
 
             if (consumoFilasOptions.Institucional)
+            {
                 comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaTratar, new ComandoRabbit("Estrutura Institucional - Tratar uma Turma", typeof(IExecutarSincronizacaoInstitucionalTurmaTratarUseCase)));
+                comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalExcluirTurmaExtinta, new ComandoRabbit("Estrutura Institucional - Excluir Turmas Extintas", typeof(IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase)));
+            }
         }
 
 
