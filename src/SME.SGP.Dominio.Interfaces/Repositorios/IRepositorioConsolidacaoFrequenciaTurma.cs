@@ -11,7 +11,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task LimparConsolidacaoFrequenciasTurmasPorAno(int ano);
         Task<long> InserirConsolidacaoDashBoard(ConsolidacaoDashBoardFrequencia consolidacao);
         Task ExcluirConsolidacaoDashBoard(int anoletivo, long turmaId, DateTime dataAula, DateTime? dataInicioSemanda, DateTime? dataFinalSemena, int? mes, TipoPeriodoDashboardFrequencia tipoPeriodo);
-        Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, int mes);
+        Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana);
         Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto);
     }
 }

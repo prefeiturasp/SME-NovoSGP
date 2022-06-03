@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioConsolidacaoFrequenciaTurma = repositorioConsolidacaoFrequenciaTurma ?? throw new ArgumentNullException(nameof(repositorioConsolidacaoFrequenciaTurma));
         }
         public async Task<RetornoConsolidacaoExistenteDto> Handle(ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery request, CancellationToken cancellationToken)
-            => await repositorioConsolidacaoFrequenciaTurma.ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(request.TurmaId, request.AnoLetivo, request.TipoPeriodo, request.Mes); 
+            => await repositorioConsolidacaoFrequenciaTurma.ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(request.TurmaId, request.AnoLetivo, request.TipoPeriodo, request.DataAula, request.Mes, request.DataInicioSemana, request.DataFimSemana); 
     }
 }

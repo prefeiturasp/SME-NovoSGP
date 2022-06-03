@@ -69,9 +69,9 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteScalarAsync(query.ToString(), parametros);
         }
 
-        public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, int mes)
+        public async Task<RetornoConsolidacaoExistenteDto> ObterConsolidacaoDashboardPorTurmaAnoTipoPeriodoMes(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
         {
-            var query = @"select cdf.id as Id, 
+            var query = new StringBuilder(@"select cdf.id as Id, 
                                                 cdf.turma_id as TurmaId,
                                                 cdf.quantidade_presencas as Presentes, 
                                                 cdf.quantidade_ausencias as Ausentes, 
@@ -79,10 +79,19 @@ namespace SME.SGP.Dados.Repositorios
                                                 from consolidado_dashboard_frequencia cdf 
                                                 where cdf.turma_id = @turmaId 
                                                 and cdf.ano_letivo = @anoLetivo 
-                                                and cdf.tipo = @tipo 
-                                                and cdf.mes = @mes";
+                                                and cdf.tipo = @tipo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<RetornoConsolidacaoExistenteDto>(query, new { turmaId, anoLetivo, tipo, mes});
+            if (tipo == TipoPeriodoDashboardFrequencia.Diario)
+                query.AppendLine(" and cdf.data_aula = @dataAula");
+
+            if (tipo == TipoPeriodoDashboardFrequencia.Semanal && dataFimSemana != null && dataInicioSemana != null)
+                query.AppendLine(@" and cdf.data_inicio_semana = @data_inicio_semana
+                                    and cdf.data_fim_semana = @data_fim_semana");
+
+            if (tipo == TipoPeriodoDashboardFrequencia.Mensal && mes != null)
+                query.AppendLine(" and cdf.mes = @mes");
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<RetornoConsolidacaoExistenteDto>(query.ToString(), new { turmaId, anoLetivo, tipo, dataAula, mes, dataInicioSemana, dataFimSemana});
         }
 
         public async Task AlterarConsolidacaoDashboardTurmaMesPeriodoAno(long id, int quantidadePresente, int quantidadeAusente, int quantidadeRemoto)

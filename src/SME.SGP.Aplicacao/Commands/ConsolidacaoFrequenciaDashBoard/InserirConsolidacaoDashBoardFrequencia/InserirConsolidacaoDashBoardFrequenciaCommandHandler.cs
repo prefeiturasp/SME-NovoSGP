@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var anoLetivo = request.DataAula.Year;
             int? mes = null;
             var data = request.DataAula;
-            DateTime? dataInicioSemena = null;
+            DateTime? dataInicioSemana = null;
             DateTime? dataFinalSemena = null; 
 
             if (request.TipoPeriodo == TipoPeriodoDashboardFrequencia.Semanal)
@@ -40,40 +40,48 @@ namespace SME.SGP.Aplicacao
                     data = data.AddDays(-1);
                 }
 
-                dataInicioSemena = data;
+                dataInicioSemana = data;
                 dataFinalSemena = data.AddDays(6);
             }else if(request.TipoPeriodo == TipoPeriodoDashboardFrequencia.Mensal)
             {
                 mes = request.DataAula.Month;
             }
             
-            await mediator.Send(new ExcluirConsolidacaoDashBoardFrequenciaPorDataETipoCommand(anoLetivo,
-                                                                                              turma.Id,
-                                                                                              request.DataAula,
-                                                                                              request.TipoPeriodo,
-                                                                                              dataInicioSemena,
-                                                                                              dataFinalSemena,
-                                                                                              mes));
-
             var consolidacao = await mediator.Send(new ObterDadosParaConsolidacaoDashBoardFrequenciaPorTurmaQuery(anoLetivo,
                                                                                                                   request.TurmaId,
                                                                                                                   turma.ModalidadeCodigo,
                                                                                                                   request.TipoPeriodo,
                                                                                                                   request.DataAula,
                                                                                                                   mes,
-                                                                                                                  dataInicioSemena,
+                                                                                                                  dataInicioSemana,
                                                                                                                   dataFinalSemena));
 
             if (consolidacao == null)
                 return false;
 
-            return await repositorioConsolidacaoFrequenciaTurma.InserirConsolidacaoDashBoard(MapearParaEntidade(turma,
-                                                                                                                consolidacao,
-                                                                                                                request.DataAula,
-                                                                                                                (int)request.TipoPeriodo,
-                                                                                                                dataInicioSemena,
-                                                                                                                dataFinalSemena,
-                                                                                                                mes)) != 0;
+            var consolidacaoJaExistente = await mediator.Send(new ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(request.TurmaId, anoLetivo, request.TipoPeriodo, request.DataAula, mes,
+                                                                dataInicioSemana, dataFinalSemena));
+
+            if (consolidacaoJaExistente != null)
+            {
+                bool validaMudancaDeInformacoes = (consolidacao.Ausentes == consolidacaoJaExistente.Ausentes && consolidacao.Presentes == consolidacaoJaExistente.Presentes
+                                                   && consolidacao.Remotos == consolidacaoJaExistente.Remotos);
+
+                if (!validaMudancaDeInformacoes)
+                    await mediator.Send(new AlterarConsolidacaoDashboardFrequenciaTurmaCommand(consolidacaoJaExistente.Id, consolidacao.Remotos, consolidacao.Ausentes, consolidacao.Presentes));     
+            }
+            else
+            {
+                return await repositorioConsolidacaoFrequenciaTurma.InserirConsolidacaoDashBoard(MapearParaEntidade(turma,
+                                                                                                                 consolidacao,
+                                                                                                                 request.DataAula,
+                                                                                                                 (int)request.TipoPeriodo,
+                                                                                                                 dataInicioSemana,
+                                                                                                                 dataFinalSemena,
+                                                                                                                 mes)) != 0;
+            }
+
+            return true;
         }
 
         private ConsolidacaoDashBoardFrequencia MapearParaEntidade(Turma turma, DadosParaConsolidacaoDashBoardFrequenciaDto dados, DateTime dataAula, int tipoPeriodo, DateTime? dataInicio = null, DateTime? dataFim = null, int? mes = null)

@@ -14,15 +14,21 @@ namespace SME.SGP.Aplicacao
     {
         public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
-        public TipoPeriodoDashboardFrequencia TipoPeriodo { get; set; }
-        public int Mes { get; set; }
+        public TipoPeriodoDashboardFrequencia TipoPeriodo { get; set; }      
+        public DateTime DataAula { get; set; }
+        public DateTime? DataInicioSemana { get; set; }
+        public DateTime? DataFimSemana { get; set; }
+        public int? Mes { get; set; }
 
-        public ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipoPeriodo, int mes)
+        public ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(long turmaId, int anoLetivo, TipoPeriodoDashboardFrequencia tipoPeriodo, DateTime dataAula, int? mes, DateTime? dataInicioSemana, DateTime? dataFimSemana)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;
             TipoPeriodo = tipoPeriodo;
+            DataAula = dataAula;
             Mes = mes;
+            DataInicioSemana = dataInicioSemana;
+            DataFimSemana = dataFimSemana;
         }
     }
 
@@ -42,9 +48,6 @@ namespace SME.SGP.Aplicacao
               .NotEmpty()
               .WithMessage("É necessário informar o tipo de período (diário, semanal ou mensal) do dashboard para obter a consolidação da frequência já existente dela.");
 
-            RuleFor(a => a.Mes)
-              .NotEmpty()
-              .WithMessage("É necessário informar o mês de período de registro para obter a consolidação do dashboard de frequência já existente dela.");
         }
     }
 }

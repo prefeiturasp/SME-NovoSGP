@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             if (consolidacao.Presentes == 0 && consolidacao.Ausentes == 0 && consolidacao.Remotos == 0)
                 return false;
 
-            var consolidacaoJaExistente = await mediator.Send(new ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(request.TurmaId, anoLetivo, TipoPeriodoDashboardFrequencia.Mensal, mes));
+            var consolidacaoJaExistente = await mediator.Send(new ObterConsolidacaoExistentePorTurmaIdAnoLetivoTipoPeriodoMesQuery(request.TurmaId, anoLetivo, TipoPeriodoDashboardFrequencia.Mensal, primeiroDiaDoMes, mes, null, null));
 
             if(consolidacaoJaExistente != null)
             {
