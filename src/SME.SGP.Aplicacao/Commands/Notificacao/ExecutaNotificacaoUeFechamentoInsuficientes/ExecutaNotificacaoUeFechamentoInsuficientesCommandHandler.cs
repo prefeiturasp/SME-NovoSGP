@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<long>> ObterUsuariosSupervisores(String codigoDre)
         {
-            var supervisores = await mediator.Send(new ObterSupervisoresPorDreQuery(codigoDre));
+            var supervisores = await mediator.Send(new ObterResponsaveisPorDreQuery(codigoDre, TipoResponsavelAtribuicao.SupervisorEscolar));
 
             var listaUsuarios = new List<long>();
             foreach (var supervisor in supervisores.GroupBy(c => c.SupervisorId))

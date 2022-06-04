@@ -167,5 +167,22 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await comandosUsuario.TokenRecuperacaoSenhaEstaValido(token));
         }
+
+
+        [HttpPut("suporte/{login}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [Permissao(Permissao.US_C, Policy = "Bearer")]
+        public async Task<IActionResult> AutenticarSuporte(string login)
+        {
+            var retornoAutenticacao = await comandosUsuario.AutenticarSuporte(login);
+
+            if (!retornoAutenticacao.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retornoAutenticacao);
+        }
     }
 }

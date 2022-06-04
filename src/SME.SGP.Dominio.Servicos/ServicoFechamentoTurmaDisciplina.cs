@@ -102,7 +102,11 @@ namespace SME.SGP.Dominio.Servicos
             var listaCPs = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
             var listaDiretores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
 
-            var listaSupervisores = consultasSupervisor.ObterPorUe(turma.Ue.CodigoUe);
+            var filtro = new FiltroObterSupervisorEscolasDto
+            {
+                UeCodigo = turma.Ue.CodigoUe
+            };
+            var listaSupervisores = await consultasSupervisor.ObterAtribuicaoResponsavel(filtro);
 
             var usuariosNotificacao = new List<UsuarioEolRetornoDto>();
 
@@ -111,7 +115,7 @@ namespace SME.SGP.Dominio.Servicos
             if (listaDiretores != null)
                 usuariosNotificacao.AddRange(listaDiretores);
             if (listaSupervisores != null)
-                usuariosNotificacao.Add(new UsuarioEolRetornoDto() { CodigoRf = listaSupervisores.SupervisorId, NomeServidor = listaSupervisores.SupervisorNome });
+                usuariosNotificacao.Add(new UsuarioEolRetornoDto() { CodigoRf = listaSupervisores.FirstOrDefault().ResponsavelId, NomeServidor = listaSupervisores.FirstOrDefault().Responsavel });
 
             foreach (var usuarioNotificacaoo in usuariosNotificacao)
             {

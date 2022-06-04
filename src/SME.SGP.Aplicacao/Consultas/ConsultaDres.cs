@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             var escolasPorDre = await repositorioAbrangencia.ObterUes(dreId, login, perfil);
 
-            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
+            var supervisoresEscolasDres = await repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
 
             return TrataEscolasSemSupervisores(escolasPorDre, supervisoresEscolasDres);
         }
