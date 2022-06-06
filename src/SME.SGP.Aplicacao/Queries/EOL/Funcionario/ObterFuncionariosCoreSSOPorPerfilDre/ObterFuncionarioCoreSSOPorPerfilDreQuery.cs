@@ -13,7 +13,8 @@ namespace SME.SGP.Aplicacao
     {
         public ObterFuncionarioCoreSSOPorPerfilDreQuery(Guid codigoPerfil, string codigoDre)
         {
-
+            CodigoPerfil = codigoPerfil;
+            CodigoDre = codigoDre;
         }
         public Guid CodigoPerfil { get; set; }
         public string CodigoDre { get; set; }

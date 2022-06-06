@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
@@ -37,12 +38,14 @@ namespace SME.SGP.TesteIntegracao
             await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
 
-            
+
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
+            var mediator = ServiceProvider.GetService<IMediator>();
 
             //Act
+
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
 
             var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(DRE_CODIGO_1, TipoResponsavelAtribuicao.SupervisorEscolar);
@@ -54,27 +57,6 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Deve_retornar_false_quando_nao_passar_dre_valida()
-        {
-            //Arrange
-            await Inserir_Dre(DRE_CODIGO_2);
-
-            var dre = "1";
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
-
-            //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(""));
-
-            var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.SupervisorEscolar);
-
-            //Assert
-            Assert.False(retorno);
-
-        }
-
-        [Fact]
         public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
         {
             //Arrange
@@ -82,9 +64,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
 
             var dre = "1";
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
 
             //Act

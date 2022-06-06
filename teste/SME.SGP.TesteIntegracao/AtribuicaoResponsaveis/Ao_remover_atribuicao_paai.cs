@@ -35,8 +35,6 @@ namespace SME.SGP.TesteIntegracao
             await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
             await InserirSupervisorPAAI(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
 
-
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
@@ -48,27 +46,6 @@ namespace SME.SGP.TesteIntegracao
             //Assert
             Assert.True(retorno);
             Assert.True(supervisoresEscolaresDre.Any());
-        }
-
-        [Fact]
-        public async Task Deve_retornar_false_quando_nao_passar_dre_valida()
-        {
-            //Arrange
-            await InserirDre(DRE_CODIGO_2);
-
-            var dre = "1";
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
-
-            //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(""));
-
-            var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(dre, TipoResponsavelAtribuicao.PAAI);
-
-            //Assert
-            Assert.False(retorno);
-
         }
 
         [Fact]
