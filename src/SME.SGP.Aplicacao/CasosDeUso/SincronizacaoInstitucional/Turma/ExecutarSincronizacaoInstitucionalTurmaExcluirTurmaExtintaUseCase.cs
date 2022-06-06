@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase
+    public class ExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase : AbstractUseCase, IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase
     {
         private readonly IRepositorioTurma repositorioTurma;
 
-        public ExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase(IRepositorioTurma repositorioTurma, IMediator mediator) : base(mediator)
+        public ExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase(IRepositorioTurma repositorioTurma, IMediator mediator) : base(mediator)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

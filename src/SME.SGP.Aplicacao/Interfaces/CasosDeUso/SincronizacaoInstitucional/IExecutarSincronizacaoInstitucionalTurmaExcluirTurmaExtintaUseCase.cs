@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExecutarSincronizacaoInstitucionalExcluirTurmaExtintaUseCase
+    public interface IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase
     {
         Task<bool> Executar(MensagemRabbit mensagemRabbit);
     }
