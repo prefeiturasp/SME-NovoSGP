@@ -31,12 +31,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
+            var usuario = command.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
+            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+
             var request = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
                                              command.Usuario?.Nome,
                                              command.Usuario?.CodigoRf,
                                              command.Usuario?.PerfilAtual,
-                                             command.NotificarErroUsuario);
+                                             command.NotificarErroUsuario,
+                                             administrador.Login);
 
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
             {
