@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.ServicosFakes.AtribuicaoResponsaveisFake
+namespace SME.SGP.TesteIntegracao
 {
     public class ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake : IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>
     {

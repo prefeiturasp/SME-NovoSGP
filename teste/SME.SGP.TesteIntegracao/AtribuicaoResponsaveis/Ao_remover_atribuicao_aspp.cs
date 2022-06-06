@@ -67,13 +67,12 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavelPsicoPedagogo(PSICOPEDAGOGO_RESPONSAVEL_ID_2, PSICOPEDAGOGO_RESPONSAVEL_RF_ID_2);
             await InserirResponsavelAssistenteSocial(ASSISTENTE_SOCIAL_RESPONSAVEL_ID_3, ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID_3);
 
-            var dre = DRE_CODIGO_1;
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
 
             //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(dre));
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
             var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
             Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());

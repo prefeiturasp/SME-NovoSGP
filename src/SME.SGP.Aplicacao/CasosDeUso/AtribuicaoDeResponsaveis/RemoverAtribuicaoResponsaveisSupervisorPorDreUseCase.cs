@@ -1,11 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.AtribuicaoDeResponsaveis.RemoverAtribuicaoSupervisor;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Aplicacao.Queries.AtribuicaoDeResponsaveis.ObterSupervisoresPorDreQuery;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;

@@ -10,7 +10,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes.AtribuicaoResponsaveisFake;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup

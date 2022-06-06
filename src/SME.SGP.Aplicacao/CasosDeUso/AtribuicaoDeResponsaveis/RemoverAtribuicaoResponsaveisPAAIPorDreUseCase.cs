@@ -27,12 +27,11 @@ namespace SME.SGP.Aplicacao
                 var codigoDre = param.ObterObjetoMensagem<string>();
 
                 var paaiEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
-                var perfil = Perfis.PERFIL_PAAI;
 
                 if (paaiEscolasDres.Any())
                 {
                     var supervisoresIds = paaiEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
-                    var funcionarios = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(perfil, codigoDre));
+                    var funcionarios = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(Perfis.PERFIL_PAAI, codigoDre));
 
                     if (funcionarios != null && funcionarios.Any())
                     {

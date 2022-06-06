@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.AtribuicaoDeResponsaveis.ObterSupervisoresPorDreQuery
+namespace SME.SGP.Aplicacao
 {
     public class ObterSupervisoresPorDreAsyncQueryHandler : IRequestHandler<ObterSupervisoresPorDreAsyncQuery, IEnumerable<SupervisorEscolasDreDto>>
     {

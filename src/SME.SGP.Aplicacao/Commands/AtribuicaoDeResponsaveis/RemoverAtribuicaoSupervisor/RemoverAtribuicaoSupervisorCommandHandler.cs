@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.AtribuicaoDeResponsaveis.RemoverAtribuicaoSupervisor
+namespace SME.SGP.Aplicacao
 {
     public class RemoverAtribuicaoSupervisorCommandHandler : IRequestHandler<RemoverAtribuicaoSupervisorCommand, long>
     {

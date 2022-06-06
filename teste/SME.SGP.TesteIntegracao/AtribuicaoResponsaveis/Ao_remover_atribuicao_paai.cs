@@ -55,14 +55,13 @@ namespace SME.SGP.TesteIntegracao
             await InserirDre(DRE_CODIGO_2);
             await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
 
-            var dre = "1";
             var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
 
             //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(dre));
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
             var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
             Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());

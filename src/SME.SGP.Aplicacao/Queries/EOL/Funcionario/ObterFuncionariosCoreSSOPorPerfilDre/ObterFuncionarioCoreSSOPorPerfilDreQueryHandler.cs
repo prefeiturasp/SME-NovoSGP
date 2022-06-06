@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    internal class ObterFuncionarioCoreSSOPorPerfilDreQueryHandler : IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>
+    public class ObterFuncionarioCoreSSOPorPerfilDreQueryHandler : IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 

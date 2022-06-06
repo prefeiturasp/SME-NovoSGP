@@ -498,14 +498,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             };
         }
 
-        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
-        {
-
-
-
-            throw new NotImplementedException();
-        }
-
         public Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)
         {
             throw new NotImplementedException();
@@ -529,26 +521,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 {
                     CodigoRf = "6926886"
                 }
-            };
-        }
-
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionarioCoreSSO(Guid perfil, string codigDre)
-        {
-            return new List<UsuarioEolRetornoDto>{
-                new UsuarioEolRetornoDto
-                {
-                    CodigoRf="1",
-                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
-                    CodigoFuncaoAtividade = 0,
-                    EstaAfastado = false
-                },
-                new UsuarioEolRetornoDto
-                {
-                    CodigoRf="2",
-                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
-                    CodigoFuncaoAtividade = 0,
-                    EstaAfastado = false
-                },
             };
         }
 
