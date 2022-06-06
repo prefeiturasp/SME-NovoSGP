@@ -2,14 +2,8 @@
 {
     public static class RotasRabbitSgp
     {
-        public const string RotaExcluirAulaRecorrencia = "sgp.aula.excluir.recorrencia";
-        public const string RotaInserirAulaRecorrencia = "sgp.aula.cadastrar.recorrencia";
-        public const string RotaAlterarAulaRecorrencia = "sgp.aula.alterar.recorrencia";
-        public const string RotaAlterarAulaFrequenciaTratar = "sgp.aula.alterar.frequencia.tratar";
         public const string RotaNotificacaoUsuario = "sgp.notificacao.usuario";
         public const string RotaNotificacaoExclusaoAulasComFrequencia = "sgp.notificacao.aulas.exclusao.frequencia";
-        public const string RotaCriarAulasInfatilAutomaticamente = "sgp.aulas.infantil.criar";
-        public const string RotaSincronizarAulasInfatil = "sgp.aulas.infantil.sincronizar";
 
         public const string RotaInserirPendenciaAula = "sgp.aulas.pendencias.inserir";
         public const string RotaNotificacaoNovaObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";
@@ -21,10 +15,10 @@
         public const string RotaExcluirNotificacaoDevolutiva = "sgp.notificacao.excluir.devolutiva";
         public const string RotaExcluirNotificacaoDiarioBordo = "sgp.notificacao.excluir.diariobordo";
         public const string RotaSincronizaComponetesCurricularesEol = "sgp.componentes.curriculares.eol.sincronizar";
-        public const string RotaConsolidacaoFrequenciaAlunoPorTurmaMensal = "sgp.frequencia.aluno.turma.mensal.consolidar";
-        public const string RotaConsolidacaoFrequenciaTurmaEvasao = "sgp.frequencia.turma.evasao.consolidar";
 
         public const string RotaExecutaPendenciasAula = "sgp.pendencias.aulas.executa";
+        public const string RotaExecutaPendenciasAulaDre = "sgp.pendencias.aulas.dre.executa";
+        public const string RotaExecutaPendenciasAulaDreUe = "sgp.pendencias.aulas.dre.ue.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordo = "sgp.pendencias.aulas.diario.bordo.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordoTurma = "sgp.pendencias.aulas.diario.bordo.turma.executa";
         public const string RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente = "sgp.pendencias.aulas.diario.bordo.turma.aula.componente.executa";
@@ -102,13 +96,6 @@
         public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
         public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
 
-        public const string RotaConciliacaoFrequenciaTurmaPorPeriodo = "sgp.frequencia.turma.conciliacao.periodo";
-
-        public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
-
-        public const string RotaConciliacaoFrequenciaTurmasAlunosBuscar = "sgp.frequencia.turma.alunos.buscar.sync";
-        public const string RotaCalcularFrequenciaGeralSync = "sgp.frequencia.calcular.geral.sync";
-
         public const string RotaNotificacaoAlunosFaltosos = "sgp.aulas.alunos.faltosos.notificar";
 
         public const string RotaNotificacaoFechamentoReabertura = "sgp.fechamento.reabertura.notificacao";
@@ -132,10 +119,7 @@
         public const string ConsolidarDiariosBordoPorUeTratar = "sgp.consolidacao.diarios.bordo.ue.tratar";
 
         public const string ConsolidarRegistrosPedagogicosPorUeTratar = "sgp.consolidacao.registros.pedagogicos.ue.tratar";
-
-        public const string CarregarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.carregar";
-        public const string SincronizarDadosUeTurmaRegenciaAutomaticamente = "aulas.automaticas.regencia.ue.turma.sync";
-        public const string SincronizarAulasRegenciaAutomaticamente = "aulas.automaticas.regencia.sync";
+        public const string ConsolidarRegistrosPedagogicosPorTurmaTratar = "sgp.consolidacao.registros.pedagogicos.ue.turma.tratar";
 
         public const string SincronizaMediaRegistrosIndividuaisSync = "sgp.sincronizacao.media.registros.individuais.sync";
         public const string ConsolidarMediaRegistrosIndividuaisTurma = "sgp.consolidacao.media.registros.individuais.turma";

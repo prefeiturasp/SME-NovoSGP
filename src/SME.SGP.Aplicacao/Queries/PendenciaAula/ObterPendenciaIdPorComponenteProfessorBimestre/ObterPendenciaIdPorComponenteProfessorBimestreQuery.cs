@@ -1,10 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPendenciaIdPorComponenteProfessorBimestreQuery : IRequest<long>
+    public class ObterPendenciaIdPorComponenteProfessorBimestreQuery : IRequest<IEnumerable<PendenciaAulaProfessorDto>>
     {
         public long ComponenteCurricularId { get; set; }
         public string CodigoRf { get; set; }
