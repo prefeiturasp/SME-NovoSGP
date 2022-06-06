@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
-    public class ServicoEOL : IServicoEol 
+    public class ServicoEOL : IServicoEol
     {
         private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
@@ -1156,7 +1156,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
         }
-        
+
         public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
         {
             var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
@@ -1171,6 +1171,8 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
         }
 
+
+
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {
             var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}?CodigoDre={filtroFuncionariosDto.CodigoDRE}&CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
@@ -1183,5 +1185,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
+
+
+
+
     }
 }
