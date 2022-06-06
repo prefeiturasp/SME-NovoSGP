@@ -70,9 +70,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
         {
-            throw new NotImplementedException();
+            return new UsuarioEolAutenticacaoRetornoDto()
+            {
+                CodigoRf = "7924488"
+            };
         }
 
         public Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
@@ -353,9 +356,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<MeusDadosDto> ObterMeusDados(string login)
+        public async Task<MeusDadosDto> ObterMeusDados(string login)
         {
-            throw new NotImplementedException();
+            return new MeusDadosDto()
+            {
+                Nome = "ESTER CUSTODIA DOS SANTOS",
+                Email = String.Empty
+            };
         }
 
         public Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno)
