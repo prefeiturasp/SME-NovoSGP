@@ -19,11 +19,9 @@ namespace SME.SGP.Aplicacao
 {
     public class RemoverAtribuicaoResponsaveisASPPPorDreUseCase : IRemoverAtribuicaoResponsaveisASPPPorDreUseCase
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
-        public RemoverAtribuicaoResponsaveisASPPPorDreUseCase(IServicoEol servicoEOL, IMediator mediator)
+        public RemoverAtribuicaoResponsaveisASPPPorDreUseCase(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL;
             this.mediator = mediator;
         }
         public async Task<bool> Executar(MensagemRabbit param)
