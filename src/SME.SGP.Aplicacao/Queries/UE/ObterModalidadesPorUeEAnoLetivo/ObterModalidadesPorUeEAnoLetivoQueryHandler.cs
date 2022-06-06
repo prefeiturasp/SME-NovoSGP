@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,6 +26,7 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterModalidadesPorUeEAnoLetivo
             if (!listaModalidades?.Any() ?? true) return new List<ModalidadeRetornoDto>();
 
             return from modalidade in listaModalidades
+                   where Enum.IsDefined(typeof(Modalidade), modalidade)
                    select new ModalidadeRetornoDto()
                    {
                        Id = (int)modalidade,

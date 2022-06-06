@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                                                                                              filtroTurmaDto.DreCodigo,
                                                                                              filtroTurmaDto.TurmaCodigo,
                                                                                              filtroTurmaDto.AnoLetivo,
-                                                                                             0,
+                                                                                             qtdeRegistros,
                                                                                              qtdeRegistrosIgnorados,
                                                                                              filtroTurmaDto.Bimestre,
                                                                                              filtroTurmaDto.Modalidade.Value,
@@ -79,7 +79,9 @@ namespace SME.SGP.Aplicacao
                                                                                              usuario.EhPerfilProfessor(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
-                                                                                             periodoEscolar.FirstOrDefault().PeriodoInicio,
+                                                                                             filtroTurmaDto.Bimestre > 0 ?
+                                                                                                periodoEscolar.Where(p => p.Bimestre == (filtroTurmaDto.Bimestre)).FirstOrDefault().PeriodoInicio :
+                                                                                                periodoEscolar.FirstOrDefault().PeriodoInicio,
                                                                                              anosInfantilDesconsiderar != null ? String.Join(",", anosInfantilDesconsiderar) : string.Empty));
             }
 
@@ -91,13 +93,17 @@ namespace SME.SGP.Aplicacao
                                      : turmasAbrangencia != null ? turmasAbrangencia.Select(c => c).ToArray().Intersect(codigosTurmaPaginada).ToArray()
                                      : codigosTurmaPaginada;
 
+            var retornoComponentesTurma = from item in turmasPaginadas.Items.ToList()
+                                          join componenteCodigo in componentesCodigos on item.TurmaCodigo equals componenteCodigo
+                                          select item.ComponenteCurricularCodigo;
+
             if (turmasAbrangencia != null)
             {
                 var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
                 turmasPaginadas.Items = turmasItems;
             }
 
-            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(componentesCodigos));
+            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(retornoComponentesTurma.ToArray()));
 
             turmasPaginadas.TotalRegistros = turmasPaginadas.Items != null && turmasPaginadas.Items.Any() ? turmasPaginadas.Items.Count() : 0;
             turmasPaginadas.TotalPaginas = (int)Math.Ceiling((double)turmasPaginadas.TotalRegistros / qtdeRegistros);
@@ -154,6 +160,7 @@ namespace SME.SGP.Aplicacao
         private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
             var nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+
             return turmas == null ? null : new TurmaComComponenteDto
             {
                 Id = turmas.Id,

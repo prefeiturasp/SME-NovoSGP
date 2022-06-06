@@ -27,15 +27,16 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         public async Task Deve_Salvar_Pendencia_Aula_Frequencia()
         {
             // arrange
-            var aula = new List<Aula>();
-
-            aula.Add(new Aula()
+            var aula = new List<Aula>
             {
-                Id = 12456,
-                DisciplinaId = "512",
-                Turma = new Turma() { Id = 512456, AnoLetivo = 2022, Ano = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil},
-                TurmaId = "512456"
-            });
+                new Aula()
+                {
+                    Id = 12456,
+                    DisciplinaId = "512",
+                    Turma = new Turma() { Id = 512456, AnoLetivo = 2022, Ano = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil },
+                    TurmaId = "512456"
+                }
+            };
 
             var hoje = DateTime.Today;
             mediator.Setup(a => a.Send(It.IsAny<ObterPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
@@ -44,7 +45,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             mediator.Setup(a => a.Send(It.IsAny<SalvarPendenciaAulasPorTipoCommand>(), It.IsAny<CancellationToken>()));
 
             // act
-            var salvarPendenciaAulaFrequencia = await pendenciaAulaFrequenciaUseCase.Executar(new MensagemRabbit("{'Mensagem':'4'}"));
+            var salvarPendenciaAulaFrequencia = await pendenciaAulaFrequenciaUseCase.Executar(new MensagemRabbit("{ 'mensagem': { 'dreId': 4, 'ueId': 101,'CodigoUe':'1'} }"));
 
             // assert
             mediator.Verify(x => x.Send(It.IsAny<SalvarPendenciaAulasPorTipoCommand>(), It.IsAny<CancellationToken>()), Times.Once);
