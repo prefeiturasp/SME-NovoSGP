@@ -20,8 +20,8 @@ namespace SME.SGP.Aplicacao.Queries.Usuario.ObterAdministradorDoSuporte
         {
             var administrador = new AdministradorSuporte()
             {
-                Login = this.contextoAplicacao.ObterVariavel<string>("login_adm_suporte") ?? string.Empty,
-                Nome = this.contextoAplicacao.ObterVariavel<string>("nome_adm_suporte") ?? string.Empty
+                Login = this.contextoAplicacao.ObterVariavel<string>("Administrador") ?? string.Empty,
+                Nome = this.contextoAplicacao.ObterVariavel<string>("NomeAdministrador") ?? string.Empty
             };
 
             return administrador;

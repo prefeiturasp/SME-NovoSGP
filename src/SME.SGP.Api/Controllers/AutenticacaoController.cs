@@ -184,5 +184,21 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retornoAutenticacao);
         }
+
+        [HttpPut("suporte/deslogar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [AllowAnonymous]
+        public async Task<IActionResult> DeslogarSuporte([FromServices] IDeslogarSuporteUsuarioUseCase deslogarSuporteUsuarioUseCase)
+        {
+            var retornoAutenticacao = await deslogarSuporteUsuarioUseCase.Executar();
+
+            if (!retornoAutenticacao.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retornoAutenticacao);
+        }
     }
 }
