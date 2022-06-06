@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao;
+using Shouldly;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Shouldly;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -25,8 +21,8 @@ namespace SME.SGP.TesteIntegracao
         {
             await _builder.CriaItensComunsEja();
 
-            var comando = ServiceProvider.GetService<IComandosUsuario>();
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.DeslogarSuporte());
+            var comando = ServiceProvider.GetService<IDeslogarSuporteUsuarioUseCase>();
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Executar());
 
             excecao.Message.ShouldBe("O usuário não está em suporte de um administrador!");
         }
