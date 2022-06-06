@@ -470,7 +470,6 @@ namespace SME.SGP.Worker.RabbitMQ
                 variaveis.Add("RF", mensagemRabbit.UsuarioLogadoRF);
                 variaveis.Add("login", mensagemRabbit.UsuarioLogadoRF);
                 variaveis.Add("Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } });
-                variaveis.Add("Administrador", mensagemRabbit.Administrador);
                 contextoAplicacao.AdicionarVariaveis(variaveis);
             }
         }
