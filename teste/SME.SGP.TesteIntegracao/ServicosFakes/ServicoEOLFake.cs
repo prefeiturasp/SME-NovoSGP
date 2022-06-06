@@ -338,9 +338,15 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
         {
-            throw new NotImplementedException();
+            return new List<ProfessorResumoDto>()
+            {
+                new ProfessorResumoDto(){
+                    CodigoRF = "7128291",
+                    Nome = "ANA RITA"
+                }
+            };
         }
 
         public Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo)

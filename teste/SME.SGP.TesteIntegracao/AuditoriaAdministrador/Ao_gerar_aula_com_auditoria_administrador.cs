@@ -45,11 +45,10 @@ namespace SME.SGP.TesteIntegracao
 
             Assert.IsType<RetornoBaseDto>(retorno);
 
-            var repositorio = ServiceProvider.GetService<IRepositorioAuditoria>();
-            var resultados = await repositorio.ObtenhaAuditoriaDoAdministrador("7924488");
+            var listaDeAuditoria = ObterTodos<Auditoria>();
 
-            resultados.ShouldNotBeEmpty();
-            resultados.Count().ShouldBe(1);
+            listaDeAuditoria.ShouldNotBeEmpty();
+            listaDeAuditoria.Exists(auditorio => auditorio.Administrador == "7924488").ShouldBeTrue();
         }
     }
 }

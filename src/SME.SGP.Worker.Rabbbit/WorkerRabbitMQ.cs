@@ -42,10 +42,10 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
-                              ServicoTelemetria servicoTelemetria,
+                              IServicoTelemetria servicoTelemetria,
                               TelemetriaOptions telemetriaOptions,
                               ConsumoFilasOptions consumoFilasOptions,
-                              ConnectionFactory factory)
+                              IConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
@@ -376,7 +376,7 @@ namespace SME.SGP.Worker.RabbitMQ
         }
 
 
-        private async Task TratarMensagem(BasicDeliverEventArgs ea)
+        public async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;
