@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class MensagemRabbit
     {
-        public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null)
+        public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null, string administrador = null)
         {
             Action = action;
             Mensagem = mensagem;
@@ -13,9 +13,10 @@ namespace SME.SGP.Infra
             NotificarErroUsuario = notificarErroUsuario;
             UsuarioLogadoRF = usuarioLogadoRF;
             PerfilUsuario = perfilUsuario;
+            Administrador = administrador;
         }
 
-        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false)
+        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false, string administrador = null)
         {
             Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
@@ -23,6 +24,7 @@ namespace SME.SGP.Infra
             UsuarioLogadoRF = usuarioLogadoRF;
             NotificarErroUsuario = notificarErroUsuario;
             PerfilUsuario = perfil?.ToString();
+            Administrador = administrador;
         }
 
         public MensagemRabbit(object mensagem)
@@ -41,6 +43,8 @@ namespace SME.SGP.Infra
         public string UsuarioLogadoRF { get; set; }
         public bool NotificarErroUsuario { get; set; }
         public string PerfilUsuario { get; set; }
+        public string Administrador { get; set; }
+
         public T ObterObjetoMensagem<T>() where T : class
         {
             return JsonConvert.DeserializeObject<T>(Mensagem.ToString());

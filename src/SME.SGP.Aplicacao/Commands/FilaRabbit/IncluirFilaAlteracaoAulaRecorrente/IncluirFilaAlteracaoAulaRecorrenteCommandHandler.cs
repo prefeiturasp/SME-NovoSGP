@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
 
             return true;
         }

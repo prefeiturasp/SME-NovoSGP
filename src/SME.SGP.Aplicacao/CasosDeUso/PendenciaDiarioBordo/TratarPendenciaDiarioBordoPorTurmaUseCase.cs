@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
 
-            if (professoresDaTurma != null)
+            if (professoresDaTurma != null && professoresDaTurma.Any(a => !string.IsNullOrEmpty(a)))
             {
                 string[] professoresSeparados = professoresDaTurma.FirstOrDefault().Split(',');
 
@@ -64,6 +64,14 @@ namespace SME.SGP.Aplicacao
 
                 var professoresParaGerarPendencia = new List<ProfessorEComponenteInfantilDto>();
 
+                var filtroPendenciaDiarioBordoTurmaAula = new FiltroPendenciaDiarioBordoTurmaAulaDto()
+                {
+                    CodigoTurma = turmaComDreUe.CodigoTurma,
+                    TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
+                    NomeEscola = turmaComDreUe.ObterEscola(),
+                    AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
+                };
+
                 foreach (var aula in aulas)
                 {
                     if (aula.ComponenteId > 0)
@@ -79,18 +87,17 @@ namespace SME.SGP.Aplicacao
 
                     if (professoresParaGerarPendencia.Any())
                     {
-                        var filtroPendenciaDiarioBordoTurmaAula = new FiltroPendenciaDiarioBordoTurmaAulaDto()
+                        filtroPendenciaDiarioBordoTurmaAula.AulasProfessoresComponentesCurriculares.AddRange(professoresParaGerarPendencia.Select(s=> new AulaProfessorComponenteDto()
                         {
-                            ProfessoresComponentes = professoresParaGerarPendencia,
-                            Aula = aula,
-                            CodigoTurma = turmaComDreUe.CodigoTurma,
-                            TurmaComModalidade = turmaComDreUe.NomeComModalidade(),
-                            NomeEscola = turmaComDreUe.ObterEscola()
-                        };
-
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, filtroPendenciaDiarioBordoTurmaAula));
+                            AulaId = aula.Id,
+                            PeriodoEscolarId = aula.PeriodoEscolarId,
+                            ComponenteCurricularId = s.DisciplinaId,
+                            DescricaoComponenteCurricular = s.DescricaoComponenteCurricular,
+                            ProfessorRf = s.CodigoRf
+                        }));
                     }
                 }
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, filtroPendenciaDiarioBordoTurmaAula));
             }
             catch (Exception ex)
             {

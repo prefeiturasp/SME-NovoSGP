@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
             if (dto.TextoSugerido)
                 await CopiarArquivo(dto);
 
-            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);            
+            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
         }
@@ -31,11 +31,11 @@ namespace SME.SGP.Aplicacao
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
-                    var novoCaminho = await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.RegistroIndividual, TipoArquivo.AcompanhamentoAluno));
+                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.RegistroIndividual, TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                     if (!string.IsNullOrEmpty(novoCaminho))
                     {
                         var caminhoBase = UtilArquivo.ObterDiretorioBase();
-                        var caminhoArquivoDestino = Path.Combine(caminhoBase, novoCaminho, nomeArquivo.ToString());                        
+                        var caminhoArquivoDestino = Path.Combine(caminhoBase, novoCaminho, nomeArquivo.ToString());
                         var str = Regex.Replace(acompanhamentoAluno.PercursoIndividual, $@"https.+?{nomeArquivo.ToString()}", caminhoArquivoDestino);
                         acompanhamentoAluno.PercursoIndividual = str;
                     }
