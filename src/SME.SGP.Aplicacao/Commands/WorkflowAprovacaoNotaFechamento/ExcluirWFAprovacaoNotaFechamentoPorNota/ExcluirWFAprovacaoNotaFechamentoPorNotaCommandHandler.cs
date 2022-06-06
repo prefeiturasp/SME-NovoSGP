@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             foreach(var wfAprovacaoNota in wfAprovacaoNotas)
             {
                 await repositorioWfAprovacaoNotaFechamento.Excluir(wfAprovacaoNota);
-                await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId));
+                await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId.Value));
             }
         }
     }

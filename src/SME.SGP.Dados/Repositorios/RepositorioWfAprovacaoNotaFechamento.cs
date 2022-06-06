@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterPorNotaId(long fechamentoNotaId)
         {
-            var query = @"select * from wf_aprovacao_nota_fechamento where fechamento_nota_id = @fechamentoNotaId";
+            var query = @"select * from wf_aprovacao_nota_fechamento where fechamento_nota_id = @fechamentoNotaId and wf_aprovacao_id is not null ";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento>(query, new { fechamentoNotaId });
         }
