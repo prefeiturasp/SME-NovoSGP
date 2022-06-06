@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -41,6 +42,14 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             retorno.ShouldNotBeNull();
 
             retorno.PlanoId.ShouldBe(1);
+
+            var listaUsuario = ObterTodos<Usuario>();
+            var usuario = listaUsuario.Find(usuario => usuario.CodigoRf == "6926886");
+            var listaPlano = ObterTodos<PlanoAEE>();
+
+            listaPlano.ShouldNotBeNull();
+            listaPlano.Exists(plano => plano.ResponsavelId == usuario.Id).ShouldBeTrue();
+
         }
     }
 }
