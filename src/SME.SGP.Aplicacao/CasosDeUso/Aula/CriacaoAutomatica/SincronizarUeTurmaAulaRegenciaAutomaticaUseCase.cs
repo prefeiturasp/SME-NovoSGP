@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var dadosTurmas = dadosCriacao.DadosTurmas.Skip(pagina == 1 ? 0 : (pagina - 1) * totalItensPorPagina).Take(totalItensPorPagina);
                         var comando = new CriarAulasRegenciaAutomaticamenteCommand(dadosCriacao.Modalidade, dadosCriacao.TipoCalendarioId, dadosCriacao.UeCodigo, dadosCriacao.DiasLetivosENaoLetivos, dadosTurmas, dadosCriacao.DiasForaDoPeriodoEscolar);
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarAulasRegenciaAutomaticamente, comando, Guid.NewGuid(), null));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.SincronizarAulasRegenciaAutomaticamente, comando, Guid.NewGuid(), null));
                     }                    
                 }
                 return true;

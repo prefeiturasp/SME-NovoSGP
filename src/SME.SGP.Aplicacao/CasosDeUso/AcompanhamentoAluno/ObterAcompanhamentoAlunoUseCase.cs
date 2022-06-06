@@ -27,13 +27,36 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            acompanhamentoAlunoTurmaSemestre.PodeEditar = await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia().Date, filtro.Semestre);
+            acompanhamentoAlunoTurmaSemestre.PodeEditar = await PodeEditarTurma(turma, filtro.Semestre);
 
             TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
             await TratamentoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, filtro.TurmaId, filtro.AlunoId, filtro.ComponenteCurricularId);
             await ParametroQuantidadeFotosAluno(acompanhamentoAlunoTurmaSemestre, turma.AnoLetivo);
 
             return acompanhamentoAlunoTurmaSemestre;
+        }
+
+        private async Task<bool> PodeEditarTurma(Turma turma, int bimestre)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
+            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            if(tipoCalendarioId == 0)
+                throw new NegocioException($"Não foi possível obter o id do tipo calêndario para a turma : {turma.CodigoTurma}");
+
+            if (turma.EhTurmaInfantil)
+            {
+                var periodosFechamento = await mediator.Send(new ObterPeriodosFechamentoTurmaInfantilCalendarioIdBimestreQuery(tipoCalendarioId, bimestre));
+                if (periodosFechamento == null || !periodosFechamento.Any())
+                    throw new NegocioException($"Não foi possível obter os periodos de fechamento do bimestre : {bimestre}");
+
+                if (dataReferencia >= periodosFechamento.FirstOrDefault().InicioDoFechamento.Date && dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date)
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre);
+
         }
 
         private async Task TratamentoPercursoIndividual(AcompanhamentoAlunoTurmaSemestreDto acompanhamentoAlunoTurmaSemestre, long turmaId, string alunoCodigo, long componenteCurricularId)
@@ -46,7 +69,7 @@ namespace SME.SGP.Aplicacao
         {
             var percursoIndividual = new StringBuilder();
             var registrosIndividuais = await mediator.Send(new ObterDescricoesRegistrosIndividuaisPorPeriodoQuery(turmaId, long.Parse(alunoCodigo), componenteCurricularId, acompanhamentoAlunoTurmaSemestre.PeriodoInicio, acompanhamentoAlunoTurmaSemestre.PeriodoFim));
-            foreach(var registroIndividual in registrosIndividuais.OrderBy(a => a.DataRegistro))
+            foreach (var registroIndividual in registrosIndividuais.OrderBy(a => a.DataRegistro))
             {
                 percursoIndividual.AppendLine(registroIndividual.Registro);
             }
@@ -65,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
         private void TratamentoSemestre(AcompanhamentoAlunoTurmaSemestreDto acompanhamentosAlunoTurmaSemestre, IEnumerable<PeriodoEscolar> periodosEscolares, int semestre, Modalidade modalidadeCodigo)
         {
-            
+
 
             var periodosSemestre = modalidadeCodigo == Modalidade.EJA ?
                 periodosEscolares :

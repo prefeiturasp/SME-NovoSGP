@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
             var bimestreInicio = await mediator.Send(new ObterBimestreAtualQuery(inicioEfetivo, turma));
             var bimestreFim = await mediator.Send(new ObterBimestreAtualQuery(fimEfetivo, turma));
 
-            if (bimestreInicio != bimestreFim)
+            if (bimestreInicio != bimestreFim && bimestreFim > 2)
             {
                 if (inicioEfetivo.AddDays(30) <= fimEfetivo)
                     return bimestreFim;

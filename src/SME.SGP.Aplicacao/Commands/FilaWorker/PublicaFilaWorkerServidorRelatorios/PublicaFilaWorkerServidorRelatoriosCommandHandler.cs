@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             byte[] body = FormataBodyWorker(request);
 
             servicoTelemetria.Registrar(() => PublicaMensagem(request, body),
-                         "RabbitMQ", "PublicaFilaWorkerServidorRelatorios", request.Fila);           
+                         "RabbitMQ", "PublicaFilaWorkerServidorRelatorios", request.Fila);
 
             return Task.FromResult(true);
         }
@@ -56,12 +56,13 @@ namespace SME.SGP.Aplicacao
         private static byte[] FormataBodyWorker(PublicaFilaWorkerServidorRelatoriosCommand request)
         {
             var mensagem = new MensagemRabbit(request.Endpoint, request.Mensagem, request.CodigoCorrelacao, request.UsuarioLogadoRF, request.NotificarErroUsuario, request.PerfilUsuario);
+
             var mensagemJson = JsonConvert.SerializeObject(mensagem, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Ignore
             });
-            var body = Encoding.UTF8.GetBytes(mensagemJson);
-            return body;
+
+            return Encoding.UTF8.GetBytes(mensagemJson);
         }
     }
 }

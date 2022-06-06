@@ -471,6 +471,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorUe(string ueCodigo, DateTime dataReferencia)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
         {
             throw new NotImplementedException();
