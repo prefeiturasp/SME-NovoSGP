@@ -3,7 +3,6 @@ declare
 	REC_PLANO_AEE RECORD;
 	usuarioId int8;
 begin
-	
 	raise notice '*INICIANDO ATRIBUIÇÃO DE RESPONSÁVEL PARA PLANO AEE*';
 	
 	for REC_PLANO_AEE in select id, criado_rf from plano_aee where responsavel_id is null
