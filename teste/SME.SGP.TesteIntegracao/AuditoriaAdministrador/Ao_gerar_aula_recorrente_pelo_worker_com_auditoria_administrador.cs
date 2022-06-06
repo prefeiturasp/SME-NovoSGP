@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao
             var basic = new BasicDeliverEventArgs()
             {
                 Body = ObtenhaCorpoMensagem(request),
-                RoutingKey = RotasRabbitSgp.RotaInserirAulaRecorrencia,
+                RoutingKey = RotasRabbitSgpAula.RotaInserirAulaRecorrencia,
                 Exchange = ExchangeSgpRabbit.Sgp
             };
 
