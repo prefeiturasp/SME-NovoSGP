@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             return meusDados;
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfilsUsuarioPorLogin(string login)
+        public async Task<PerfisApiEolDto> ObterPerfilsUsuarioPorLogin(string login)
         {
             return await servicoEOL.ObterPerfisPorLogin(login);
         }
