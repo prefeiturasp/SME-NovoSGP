@@ -86,8 +86,8 @@ namespace SME.SGP.TesteIntegracao
                 FechamentoNotaId = 1,
                 Nota = NOTA_5,
                 CriadoEm = System.DateTime.Now,
-                CriadoPor = "Sistema",
-                CriadoRF = "Sistema",
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
                 WfAprovacaoId = 1
             });
 
