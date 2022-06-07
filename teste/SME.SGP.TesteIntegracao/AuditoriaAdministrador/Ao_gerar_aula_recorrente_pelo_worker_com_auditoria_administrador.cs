@@ -32,12 +32,12 @@ namespace SME.SGP.TesteIntegracao
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var connection = new ConnectionFactoryFake();
 
-            var worker = new WorkerRabbitMQ(
-                                scope,
-                                telemetria,
-                                new TelemetriaOptions(),
-                                new ConsumoFilasOptions() { Padrao = true },
-                                connection);
+            //var worker = new WorkerRabbitMQ(
+            //                    scope,
+            //                    telemetria,
+            //                    new TelemetriaOptions(),
+            //                    new ConsumoFilasOptions() { Padrao = true },
+            //                    connection);
 
             var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
@@ -70,7 +70,7 @@ namespace SME.SGP.TesteIntegracao
                 Exchange = ExchangeSgpRabbit.Sgp
             };
 
-            await worker.TratarMensagem(basic);
+            //await worker.TratarMensagem(basic);
 
             Reconectar();
 
