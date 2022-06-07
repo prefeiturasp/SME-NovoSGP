@@ -10,6 +10,7 @@
         public string Frequencia { get; set; }
         public int Remotos { get; set; }
         public int Presencas { get; set; }
+        public int TotalAulas { get; set; }
         public bool PossuiJustificativas { get; set; }
         public MarcadorFrequenciaDto MarcadorFrequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }
