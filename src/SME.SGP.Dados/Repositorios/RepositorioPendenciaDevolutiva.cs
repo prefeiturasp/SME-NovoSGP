@@ -92,5 +92,15 @@ namespace SME.SGP.Dados
 
 			return await database.Conexao.QueryAsync<string>(query, new { turmaId, ueId });
 		}
+
+        public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
+        {
+			var query = @"select t.* 
+							from pendencia_devolutiva pd
+							inner join turma t on t.id = pd.turma_id
+							where pd.pendencia_id = @pendenciaId ";
+
+			return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+		}
     }
 }
