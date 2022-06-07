@@ -1,10 +1,14 @@
 ﻿using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
+using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -39,6 +43,31 @@ namespace SME.SGP.TesteIntegracao
 
         public Ao_gerar_wf_aprovacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        [Fact]
+        public async Task Deve_gerar_notificacao_para_workflow_aprovacao_nota_fechamento_para_workflow_aprovacao_id_nulo()
+        {
+            await CirarDadosBasicos();
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 1,
+                Nota = NOTA_5,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
+
+            var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaUseCase>();
+            await useCase.Executar(new MensagemRabbit());
+
+            var wfAprovacaoPosWorker = ObterTodos<WfAprovacaoNotaFechamento>();
+            var wfAprovacao = ObterTodos<WorkflowAprovacao>();
+            var wfAprovacaoNivel = ObterTodos<WorkflowAprovacaoNivel>();
+
+            wfAprovacaoPosWorker.FirstOrDefault().WfAprovacaoId.ShouldBe(1);
+            wfAprovacao.ShouldNotBeEmpty();
+            wfAprovacaoNivel.First().Cargo.ShouldBe(Cargo.CP);
         }
 
         [Fact]
@@ -188,6 +217,14 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
                 FechamentoAlunoId = 1
+            });
+
+            await InserirNaBase(new ComponenteCurricular()
+            {
+                
+                Descricao = "Disciplina 1",
+                PermiteRegistroFrequencia = true,
+                PermiteLancamentoNota = true
             });
         }
     }
