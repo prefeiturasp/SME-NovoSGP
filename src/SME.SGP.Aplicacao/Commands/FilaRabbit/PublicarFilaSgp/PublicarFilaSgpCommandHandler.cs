@@ -5,6 +5,7 @@ using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
 using SME.GoogleClassroom.Infra;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
-            var usuario = command.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = command.Usuario ?? await ObtenhaUsuario();
             var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
 
             var request = new MensagemRabbit(command.Filtros,
@@ -53,6 +54,18 @@ namespace SME.SGP.Aplicacao
                             "RabbitMQ", "PublicarFilaSgp", command.Rota);
 
             return true;
+        }
+
+        private async Task<Usuario> ObtenhaUsuario()
+        {
+            try
+            {
+                return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } 
+            catch
+            {
+                return new Usuario();
+            }
         }
 
         private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
