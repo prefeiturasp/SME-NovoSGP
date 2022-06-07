@@ -13,7 +13,6 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
 namespace SME.SGP.TesteIntegracao
 {
