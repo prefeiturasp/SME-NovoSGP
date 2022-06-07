@@ -80,19 +80,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CirarDadosBasicos();
 
-            await InserirNaBase(new WorkflowAprovacao()
-            {
-                UeId = UE_CODIGO,
-                DreId = DRE_CODIGO,
-                Ano = 2022,                
-                NotificacaoTipo = NotificacaoTipo.Fechamento,
-                NotifacaoMensagem = MENSAGEM_NOTIFICACAO_WF_APROVACAO,
-                NotifacaoTitulo = MENSAGEM_TITULO_WF_APROVACAO,
-                CriadoPor = SISTEMA,
-                CriadoEm = DateTime.Now,
-                CriadoRF = SISTEMA,
-                Tipo = WorkflowAprovacaoTipo.Basica
-            });
+            await CriarWfAprovacao();
 
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
@@ -109,8 +97,8 @@ namespace SME.SGP.TesteIntegracao
             resultadoWfAprovacao.ShouldNotBeEmpty();
             resultadoWfAprovacao.Count().ShouldBe(1);
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeFalse();
-            resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeTrue();            
-        }
+            resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeTrue();
+        }        
 
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_sem_aprovacao_id()
@@ -119,36 +107,11 @@ namespace SME.SGP.TesteIntegracao
 
             await CirarDadosBasicos();
 
-            await InserirNaBase(new WfAprovacaoNotaFechamento()
-            {
-                FechamentoNotaId = 1,
-                Nota = NOTA_5,
-                CriadoEm = System.DateTime.Now,
-                CriadoPor = SISTEMA,
-                CriadoRF = SISTEMA,
-            });
-
-            await InserirNaBase(new WfAprovacaoNotaFechamento()
-            {
-                FechamentoNotaId = 2,
-                Nota = NOTA_8,
-                CriadoEm = System.DateTime.Now,
-                CriadoPor = SISTEMA,
-                CriadoRF = SISTEMA,
-            });
-
-            await InserirNaBase(new WfAprovacaoNotaFechamento()
-            {
-                FechamentoNotaId = 3,
-                Nota = NOTA_9,
-                CriadoEm = System.DateTime.Now,
-                CriadoPor = SISTEMA,
-                CriadoRF = SISTEMA,
-            });
+            await CriarWfAprovacaoNotaFechamento(null);
 
             var fechamentosNota = new List<FechamentoNotaDto>()
             {
-                new FechamentoNotaDto() 
+                new FechamentoNotaDto()
                 {
                     Id = 1,
                     Nota = NOTA_9,
@@ -174,13 +137,114 @@ namespace SME.SGP.TesteIntegracao
 
             resultadoWfAprovacao.ShouldNotBeEmpty();
             resultadoWfAprovacao.Count().ShouldBe(3);
-            
+
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeFalse();
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeTrue();
 
             resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 1).Nota.ShouldBe(NOTA_9);
             resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 2).Nota.ShouldBe(NOTA_5);
             resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 3).Nota.ShouldBe(NOTA_8);
+        }
+
+        [Fact]
+        public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_com_aprovacao_id()
+        {
+            
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await CirarDadosBasicos();
+
+            await CriarWfAprovacao();
+
+            await CriarWfAprovacaoNotaFechamento(1);
+
+            var fechamentosNota = new List<FechamentoNotaDto>()
+            {
+                new FechamentoNotaDto()
+                {
+                    Id = 1,
+                    Nota = NOTA_9,                    
+                },
+                new FechamentoNotaDto()
+                {
+                    Id = 2,
+                    Nota = NOTA_5,
+                },
+                new FechamentoNotaDto()
+                {
+                    Id = 3,
+                    Nota = NOTA_8,
+                },
+
+            };
+
+            var usuarioLogado = ObterTodos<Usuario>().FirstOrDefault();
+
+            var resultadoWfAprovacaoTeste = ObterTodos<WorkflowAprovacao>();
+
+            await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(fechamentosNota, usuarioLogado));
+
+            var resultadoWfAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
+
+            resultadoWfAprovacao.ShouldNotBeEmpty();
+            resultadoWfAprovacao.Count().ShouldBe(3);
+
+            resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeFalse();
+            resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeTrue();
+
+            resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 1).Nota.ShouldBe(NOTA_9);
+            resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 2).Nota.ShouldBe(NOTA_5);
+            resultadoWfAprovacao.FirstOrDefault(a => a.FechamentoNotaId == 3).Nota.ShouldBe(NOTA_8);
+        }
+
+        private async Task CriarWfAprovacao()
+        {
+            await InserirNaBase(new WorkflowAprovacao()
+            {
+                UeId = UE_CODIGO,
+                DreId = DRE_CODIGO,
+                Ano = 2022,
+                NotificacaoTipo = NotificacaoTipo.Fechamento,
+                NotifacaoMensagem = MENSAGEM_NOTIFICACAO_WF_APROVACAO,
+                NotifacaoTitulo = MENSAGEM_TITULO_WF_APROVACAO,
+                CriadoPor = SISTEMA,
+                CriadoEm = DateTime.Now,
+                CriadoRF = SISTEMA,
+                Tipo = WorkflowAprovacaoTipo.Basica
+            });
+        }
+
+        private async Task CriarWfAprovacaoNotaFechamento(long? wfAprovacaoId)
+        {
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 1,
+                Nota = NOTA_5,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+                WfAprovacaoId = wfAprovacaoId
+            });
+
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 2,
+                Nota = NOTA_8,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+                WfAprovacaoId = wfAprovacaoId
+            });
+
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 3,
+                Nota = NOTA_9,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+                WfAprovacaoId = wfAprovacaoId
+            });
         }
 
         private async Task CirarDadosBasicos()
