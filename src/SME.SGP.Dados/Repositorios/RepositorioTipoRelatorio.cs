@@ -20,9 +20,7 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
         public async Task<int>ObterTipoPorCodigo(string codigo)
-        {
-            //Guid codigoRelatorio = Guid.Parse(codigo);
-
+        {            
             var query = "select tipo_relatorio from relatorio_correlacao where codigo::text = @codigo";
             return await database.Conexao.QueryFirstAsync<int>(query, new { codigo });
         }
