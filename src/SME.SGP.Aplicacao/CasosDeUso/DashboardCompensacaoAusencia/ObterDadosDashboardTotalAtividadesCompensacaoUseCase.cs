@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,7 +22,10 @@ namespace SME.SGP.Aplicacao
                                                                                                           bimestre,
                                                                                                           semestre));
 
-            return MapearParaDto(dadosAtividadesCompensadas, "");
+            if(dadosAtividadesCompensadas != null && dadosAtividadesCompensadas.Any())
+                return MapearParaDto(dadosAtividadesCompensadas, "");
+
+            return default;
         }
 
         private GraficoCompensacaoAusenciaDto MapearParaDto(IEnumerable<TotalCompensacaoAusenciaDto> dadosAusenciaAlunos, string tagTotalAusencia)
