@@ -42,21 +42,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaDiariaAluno(long turmaId,long componenteCurricularId, long alunoCodigo, int bimestre)
+        public async Task<IActionResult> ObterFrequenciaDiariaAluno(long turmaId,long componenteCurricularId, long alunoCodigo, int bimestre, [FromServices] IObterFrequenciaDiariaAlunoUseCase useCase)
         {
-            IEnumerable<FrequenciaDiariaAlunoDto> retorno = new List<FrequenciaDiariaAlunoDto>
-            {
-                new FrequenciaDiariaAlunoDto(1360815,DateTime.Now.AddDays(1),10,2,5,3,"Teste1"),
-                new FrequenciaDiariaAlunoDto(1360815,DateTime.Now.AddDays(2),10,2,5,3,"Atestado Médico do Aluno2"),
-                new FrequenciaDiariaAlunoDto(null,DateTime.Now.AddDays(3),10,2,5,3,null),
-            };
-            var paginacao = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>()
-            {
-                TotalPaginas = 1,
-                TotalRegistros = 3,
-                Items = retorno.OrderByDescending(x => x.DataAula)
-            };
-            return Ok(paginacao);
+            return Ok(await useCase.Executar(new FiltroFrequenciaDiariaAlunoDto(turmaId, componenteCurricularId, alunoCodigo, bimestre)));
         }
 
         [HttpGet("turmas/{turmaId}/semestres/{semestre}/alunos/{alunoCodigo}")]
