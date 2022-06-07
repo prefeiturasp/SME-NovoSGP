@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
                     if (funcionarios != null && funcionarios.Any())
                     {
                         if (funcionarios.Count() != supervisoresIds.Count())
-                            RemoverASPPCoreSSoSemAtribuicao(funcionariosASPP, funcionarios);
+                            await RemoverASPPCoreSSoSemAtribuicao(funcionariosASPP, funcionarios);
                     }
                     return true;
                 }
@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void RemoverASPPCoreSSoSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<UsuarioEolRetornoDto> supervisoresEol)
+        private async Task RemoverASPPCoreSSoSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<UsuarioEolRetornoDto> supervisoresEol)
         {
             var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
 
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                         supervisor.Tipo == (int)TipoResponsavelAtribuicao.Psicopedagogo)
                     {
                         var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                        mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
+                        await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
                     }
                 }
             }
