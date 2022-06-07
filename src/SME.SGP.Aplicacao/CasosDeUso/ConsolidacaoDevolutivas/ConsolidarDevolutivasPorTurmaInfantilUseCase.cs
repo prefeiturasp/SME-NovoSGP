@@ -33,12 +33,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task ConsolidarDevolutivasAnoAtual()
         {
             var anoAtual = DateTime.Now.Year;
-
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+            var turmasIds = turmasInfantil.Select(x => x.Id).ToArray();
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
 
-            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
+            var agrupamentoTurmaUe = turmasInfantil.GroupBy(x => x.UeId);
+            
+            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(anoAtual, agrupamentoTurmaUe);
 
             await AtualizarDataExecucao(anoAtual);
         }
@@ -46,10 +48,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         private async Task ConsolidarDevolutivas(int ano)
         {
             var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano));
+            var turmasIds = turmasInfantil.Select(x => x.Id).ToArray();
+            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
-
-            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
+            var agrupamentoTurmaUe = turmasInfantil.GroupBy(x => x.UeId);
+            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(ano, agrupamentoTurmaUe);
 
             await AtualizarDataExecucao(ano);
         }
@@ -65,16 +68,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
         }
 
-        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<DevolutivaTurmaDTO> turmasInfantil, int anoLetivo)
+        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(int anoLetivo, IEnumerable<IGrouping<long, DevolutivaTurmaDTO>> agrupamentoTurmaUe)
         {
-            if (turmasInfantil == null && !turmasInfantil.Any())
+            if (agrupamentoTurmaUe == null && !agrupamentoTurmaUe.Any())
                 throw new NegocioException("Não foi possível localizar turmas para consolidar dados de devolutivas");
 
-            foreach (var turma in turmasInfantil)
+            foreach (var turmaUe in agrupamentoTurmaUe)
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turmaUe.FirstOrDefault().TurmaId, anoLetivo, turmaUe.FirstOrDefault().UeId), Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {

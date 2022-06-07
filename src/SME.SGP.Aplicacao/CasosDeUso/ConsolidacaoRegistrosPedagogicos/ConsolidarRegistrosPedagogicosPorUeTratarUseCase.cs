@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public ConsolidarRegistrosPedagogicosPorUeTratarUseCase(IMediator mediator, IRepositorioUeConsulta repositorioUe) : base(mediator)
         {
-            this.repositorioUe = repositorioUe;
+            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
@@ -31,7 +31,14 @@ namespace SME.SGP.Aplicacao
             if (await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.SepararDiarioBordoPorComponente, filtro.AnoLetivo)) != null)
             {
                 var ue = await repositorioUe.ObterUePorId(filtro.UeId);
+
+                if (ue == null)
+                    throw new NegocioException("UE não encontrada");
+
                 var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
+
+                if (professoresTitulares == null)
+                    throw new NegocioException("Nenhum Professor Titular foi Encontrado");
 
                 var professoresTitularesAgrupadoTurma = professoresTitulares.GroupBy(c => c.TurmaId);
 

@@ -35,7 +35,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto>> ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMes(long turmaId, int mes)
         {
-            const string query = @"select turma_id as TurmaId, 
+            const string query = @"select id as Id,
+                                        turma_id as TurmaId, 
                                         aluno_codigo as AlunoCodigo,
                                         mes,
                                         percentual,
@@ -47,6 +48,24 @@ namespace SME.SGP.Dados.Repositorios
                                     and mes = @mes";
 
             return await database.Conexao.QueryAsync<ConsolidacaoFrequenciaAlunoMensalDto>(query, new { turmaId, mes });
+        }
+
+        public async Task AlterarConsolidacaoAluno(long consolidacaoId, decimal percentual, int quantidadeAulas, int quantidadeAusencias, int quantidadeCompensacoes)
+        {
+            string query = @"update consolidacao_frequencia_aluno_mensal 
+                                    set percentual = @percentual, 
+                                    quantidade_aulas = @quantidadeAulas,
+                                    quantidade_ausencias = @quantidadeAusencias,
+                                    quantidade_compensacoes = @quantidadeCompensacoes
+                                    where id = @consolidacaoId";
+
+            await database.Conexao.ExecuteAsync(query, new { consolidacaoId, percentual, quantidadeAulas, quantidadeAusencias, quantidadeCompensacoes });
+        }
+
+        public async Task RemoverConsolidacaoAluno(long consolidacaoId)
+        {
+            string query = @"delete from consolidacao_frequencia_aluno_mensal where id = @consolidacaoId";
+            await database.Conexao.ExecuteAsync(query, new { consolidacaoId });
         }
     }
 }

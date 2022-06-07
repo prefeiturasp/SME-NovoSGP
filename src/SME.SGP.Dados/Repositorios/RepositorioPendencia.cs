@@ -35,25 +35,37 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }
 
-        public void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
+        public async void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
-            var query = @"update pendencia p
-                             set excluido = true
-                         from pendencia_fechamento f
-                        where not p.excluido
-                          and p.situacao = 1
-                          and p.id = f.pendencia_id
-                          and p.tipo = @tipoPendencia
-	                      and f.fechamento_turma_disciplina_id = @fechamentoId";
+            var idsEntidade = await ObterIdPendenciasParaExclusao(fechamentoId,tipoPendencia);
+            if (idsEntidade.Count()>0)
+            {
+                var queryUpdate = @"update pendencia p
+	                     	                set excluido = TRUE
+	                                     WHERE p.id = any(@ids) ";
 
-            database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
+                database.Conexao.Execute(queryUpdate, new { ids= idsEntidade.ToArray() });
+            }
+        }
+
+        private async Task<IEnumerable<long>> ObterIdPendenciasParaExclusao(long fechamentoId, TipoPendencia tipoPendencia)
+        {
+            var query = @"SELECT p.id    
+                                 from pendencia_fechamento f
+                                 JOIN pendencia p ON f.pendencia_id =p.id 
+                            where not p.excluido
+                              and p.situacao = 1
+                              and p.id = f.pendencia_id
+                              and p.tipo = @tipoPendencia
+	                          and f.fechamento_turma_disciplina_id = @fechamentoId ";
+            return await database.Conexao.QueryAsync<long>(query, new { fechamentoId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)
         {
             var situacao = SituacaoPendencia.Pendente;
 
-            var query = @" select * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+            var query = @" select distinct * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                            inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
 		                            inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
