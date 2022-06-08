@@ -141,6 +141,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto);
 
-        Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login);
+        Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login);
     }
 }

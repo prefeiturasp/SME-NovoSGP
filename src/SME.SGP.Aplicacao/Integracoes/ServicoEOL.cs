@@ -1157,7 +1157,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
         {
             var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
 
@@ -1168,7 +1168,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
 
 
