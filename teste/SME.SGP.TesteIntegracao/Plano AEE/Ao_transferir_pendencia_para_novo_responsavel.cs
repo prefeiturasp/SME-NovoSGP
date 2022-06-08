@@ -7,10 +7,10 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
-using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             var useCase = ServiceProvider.GetService<ITransferirPendenciaParaNovoResponsavelUseCase>();
 
-            var command = new TransferirPendenciaParaNovoResponsavelCommand(1, 1);
+            var command = new TransferirPendenciaParaNovoResponsavelCommand(1, 2);
             var jsonMensagem = JsonSerializer.Serialize(command);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             var lista = ObterTodos<PendenciaUsuario>();
 
             lista.ShouldNotBeEmpty();
-            lista.FirstOrDefault().UsuarioId.ShouldBe(1);
+            lista.FirstOrDefault().UsuarioId.ShouldBe(2);
         }
 
         private async Task CriaBase()
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             {
                 Id = 1,
                 AlunoCodigo = "7128291",
-                ResponsavelId = 29,
+                ResponsavelId = 1,
                 TurmaId = 1,
                 AlunoNome = "ANA RITA",
                 Questoes = new List<PlanoAEEQuestao>(),
@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new PendenciaUsuario
             {
                 PendenciaId = 1,
-                UsuarioId = 29,
+                UsuarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new System.DateTime(2022, 06, 08)
