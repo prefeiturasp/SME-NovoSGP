@@ -35,9 +35,9 @@ namespace SME.SGP.Fechamento.Worker
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
         public WorkerRabbitFechamento(IServiceScopeFactory serviceScopeFactory,
-                              ServicoTelemetria servicoTelemetria,
+                              IServicoTelemetria servicoTelemetria,
                               TelemetriaOptions telemetriaOptions,
-                              ConnectionFactory factory)
+                              IConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
