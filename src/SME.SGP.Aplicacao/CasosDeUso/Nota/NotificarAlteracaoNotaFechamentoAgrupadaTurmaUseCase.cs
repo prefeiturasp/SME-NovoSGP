@@ -12,10 +12,9 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase : AbstractUseCase, INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase
     {
-        private readonly IMediator mediator;
         private readonly IServicoEol servicoEol;
 
-        public NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase(IMediator mediator) : base(mediator)
+        public NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase(IMediator mediator, IServicoEol servicoEol) : base(mediator)
         {
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
@@ -39,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 TurmaId = turma.CodigoTurma,
                 UeId = turma.Ue.CodigoUe,
                 DreId = turma.Ue.Dre.CodigoDre,
-                NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) -  {turma.NomeComModalidade()} (ano anterior)",
+                NotificacaoTitulo = $"Alteração em {notaConceitoMensagem} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
                 NotificacaoTipo = NotificacaoTipo.Notas,
                 NotificacaoMensagem = mensagem
             };

@@ -10,8 +10,6 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarAlteracaoNotaFechamentoAgrupadaUseCase : AbstractUseCase, INotificarAlteracaoNotaFechamentoAgrupadaUseCase
     {
-        private readonly IMediator mediator;
-
         public NotificarAlteracaoNotaFechamentoAgrupadaUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -19,11 +17,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var wfSemAprovacao = await mediator.Send(new ObterWorkflowAprovacaoNotaFechamentoSemAprovacaoIdQuery());
-
             var agruparEmTurmaBimestre = wfSemAprovacao.GroupBy(w => new { w.TurmaId, w.Bimestre });
 
-            foreach(var turmas in agruparEmTurmaBimestre)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAprovacaoFechamentoPorTurma, turmas, Guid.NewGuid(), null));   
+            foreach (var turmas in agruparEmTurmaBimestre)
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAprovacaoFechamentoPorTurma, turmas, Guid.NewGuid(), null));
 
             return true;
         }

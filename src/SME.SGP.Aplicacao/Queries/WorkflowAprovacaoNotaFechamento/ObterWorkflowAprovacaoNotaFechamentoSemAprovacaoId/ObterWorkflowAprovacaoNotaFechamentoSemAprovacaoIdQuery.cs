@@ -11,5 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterWorkflowAprovacaoNotaFechamentoSemAprovacaoIdQuery : IRequest<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>>
     {
+        public ObterWorkflowAprovacaoNotaFechamentoSemAprovacaoIdQuery()
+        {
+
+        }
     }
 }
