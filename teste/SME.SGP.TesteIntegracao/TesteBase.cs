@@ -49,10 +49,5 @@ namespace SME.SGP.TesteIntegracao
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
         }
-
-        public void Reconectar()
-        {
-            _collectionFixture.Database.CriarConexaoEAbrir();
-        }
     }
 }

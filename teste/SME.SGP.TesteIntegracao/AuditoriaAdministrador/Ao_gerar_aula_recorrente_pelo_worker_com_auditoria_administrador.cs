@@ -12,6 +12,8 @@ using SME.SGP.Worker.RabbitMQ;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -23,12 +25,13 @@ namespace SME.SGP.TesteIntegracao
             _buider = new ItensBasicosBuilder(this);
         }
 
+        [Fact]
         public async Task Deve_gravar_aula_recorrente_pelo_worker_com_auditoria_administrador()
         {
             await _buider.CriaItensComunsEja();
             await _buider.CriaComponenteCurricularSemFrequencia();
 
-            var scope = ServiceProvider.GetService<IServiceScopeFactory>(); 
+            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider); 
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var connection = new ConnectionFactoryFake();
 
@@ -71,9 +74,7 @@ namespace SME.SGP.TesteIntegracao
             };
 
             await worker.TratarMensagem(basic);
-
-            Reconectar();
-
+            
             var listaDeAuditoria = ObterTodos<Auditoria>();
 
             listaDeAuditoria.ShouldNotBeEmpty();
