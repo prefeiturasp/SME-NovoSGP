@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Aplicacao;
@@ -82,7 +83,11 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos")),
+                RequestPath = "/Arquivos"
+            });
 
             app.UseEndpoints(endpoints =>
             {
