@@ -959,6 +959,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioPlanejamentoDiarioUseCase, RelatorioPlanejamentoDiarioUseCase>();
 
             services.TryAddScoped<IRemoveConexaoIdleUseCase, RemoveConexaoIdleUseCase>();
+            services.TryAddScoped<IDeslogarSuporteUsuarioUseCase, DeslogarSuporteUsuarioUseCase>();
 
             // EncaminhamentoAEE
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoAEEUseCase, ObterSecoesPorEtapaDeEncaminhamentoAEEUseCase>();

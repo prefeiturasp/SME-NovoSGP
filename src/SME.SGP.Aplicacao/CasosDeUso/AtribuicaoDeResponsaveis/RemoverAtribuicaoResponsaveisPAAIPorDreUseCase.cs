@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     if (funcionarios != null && funcionarios.Any())
                     {
                         if (funcionarios.Count() != supervisoresIds.Count())
-                            RemoverPAAISemAtribuicao(paaiEscolasDres, funcionarios);
+                            await RemoverPAAISemAtribuicao(paaiEscolasDres, funcionarios);
                     }
                     return true;
                 }
@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private void RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<UsuarioEolRetornoDto> supervisoresEol)
+        private async Task RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<UsuarioEolRetornoDto> supervisoresEol)
         {
             var supervisoresSemAtribuicao = supervisoresEscolasDres;
 
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                     if (supervisor.Tipo == (int)TipoResponsavelAtribuicao.PAAI)
                     {
                         var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                        mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
+                        await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
                     }
                 }
             }
