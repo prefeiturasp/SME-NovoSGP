@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, turma, componenteCurricular, fechamentoTurma.EhFinal);
+                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurma.EhFinal, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
                 var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
@@ -550,12 +550,12 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, Turma turma, DisciplinaDto componenteCurricular, bool ehFinal)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, bool ehFinal, Usuario usuarioLogado)
         {
             if (notasEmAprovacao.Any() && ehFinal)
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, null, usuarioLogado, componenteCurricular, turma));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
             else if (notasEmAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, componenteCurricular, turma));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
         }
 
         private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, bool ehFinal)

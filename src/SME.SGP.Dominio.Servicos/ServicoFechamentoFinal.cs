@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                 }
-                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, usuarioLogado, turma, componenteCurricular);
+                await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
                 foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
@@ -199,10 +199,10 @@ namespace SME.SGP.Dominio.Servicos
             return componentes.FirstOrDefault();
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, long fechamentoTurmaDisciplinaId, Usuario usuarioLogado, Turma turma, DisciplinaDto componenteCurricular)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, Usuario usuarioLogado)
         {
             if (notasEmAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, null, usuarioLogado, componenteCurricular, turma));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
         }
 
         private Task LogarErro(string mensagem, Exception e, LogNivel nivel)
