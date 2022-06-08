@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Deve_Retornar_True()
+        public async Task Deve_retornar_true_quando_exlcuir_alguns_responsaveis_mas_nao_todos()
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
@@ -46,7 +46,6 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavelAssistenteSocial(ASSISTENTE_SOCIAL_RESPONSAVEL_ID_2, ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID_2);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
             var listaAspp = new List<SupervisorEscolasDreDto>();
             //Act
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
@@ -58,10 +57,9 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
+        public async Task Deve_retornar_true_quando_excluir_responsaveis_nao_estao_no_eol()
         {
             //Arrange
-            await InserirDre(DRE_CODIGO_2);
             await InserirDre(DRE_CODIGO_1);
             await InserirResponsavelPsicologo(PSICOLOGO_RESPONSAVEL_ID_2, PSICOLOGO_RESPONSAVEL_RF_ID_2);
             await InserirResponsavelPsicoPedagogo(PSICOPEDAGOGO_RESPONSAVEL_ID_2, PSICOPEDAGOGO_RESPONSAVEL_RF_ID_2);
@@ -75,7 +73,40 @@ namespace SME.SGP.TesteIntegracao
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
             var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
-            Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());
+            Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 3);
+        }
+
+        [Fact]
+        public async Task Deve_retornar_true_quando_nao_excluir_responsaveis()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            await InserirResponsavelPsicologo(PSICOLOGO_RESPONSAVEL_ID, PSICOLOGO_RESPONSAVEL_RF_ID);
+            await InserirResponsavelPsicoPedagogo(PSICOPEDAGOGO_RESPONSAVEL_ID, PSICOPEDAGOGO_RESPONSAVEL_RF_ID);
+            await InserirResponsavelAssistenteSocial(ASSISTENTE_SOCIAL_RESPONSAVEL_ID, ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID);
+
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
+            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
+            var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
+            //Assert
+            Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 0);
+        }
+
+        [Fact]
+        public async Task Deve_retornar_true_quando_nao_excluir_nada_no_SGP()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            //Assert
+            Assert.True(retorno);
         }
 
         public async Task InserirDre(string codigoDre)

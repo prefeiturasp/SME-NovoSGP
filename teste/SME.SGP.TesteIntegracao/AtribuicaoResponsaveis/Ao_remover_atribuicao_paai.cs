@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao
         public Ao_remover_atribuicao_paai(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
-        public async Task Deve_Retornar_True()
+        public async Task Deve_retornar_true_quando_excluir_alguns_mas_nao_todos_responsaveis()
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
@@ -36,16 +36,35 @@ namespace SME.SGP.TesteIntegracao
             await InserirSupervisorPAAI(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
 
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
 
             //Act
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
 
-            var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(DRE_CODIGO_1, TipoResponsavelAtribuicao.PAAI);
+            var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
 
             //Assert
             Assert.True(retorno);
-            Assert.True(supervisoresEscolaresDre.Any());
+            Assert.True(registrosAposuseCase.Count(x => x.Excluido) == 2);
+        }
+
+        [Fact]
+        public async Task Deve_retornar_true_quando_excluir_responsaveis_nao_estao_no_eol()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
+            await InserirSupervisorPAAI(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
+
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+
+            var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
+
+            //Assert
+            Assert.True(retorno);
+            Assert.True(registrosAposuseCase.Count(x => x.Excluido) == 2);
         }
 
         [Fact]
@@ -55,17 +74,24 @@ namespace SME.SGP.TesteIntegracao
             await InserirDre(DRE_CODIGO_2);
             await InserirSupervisorPAAI(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
 
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
-            var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
+            //Act
+            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
+            //Assert
+            Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 0);
+
+        }
+        [Fact]
+        public async Task Deve_retornar_true_quando_nao_excluir_nada_no_SGP()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
 
             //Act
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
-            var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
-            Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());
-
+            Assert.True(retorno);
         }
 
         public async Task InserirDre(string codigoDre)
