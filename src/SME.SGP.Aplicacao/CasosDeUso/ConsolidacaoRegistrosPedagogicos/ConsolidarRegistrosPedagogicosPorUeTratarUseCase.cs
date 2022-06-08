@@ -37,8 +37,8 @@ namespace SME.SGP.Aplicacao
 
                 var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
 
-                if (professoresTitulares == null)
-                    throw new NegocioException("Nenhum Professor Titular foi Encontrado");
+                if (professoresTitulares is null || !professoresTitulares.Any())
+                    return true;
 
                 var professoresTitularesAgrupadoTurma = professoresTitulares.GroupBy(c => c.TurmaId);
 
