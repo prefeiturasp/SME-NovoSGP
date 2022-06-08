@@ -765,11 +765,12 @@ namespace SME.SGP.Dados.Repositorios
                             t.ano,
                             t.tipo_turma as TurmaTipo,
                             t.nome as TurmaNome,
-                            t.modalidade_codigo as TurmaModalidade, bimestre as Bimestre, aluno_codigo as AlunoCodigo 
-                        from consolidado_conselho_classe_aluno_turma cccat
-                        inner join turma t on cccat.turma_id = t.id 
-                        inner join ue on ue.id = t.ue_id 
-                        where t.ano_letivo = @ano ");
+                            t.modalidade_codigo as TurmaModalidade, cccatn.bimestre as Bimestre, cccat.aluno_codigo as AlunoCodigo 
+                       from consolidado_conselho_classe_aluno_turma cccat
+                      inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
+                      inner join turma t on cccat.turma_id = t.id 
+                      inner join ue on ue.id = t.ue_id 
+                      where t.ano_letivo = @ano ");
 
             if (ueId > 0)
             {
@@ -793,7 +794,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre > 0)
             {
-                query.Append(" and cccat.bimestre = @bimestre ");
+                query.Append(" and cccatn.bimestre = @bimestre ");
             }
 
             return await contexto.QueryAsync<TurmaAlunoBimestreFechamentoDto>(query.ToString(), new { ueId, ano, dreId, modalidade, semestre, bimestre });
