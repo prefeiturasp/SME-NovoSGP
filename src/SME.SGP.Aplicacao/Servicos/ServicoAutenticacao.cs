@@ -36,17 +36,17 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
-            return ObtenhaAutenticacao(retornoServicoEol);
+            return await ObtenhaAutenticacao(retornoServicoEol);
         }
 
         public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEolSemSenha(string login)
         {
             var retornoServicoEol = await servicoEOL.ObtenhaAutenticacaoSemSenha(login);
 
-            return ObtenhaAutenticacao(retornoServicoEol);
+            return await ObtenhaAutenticacao(retornoServicoEol);
         }
 
-        private (UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) ObtenhaAutenticacao(UsuarioEolAutenticacaoRetornoDto retornoServicoEol)
+        private async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> ObtenhaAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
             if (retornoServicoEol != null)
@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
                 retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
 
-                var perfis = await servicoEOL.ObterPerfisPorLogin(login);
+                var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
 
                 return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
             }

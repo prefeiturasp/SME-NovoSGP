@@ -70,9 +70,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
         {
-            return new UsuarioEolAutenticacaoRetornoDto()
+            return new AutenticacaoApiEolDto()
             {
                 CodigoRf = "7924488"
             };
