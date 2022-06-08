@@ -96,20 +96,20 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
             return pendencia.EhPendenciaAula() ?
-                        await ObterPendenciasAulasFormatadas(pendencia) :
-                    pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
-                        await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
-                    pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
-                        await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
-                    pendencia.EhPendenciaFechamento() ?
-                        await ObterPendenciasFechamentoFormatadas(pendencia) :
-                    pendencia.EhAusenciaFechamento() ?
-                        await ObterPendenciasProfessorFormatadas(pendencia) :
-                    pendencia.EhPendenciaDiarioBordo() ?
-                        await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf) :
-                    pendencia.EhPendenciaDevolutiva() ?
-                        await ObterPendenciasDevolutivaFormatadas(pendencia) :
-                    new List<PendenciaDto>();
+                    await ObterPendenciasAulasFormatadas(pendencia) :
+                pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
+                    await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
+                pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
+                    await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
+                pendencia.EhPendenciaFechamento() ?
+                    await ObterPendenciasFechamentoFormatadas(pendencia) :
+                pendencia.EhAusenciaFechamento() ?
+                    await ObterPendenciasProfessorFormatadas(pendencia) :
+                pendencia.EhPendenciaDiarioBordo() ?
+                    await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf) :
+                pendencia.EhPendenciaDevolutiva() ?
+                    await ObterPendenciasDevolutivaFormatadas(pendencia) :
+                new List<PendenciaDto>();
         }
         
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)
@@ -276,15 +276,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterBimestreTurma(Pendencia pendencia)
         {
-            Turma turma = pendencia.EhPendenciaAula() ?
-                         await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
-                    pendencia.EhPendenciaFechamento() ?
-                         await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
-                    pendencia.EhPendenciaProfessor() ?
-                        await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
-                    pendencia.EhPendenciaDiarioBordo()?
-                         await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
-                        null;
+            Turma turma = pendencia.EhPendenciaAula() ? 
+                    await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
+                pendencia.EhPendenciaFechamento() ?
+                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
+                pendencia.EhPendenciaProfessor() ?
+                    await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
+                pendencia.EhPendenciaDiarioBordo() ?
+                    await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
+                pendencia.EhPendenciaDevolutiva() ?
+                    await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id)) :
+                null;
 
             if (turma == null)
                 return "";

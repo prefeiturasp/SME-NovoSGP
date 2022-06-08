@@ -52,7 +52,34 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 Id = 1,
                 UeId = 1,
                 Ano = "1",
-                CodigoTurma = "1"
+                CodigoTurma = "1",
+                ModalidadeCodigo = Modalidade.Fundamental,
+                AnoLetivo = 2022
+            });
+
+            await InserirNaBase(new TipoCalendario()
+            {
+                Id = 1,
+                AnoLetivo = 2022,
+                Nome = "Calendário Teste 2022",
+                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                Periodo = Periodo.Anual,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = "Sistema",
+                CriadoRF = "0"
+            });
+
+            await InserirNaBase(new PeriodoEscolar
+            {
+                Id = 1,
+                TipoCalendarioId = 1,
+                Bimestre = 3,
+                PeriodoInicio = new DateTime(2022, 06, 01),
+                PeriodoFim = new DateTime(2022, 08, 30),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                Migrado = false
             });
         }
 
@@ -101,7 +128,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 Descricao = "O componente REGÊNCIA INFANTIL EMEI 4H da turma EI-7G da CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) está há mais de 25 dias sem registro de devolutiva para os diários de bordo.",
                 Situacao = SituacaoPendencia.Pendente,
                 Excluido = false,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
                 Instrucao = "Esta pendência será resolvida automaticamente quando o registro da devolutiva for regularizado.",
@@ -113,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 Id = 1,
                 PerfilCodigo = PerfilUsuario.CP,
                 PendenciaId = 1,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",
                 CriadoRF = "0"
             };
@@ -121,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             pendenciaPerfil.AdicionaPendenciaPerfilUsuario(new PendenciaPerfilUsuario(1, 1, PerfilUsuario.CP)
             {
                 Id = 1,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = "Sistema",
                 CriadoRF = "0"
             });
@@ -135,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 PendenciaId = 1,
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
 
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Area Conhecimento 1'");
