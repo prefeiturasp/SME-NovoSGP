@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var dres = await mediator.Send(new ObterIdsDresQuery());
+            var dres = await mediator.Send(new ObterCodigosDresQuery());
 
             foreach (var dreId in dres)
             {
@@ -27,15 +27,15 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private async Task ProcessarAtribuicaoDeResponsavelSupervisor(long dreId)
+        private async Task ProcessarAtribuicaoDeResponsavelSupervisor(string dreId)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, dreId));
         }
-        private async Task ProcessarAtribuicaoDeResponsavelPAAI(long dreId)
+        private async Task ProcessarAtribuicaoDeResponsavelPAAI(string dreId)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, dreId));
         }
-        private async Task ProcessarAtribuicaoDeResponsavelASPP(long dreId)
+        private async Task ProcessarAtribuicaoDeResponsavelASPP(string dreId)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, dreId));
         }

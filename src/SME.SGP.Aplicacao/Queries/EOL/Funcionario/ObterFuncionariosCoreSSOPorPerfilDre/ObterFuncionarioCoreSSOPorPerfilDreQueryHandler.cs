@@ -22,15 +22,18 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionarioCoreSSOPorPerfilDreQuery request, CancellationToken cancellationToken)
         {
+            var json = new StringContent(JsonConvert.SerializeObject(new string[] { request.CodigoPerfil.ToString() }), Encoding.UTF8, "application/json");
+
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync($@"funcionarios/unidade/{request.CodigoDre}", new StringContent(JsonConvert.SerializeObject(request.CodigoPerfil), Encoding.UTF8, "application/json-patch+json"));
+
+            var resposta = await httpClient.PostAsync($@"funcionarios/unidade/{request.CodigoDre}", json);
 
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
                 return null;
 
-            var json = await resposta.Content.ReadAsStringAsync();
+            var jsonRetorno = await resposta.Content.ReadAsStringAsync();
 
-            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json));
+            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(jsonRetorno));
         }
     }
 }
