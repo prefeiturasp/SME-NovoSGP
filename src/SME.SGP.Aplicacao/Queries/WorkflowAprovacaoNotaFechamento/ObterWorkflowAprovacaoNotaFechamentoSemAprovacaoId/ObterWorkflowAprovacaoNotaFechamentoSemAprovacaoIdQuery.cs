@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos.FechamentoNota;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;

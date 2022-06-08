@@ -1,4 +1,5 @@
-﻿using SME.SGP.Infra.Dtos.FechamentoNota;
+﻿
+using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

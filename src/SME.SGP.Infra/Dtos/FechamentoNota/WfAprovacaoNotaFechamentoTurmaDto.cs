@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Infra.Dtos.FechamentoNota
+namespace SME.SGP.Infra
 {
     public class WfAprovacaoNotaFechamentoTurmaDto
     {
@@ -13,6 +13,7 @@ namespace SME.SGP.Infra.Dtos.FechamentoNota
         public long TurmaId { get; set; }
         public long FechamentoTurmaDisciplinaId { get; set; }
         public ComponenteCurricular ComponenteCurricular { get; set; }
+        public FechamentoNota FechamentoNota { get; set; }
         public string CodigoAluno { get; set; }
         public double? NotaAnterior { get; set; }
         public long? ConceitoAnteriorId { get; set; }
