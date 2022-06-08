@@ -43,6 +43,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
+
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 2,
@@ -58,6 +59,38 @@ namespace SME.SGP.TesteIntegracao.Setup
         public async Task CriaItensComunsEja()
         {
             await CriaItensComunsEja(false);
+        }
+
+        public async Task CriarUsuarioLogadoCP()
+        {
+            await _teste.InserirNaBase(new Usuario
+            {
+                Id = 59889,
+                Login = "8405255",
+                CodigoRf = "8405255",
+                Nome = "JOYCE HELENA PEDRO VICENTE ALVES",
+                CriadoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0"
+            });
+
+            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
+
+            var variaveis = new Dictionary<string, object>
+            {
+                { "NomeUsuario", "JOYCE HELENA PEDRO VICENTE ALVES" },
+                { "UsuarioLogado", "8405255" },
+                { "RF", "8405255" },
+                { "login", "8405255" },
+                {
+                    "Claims", new List<InternalClaim> {
+                        new InternalClaim { Value = "8405255", Type = "rf" },
+                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
+                    }
+                }
+            };
+
+            contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
         public async Task CriaItensComunsEja(bool incluirAdm)
@@ -154,8 +187,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Migrado = false,
                 AulaCJ = false
             });
-
-
         }
 
         public async Task CriaComponenteCurricularSemFrequencia()
