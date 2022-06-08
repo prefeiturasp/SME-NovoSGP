@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Integracoes
 {
-    public class ServicoEOL : IServicoEol 
+    public class ServicoEOL : IServicoEol
     {
         private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             throw new NegocioException(mensagem);
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        public async Task<AutenticacaoApiEolDto> Autenticar(string login, string senha)
         {
             var parametros = JsonConvert.SerializeObject(new { login, senha });
             var resposta = await httpClient.PostAsync($"v1/autenticacao", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+                return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
             }
             else
             {
@@ -557,14 +557,14 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<MeusDadosDto>(json);
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
+        public async Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
         {
             var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPerfisPorLogin/{login}");
 
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+                return JsonConvert.DeserializeObject<PerfisApiEolDto>(json);
             }
             return null;
         }
@@ -1156,8 +1156,8 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
         }
-        
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
         {
             var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
 
@@ -1168,8 +1168,10 @@ namespace SME.SGP.Aplicacao.Integracoes
 
 
             var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<UsuarioEolAutenticacaoRetornoDto>(json);
+            return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
+
+
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {
@@ -1183,5 +1185,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
+
+
+
+
     }
 }

@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                     periodoEscolar = periodosEscolares.OrderByDescending(o => o.PeriodoInicio).FirstOrDefault(p => p.PeriodoFim <= DateTime.Today);
             }
 
-            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(request.Turma.CodigoTurma, request.Turma.AnoLetivo, periodoEscolar));
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(request.Turma.CodigoTurma, request.Turma.AnoLetivo, periodoEscolar, true));
 
             var dadosAlunosAgrupados = dadosAlunos.GroupBy(x => x.CodigoEOL).SelectMany(y => y.OrderBy(a => a.SituacaoCodigo).Take(1));
 

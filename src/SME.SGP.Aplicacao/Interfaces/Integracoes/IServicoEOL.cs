@@ -17,11 +17,12 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task AtribuirCJSeNecessario(Guid usuarioId);
 
+
         Task AtribuirCJSeNecessario(string codigoRf);
 
         Task AtribuirPerfil(string codigoRf, Guid perfil);
 
-        Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha);
+        Task<AutenticacaoApiEolDto> Autenticar(string login, string senha);
 
         IEnumerable<CicloRetornoDto> BuscarCiclos();
 
@@ -84,7 +85,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<MeusDadosDto> ObterMeusDados(string login);
 
-        Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login);
+        Task<PerfisApiEolDto> ObterPerfisPorLogin(string login);
 
         Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid);
 
@@ -104,7 +105,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores);
 
-        IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId);
 
         Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo);
 
@@ -141,6 +141,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto);
 
-        Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login);
+        Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login);
     }
 }

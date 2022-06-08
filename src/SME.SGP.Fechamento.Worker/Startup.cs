@@ -75,7 +75,7 @@ namespace SME.SGP.Fechamento.Worker
 
             DapperExtensionMethods.Init(servicoTelemetria);
 
-            services.AddSingleton(servicoTelemetria);
+            services.AddSingleton<IServicoTelemetria>(servicoTelemetria);
         }
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)
         {

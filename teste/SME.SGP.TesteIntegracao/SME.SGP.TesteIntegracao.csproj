@@ -32,6 +32,7 @@
       <ProjectReference Include="..\..\src\SME.SGP.Api\SME.SGP.Api.csproj" />
       <ProjectReference Include="..\..\src\SME.SGP.Dados\SME.SGP.Dados.csproj" />
       <ProjectReference Include="..\..\src\SME.SGP.IoC\SME.SGP.IoC.csproj" />
+      <ProjectReference Include="..\..\src\SME.SGP.Worker.Rabbbit\SME.SGP.Worker.Rabbbit.csproj" />
     </ItemGroup>
 
     <ItemGroup>
