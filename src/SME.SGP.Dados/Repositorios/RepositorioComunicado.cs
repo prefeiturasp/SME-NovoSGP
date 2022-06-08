@@ -320,7 +320,7 @@ namespace SME.SGP.Dados.Repositorios
                 where.Append($" AND lower(f_unaccent(cm.titulo)) LIKE lower(f_unaccent('%" + filtro.Titulo + "%'))");
             }
 
-            where.Append($" and not {comunicadoAlias}.excluido and {comunicadoModalidadeAlias}.tipo_comunicado <> @tipoComunicado ");
+            where.Append($" and not {comunicadoAlias}.excluido and {comunicadoAlias}.tipo_comunicado <> @tipoComunicado ");
 
             return where.ToString();
         }
