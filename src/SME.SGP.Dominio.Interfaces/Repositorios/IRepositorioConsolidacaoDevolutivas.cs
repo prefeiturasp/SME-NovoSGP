@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         
         Task<long> Inserir(ConsolidacaoDevolutivas consolidacao);
 
-        Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo);
+        Task LimparConsolidacaoDevolutivasPorAno(long[] turmasIds);
         Task<bool> ExisteConsolidacaoDevolutivaTurmaPorAno(int ano);
         Task<IEnumerable<GraficoBaseDto>> ObterTotalDevolutivasPorDre(int anoLetivo, string ano);
     }

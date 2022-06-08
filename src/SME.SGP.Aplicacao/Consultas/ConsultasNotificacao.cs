@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,11 +18,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
         private readonly IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio;
+        private readonly IRepositorioTipoRelatorio repositorioTipoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio) : base(contextoAplicacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio, IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.obterDataCriacaoRelatorio = obterDataCriacaoRelatorio ?? throw new System.ArgumentNullException(nameof(obterDataCriacaoRelatorio));
+            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioTipoRelatorio));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -78,6 +81,12 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
+            if (Regex.Match(notificacao.Mensagem, "<a [^>]*?>").Success && notificacao.Mensagem.Contains("Para visualizar a aula clique"))
+            {
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"Para visualizar a aula clique(\s)?.", "", RegexOptions.IgnoreCase);
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"<a [^>]*?>(.*?)<\/a>?.", "");
+            }
+            
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
@@ -118,11 +127,17 @@ namespace SME.SGP.Aplicacao
         private async Task<NotificacaoDetalheDto> MapearEntidadeParaDetalheDto(Notificacao retorno)
         {
             string codigoRelatorio = string.Empty;
+            int tipoRelatorio = 0;
             bool relatorioExiste = true;
             if (NotificacaoTipo.Relatorio == retorno.Tipo)
                 codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
 
-            if (!string.IsNullOrEmpty(codigoRelatorio))
+            if (codigoRelatorio.Any())
+            {
+                tipoRelatorio = await repositorioTipoRelatorio.ObterTipoPorCodigo(codigoRelatorio);
+            }
+
+            if (!string.IsNullOrEmpty(codigoRelatorio) && (tipoRelatorio != (int)TipoRelatorio.Itinerancias))
                 relatorioExiste = await VerificarSeArquivoExiste(codigoRelatorio);
 
             return new NotificacaoDetalheDto()
