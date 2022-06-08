@@ -62,6 +62,8 @@ namespace SME.SGP.Aplicacao.Commands
 
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
+                    await TransfereResponsavelDaPendecia(plano);
+
                     if (planoId > 0 && ultimaVersaoPlanoAee > 1)
                         await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoId));
 
@@ -91,6 +93,13 @@ namespace SME.SGP.Aplicacao.Commands
                     throw;
                 }
             }
+        }
+
+        private async Task TransfereResponsavelDaPendecia(PlanoAEE plano)
+        {
+            var command = new TransferirPendenciaParaNovoResponsavelCommand(plano.Id, plano.ResponsavelId);
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, command, Guid.NewGuid()));
         }
 
         private async Task<bool> ValidaPersistenciaResposta(string resposta, long questaoId)
