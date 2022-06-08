@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        public Task<AutenticacaoApiEolDto> Autenticar(string login, string senha)
         {
             throw new NotImplementedException();
         }
@@ -70,9 +70,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
         {
-            return new UsuarioEolAutenticacaoRetornoDto()
+            return new AutenticacaoApiEolDto()
             {
                 CodigoRf = "7924488"
             };
@@ -403,11 +403,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
+        public async Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
         {
-            var listaUsuarios = new List<UsuarioEolAutenticacaoRetornoDto>
+            var listaUsuarios = new List<PerfisApiEolDto>
             {
-                new UsuarioEolAutenticacaoRetornoDto
+                new PerfisApiEolDto
                 {
                     CodigoRf = "6926886",
                     Perfis = new List<Guid>
@@ -416,7 +416,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
                     }
                 },
-                new UsuarioEolAutenticacaoRetornoDto
+                new PerfisApiEolDto
                 {
                     CodigoRf = "6737544",
                     Perfis = new List<Guid>

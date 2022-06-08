@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var situacao = SituacaoPendencia.Pendente;
 
-            var query = @" select * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+            var query = @" select distinct * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                            inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
 		                            inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id

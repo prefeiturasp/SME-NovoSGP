@@ -55,7 +55,18 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                pendencias = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId, Paginacao);
+                pendencias = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId,
+                                                                                             Paginacao);
+                var itensDaLista = pendencias.Items.ToList();
+                foreach (var pendencia in pendencias.Items)
+                {
+                    var pendenciaFiltrada = await repositorioPendencia
+                                                   .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                  pendencia);
+
+                    if (pendenciaFiltrada == null)
+                        itensDaLista.Remove(pendencia);
+                }
             }        
 
             return await MapearParaDtoPaginado(pendencias);
@@ -103,10 +114,12 @@ namespace SME.SGP.Aplicacao
                     await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
                 pendencia.EhPendenciaFechamento() ?
                     await ObterPendenciasFechamentoFormatadas(pendencia) :
-                pendencia.EhAusenciaFechamento() ?
+                    pendencia.EhAusenciaFechamento() ?
                     await ObterPendenciasProfessorFormatadas(pendencia) :
                 pendencia.EhPendenciaDiarioBordo() ?
                     await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf) :
+                pendencia.EhPendenciaAEE() ?
+                    await ObterPendenciasProfessorFormatadas(pendencia) :
                 pendencia.EhPendenciaDevolutiva() ?
                     await ObterPendenciasDevolutivaFormatadas(pendencia) :
                 new List<PendenciaDto>();

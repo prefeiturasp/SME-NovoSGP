@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
                 enderecoFuncionalidade = await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
             }
 
-            return request.TextoEditorNovo.Replace(ArquivoContants.PastaTemporaria, enderecoFuncionalidade);
+            string textoNovo = request.TextoEditorNovo.Replace(ArquivoContants.PastaTemporaria, enderecoFuncionalidade);
+            return textoNovo.ToString();
 
         }
     }
