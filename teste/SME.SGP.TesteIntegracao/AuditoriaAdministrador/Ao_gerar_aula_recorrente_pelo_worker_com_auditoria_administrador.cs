@@ -12,6 +12,8 @@ using SME.SGP.Worker.RabbitMQ;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -23,21 +25,22 @@ namespace SME.SGP.TesteIntegracao
             _buider = new ItensBasicosBuilder(this);
         }
 
+        [Fact]
         public async Task Deve_gravar_aula_recorrente_pelo_worker_com_auditoria_administrador()
         {
             await _buider.CriaItensComunsEja();
             await _buider.CriaComponenteCurricularSemFrequencia();
 
-            var scope = ServiceProvider.GetService<IServiceScopeFactory>(); 
+            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider); 
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var connection = new ConnectionFactoryFake();
 
-            //var worker = new WorkerRabbitMQ(
-            //                    scope,
-            //                    telemetria,
-            //                    new TelemetriaOptions(),
-            //                    new ConsumoFilasOptions() { Padrao = true },
-            //                    connection);
+            var worker = new WorkerRabbitMQ(
+                                scope,
+                                telemetria,
+                                new TelemetriaOptions(),
+                                new ConsumoFilasOptions() { Padrao = true },
+                                connection);
 
             var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
@@ -70,10 +73,8 @@ namespace SME.SGP.TesteIntegracao
                 Exchange = ExchangeSgpRabbit.Sgp
             };
 
-            //await worker.TratarMensagem(basic);
-
-            Reconectar();
-
+            await worker.TratarMensagem(basic);
+            
             var listaDeAuditoria = ObterTodos<Auditoria>();
 
             listaDeAuditoria.ShouldNotBeEmpty();

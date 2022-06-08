@@ -67,7 +67,7 @@ namespace SME.SGP.Worker.Rabbbit
 
             DapperExtensionMethods.Init(servicoTelemetria);
 
-            services.AddSingleton(servicoTelemetria);
+            services.AddSingleton<IServicoTelemetria>(servicoTelemetria);
 
             services.AddMemoryCache();
 
