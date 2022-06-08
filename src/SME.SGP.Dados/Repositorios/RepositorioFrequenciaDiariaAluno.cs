@@ -1,12 +1,14 @@
-﻿using SME.SGP.Dominio.Interfaces;
+﻿using Dapper;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public  class RepositorioFrequenciaDiariaAluno : IRepositorioFrequenciaDiariaAluno
+    public class RepositorioFrequenciaDiariaAluno : IRepositorioFrequenciaDiariaAluno
     {
         private readonly ISgpContext database;
         public RepositorioFrequenciaDiariaAluno(ISgpContext database)
@@ -14,53 +16,34 @@ namespace SME.SGP.Dados.Repositorios
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
-        public async Task<IEnumerable<ObterMotivoAusenciaAlunoFrequenciaDiariaPorAulasIdsDto>> ObterMotivoAusenciaAlunoFrequenciaDiariaPorAulasIds(int[] aulaIds)
+        public async Task<PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>> ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao paginacao, int bimestre, string codigoAluno, long turmaId, string aulaDisciplinaId)
         {
-            var query = @"
-                        select 
-                            an.id AS AnotacaoId,
-                            a.id as AulaId,
-                            a.data_aula AS DataAula,
-                            case when ma.descricao is not null then ma.descricao else an.anotacao end as MotivoAusencia 
-                        from aula a
-	                        inner join anotacao_frequencia_aluno an on a.id = an.aula_id 
-	                        inner join motivo_ausencia ma on an.motivo_ausencia_id = ma.id
-                        WHERE a.id = any(aulaIds)";
-            var parametros = new
-            {
-                aulaIds
-            };
-            return await database.Conexao.QueryAsync<ObterMotivoAusenciaAlunoFrequenciaDiariaPorAulasIdsDto>(query, parametros);
-        }
+            var query = new StringBuilder(@"
+                       SELECT DISTINCT 
+	                        rfa.id AS RegistroFrequenciaAlunoId,
+	                        a.data_aula AS DataAula,
+	                        a.id AS AulasId,
+	                        rfa.valor AS TipoFrequencia,
+	                        rfa.codigo_aluno AS AlunoCodigo,
+	                        an.id AS AnotacaoId,
+	                        CASE
+		                        WHEN ma.descricao IS NOT NULL THEN ma.descricao
+		                        ELSE an.anotacao
+	                        END AS MotivoAusencia
+                        FROM registro_frequencia_aluno rfa 
+                        INNER JOIN registro_frequencia rf ON rfa.registro_frequencia_id = rf.id
+                        INNER JOIN aula a ON rf.aula_id = a.id
+                        INNER JOIN turma t ON t.turma_id = a.turma_id
+                        INNER JOIN periodo_escolar pe ON a.tipo_calendario_id = pe.tipo_calendario_id AND a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim AND pe.bimestre = @bimestre
+                        LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno
+                        LEFT JOIN motivo_ausencia ma ON an.motivo_ausencia_id = ma.id
+                        WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
+	                        AND rfa.codigo_aluno = @codigoAluno
+	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId 
+	                        ORDER BY a.data_aula  ");
 
-        public async Task<IEnumerable<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>> ObterQuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplina(int bimestre, string codigoAluno, long turmaId, string aulaDisciplinaId)
-        {
-            var query = @"
-                        SELECT
-	                    count(rfa.id)AS TotalAulas,
-	                    a.data_aula  AS DataAula,
-	                    a.id  AS AulasId,
-	                    rfa.valor AS TipoFrequencia
-                    FROM
-	                    registro_frequencia_aluno rfa
-                    INNER JOIN registro_frequencia rf ON
-	                    rfa.registro_frequencia_id = rf.id
-                    INNER JOIN aula a ON
-	                    rf.aula_id = a.id
-                    INNER JOIN turma t ON
-	                    t.turma_id = a.turma_id
-                    INNER JOIN periodo_escolar pe ON
-	                    a.tipo_calendario_id = pe.tipo_calendario_id
-	                    AND a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim
-	                    AND pe.bimestre = @bimestre
-                    WHERE
-	                    NOT rfa.excluido
-	                    AND NOT rf.excluido
-	                    AND NOT a.excluido
-	                    AND rfa.codigo_aluno = codigoAluno
-	                    AND t.id = @turmaId
-	                    AND a.disciplina_id = aulaDisciplinaId
-                        GROUP  BY a.data_aula,a.id,rfa.valor";
+            if (paginacao.QuantidadeRegistros > 0)
+                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
 
             var parametros = new
             {
@@ -69,8 +52,16 @@ namespace SME.SGP.Dados.Repositorios
                 turmaId,
                 aulaDisciplinaId
             };
+            var retorno = new PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
+                retorno.TotalRegistros = retorno.Items.AsList().Count;
+            }
 
-            return await database.Conexao.QueryAsync<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>(query,parametros);
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
         }
     }
 }
