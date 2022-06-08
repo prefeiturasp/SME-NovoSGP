@@ -88,5 +88,11 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.AusenciaFechamento
             }.Contains(Tipo);
+
+        public bool EhPendenciaDevolutiva()
+            => new TipoPendencia[]
+            {
+                TipoPendencia.Devolutiva
+            }.Contains(Tipo);
     }
 }
