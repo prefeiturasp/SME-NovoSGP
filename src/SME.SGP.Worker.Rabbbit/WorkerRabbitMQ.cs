@@ -42,10 +42,10 @@ namespace SME.SGP.Worker.RabbitMQ
         private readonly Dictionary<string, ComandoRabbit> comandos;
 
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
-                              ServicoTelemetria servicoTelemetria,
+                              IServicoTelemetria servicoTelemetria,
                               TelemetriaOptions telemetriaOptions,
                               ConsumoFilasOptions consumoFilasOptions,
-                              ConnectionFactory factory)
+                              IConnectionFactory factory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
