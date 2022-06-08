@@ -876,6 +876,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ITratarPendenciaDiarioBordoPorTurmaUseCase, TratarPendenciaDiarioBordoPorTurmaUseCase>();
             services.TryAddScoped<ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase, TratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase>();
             services.TryAddScoped<IExcluirPendenciaDiarioBordoPorAulaIdUseCase, ExcluirPendenciaDiarioBordoPorAulaIdUseCase>();
+            services.TryAddScoped<IExecutarExclusaoPendenciasDevolutivaUseCase, ExecutarExclusaoPendenciasDevolutivaUseCase>();
 
             services.TryAddScoped<ITratarAtribuicaoPendenciasUsuariosUseCase, TratarAtribuicaoPendenciasUsuariosUseCase>();
             services.TryAddScoped<ICargaAtribuicaoPendenciasPerfilUsuarioUseCase, CargaAtribuicaoPendenciasPerfilUsuarioUseCase>();
