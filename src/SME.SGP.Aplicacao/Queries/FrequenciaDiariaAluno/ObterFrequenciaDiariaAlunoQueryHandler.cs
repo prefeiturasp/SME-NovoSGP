@@ -43,22 +43,19 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<FrequenciaDiariaAlunoDto> MapearMotivoAusencia(IEnumerable<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto> quantidadeDiasPorTipoFrequencia)
         {
             var listaFrequencias = new List<FrequenciaDiariaAlunoDto>();
-            foreach (var item in quantidadeDiasPorTipoFrequencia.GroupBy(x => x.DataAula))
+            
+            foreach (var item in quantidadeDiasPorTipoFrequencia)
             {
-                var qtdPresenca = item.Where(x => x.AulasId == item.FirstOrDefault().AulasId && x.TipoFrequencia == (int)TipoFrequencia.C).Count();
-                var totalFaltas = item.Where(x => x.AulasId == item.FirstOrDefault().AulasId && x.TipoFrequencia == (int)TipoFrequencia.F).Count();
-                var totalRemoto = item.Where(x => x.AulasId == item.FirstOrDefault().AulasId && x.TipoFrequencia == (int)TipoFrequencia.R).Count();
-                var totalAulasDia = item.Count();
-
+                
                 var frequencia = new FrequenciaDiariaAlunoDto
                 {
-                    Id = item.FirstOrDefault().AnotacaoId,
-                    DataAula = item.FirstOrDefault().DataAula,
-                    QuantidadeAulas = totalAulasDia,
-                    QuantidadePresenca = qtdPresenca,
-                    QuantidadeAusencia = totalFaltas > 0 ? totalFaltas :(totalAulasDia - qtdPresenca),
-                    QuantidadeRemoto = totalRemoto,
-                    Motivo = !string.IsNullOrEmpty(item.FirstOrDefault().MotivoAusencia) ? UtilRegex.RemoverTagsHtml(item.FirstOrDefault().MotivoAusencia) : string.Empty,
+                    Id = item.AnotacaoId,
+                    DataAula = item.DataAula,
+                    QuantidadeAulas = item.TotalAulasNoDia,
+                    QuantidadePresenca = item.TotalPresencas,
+                    QuantidadeAusencia = item.TotalAusencias > 0 ? item.TotalAusencias : (item.TotalAulasNoDia - item.TotalAusencias),
+                    QuantidadeRemoto = item.TotalRemotos,
+                    Motivo = !string.IsNullOrEmpty(item.MotivoAusencia) ? UtilRegex.RemoverTagsHtml(item.MotivoAusencia) : string.Empty,
                 };
                 listaFrequencias.Add(frequencia);
             }

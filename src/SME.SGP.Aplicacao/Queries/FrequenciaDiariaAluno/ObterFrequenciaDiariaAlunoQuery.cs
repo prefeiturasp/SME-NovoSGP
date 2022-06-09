@@ -26,15 +26,19 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.AlunoCodigo)
                 .NotEmpty()
+                .NotEqual(0)
                 .WithMessage("O Código do aluno deve ser informado.");
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
+                .NotEqual(0)
                 .WithMessage("O id da Turma deve ser informado.");
             RuleFor(a => a.ComponenteCurricularId)
                 .NotEmpty()
+                .NotEqual(0)
                 .WithMessage("O id da Componente deve ser informado.");
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
+                .NotEqual(0)
                 .WithMessage("O Bimestre deve ser informado.");
         }
     }

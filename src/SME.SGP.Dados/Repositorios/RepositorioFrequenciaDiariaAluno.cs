@@ -20,16 +20,16 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"
                        SELECT DISTINCT 
-	                        rfa.id AS RegistroFrequenciaAlunoId,
+	                        count(rfa.id) AS TotalAulasNoDia,
 	                        a.data_aula AS DataAula,
 	                        a.id AS AulasId,
 	                        rfa.valor AS TipoFrequencia,
 	                        rfa.codigo_aluno AS AlunoCodigo,
 	                        an.id AS AnotacaoId,
-	                        CASE
-		                        WHEN ma.descricao IS NOT NULL THEN ma.descricao
-		                        ELSE an.anotacao
-	                        END AS MotivoAusencia
+                            count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 1) AS TotalPresencas,
+                            count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 2) AS TotalAusencias,
+                            count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 3) AS TotalRemotos,
+                            coalesce(ma.descricao, an.anotacao) as MotivoAusencia
                         FROM registro_frequencia_aluno rfa 
                         INNER JOIN registro_frequencia rf ON rfa.registro_frequencia_id = rf.id
                         INNER JOIN aula a ON rf.aula_id = a.id
@@ -40,6 +40,7 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
 	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId 
+                            GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno
 	                        ORDER BY a.data_aula  ");
 
             if (paginacao.QuantidadeRegistros > 0)
