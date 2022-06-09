@@ -17,6 +17,10 @@ namespace SME.SGP.TesteIntegracao
         const string DRE_CODIGO_1 = "1";
         const string SUPERVISOR_ID_2 = "2";
         const string SUPERVISOR_RF_03 = "3";
+        const string DRE_TESTE = "DT";
+        const string DRE_NOME = "DRE TESTE";
+        const string ESCOLA_ID = "1";
+        const string CRIADO_POR = "TESTE";
         public Ao_acessar_controller_obter_paai(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
@@ -45,10 +49,10 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new Dre()
             {
-                Abreviacao = "DT",
+                Abreviacao = DRE_TESTE,
                 CodigoDre = codigoDre,
                 DataAtualizacao = DateTime.Now,
-                Nome = "Dre Teste"
+                Nome = DRE_NOME
             });
         }
 
@@ -57,12 +61,12 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new SupervisorEscolaDre()
             {
-                DreId = "1",
-                EscolaId = "1",
+                DreId = DRE_CODIGO_1,
+                EscolaId = ESCOLA_ID,
                 SupervisorId = id,
                 Tipo = 2,
                 CriadoEm = DateTime.Now,
-                CriadoPor = "Teste",
+                CriadoPor = CRIADO_POR,
                 CriadoRF = rf,
                 Excluido = false
             });

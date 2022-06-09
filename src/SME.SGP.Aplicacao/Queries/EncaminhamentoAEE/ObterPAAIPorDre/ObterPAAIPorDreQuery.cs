@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPAAIPorDreQueryValidator()
         {
-            RuleFor(x => x.TipoResponsavel).NotEmpty().WithMessage("O Código do perfil deve ser informado para obter funcionarios por perfil e dre");
-            RuleFor(x => x.CodigoDre).NotEmpty().WithMessage("O Código do perfil deve ser informado para obter funcionarios por perfil e dre");
+            RuleFor(x => x.TipoResponsavel).NotEmpty().WithMessage("O Código do perfil deve ser informado para obter reponsáveis por perfil e dre");
+            RuleFor(x => x.CodigoDre).NotEmpty().WithMessage("O Código do perfil deve ser informado para obter reponsáveis por perfil e dre");
         }
     }
 }
