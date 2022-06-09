@@ -116,5 +116,14 @@ namespace SME.SGP.Dados
 			var resultado = await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteId });
 			return (resultado > 0);
 		}
+
+        public async Task ExlusaoLogicaPorTurmaComponente(long turmaId, long componenteId)
+        {
+			await database.Conexao.ExecuteAsync(@"update pendencia set excluido = true 
+													where id = (select pd.pendencia_id 
+																from pendencia_devolutiva pd 
+																where pd.turma_id = @turmaId 
+																and pd.componente_curricular_id = @componenteId)", new { @turmaId, componenteId });
+        }
     }
 }

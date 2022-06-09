@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             if (!existePendenciaDiarioBordo)
             {
-                await repositorioPendenciaDevolutiva.ExcluirPorTurmaComponente(request.TurmaId, request.ComponenteId);
+                await repositorioPendenciaDevolutiva.ExlusaoLogicaPorTurmaComponente(request.TurmaId, request.ComponenteId);
                 return await Task.FromResult(true);
             }
 

@@ -249,7 +249,6 @@ namespace SME.SGP.Aplicacao
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
                     Detalhe = descricao.ToString(),
                     Turma = ObterNomeTurma(turma),
-                    Bimestre = await ObterBimestreTurma(pendencia)
                 }
             };
         }
