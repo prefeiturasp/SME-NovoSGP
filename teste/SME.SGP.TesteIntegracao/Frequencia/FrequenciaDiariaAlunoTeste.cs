@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 1, 4977176, 2, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 1, 1, 2, useCase);
 
             retorno.ShouldNotBeNull();
             Assert.IsType<OkObjectResult>(retorno);
@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(872388, 138, 4977176, 2, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(111, 138, 1, 2, useCase);
 
             retorno.ShouldNotBeNull();
 
@@ -58,12 +58,12 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "ADALGISA GONCALVES");
-            variaveis.Add("UsuarioLogado", "6769195");
-            variaveis.Add("RF", "6769195");
-            variaveis.Add("login", "6769195");
+            variaveis.Add("NomeUsuario", "Professor Nome");
+            variaveis.Add("UsuarioLogado", "1");
+            variaveis.Add("RF", "1");
+            variaveis.Add("login", "1");
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "6769195", Type = "rf" },
+                new InternalClaim { Value = "1", Type = "rf" },
                 new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
@@ -73,9 +73,9 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             await InserirNaBase(new Usuario
             {
-                Id = 6769195,
-                Login = "6769195",
-                CodigoRf = "6769195",
+                Id = 1,
+                Login = "1",
+                CodigoRf = "1",
                 Nome = "ADALGISA GONCALVES",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await InserirNaBase(new RegistroFrequenciaAluno
             {
                 Id = 1,
-                CodigoAluno = "4977176",
+                CodigoAluno = "1",
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
