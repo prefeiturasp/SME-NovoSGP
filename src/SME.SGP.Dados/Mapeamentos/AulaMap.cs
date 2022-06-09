@@ -34,6 +34,9 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.EhTecnologiaAprendizagem).Ignore();
             Map(c => c.EhDataSelecionadaFutura).Ignore();
             Map(c => c.PermiteSubstituicaoFrequencia).Ignore();
-        }
+            Map(c => c.PossuiFrequencia).Ignore();
+            Map(c => c.RegistroFerquenciaExcluido).Ignore();
+            Map(c => c.PossuiPlanoAula).Ignore();
+            Map(c => c.RegistroPlanoAulaExcluido).Ignore();
     }
 }
