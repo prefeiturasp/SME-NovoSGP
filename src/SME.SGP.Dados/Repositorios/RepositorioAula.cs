@@ -67,6 +67,11 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
 
+            var idsAulasAtualizacao = aulas
+                .Where(a => a.aula.Id > 0)
+                .Select(a => a.aula.Id)
+                .ToArray();
+
             try
             {
                 sql = @"update aula 
@@ -79,7 +84,32 @@ namespace SME.SGP.Dados.Repositorios
                 unitOfWork.IniciarTransacao();
 
                 database.Conexao
-                    .Execute(sql, new { idsAulas = aulas.Where(a => a.aula.Id > 0).Select(a => a.aula.Id).ToArray() });
+                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+
+                sql = @"update registro_frequencia
+                        set excluido = false,
+                            alterado_por = 'Sistema', 
+                            alterado_em = current_timestamp, 
+                            alterado_rf = 'Sistema'
+                        where aula_id = any(@idsAulas) and
+                              excluido;";
+
+                database.Conexao
+                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+
+                sql = @"update registro_frequencia_aluno
+                        set excluido = false,
+                            alterado_por = 'Sistema', 
+                            alterado_em = current_timestamp, 
+                            alterado_rf = 'Sistema'
+                        where id in (select rf.id
+                                        from registro_frequencia rf
+                                            inner join aula a
+                                                on rf.aula_id = a.id
+                                     where a.id = any(@idsAulas)) and excluido;";
+
+                database.Conexao
+                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
 
                 sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasDaTurmaPorTipoCalendarioQueryHandler : IRequestHandler<ObterAulasDaTurmaPorTipoCalendarioQuery, IEnumerable<Dominio.Aula>>
+    public class ObterAulasDaTurmaPorTipoCalendarioQueryHandler : IRequestHandler<ObterAulasDaTurmaPorTipoCalendarioQuery, IEnumerable<Dominio.AulaInformacoesAdicionais>>
     {
         private readonly IRepositorioAulaConsulta repositorioAula;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
         }
 
-        public async Task<IEnumerable<Dominio.Aula>> Handle(ObterAulasDaTurmaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<Dominio.AulaInformacoesAdicionais>> Handle(ObterAulasDaTurmaPorTipoCalendarioQuery request, CancellationToken cancellationToken)
         {
             return await repositorioAula.ObterAulasPorTurmaETipoCalendario(request.TipoCalendarioId, request.TurmaId, request.CriadoPor);
         }

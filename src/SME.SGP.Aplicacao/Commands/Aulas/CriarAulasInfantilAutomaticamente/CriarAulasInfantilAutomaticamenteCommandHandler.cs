@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
 
                 aulasACriar.AddRange(ObterListaDeAulas(diasCriacaoAula, tipoCalendarioId, turma, aulasCriadasPeloSistema, dadosDisciplinaAulaCriada, quantidadeAulas, rfProfessor).ToList());
 
-                IEnumerable<Aula> aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
+                var aulasDaTurmaParaExcluir = ObterAulasParaExcluir(diasNaoLetivos, turma, aulas.Where(a => !a.AulaCJ), diasLetivos);
                 ExcluirAulas(aulasAExcluirComFrequenciaRegistrada, idsAulasAExcluir, aulasDaTurmaParaExcluir.ToList());
 
                 var aulasForaDoPeriodo = aulas.Where(c => diasForaDoPeriodo.Contains(c.DataAula) && !c.AulaCJ);
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private void ExcluirAulas(List<DateTime> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
+        private void ExcluirAulas(List<DateTime> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<AulaInformacoesAdicionais> aulasDaTurmaParaExcluir)
         {
             if (aulasDaTurmaParaExcluir != null)
             {
@@ -154,9 +154,9 @@ namespace SME.SGP.Aplicacao
             idsAulasAExcluir.Clear();
             return contadorAulasExcluidas;
         }
-        private IEnumerable<Aula> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulas, IEnumerable<DiaLetivoDto> diasLetivos)
+        private IEnumerable<AulaInformacoesAdicionais> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulas, IEnumerable<DiaLetivoDto> diasLetivos)
         {
-            var aulasExclusao = new List<Aula>();
+            var aulasExclusao = new List<AulaInformacoesAdicionais>();
             var aulasNaoExcluidasOrdenadas = aulas
                 .Where(a => !a.Excluido)
                 .OrderBy(a => a.DataAula)
@@ -177,7 +177,7 @@ namespace SME.SGP.Aplicacao
             return aulasExclusao;
         }
 
-        private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
+        private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var diasParaCriar = diasDoPeriodo
                 .Where(l => diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)))?
@@ -201,7 +201,7 @@ namespace SME.SGP.Aplicacao
                                 .OrderBy(c => c.Data)?.ToList();
         }
 
-        private IEnumerable<(Aula aula, long? planoAulaId)> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
+        private IEnumerable<(Aula aula, long? planoAulaId)> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var lista = new List<(Aula aula, long? planoAulaId)>();
             if (diasLetivos != null && diasLetivos.Any())
