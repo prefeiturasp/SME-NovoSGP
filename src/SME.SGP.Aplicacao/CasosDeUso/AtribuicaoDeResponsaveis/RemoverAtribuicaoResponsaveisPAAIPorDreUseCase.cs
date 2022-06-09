@@ -36,7 +36,6 @@ namespace SME.SGP.Aplicacao
                     {
                         return await RemoverPAAISemAtribuicao(responsavelPAAI, funcionariosEOL);
                     }
-                    return true;
                 }
                 return true;
             }

@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirDre(DRE_CODIGO_2);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
 
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             //Act
             var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
@@ -88,61 +88,13 @@ namespace SME.SGP.TesteIntegracao
         {
             //Arrange
             await InserirDre(DRE_CODIGO_1);
-            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
 
             //Act
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
             //Assert
             Assert.True(retorno);
         }
-
-        //
-
-        //[Fact]
-        //public async Task Deve_retornar_true()
-        //{
-        //    //Arrange
-        //    await Inserir_Dre(DRE_CODIGO_1);
-        //    await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
-        //    await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
-
-
-        //    var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
-        //    var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-        //    var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
-        //    var mediator = ServiceProvider.GetService<IMediator>();
-
-        //    //Act
-
-        //    var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
-
-        //    var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(DRE_CODIGO_1, TipoResponsavelAtribuicao.SupervisorEscolar);
-
-        //    //Assert
-        //    Assert.True(retorno);
-        //    Assert.True(supervisoresEscolaresDre.Any());
-
-        //}
-
-        //[Fact]
-        //public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
-        //{
-        //    //Arrange
-        //    await Inserir_Dre(DRE_CODIGO_2);
-        //    await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
-
-        //    var dre = "1";
-        //    var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-        //    var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
-
-        //    //Act
-        //    var retorno = await useCase.Executar(new MensagemRabbit(dre));
-        //    var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
-        //    //Assert
-        //    Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());
-
-        //}
-
         public async Task InserirDre(string codigoDre)
         {
             await InserirNaBase(new Dre()

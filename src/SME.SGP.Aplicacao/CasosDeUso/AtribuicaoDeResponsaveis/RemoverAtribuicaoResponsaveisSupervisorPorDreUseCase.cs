@@ -32,11 +32,9 @@ namespace SME.SGP.Aplicacao
 
                     if (supervisores != null && supervisores.Any())
                     {
-                        if (supervisores.Count() != supervisoresIds.Count())
-                            await RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
+                        await RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
                     }
                 }
-                else { return false; }
                 return true;
             }
             catch (Exception ex)
