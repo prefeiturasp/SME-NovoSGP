@@ -26,10 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        rfa.valor AS TipoFrequencia,
 	                        rfa.codigo_aluno AS AlunoCodigo,
 	                        an.id AS AnotacaoId,
-	                        CASE
-		                        WHEN ma.descricao IS NOT NULL THEN ma.descricao
-		                        ELSE an.anotacao
-	                        END AS MotivoAusencia
+	                        coalesce(ma.descricao, an.anotacao) as MotivoAusencia
                         FROM registro_frequencia_aluno rfa 
                         INNER JOIN registro_frequencia rf ON rfa.registro_frequencia_id = rf.id
                         INNER JOIN aula a ON rf.aula_id = a.id
