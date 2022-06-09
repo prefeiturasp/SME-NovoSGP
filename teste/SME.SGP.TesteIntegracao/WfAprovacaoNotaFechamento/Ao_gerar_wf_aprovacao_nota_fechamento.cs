@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,8 +8,10 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using SME.SGP.Aplicacao;
+using Microsoft.Extensions.DependencyInjection;
+using MediatR;
 using SME.SGP.Infra;
+using System.Text.Json;
 using System.Collections.Generic;
 
 namespace SME.SGP.TesteIntegracao
@@ -29,6 +32,8 @@ namespace SME.SGP.TesteIntegracao
 
         private const string TIPO_CALDENDARIO_NOME = "Calendário Escolar de 2022";
 
+        private const string COMPONENTE_CURRICULAR_MATEMATICA = "Matemática";
+
         private const string SISTEMA = "Sistema";
         private const string SISTEMA_CRIADO_RF = "1";
 
@@ -36,11 +41,13 @@ namespace SME.SGP.TesteIntegracao
 
         private const int NOTA_5 = 5;
         private const int NOTA_8 = 8;
+        private const int NOTA_7 = 7;
         private const int NOTA_9 = 9;
 
         private const string ALUNO_CODIGO_4182555 = "4182555";
         private const string ALUNO_CODIGO_4182556 = "4182556";
         private const string ALUNO_CODIGO_4182557 = "4182557";
+        private const string ALUNO_FAKE_111111 = "111111";
 
         private const string MENSAGEM_NOTIFICACAO_WF_APROVACAO = "Foram criadas 4 aula(s) de reposição de Língua Portuguesa na turma 7B da DERVILLE ALLEGRETTI, PROF. (DIRETORIA REGIONAL DE EDUCACAO JACANA/TREMEMBE). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='https://dev-novosgp.sme.prefeitura.sp.gov.br/calendario-escolar/calendario-professor/cadastro-aula/editar/:0/'>aqui</a>.";
 
@@ -52,6 +59,89 @@ namespace SME.SGP.TesteIntegracao
 
         public Ao_gerar_wf_aprovacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        [Fact]
+        public async Task Deve_consumir_primeira_fila_wf_notificacao_nota_fechamento_com_sucesso()
+        {
+            await CirarDadosBasicos();
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 1,
+                Nota = NOTA_5,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
+
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 2,
+                Nota = NOTA_8,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
+
+            var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaUseCase>();
+            var mensagem = new WfAprovacaoNotaFechamentoTurmaDto() { TurmaId = 1 };
+            var jsonMensagem = JsonSerializer.Serialize(mensagem);
+            bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
+
+            var wfAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
+
+            validaFila.ShouldBeTrue();
+            wfAprovacao.ShouldNotBeEmpty();
+        }
+
+
+        [Fact]
+        public async Task Deve_gerar_notificacao_com_dados_wf_aprovacao_nota_sem_wf_aprovacao_id()
+        {
+            await CirarDadosBasicos();
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 1,
+                Nota = NOTA_5,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+               
+            });
+
+            await InserirNaBase(new WfAprovacaoNotaFechamento()
+            {
+                FechamentoNotaId = 2,
+                Nota = NOTA_8,
+                CriadoEm = System.DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+                
+            });
+
+            var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
+            var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
+            var componenteCurricular = new ComponenteCurricular()
+            {
+                Descricao = COMPONENTE_CURRICULAR_MATEMATICA,
+                EhRegenciaClasse = false
+            };
+
+            var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_FAKE_111111, ComponenteCurricular = componenteCurricular, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+            
+            var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
+            bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
+
+            var wfAprovacao = ObterTodos<WorkflowAprovacao>();
+            var wfAprovacaoNivel = ObterTodos<WorkflowAprovacaoNivel>();
+
+            validaFila.ShouldBeTrue();
+            wfAprovacao.ShouldNotBeNull();
+            wfAprovacaoNivel.ShouldNotBeNull();
+            wfAprovacaoNivel.Any(w => w.Cargo == Cargo.CP).ShouldBeTrue();
+            wfAprovacaoNivel.Any(w => w.Cargo == Cargo.Supervisor).ShouldBeTrue();
+            wfAprovacao.Any(w => w.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao).ShouldBeTrue();
         }
 
         [Fact]
@@ -278,7 +368,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = TURMA_NOME,
                 CodigoTurma = TURMA_CODIGO,
                 Ano = TURMA_ANO,
-                AnoLetivo = 2022,
+                AnoLetivo = 2021,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1,
@@ -384,6 +474,29 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA,
                 FechamentoAlunoId = 3
             });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = 1,
+                AlunoCodigo = "111111",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = DISCIPLINA_ID,
+                Nota = NOTA_7,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA,
+                FechamentoAlunoId = 2
+            });
+
+            await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
+            await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
+            await InserirNaBase("componente_curricular", "1", "512", "1", "1", "'MAT'", "false", "false", "true", "false", "false", "true", "'MATEMATICA'", "'MATEMATICA'");
         }
     }
 }

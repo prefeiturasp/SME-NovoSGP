@@ -103,29 +103,32 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento>(query, new { fechamentoTurmaDisciplinaId });
         }
 
-        public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoWf(long workFlowId)
+        public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacaoWf(long wfAprovacaoId)
         {
-            var query = @"select w.*, n.*, a.*, d.*, f.*, e.*
-                            from wf_aprovacao_nota_fechamento w
-                          inner join fechamento_nota n on n.id = w.fechamento_nota_id 
-                          inner join fechamento_aluno a on a.id = n.fechamento_aluno_id
-                          inner join fechamento_turma_disciplina d on d.id = a.fechamento_turma_disciplina_id
-                          inner join fechamento_turma f on f.id = d.fechamento_turma_id
-                           left join periodo_escolar e on e.id = f.periodo_escolar_id
-                          where w.wf_aprovacao_id = @workFlowId";
+            var query = @"select wanf.*, cc.*, fn.*, fa.*, ftd.*, ft.*, pe.*, ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
+                                fa.aluno_codigo, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId
+                                fn.conceito_id as ConceitoAnterior from wf_aprovacao_nota_fechamento wanf 
+                            inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
+                            inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
+                            inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
+                            inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
+                            inner join componente_curricular cc on cc.id = fn.disciplina_id 
+                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                            where wf_aprovacao_id = @wfAprovacaoId";
 
-            return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
-                                    , FechamentoTurma, PeriodoEscolar, WfAprovacaoNotaFechamento>(query
-                , (wfAprovacaoNota, fechamentoNota, fechamentoAluno, fechamentoTurmaDisciplina, fechamentoTurma, periodoEscolar) =>
-                {
-                    fechamentoTurma.PeriodoEscolar = periodoEscolar;
-                    fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
-                    fechamentoAluno.FechamentoTurmaDisciplina = fechamentoTurmaDisciplina;
-                    fechamentoNota.FechamentoAluno = fechamentoAluno;
-                    wfAprovacaoNota.FechamentoNota = fechamentoNota;
-                    return wfAprovacaoNota;
-                }
-                , new { workFlowId });
+            return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamentoTurmaDto, WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
+                                     , FechamentoTurma, ComponenteCurricular, WfAprovacaoNotaFechamentoTurmaDto>(query
+                 , (wfAprovacaoDto, wfAprovacaoNota, fechamentoNota, fechamentoAluno, fechamentoTurmaDisciplina, fechamentoTurma, componenteCurricular) =>
+                 {
+                     wfAprovacaoDto.WfAprovacao = wfAprovacaoNota;
+                     wfAprovacaoDto.ComponenteCurricular = componenteCurricular;
+                     wfAprovacaoDto.FechamentoNota = fechamentoNota;
+                     fechamentoAluno.FechamentoTurmaDisciplina = fechamentoTurmaDisciplina;
+                     fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
+                     fechamentoNota.FechamentoAluno = fechamentoAluno;
+
+                    return wfAprovacaoDto;
+            }, new { wfAprovacaoId });
         }
 
         public async Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoTurmaDisciplinaId, string alunoCodigo)
@@ -191,7 +194,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
                            from wf_aprovacao_nota_fechamento w where w.fechamento_nota_id = ANY(@Ids)";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray()});
+            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
         }
 
         public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)
