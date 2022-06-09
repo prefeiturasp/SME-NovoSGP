@@ -13,11 +13,11 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
-    public class Ao_gerar_pendencia_valide_plano : TesteBase
+    public class Ao_gerar_pendencia_validade_plano : TesteBase
     {
         private readonly ItensBasicosBuilder _builder;
 
-        public Ao_gerar_pendencia_valide_plano(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_gerar_pendencia_validade_plano(CollectionFixture collectionFixture) : base(collectionFixture)
         {
             _builder = new ItensBasicosBuilder(this);
         }
