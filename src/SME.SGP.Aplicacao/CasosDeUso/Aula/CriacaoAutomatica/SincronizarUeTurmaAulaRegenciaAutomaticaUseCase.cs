@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -15,25 +16,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var totalItensPorPagina = 10;
             var dadosCriacao = mensagemRabbit.ObterObjetoMensagem<DadosCriacaoAulasAutomaticasDto>();
 
             if (dadosCriacao.TipoCalendarioId > 0)
             {
-                if (dadosCriacao.DadosTurmas != null && dadosCriacao.DadosTurmas.Any())
+                foreach (var dadosTurma in dadosCriacao?.DadosTurmas)
                 {
-                    var totalPaginas = Math.Ceiling((decimal)dadosCriacao.DadosTurmas.Count() / totalItensPorPagina);
-                    for (int pagina = 1; pagina <= totalPaginas; pagina++)
-                    {
-                        var dadosTurmas = dadosCriacao.DadosTurmas.Skip(pagina == 1 ? 0 : (pagina - 1) * totalItensPorPagina).Take(totalItensPorPagina);
-
-                        foreach(var dadoTurma in dadosTurmas)
-                        {                            
-                            var comando = new CriarAulasRegenciaAutomaticamenteCommand(dadosCriacao.Modalidade, dadosCriacao.TipoCalendarioId, dadosCriacao.UeCodigo, dadosCriacao.DiasLetivosENaoLetivos, 
-                                dadosTurmas.Where(x => x.TurmaCodigo == dadoTurma.TurmaCodigo), dadosCriacao.DiasForaDoPeriodoEscolar);
-                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.SincronizarAulasRegenciaAutomaticamente, comando, Guid.NewGuid(), null));
-                        }
-                    }
+                    var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(dadosTurma.TurmaCodigo, dadosTurma.ComponenteCurricularCodigo));
+                    var dadosAulaCriada = new DadosAulaCriadaAutomaticamenteDto((dadosTurma.ComponenteCurricularCodigo, dadosTurma.ComponenteCurricularDescricao), dadosCriacao.Modalidade == Modalidade.EJA ? 5 : 1, professorTitular?.ProfessorRf);
+                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadosTurma.TurmaCodigo));
+                    var comando = new CriarAulasInfantilAutomaticamenteCommand(dadosCriacao.DiasLetivosENaoLetivos, turma, dadosCriacao.TipoCalendarioId, dadosCriacao.DiasForaDoPeriodoEscolar, new string[] { dadosTurma.ComponenteCurricularCodigo }, dadosAulaCriada);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaCriarAulasInfatilAutomaticamente, comando, Guid.NewGuid(), null));
                 }
                 return true;
             }

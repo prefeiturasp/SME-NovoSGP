@@ -6,14 +6,18 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAula : RepositorioBase<Aula>, IRepositorioAula
     {
-        public RepositorioAula(ISgpContext conexao) : base(conexao)
+        private readonly IUnitOfWork unitOfWork;
+
+        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork) : base(conexao)
         {
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task ExcluirPeloSistemaAsync(long[] idsAulas)
@@ -25,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { idsAulas, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
 
-        public void SalvarVarias(IEnumerable<Aula> aulas)
+        public void SalvarVarias(IEnumerable<(Aula aula, long? planoAulaId)> aulas)
         {
             var sql = @"copy aula ( 
                                         data_aula, 
@@ -44,23 +48,50 @@ namespace SME.SGP.Dados.Repositorios
                             stdin (FORMAT binary)";
             using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                foreach (var aula in aulas)
+                foreach (var itemAula in aulas.Where(a => a.aula.Id == 0))
                 {
                     writer.StartRow();
-                    writer.Write(aula.DataAula);
-                    writer.Write(aula.DisciplinaId);
-                    writer.Write(aula.Quantidade);
-                    writer.Write((int)aula.RecorrenciaAula, NpgsqlDbType.Integer);
-                    writer.Write((int)aula.TipoAula, NpgsqlDbType.Integer);
-                    writer.Write(aula.TipoCalendarioId);
-                    writer.Write(aula.TurmaId);
-                    writer.Write(aula.UeId);
-                    writer.Write(aula.ProfessorRf);
-                    writer.Write(aula.CriadoEm);
-                    writer.Write(aula.CriadoPor != null ? aula.CriadoPor : "Sistema");
-                    writer.Write(aula.CriadoRF != null ? aula.CriadoRF : "Sistema");
+                    writer.Write(itemAula.aula.DataAula);
+                    writer.Write(itemAula.aula.DisciplinaId);
+                    writer.Write(itemAula.aula.Quantidade);
+                    writer.Write((int)itemAula.aula.RecorrenciaAula, NpgsqlDbType.Integer);
+                    writer.Write((int)itemAula.aula.TipoAula, NpgsqlDbType.Integer);
+                    writer.Write(itemAula.aula.TipoCalendarioId);
+                    writer.Write(itemAula.aula.TurmaId);
+                    writer.Write(itemAula.aula.UeId);
+                    writer.Write(itemAula.aula.ProfessorRf);
+                    writer.Write(itemAula.aula.CriadoEm);
+                    writer.Write(itemAula.aula.CriadoPor != null ? itemAula.aula.CriadoPor : "Sistema");
+                    writer.Write(itemAula.aula.CriadoRF != null ? itemAula.aula.CriadoRF : "Sistema");
                 }
                 writer.Complete();
+            }
+
+            try
+            {
+                sql = @"update aula 
+                        set excluido = false, 
+                            alterado_por = 'Sistema', 
+                            alterado_em = current_timestamp, 
+                            alterado_rf = 'Sistema'
+                        where id = any(@idsAulas);";
+
+                unitOfWork.IniciarTransacao();
+
+                database.Conexao
+                    .Execute(sql, new { idsAulas = aulas.Where(a => a.aula.Id > 0).Select(a => a.aula.Id).ToArray() });
+
+                sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
+
+                aulas.Where(a => a.planoAulaId.HasValue).ToList()
+                    .ForEach(a => database.Conexao.Execute(sql, new { aulaId = a.aula.Id, planoAulaId = a.planoAulaId.Value }));
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
             }
         }
 
