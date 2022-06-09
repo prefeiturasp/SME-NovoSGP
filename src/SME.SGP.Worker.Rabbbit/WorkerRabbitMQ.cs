@@ -211,6 +211,7 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.NotificarPlanoAEEReestruturado, new ComandoRabbit("Enviar Notificação de Reestruturação de PlanoAEE", typeof(IEnviarNotificacaoReestruturacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.NotificarCriacaoPlanoAEE, new ComandoRabbit("Enviar Notificação de Criação de PlanoAEE", typeof(IEnviarNotificacaoCriacaoPlanoAEEUseCase)));
             comandos.Add(RotasRabbitSgp.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
+            comandos.Add(RotasRabbitSgp.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, new ComandoRabbit("Transferir pendência plano aee para novo responsável", typeof(ITransferirPendenciaParaNovoResponsavelUseCase)));
 
             // Sincronização das UES e turmas
             comandos.Add(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalDreSync, new ComandoRabbit("Estrutura Institucional - Sync de Dre", typeof(IExecutarSincronizacaoInstitucionalDreSyncUseCase)));
