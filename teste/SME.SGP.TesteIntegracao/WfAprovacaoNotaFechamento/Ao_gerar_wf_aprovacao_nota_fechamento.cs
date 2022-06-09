@@ -140,7 +140,6 @@ namespace SME.SGP.TesteIntegracao
             wfAprovacao.ShouldNotBeNull();
             wfAprovacaoNivel.ShouldNotBeNull();
             wfAprovacaoNivel.Any(w => w.Cargo == Cargo.CP).ShouldBeTrue();
-            wfAprovacaoNivel.Any(w => w.Cargo == Cargo.Supervisor).ShouldBeTrue();
             wfAprovacao.Any(w => w.NotificacaoCategoria == NotificacaoCategoria.Workflow_Aprovacao).ShouldBeTrue();
         }
 

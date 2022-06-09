@@ -43,8 +43,14 @@ namespace SME.SGP.Aplicacao
                 NotificacaoMensagem = mensagem
             };
 
-            wfAprovacaoNota.AdicionarNivel(Cargo.CP);
-            wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
+            int? bimestre = dados.FirstOrDefault().Bimestre;
+            if (bimestre != null)
+                wfAprovacaoNota.AdicionarNivel(Cargo.CP);
+            else
+            {
+                wfAprovacaoNota.AdicionarNivel(Cargo.CP);
+                wfAprovacaoNota.AdicionarNivel(Cargo.Supervisor);
+            }
 
             var idWorkflow = await mediator.Send(new SalvarWorkflowAprovacaoCommand(wfAprovacaoNota));
 
