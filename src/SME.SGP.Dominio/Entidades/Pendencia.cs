@@ -88,5 +88,9 @@ namespace SME.SGP.Dominio
             => new TipoPendencia[] {
                 TipoPendencia.AusenciaFechamento
             }.Contains(Tipo);
+        public bool EhPendenciaAEE()
+           => new TipoPendencia[] {
+                TipoPendencia.AEE
+           }.Contains(Tipo);
     }
 }

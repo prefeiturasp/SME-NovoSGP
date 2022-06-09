@@ -48,7 +48,8 @@ namespace SME.SGP.Dados.Repositorios
                                               from frequencia_pre_definida fpd 
                                              where turma_id = @turmaId
                                                and componente_curricular_id = @componenteCurricularId 
-                                               and codigo_aluno = @alunoCodigo; ");
+                                               and codigo_aluno = @alunoCodigo
+                                               order by fpd.id desc;");
 
             var parametros = new
             {

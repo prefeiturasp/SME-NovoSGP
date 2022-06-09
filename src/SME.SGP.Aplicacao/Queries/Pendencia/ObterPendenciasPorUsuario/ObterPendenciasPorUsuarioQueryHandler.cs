@@ -58,6 +58,16 @@ namespace SME.SGP.Aplicacao
             {
                 pendencias = await repositorioPendencia.ListarPendenciasUsuarioSemFiltro(request.UsuarioId,
                                                                                              Paginacao);
+                var itensDaLista = pendencias.Items.ToList();
+                foreach (var pendencia in pendencias.Items)
+                {
+                    var pendenciaFiltrada = await repositorioPendencia
+                                                   .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                  pendencia);
+
+                    if (pendenciaFiltrada == null)
+                        itensDaLista.Remove(pendencia);
+                }
             }        
 
             return await MapearParaDtoPaginado(pendencias);
@@ -108,6 +118,8 @@ namespace SME.SGP.Aplicacao
                         await ObterPendenciasProfessorFormatadas(pendencia) :
                     pendencia.EhPendenciaDiarioBordo() ?
                         await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf):
+                    pendencia.EhPendenciaAEE() ?
+                        await ObterPendenciasProfessorFormatadas(pendencia) :
                     new List<PendenciaDto>();
         }
         
