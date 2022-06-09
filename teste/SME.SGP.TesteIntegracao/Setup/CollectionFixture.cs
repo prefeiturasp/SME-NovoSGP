@@ -34,9 +34,16 @@ namespace SME.SGP.TesteIntegracao.Setup
             new RegistradorDependencias().Registrar(_services, null);
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
                 typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            RegistraMock();
             ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
+
+        private void RegistraMock()
+        {
+            _services.AddMockPlanoAEE();
+        }
+
         public void Dispose()
         {
             Database.Dispose();
