@@ -427,7 +427,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "8405255",
+                    CodigoRf = "8888888",
                     Perfis = new List<Guid>
                     {
                         new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),

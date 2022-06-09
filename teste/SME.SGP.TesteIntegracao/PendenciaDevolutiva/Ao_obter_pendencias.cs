@@ -88,9 +88,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await InserirNaBase(new Usuario()
             {
                 Id = 1,
-                Login = "8405255",
-                CodigoRf = "8405255",
-                Nome = "JOYCE HELENA PEDRO VICENTE ALVES",
+                Login = "8888888",
+                CodigoRf = "8888888",
+                Nome = "Usuario CP",
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
                 AlteradoRF = "0"
@@ -100,13 +100,13 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 
             var variaveis = new Dictionary<string, object>
             {
-                { "NomeUsuario", "JOYCE HELENA PEDRO VICENTE ALVES" },
-                { "UsuarioLogado", "8405255" },
-                { "RF", "8405255" },
-                { "login", "8405255" },
+                { "NomeUsuario", "Usuario CP" },
+                { "UsuarioLogado", "8888888" },
+                { "RF", "8888888" },
+                { "login", "8888888" },
                 {
                     "Claims", new List<InternalClaim> {
-                        new InternalClaim { Value = "8405255", Type = "rf" },
+                        new InternalClaim { Value = "8888888", Type = "rf" },
                         new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
                     }
                 }
