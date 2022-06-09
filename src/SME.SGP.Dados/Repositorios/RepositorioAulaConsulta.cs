@@ -858,7 +858,7 @@ namespace SME.SGP.Dados.Repositorios
             return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
-        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
+        public async Task<IEnumerable<AulaInformacoesAdicionais>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
             var query = @"select a.*,
                                  rf.id is not null PossuiFrequencia,
@@ -888,7 +888,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query += " order by a.data_aula;";
 
-            return await database.Conexao.QueryAsync<Aula>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
+            return await database.Conexao.QueryAsync<AulaInformacoesAdicionais>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
