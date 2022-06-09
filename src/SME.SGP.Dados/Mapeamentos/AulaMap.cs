@@ -38,5 +38,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.RegistroFerquenciaExcluido).Ignore();
             Map(c => c.PossuiPlanoAula).Ignore();
             Map(c => c.RegistroPlanoAulaExcluido).Ignore();
+        }
     }
 }
