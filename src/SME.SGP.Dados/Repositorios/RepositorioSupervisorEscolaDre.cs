@@ -188,5 +188,12 @@ namespace SME.SGP.Dados.Repositorios
                     tipoResponsavelAtribuicao
                 });
         }
+
+        public async Task<bool> ExisteResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        {
+            var query = "select 1 from supervisor_escola_dre sed where escola_id = @codigoUe and tipo = @tipoResponsavelAtribuicao";
+
+            return (await database.Conexao.QueryAsync<long>(query, new { codigoUe, tipoResponsavelAtribuicao })).Count() > 0;
+        }
     }
 }
