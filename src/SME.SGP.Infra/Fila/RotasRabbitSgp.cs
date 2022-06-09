@@ -17,7 +17,7 @@
         public const string RotaNovaNotificacaoObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";
         public const string RotaNotificacaoAlterarObservacaoDiarioBordo = "sgp.notificacao.alterar.observacao.diariobordo";
         public const string RotaNotificacaoAprovacaoFechamento = "sgp.fechamento.nota.aprovacao.notificar";
-        public const string RotaNotificacaoAprovacaoFechamentoPorTurma = "sgp.fechamento.nota.aprovacao.turma.notificar";
+        public const string RotaNotificacaoAprovacaoFechamentoPorTurma = "sgp.fechamento.nota.aprovacao.notificar.turma";
         public const string RotaExcluirNotificacaoObservacaoCartaIntencoes = "sgp.notificacao.excluir.observacao.cartaintencoes";
         public const string RotaNovaNotificacaoDevolutiva = "sgp.notificacao.nova.devolutiva";
         public const string RotaExcluirNotificacaoDevolutiva = "sgp.notificacao.excluir.devolutiva";
