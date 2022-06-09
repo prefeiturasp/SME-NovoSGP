@@ -141,7 +141,8 @@ namespace SME.SGP.Dados.Repositorios
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
                 Perfil = perfil,
-                Acao = acao
+                Acao = acao,
+                Administrador = database.Administrador
             });
         }
 
@@ -156,7 +157,8 @@ namespace SME.SGP.Dados.Repositorios
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
                 Perfil = perfil,
-                Acao = acao
+                Acao = acao,
+                Administrador = database.Administrador
             });
         }
        // public async Task SalvarVariosAsync(IEnumerable<T> entidades)

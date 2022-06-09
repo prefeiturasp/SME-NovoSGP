@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 cancellationToken);
 
             var comandoConsolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, comandoConsolidacao, Guid.NewGuid(), null),
                 cancellationToken);
 
             return true;

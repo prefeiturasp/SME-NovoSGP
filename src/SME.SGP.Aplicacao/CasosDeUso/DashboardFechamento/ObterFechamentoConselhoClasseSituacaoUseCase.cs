@@ -24,11 +24,10 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasse == null || !conselhoClasse.Any())
                 return default;
 
-            List<GraficoBaseDto> conselhos = new List<GraficoBaseDto>();
+            var conselhos = new List<GraficoBaseDto>();
 
             foreach (var conselho in conselhoClasse.Where(c => c.Quantidade > 0).ToList())
                 conselhos.Add(new GraficoBaseDto(conselho.AnoTurma, conselho.Quantidade, conselho.Situacao.Name()));
-
 
             return conselhos.OrderBy(a => a.Grupo).ToList();
         }

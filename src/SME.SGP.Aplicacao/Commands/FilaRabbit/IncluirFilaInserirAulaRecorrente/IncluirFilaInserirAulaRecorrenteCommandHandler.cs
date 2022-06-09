@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao.Commands.FilaRabbit.IncluirFilaInserirAulaRecorrente
                                                            request.EhRegencia,
                                                            request.RecorrenciaAula);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaInserirAulaRecorrencia, command, Guid.NewGuid(), request.Usuario, true));
 
             return true;
         }

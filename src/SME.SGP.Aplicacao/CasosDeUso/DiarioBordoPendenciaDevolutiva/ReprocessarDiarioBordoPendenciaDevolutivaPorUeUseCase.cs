@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
-                var ues =  repositorioUeConsulta.ObterPorDre(filtro.DreId);
+                var ues =  await repositorioUeConsulta.ObterPorDre(filtro.DreId);
                 foreach (var ue in ues)
                 {
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma, 
