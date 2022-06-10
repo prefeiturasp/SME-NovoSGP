@@ -31,7 +31,6 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var diaAtual in periodoEscolar.ObterIntervaloDatas())
                 {
-
                     var diaLetivoDto = new DiaLetivoDto()
                     {
                         Data = diaAtual,
