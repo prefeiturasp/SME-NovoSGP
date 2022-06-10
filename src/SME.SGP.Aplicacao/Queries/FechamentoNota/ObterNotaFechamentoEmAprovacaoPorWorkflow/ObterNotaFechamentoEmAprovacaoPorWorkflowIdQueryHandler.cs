@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.Aplicacao 
 {
     class ObterNotaFechamentoEmAprovacaoPorWorkflowIdQueryHandler : IRequestHandler<ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery, IEnumerable<WfAprovacaoNotaFechamento>>
     {

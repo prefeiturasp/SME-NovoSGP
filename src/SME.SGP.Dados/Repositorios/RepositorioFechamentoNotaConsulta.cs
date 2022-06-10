@@ -190,7 +190,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
                            from wf_aprovacao_nota_fechamento w where w.fechamento_nota_id = ANY(@Ids)";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
+            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray() });
         }
 
         public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)

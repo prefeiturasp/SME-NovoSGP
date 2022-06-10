@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioWfAprovacaoNotaFechamento : IRepositorioWfAprovacaoNotaFechamento
+    public class RepositorioWfAprovacaoNotaFechamento: IRepositorioWfAprovacaoNotaFechamento
     {
         protected readonly ISgpContext database;
 
