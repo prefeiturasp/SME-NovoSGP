@@ -23,17 +23,15 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var codigoDre = param.ObterObjetoMensagem<string>();
-                var supervisoresEscolasDres = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.SupervisorEscolar));
+                var responsaveisSGP = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.SupervisorEscolar));
 
-                if (supervisoresEscolasDres.Any())
+                if (responsaveisSGP.Any())
                 {
-                    var supervisoresIds = supervisoresEscolasDres.GroupBy(a => a.SupervisorId).Select(a => a.Key);
-                    var supervisores = await mediator.Send(new ObterSupervisorPorCodigoQuery(supervisoresIds.ToArray()));
+                    var supervisoresSGPIds = responsaveisSGP.GroupBy(a => a.SupervisorId).Select(a => a.Key);
 
-                    if (supervisores != null && supervisores.Any())
-                    {
-                        await RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
-                    }
+                    var responsaveisEOL = await mediator.Send(new ObterSupervisorPorCodigoQuery(supervisoresSGPIds.ToArray()));
+
+                    await RemoverSupervisorSemAtribuicao(responsaveisSGP, responsaveisEOL);
                 }
                 return true;
             }
@@ -44,29 +42,19 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<SupervisoresRetornoDto> supervisoresEol)
+        private async Task<bool> RemoverSupervisorSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> responsaveisSGP, IEnumerable<SupervisoresRetornoDto> responsaveisEOL)
         {
-            var responsavelSupervisor = supervisoresEscolasDres;
+            var responsavelSupervisor = responsaveisSGP;
 
-            if (supervisoresEol != null)
-            {
-                responsavelSupervisor = responsavelSupervisor
-                    .Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.SupervisorEscolar &&
-                        !supervisoresEol.Select(e => e.CodigoRf)
-                    .Contains(s.SupervisorId));
-            }
+            if (responsaveisEOL != null)
+                responsavelSupervisor = responsavelSupervisor.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
-            if (responsavelSupervisor != null && responsavelSupervisor.Any())
+            foreach (var supervisor in responsavelSupervisor)
             {
-                foreach (var supervisor in responsavelSupervisor)
-                {
-                    var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                    await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
-                }
-                return true;
+                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
             }
-            await mediator.Send(new SalvarLogViaRabbitCommand("Não foram encontrados responsáveis para atribuição no EOL", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, "Responsável Supervisor"));
-            return false;
+            return true;
         }
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
         {
