@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasDaTurmaPorTipoCalendarioQuery : IRequest<IEnumerable<Dominio.AulaInformacoesAdicionais>>
+    public class ObterAulasDaTurmaPorTipoCalendarioQuery : IRequest<IEnumerable<Dominio.Aula>>
     {
         public ObterAulasDaTurmaPorTipoCalendarioQuery(string turmaId, long tipoCalendarioId, string criadoPor = null)
         {

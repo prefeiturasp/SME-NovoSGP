@@ -85,7 +85,8 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public string TurmaId { get; set; }
         public string UeId { get; set; }
-        public long? WorkflowAprovacaoId { get; set; }        
+        public long? WorkflowAprovacaoId { get; set; }
+        public AulaDadosComplementares DadosComplementares { get; set; }
         public void AdicionarAulaPai(Aula aula)
         {
             AulaPai = aula ?? throw new NegocioException("É necessário informar uma aula.");

@@ -858,9 +858,10 @@ namespace SME.SGP.Dados.Repositorios
             return modalidade == (int)Modalidade.EducacaoInfantil;
         }
 
-        public async Task<IEnumerable<AulaInformacoesAdicionais>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
+        public async Task<IEnumerable<Aula>> ObterAulasPorTurmaETipoCalendario(long tipoCalendarioId, string turmaId, string criadoPor = null)
         {
             var query = @"select a.*,
+                                 a.id aula_id,
                                  rf.id is not null PossuiFrequencia,
                                  rf.id is not null and rf.excluido RegistroFerquenciaExcluido,
                                  pa.id is not null PossuiPlanoAula,
@@ -886,9 +887,19 @@ namespace SME.SGP.Dados.Repositorios
                             and a.criado_rf = any(@criadoRf) ";
             }
 
-            query += " order by a.data_aula;";
+            query += " order by a.data_aula, a.id;";
 
-            return await database.Conexao.QueryAsync<AulaInformacoesAdicionais>(query.ToString(), new { tipoCalendarioId, turmaId, criadoPor, criadoRf });
+            return await database.Conexao.QueryAsync<Aula, AulaDadosComplementares, Aula>(query.ToString(), (aula, dadosComplementares) =>
+            {
+                aula.DadosComplementares = new AulaDadosComplementares()
+                {
+                    PossuiFrequencia = dadosComplementares.PossuiFrequencia,
+                    PossuiPlanoAula = dadosComplementares.PossuiPlanoAula,
+                    RegistroFrequenciaExcluido = dadosComplementares.RegistroFrequenciaExcluido,
+                    RegistroPlanoAulaExcluido = dadosComplementares.RegistroPlanoAulaExcluido
+                };
+                return aula;
+            }, new { tipoCalendarioId, turmaId, criadoPor, criadoRf }, splitOn: "aula_id");
         }
 
         public async Task<IEnumerable<AulaReduzidaDto>> ObterAulasReduzidasParaPendenciasAulaDiasNaoLetivos(long tipoCalendarioId, TipoEscola[] tiposEscola)
@@ -1097,10 +1108,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DiarioBordoPorPeriodoDto>> ObterAulasDiariosPorPeriodo(string turmaCodigo, string componenteCurricularFilhoCodigo, string componenteCurricularPaiCodigo, DateTime dataFim, DateTime dataInicio)
         {
-            try
-            {
 
-                var query = @"
+            var query = @"
                          select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
                                 db.criado_por Nome, db.planejamento as Planejamento, 
                                 a.tipo_aula as Tipo, db.inserido_cj as InseridoCJ, 
@@ -1115,31 +1124,26 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim ";
 
-                var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
-                await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
-                     {
-                         if (auditoriaDto != null)
-                             diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
+            var lookup = new Dictionary<long, DiarioBordoPorPeriodoDto>();
+            await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto, AuditoriaDto, DiarioBordoPorPeriodoDto>(query, (diarioBordoPorPeriodoDto, auditoriaDto) =>
+                 {
+                     if (auditoriaDto != null)
+                         diarioBordoPorPeriodoDto.Auditoria = auditoriaDto;
 
-                         lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
+                     lookup.Add(diarioBordoPorPeriodoDto.AulaId, diarioBordoPorPeriodoDto);
 
-                         return diarioBordoPorPeriodoDto;
-                     }, new
-                     {
-                         turmaCodigo,
-                         componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
-                         componenteCurricularPaiCodigo,
-                         dataFim,
-                         dataInicio
-                     });
+                     return diarioBordoPorPeriodoDto;
+                 }, new
+                 {
+                     turmaCodigo,
+                     componenteCurricularFilho = int.Parse(componenteCurricularFilhoCodigo),
+                     componenteCurricularPaiCodigo,
+                     dataFim,
+                     dataInicio
+                 });
 
-                return lookup.Values;
+            return lookup.Values;
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasPorIds(IEnumerable<long> aulasIds)
