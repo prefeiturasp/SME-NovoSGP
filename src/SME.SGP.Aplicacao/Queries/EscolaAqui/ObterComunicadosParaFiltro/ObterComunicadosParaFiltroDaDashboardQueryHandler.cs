@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries.EscolaAqui.ObterComunicadosParaFiltro
+namespace SME.SGP.Aplicacao
 {
     public class ObterComunicadosParaFiltroDaDashboardQueryHandler : IRequestHandler<ObterComunicadosParaFiltroDaDashboardQuery, IEnumerable<ComunicadoParaFiltroDaDashboardDto>>
     {

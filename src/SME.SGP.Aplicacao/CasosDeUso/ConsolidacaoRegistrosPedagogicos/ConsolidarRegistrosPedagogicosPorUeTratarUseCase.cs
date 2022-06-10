@@ -33,6 +33,9 @@ namespace SME.SGP.Aplicacao
                 var ue = await repositorioUe.ObterUePorId(filtro.UeId);
                 var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesPorUeQuery(ue.CodigoUe, dataReferencia));
 
+                if (professoresTitulares is null || !professoresTitulares.Any())
+                    return true;
+
                 var professoresTitularesAgrupadoTurma = professoresTitulares.GroupBy(c => c.TurmaId);
 
                 foreach (var agrupadoTurma in professoresTitularesAgrupadoTurma)
