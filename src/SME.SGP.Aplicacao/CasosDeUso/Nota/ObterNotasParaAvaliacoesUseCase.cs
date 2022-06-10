@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
             long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
             notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
-
+            
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
             var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
@@ -133,14 +133,14 @@ namespace SME.SGP.Aplicacao
             var idsFechamentoNota = fechamentosNotasDaTurma.SelectMany(a => a.FechamentoAlunos).SelectMany(a => a.FechamentoNotas).Select(a => a.Id);
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
-
+           
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             alunosAtivos = from a in alunos
-                           where a.EstaAtivo(periodoInicio, periodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido)
+                            where a.EstaAtivo(periodoInicio, periodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
-                           select a;
-
+                            select a;
+          
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
-                }
+                }                
 
                 notaConceitoAluno.PodeEditar =
                        (aluno.Inativo == false || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
@@ -273,7 +273,7 @@ namespace SME.SGP.Aplicacao
                                     double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
                                     VerificaNotaEmAprovacao(notaConceitoWF, nota);
                                 }
-                            }
+                            }                            
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
@@ -291,7 +291,7 @@ namespace SME.SGP.Aplicacao
                                    notaConceitoBimestre.ConceitoId.Value :
                                    notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            };
+                            };                         
 
                             if (listaFechamentoNotaEmAprovacao.Any())
                             {
@@ -301,7 +301,7 @@ namespace SME.SGP.Aplicacao
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
-
+                           
                     }
                 }
                 else if (componenteReferencia.Regencia && componenteReferencia != null)
@@ -327,7 +327,7 @@ namespace SME.SGP.Aplicacao
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
-
+            
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
             if (!componenteReferencia.Regencia)

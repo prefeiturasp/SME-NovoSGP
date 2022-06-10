@@ -24,6 +24,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
                                         inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+
                                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id
                                         where not fa.excluido 
                                           and not n.excluido 
@@ -190,7 +191,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
                            from wf_aprovacao_nota_fechamento w where w.fechamento_nota_id = ANY(@Ids)";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray() });
+            return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i=>i).ToArray()});
         }
 
         public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)

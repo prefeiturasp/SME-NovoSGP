@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
 
-        public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota,
+        public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota, 
             IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
         {
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
             var disciplinasEOL = await mediator.Send(new ObterDisciplinasPorIdsQuery(new long[] { fechamentoTurmaDisciplina.DisciplinaId }));
-            var disciplinaEOL = disciplinasEOL is null ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
+            var disciplinaEOL = disciplinasEOL is null ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.") 
                 : disciplinasEOL.FirstOrDefault();
-
+                
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (fechamentoTurma.ComponenteSemNota && fechamentoTurma.Id > 0)
@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
 
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
                 }
-
+                    
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
