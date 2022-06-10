@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
                     RfReponsavel = planoAEE.RfReponsavel,
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
-                    NomePaaiReponsavel = planoAEE.RfPaaiReponsavel 
+                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel 
                 };
             }
         }
