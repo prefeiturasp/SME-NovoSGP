@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
 
                 }
-                await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
+                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, usuarioLogado, turma, componenteCurricular);
                 unitOfWork.PersistirTransacao();
 
                 foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
@@ -148,12 +148,6 @@ namespace SME.SGP.Dominio.Servicos
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoFinal.FechamentoTurma;
                 auditoria.Mensagens = mensagens;
                 auditoria.EmAprovacao = notasEmAprovacao.Any();
-
-                if (emAprovacao)
-                    auditoria.MensagemConsistencia = $"{ tipoNota.TipoNota.Name()} registrados com sucesso.Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
-                else
-                    auditoria.MensagemConsistencia = $"Fechamento final salvo com sucesso.";
-
                 return auditoria;
             }
             catch (Exception e)
@@ -170,7 +164,7 @@ namespace SME.SGP.Dominio.Servicos
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = AlunoCodigo,
-                TurmaId = turma.Id,                
+                TurmaId = turma.Id,
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
@@ -205,10 +199,10 @@ namespace SME.SGP.Dominio.Servicos
             return componentes.FirstOrDefault();
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, Usuario usuarioLogado)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, long fechamentoTurmaDisciplinaId, Usuario usuarioLogado, Turma turma, DisciplinaDto componenteCurricular)
         {
             if (notasEmAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, null, usuarioLogado, componenteCurricular, turma));
         }
 
         private Task LogarErro(string mensagem, Exception e, LogNivel nivel)

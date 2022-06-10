@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
 
-        public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota, 
+        public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota,
             IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
         {
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
@@ -82,9 +82,9 @@ namespace SME.SGP.Aplicacao
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
             var disciplinasEOL = await mediator.Send(new ObterDisciplinasPorIdsQuery(new long[] { fechamentoTurmaDisciplina.DisciplinaId }));
-            var disciplinaEOL = disciplinasEOL is null ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.") 
+            var disciplinaEOL = disciplinasEOL is null ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.")
                 : disciplinasEOL.FirstOrDefault();
-                
+
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (fechamentoTurma.ComponenteSemNota && fechamentoTurma.Id > 0)
@@ -197,15 +197,13 @@ namespace SME.SGP.Aplicacao
                             if (fechamentoTurma.Id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
                             {
                                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                               
-                                if(aluno != null)
-                                    alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
+                                alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                             }
                         }
                     }
                 }
 
-                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurma.EhFinal, usuarioLogado);
+                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, turma, componenteCurricular, fechamentoTurma.EhFinal);
                 unitOfWork.PersistirTransacao();
 
                 var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
@@ -217,7 +215,7 @@ namespace SME.SGP.Aplicacao
 
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
                 }
-                    
+
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
@@ -251,13 +249,6 @@ namespace SME.SGP.Aplicacao
 
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
                 auditoria.EmAprovacao = notasEmAprovacao.Any();
-
-                if (parametroAlteracaoNotaFechamento.Ativo && turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
-                      auditoria.MensagemConsistencia = $"{tipoNota.TipoNota.Name()} registrados com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";         
-                else
-                    auditoria.MensagemConsistencia = $" {tipoNota.TipoNota.Name()} registrados com sucesso.";
-                
-
                 return auditoria;
             }
             catch (Exception e)
@@ -559,12 +550,12 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, bool ehFinal, Usuario usuarioLogado)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, Turma turma, DisciplinaDto componenteCurricular, bool ehFinal)
         {
             if (notasEmAprovacao.Any() && ehFinal)
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, null, usuarioLogado, componenteCurricular, turma));
             else if (notasEmAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, componenteCurricular, turma));
         }
 
         private async Task ExcluirPendenciaAusenciaFechamento(long disciplinaId, long turmaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, bool ehFinal)

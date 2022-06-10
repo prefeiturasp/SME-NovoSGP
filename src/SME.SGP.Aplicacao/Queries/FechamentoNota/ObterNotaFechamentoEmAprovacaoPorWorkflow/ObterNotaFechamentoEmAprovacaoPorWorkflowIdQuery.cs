@@ -1,16 +1,15 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery : IRequest<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>>
+    public class ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery : IRequest<IEnumerable<WfAprovacaoNotaFechamento>>
     {
         public ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(long workflowId)
         {
-            WorkflowId = workflowId; 
+            WorkflowId = workflowId;
         }
         public long WorkflowId { get; internal set; }
     }
@@ -21,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.WorkflowId)
                 .NotEmpty()
-                .WithMessage("O workflowId deve ser informado."); 
+                .WithMessage("O workflowId deve ser informado.");
         }
     }
 }

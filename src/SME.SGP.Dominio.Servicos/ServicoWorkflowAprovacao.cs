@@ -225,7 +225,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
@@ -237,19 +237,19 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var fechamentoNota = notaEmAprovacao.FechamentoNota;
 
-                if (notaEmAprovacao.WfAprovacao.Nota.HasValue)
+                if (notaEmAprovacao.Nota.HasValue)
                 {
-                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota)
-                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.WfAprovacao.Nota.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                    if (notaEmAprovacao.Nota != fechamentoNota.Nota)
+                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.Nota.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
-                    fechamentoNota.Nota = notaEmAprovacao.WfAprovacao.Nota;
+                    fechamentoNota.Nota = notaEmAprovacao.Nota;
                 }
                 else
                 {
-                    if (notaEmAprovacao.WfAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.WfAprovacao.ConceitoId.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                    if (notaEmAprovacao.ConceitoId != fechamentoNota.ConceitoId)
+                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
-                    fechamentoNota.ConceitoId = notaEmAprovacao.WfAprovacao.ConceitoId;
+                    fechamentoNota.ConceitoId = notaEmAprovacao.ConceitoId;
                 }
 
                 repositorioFechamentoNota.Salvar(fechamentoNota);
@@ -505,62 +505,55 @@ namespace SME.SGP.Dominio.Servicos
             return nivel.Cargo;
         }
 
-        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
+        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
         {
             await ExcluirWfNotasFechamento(notasEmAprovacao);
+
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            
+            var usuarioRf = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF;
             var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
-            var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
+            var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
+            var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(notasEmAprovacao.First().FechamentoNota.DisciplinaId));
 
-            var usuariosRfs = notasEmAprovacao.Select(n=> n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
-
-            foreach(var usuarioRf in usuariosRfs)
+            if (usuario != null)
             {
-                var dadosUsuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
-
-                if (dadosUsuario != null)
+                repositorioNotificacao.Salvar(new Notificacao()
                 {
-                    repositorioNotificacao.Salvar(new Notificacao()
-                    {
-                        UeId = turma.Ue.CodigoUe,
-                        UsuarioId = dadosUsuario.Id,
-                        Ano = DateTime.Today.Year,
-                        Categoria = NotificacaoCategoria.Aviso,
-                        DreId = turma.Ue.Dre.CodigoDre,
-                        Titulo = $"Alteração em {notaConceitoTitulo} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
-                        Tipo = NotificacaoTipo.Notas,
-                        Codigo = codigoDaNotificacao,
-                        Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, periodoEscolar?.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
-                    });
+                    UeId = turma.Ue.CodigoUe,
+                    UsuarioId = usuario.Id,
+                    Ano = DateTime.Today.Year,
+                    Categoria = NotificacaoCategoria.Aviso,
+                    DreId = turma.Ue.Dre.CodigoDre,
+                    Titulo = $"Alteração em {notaConceitoTitulo} final - {componenteCurricularNome} - Turma {turma.Nome} ({turma.AnoLetivo})",
+                    Tipo = NotificacaoTipo.Notas,
+                    Codigo = codigoDaNotificacao,
+                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, periodoEscolar?.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
+                });
 
-                }
             }
-            
         }
 
-        private async Task ExcluirWfNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao)
+        private async Task ExcluirWfNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
         {
             foreach (var notaEmAprovacao in notasEmAprovacao)
-                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao.WfAprovacao));
+                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao));
         }
 
-        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, bool aprovado, string justificativa)
+        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa, string componenteCurricularNome)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
             var bimestreFormatado = !bimestre.HasValue ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. Motivo: {motivo}</p>");
+            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricularNome} 
+da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} para o(s) estudante(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente curricular</b></td>");
             mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
-            mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Usuário que alterou</b></td>");
-            mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
             var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
@@ -568,30 +561,19 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var notaAprovacao in notasEmAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo);
-                string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
-                string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
-                DateTime? dataUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoEm == null ? notaAprovacao.WfAprovacao.CriadoEm : notaAprovacao.WfAprovacao.AlteradoEm;
 
                 mensagem.AppendLine("<tr>");
-                
+                mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
 
-                if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue)
+                if (!notaAprovacao.ConceitoId.HasValue)
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
                 }
 
                 mensagem.AppendLine("</tr>");
@@ -639,7 +621,7 @@ namespace SME.SGP.Dominio.Servicos
                 Ano = fechamentoReabertura.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
                 DreId = fechamentoReabertura.Dre.CodigoDre,
-                Titulo =  isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
+                Titulo = isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
                 Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
@@ -920,8 +902,8 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
 
-        private async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacao(long workflowId)
-            => await mediator.Send(new ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(workflowId));
+        private Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacao(long workflowId)
+            => mediator.Send(new ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(workflowId));
 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {

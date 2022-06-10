@@ -278,7 +278,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                 }
 
-                await EnviarNotasWfAprovacao(usuarioLogado);
+                await EnviarNotasWfAprovacao(fechamentoTurmaDisciplina.Id, fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar, usuarioLogado, disciplinaEOL, turmaFechamento);
 
                 unitOfWork.PersistirTransacao();
 
@@ -316,12 +316,6 @@ namespace SME.SGP.Dominio.Servicos
 
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
                 auditoria.EmAprovacao = notasEnvioWfAprovacao.Any();
-
-                if (parametroAlteracaoNotaFechamento.Ativo && turmaFechamento.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
-                  auditoria.MensagemConsistencia = "Registro alterado com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
-                else
-                    auditoria.MensagemConsistencia = "Suas informações foram salvas com sucesso.";
-
                 return auditoria;
             }
             catch (Exception e)
@@ -448,10 +442,10 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Turma com código [{turmaCodigo}] não localizada!");
         }
 
-        private async Task EnviarNotasWfAprovacao(Usuario usuarioLogado)
+        private async Task EnviarNotasWfAprovacao(long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, DisciplinaDto componenteCurricular, Turma turma)
         {
             if (notasEnvioWfAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEnvioWfAprovacao, usuarioLogado));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEnvioWfAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, componenteCurricular, turma));
         }
 
         private bool EnviarWfAprovacao(Usuario usuarioLogado)

@@ -133,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new AlunoPorTurmaResposta
                 {
                       Ano=0,
-                      CodigoAluno = "111111",
+                      CodigoAluno = "7128291",
                       CodigoComponenteCurricular=0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       CodigoTurma=int.Parse(turmaId),
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       DataSituacao= new DateTime(2021,11,09,17,25,31),
                       DataMatricula= new DateTime(2021,11,09,17,25,31),
                       EscolaTransferencia=null,
-                      NomeAluno="ANA DA SILVA",
+                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
                       NomeSocialAluno=null,
                       NumeroAlunoChamada=1,
                       ParecerConclusivo=null,
@@ -151,15 +151,15 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       TurmaEscola=null,
                       TurmaRemanejamento=null,
                       TurmaTransferencia=null,
-                      NomeResponsavel="ANA DA SILVA",
+                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
                       TipoResponsavel="4",
-                      CelularResponsavel="1111111111",
+                      CelularResponsavel="11961861993",
                       DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
                 },
                 new AlunoPorTurmaResposta
                 {
                       Ano=0,
-                      CodigoAluno = "222222",
+                      CodigoAluno = "6523614",
                       CodigoComponenteCurricular=0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       CodigoTurma=int.Parse(turmaId),
@@ -167,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       DataSituacao= new DateTime(2021,11,09,17,25,31),
                       DataMatricula= new DateTime(2021,11,09,17,25,31),
                       EscolaTransferencia=null,
-                      NomeAluno="JOSE DOS SANTOS",
+                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
                       NomeSocialAluno=null,
                       NumeroAlunoChamada=1,
                       ParecerConclusivo=null,
@@ -177,9 +177,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       TurmaEscola=null,
                       TurmaRemanejamento=null,
                       TurmaTransferencia=null,
-                      NomeResponsavel="JOSE DOS DANTOS",
+                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
                       TipoResponsavel="4",
-                      CelularResponsavel="1111111111",
+                      CelularResponsavel="11961861993",
                       DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
                 }
             };
@@ -224,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
         {
-            return ObterAlunosPorTurma("1");
+            throw new NotImplementedException();
         }
 
         public async Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
@@ -306,39 +306,24 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new List<UsuarioEolRetornoDto>{
                 new UsuarioEolRetornoDto
                 {
-                    CodigoRf="111111",
-                    NomeServidor = "Usuario Retorno 1",
+                    CodigoRf="7921489",
+                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
                     CodigoFuncaoAtividade = 0,
                     EstaAfastado = false
                 },
                 new UsuarioEolRetornoDto
                 {
-                    CodigoRf="222222",
-                    NomeServidor = "Usuario Retorno 2",
+                    CodigoRf="7549610",
+                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
                     CodigoFuncaoAtividade = 0,
                     EstaAfastado = false
                 },
             };
         }
 
-        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId)
+        public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId)
         {
-            return new List<UsuarioEolRetornoDto>{
-                new UsuarioEolRetornoDto
-                {
-                    CodigoRf="111111",
-                    NomeServidor = "Usuario Retorno 1",
-                    CodigoFuncaoAtividade = 0,
-                    EstaAfastado = false
-                },
-                new UsuarioEolRetornoDto
-                {
-                    CodigoRf="222222",
-                    NomeServidor = "Usuario Retorno 2",
-                    CodigoFuncaoAtividade = 0,
-                    EstaAfastado = false
-                },
-            };
+            throw new NotImplementedException();
         }
 
         public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)

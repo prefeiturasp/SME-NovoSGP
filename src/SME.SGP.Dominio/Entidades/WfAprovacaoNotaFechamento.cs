@@ -1,9 +1,9 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class WfAprovacaoNotaFechamento : EntidadeBase
+    public class WfAprovacaoNotaFechamento
     {
-        public WfAprovacaoNotaFechamento() { }
-        public long? WfAprovacaoId { get; set; }
+        public long Id { get; set; }
+        public long WfAprovacaoId { get; set; }
         public WorkflowAprovacao WfAprovacao { get; set; }
         public long FechamentoNotaId { get; set; }
         public FechamentoNota FechamentoNota { get; set; }
