@@ -55,11 +55,6 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         }
 
-        private void RegistraMock()
-        {
-            _services.AddMockPlanoAEE();
-        }
-
         public void Dispose()
         {
             Database.Dispose();
