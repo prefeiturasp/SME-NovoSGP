@@ -197,7 +197,9 @@ namespace SME.SGP.Aplicacao
                             if (fechamentoTurma.Id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
                             {
                                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                                alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
+                               
+                                if(aluno != null)
+                                    alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                             }
                         }
                     }
@@ -249,6 +251,13 @@ namespace SME.SGP.Aplicacao
 
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
                 auditoria.EmAprovacao = notasEmAprovacao.Any();
+
+                if (parametroAlteracaoNotaFechamento.Ativo && turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
+                      auditoria.MensagemConsistencia = $"{tipoNota.TipoNota.Name()} registrados com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";         
+                else
+                    auditoria.MensagemConsistencia = $" {tipoNota.TipoNota.Name()} registrados com sucesso.";
+                
+
                 return auditoria;
             }
             catch (Exception e)
