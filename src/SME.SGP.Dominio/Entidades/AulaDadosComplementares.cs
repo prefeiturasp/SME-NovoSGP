@@ -1,11 +1,10 @@
 ﻿namespace SME.SGP.Dominio
 {
-    public class AulaInformacoesAdicionais : Aula
+    public class AulaDadosComplementares
     {
         public bool PossuiFrequencia { get; set; }
-        public bool RegistroFerquenciaExcluido { get; set; }
+        public bool RegistroFrequenciaExcluido { get; set; }
         public bool PossuiPlanoAula { get; set; }
         public bool RegistroPlanoAulaExcluido { get; set; }
-
     }
 }

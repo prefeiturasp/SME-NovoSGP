@@ -72,21 +72,23 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(a => a.aula.Id)
                 .ToArray();
 
-            try
+            if (idsAulasAtualizacao != null && idsAulasAtualizacao.Any())
             {
-                sql = @"update aula 
+                try
+                {
+                    sql = @"update aula 
                         set excluido = false, 
                             alterado_por = 'Sistema', 
                             alterado_em = current_timestamp, 
                             alterado_rf = 'Sistema'
                         where id = any(@idsAulas);";
 
-                unitOfWork.IniciarTransacao();
+                    unitOfWork.IniciarTransacao();
 
-                database.Conexao
-                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    database.Conexao
+                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
 
-                sql = @"update registro_frequencia
+                    sql = @"update registro_frequencia
                         set excluido = false,
                             alterado_por = 'Sistema', 
                             alterado_em = current_timestamp, 
@@ -94,10 +96,10 @@ namespace SME.SGP.Dados.Repositorios
                         where aula_id = any(@idsAulas) and
                               excluido;";
 
-                database.Conexao
-                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    database.Conexao
+                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
 
-                sql = @"update registro_frequencia_aluno
+                    sql = @"update registro_frequencia_aluno
                         set excluido = false,
                             alterado_por = 'Sistema', 
                             alterado_em = current_timestamp, 
@@ -108,20 +110,21 @@ namespace SME.SGP.Dados.Repositorios
                                                 on rf.aula_id = a.id
                                      where a.id = any(@idsAulas)) and excluido;";
 
-                database.Conexao
-                    .Execute(sql, new { idsAulas = idsAulasAtualizacao });
+                    database.Conexao
+                        .Execute(sql, new { idsAulas = idsAulasAtualizacao });
 
-                sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
+                    sql = @"update plano_aula set aula_id = @aulaId where id = @planoAulaId;";
 
-                aulas.Where(a => a.planoAulaId.HasValue).ToList()
-                    .ForEach(a => database.Conexao.Execute(sql, new { aulaId = a.aula.Id, planoAulaId = a.planoAulaId.Value }));
+                    aulas.Where(a => a.planoAulaId.HasValue).ToList()
+                        .ForEach(a => database.Conexao.Execute(sql, new { aulaId = a.aula.Id, planoAulaId = a.planoAulaId.Value }));
 
-                unitOfWork.PersistirTransacao();
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
+                    unitOfWork.PersistirTransacao();
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
             }
         }
 
