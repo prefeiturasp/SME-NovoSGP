@@ -32,8 +32,7 @@ namespace SME.SGP.Aplicacao
                 return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
             }
 
-            string erro = $"Não foi possível consultar os funcionários no EOL - HttpCode {(int)resposta.StatusCode} - Dre:{request.DreCodigo} - erro : {resposta.Content.ReadAsStringAsync()}";
-            throw new NegocioException(erro);
+            return new List<UsuarioEolRetornoDto>();
         }
     }
 }
