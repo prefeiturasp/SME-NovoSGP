@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,6 +18,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> Handle(ObterConsolidacaoRegistrosPedagogicosQuery request, CancellationToken cancellationToken)
-            => await repositorio.GerarRegistrosPedagogicos(request.UeId, request.AnoLetivo);
+        {
+            return await repositorio.GerarRegistrosPedagogicos(request.UeId, request.AnoLetivo);
+        }
     }
 }

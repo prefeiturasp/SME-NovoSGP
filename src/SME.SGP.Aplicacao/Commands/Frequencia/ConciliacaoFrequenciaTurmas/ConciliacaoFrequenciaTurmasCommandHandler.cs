@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
         private async Task PublicarFilaConciliacaoMensal(List<string> turmasDaModalidade, int mes)
         {
             var dto = new ConciliacaoFrequenciaTurmaMensalDto(turmasDaModalidade, mes);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConciliacaoFrequenciaTurmaMes, dto, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConciliacaoFrequenciaTurmaMes, dto, Guid.NewGuid(), null));
         }
 
         private async Task<IEnumerable<string>> ObterTurmasPorModalidade(ModalidadeTipoCalendario modalidadeTipoCalendario, int ano, string turmaCodigo)

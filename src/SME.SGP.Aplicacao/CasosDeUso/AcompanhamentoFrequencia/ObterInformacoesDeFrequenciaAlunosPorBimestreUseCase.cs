@@ -109,6 +109,7 @@ namespace SME.SGP.Aplicacao
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                 var remotos = frequenciaAlunoRegistrada?.TotalRemotos ?? default;
                 var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
+                var totalAulas = frequenciaAlunoRegistrada?.TotalAulas ?? default;
 
                 var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada
                 ?
@@ -132,7 +133,8 @@ namespace SME.SGP.Aplicacao
                     PossuiJustificativas = ausencias > 0,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
                     Remotos = remotos,
-                    Presencas = presencas
+                    Presencas = presencas,
+                    TotalAulas = totalAulas
                 });
             }
 

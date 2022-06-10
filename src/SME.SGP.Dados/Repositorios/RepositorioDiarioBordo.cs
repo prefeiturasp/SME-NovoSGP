@@ -543,6 +543,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            db.devolutiva_id ISNULL
 	                            AND db.turma_id = @turmaId
 	                            AND a.disciplina_id = @componenteCodigo
+                                AND NOT db.excluido
                             GROUP BY
 	                            a.tipo_calendario_id
                             )

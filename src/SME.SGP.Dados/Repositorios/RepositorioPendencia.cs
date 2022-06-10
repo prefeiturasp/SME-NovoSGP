@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var situacao = SituacaoPendencia.Pendente;
 
-            var query = @" select * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
+            var query = @" select distinct * from ( select distinct p.id, p.titulo, p.descricao, p.situacao, p.tipo, p.criado_em as CriadoEm
 		                            from pendencia p 
 		                            inner join pendencia_perfil pp on pp.pendencia_id  = p.id 
 		                            inner join pendencia_perfil_usuario ppu on ppu.pendencia_perfil_id = pp.id
@@ -350,7 +350,6 @@ namespace SME.SGP.Dados.Repositorios
                     break;
 
                 case TipoPendencia.AulaNaoLetivo:
-
                     query += @" LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
                                 LEFT JOIN aula a ON a.id = pa.aula_id
                                 LEFT JOIN turma t ON t.turma_id = a.turma_id ";
@@ -369,23 +368,24 @@ namespace SME.SGP.Dados.Repositorios
                 case TipoPendencia.AusenciaDeAvaliacaoProfessor:
                 case TipoPendencia.AusenciaDeAvaliacaoCP:
                 case TipoPendencia.AusenciaFechamento:
-
                     query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
                                 LEFT JOIN turma t on t.id = pp.turma_id ";
 
                     break;
 
                 case TipoPendencia.AusenciaDeRegistroIndividual:
-
                     query += @" LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
                                 LEFT JOIN turma t ON t.id = pri.turma_id ";
 
                     break;
 
+                case TipoPendencia.Devolutiva:
+                    query += @" LEFT JOIN pendencia_devolutiva pd ON pd.pendencia_id = p.id
+                                LEFT JOIN turma t on t.id = pd.turma_id";
+                    break;
+
                 default:
-
                     tipoPendenciaAceito = false;
-
                     break;
             }
 

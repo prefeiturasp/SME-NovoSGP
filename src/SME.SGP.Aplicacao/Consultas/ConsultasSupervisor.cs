@@ -232,9 +232,6 @@ namespace SME.SGP.Aplicacao
 
                 if (supervisores != null && supervisores.Any())
                 {
-                    if (supervisores.Count() != supervisoresIds.Count())
-                        RemoverSupervisorSemAtribuicao(supervisoresEscolasDres, supervisores);
-
                     foreach (var supervisorEscolaDre in supervisoresIds)
                     {
                         var responsavelEscolasDto = new ResponsavelEscolasDto

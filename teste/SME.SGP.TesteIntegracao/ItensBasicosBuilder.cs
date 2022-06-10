@@ -43,6 +43,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
+
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 2,
@@ -57,10 +58,48 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public async Task CriaItensComunsEja()
         {
-            CriarClaimRegenciaEja();
+            await CriaItensComunsEja(false);
+        }
+
+        public async Task CriarUsuarioLogadoCP()
+        {
+            await _teste.InserirNaBase(new Usuario
+            {
+                Id = 1,
+                Login = "8888888",
+                CodigoRf = "8888888",
+                Nome = "Usuario CP",
+                CriadoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0"
+            });
+
+            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
+
+            var variaveis = new Dictionary<string, object>
+            {
+                { "NomeUsuario", "Usuario CP" },
+                { "UsuarioLogado", "8888888" },
+                { "RF", "8888888" },
+                { "login", "8888888" },
+                {
+                    "Claims", new List<InternalClaim> {
+                        new InternalClaim { Value = "8888888", Type = "rf" },
+                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
+                    }
+                }
+            };
+
+            contextoAplicacao.AdicionarVariaveis(variaveis);
+        }
+
+        public async Task CriaItensComunsEja(bool incluirAdm)
+        {
+            CriarClaimRegenciaEja(incluirAdm);
 
             await CriaItensComuns();
             await CriarPeriodoEscolar();
+            await CriaAtribuicaoCJ();
 
             await _teste.InserirNaBase(new Usuario
             {
@@ -148,8 +187,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Migrado = false,
                 AulaCJ = false
             });
-
-
         }
 
         public async Task CriaComponenteCurricularSemFrequencia()
@@ -161,7 +198,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
         }
 
-        private void CriarClaimRegenciaEja()
+        private void CriarClaimRegenciaEja(bool incluirAdm)
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
@@ -169,6 +206,12 @@ namespace SME.SGP.TesteIntegracao.Setup
             variaveis.Add("UsuarioLogado", "6926886");
             variaveis.Add("RF", "6926886");
             variaveis.Add("login", "6926886");
+
+            if (incluirAdm)
+            {
+                variaveis.Add("Administrador", "7924488");
+            }
+
             variaveis.Add("Claims", new List<InternalClaim> {
                 new InternalClaim { Value = "6926886", Type = "rf" },
                 new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
@@ -185,6 +228,24 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Bimestre = 2,
                 PeriodoInicio = new DateTime(2022, 01, 10),
                 PeriodoFim = DateTime.Now.AddYears(1),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now,
+                Migrado = false
+            });
+        }
+
+        private async Task CriaAtribuicaoCJ()
+        {
+            await _teste.InserirNaBase(new AtribuicaoCJ
+            {
+                TurmaId = "1",
+                DreId = "1",
+                UeId = "1",
+                ProfessorRf = "6926886",
+                DisciplinaId = 1106,
+                Modalidade = Modalidade.CIEJA,
+                Substituir = true,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now,

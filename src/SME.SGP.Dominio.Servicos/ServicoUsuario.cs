@@ -272,7 +272,7 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Já existe outro usuário com o e-mail informado.");
 
             var retornoEol = await servicoEOL.ObterPerfisPorLogin(usuario.Login);
-            if (retornoEol == null || retornoEol.Status != AutenticacaoStatusEol.Ok)
+            if (retornoEol == null)
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
           

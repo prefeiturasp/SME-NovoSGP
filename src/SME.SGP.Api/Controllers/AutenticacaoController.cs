@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -178,6 +179,22 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> AutenticarSuporte(string login)
         {
             var retornoAutenticacao = await comandosUsuario.AutenticarSuporte(login);
+
+            if (!retornoAutenticacao.Autenticado)
+                return StatusCode(401);
+
+            return Ok(retornoAutenticacao);
+        }
+
+        [HttpPut("suporte/deslogar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(UsuarioAutenticacaoRetornoDto), 200)]
+        [AllowAnonymous]
+        public async Task<IActionResult> DeslogarSuporte([FromServices] IDeslogarSuporteUsuarioUseCase deslogarSuporteUsuarioUseCase)
+        {
+            var retornoAutenticacao = await deslogarSuporteUsuarioUseCase.Executar();
 
             if (!retornoAutenticacao.Autenticado)
                 return StatusCode(401);

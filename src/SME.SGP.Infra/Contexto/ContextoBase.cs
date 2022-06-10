@@ -14,7 +14,7 @@ namespace SME.SGP.Infra.Contexto
         public string UsuarioLogado => ObterVariavel<string>("UsuarioLogado") ?? "Sistema";
         public string PerfilUsuario => ObterVariavel<string>("PerfilUsuario") ?? string.Empty;
         public IDictionary<string, object> Variaveis { get; set; }
-
+        public string Administrador => ObterVariavel<string>("Administrador") ?? string.Empty;
         public abstract void AdicionarVariaveis(IDictionary<string, object> variaveis);
         public abstract IContextoAplicacao AtribuirContexto(IContextoAplicacao contexto);
 
