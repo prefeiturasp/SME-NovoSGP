@@ -5,7 +5,7 @@ using System;
 
 namespace SME.SGP.IoC
 {
-    public static class RegistraMediatr
+    public static class RegistrarMediatr
     {
         public static void AdicionarMediatr(this IServiceCollection services)
         {

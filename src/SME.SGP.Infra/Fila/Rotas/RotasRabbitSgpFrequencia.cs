@@ -28,5 +28,14 @@
 
         public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
 
+        public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
+        public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
+        public const string RotaConsolidacaoMensalDashBoardFrequencia = "sgp.consolidacao.mensal.frequencia.dashboard";
+
+        public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
+        public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
+
+        public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
+        public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
     }
 }

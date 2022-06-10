@@ -511,6 +511,9 @@ namespace SME.SGP.IoC
 
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
         {
+            services.RegistrarAulaUseCase();
+            services.RegistrarAEEUseCase();
+
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseAlunoUseCase, ImpressaoConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IImpressaoConselhoClasseTurmaUseCase, ImpressaoConselhoClasseTurmaUseCase>();

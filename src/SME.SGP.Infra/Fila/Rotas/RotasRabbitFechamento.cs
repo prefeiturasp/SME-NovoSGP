@@ -14,6 +14,10 @@
         public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.tratar"; 
         public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.ue.tratar";        
         public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.turma.tratar";        
-        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.aluno.tratar";        
+        public const string ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar = "sgp.consolidacao.turma.conselhoclasse.aluno.anos.anteriores.aluno.tratar";
+
+        public const string RotaNotificacaoFechamentoReabertura = "sgp.fechamento.reabertura.notificacao";
+        public const string RotaNotificacaoFechamentoReaberturaDRE = "sgp.fechamento.reabertura.notificacao.dre";
+        public const string RotaNotificacaoFechamentoReaberturaUE = "sgp.fechamento.reabertura.notificacao.ue";
     }
 }
