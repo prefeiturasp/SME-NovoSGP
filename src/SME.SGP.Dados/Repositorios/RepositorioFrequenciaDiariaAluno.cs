@@ -46,11 +46,11 @@ namespace SME.SGP.Dados.Repositorios
 
         private void MontarQueryConsulta(Paginacao paginacao, int bimestre, string codigoAluno, long turmaId, string aulaDisciplinaId, StringBuilder query, bool contador)
         {
-            query.AppendLine(contador ? " select count(n.id) " : " select n.*  ");
+            query.AppendLine(contador ? " select count(n.TotalAulasNoDia) " : " select n.*  ");
 
 
             query.AppendLine(@"
-                FROM(SELECT count(rfa.id) AS id,
+                FROM(SELECT count(rfa.id) AS TotalAulasNoDia,
 	                        a.data_aula AS DataAula,
 	                        a.id AS AulasId,
 	                        rfa.valor AS TipoFrequencia,
