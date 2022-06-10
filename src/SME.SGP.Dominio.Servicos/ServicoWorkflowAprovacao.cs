@@ -621,7 +621,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                 Ano = fechamentoReabertura.CriadoEm.Year,
                 Categoria = NotificacaoCategoria.Aviso,
                 DreId = fechamentoReabertura.Dre.CodigoDre,
-                Titulo =isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
+                Titulo =  isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
                 Tipo = NotificacaoTipo.Calendario,
                 Codigo = codigoDaNotificacao,
                 Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
