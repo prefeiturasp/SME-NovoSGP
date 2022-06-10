@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <Compile Remove="Interfaces\CasosDeUso\Aluno\**" />
     <Compile Remove="Queries\AcompanhamentoFrequencia\**" />
+    <EmbeddedResource Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <EmbeddedResource Remove="Interfaces\CasosDeUso\Aluno\**" />
     <EmbeddedResource Remove="Queries\AcompanhamentoFrequencia\**" />
+    <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <None Remove="Interfaces\CasosDeUso\Aluno\**" />
     <None Remove="Queries\AcompanhamentoFrequencia\**" />
   </ItemGroup>
@@ -42,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
     <Folder Include="Servicos\Interfaces\" />

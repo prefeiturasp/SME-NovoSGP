@@ -44,10 +44,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasSupervisor.ObterAtribuicaoResponsavel(filtro));
         }
 
-        [HttpGet("tipo-responsavel/{exibirTodos}")]
-        public async Task<IActionResult> ObterListTipoReponsavel(bool exibirTodos, [FromServices] IObterListaTipoReponsavelUseCase useCase)
+        [HttpGet("tipo-responsavel")]
+        public IActionResult ObterListTipoReponsavel()
         {
-            return Ok(await useCase.Executar(exibirTodos));
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
+                            .Cast<TipoResponsavelAtribuicao>()
+                            .Select(d => new { codigo = (int)d, descricao = d.Name() }).OrderBy(x => x.descricao).ToList();
+
+            return Ok(tipos);
         }
 
         [HttpGet("dre/{dreId}")]

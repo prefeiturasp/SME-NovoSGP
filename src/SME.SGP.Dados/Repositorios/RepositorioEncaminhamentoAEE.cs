@@ -270,16 +270,18 @@ namespace SME.SGP.Dados.Repositorios
                 .OrderBy(a => a.Ordem).ThenBy(a => a.Descricao);
         }
 
-        public async Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string codigoEstudante)
+        public async Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string codigoEstudante, long ueId)
         {
-            var sql = @"select count(ea.id)
-                         from encaminhamento_aee ea 
-                     where not ea.excluido 
-                       and ea.situacao not in (4, 5, 8, 10)
-                       and ea.aluno_codigo = @codigoEstudante ";
+            var sql = @"select exists (select 1 
+                          from encaminhamento_aee ea 
+                         inner join turma t on t.id = ea.turma_id                     
+                         where not ea.excluido 
+                           and ea.situacao not in (4, 5, 8, 10)
+                           and ea.aluno_codigo = @codigoEstudante
+                           and t.ue_id = @ueId
+                           limit 1) ";
 
-            var existeEncaminhamentoAEEAluno = await database.Conexao.QueryFirstOrDefaultAsync<int>(sql, new { codigoEstudante });
-            return existeEncaminhamentoAEEAluno >= 1 ? true : false;
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoEstudante, ueId });            
         }
 
         public async Task<IEnumerable<EncaminhamentoAEECodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoAEEId(long encaminhamentoId)

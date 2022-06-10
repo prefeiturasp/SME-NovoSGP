@@ -193,7 +193,9 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula, "2372753", 1));
 
-            retorno.ShouldBe(1);
+            retorno.Any().ShouldBeTrue();
+
+            retorno.Any(f => f.PendenciaId == 1).ShouldBeTrue();
         }
     }
 }

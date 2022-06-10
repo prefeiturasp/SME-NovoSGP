@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<UsuarioEolAutenticacaoRetornoDto> Autenticar(string login, string senha)
+        public Task<AutenticacaoApiEolDto> Autenticar(string login, string senha)
         {
             throw new NotImplementedException();
         }
@@ -70,9 +70,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<UsuarioEolAutenticacaoRetornoDto> ObtenhaAutenticacaoSemSenha(string login)
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
         {
-            throw new NotImplementedException();
+            return new AutenticacaoApiEolDto()
+            {
+                CodigoRf = "7924488"
+            };
         }
 
         public Task<AbrangenciaRetornoEolDto> ObterAbrangencia(string login, Guid perfil)
@@ -95,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Grupo = GruposSGP.Professor,
                     Abrangencia = Infra.Enumerados.Abrangencia.Professor,
                 },
-                IdTurmas = new List<string> {"2366531"}.ToArray(),
+                IdTurmas = new List<string> { "2366531" }.ToArray(),
             };
         }
 
@@ -328,6 +331,28 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorPerfilDre(Guid perfil, string codigoDre)
+        {
+            return new List<UsuarioEolRetornoDto>{
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="1",
+                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false,
+                    UsuarioId = 1
+                },
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="2",
+                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false,
+                    UsuarioId = 2
+                },
+            };
+        }
+
         public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorUe(BuscaFuncionariosFiltroDto buscaFuncionariosFiltroDto)
         {
             throw new NotImplementedException();
@@ -338,9 +363,15 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
+        public async Task<IEnumerable<ProfessorResumoDto>> ObterListaNomePorListaRF(IEnumerable<string> codigosRF)
         {
-            throw new NotImplementedException();
+            return new List<ProfessorResumoDto>()
+            {
+                new ProfessorResumoDto(){
+                    CodigoRF = "7128291",
+                    Nome = "ANA RITA"
+                }
+            };
         }
 
         public Task<IEnumerable<ProfessorResumoDto>> ObterListaResumosPorListaRF(IEnumerable<string> codigosRF, int anoLetivo)
@@ -353,9 +384,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<MeusDadosDto> ObterMeusDados(string login)
+        public async Task<MeusDadosDto> ObterMeusDados(string login)
         {
-            throw new NotImplementedException();
+            return new MeusDadosDto()
+            {
+                Nome = "ESTER CUSTODIA DOS SANTOS",
+                Email = String.Empty
+            };
         }
 
         public Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno)
@@ -368,11 +403,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<UsuarioEolAutenticacaoRetornoDto> ObterPerfisPorLogin(string login)
+        public async Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
         {
-            var listaUsuarios = new List<UsuarioEolAutenticacaoRetornoDto>
+            var listaUsuarios = new List<PerfisApiEolDto>
             {
-                new UsuarioEolAutenticacaoRetornoDto
+                new PerfisApiEolDto
                 {
                     CodigoRf = "6926886",
                     Perfis = new List<Guid>
@@ -381,13 +416,21 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
                     }
                 },
-                new UsuarioEolAutenticacaoRetornoDto
+                new PerfisApiEolDto
                 {
                     CodigoRf = "6737544",
                     Perfis = new List<Guid>
                     {
                         new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
                         new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "8888888",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),
                     }
                 },
             };
@@ -449,6 +492,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<ProfessorTitularDisciplinaEol>> ObterProfessoresTitularesPorUe(string ueCodigo, DateTime dataReferencia)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
         {
             throw new NotImplementedException();
@@ -466,12 +514,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorDre(string dreId)
-        {
-            throw new NotImplementedException();
+            return new List<SupervisoresRetornoDto>()
+            {
+                new SupervisoresRetornoDto()
+                {
+                    CodigoRf = "1",
+                    NomeServidor = "Teste da silva"
+                }
+            };
         }
 
         public Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessorPorEscolaEAnoLetivo(string rfProfessor, string codigoEscola, int anoLetivo)

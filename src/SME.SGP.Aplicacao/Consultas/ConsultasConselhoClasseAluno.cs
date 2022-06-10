@@ -234,7 +234,7 @@ namespace SME.SGP.Aplicacao
 
             //Verificar as notas finais
             var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
-            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo,null,true));
+            var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo, null, true));
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
             if (periodosEscolares != null)
@@ -291,9 +291,11 @@ namespace SME.SGP.Aplicacao
                 {
                     var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
+                    var componentesIds = componentes.Select(c => c.Id.ToString()).ToArray();                   
+
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {
-                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);                        
 
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
@@ -301,7 +303,9 @@ namespace SME.SGP.Aplicacao
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
-                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
+                        {
+                            frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();                                                     
+                        }
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno()
@@ -313,7 +317,8 @@ namespace SME.SGP.Aplicacao
 
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                             frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
-                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);
+                            frequenciaAluno.TotalCompensacoes = frequenciasAlunoParaTratar.Sum(a => a.TotalCompensacoes);                            
+
                             percentualFrequenciaPadrao = true;
                             frequenciasAlunoParaTratar
                                 .ToList()
@@ -403,7 +408,7 @@ namespace SME.SGP.Aplicacao
             if (turmaFechamento == null || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
 
-            var aluno = turmaFechamento.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
+            var aluno = turmaFechamento.Last(a => a.CodigoAluno == alunoCodigo);
 
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
