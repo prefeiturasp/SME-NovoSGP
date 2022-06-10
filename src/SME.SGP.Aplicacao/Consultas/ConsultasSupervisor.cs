@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
 
                 yield return new ResponsavelEscolasDto()
                 {
-                    Responsavel = supervisor.Excluido ? "NÃO ATRIBUÍDO" : nomeResponsavel ,
+                    Responsavel = supervisor.Excluido ? null : nomeResponsavel ,
                     ResponsavelId = supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
                     Escolas = escolas.ToList(),

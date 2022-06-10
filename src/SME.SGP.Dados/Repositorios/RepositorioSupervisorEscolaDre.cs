@@ -85,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
             if(!string.IsNullOrEmpty(filtro.SupervisorId))
                 query.AppendLine(" AND supervisor_id = ANY(@supervisor)  AND excluido = False ");
 
-            if (filtro.SupervisorId?.Length == 0 && filtro.UESemResponsavel)
+            if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel)
                 query.AppendLine(" AND excluido = true ");
 
             var parametros = new
