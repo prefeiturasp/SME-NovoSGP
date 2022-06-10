@@ -1,5 +1,7 @@
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -32,6 +34,6 @@ namespace SME.SGP.Aplicacao
 
         Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login);
 
-        Task<UsuarioAutenticacaoRetornoDto> DeslogarSuporte();
+        Task<UsuarioAutenticacaoRetornoDto> ObtenhaAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol, string login, List<Claim> claims = null);
     }
 }

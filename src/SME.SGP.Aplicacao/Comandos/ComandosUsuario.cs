@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
             return await ObtenhaAutenticacao(retornoAutenticacaoEol, login);
         }
 
-        private async Task<UsuarioAutenticacaoRetornoDto> ObtenhaAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol, string login, List<Claim> claims = null)
+        public async Task<UsuarioAutenticacaoRetornoDto> ObtenhaAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol, string login, List<Claim> claims = null)
         {
             if (!retornoAutenticacaoEol.Item1.Autenticado)
                 return retornoAutenticacaoEol.Item1;

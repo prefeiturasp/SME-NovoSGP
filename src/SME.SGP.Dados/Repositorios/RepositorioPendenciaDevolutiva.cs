@@ -92,5 +92,38 @@ namespace SME.SGP.Dados
 
 			return await database.Conexao.QueryAsync<string>(query, new { turmaId, ueId });
 		}
+
+        public async Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId)
+        {
+			var query = @"select t.* 
+							from pendencia_devolutiva pd
+							inner join turma t on t.id = pd.turma_id
+							where pd.pendencia_id = @pendenciaId ";
+
+			return await database.Conexao.QueryFirstOrDefaultAsync<Turma>(query, new { pendenciaId });
+		}
+
+        public async Task<bool> ExistePendenciasDevolutivaPorTurmaComponente(long turmaId, long componenteId)
+        {
+			var query = @"SELECT count(pd.id) as TotalPendenciasDevolutiva
+							FROM pendencia_devolutiva pd
+								INNER JOIN pendencia p ON pd.pendencia_Id = p.id
+								INNER JOIN componente_curricular cc ON pd.componente_curricular_id = cc.id
+								INNER JOIN turma t ON pd.turma_id = t.id
+							WHERE pd.componente_curricular_id = @componenteId 
+							AND pd.turma_id  = @turmaId";
+
+			var resultado = await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteId });
+			return (resultado > 0);
+		}
+
+        public async Task ExlusaoLogicaPorTurmaComponente(long turmaId, long componenteId)
+        {
+			await database.Conexao.ExecuteAsync(@"update pendencia set excluido = true 
+													where id = (select pd.pendencia_id 
+																from pendencia_devolutiva pd 
+																where pd.turma_id = @turmaId 
+																and pd.componente_curricular_id = @componenteId)", new { @turmaId, componenteId });
+        }
     }
 }

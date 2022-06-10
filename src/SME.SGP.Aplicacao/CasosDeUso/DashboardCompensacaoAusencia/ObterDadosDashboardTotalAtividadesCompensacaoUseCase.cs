@@ -15,11 +15,11 @@ namespace SME.SGP.Aplicacao
         public async Task<GraficoCompensacaoAusenciaDto> Executar(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, int semestre)
         {
             var dadosAtividadesCompensadas = await mediator.Send(new ObterDadosDashboardTotalAtividadesCompensacaoQuery(anoLetivo,
-                                                                                                          dreId,
-                                                                                                          ueId,
-                                                                                                          modalidade,
-                                                                                                          bimestre,
-                                                                                                          semestre));
+                                                                                                                        dreId,
+                                                                                                                        ueId,
+                                                                                                                        modalidade,
+                                                                                                                        bimestre,
+                                                                                                                        semestre));
 
             return MapearParaDto(dadosAtividadesCompensadas, "");
         }

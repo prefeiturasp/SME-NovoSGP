@@ -84,13 +84,16 @@ namespace SME.SGP.Aplicacao
                     if (componentesDaTurmaEol == null || !componentesDaTurmaEol.Any())
                         throw new NegocioException("Não foi encontrado componentes curriculares no eol");
 
+                    var notasFechamento = await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, request.Bimestre, null, null));
+                    var possuiComponenteSemNota = notasFechamento.Where(x => x.NotaConceito == null).Any();
+
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
                         .Select(ct => ct.Codigo)
                         .Except(componentesComNotaFechamentoOuConselho.Select(cn => cn.Codigo))
                         .Any();
 
-                    statusNovo = possuiComponentesSemNotaConceito ? SituacaoConselhoClasse.EmAndamento : SituacaoConselhoClasse.Concluido;
+                    statusNovo = possuiComponentesSemNotaConceito || possuiComponenteSemNota ? SituacaoConselhoClasse.EmAndamento : SituacaoConselhoClasse.Concluido;
                 }
 
                 if (consolidadoTurmaAluno.ParecerConclusivoId != null)

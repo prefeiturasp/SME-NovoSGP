@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUesCodigosPorDreQueryHeandler : IRequestHandler<ObterUesCodigosPorDreQuery, IEnumerable<string>>
+    public class ObterUesCodigosPorDreQueryHandler : IRequestHandler<ObterUesCodigosPorDreQuery, IEnumerable<string>>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
 
-        public ObterUesCodigosPorDreQueryHeandler(IRepositorioUeConsulta repositorioUe)
+        public ObterUesCodigosPorDreQueryHandler(IRepositorioUeConsulta repositorioUe)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
         }

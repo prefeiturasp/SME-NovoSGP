@@ -44,6 +44,7 @@ namespace SME.SGP.Infra
         public bool NotificarErroUsuario { get; set; }
         public string PerfilUsuario { get; set; }
         public string Administrador { get; set; }
+
         public T ObterObjetoMensagem<T>() where T : class
         {
             return JsonConvert.DeserializeObject<T>(Mensagem.ToString());

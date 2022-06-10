@@ -142,17 +142,19 @@ namespace SME.SGP.Dados.Repositorios
            int ano, long dreId, int modalidade, int semestre, int bimestre)
         {
 
-            var sqlQuery = new StringBuilder($@"select Situacao, sum(x.Quantidade) as Quantidade,
-                            x.AnoTurma
-                       from (
-                             select  cccat.status as Situacao,
-                                       count(cccat.id) as Quantidade, ");
+            var sqlQuery = new StringBuilder($@"select Situacao, 
+                                                       sum(x.Quantidade) as Quantidade,
+                                                       x.AnoTurma
+                                                  from (
+                                                        select  cccat.status as Situacao,
+                                                                count(cccat.id) as Quantidade, ");
             if (ueId > 0)
                 sqlQuery.AppendLine(" t.nome as AnoTurma ");
             else
                 sqlQuery.AppendLine(" t.ano as AnoTurma ");
             sqlQuery.AppendLine(@" 
-                                  from consolidado_conselho_classe_aluno_turma cccat 
+                                  from consolidado_conselho_classe_aluno_turma cccat
+                                 inner join consolidado_conselho_classe_aluno_turma_nota cccatn on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
                                  inner join turma t on t.id = cccat.turma_id 
                                  inner join ue on ue.id = t.ue_id where t.tipo_turma = 1 ");
 
@@ -185,7 +187,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (bimestre >= 0)
             {
-                queryWhere.AppendLine(" and cccat.bimestre = @bimestre ");
+                queryWhere.AppendLine(" and cccatn.bimestre = @bimestre ");
             }
 
             sqlQuery.AppendLine(queryWhere.ToString());

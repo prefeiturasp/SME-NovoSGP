@@ -43,6 +43,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
+
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 2,
@@ -58,6 +59,38 @@ namespace SME.SGP.TesteIntegracao.Setup
         public async Task CriaItensComunsEja()
         {
             await CriaItensComunsEja(false);
+        }
+
+        public async Task CriarUsuarioLogadoCP()
+        {
+            await _teste.InserirNaBase(new Usuario
+            {
+                Id = 1,
+                Login = "8888888",
+                CodigoRf = "8888888",
+                Nome = "Usuario CP",
+                CriadoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0"
+            });
+
+            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
+
+            var variaveis = new Dictionary<string, object>
+            {
+                { "NomeUsuario", "Usuario CP" },
+                { "UsuarioLogado", "8888888" },
+                { "RF", "8888888" },
+                { "login", "8888888" },
+                {
+                    "Claims", new List<InternalClaim> {
+                        new InternalClaim { Value = "8888888", Type = "rf" },
+                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
+                    }
+                }
+            };
+
+            contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
         public async Task CriaItensComunsEja(bool incluirAdm)
@@ -154,8 +187,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Migrado = false,
                 AulaCJ = false
             });
-
-
         }
 
         public async Task CriaComponenteCurricularSemFrequencia()
