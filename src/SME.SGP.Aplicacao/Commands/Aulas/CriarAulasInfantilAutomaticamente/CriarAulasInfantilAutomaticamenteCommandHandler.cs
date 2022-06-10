@@ -125,13 +125,13 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private void ExcluirAulas(List<DateTime> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<AulaInformacoesAdicionais> aulasDaTurmaParaExcluir)
+        private void ExcluirAulas(List<DateTime> aulasAExcluirComFrequenciaRegistrada, List<long> idsAulasAExcluir, List<Aula> aulasDaTurmaParaExcluir)
         {
             if (aulasDaTurmaParaExcluir != null)
             {
                 foreach (var aula in aulasDaTurmaParaExcluir)
                 {
-                    if (aula.PossuiFrequencia && !aula.RegistroFerquenciaExcluido)
+                    if (aula.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.RegistroFrequenciaExcluido)
                         aulasAExcluirComFrequenciaRegistrada.Add(aula.DataAula);
                     else
                         idsAulasAExcluir.Add(aula.Id);
@@ -154,9 +154,9 @@ namespace SME.SGP.Aplicacao
             idsAulasAExcluir.Clear();
             return contadorAulasExcluidas;
         }
-        private IEnumerable<AulaInformacoesAdicionais> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulas, IEnumerable<DiaLetivoDto> diasLetivos)
+        private IEnumerable<Aula> ObterAulasParaExcluir(IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulas, IEnumerable<DiaLetivoDto> diasLetivos)
         {
-            var aulasExclusao = new List<AulaInformacoesAdicionais>();
+            var aulasExclusao = new List<Aula>();
             var aulasNaoExcluidasOrdenadas = aulas
                 .Where(a => !a.Excluido)
                 .OrderBy(a => a.DataAula)
@@ -164,11 +164,17 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aula in aulasNaoExcluidasOrdenadas)
             {
+                var aulasMesmoDia = aulas
+                    .Where(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido)
+                    .ToList();
+
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
-                                  !turma.DataInicio.HasValue ||
-                                  aula.DataAula.Date < turma.DataInicio.Value.Date ||
-                                  aulas.Any(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido && a.Id < aula.Id)) &&
-                                  !diasLetivos.Any(d => d.Data == aula.DataAula);
+                                    !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
+                                    aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
+                                    aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
+                                    aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia && aula.DadosComplementares.PossuiFrequencia) ||
+                                    aulasMesmoDia.Any(a => a.Id < aula.Id && !a.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.PossuiFrequencia)) &&
+                                    diasLetivos.Any(d => d.Data == aula.DataAula);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
@@ -177,7 +183,7 @@ namespace SME.SGP.Aplicacao
             return aulasExclusao;
         }
 
-        private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
+        private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var diasParaCriar = diasDoPeriodo
                 .Where(l => diasLetivos != null && diasLetivos.Any(n => n.Data == l.Data) || (diasNaoLetivos == null || !diasNaoLetivos.Any(n => n.Data == l.Data)))?
@@ -201,7 +207,7 @@ namespace SME.SGP.Aplicacao
                                 .OrderBy(c => c.Data)?.ToList();
         }
 
-        private IEnumerable<(Aula aula, long? planoAulaId)> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, Turma turma, IEnumerable<AulaInformacoesAdicionais> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
+        private IEnumerable<(Aula aula, long? planoAulaId)> ObterListaDeAulas(List<DiaLetivoDto> diasLetivos, long tipoCalendarioId, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
             var lista = new List<(Aula aula, long? planoAulaId)>();
             if (diasLetivos != null && diasLetivos.Any())
@@ -215,23 +221,23 @@ namespace SME.SGP.Aplicacao
                     var aulaExcluida = aulasCriadasPeloSistema
                         .Where(a => a.DataAula.Date.Equals(diaLetivo.Data.Date) && a.Excluido)
                         .OrderByDescending(a => a.CriadoEm)
-                        .ThenBy(a => a.PossuiFrequencia)
-                        .ThenBy(a => !a.RegistroFerquenciaExcluido)
+                        .ThenBy(a => a.DadosComplementares.PossuiFrequencia)
+                        .ThenBy(a => !a.DadosComplementares.RegistroFrequenciaExcluido)
                         .FirstOrDefault();
 
                     if (aulaExcluida != null)
                     {
                         var aulaComPlano = (from a in aulasCriadasPeloSistema
                                             where a.DataAula.Date.Equals(diaLetivo.Data) &&
-                                                 !aulaExcluida.PossuiPlanoAula &&
+                                                 !aulaExcluida.DadosComplementares.PossuiPlanoAula &&
                                                  a.Excluido &&
-                                                 a.PossuiPlanoAula &&
+                                                 a.DadosComplementares.PossuiPlanoAula &&
                                                  !a.Id.Equals(aulaExcluida.Id)
                                             select a)
                                             .OrderByDescending(a => a.CriadoEm)
                                             .FirstOrDefault();
 
-                        var planoAula = aulaComPlano != null ? mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComPlano.Id)).Result : null;                        
+                        var planoAula = aulaComPlano != null ? mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComPlano.Id)).Result : null;
                         lista.Add((aulaExcluida, planoAula?.Id));
                     }
                     else
