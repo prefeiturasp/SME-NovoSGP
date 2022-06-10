@@ -356,6 +356,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
 
+
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
@@ -846,6 +847,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoInicioFimPeriodoFechamentoUseCase, NotificacaoInicioFimPeriodoFechamentoUseCase>();
             services.TryAddScoped<INotificacaoInicioPeriodoFechamentoUEUseCase, NotificacaoInicioPeriodoFechamentoUEUseCase>();
             services.TryAddScoped<INotificacaoFimPeriodoFechamentoUEUseCase, NotificacaoFimPeriodoFechamentoUEUseCase>();
+            services.TryAddScoped<INotificarAlteracaoNotaFechamentoAgrupadaUseCase, NotificarAlteracaoNotaFechamentoAgrupadaUseCase>();
+            services.TryAddScoped<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase, NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
 
             //Notificação Resultado Insatisfatorio
             services.TryAddScoped<INotificarResultadoInsatisfatorioUseCase, NotificarResultadoInsatisfatorioUseCase>();
