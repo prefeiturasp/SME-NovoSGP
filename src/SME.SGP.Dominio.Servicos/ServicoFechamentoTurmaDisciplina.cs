@@ -317,7 +317,7 @@ namespace SME.SGP.Dominio.Servicos
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
                 auditoria.EmAprovacao = notasEnvioWfAprovacao.Any();
 
-                if (parametroAlteracaoNotaFechamento.Ativo && turmaFechamento.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
+                if (parametroAlteracaoNotaFechamento.Ativo && turmaFechamento.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && !usuarioLogado.EhGestorEscolar())
                   auditoria.MensagemConsistencia = "Registro alterado com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
                 else
                     auditoria.MensagemConsistencia = "Suas informações foram salvas com sucesso.";
