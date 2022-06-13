@@ -73,8 +73,8 @@ namespace SME.SGP.Aplicacao
 
                 atribuicaoSupervisorEscolaDto.UESIds.Clear();
                 await AjustarRegistrosExistentes(atribuicaoSupervisorEscolaDto, atribuicaoExistentes);
-
-                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.");
+               
+                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.SupervisorId} não é valido para essa atribuição.", ehInformativo: true);
             }
         }
 
