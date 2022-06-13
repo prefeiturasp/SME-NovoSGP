@@ -133,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new AlunoPorTurmaResposta
                 {
                       Ano=0,
-                      CodigoAluno = "7128291",
+                      CodigoAluno = "11223344",
                       CodigoComponenteCurricular=0,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       CodigoTurma=int.Parse(turmaId),
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       DataSituacao= new DateTime(2021,11,09,17,25,31),
                       DataMatricula= new DateTime(2021,11,09,17,25,31),
                       EscolaTransferencia=null,
-                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                      NomeAluno="Maria Aluno teste",
                       NomeSocialAluno=null,
                       NumeroAlunoChamada=1,
                       ParecerConclusivo=null,
@@ -151,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                       TurmaEscola=null,
                       TurmaRemanejamento=null,
                       TurmaTransferencia=null,
-                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                      NomeResponsavel="João teste",
                       TipoResponsavel="4",
                       CelularResponsavel="11961861993",
                       DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
@@ -368,8 +368,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new List<ProfessorResumoDto>()
             {
                 new ProfessorResumoDto(){
-                    CodigoRF = "7128291",
-                    Nome = "ANA RITA"
+                    CodigoRF = "11223344",
+                    Nome = "Maria Aluno teste"
                 }
             };
         }
@@ -388,7 +388,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             return new MeusDadosDto()
             {
-                Nome = "ESTER CUSTODIA DOS SANTOS",
+                Nome = "João Usuário",
                 Email = String.Empty
             };
         }
@@ -409,7 +409,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             {
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "6926886",
+                    CodigoRf = "2222222",
                     Perfis = new List<Guid>
                     {
                         new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
@@ -472,8 +472,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
                 new ProfessorTitularDisciplinaEol
                 {
-                    ProfessorRf = "6926886",
-                    ProfessorNome = "ESTER CUSTODIA DOS SANTOS",
+                    ProfessorRf = "2222222",
+                    ProfessorNome = "João Usuário",
                     DisciplinaNome = "REG CLASSE EJA ETAPA BASICA",
                     DisciplinaId = 1114
                 },
@@ -545,7 +545,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             {
                 new UsuarioEolRetornoDto()
                 {
-                    CodigoRf = "6926886"
+                    CodigoRf = "2222222"
                 }
             };
         }

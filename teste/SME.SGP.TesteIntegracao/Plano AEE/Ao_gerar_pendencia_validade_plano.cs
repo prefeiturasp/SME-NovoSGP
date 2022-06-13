@@ -68,10 +68,10 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new PlanoAEE()
             {
                 Id = 1,
-                AlunoCodigo = "7128291",
+                AlunoCodigo = "11223344",
                 ResponsavelId = 1,
                 TurmaId = 1,
-                AlunoNome = "ANA RITA",
+                AlunoNome = "Maria Aluno teste",
                 Questoes = new List<PlanoAEEQuestao>(),
                 Situacao = SituacaoPlanoAEE.Validado,
                 CriadoPor = "",
