@@ -65,12 +65,11 @@ namespace SME.SGP.Dados.Repositorios
                         INNER JOIN aula a ON rf.aula_id = a.id
                         INNER JOIN turma t ON t.turma_id = a.turma_id
                         INNER JOIN periodo_escolar pe ON a.tipo_calendario_id = pe.tipo_calendario_id AND a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim AND pe.bimestre = @bimestre
-                        LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno
+                        LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno AND an.excluido = false
                         LEFT JOIN motivo_ausencia ma ON an.motivo_ausencia_id = ma.id
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
 	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId   
-                            AND an.excluido = false
  						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno)n
                 ");
 
