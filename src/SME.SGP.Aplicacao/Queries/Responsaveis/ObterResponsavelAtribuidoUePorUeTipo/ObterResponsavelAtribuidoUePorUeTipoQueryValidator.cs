@@ -2,9 +2,9 @@
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExisteResponsavelAtribuidoUePorUeTipoQueryValidator : AbstractValidator<ExisteResponsavelAtribuidoUePorUeTipoQuery>
+    public class ObterResponsavelAtribuidoUePorUeTipoQueryValidator : AbstractValidator<ObterResponsavelAtribuidoUePorUeTipoQuery>
     {
-        public ExisteResponsavelAtribuidoUePorUeTipoQueryValidator()
+        public ObterResponsavelAtribuidoUePorUeTipoQueryValidator()
         {
             RuleFor(a => a.CodigoUe)
                 .NotEmpty()

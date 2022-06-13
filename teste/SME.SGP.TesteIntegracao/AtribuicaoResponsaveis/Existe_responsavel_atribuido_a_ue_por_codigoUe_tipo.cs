@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_11, TipoResponsavelAtribuicao.PAAI);
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_12, TipoResponsavelAtribuicao.PAAI);
 
-            var retorno = await mediator.Send(new ExisteResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
+            var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
 
             retorno.ShouldBeTrue();            
         }
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_11, TipoResponsavelAtribuicao.AssistenteSocial);
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_12, TipoResponsavelAtribuicao.AssistenteSocial);
 
-            var retorno = await mediator.Send(new ExisteResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.AssistenteSocial));
+            var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.AssistenteSocial));
 
             retorno.ShouldBeTrue();
         }
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_11, TipoResponsavelAtribuicao.AssistenteSocial);
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_12, TipoResponsavelAtribuicao.AssistenteSocial);
 
-            var retorno = await mediator.Send(new ExisteResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
+            var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
 
             retorno.ShouldBeFalse();
         }
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao
         {
             var mediator = ServiceProvider.GetService<IMediator>();
                         
-            var retorno = await mediator.Send(new ExisteResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
+            var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
 
             retorno.ShouldBeFalse();
         }
@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_11, TipoResponsavelAtribuicao.PAAI);
             await InserirResponsavel(CODIGO_UE_1, RESPONSAVEL_PAAI_12, TipoResponsavelAtribuicao.PAAI);
 
-            var retorno = await mediator.Send(new ExisteResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
+            var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
 
             retorno.ShouldBeFalse();
         }

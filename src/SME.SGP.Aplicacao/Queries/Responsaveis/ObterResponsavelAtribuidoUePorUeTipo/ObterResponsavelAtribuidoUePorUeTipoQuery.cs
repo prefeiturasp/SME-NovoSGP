@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExisteResponsavelAtribuidoUePorUeTipoQuery : IRequest<bool>
+    public class ObterResponsavelAtribuidoUePorUeTipoQuery : IRequest<IEnumerable<UsuarioEolRetornoDto>>
     {
-        public ExisteResponsavelAtribuidoUePorUeTipoQuery(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        public ObterResponsavelAtribuidoUePorUeTipoQuery(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
             CodigoUe = codigoUe;
             TipoResponsavelAtribuicao = tipoResponsavelAtribuicao;

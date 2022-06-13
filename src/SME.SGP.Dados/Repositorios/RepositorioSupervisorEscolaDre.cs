@@ -189,11 +189,15 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        public async Task<bool> ExisteResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
         {
-            var query = "select 1 from supervisor_escola_dre sed where escola_id = @codigoUe and tipo = @tipoResponsavelAtribuicao";
+            var query = @" select u.rf_codigo as codigoRf, u.nome as NomeServidor, u.id as usuarioId
+                           from supervisor_escola_dre sed
+                          inner join usuario u on u.rf_codigo = sed.supervisor_id 
+                          where sed.escola_id = @codigoUe
+                            and sed.tipo = @tipoResponsavelAtribuicao ";
 
-            return (await database.Conexao.QueryAsync<long>(query, new { codigoUe, tipoResponsavelAtribuicao })).Count() > 0;
+            return (await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(query, new { codigoUe, tipoResponsavelAtribuicao }));
         }
     }
 }
