@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoFuncaoAtividade = 0,
                 CodigoRf = "1111111",
                 EstaAfastado = false,
-                NomeServidor = "Assistente Social Teste" }
+                NomeServidor = "USUARIO LOGADO 1111111" }
             };
         }
 
