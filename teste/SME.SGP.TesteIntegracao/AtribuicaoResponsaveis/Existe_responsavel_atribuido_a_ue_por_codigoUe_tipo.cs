@@ -104,5 +104,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA,
                 Excluido = false
             });
-        }    }
+        }    
+    }
 }

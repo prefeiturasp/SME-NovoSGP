@@ -8,22 +8,14 @@ namespace SME.SGP.Aplicacao
 {
     public class EnviarNotasFechamentoParaAprovacaoCommand : IRequest
     {
-        public EnviarNotasFechamentoParaAprovacaoCommand(List<FechamentoNotaDto> notasAprovacao, long fechamentoTurmaDisciplinaId, PeriodoEscolar periodoEscolar, Usuario usuarioLogado, DisciplinaDto componenteCurricular, Turma turma)
+        public EnviarNotasFechamentoParaAprovacaoCommand(List<FechamentoNotaDto> notasAprovacao, Usuario usuarioLogado)
         {
             NotasAprovacao = notasAprovacao;
-            FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;
-            PeriodoEscolar = periodoEscolar;
-            UsuarioLogado = usuarioLogado;
-            ComponenteCurricular = componenteCurricular;
-            Turma = turma;
+            Usuario = usuarioLogado;
         }
 
         public List<FechamentoNotaDto> NotasAprovacao { get; }
-        public long FechamentoTurmaDisciplinaId { get; }
-        public PeriodoEscolar PeriodoEscolar { get; }
-        public Usuario UsuarioLogado { get; }
-        public DisciplinaDto ComponenteCurricular { get; }
-        public Turma Turma { get; }
+        public Usuario Usuario { get; set; }
     }
 
     public class EnviarNotasFechamentoParaAprovacaoCommandValidator : AbstractValidator<EnviarNotasFechamentoParaAprovacaoCommand>
@@ -34,17 +26,9 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("Necessário informar as notas para envio para aprovação");
 
-            RuleFor(a => a.FechamentoTurmaDisciplinaId)
+            RuleFor(a => a.Usuario)
                 .NotEmpty()
-                .WithMessage("O id do fechamento turma disciplina deve ser informado para envio das notas de fechamento para aprovação");
-
-            RuleFor(a => a.ComponenteCurricular)
-                .NotEmpty()
-                .WithMessage("O componente curricular deve ser informado para envio das notas de fechamento para aprovação");
-
-            RuleFor(a => a.ComponenteCurricular)
-                .NotEmpty()
-                .WithMessage("A turma deve ser informada para envio das notas de fechamento para aprovação");
+                .WithMessage("Necessário informar o usuário para envio para aprovação");
         }
     }
 }

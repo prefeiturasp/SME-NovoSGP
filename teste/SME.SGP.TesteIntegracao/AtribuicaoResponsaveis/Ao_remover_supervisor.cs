@@ -22,60 +22,80 @@ namespace SME.SGP.TesteIntegracao
         const string DRE_CODIGO_2 = "2";
         const string SUPERVISOR_ID_1 = "1";
         const string SUPERVISOR_ID_2 = "2";
+        const string SUPERVISOR_ID_3 = "3";
         const string SUPERVISOR_RF_01 = "1";
         const string SUPERVISOR_RF_02 = "2";
         const string SUPERVISOR_RF_03 = "3";
-        public Ao_remover_supervisor(CollectionFixture collectionFixture) : base(collectionFixture)
-        {
 
-        }
+        public Ao_remover_supervisor(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
-        public async Task Deve_retornar_true()
+        public async Task Deve_retornar_true_quando_excluir_alguns_mas_nao_todos_responsaveis()
         {
             //Arrange
-            await Inserir_Dre(DRE_CODIGO_1);
+            await InserirDre(DRE_CODIGO_1);
             await InserirSupervisor(SUPERVISOR_ID_1, SUPERVISOR_RF_01);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_02);
+            await InserirSupervisor(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
 
-
-            var _servicoEolFake = ServiceProvider.GetService<IServicoEol>();
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-            var repositorio = ServiceProvider.GetService<IRepositorioSupervisorEscolaDre>();
-            var mediator = ServiceProvider.GetService<IMediator>();
 
             //Act
-
             var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
 
-            var supervisoresEscolaresDre = await repositorio.ObtemSupervisoresPorDreAsync(DRE_CODIGO_1, TipoResponsavelAtribuicao.SupervisorEscolar);
+            var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
 
             //Assert
             Assert.True(retorno);
-            Assert.True(supervisoresEscolaresDre.Any());
+            Assert.True(registrosAposuseCase.Count(x => x.Excluido) == 1);
+        }
 
+        [Fact]
+        public async Task Deve_retornar_true_quando_excluir_responsaveis_nao_estao_no_eol()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            await InserirSupervisor(SUPERVISOR_ID_3, SUPERVISOR_RF_03);
+
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
+
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+
+            var registrosAposuseCase = ObterTodos<SupervisorEscolaDre>();
+
+            //Assert
+            Assert.True(retorno);
+            Assert.True(registrosAposuseCase.Count(x => x.Excluido) == 1);
         }
 
         [Fact]
         public async Task Deve_retornar_true_quando_nao_excluir_supervisores()
         {
             //Arrange
-            await Inserir_Dre(DRE_CODIGO_2);
+            await InserirDre(DRE_CODIGO_2);
             await InserirSupervisor(SUPERVISOR_ID_2, SUPERVISOR_RF_03);
 
-            var dre = "1";
             var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
-            var registrosAntesUseCase = ObterTodos<SupervisorEscolaDre>();
-
             //Act
-            var retorno = await useCase.Executar(new MensagemRabbit(dre));
             var registrosAposUseCase = ObterTodos<SupervisorEscolaDre>();
             //Assert
-            Assert.True(registrosAntesUseCase.Count() == registrosAposUseCase.Count());
+            Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 0);
 
         }
+        [Fact]
+        public async Task Deve_retornar_true_quando_nao_excluir_nada_no_SGP()
+        {
+            //Arrange
+            await InserirDre(DRE_CODIGO_1);
+            var useCase = ServiceProvider.GetService<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
 
-        public async Task Inserir_Dre(string codigoDre)
+            //Act
+            var retorno = await useCase.Executar(new MensagemRabbit(DRE_CODIGO_1));
+            //Assert
+            Assert.True(retorno);
+        }
+        public async Task InserirDre(string codigoDre)
         {
             await InserirNaBase(new Dre()
             {
