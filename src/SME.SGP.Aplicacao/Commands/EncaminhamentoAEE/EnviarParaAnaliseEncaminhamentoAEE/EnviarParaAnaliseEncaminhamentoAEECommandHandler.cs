@@ -52,11 +52,9 @@ namespace SME.SGP.Aplicacao
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
-            await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
+            await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));            
 
-            var funcionarioPAEEPAAI = funcionarioPAEE.Any() ? funcionarioPAEE : funcionarioPAAI;
-
-            await GerarPendenciasEncaminhamentoAEE(encaminhamentoAEE, funcionarioPAEEPAAI);
+            await GerarPendenciasEncaminhamentoAEE(encaminhamentoAEE, funcionarioPAEE);
 
             return idEntidadeEncaminhamento != 0;
         }
@@ -69,17 +67,17 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
         }
 
-        private async Task GerarPendenciasEncaminhamentoAEE(EncaminhamentoAEE encaminhamentoAEE, IEnumerable<UsuarioEolRetornoDto> funcionarioPAEEPAAI)
+        private async Task GerarPendenciasEncaminhamentoAEE(EncaminhamentoAEE encaminhamentoAEE, IEnumerable<UsuarioEolRetornoDto> funcionarioPAEE)
         {
             if (!await ParametroGeracaoPendenciaAtivo())
                 return;
 
-            if (!funcionarioPAEEPAAI.Any())
+            if (!funcionarioPAEE.Any())
             {
                 await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, true));
             }
 
-            if (funcionarioPAEEPAAI.Count() > 1)
+            if (funcionarioPAEE.Count() > 1)
             {
                 await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, false));
             }
