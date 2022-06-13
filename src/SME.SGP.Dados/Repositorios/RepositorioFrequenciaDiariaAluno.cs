@@ -70,6 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
 	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId   
+                            AND an.excluido = false
  						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno)n
                 ");
 
