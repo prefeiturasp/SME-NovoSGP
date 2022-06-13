@@ -100,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre,
-            TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+            TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
             StringBuilder query = new();
 
@@ -111,8 +111,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from supervisor_escola_dre sed");
 
             query.AppendLine("where dre_id = @codigoDre " +
-                "and excluido = false " +
-                "and tipo = @tipoResponsavelAtribuicao");
+                "and excluido = false ");
+
+            if (tipoResponsavelAtribuicao != null)
+                query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }

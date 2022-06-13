@@ -81,7 +81,37 @@ namespace SME.SGP.Aplicacao
             if (responsavelEscolaDreDto == null)
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
+
+            responsavelEscolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto.ToList());
+
             return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
+                 
+        }
+
+        private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto)
+        {
+            var agrupamentoUe = responsavelEscolaDreDto.GroupBy(x => x.EscolaId);
+            foreach (var item in agrupamentoUe)
+            {
+               var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+                
+                var itemTipo = item.Select(e => e.Tipo);
+                var naotemTipo = tipos.Except(itemTipo).ToList();
+
+                foreach (var itemCodigo in naotemTipo)
+                {
+                    var registro = new SupervisorEscolasDreDto
+                    {
+                        DreId = item.FirstOrDefault().DreId,
+                        EscolaId = item.FirstOrDefault().EscolaId,
+                        Tipo = itemCodigo,
+                        SupervisorId = null,
+                        Excluido = false
+                    };
+                    responsavelEscolaDreDto.Add(registro);
+                }
+            }
+            return responsavelEscolaDreDto;
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
@@ -115,11 +145,12 @@ namespace SME.SGP.Aplicacao
                 listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
 
             var supervisoresTipo = supervisoresEscolasDres
-                .GroupBy(a => new { a.SupervisorId, a.Tipo,a.Excluido })
+                .GroupBy(a => new { a.SupervisorId, a.Tipo, a.Excluido,a.EscolaId })
                 .Select(g => g.Key);
 
             foreach (var supervisor in supervisoresTipo)
             {
+
                 var supervisorEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisor.SupervisorId).ToList();
 
                 var idsEscolas = supervisorEscolas.Select(a => a.EscolaId).ToList();
@@ -179,8 +210,9 @@ namespace SME.SGP.Aplicacao
                 yield return new ResponsavelEscolasDto()
                 {
                     Responsavel = supervisor.Excluido ? null : nomeResponsavel ,
-                    ResponsavelId = supervisor.SupervisorId,
+                    ResponsavelId = supervisor.Excluido? null : supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
+                    TipoResponsavelId = supervisor.Tipo,
                     Escolas = escolas.ToList(),
                     AlteradoEm = auditoria.AlteradoEm,
                     AlteradoPor = auditoria.AlteradoPor,
