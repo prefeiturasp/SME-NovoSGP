@@ -197,6 +197,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+
+        [HttpPost]
+        [Route("responsavel-plano/pesquisa")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> PesquisaResponsavelPlano([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaResponsavelPlanoPorDreUEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
         [HttpPost("concluir/{encaminhamentoId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

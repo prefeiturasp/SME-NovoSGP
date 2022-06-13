@@ -10,6 +10,8 @@
         public const string RotaNotificacaoNovaObservacaoDiarioBordo = "sgp.notificacao.nova.observacao.diariobordo";
         public const string RotaNovaNotificacaoObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";
         public const string RotaNotificacaoAlterarObservacaoDiarioBordo = "sgp.notificacao.alterar.observacao.diariobordo";
+        public const string RotaNotificacaoAprovacaoFechamento = "sgp.fechamento.nota.aprovacao.notificar";
+        public const string RotaNotificacaoAprovacaoFechamentoPorTurma = "sgp.fechamento.nota.aprovacao.notificar.turma";
         public const string RotaExcluirNotificacaoObservacaoCartaIntencoes = "sgp.notificacao.excluir.observacao.cartaintencoes";
         public const string RotaNovaNotificacaoDevolutiva = "sgp.notificacao.nova.devolutiva";
         public const string RotaExcluirNotificacaoDevolutiva = "sgp.notificacao.excluir.devolutiva";
@@ -33,7 +35,7 @@
         public const string RotaExecutaVerificacaoPendenciasProfessor = "sgp.pendencias.professor.executa.verificacao";
         public const string RotaExecutaVerificacaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.verificacao";
         public const string RotaExecutaExclusaoPendenciasAusenciaAvaliacao = "sgp.pendencias.professor.avaliacao.excluir";
-        public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";
+        public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";        
 
         public const string RotaTratarAtribuicaoPendenciaUsuarios = "sgp.pendencias.atribuicao.tratar";
         public const string RotaCargaAtribuicaoPendenciaPerfilUsuario = "sgp.pendencia.perfil.usuario.atribuicao.carga";
@@ -85,6 +87,7 @@
         public const string NotificarCriacaoPlanoAEE = "plano.aee.notificar.criacao";
         public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
         public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
+        public const string RotaTransferirPendenciaPlanoAEEParaNovoResponsavel = "plano.aee.transferir.pendencia.novo.responsavel";
 
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
 

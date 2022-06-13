@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ExistePendenciaDiarioBordoQuery request, CancellationToken cancellationToken)
         {
-            var totalDiasPermitidos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PeriodoDeDiasDevolutiva, DateTime.Now.Year));
+            var totalDiasPermitidos = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PeriodoDeDiasDevolutiva, DateTime.Now.Year), cancellationToken);
 
             var consulta = await repositorio.DiarioBordoSemDevolutiva(request.TurmaId, request.ComponenteCodigo);
 
