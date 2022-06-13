@@ -96,6 +96,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
+
             foreach (var notaAprovacao in notasAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
@@ -146,6 +148,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Usuário que alterou</b></td>");
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
+
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
 
             foreach (var notaAprovacao in notasAprovacao)
             {
