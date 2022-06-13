@@ -105,9 +105,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacaoWf(long wfAprovacaoId)
         {
-            var query = @"select wanf.*, cc.*, fn.*, fa.*, ftd.*, ft.*, pe.*, ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
-                                fa.aluno_codigo, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId
-                                fn.conceito_id as ConceitoAnterior from wf_aprovacao_nota_fechamento wanf 
+            var query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
+                                fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId,
+                                fn.conceito_id as ConceitoAnterior, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
+                                cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
                             inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
                             inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
                             inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
@@ -117,11 +118,10 @@ namespace SME.SGP.Dados.Repositorios
                             where wf_aprovacao_id = @wfAprovacaoId";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamentoTurmaDto, WfAprovacaoNotaFechamento, FechamentoNota, FechamentoAluno, FechamentoTurmaDisciplina
-                                     , FechamentoTurma, ComponenteCurricular, WfAprovacaoNotaFechamentoTurmaDto>(query
-                 , (wfAprovacaoDto, wfAprovacaoNota, fechamentoNota, fechamentoAluno, fechamentoTurmaDisciplina, fechamentoTurma, componenteCurricular) =>
+                                     , FechamentoTurma, WfAprovacaoNotaFechamentoTurmaDto>(query
+                 , (wfAprovacaoDto, wfAprovacaoNota, fechamentoNota, fechamentoAluno, fechamentoTurmaDisciplina, fechamentoTurma) =>
                  {
                      wfAprovacaoDto.WfAprovacao = wfAprovacaoNota;
-                     wfAprovacaoDto.ComponenteCurricular = componenteCurricular;
                      wfAprovacaoDto.FechamentoNota = fechamentoNota;
                      fechamentoAluno.FechamentoTurmaDisciplina = fechamentoTurmaDisciplina;
                      fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;

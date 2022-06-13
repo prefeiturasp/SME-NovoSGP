@@ -239,7 +239,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (notaEmAprovacao.WfAprovacao.Nota.HasValue)
                 {
-                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota)
+                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota && fechamentoNota.Nota.HasValue)
                         await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.WfAprovacao.Nota.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                     fechamentoNota.Nota = notaEmAprovacao.WfAprovacao.Nota;
@@ -251,8 +251,8 @@ namespace SME.SGP.Dominio.Servicos
 
                     fechamentoNota.ConceitoId = notaEmAprovacao.WfAprovacao.ConceitoId;
                 }
-
-                repositorioFechamentoNota.Salvar(fechamentoNota);
+                    repositorioFechamentoNota.Salvar(fechamentoNota);
+               
             }
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
@@ -509,13 +509,13 @@ namespace SME.SGP.Dominio.Servicos
         {
             await ExcluirWfNotasFechamento(notasEmAprovacao);
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            
-            var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
+
+            int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
 
             var usuariosRfs = notasEmAprovacao.Select(n=> n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
 
-            foreach(var usuarioRf in usuariosRfs)
+            foreach(var usuarioRf in usuariosRfs.Distinct())
             {
                 var dadosUsuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
 
@@ -531,7 +531,7 @@ namespace SME.SGP.Dominio.Servicos
                         Titulo = $"Alteração em {notaConceitoTitulo} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
                         Tipo = NotificacaoTipo.Notas,
                         Codigo = codigoDaNotificacao,
-                        Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, periodoEscolar?.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
+                        Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
                     });
 
                 }
@@ -551,7 +551,7 @@ namespace SME.SGP.Dominio.Servicos
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
             var bimestreFormatado = !bimestre.HasValue ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. Motivo: {motivo}</p>");
+            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
@@ -577,7 +577,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue)
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
@@ -586,7 +586,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");

@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> MontaMensagemWfAprovacao(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasAprovacao, bool lancaNota, Turma turma)
         {
             int? bimestreNota = notasAprovacao.FirstOrDefault().Bimestre;
-            bool ehRegencia = notasAprovacao.FirstOrDefault().ComponenteCurricular.EhRegenciaClasse;
+            bool ehRegencia = notasAprovacao.FirstOrDefault().ComponenteCurricularEhRegencia;
             var notaConceitoMensagem = lancaNota ? "A(s) nota(s)" : "O(s) conceito(s)";
 
             var mensagem = new StringBuilder();
@@ -96,6 +96,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
+
             foreach (var notaAprovacao in notasAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
@@ -108,7 +110,7 @@ namespace SME.SGP.Aplicacao
                 if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue && lancaNota)
                 {
 
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
@@ -118,7 +120,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
@@ -147,6 +149,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
+
             foreach (var notaAprovacao in notasAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
@@ -159,7 +163,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!notaAprovacao.ConceitoAnteriorId.HasValue)
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota)}</td>");
@@ -168,7 +172,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricular.Descricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");

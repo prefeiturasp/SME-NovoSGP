@@ -27,17 +27,21 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var notaFechamento in request.NotasAprovacao)
             {
-                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
-
-                await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
+                if(notaFechamento.Id > 0)
                 {
-                    FechamentoNotaId = notaFechamento.Id,
-                    Nota = notaFechamento.Nota,
-                    ConceitoId = notaFechamento.ConceitoId,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = request.Usuario.Nome,
-                    CriadoRF = request.Usuario.CodigoRf,
-                });
+                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
+
+                    await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
+                    {
+                        FechamentoNotaId = notaFechamento.Id,
+                        Nota = notaFechamento.Nota,
+                        ConceitoId = notaFechamento.ConceitoId,
+                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                        CriadoPor = request.Usuario.Nome,
+                        CriadoRF = request.Usuario.CodigoRf,
+                    });
+                }
+                   
             }
         } 
     }
