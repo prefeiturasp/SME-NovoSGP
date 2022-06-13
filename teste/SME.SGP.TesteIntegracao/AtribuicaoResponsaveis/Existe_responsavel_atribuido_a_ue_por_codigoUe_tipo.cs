@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -35,7 +36,7 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
 
-            retorno.ShouldBeTrue();            
+            retorno.Any().ShouldBeTrue();            
         }
 
         [Fact]
@@ -49,7 +50,7 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.AssistenteSocial));
 
-            retorno.ShouldBeTrue();
+            retorno.Any().ShouldBeTrue();
         }
 
         [Fact]
@@ -63,7 +64,7 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_1, TipoResponsavelAtribuicao.PAAI));
 
-            retorno.ShouldBeFalse();
+            retorno.Any().ShouldBeFalse();
         }
 
         [Fact]
@@ -73,7 +74,7 @@ namespace SME.SGP.TesteIntegracao
                         
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
 
-            retorno.ShouldBeFalse();
+            retorno.Any().ShouldBeFalse();
         }
 
         [Fact]
@@ -87,7 +88,7 @@ namespace SME.SGP.TesteIntegracao
 
             var retorno = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(CODIGO_UE_2, TipoResponsavelAtribuicao.PAAI));
 
-            retorno.ShouldBeFalse();
+            retorno.Any().ShouldBeFalse();
         }
 
         public async Task InserirResponsavel(string codigoUe, string responsavel,  TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
@@ -103,5 +104,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA,
                 Excluido = false
             });
-        }    }
+        }    
+    }
 }
