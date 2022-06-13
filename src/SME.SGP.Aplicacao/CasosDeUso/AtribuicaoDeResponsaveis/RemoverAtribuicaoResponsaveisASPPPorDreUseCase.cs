@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
                 var funcionariosSGP = new List<SupervisorEscolasDreDto>();
 
-                if(assitenteSocialSGP != null && assitenteSocialSGP.Any())
+                if (assitenteSocialSGP != null && assitenteSocialSGP.Any())
                     funcionariosSGP.AddRange(assitenteSocialSGP);
 
                 if (psicologosSGP != null && psicologosSGP.Any())
@@ -69,30 +69,25 @@ namespace SME.SGP.Aplicacao
         {
             var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
 
-            if (responsaveisEol != null && responsaveisEol.Any())
+            var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+            var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+            var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+
+            if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
+                listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
+
+            if (psicologosEscolasSemAtribuicao != null && psicologosEscolasSemAtribuicao.Any())
+                listaAsspSemAtribuicao.AddRange(psicologosEscolasSemAtribuicao);
+
+            if (psicopedagogosEscolasSemAtribuicao != null && psicopedagogosEscolasSemAtribuicao.Any())
+                listaAsspSemAtribuicao.AddRange(psicopedagogosEscolasSemAtribuicao);
+
+            foreach (var supervisor in listaAsspSemAtribuicao)
             {
-                var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
-                var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
-                var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
-
-                if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
-                    listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
-
-                if (psicologosEscolasSemAtribuicao != null && psicologosEscolasSemAtribuicao.Any())
-                    listaAsspSemAtribuicao.AddRange(psicologosEscolasSemAtribuicao);
-
-                if (psicopedagogosEscolasSemAtribuicao != null && psicopedagogosEscolasSemAtribuicao.Any())
-                    listaAsspSemAtribuicao.AddRange(psicopedagogosEscolasSemAtribuicao);
-
-                foreach (var supervisor in listaAsspSemAtribuicao)
-                {
-                    var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                    await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
-                }
-                return true;
+                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
             }
-            await mediator.Send(new SalvarLogViaRabbitCommand("Não foram encontrados responsáveis para atribuição no EOL", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, "Assistente Social, Psicologo Escolar e Psicopedagogo"));
-            return false;
+            return true;
         }
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
         {
