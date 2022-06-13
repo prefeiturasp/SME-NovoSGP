@@ -85,6 +85,7 @@
         public const string NotificarCriacaoPlanoAEE = "plano.aee.notificar.criacao";
         public const string NotificarPlanoAEEEncerrado = "plano.aee.notificar.encerramento";
         public const string RotaNotificacaoRegistroItineranciaInseridoUseCase = "notificacao.registro.itinerancia.inserido";
+        public const string RotaTransferirPendenciaPlanoAEEParaNovoResponsavel = "plano.aee.transferir.pendencia.novo.responsavel";
 
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
 

@@ -33,6 +33,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
             var usuario = command.Usuario ?? await ObtenhaUsuario();
+
             var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
 
             var request = new MensagemRabbit(command.Filtros,

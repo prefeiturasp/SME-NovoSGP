@@ -356,6 +356,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaDevolutiva, RepositorioPendenciaDevolutiva>();
             services.TryAddScoped<IRepositorioFrequenciaDiariaAluno, RepositorioFrequenciaDiariaAluno>();
 
+
             // Acompanhamento Aluno
             services.TryAddScoped<IRepositorioAcompanhamentoAluno, RepositorioAcompanhamentoAluno>();
             services.TryAddScoped<IRepositorioAcompanhamentoAlunoConsulta, RepositorioAcompanhamentoAlunoConsulta>();
@@ -786,6 +787,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterInstrucoesModalUseCase, ObterInstrucoesModalUseCase>();
             services.TryAddScoped<IObterEncaminhamentosAEEUseCase, ObterEncaminhamentosAEEUseCase>();
             services.TryAddScoped<IPesquisaResponsavelEncaminhamentoPorDreUEUseCase, PesquisaResponsavelEncaminhamentoPorDreUEUseCase>();
+            services.TryAddScoped<IPesquisaResponsavelPlanoPorDreUEUseCase, PesquisaResponsavelPlanoPorDreUEUseCase>();
 
             //FechamentoReabertura
             services.TryAddScoped<INotificarFechamentoReaberturaUseCase, NotificarFechamentoReaberturaUseCase>();
@@ -1053,6 +1055,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAlterarPlanoAEEObservacaoUseCase, AlterarPlanoAEEObservacaoUseCase>();
             services.TryAddScoped<IExcluirPlanoAEEObservacaoUseCase, ExcluirPlanoAEEObservacaoUseCase>();
             services.TryAddScoped<IDevolverPlanoAEEUseCase, DevolverPlanoAEEUseCase>();
+            services.TryAddScoped<ITransferirPendenciaParaNovoResponsavelUseCase, TransferirPendenciaParaNovoResponsavelUseCase>();
 
             //Notificacoes EncaminhamentoAEE
             services.TryAddScoped<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();

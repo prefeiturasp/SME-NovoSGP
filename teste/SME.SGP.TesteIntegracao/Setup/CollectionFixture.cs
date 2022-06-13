@@ -35,10 +35,17 @@ namespace SME.SGP.TesteIntegracao.Setup
             new RegistradorDependencias().Registrar(_services, null);
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
                 typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            CarregarMockAtribuicaoReponsaveis();
+            RegistraMock();
             ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
+
+        private void RegistraMock()
+        {
+            _services.AddMockPlanoAEE();
+            CarregarMockAtribuicaoReponsaveis();
+        }
+
         public void CarregarMockAtribuicaoReponsaveis()
         {
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
@@ -46,6 +53,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
 
         }
+
         public void Dispose()
         {
             Database.Dispose();
