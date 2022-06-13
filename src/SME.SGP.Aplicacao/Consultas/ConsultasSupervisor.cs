@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
                 listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
 
             var supervisoresTipo = supervisoresEscolasDres
-                .GroupBy(a => new { a.SupervisorId, a.Tipo })
+                .GroupBy(a => new { a.SupervisorId, a.Tipo,a.Excluido })
                 .Select(g => g.Key);
 
             foreach (var supervisor in supervisoresTipo)
@@ -171,11 +171,14 @@ namespace SME.SGP.Aplicacao
                         }
                 }
 
-                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRfOuLogin == (supervisor?.SupervisorId ?? string.Empty));
+                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRfOuLogin == supervisor.SupervisorId);
+
+                string nomeResponsavel = responsavelRetorno != null ? responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRfOuLogin
+                                         : string.Empty;
 
                 yield return new ResponsavelEscolasDto()
                 {
-                    Responsavel = responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRfOuLogin,
+                    Responsavel = supervisor.Excluido ? null : nomeResponsavel ,
                     ResponsavelId = supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
                     Escolas = escolas.ToList(),
@@ -198,7 +201,7 @@ namespace SME.SGP.Aplicacao
                 .Select(d => new { descricao = d.Name() })
                 .FirstOrDefault()?.descricao;
 
-            return tipoDescricao;
+            return tipoDescricao != null ? tipoDescricao : "NÃO ATRIBUÍDO";
         }
 
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
