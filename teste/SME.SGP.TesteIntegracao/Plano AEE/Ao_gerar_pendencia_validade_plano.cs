@@ -130,9 +130,9 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new Usuario
             {
                 Id = 2,
-                Login = "6118232",
-                CodigoRf = "6118232",
-                Nome = "MARLEI LUCIANE BERNUN",
+                Login = "1234567",
+                CodigoRf = "1234567",
+                Nome = "Maria dos testes",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
