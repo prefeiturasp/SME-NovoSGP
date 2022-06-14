@@ -112,7 +112,8 @@ namespace SME.SGP.Dados
 								INNER JOIN componente_curricular cc ON pd.componente_curricular_id = cc.id
 								INNER JOIN turma t ON pd.turma_id = t.id
 							WHERE pd.componente_curricular_id = @componenteId 
-							AND pd.turma_id  = @turmaId";
+							AND pd.turma_id  = @turmaId
+							AND NOT p.excluido";
 
 			var resultado = await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, componenteId });
 			return (resultado > 0);
@@ -121,7 +122,7 @@ namespace SME.SGP.Dados
         public async Task ExlusaoLogicaPorTurmaComponente(long turmaId, long componenteId)
         {
 			await database.Conexao.ExecuteAsync(@"update pendencia set excluido = true 
-													where id = (select pd.pendencia_id 
+													where id in (select pd.pendencia_id 
 																from pendencia_devolutiva pd 
 																where pd.turma_id = @turmaId 
 																and pd.componente_curricular_id = @componenteId)", new { @turmaId, componenteId });
