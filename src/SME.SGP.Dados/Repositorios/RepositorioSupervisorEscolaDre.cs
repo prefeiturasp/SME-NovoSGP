@@ -61,32 +61,37 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine(@"SELECT id,
-                                   dre_id AS DreId,
-                                   escola_id AS EscolaId,
-                                   supervisor_id AS SupervisorId,
-                                   criado_em AS CriadoEm,
-                                   criado_por AS CriadoPor,
-                                   alterado_em AS AlteradoEm,
-                                   alterado_por AS AlteradoPor,
-                                   criado_rf AS CriadoRf,
-                                   alterado_rf AS AlteradoRf,
-                                   excluido,
-                                   COALESCE(NULL,tipo,0) AS tipo
+            query.AppendLine(@"SELECT sed.id,
+                                 sed.dre_id AS DreId,
+                                 sed.escola_id AS EscolaId,
+                                 sed.supervisor_id AS SupervisorId,
+                                 sed.criado_em AS CriadoEm,
+                                 sed.criado_por AS CriadoPor,
+                                 sed.alterado_em AS AlteradoEm,
+                                 sed.alterado_por AS AlteradoPor,
+                                 sed.criado_rf AS CriadoRf,
+                                 sed.alterado_rf AS AlteradoRf,
+                                 sed.excluido AtribuicaoExcluida,
+                                 sed.tipo AS TipoAtribuicao,
+                                 d.abreviacao  AS DreNome,
+                                 u.nome AS UeNome,
+                                 u.tipo_escola AS TipoEscola
                             FROM supervisor_escola_dre sed
-                            WHERE dre_id = @dre ");
+                             INNER JOIN dre d ON sed.dre_id = d.dre_id
+                             INNER JOIN ue u ON u.ue_id  = sed.escola_id 
+                            WHERE sed.dre_id = @dre ");
 
             if (!string.IsNullOrEmpty(filtro.UeCodigo))
-                query.AppendLine(" and escola_id = @ue ");
+                query.AppendLine(" and sed.escola_id = @ue ");
 
             if (filtro.TipoCodigo > 0)
-                query.AppendLine(" and tipo = @tipo ");
+                query.AppendLine(" and sed.tipo = @tipo ");
 
             if(!string.IsNullOrEmpty(filtro.SupervisorId))
-                query.AppendLine(" AND supervisor_id = ANY(@supervisor)  AND excluido = False ");
+                query.AppendLine(" AND sed.supervisor_id = ANY(@supervisor)  AND sed.excluido = False ");
 
             if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel)
-                query.AppendLine(" AND excluido = true ");
+                query.AppendLine(" AND sed.excluido = true ");
 
             var parametros = new
             {
