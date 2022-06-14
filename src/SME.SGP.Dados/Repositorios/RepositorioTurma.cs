@@ -14,10 +14,12 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioTurma : IRepositorioTurma
     {
         private readonly ISgpContext contexto;
+        private readonly IServicoTelemetria servicoTelemetria;
 
-        public RepositorioTurma(ISgpContext contexto)
+        public RepositorioTurma(ISgpContext contexto, IServicoTelemetria servicoTelemetria)
         {
             this.contexto = contexto;
+            this.servicoTelemetria = servicoTelemetria;
         }
 
         public IEnumerable<Turma> MaterializarCodigosTurma(string[] idTurmas, out string[] codigosNaoEncontrados)
@@ -272,7 +274,11 @@ namespace SME.SGP.Dados.Repositorios
             var sqlExcluirTurma = @"delete from public.turma where id = @turmaId;";
             try
             {
-                await contexto.Conexao.ExecuteScalarAsync(sqlExcluirTurma, new { turmaId });
+                var parametros = new { turmaId };
+
+                await servicoTelemetria.RegistrarAsync(async () =>
+                    await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "Query", "Excluir Turma Extinta", sqlExcluirTurma, parametros.ToString());
+
             }
             catch (Exception)
             {
