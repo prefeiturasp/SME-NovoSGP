@@ -13,5 +13,6 @@ namespace SME.SGP.Infra
         public string ResponsavelId { get; set; }
         public string Responsavel { get; set; }
         public string TipoResponsavel { get; set; }
+        public int? TipoResponsavelId { get; set; }
     }
 }
