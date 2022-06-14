@@ -195,21 +195,21 @@ namespace SME.SGP.Dominio.Servicos
 
                 unitOfWork.PersistirTransacao();
             }
-            catch (Exception e)
+            catch
             {
-                unitOfWork.Rollback();
-                throw e;
+                unitOfWork.Rollback();                
             }
 
             var alunos = await mediator
-                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos:true));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
-            var inativo = alunos.First(a => a.CodigoAluno == alunoCodigo).Inativo;
+            var alunoFiltrado = alunos.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
 
-            await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, inativo));
+            if(alunoFiltrado != null)
+                await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, alunoFiltrado.Inativo));
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
