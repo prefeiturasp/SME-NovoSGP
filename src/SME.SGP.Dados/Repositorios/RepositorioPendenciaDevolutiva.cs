@@ -71,7 +71,8 @@ namespace SME.SGP.Dados
 						INNER JOIN turma t ON
 							pd.turma_id = t.id
 						WHERE pd.componente_curricular_id  = @componenteId 
-						AND pd.turma_id  = @turmaId";
+						AND pd.turma_id  = @turmaId
+						AND NOT p.excluido";
 
 			return await database.Conexao.QueryAsync<PendenciaDevolutiva>(query,new { turmaId, componenteId });
 		}
