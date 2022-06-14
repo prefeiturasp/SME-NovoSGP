@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,9 +19,38 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>> ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao paginacao, int bimestre, string codigoAluno, long turmaId, string aulaDisciplinaId)
         {
-            var query = new StringBuilder(@"
-                       SELECT DISTINCT 
-	                        count(rfa.id) AS TotalAulasNoDia,
+            var query = new StringBuilder();
+            MontarQueryConsulta(paginacao, bimestre, codigoAluno, turmaId, aulaDisciplinaId, query, false);
+            query.AppendLine(";");
+            MontarQueryConsulta(paginacao, bimestre, codigoAluno, turmaId, aulaDisciplinaId, query, true);
+
+            var parametros = new
+            {
+                bimestre,
+                codigoAluno,
+                turmaId,
+                aulaDisciplinaId
+            };
+
+            var retorno = new PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
+            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
+            {
+                retorno.Items = multi.Read<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
+                retorno.TotalRegistros = multi.ReadFirst<int>();
+            }
+
+            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+            return retorno;
+        }
+
+        private void MontarQueryConsulta(Paginacao paginacao, int bimestre, string codigoAluno, long turmaId, string aulaDisciplinaId, StringBuilder query, bool contador)
+        {
+            query.AppendLine(contador ? " select count(n.TotalAulasNoDia) " : " select n.*  ");
+
+
+            query.AppendLine(@"
+                FROM(SELECT count(rfa.id) AS TotalAulasNoDia,
 	                        a.data_aula AS DataAula,
 	                        a.id AS AulasId,
 	                        rfa.valor AS TipoFrequencia,
@@ -35,34 +65,16 @@ namespace SME.SGP.Dados.Repositorios
                         INNER JOIN aula a ON rf.aula_id = a.id
                         INNER JOIN turma t ON t.turma_id = a.turma_id
                         INNER JOIN periodo_escolar pe ON a.tipo_calendario_id = pe.tipo_calendario_id AND a.data_aula BETWEEN pe.periodo_inicio AND pe.periodo_fim AND pe.bimestre = @bimestre
-                        LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno
+                        LEFT JOIN anotacao_frequencia_aluno an ON a.id = an.aula_id AND an.codigo_aluno  = rfa.codigo_aluno AND an.excluido = false
                         LEFT JOIN motivo_ausencia ma ON an.motivo_ausencia_id = ma.id
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
-	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId 
-                            GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno
-	                        ORDER BY a.data_aula  ");
+	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId   
+ 						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno)n
+                ");
 
-            if (paginacao.QuantidadeRegistros > 0)
-                query.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
-
-            var parametros = new
-            {
-                bimestre,
-                codigoAluno,
-                turmaId,
-                aulaDisciplinaId
-            };
-            var retorno = new PaginacaoResultadoDto<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
-            using (var multi = await database.Conexao.QueryMultipleAsync(query.ToString(), parametros))
-            {
-                retorno.Items = multi.Read<QuantidadeAulasDiasPorBimestreAlunoCodigoTurmaDisciplinaDto>();
-                retorno.TotalRegistros = retorno.Items.AsList().Count;
-            }
-
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            return retorno;
+            if (paginacao.QuantidadeRegistros > 0 && !contador)
+                query.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
         }
     }
 }

@@ -357,7 +357,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Id = 1,
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = "6926886",
+                ProfessorRf = "2222222",
                 TurmaId = "1",
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = 1,
@@ -365,16 +365,16 @@ namespace SME.SGP.TesteIntegracao.Nota
                 DescricaoAvaliacao = "Avaliação 04",
                 CriadoEm = new DateTime(2022, 02, 10),
                 DataAvaliacao = new DateTime(2022, 02, 10),
-                CriadoRF = "6926886",
-                CriadoPor = "ESTER CUSTODIA DOS SANTOS"
+                CriadoRF = "2222222",
+                CriadoPor = "João Usuário"
             });
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
                 Id = 1,
                 AtividadeAvaliativaId = 1,
                 DisciplinaId = "1114",
-                CriadoPor = "ESTER CUSTODIA DOS SANTOS",
-                CriadoRF = "6926886"
+                CriadoPor = "João Usuário",
+                CriadoRF = "2222222"
             });
         }
         private async Task CriarAtividadeAvaliativaFundamental()
@@ -495,7 +495,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 DisciplinaId = "1114",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "6926886",
+                ProfessorRf = "2222222",
                 Quantidade = 1,
                 DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
@@ -534,12 +534,12 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "ESTER CUSTODIA DOS SANTOS");
-            variaveis.Add("UsuarioLogado", "6926886");
-            variaveis.Add("RF", "6926886");
-            variaveis.Add("login", "6926886");
+            variaveis.Add("NomeUsuario", "João Usuário");
+            variaveis.Add("UsuarioLogado", "2222222");
+            variaveis.Add("RF", "2222222");
+            variaveis.Add("login", "2222222");
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "6926886", Type = "rf" },
+                new InternalClaim { Value = "2222222", Type = "rf" },
                 new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
@@ -563,9 +563,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new Usuario
             {
                 Id = 29,
-                Login = "6926886",
-                CodigoRf = "6926886",
-                Nome = "ESTER CUSTODIA DOS SANTOS",
+                Login = "2222222",
+                CodigoRf = "2222222",
+                Nome = "João Usuário",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });

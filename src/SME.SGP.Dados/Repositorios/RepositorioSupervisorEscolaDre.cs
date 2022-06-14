@@ -62,7 +62,6 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new();
 
             query.AppendLine(@"SELECT id,
-                                   tipo,
                                    dre_id AS DreId,
                                    escola_id AS EscolaId,
                                    supervisor_id AS SupervisorId,
@@ -75,19 +74,19 @@ namespace SME.SGP.Dados.Repositorios
                                    excluido,
                                    COALESCE(NULL,tipo,0) AS tipo
                             FROM supervisor_escola_dre sed
-                            WHERE excluido = FALSE
-                              AND dre_id = @dre ");
+                            WHERE dre_id = @dre ");
 
             if (!string.IsNullOrEmpty(filtro.UeCodigo))
                 query.AppendLine(" and escola_id = @ue ");
 
             if (filtro.TipoCodigo > 0)
                 query.AppendLine(" and tipo = @tipo ");
-            else if(filtro.TipoCodigo == 0)
-                query.AppendLine(" AND tipo IS NULL ");
 
             if(!string.IsNullOrEmpty(filtro.SupervisorId))
-                query.AppendLine(" AND supervisor_id = ANY(@supervisor) ");
+                query.AppendLine(" AND supervisor_id = ANY(@supervisor)  AND excluido = False ");
+
+            if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel)
+                query.AppendLine(" AND excluido = true ");
 
             var parametros = new
             {
@@ -101,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre,
-            TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+            TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
             StringBuilder query = new();
 
@@ -112,8 +111,10 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from supervisor_escola_dre sed");
 
             query.AppendLine("where dre_id = @codigoDre " +
-                "and excluido = false " +
-                "and tipo = @tipoResponsavelAtribuicao");
+                "and excluido = false ");
+
+            if (tipoResponsavelAtribuicao != null)
+                query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }

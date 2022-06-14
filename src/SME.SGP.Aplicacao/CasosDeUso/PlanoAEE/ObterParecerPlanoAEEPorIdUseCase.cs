@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PlanoAEEParecerDto> MapearParaDto(PlanoAEE planoAEE)
         {
-            var responsavel = planoAEE.ResponsavelId.HasValue ?
-                await ObterResponsavel(planoAEE.ResponsavelId.Value) :
+            var responsavel = planoAEE.ResponsavelPaaiId.HasValue ?
+                await ObterResponsavel(planoAEE.ResponsavelPaaiId.Value) :
                 null;
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
             => planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI
-            && (planoAEE.ResponsavelId.GetValueOrDefault() == usuario.Id);
+            && (planoAEE.ResponsavelPaaiId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
             => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&
