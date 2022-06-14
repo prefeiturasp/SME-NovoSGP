@@ -277,7 +277,7 @@ namespace SME.SGP.Dados.Repositorios
                 var parametros = new { turmaId };
 
                 await servicoTelemetria.RegistrarAsync(async () =>
-                    await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "Query", "Excluir Turma Extinta", sqlExcluirTurma, parametros.ToString());
+                    await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta", sqlExcluirTurma, parametros.ToString());
 
             }
             catch (Exception)
