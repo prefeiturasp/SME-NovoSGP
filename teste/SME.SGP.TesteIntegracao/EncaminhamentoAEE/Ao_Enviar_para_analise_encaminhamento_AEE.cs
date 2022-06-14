@@ -195,11 +195,6 @@ namespace SME.SGP.TesteIntegracao
             //await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
 
             //Como tem um PAAE, não pode inserir para CP nem CEFAI
-
-            //var pendenciaPerfil = ObterTodos<PendenciaPerfil>();
-
-            //pendenciaPerfil.Any().ShouldBeTrue();
-            //Validar todos esses caras aqui
         }
 
         private async Task CriarEncaminhamentoEPendencia()
