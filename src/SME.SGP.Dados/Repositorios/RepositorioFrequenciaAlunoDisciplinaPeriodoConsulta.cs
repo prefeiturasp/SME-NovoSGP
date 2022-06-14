@@ -62,15 +62,15 @@ namespace SME.SGP.Dados
             return query;
         }
 
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, params string[] turmasId)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string disciplinaId)
         {
-            var query = new StringBuilder(@"select
-	                        *
+            var query = new StringBuilder(@"select *
                         from
 	                        frequencia_aluno
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
-                            and turma_id = any(@turmasId) ");
+                            and turma_id = @turmaId
+                            and (disciplina_id = @disciplinaId or tipo = @tipo)");
             if (periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
             {
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
@@ -80,7 +80,9 @@ namespace SME.SGP.Dados
             {
                 alunosCodigo,
                 periodosEscolaresId,
-                turmasId
+                turmaId,
+                disciplinaId,
+                tipo = TipoFrequenciaAluno.Geral
             });
         }
 
