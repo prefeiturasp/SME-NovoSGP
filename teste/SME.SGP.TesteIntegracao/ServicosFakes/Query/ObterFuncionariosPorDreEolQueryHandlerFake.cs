@@ -11,6 +11,19 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorDreEolQuery request, CancellationToken cancellationToken)
         {
+            if (request.UeCodigo.Equals("PAEE"))
+                return new List<UsuarioEolRetornoDto>
+                {
+                    new UsuarioEolRetornoDto()
+                    {
+                        UsuarioId = 99,
+                        CodigoFuncaoAtividade = 6,
+                        CodigoRf = "PAEE_1",
+                        EstaAfastado = false,
+                        NomeServidor = "USUARIO PAEE 1"
+                    }
+                };
+
             return new List<UsuarioEolRetornoDto>
             { 
                 new UsuarioEolRetornoDto()
@@ -19,7 +32,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoFuncaoAtividade = 0,
                     CodigoRf = "1",
                     NomeServidor = "Maria da Silva" 
-                }
+                },
+                
             };
         }
     }
