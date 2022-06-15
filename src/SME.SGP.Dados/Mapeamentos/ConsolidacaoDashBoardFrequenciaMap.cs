@@ -8,6 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public ConsolidacaoDashBoardFrequenciaMap()
         {
             ToTable("consolidado_dashboard_frequencia");
+            Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
             Map(c => c.TurmaId).ToColumn("turma_id");
             Map(c => c.TurmaNome).ToColumn("turma_nome");
             Map(c => c.TurmaAno).ToColumn("turma_ano");
@@ -24,6 +25,9 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.QuantidadeAusentes).ToColumn("quantidade_ausencias");
             Map(c => c.QuantidadeRemotos).ToColumn("quantidade_remotos");
             Map(c => c.CriadoEm).ToColumn("criado_em");
+            Map(c => c.semestre).ToColumn("semestre");
+            Map(c => c.Mes).ToColumn("mes");
+            Map(c => c.Tipo).ToColumn("tipo");
         }
     }
 }

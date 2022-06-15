@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dto;
+using SME.SGP.Infra.Consts;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,9 +53,24 @@ namespace SME.SGP.Aplicacao
             var notaConselhoClasse = notaEmAprovacao.ConselhoClasseNota;
 
             notaConselhoClasse.Nota = notaEmAprovacao.Nota;
+
             notaConselhoClasse.ConceitoId = notaEmAprovacao.ConceitoId;
 
             await mediator.Send(new SalvarConselhoClasseNotaCommand(notaConselhoClasse));
+
+            var periodoEscolar = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
+
+            var consolidacaoNotaAlunoDto = new ConsolidacaoNotaAlunoDto()
+            {
+                AlunoCodigo = notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo,
+                TurmaId = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id,
+                Bimestre = periodoEscolar == null ? (int?)null : periodoEscolar.Bimestre,
+                AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
+                Nota = notaConselhoClasse.Nota,
+                ConceitoId = notaConselhoClasse.ConceitoId,
+                ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo
+            };
+            await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
         }
 
         private async Task GerarParecerConclusivo(ConselhoClasseAluno conselhoClasseAluno, long usuarioSolicitanteId)

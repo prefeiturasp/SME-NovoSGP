@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DiarioBordo>> Handle(RecuperarDiarioBordoComAulasExcluidasQuery request, CancellationToken cancellationToken)
         {
             return await repositorioDiarioBordo
-                .ObterIdDiarioBordoAulasExcluidas(request.CodigoTurma, request.CodigoDisciplina, request.TipoCalendarioId, request.DatasConsideradas);
+                .ObterIdDiarioBordoAulasExcluidas(request.CodigoTurma, request.CodigosDisciplinas, request.TipoCalendarioId, request.DatasConsideradas);
         }
     }
 }

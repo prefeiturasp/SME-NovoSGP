@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,21 +17,27 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
-            var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.DiarioBordo,
-                                                                                 "diario_bordo",
-                                                                                 new long[] { (int)Modalidade.EducacaoInfantil },
-                                                                                 filtro.DreId, filtro.UeId));
+            if (filtro != null)
+            {
+                var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, filtro.CodigoUe));
 
-            if (aulas != null && aulas.Any())
-                await RegistraPendencia(aulas, TipoPendencia.DiarioBordo);
+                foreach (var turma in turmasUe)
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, turma.TurmaCodigo));
+            }                
 
             return true;
         }
 
-        private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendencia tipoPendenciaAula)
-        {
-            await mediator.Send(new SalvarPendenciaAulasPorTipoCommand(aulas, tipoPendenciaAula));
-        }
+        private Task<IEnumerable<string>> CarregarUesPorDreId(long dreId)
+            => mediator.Send(new ObterUesCodigosPorDreQuery(dreId));
 
+        private async Task<IEnumerable<string>> CarregarUePorId(long ueId)
+        {
+            var ueCodigo = await mediator.Send(new ObterUeCodigoPorIdQuery(ueId));
+            if (string.IsNullOrEmpty(ueCodigo))
+                throw new NegocioException("Código da escola não localizado pelo identificador");
+
+            return new List<string>() { ueCodigo };
+        }
     }
 }

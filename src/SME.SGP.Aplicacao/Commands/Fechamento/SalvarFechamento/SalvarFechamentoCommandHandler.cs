@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
+using SME.SGP.Infra.Consts;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,6 +39,7 @@ namespace SME.SGP.Aplicacao
             var notasEmAprovacao = new List<FechamentoNotaDto>();
             var mensagens = new List<string>();
             PeriodoEscolar periodoEscolar = null;
+            var consolidacaoNotasAlunos = new List<ConsolidacaoNotaAlunoDto>();
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(fechamentoTurma.TurmaId);
@@ -58,13 +61,15 @@ namespace SME.SGP.Aplicacao
                                                                                                            turma.AnoLetivo, turma.Semestre));
             var ue = turma.Ue;
 
+            var bimestre = fechamentoTurma.EhFinal ? 4 : fechamentoTurma.Bimestre;
+
+            var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
+            periodoEscolar = periodos.periodoEscolar;
+            if (periodoEscolar == null)
+                throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {fechamentoTurma.Bimestre}º Bimestre");
+
             if (!fechamentoTurma.EhFinal)
             {
-                var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, fechamentoTurma.Bimestre);
-                periodoEscolar = periodos.periodoEscolar;
-                if (periodoEscolar == null)
-                    throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {fechamentoTurma.Bimestre}º Bimestre");
-
                 await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turma, periodoEscolar);
 
                 // Valida Permissão do Professor na Turma/Disciplina            
@@ -76,13 +81,14 @@ namespace SME.SGP.Aplicacao
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 
-            var disciplinaEOL = await mediator.Send(new ObterDisciplinasPorIdsQuery(new long[] { fechamentoTurmaDisciplina.DisciplinaId }));
-            if (disciplinaEOL == null)
-                throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
+            var disciplinasEOL = await mediator.Send(new ObterDisciplinasPorIdsQuery(new long[] { fechamentoTurmaDisciplina.DisciplinaId }));
+            var disciplinaEOL = disciplinasEOL is null ? throw new NegocioException("Não foi possível localizar o componente curricular no EOL.") 
+                : disciplinasEOL.FirstOrDefault();
+                
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (fechamentoTurma.ComponenteSemNota && fechamentoTurma.Id > 0)
-                fechamentoAlunos = await AtualizaSinteseAlunos(fechamentoTurma.Id, periodoEscolar.PeriodoFim, disciplinaEOL.FirstOrDefault(), turma.AnoLetivo, turma.CodigoTurma);
+                fechamentoAlunos = await AtualizaSinteseAlunos(fechamentoTurma.Id, periodoEscolar.PeriodoFim, disciplinaEOL, turma.AnoLetivo, turma.CodigoTurma);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(fechamentoTurma.Id, fechamentoTurma.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento, turma.AnoLetivo);
 
@@ -139,6 +145,8 @@ namespace SME.SGP.Aplicacao
                                     fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                     fechamentoNota.FechamentoAluno = fechamentoAluno;
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                    ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
                             }
                             catch (NegocioException e)
@@ -166,6 +174,8 @@ namespace SME.SGP.Aplicacao
 
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                             }
                             catch (NegocioException e)
                             {
@@ -192,8 +202,20 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                 }
+
                 await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, periodoEscolar, usuarioLogado, turma, componenteCurricular, fechamentoTurma.EhFinal);
                 unitOfWork.PersistirTransacao();
+
+                var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+
+                foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
+                {
+                    var dadosAluno = alunosDaTurma.FirstOrDefault(f => f.CodigoAluno.Equals(consolidacaoNotaAlunoDto.AlunoCodigo));
+                    consolidacaoNotaAlunoDto.Inativo = dadosAluno != null ? dadosAluno.Inativo : true;
+
+                    await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
+                }
+                    
 
                 if (alunosComNotaAlterada.Length > 0)
                 {
@@ -207,6 +229,20 @@ namespace SME.SGP.Aplicacao
                     };
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
                 }
+
+                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                                                turma.CodigoTurma,
+                                                turma.Nome,
+                                                periodoEscolar.PeriodoInicio,
+                                                periodoEscolar.PeriodoFim,
+                                                periodoEscolar.Bimestre,
+                                                usuarioLogado,
+                                                fechamentoTurmaDisciplina.Id,
+                                                fechamentoTurmaDisciplina.Justificativa,
+                                                fechamentoTurmaDisciplina.CriadoRF,
+                                                fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
+                                                fechamentoTurma.ComponenteSemNota,
+                                                disciplinaEOL.RegistraFrequencia);
 
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoTurmaDisciplina.DisciplinaId, fechamentoTurmaDisciplina.FechamentoTurma.TurmaId, periodoEscolar, usuarioLogado, fechamentoTurma.EhFinal);
@@ -223,6 +259,41 @@ namespace SME.SGP.Aplicacao
                 throw e;
             }
         }
+
+        private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
+        {
+            consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
+            {
+                AlunoCodigo = AlunoCodigo,
+                TurmaId = turma.Id,
+                Bimestre = ObterBimestre(bimestre),
+                AnoLetivo = turma.AnoLetivo,
+                Nota = fechamentoNota.Nota,
+                ConceitoId = fechamentoNota.ConceitoId,
+                ComponenteCurricularId = fechamentoNota.DisciplinaId
+            });
+        }
+
+        private int? ObterBimestre(int? bimestre)
+        {
+            return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
+        }
+
+        private Task GerarPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, Usuario usuario, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
+            => mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
+                componenteCurricularId,
+                turmaCodigo,
+                turmaNome,
+                periodoEscolarInicio,
+                periodoEscolarFim,
+                bimestre,
+                usuario,
+                fechamentoTurmaDisciplinaId,
+                justificativa,
+                criadoRF,
+                turmaId,
+                componenteSemNota,
+                registraFrequencia));
 
         private async Task<Turma> ObterTurma(string turmaId)
         {

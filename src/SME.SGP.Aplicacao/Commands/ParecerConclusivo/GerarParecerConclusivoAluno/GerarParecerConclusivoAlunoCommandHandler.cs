@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-
+                        
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, turma.Historica))
                 return new ParecerConclusivoDto();
@@ -38,12 +39,19 @@ namespace SME.SGP.Aplicacao
                 await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
+                var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
                 conselhoClasseAluno.ConselhoClasseParecerId = parecerConclusivo.Id;
-                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
-                var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar != null ?
-                       conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre : 0);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaConselhoClasseSync, consolidacaoTurma, Guid.NewGuid(), null));
+                var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
+                {
+                    ConselhoClasseAlunoId = conselhoClasseAluno.Id,
+                    ConselhoClasseAlunoCodigo = conselhoClasseAluno.AlunoCodigo,
+                    ParecerConclusivoId = parecerConclusivo.Id,
+                    TurmaId = turma.Id,
+                    TurmaCodigo = turma.CodigoTurma,
+                    Bimestre = bimestre,
+                    AnoLetivo = turma.AnoLetivo
+                };
+                await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto)); 
             }
 
             return new ParecerConclusivoDto()

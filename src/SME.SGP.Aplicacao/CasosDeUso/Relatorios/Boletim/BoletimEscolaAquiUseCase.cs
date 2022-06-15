@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
         }
-        public async Task<bool> Executar(FiltroRelatorioBoletimEscolaAquiDto relatorioBoletimEscolaAquiDto)
+        public async Task<bool> Executar(FiltroRelatorioEscolaAquiDto relatorioBoletimEscolaAquiDto)
         {
             int usuarioLogadoId = 1;
             if (repositorioDre.ObterPorCodigo(relatorioBoletimEscolaAquiDto.DreCodigo) == null)
@@ -49,13 +49,7 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
             var usuarioLogado = repositorioUsuario.ObterPorId(usuarioLogadoId);
-            bool retorno;
-
-            if (relatorioBoletimEscolaAquiDto.Modelo == (int)ModeloBoletim.Detalhado)
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
-            else
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimEscolaAqui));
-
+            var retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhadoApp, relatorioBoletimEscolaAquiDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhadoEscolaAqui, notificarErroUsuario: true));
             unitOfWork.PersistirTransacao();
             return retorno;
         }

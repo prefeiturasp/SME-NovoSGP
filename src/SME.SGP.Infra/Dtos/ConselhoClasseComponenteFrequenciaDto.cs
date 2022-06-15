@@ -9,6 +9,7 @@ namespace SME.SGP.Infra
             NotasFechamentos = new List<NotaBimestreDto>();
         }
 
+        public string Aulas { get; set; }
         public string Nome { get; set; }
         public long CodigoComponenteCurricular { get; set; }
         public int QuantidadeAulas { get; set; }

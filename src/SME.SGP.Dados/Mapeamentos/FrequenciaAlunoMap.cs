@@ -7,21 +7,22 @@ namespace SME.SGP.Dados.Mapeamentos
         public FrequenciaAlunoMap()
         {
             ToTable("frequencia_aluno");
-            Map(a => a.CodigoAluno).ToColumn("codigo_aluno");
-            Map(a => a.TurmaId).ToColumn("turma_id");
-            Map(a => a.DisciplinaId).ToColumn("disciplina_id");
-            Map(a => a.PeriodoEscolarId).ToColumn("periodo_escolar_id");
-            Map(a => a.PeriodoInicio).ToColumn("periodo_inicio");
-            Map(a => a.PeriodoFim).ToColumn("periodo_fim");
-            Map(a => a.TotalAulas).ToColumn("total_aulas");
-            Map(a => a.TotalAusencias).ToColumn("total_ausencias");
-            Map(a => a.TotalCompensacoes).ToColumn("total_compensacoes");
-            Map(a => a.Tipo).ToColumn("tipo");
-            Map(a => a.Bimestre).ToColumn("bimestre");
             Map(a => a.PercentualFrequencia).Ignore();
+            Map(a => a.PercentualFrequenciaFinal).Ignore();
             Map(a => a.NumeroFaltasNaoCompensadas).Ignore();
-            Map(a => a.TotalRemotos).ToColumn("total_remotos");
-            Map(a => a.TotalPresencas).ToColumn("total_presencas");
+            Map(c => c.Bimestre).ToColumn("bimestre");
+            Map(c => c.CodigoAluno).ToColumn("codigo_aluno");
+            Map(c => c.DisciplinaId).ToColumn("disciplina_id");
+            Map(c => c.PeriodoEscolarId).ToColumn("periodo_escolar_id");
+            Map(c => c.PeriodoFim).ToColumn("periodo_fim");
+            Map(c => c.PeriodoInicio).ToColumn("periodo_inicio");
+            Map(c => c.Tipo).ToColumn("tipo");
+            Map(c => c.TotalAulas).ToColumn("total_aulas");
+            Map(c => c.TotalAusencias).ToColumn("total_ausencias");
+            Map(c => c.TotalRemotos).ToColumn("total_remotos");
+            Map(c => c.TotalPresencas).ToColumn("total_presencas");
+            Map(c => c.TotalCompensacoes).ToColumn("total_compensacoes");
+            Map(c => c.TurmaId).ToColumn("turma_id");
         }
     }
 }

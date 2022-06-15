@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<long[]> Handle(ObterPendenciasAulaPorAulaIdQuery request, CancellationToken cancellationToken)
         {
-            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil);
+            var pendencias = await repositorioPendenciaAula.PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.UsuarioLogado);
             if (pendencias == null)
                 return null;
 
@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
                 AulaId = request.AulaId,
                 PossuiPendenciaFrequencia = pendencias.PossuiPendenciaFrequencia,
                 PossuiPendenciaPlanoAula = pendencias.PossuiPendenciaPlanoAula,
-                PossuiPendenciaAtividadeAvaliativa = false
+                PossuiPendenciaAtividadeAvaliativa = false,
+                PossuiPendenciaDiarioBordo = pendencias.PossuiPendenciaDiarioBordo
             };
             pendencias.PossuiPendenciaAtividadeAvaliativa = request.TemAtividadeAvaliativa && await repositorioPendenciaAula.PossuiPendenciasAtividadeAvaliativaPorAulaId(request.AulaId);
 

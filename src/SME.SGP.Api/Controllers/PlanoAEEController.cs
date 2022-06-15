@@ -103,6 +103,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planoAEEId}/reestruturacoes")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEReestruturacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterReestruturacoesPlanoAEE(long planoAEEId, [FromServices] IObterRestruturacoesPlanoAEEPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAEEId));
@@ -111,6 +112,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{planoAEEId}/versoes/reestruturacao/{reestruturacaoId}")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEDescricaoVersaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterVersoes(long planoAEEId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
@@ -178,6 +180,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> EncerrarPlanos()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
@@ -188,6 +191,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ExpirarPlanos()
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));

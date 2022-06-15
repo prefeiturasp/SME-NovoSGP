@@ -7,15 +7,13 @@ using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Prometheus;
-using RabbitMQ.Client;
 using SME.SGP.Api.HealthCheck;
-using SME.SGP.Aplicacao.Servicos;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -63,17 +61,20 @@ namespace SME.SGP.Api
             app.UseRequestLocalization();
 
             app.UseHttpsRedirection();
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseSwagger();                                         
+            app.UseSwaggerUI(c =>                                         
+            {                                                             
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SGP Api");
             });
 
             //TODO: Ajustar para as os origins que irão consumir
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
+            app.UseCors(config => config
                 .AllowAnyMethod()
                 .AllowAnyHeader()
+                .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 
             app.UseMetricServer();
@@ -82,9 +83,16 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseMvc();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos")),
+                RequestPath = "/Arquivos"
+            });
 
-            app.UseStaticFiles();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
@@ -132,8 +140,10 @@ namespace SME.SGP.Api
 
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services, serviceProvider);
-            RegistraDocumentacaoSwagger.Registrar(services);
+            RegistrarMvc.Registrar(services, serviceProvider); 
+
+            RegistraDocumentacaoSwagger.Registrar(services); 
+
             services.AddPolicies();
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -156,6 +166,10 @@ namespace SME.SGP.Api
             services.AddSingleton(servicoTelemetria);
 
             services.AddMemoryCache();
+
+            services.AddCors();
+
+            services.AddControllers();
         }
 
         private void ConfiguraVariaveisAmbiente(IServiceCollection services)

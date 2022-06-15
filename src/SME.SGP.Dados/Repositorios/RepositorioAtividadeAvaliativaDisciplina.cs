@@ -13,9 +13,9 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativaDisciplina : RepositorioBase<AtividadeAvaliativaDisciplina>, IRepositorioAtividadeAvaliativaDisciplina
     {
         private readonly string connectionString;
-        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IConfiguration configuration) : base(conexao)
+        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao) : base(conexao)
         {
-            this.connectionString = configuration.GetConnectionString("SGP_Postgres");
+            this.connectionString = conexao.ConnectionString;
         }
 
         public async Task<IEnumerable<AtividadeAvaliativaDisciplina>> ListarPorIdAtividade(long atividadeAvaliativaId)
@@ -103,14 +103,13 @@ namespace SME.SGP.Dados.Repositorios
                                      and aar.excluido = false
                                    group by(aar.disciplina_contida_regencia_id)";
 
+
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-                await conexao.OpenAsync();
-                var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
+                var totalizador = await database.Conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
                 {
                     atividadesAvaliativasId
                 });
-                conexao.Close();
                 return totalizador;
             }
         }

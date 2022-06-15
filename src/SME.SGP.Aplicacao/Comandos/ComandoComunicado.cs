@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Dominio.Interfaces.Repositorios;
 using SME.SGP.Dto;
 using System;
 using System.Collections.Generic;

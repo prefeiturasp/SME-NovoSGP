@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             {
                 mensagem.Pagina += 1;
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, mensagem, Guid.NewGuid(), null));
             }
 
             return true;
@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
             var diasLetivosENaoLetivos = await mediator
-                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, true));
+                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
 
             var uesCodigos = turma != null ? new string[] { turma.Ue.CodigoUe } : await mediator
                 .Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual, pagina));
@@ -115,7 +115,7 @@ namespace SME.SGP.Aplicacao
             {
                 var dados = new DadosCriacaoAulasAutomaticasDto(ueCodigo, tipoCalendarioId, diasLetivosENaoLetivos, diasForaDoPeriodoEscolar, modalidade, dadosTurmaComponente);
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosUeTurmaRegenciaAutomaticamente, dados, Guid.NewGuid(), null));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.SincronizarDadosUeTurmaRegenciaAutomaticamente, dados, Guid.NewGuid(), null));
             }
         }
 

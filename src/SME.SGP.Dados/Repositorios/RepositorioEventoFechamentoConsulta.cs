@@ -60,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> UeEmFechamento(DateTime dataReferencia, long tipoCalendarioId, bool ehModalidadeInfantil, int bimestre)
         {
-            var retorno = (await UeEmFechamentoBimestre(tipoCalendarioId, ehModalidadeInfantil, bimestre));
+            var retorno = (await UeEmFechamentoBimestreVigente(dataReferencia,tipoCalendarioId, ehModalidadeInfantil, bimestre));
             return retorno != null;
         }
 
@@ -118,10 +118,38 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine($" and pe.bimestre =  {consultaObterBimestreFinal} ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoFechamentoBimestre>(query.ToString(), new
-            {                
+            {
                 bimestre,
                 tipoCalendarioId
             });
+        }
+
+        public async Task<IEnumerable<PeriodoFechamentoBimestre>> ObterPeriodosFechamentoTurmaInfantil(long tipoCalendarioId, int bimestre)
+        {
+            var query = new StringBuilder();
+
+            var consultaObterBimestreFinal = "(select pe2.bimestre from periodo_escolar pe2 where @tipoCalendarioId = pe2.tipo_calendario_id order by pe2.bimestre desc limit 1)";
+
+            query.AppendLine(@"select pfb.* 
+                                 from periodo_fechamento pf 
+				                inner join periodo_fechamento_bimestre pfb on pf.id = pfb.periodo_fechamento_id 
+				                inner join periodo_escolar pe on pe.id = pfb.periodo_escolar_id
+				                where pe.tipo_calendario_id = @tipoCalendarioId
+				                  and pf.ue_id is null
+				                  and pf.dre_id is null");
+
+            if (bimestre > 0)
+                query.AppendLine($"and pe.bimestre {BimestreConstants.ObterCondicaoBimestre(bimestre, true)}");
+            else
+                query.AppendLine($"and pe.bimestre =  {consultaObterBimestreFinal}");
+
+            var parametros = new
+            {
+                bimestre,
+                tipoCalendarioId
+            };
+
+            return await database.Conexao.QueryAsync<PeriodoFechamentoBimestre>(query.ToString(), parametros);
         }
     }
 }

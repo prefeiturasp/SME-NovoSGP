@@ -10,8 +10,9 @@ namespace SME.SGP.TesteIntegracao
     [Collection("TesteIntegradoSGP")]
     public class TesteBase : IClassFixture<TestFixture>
     {
-        protected ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
         private readonly CollectionFixture _collectionFixture;
+
+        public ServiceProvider ServiceProvider {  get {  return _collectionFixture.ServiceProvider; } }
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
@@ -29,15 +30,20 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(objeto);
             return Task.CompletedTask;
         }
+        public Task InserirNaBase(string nomeTabela, params string[] campos)
+        {
+            _collectionFixture.Database.Inserir(nomeTabela, campos);
+            return Task.CompletedTask;
+        }
 
-        public List<T> ObterTodos<T>() where T: class, new()
+        public List<T> ObterTodos<T>() where T : class, new()
         {
             return _collectionFixture.Database.ObterTodos<T>();
         }
-        
-        public T ObterPorId<T,K>(K id) 
-            where T: class, new()
-            where K : struct 
+
+        public T ObterPorId<T, K>(K id)
+            where T : class, new()
+            where K : struct
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
         }

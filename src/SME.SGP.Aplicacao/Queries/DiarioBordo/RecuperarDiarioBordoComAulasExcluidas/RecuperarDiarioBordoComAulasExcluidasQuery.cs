@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class RecuperarDiarioBordoComAulasExcluidasQuery : IRequest<IEnumerable<DiarioBordo>>
     {
-        public RecuperarDiarioBordoComAulasExcluidasQuery(string codigoTurma, string codigoDisciplina, long tipoCalendarioId, DateTime[] datasConsideradas)
+        public RecuperarDiarioBordoComAulasExcluidasQuery(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas)
         {
             CodigoTurma = codigoTurma;
-            CodigoDisciplina = codigoDisciplina;
+            CodigosDisciplinas = codigosDisciplinas;
             TipoCalendarioId = tipoCalendarioId;
             DatasConsideradas = datasConsideradas;
         }
 
         public string CodigoTurma { get; set; }
-        public string CodigoDisciplina { get; set; }
+        public string[] CodigosDisciplinas { get; set; }
         public long TipoCalendarioId { get; set; }
         public DateTime[] DatasConsideradas { get; set; }
     }
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O código da turma deve ser informado.");
 
-            RuleFor(x => x.CodigoDisciplina)
+            RuleFor(x => x.CodigosDisciplinas)
                 .NotEmpty()
                 .WithMessage("O código da disciplina deve ser informado.");
 

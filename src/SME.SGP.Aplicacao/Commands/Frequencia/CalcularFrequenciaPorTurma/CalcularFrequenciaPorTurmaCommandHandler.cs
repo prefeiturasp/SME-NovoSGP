@@ -61,16 +61,21 @@ namespace SME.SGP.Aplicacao
                 request.Alunos = request.Alunos.Union(alunosDaTurma.Select(a => a.CodigoAluno)).ToArray();
             }
 
+            var excluirFrequenciaAlunoIds = new List<long>();
+
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
 
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
-            List<FrequenciaAluno> frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId))).ToList();
+            List<FrequenciaAluno> frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
 
             if (registroFreqAlunos.Any())
             {
                 var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
                 var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
+
+                if (totalAulasDaDisciplina == 0)
+                    excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId)).Select(s => s.Id));
 
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
                 var bimestre = registroFreqAlunos.Select(a => a.Bimestre).First();
@@ -86,8 +91,14 @@ namespace SME.SGP.Aplicacao
                     TrataFrequenciaGlobalAluno(codigoAluno, totalAulasDaTurmaGeral, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                 }
             }
-
+            await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             await TrataPersistencia(frequenciaDosAlunos);
+        }
+
+        private async Task ExcluirFrequenciaAluno(List<long> excluirFrequenciaAlunoIds)
+        {
+            if (excluirFrequenciaAlunoIds.Any())
+                await repositorioFrequenciaAlunoDisciplinaPeriodo.RemoverVariosAsync(excluirFrequenciaAlunoIds.ToArray());
         }
 
         private List<RegistroFrequenciaPorDisciplinaAlunoDto> ObterRegistroFrequenciaAgregado(List<RegistroFrequenciaPorDisciplinaAlunoDto> registroFreqAlunos)
@@ -214,8 +225,30 @@ namespace SME.SGP.Aplicacao
             {
                 int totalCompensacoesDoAlunoGeral = 0;
 
-                var registroFrequenciaAluno = registroFrequenciaAlunos.FirstOrDefault(a => a.AlunoCodigo == alunoCodigo);
-
+                var registroFrequenciaAluno = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo)
+                    .GroupBy(g => new { g.PeriodoEscolarId, g.PeriodoInicio, g.PeriodoFim, g.Bimestre, g.AlunoCodigo }, (key, group) =>
+                new
+                {
+                    key.PeriodoEscolarId,
+                    key.PeriodoInicio,
+                    key.PeriodoFim,
+                    key.Bimestre,
+                    key.AlunoCodigo,
+                    TotalPresencas = group.Sum(s => s.TotalPresencas),
+                    TotalAusencias = group.Sum(s => s.TotalAusencias),
+                    TotalRemotos = group.Sum(s => s.TotalRemotos)
+                }).Select(s => new RegistroFrequenciaPorDisciplinaAlunoDto()
+                {
+                    PeriodoEscolarId = s.PeriodoEscolarId,
+                    PeriodoInicio = s.PeriodoInicio,
+                    PeriodoFim = s.PeriodoFim,
+                    Bimestre = s.Bimestre,
+                    AlunoCodigo = s.AlunoCodigo,
+                    TotalPresencas = s.TotalPresencas,
+                    TotalAusencias = s.TotalAusencias,
+                    TotalRemotos = s.TotalRemotos
+                }).FirstOrDefault();
+                               
                 var totaisDoAluno = compensacoesDisciplinasAlunos.Where(a => a.AlunoCodigo == alunoCodigo).ToList();
                 if (totaisDoAluno.Any())
                     totalCompensacoesDoAlunoGeral = totaisDoAluno.Sum(a => a.Compensacoes);

@@ -25,6 +25,8 @@ namespace SME.SGP.Dominio
 
         public long UsuarioSolicitanteId { get; set; }
 
+        public TipoFormatoRelatorio Formato { get; set; }
+
         public void AdicionarCorrelacaoJasper(RelatorioCorrelacaoJasper relatorioCorrelacaoJasper)
         {
             CorrelacaoJasper = relatorioCorrelacaoJasper;
@@ -34,10 +36,8 @@ namespace SME.SGP.Dominio
         {
             return this.MemberwiseClone();
         }
-
-        public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.Boletim, TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma, TipoRelatorio.HistoricoEscolarFundamental);
+        public bool EhRelatorioJasper => TipoRelatorio.EhUmDosValores(TipoRelatorio.ConselhoClasseAluno, TipoRelatorio.ConselhoClasseTurma, TipoRelatorio.HistoricoEscolarFundamental);
 
         public bool PrazoDownloadExpirado => (DateTime.Now - CriadoEm).Days > 1;
-        public TipoFormatoRelatorio  Formato { get; set; }
     }
 }

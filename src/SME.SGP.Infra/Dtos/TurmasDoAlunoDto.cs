@@ -1,5 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -24,6 +26,12 @@ namespace SME.SGP.Infra
         public string ObterNomeComNumeroChamada()
         {
             return $"{NumeroAlunoChamada} - {ObterNomeFinalAluno()}";
-        }        
+        }
+
+        public bool Inativo => !new int[] { (int)SituacaoMatriculaAluno.Ativo,
+                             (int)SituacaoMatriculaAluno.PendenteRematricula,
+                             (int)SituacaoMatriculaAluno.Rematriculado,
+                             (int)SituacaoMatriculaAluno.SemContinuidade,
+                             (int)SituacaoMatriculaAluno.Concluido }.Contains(this.CodigoSituacaoMatricula);
     }
 }

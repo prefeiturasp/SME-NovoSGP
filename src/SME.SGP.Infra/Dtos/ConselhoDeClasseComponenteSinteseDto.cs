@@ -8,5 +8,7 @@
         public string PercentualFrequencia { get; set; }
         public int ParecerFinalId { get; set; }
         public string ParecerFinal { get; set; }
+        public string TotalAulas { get; set; }
+        public string TotalAusenciasCompensadas { get; set; }
     }
 }
