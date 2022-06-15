@@ -198,6 +198,22 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
         }
 
+        public async Task CriarPeriodoEscolar()
+        {
+            await _teste.InserirNaBase(new PeriodoEscolar
+            {
+                Id = 1,
+                TipoCalendarioId = 1,
+                Bimestre = 2,
+                PeriodoInicio = new DateTime(2022, 01, 10),
+                PeriodoFim = DateTime.Now.AddYears(1),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now,
+                Migrado = false
+            });
+        }
+
         private void CriarClaimRegenciaEja(bool incluirAdm)
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
@@ -217,22 +233,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
-        }
-
-        private async Task CriarPeriodoEscolar()
-        {
-            await _teste.InserirNaBase(new PeriodoEscolar
-            {
-                Id = 1,
-                TipoCalendarioId = 1,
-                Bimestre = 2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = DateTime.Now.AddYears(1),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now,
-                Migrado = false
-            });
         }
 
         private async Task CriaAtribuicaoCJ()
