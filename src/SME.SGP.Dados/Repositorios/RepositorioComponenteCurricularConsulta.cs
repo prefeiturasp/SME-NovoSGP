@@ -243,7 +243,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<string> ObterDescricaoPorId(long id)
         {
-            var query = @"select coalesce(descricao_infantil, descricao_sgp, descricao) from componente_curricular cc where id = @id";
+            var query = @"select 
+                           case 
+                            when descricao_infantil != null and descricao_infantil != '' and descricao_infantil != ' '
+                               then 
+                                    descricao_infantil 
+                               else 
+           		                    case
+           		                     when descricao_sgp != null and descricao_sgp != '' and descricao_sgp != ' '
+           		                        then 
+                                            descricao_sgp
+           		                        else 
+           		                            descricao
+           		                    end 
+           	                    end
+                           from componente_curricular cc where id = @id";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
