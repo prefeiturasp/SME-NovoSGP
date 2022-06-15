@@ -184,8 +184,7 @@
         public const string FrequenciaDaAulaExcluir = "sgp.frequencia.aula.excluir";
         public const string PlanoAulaDaAulaExcluir = "sgp.plano.aula.excluir";
         public const string AnotacoesFrequenciaDaAulaExcluir = "sgp.anotacoes.frequencia.aula.excluir";
-        public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";
-        
+        public const string DiarioBordoDaAulaExcluir = "sgp.diarios.bordo.aula.excluir";        
 
         public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
         public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
@@ -199,8 +198,7 @@
         public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
         public const string VerificarPendenciasFechamentoTurmaDisciplina = "sgp.verificar.pendencias.fechamento.turma.disciplina";
         public const string AlterarPeriodosComHierarquiaInferiorFechamento = "sgp.alterar.periodo.hierarquia.inferior.fechamento";
-        public const string AlterarRecorrenciaEventos = "sgp.alterar.recorrencia.eventos";
-        
+        public const string AlterarRecorrenciaEventos = "sgp.alterar.recorrencia.eventos";        
 
         public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
         public const string SincronizarObjetivosComJurema = "sgp.sincronizar.objetivos.com.jurema";
