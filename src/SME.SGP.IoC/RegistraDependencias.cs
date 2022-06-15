@@ -1158,6 +1158,8 @@ namespace SME.SGP.IoC
             // Sincronização de Devolutivas
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
+            services.TryAddScoped<IObterCodigoTurmaInfantilPorAnoUseCase, ObterCodigoTurmaInfantilPorAnoUseCase>();
+            services.TryAddScoped<IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase, ObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase>();
 
             // Consolidação de Diarios de Bordo
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();

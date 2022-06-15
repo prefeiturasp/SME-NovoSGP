@@ -32,29 +32,28 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task ConsolidarDevolutivasAnoAtual()
         {
-            var anoAtual = DateTime.Now.Year;
-            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
-            var turmasIds = turmasInfantil.Select(x => x.Id).ToArray();
+            try
+            {
+                var anoAtual = DateTime.Now.Year;
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(anoAtual), Guid.NewGuid(), null));
+            }
+            catch (Exception ex)
+            {
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
-
-            var agrupamentoTurmaUe = turmasInfantil.GroupBy(x => x.UeId);
-            
-            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(anoAtual, agrupamentoTurmaUe);
-
-            await AtualizarDataExecucao(anoAtual);
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+            }
         }
 
         private async Task ConsolidarDevolutivas(int ano)
         {
-            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano));
-            var turmasIds = turmasInfantil.Select(x => x.Id).ToArray();
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds));
-
-            var agrupamentoTurmaUe = turmasInfantil.GroupBy(x => x.UeId);
-            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(ano, agrupamentoTurmaUe);
-
-            await AtualizarDataExecucao(ano);
+            try
+            {
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(ano), Guid.NewGuid(), null));
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao executar", LogNivel.Critico, LogContexto.Geral, ex.Message));
+            }
         }
 
         private async Task ConsolidarDevolutivasHistorico()
@@ -81,7 +80,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
                 }
 
             }
