@@ -306,24 +306,39 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new List<UsuarioEolRetornoDto>{
                 new UsuarioEolRetornoDto
                 {
-                    CodigoRf="7921489",
-                    NomeServidor = "ALEXANDRE AFRANIO HOKAMA SILVA",
+                    CodigoRf="9988776",
+                    NomeServidor = "UsuarioTeste1",
                     CodigoFuncaoAtividade = 0,
                     EstaAfastado = false
                 },
                 new UsuarioEolRetornoDto
                 {
-                    CodigoRf="7549610",
-                    NomeServidor = "FILIPE EMMANUEL ADOLPHO ECARD",
+                    CodigoRf="7788990",
+                    NomeServidor = "UsuarioTeste2",
                     CodigoFuncaoAtividade = 0,
                     EstaAfastado = false
                 },
             };
         }
 
-        public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId)
         {
-            throw new NotImplementedException();
+            return new List<UsuarioEolRetornoDto>{
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="9988776",
+                    NomeServidor = "UsuarioTeste1",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+                new UsuarioEolRetornoDto
+                {
+                    CodigoRf="7788990",
+                    NomeServidor = "UsuarioTeste2",
+                    CodigoFuncaoAtividade = 0,
+                    EstaAfastado = false
+                },
+            };
         }
 
         public Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorDre(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
