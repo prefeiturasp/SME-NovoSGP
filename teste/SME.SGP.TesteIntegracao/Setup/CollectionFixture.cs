@@ -35,8 +35,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             _services.AddMemoryCache();
             FluentMapper.EntityMaps.Clear();
             new RegistradorDependencias().Registrar(_services, null);
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
-                typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
             RegistraMock();
             ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
@@ -45,6 +43,8 @@ namespace SME.SGP.TesteIntegracao.Setup
         private void RegistraMock()
         {
             _services.AddMockPlanoAEE();
+            _services.AddMockFila();
+            _services.AddMockAluno();
             CarregarMockAtribuicaoReponsaveis();
         }
 
