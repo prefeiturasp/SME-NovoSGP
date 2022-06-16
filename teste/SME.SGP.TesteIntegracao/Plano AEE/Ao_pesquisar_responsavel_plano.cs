@@ -9,13 +9,11 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
-
-    [Collection("PlanoAEE")]
-    public class Ao_pesquisar_responsavel_plano : TesteBase
+    public class Ao_pesquisar_responsavel_plano : PlanoAEETesteBase
     {
         private readonly ItensBasicosBuilder _builder;
 
-        public Ao_pesquisar_responsavel_plano(PlanoAEEFixture collectionFixture) : base(collectionFixture)
+        public Ao_pesquisar_responsavel_plano(CollectionFixture collectionFixture) : base(collectionFixture)
         {
             _builder = new ItensBasicosBuilder(this);
         }

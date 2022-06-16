@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
 {
-    [Collection("AtribuicaoResponsaveis")]
-    public class Ao_remover_atribuicao_paai : TesteBase
+    public class Ao_remover_atribuicao_paai : AtribuicaoResponsavelTesteBase
     {
         #region Constantes
         const string DRE_CODIGO_1 = "1";
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
         const string SUPERVISOR_RF_03 = "3";
         #endregion
 
-        public Ao_remover_atribuicao_paai(AtribuicaoResponsavelFixture collectionFixture) : base(collectionFixture) { }
+        public Ao_remover_atribuicao_paai(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
         public async Task Deve_retornar_true_quando_excluir_alguns_mas_nao_todos_responsaveis()

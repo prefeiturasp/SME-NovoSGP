@@ -6,22 +6,20 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
-    public class PlanoAEEFixture : CollectionFixture
+    public class PlanoAEETesteBase : TesteBase
     {
-        protected override void RegistrarMocks(IServiceCollection services)
+        public PlanoAEETesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            base.RegistrarMocks(services);
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
-    }
-
-    [CollectionDefinition("PlanoAEE")]
-    public class PlanoAEECollection : ICollectionFixture<PlanoAEEFixture>
-    {
     }
 }

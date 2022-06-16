@@ -5,23 +5,22 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
 {
-    public class AtribuicaoResponsavelFixture : CollectionFixture
+    public class AtribuicaoResponsavelTesteBase : TesteBase
     {
-        protected override void RegistrarMocks(IServiceCollection services)
+        public AtribuicaoResponsavelTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            base.RegistrarMocks(services);
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
     }
-
-    [CollectionDefinition("AtribuicaoResponsaveis")]
-    public class AtribuicaoResponsavelCollection : ICollectionFixture<AtribuicaoResponsavelFixture>
-    { }
 }

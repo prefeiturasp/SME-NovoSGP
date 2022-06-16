@@ -14,36 +14,32 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable
+    public class CollectionFixture : IDisposable 
     {
-        private readonly IServiceCollection _services;
+        public readonly IServiceCollection services;
         public readonly InMemoryDatabase Database;
-        public readonly ServiceProvider ServiceProvider;
+        public ServiceProvider ServiceProvider;
 
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            _services = new ServiceCollection();
+            services = new ServiceCollection();
 
             Database = new InMemoryDatabase();
-            _services.AddScoped<IDbConnection>(x => Database.Conexao);
+            services.AddScoped<IDbConnection>(x => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            _services.AddSingleton<IConfiguration>(config);
-            _services.AddMemoryCache();
-            new RegistradorDependencias().Registrar(_services, null);
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
-                typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.AddSingleton<IConfiguration>(config);
+            services.AddMemoryCache();
+            new RegistradorDependencias().Registrar(services, null);
 
-            RegistrarMocks(_services);
-
-            ServiceProvider = _services.BuildServiceProvider();
-            DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
 
-        protected virtual void RegistrarMocks(IServiceCollection services)
+        public void BuildServiceProvider()
         {
+            ServiceProvider = services.BuildServiceProvider();
+            DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
 
         public void Dispose()

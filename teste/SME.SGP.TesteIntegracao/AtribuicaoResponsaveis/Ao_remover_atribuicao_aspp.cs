@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
 {
-    [Collection("AtribuicaoResponsaveis")]
-    public class Ao_remover_atribuicao_aspp : TesteBase
+    public class Ao_remover_atribuicao_aspp : AtribuicaoResponsavelTesteBase
     {
         #region Constants
         private const string DRE_CODIGO_1 = "1";
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
         private const string ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID_3 = "8";
         #endregion
 
-        public Ao_remover_atribuicao_aspp(AtribuicaoResponsavelFixture collectionFixture) : base(collectionFixture)
+        public Ao_remover_atribuicao_aspp(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
