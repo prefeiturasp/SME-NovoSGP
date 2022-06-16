@@ -4,15 +4,24 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
+using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
-    public static class RegistraMock
+    public class PlanoAEEFixture : CollectionFixture
     {
-        public static void AddMockPlanoAEE(this IServiceCollection services)
+        protected override void RegistrarMocks(IServiceCollection services)
         {
+            base.RegistrarMocks(services);
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
+    }
+
+    [CollectionDefinition("PlanoAEE")]
+    public class PlanoAEECollection : ICollectionFixture<PlanoAEEFixture>
+    {
     }
 }

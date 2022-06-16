@@ -1,23 +1,21 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Shouldly;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
+
+    [Collection("PlanoAEE")]
     public class Ao_pesquisar_responsavel_plano : TesteBase
     {
         private readonly ItensBasicosBuilder _builder;
 
-        public Ao_pesquisar_responsavel_plano(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_pesquisar_responsavel_plano(PlanoAEEFixture collectionFixture) : base(collectionFixture)
         {
             _builder = new ItensBasicosBuilder(this);
         }
