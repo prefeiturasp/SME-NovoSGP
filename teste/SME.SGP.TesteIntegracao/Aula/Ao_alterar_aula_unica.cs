@@ -47,7 +47,6 @@ namespace SME.SGP.TesteIntegracao
             excecao.Message.ShouldBe("Não é possível cadastrar aula fora do periodo escolar");
         }
 
-
         [Fact]
         public async Task Altera_aula()
         {
@@ -68,7 +67,6 @@ namespace SME.SGP.TesteIntegracao
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().Quantidade.ShouldBe(1);
         }
-
 
         [Fact]
         public async Task Altera_aula_regente_diferente_do_atual()

@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriaUsuario()
+        protected async Task CriaUsuario()
         {
             await InserirNaBase(new Usuario
             {
