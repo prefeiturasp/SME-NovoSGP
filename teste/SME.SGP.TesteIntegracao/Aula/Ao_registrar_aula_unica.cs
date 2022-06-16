@@ -26,6 +26,22 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
+        public async Task Ao_registrar_aula_unica_regente_professor_EJA()
+        {
+            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+
+            await ExecuteTesteRegistre(true);
+        }
+
+        [Fact]
+        public async Task Ao_registrar_aula_unica_regente_professor_educacao_infantil()
+        {
+            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
+
+            await ExecuteTesteRegistre(true);
+        }
+
+        [Fact]
         public async Task Ao_registrar_aula_unica_professor_CP()
         {
             await CarregueBase(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
