@@ -2,10 +2,8 @@
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -78,7 +76,8 @@ namespace SME.SGP.TesteIntegracao
             await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula(new DateTime(2022, 02, 13));
+            var dto = ObtenhaDtoAula();
+            dto.DataAula = new DateTime(2022, 02, 13);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -91,7 +90,8 @@ namespace SME.SGP.TesteIntegracao
             await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula(new DateTime(2022, 02, 02));
+            var dto = ObtenhaDtoAula();
+            dto.DataAula = new DateTime(2022, 02, 02);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 

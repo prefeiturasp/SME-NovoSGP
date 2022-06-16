@@ -23,7 +23,8 @@ namespace SME.SGP.TesteIntegracao
             await CriarGrade();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula(null, 2);
+            var dto = ObtenhaDtoAula();
+            dto.Quantidade = 2;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 

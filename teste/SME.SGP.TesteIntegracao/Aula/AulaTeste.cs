@@ -71,16 +71,14 @@ namespace SME.SGP.TesteIntegracao
             return "41e1e074-37d6-e911-abd6-f81654fe895d";
         }
 
-        protected PersistirAulaDto ObtenhaDtoAula(DateTime? dataAula = null, int quantidadeAula = 1)
+        protected PersistirAulaDto ObtenhaDtoAula()
         {
-            dataAula = dataAula.HasValue ? dataAula : new DateTime(2022, 02, 10);
-
             return new PersistirAulaDto()
             {
                 CodigoTurma = "1",
-                Quantidade = quantidadeAula,
+                Quantidade = 1,
                 TipoAula = TipoAula.Normal,
-                DataAula = dataAula.GetValueOrDefault(),
+                DataAula = new DateTime(2022, 02, 10),
                 DisciplinaCompartilhadaId = 1106,
                 CodigoUe = "1",
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
