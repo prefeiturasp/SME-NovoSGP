@@ -564,8 +564,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-
-            return true;
+            return data != new DateTime(2022, 02, 02);
         }
 
         public Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)

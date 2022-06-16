@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using Dapper.FluentMap;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
             _services.AddSingleton<IConfiguration>(config);
             _services.AddMemoryCache();
+            FluentMapper.EntityMaps.Clear();
             new RegistradorDependencias().Registrar(_services, null);
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
                 typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
