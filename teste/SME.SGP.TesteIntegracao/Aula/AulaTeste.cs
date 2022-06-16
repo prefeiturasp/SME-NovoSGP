@@ -168,7 +168,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriaAula()
+        protected async Task CriaAula(string rf = "2222222")
         {
             await InserirNaBase(new Aula
             {
@@ -176,7 +176,7 @@ namespace SME.SGP.TesteIntegracao
                 DisciplinaId = "1106",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "1111111",
+                ProfessorRf = rf,
                 Quantidade = 3,
                 DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,

@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
             await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
-            await CriaAula();
+            await CriaAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
             await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAula();
+            await CriaAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
