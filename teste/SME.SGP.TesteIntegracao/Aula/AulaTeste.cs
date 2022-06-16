@@ -20,10 +20,11 @@ namespace SME.SGP.TesteIntegracao
         {
         }
 
-        protected async Task ExecuteTesteRegistre()
+        protected async Task ExecuteTesteRegistre(bool ehRegente = false)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObtenhaDtoAula();
+            if (ehRegente) dto.EhRegencia = true;
 
             var retorno = await useCase.Executar(dto);
 
