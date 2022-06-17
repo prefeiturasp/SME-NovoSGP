@@ -8,7 +8,7 @@ using Xunit;
 using System.Linq;
 
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_alterar_aula_unica : AulaTeste
     {

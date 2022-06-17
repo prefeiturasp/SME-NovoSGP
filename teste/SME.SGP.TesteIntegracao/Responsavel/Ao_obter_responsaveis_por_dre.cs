@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarResponsaveisPorDre
 {
     public class Ao_obter_responsaveis_por_dre : TesteBase
     {

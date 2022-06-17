@@ -13,7 +13,7 @@ using SME.SGP.Dominio;
 using MediatR;
 using System.Linq;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarPendenciaAula
 {
     public class Ao_gerar_pendencia_aula : TesteBase
     {

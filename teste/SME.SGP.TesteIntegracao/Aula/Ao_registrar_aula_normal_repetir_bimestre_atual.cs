@@ -3,7 +3,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
     public class Ao_registrar_aula_normal_repetir_bimestre_atual : AulaTeste
     {

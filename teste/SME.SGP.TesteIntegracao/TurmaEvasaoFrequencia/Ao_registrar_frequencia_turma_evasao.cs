@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 {
     public class Ao_registrar_frequencia_turma_evasao : TesteBase
     {

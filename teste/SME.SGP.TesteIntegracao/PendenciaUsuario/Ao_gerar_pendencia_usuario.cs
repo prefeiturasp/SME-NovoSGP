@@ -9,7 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarPendenciaUsuario
 {
     public class Ao_gerar_pendencia_usuario : TesteBase
     {

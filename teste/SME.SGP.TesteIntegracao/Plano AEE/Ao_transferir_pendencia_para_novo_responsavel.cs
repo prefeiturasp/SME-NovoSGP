@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
 {
     public class Ao_transferir_pendencia_para_novo_responsavel : TesteBase
     {

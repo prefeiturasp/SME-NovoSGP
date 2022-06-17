@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAtribuicaoResponsavel
 {
     public class Ao_atribuir_ue_responsavel : TesteBase
     {

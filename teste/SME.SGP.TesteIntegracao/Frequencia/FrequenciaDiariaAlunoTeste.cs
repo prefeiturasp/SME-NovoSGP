@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Frequencia
+namespace SME.SGP.TesteIntegracao.TestarFrequenciaDiaria
 {
     public class FrequenciaDiariaAlunoTeste : TesteBase
     {

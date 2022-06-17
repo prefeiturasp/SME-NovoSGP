@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
 {
     public class Ao_obter_recomendacoes : TesteBase
     {

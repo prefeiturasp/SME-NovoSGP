@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador : TesteBase
     {

@@ -8,7 +8,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
+namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
 {
     public class Ao_executar_exclusao_pendencias_devolutiva : TesteBase
     {

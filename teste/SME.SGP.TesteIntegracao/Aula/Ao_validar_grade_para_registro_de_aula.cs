@@ -7,7 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
     public class Ao_validar_grade_para_registro_de_aula : AulaTeste
     {

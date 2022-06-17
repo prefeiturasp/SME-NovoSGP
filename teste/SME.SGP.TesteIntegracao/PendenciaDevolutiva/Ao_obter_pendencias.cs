@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
+namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
 {
     public class Ao_obter_pendencias : TesteBase
     {

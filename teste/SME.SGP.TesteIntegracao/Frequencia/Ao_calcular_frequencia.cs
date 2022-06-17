@@ -11,7 +11,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 {
     public class Ao_calcular_frequencia : TesteBase
     {

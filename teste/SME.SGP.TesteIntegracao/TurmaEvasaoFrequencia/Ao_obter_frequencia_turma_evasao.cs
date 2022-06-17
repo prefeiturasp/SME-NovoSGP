@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 {
     public class Ao_obter_frequencia_turma_evasao : TesteBase
     {

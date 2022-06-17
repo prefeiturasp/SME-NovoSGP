@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarFrequencia
 {
     public class RetornarTotalAulasNaoRealizamFrequenciaTeste : TesteBase
     {

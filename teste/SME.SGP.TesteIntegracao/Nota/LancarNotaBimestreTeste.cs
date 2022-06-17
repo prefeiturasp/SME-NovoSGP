@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 using Xunit;
 using TipoAvaliacao = SME.SGP.Dominio.TipoAvaliacao;
 
-namespace SME.SGP.TesteIntegracao.Nota
+namespace SME.SGP.TesteIntegracao.TestarNota
 {
     public class LancarNotaBimestreTeste : TesteBase
     {

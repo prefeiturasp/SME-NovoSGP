@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.TestarAnotacaoFechamentoAluno
 {
     public class Ao_registrar_anotacao_fechamento : TesteBase
     {
