@@ -83,6 +83,10 @@ namespace SME.SGP.TesteIntegracao
         private const string PROFESSOR_CJ = "Professor CJ";
         private const int ORDEM_320 = 320;
 
+        private const int QUANTIDADE_3 = 3;
+
+        private const int BIMESTRE_2 = 2;
+
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -177,7 +181,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 TipoCalendarioId = 1,
-                Bimestre = 2,
+                Bimestre = BIMESTRE_2,
                 PeriodoInicio = new DateTime(2022, 01, 10),
                 PeriodoFim = new DateTime(2022, 02, 5),
                 CriadoPor = SISTEMA_NOME,
@@ -222,7 +226,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 UeId =UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                AnoLetivo = 2022,
+                AnoLetivo = ANO_LETIVO_2022_NUMERO,
                 DreId = DRE_CODIGO_1,
                 DataInicio = new DateTime(2022, 01, 10),
                 DataFim = new DateTime(2022, 01, 10),
@@ -241,7 +245,7 @@ namespace SME.SGP.TesteIntegracao
                 DreId =DRE_CODIGO_1,
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                DisciplinaId = 1106,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_1106,
                 Modalidade = Modalidade.EducacaoInfantil,
                 Substituir = true,
                 CriadoPor = SISTEMA_NOME,
@@ -260,7 +264,7 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
                 ProfessorRf = rf,
-                Quantidade = 3,
+                Quantidade = QUANTIDADE_3,
                 DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
