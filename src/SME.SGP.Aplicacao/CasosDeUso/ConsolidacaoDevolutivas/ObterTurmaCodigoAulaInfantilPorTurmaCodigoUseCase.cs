@@ -34,7 +34,6 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-
                 await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao executar", LogNivel.Critico, LogContexto.Geral, ex.Message));
                 return false;
             }
