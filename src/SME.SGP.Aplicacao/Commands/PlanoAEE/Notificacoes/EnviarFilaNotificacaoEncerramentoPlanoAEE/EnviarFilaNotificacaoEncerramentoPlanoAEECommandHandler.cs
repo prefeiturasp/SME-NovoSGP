@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var command = new NotificarEncerramentoPlanoAEECommand(request.PlanoAEEId, usuario);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarPlanoAEEEncerrado, command, Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.NotificarPlanoAEEEncerrado, command, Guid.NewGuid(), usuario));
 
             return true;
         }

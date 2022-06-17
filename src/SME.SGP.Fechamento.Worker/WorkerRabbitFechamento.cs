@@ -66,7 +66,7 @@ namespace SME.SGP.Fechamento.Worker
 
         private void DeclararFilasSgp()
         {
-            DeclararFilasPorRota(typeof(RotasRabbitFechamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
+            DeclararFilasPorRota(typeof(RotasRabbitSgpFechamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 
         private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
@@ -93,19 +93,19 @@ namespace SME.SGP.Fechamento.Worker
         private void RegistrarUseCases()
         {
             // Consolidação fechamento turmas
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaSync, new ComandoRabbit("Inicia processo de Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaSync, new ComandoRabbit("Inicia processo de Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
 
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase)));
 
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));
 
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por ue", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por turma", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por aluno", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por ue", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por turma", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase)));
+            comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por aluno", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase)));
         }
 
 
@@ -192,7 +192,7 @@ namespace SME.SGP.Fechamento.Worker
                 var mensagem = JsonConvert.SerializeObject(request);
                 var body = Encoding.UTF8.GetBytes(mensagem);
 
-                canalRabbit.BasicPublish(ExchangeSgpRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
+                canalRabbit.BasicPublish(ExchangeSgpRabbit.Sgp, RotasRabbitSgpFechamento.RotaNotificacaoUsuario, null, body);
             }
         }
 
@@ -252,7 +252,7 @@ namespace SME.SGP.Fechamento.Worker
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
         {
-            foreach (var fila in typeof(RotasRabbitFechamento).ObterConstantesPublicas<string>())
+            foreach (var fila in typeof(RotasRabbitSgpFechamento).ObterConstantesPublicas<string>())
                 canalRabbit.BasicConsume(fila, false, consumer);
         }
 

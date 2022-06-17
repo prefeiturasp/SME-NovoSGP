@@ -8,20 +8,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
-using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
-using SME.SGP.IoC.Extensions;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class RegistradorDependencias : RegistraDependencias
     {
-        public override void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
-        {
-            //Não registra Rabbit
-        }
-
         protected override void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
@@ -39,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 return new SgpContextConsultas(connection, contextoAplicacao);
             });
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddPolicies();
+            base.RegistrarPolicies(services);
         }
 
         protected override void RegistrarServicos(IServiceCollection services)

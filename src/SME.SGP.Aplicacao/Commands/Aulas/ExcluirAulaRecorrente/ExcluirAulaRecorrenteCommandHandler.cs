@@ -150,12 +150,12 @@ namespace SME.SGP.Aplicacao
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, usuario);
 
-            await PulicaFilaSgp(RotasRabbitSgp.NotificacoesDaAulaExcluir, aula.Id, usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.FrequenciaDaAulaExcluir, aula.Id, usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.PlanoAulaDaAulaExcluir, aula.Id, usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpAula.NotificacoesDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpAula.PlanoAulaDaAulaExcluir, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir, aula.Id, usuario);
             await PulicaFilaSgp(RotasRabbitSgp.DiarioBordoDaAulaExcluir, aula.Id, usuario);
-            await PulicaFilaSgp(RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
+            await PulicaFilaSgp(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, aula.Id, usuario);
 
             aula.Excluido = true;
 

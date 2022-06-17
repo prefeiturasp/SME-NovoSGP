@@ -27,7 +27,6 @@ namespace SME.SGP.Worker.Rabbbit
     {
         private readonly IConfiguration configuration;
         private readonly IHostingEnvironment env;
-        private ConfiguracaoRabbitOptions configuracaoRabbitOptions;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env)
         {
@@ -44,50 +43,18 @@ namespace SME.SGP.Worker.Rabbbit
 
             RegistrarHttpClients(services, configuration);
             services.AddApplicationInsightsTelemetry(configuration);
-            services.AddPolicies();
 
-            ConfiguraVariaveisAmbiente(services);
-
-            var registrarDependencias = new RegistraDependencias();
-            registrarDependencias.Registrar(services, configuracaoRabbitOptions);
-            registrarDependencias.RegistrarGCA(services);
+            var registrarDependencias = new RegistraDependencias();            
+            registrarDependencias.Registrar(services, configuration);
+            registrarDependencias.RegistrarPolicies(services);
 
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
             ConfiguraConsumoFilas(services);
 
-            services.AddRabbit(configuracaoRabbitOptions);
-
-            var telemetriaOptions = ConfiguraTelemetria(services);
-            var serviceProvider = services.BuildServiceProvider();
-
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
-
-            DapperExtensionMethods.Init(servicoTelemetria);
-
-            services.AddSingleton(servicoTelemetria);
-
             services.AddMemoryCache();
 
             services.AddHostedService<WorkerRabbitMQ>();
-        }
-        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
-        {
-            var telemetriaOptions = new TelemetriaOptions();
-            configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(telemetriaOptions);
-
-            return telemetriaOptions;
-        }
-        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
-        {
-            configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
-            configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(configuracaoRabbitOptions);
         }
 
         private void ConfiguraGoogleClassroomSync(IServiceCollection services)
@@ -123,6 +90,7 @@ namespace SME.SGP.Worker.Rabbbit
                 await context.Response.WriteAsync("WorkerRabbitMQ!");
             });
         }
+
         private void ConfiguraRabbitParaLogs(IServiceCollection services)
         {
             var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
@@ -130,6 +98,7 @@ namespace SME.SGP.Worker.Rabbbit
 
             services.AddSingleton(configuracaoRabbitLogOptions);
         }
+
         static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
@@ -137,6 +106,7 @@ namespace SME.SGP.Worker.Rabbbit
                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3,
                                                                             retryAttempt)));
         }
+
         private static void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
@@ -209,7 +179,6 @@ namespace SME.SGP.Worker.Rabbbit
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
             });
-
         }
     }
 }

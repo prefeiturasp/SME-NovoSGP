@@ -3,7 +3,6 @@ using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
 using HealthChecks.UI.Client;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
@@ -14,11 +13,9 @@ using Microsoft.Extensions.FileProviders;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
-using SME.SGP.IoC.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,7 +33,6 @@ namespace SME.SGP.Api
 
         }
 
-        private ConfiguracaoRabbitOptions configuracaoRabbitOptions;
         public IConfiguration Configuration { get; }
         private IHostingEnvironment _env;
 
@@ -123,28 +119,20 @@ namespace SME.SGP.Api
 
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-            services.AddApplicationInsightsTelemetry(Configuration);
 
-            ConfiguraVariaveisAmbiente(services);
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
-            var telemetriaOptions = ConfiguraTelemetria(services);
 
-            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
+            var registraDependencias = new RegistraDependencias();
+            registraDependencias.Registrar(services, Configuration);
 
             RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services, serviceProvider); 
+            RegistrarMvc.Registrar(services); 
 
-            RegistraDocumentacaoSwagger.Registrar(services); 
+            RegistraDocumentacaoSwagger.Registrar(services);
 
-            services.AddPolicies();
+            registraDependencias.RegistrarPolicies(services);
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -161,23 +149,11 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            DapperExtensionMethods.Init(servicoTelemetria);
-
-            services.AddSingleton(servicoTelemetria);
-
             services.AddMemoryCache();
 
             services.AddCors();
 
             services.AddControllers();
-        }
-
-        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
-        {
-            configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
-            Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(configuracaoRabbitOptions);
         }
 
         private void ConfiguraGoogleClassroomSync(IServiceCollection services)
@@ -194,15 +170,6 @@ namespace SME.SGP.Api
             Configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton(configuracaoRabbitLogOptions);
-        }
-        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
-        {
-            var telemetriaOptions = new TelemetriaOptions();
-            Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(telemetriaOptions);
-
-            return telemetriaOptions;
         }
     }
 }

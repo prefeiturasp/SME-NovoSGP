@@ -5,9 +5,9 @@ using System;
 
 namespace SME.SGP.IoC
 {
-    public static class RegistrarMediatr
+    internal static class RegistrarMediatr
     {
-        public static void AdicionarMediatr(this IServiceCollection services)
+        internal static void AdicionarMediatr(this IServiceCollection services)
         {
             var assembly = AppDomain.CurrentDomain.Load("SME.SGP.Aplicacao");
             services.AddMediatR(assembly);
