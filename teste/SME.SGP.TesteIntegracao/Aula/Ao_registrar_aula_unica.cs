@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ExecuteTesteRegistre();
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
 
-            await ExecuteTesteRegistre(true);
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
 
-            await ExecuteTesteRegistre(true);
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBasicosAula(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ExecuteTesteRegistre();
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CrieEvento(EventoLetivo.Sim);
 
-            await ExecuteTesteRegistre();
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarPeriodoEscolarEncerrado();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.DataAula = new DateTime(2022, 02, 13);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.DataAula = new DateTime(2022, 02, 02);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));

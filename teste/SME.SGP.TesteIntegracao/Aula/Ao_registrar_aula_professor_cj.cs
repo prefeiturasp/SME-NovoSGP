@@ -18,20 +18,20 @@ namespace SME.SGP.TesteIntegracao
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAtribuicaoCJ();
+            await CriarAtribuicaoCJ();
 
-            await ExecuteTesteRegistre();
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAtribuicaoCJ();
-            await CrieAtribuicaoEsporadica();
+            await CriarAtribuicaoCJ();
+            await CriarAtribuicaoEsporadica();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Você não possui permissão para cadastrar aulas neste período");
@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao
             await CrieEvento(EventoLetivo.Nao);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");

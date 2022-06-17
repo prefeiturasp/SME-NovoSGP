@@ -11,19 +11,19 @@ namespace SME.SGP.TesteIntegracao
         {}
 
         [Fact]
-        public async Task Ao_registrar_aula_unica_professor_especialista()
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_com_professor_modalidade_fundamental()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ExecuteTesteRegistre();
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
         }
 
         //[Fact]
-        //public async Task Ao_registrar_aula_unica_regente_professor_EJA()
+        //public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_com_professor_regente_modalidade_eja()
         //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
 
-        //    await ExecuteTesteRegistre(true);
+        //    await ValidarInserirAulaUseCaseBasico(true);
         //}
 
         //[Fact]

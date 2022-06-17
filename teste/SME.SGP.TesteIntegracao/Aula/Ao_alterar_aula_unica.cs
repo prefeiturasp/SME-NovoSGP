@@ -20,10 +20,10 @@ namespace SME.SGP.TesteIntegracao
         public async Task Ja_existe_aula_criada_no_dia_para_o_componente()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAula();
+            await CriarAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.Id = 2;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -36,10 +36,10 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
             await CriarPeriodoEscolarEncerrado();
-            await CriaAula();
+            await CriarAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.Id = 1;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -51,10 +51,10 @@ namespace SME.SGP.TesteIntegracao
         public async Task Altera_aula()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAula();
+            await CriarAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.Id = 1;
             dto.Quantidade = 1;
 
@@ -72,10 +72,10 @@ namespace SME.SGP.TesteIntegracao
         public async Task Altera_aula_regente_diferente_do_atual()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAula("1111111");
+            await CriarAula("1111111");
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.Id = 1;
             dto.Quantidade = 1;
             dto.EhRegencia = true;

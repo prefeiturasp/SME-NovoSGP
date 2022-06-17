@@ -101,25 +101,25 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ExecuteTesteRegistre(bool ehRegente = false)
+        protected async Task ValidarInserirAulaUseCaseBasico(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
-            if (ehRegente) dto.EhRegencia = true;
+            var aula = ObterAula(tipoAula, recorrenciaAula);
+            if (ehRegente) aula.EhRegencia = true;
 
-            var retorno = await useCase.Executar(dto);
+            var retorno = await useCase.Executar(aula);
 
             retorno.ShouldNotBeNull();
 
-            var lista = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Aula>();
 
-            lista.ShouldNotBeEmpty();
-            lista.Count().ShouldBeGreaterThanOrEqualTo(1);
+            aulasCadastradas.ShouldNotBeEmpty();
+            aulasCadastradas.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criaPeriodo = true)
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
         {
-            await CriarItensComuns(criaPeriodo);
+            await CriarItensComuns(criarPeriodo);
             CriarClaimUsuario(perfil);
             await CriarUsuarios();
             await CriarTipoCalendario(tipoCalendario);
@@ -157,18 +157,17 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
         }
 
-        //TODO: isso aqui vai ter que ser modificado por que está na base - deve ser especialista
-        protected PersistirAulaDto ObterAula()
+        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula)
         {
             return new PersistirAulaDto()
             {
                 CodigoTurma = TURMA_CODIGO_1,
                 Quantidade = 1,
-                TipoAula = TipoAula.Normal,
+                TipoAula = tipoAula,
                 DataAula = new DateTime(2022, 02, 10),
                 DisciplinaCompartilhadaId = 1106,
                 CodigoUe = UE_CODIGO_1,
-                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                RecorrenciaAula = recorrenciaAula,
                 CodigoComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_1106,
                 NomeComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_NOME,
                 TipoCalendarioId = 1
@@ -220,7 +219,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CrieAtribuicaoEsporadica()
+        protected async Task CriarAtribuicaoEsporadica()
         {
             await InserirNaBase(new AtribuicaoEsporadica
             {
@@ -237,7 +236,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriaAtribuicaoCJ()
+        protected async Task CriarAtribuicaoCJ()
         {
             await InserirNaBase(new AtribuicaoCJ
             {
@@ -255,7 +254,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriaAula(string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        protected async Task CriarAula(string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             await InserirNaBase(new Aula
             {
@@ -330,14 +329,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarItensComuns(bool criaPeriodo)
+        private async Task CriarItensComuns(bool criarPeriodo)
         {
-            await CriaPadrao();
-            if (criaPeriodo) await CriarPeriodoEscolar();
-            await CriaComponenteCurricular();
+            await CriarPadrao();
+            if (criarPeriodo) await CriarPeriodoEscolar();
+            await CriarComponenteCurricular();
         }
 
-        public async Task CriaPadrao()
+        public async Task CriarPadrao()
         {
             await InserirNaBase(new Dre
             {
@@ -388,7 +387,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriaComponenteCurricular()
+        private async Task CriarComponenteCurricular()
         {
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 

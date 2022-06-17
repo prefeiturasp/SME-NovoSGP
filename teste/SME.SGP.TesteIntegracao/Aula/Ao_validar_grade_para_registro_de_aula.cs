@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarGrade();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.Quantidade = 2;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -35,11 +35,11 @@ namespace SME.SGP.TesteIntegracao
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
-            await CriaAula("1111111");
+            await CriarAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.EhRegencia = true;
       
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -51,11 +51,11 @@ namespace SME.SGP.TesteIntegracao
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriaAula("1111111");
+            await CriarAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula();
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
             dto.EhRegencia = true;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
