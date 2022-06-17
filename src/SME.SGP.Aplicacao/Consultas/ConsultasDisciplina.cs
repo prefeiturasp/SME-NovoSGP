@@ -474,7 +474,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<DisciplinaDto>> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, long codigoDisciplina, bool regencia, string codigoTurma = "", bool CJ = false)
         {
-            if (codigoDisciplina == 0)
+            if (codigoDisciplina == 0 && !regencia)
                 return disciplinas;
 
             if (regencia)
