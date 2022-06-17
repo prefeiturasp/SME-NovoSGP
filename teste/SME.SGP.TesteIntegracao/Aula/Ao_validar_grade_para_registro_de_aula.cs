@@ -19,11 +19,11 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Quantidade_aulas_superior_ao_limite_de_aulas_da_grade()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriarGrade();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.Quantidade = 2;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -34,12 +34,12 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
             await CriaAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.EhRegencia = true;
       
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -50,12 +50,12 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula("1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.EhRegencia = true;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));

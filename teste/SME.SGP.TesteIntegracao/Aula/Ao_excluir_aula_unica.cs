@@ -22,8 +22,8 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Aula_nao_encontrada()
         {
-            CriarClaimUsuario(ObtenhaPerfilEspecialista());
-            await CriaUsuario();
+            CriarClaimUsuario(ObterPerfilProfessor());
+            await CriarUsuarios();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto();
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Exclui_aula_unica()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Aula_possui_avaliacao()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula();
             await CriarAtividadeAvaliativaFundamental();
 

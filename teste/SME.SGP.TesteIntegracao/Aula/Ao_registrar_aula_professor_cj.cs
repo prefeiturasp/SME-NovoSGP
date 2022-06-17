@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
-            await CarregueBase(ObtenhaPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAtribuicaoCJ();
 
             await ExecuteTesteRegistre();
@@ -26,12 +26,12 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
-            await CarregueBase(ObtenhaPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAtribuicaoCJ();
             await CrieAtribuicaoEsporadica();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Você não possui permissão para cadastrar aulas neste período");
@@ -40,10 +40,10 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Professor_CJ_nao_pode_criar_aulas()
         {
-            await CarregueBase(ObtenhaPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -53,11 +53,11 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Nao_pode_cadastrar_aula_data_com_evento_nao_letivo()
         {
-            await CarregueBase(ObtenhaPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CrieEvento(EventoLetivo.Nao);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");

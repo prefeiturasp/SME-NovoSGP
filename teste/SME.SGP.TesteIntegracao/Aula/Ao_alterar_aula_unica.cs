@@ -19,11 +19,11 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Ja_existe_aula_criada_no_dia_para_o_componente()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.Id = 2;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -34,12 +34,12 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Nao_e_possivel_alterar_aula_fora_do_periodo()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
             await CriarPeriodoEscolarEncerrado();
             await CriaAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.Id = 1;
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
@@ -50,11 +50,11 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Altera_aula()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula();
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.Id = 1;
             dto.Quantidade = 1;
 
@@ -71,11 +71,11 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Altera_aula_regente_diferente_do_atual()
         {
-            await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriaAula("1111111");
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             dto.Id = 1;
             dto.Quantidade = 1;
             dto.EhRegencia = true;

@@ -104,7 +104,7 @@ namespace SME.SGP.TesteIntegracao
         protected async Task ExecuteTesteRegistre(bool ehRegente = false)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObtenhaDtoAula();
+            var dto = ObterAula();
             if (ehRegente) dto.EhRegencia = true;
 
             var retorno = await useCase.Executar(dto);
@@ -117,13 +117,13 @@ namespace SME.SGP.TesteIntegracao
             lista.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
-        protected async Task CarregueBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criaPeriodo = true)
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criaPeriodo = true)
         {
-            await CriaItensComuns(criaPeriodo);
+            await CriarItensComuns(criaPeriodo);
             CriarClaimUsuario(perfil);
-            await CriaUsuario();
-            await CriaTipoCalendario(tipoCalendario);
-            await CriaTurma(modalidade);
+            await CriarUsuarios();
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarTurma(modalidade);
         }
 
         protected void CriarClaimUsuario(string perfil)
@@ -147,18 +147,18 @@ namespace SME.SGP.TesteIntegracao
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
-        protected string ObtenhaPerfilEspecialista()
+        protected string ObterPerfilProfessor()
         {
             return Guid.Parse(PerfilUsuario.PROFESSOR.Name()).ToString();
         }
 
-        protected string ObtenhaPerfilCJ()
+        protected string ObterPerfilCJ()
         {
             return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
         }
 
         //TODO: isso aqui vai ter que ser modificado por que está na base - deve ser especialista
-        protected PersistirAulaDto ObtenhaDtoAula()
+        protected PersistirAulaDto ObterAula()
         {
             return new PersistirAulaDto()
             {
@@ -277,7 +277,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriaUsuario()
+        protected async Task CriarUsuarios()
         {
             await InserirNaBase(new Usuario
             {
@@ -298,7 +298,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriaTurma(Modalidade modalidade)
+        private async Task CriarTurma(Modalidade modalidade)
         {
             await InserirNaBase(new Turma
             {
@@ -313,7 +313,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriaTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
+        private async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -330,7 +330,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriaItensComuns(bool criaPeriodo)
+        private async Task CriarItensComuns(bool criaPeriodo)
         {
             await CriaPadrao();
             if (criaPeriodo) await CriarPeriodoEscolar();
