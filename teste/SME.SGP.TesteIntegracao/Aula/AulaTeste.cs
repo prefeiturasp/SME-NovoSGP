@@ -145,12 +145,12 @@ namespace SME.SGP.TesteIntegracao
 
         protected string ObtenhaPerfilEspecialista()
         {
-            return PerfilUsuario.PROFESSOR.ToString();
+            return Guid.Parse(PerfilUsuario.PROFESSOR.Name()).ToString();
         }
 
         protected string ObtenhaPerfilCJ()
         {
-            return PerfilUsuario.CJ.ToString();
+            return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
         }
 
         //TODO: isso aqui vai ter que ser modificado por que está na base - deve ser especialista
