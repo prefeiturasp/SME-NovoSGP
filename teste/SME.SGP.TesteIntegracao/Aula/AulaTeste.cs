@@ -19,6 +19,70 @@ namespace SME.SGP.TesteIntegracao
 {
     public abstract class AulaTeste : TesteBase
     {
+        private const string USUARIO_CHAVE = "NomeUsuario";
+        private const string USUARIO_RF_CHAVE = "RF";
+        private const string USUARIO_LOGIN_CHAVE = "login";
+
+        private const string USUARIO_LOGADO_CHAVE = "UsuarioLogado";
+
+        private const string USUARIO_CLAIMS_CHAVE = "Claims";
+
+        private const string USUARIO_CLAIM_TIPO_RF = "rf";
+        private const string USUARIO_CLAIM_TIPO_PERFIL = "perfil";
+
+        private const string TURMA_CODIGO_1 = "1";
+        private const string TURMA_NOME_1 = "Turma Nome 1";
+        private const string TURMA_ANO_2 = "2";
+
+        private const int ANO_LETIVO_2022_NUMERO = 2022;
+        private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
+
+        private const int SEMESTRE_2 = 2;
+        
+        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_1106 = 1106;
+        private const string COMPONENTE_CURRICULAR_PORTUGUES_1106_CODIGO = "1106";
+        private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
+
+        private const string COMPONENTE_CURRICULAR = "componente_curricular";
+        private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
+        private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
+
+        private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
+        private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
+
+        private const string CODIGO_1 = "1";
+
+        private const string ED_INF_EMEI_4_HS = "'ED.INF. EMEI 4 HS'";
+        private const string REGENCIA_CLASSE_INFANTIL = "'Regência de Classe Infantil'";
+        private const string REGENCIA_INFATIL_EMEI_4H = "'REGÊNCIA INFANTIL EMEI 4H'";
+        private const string FALSE = "false";
+        private const string TRUE = "true";
+
+        private const string UE_CODIGO_1 = "1";
+        private const string UE_NOME_1 = "Nome da UE";
+
+        private const string DRE_CODIGO_1 = "1";
+        private const string DRE_NOME_1 = "DRE 1";        
+
+        private const string SISTEMA_NOME = "Sistema";
+        private const string SISTEMA_CODIGO_RF = "1";
+
+        private const string EVENTO_NOME_FESTA = "Festa";
+
+        private const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
+        private const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
+        private const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
+
+        private const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
+        private const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
+        private const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
+
+        private const string PROFESSOR = "Professor";
+        private const int ORDEM_290 = 290;
+
+        private const string PROFESSOR_CJ = "Professor CJ";
+        private const int ORDEM_320 = 320;
+
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -61,42 +125,48 @@ namespace SME.SGP.TesteIntegracao
         protected void CriarClaimUsuario(string perfil)
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "João Usuário");
-            variaveis.Add("UsuarioLogado", "2222222");
-            variaveis.Add("RF", "2222222");
-            variaveis.Add("login", "2222222");
+            var variaveis = new Dictionary<string, object>
+            {
+                { USUARIO_CHAVE, USUARIO_PROFESSOR_NOME_2222222 },
+                { USUARIO_LOGADO_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
+                { USUARIO_RF_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
+                { USUARIO_LOGIN_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
 
-            variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "2222222", Type = "rf" },
-                new InternalClaim { Value = perfil, Type = "perfil" }
-            });
+                {
+                   USUARIO_CLAIMS_CHAVE,
+                    new List<InternalClaim> {
+                        new InternalClaim { Value = USUARIO_PROFESSOR_LOGIN_2222222, Type = USUARIO_CLAIM_TIPO_RF },
+                        new InternalClaim { Value = perfil, Type = USUARIO_CLAIM_TIPO_PERFIL }
+                    }
+                }
+            };
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
         protected string ObtenhaPerfilEspecialista()
         {
-            return "40e1e074-37d6-e911-abd6-f81654fe895d";
+            return PerfilUsuario.PROFESSOR.ToString();
         }
 
         protected string ObtenhaPerfilCJ()
         {
-            return "41e1e074-37d6-e911-abd6-f81654fe895d";
+            return PerfilUsuario.CJ.ToString();
         }
 
+        //TODO: isso aqui vai ter que ser modificado por que está na base - deve ser especialista
         protected PersistirAulaDto ObtenhaDtoAula()
         {
             return new PersistirAulaDto()
             {
-                CodigoTurma = "1",
+                CodigoTurma = TURMA_CODIGO_1,
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 DataAula = new DateTime(2022, 02, 10),
                 DisciplinaCompartilhadaId = 1106,
-                CodigoUe = "1",
+                CodigoUe = UE_CODIGO_1,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
-                CodigoComponenteCurricular = 1106,
-                NomeComponenteCurricular = "português",
+                CodigoComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_1106,
+                NomeComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_NOME,
                 TipoCalendarioId = 1
             };
         }
@@ -110,8 +180,8 @@ namespace SME.SGP.TesteIntegracao
                 Bimestre = 2,
                 PeriodoInicio = new DateTime(2022, 01, 10),
                 PeriodoFim = new DateTime(2022, 02, 5),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
@@ -121,26 +191,26 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new EventoTipo
             {
-                Descricao = "festa",
+                Descricao = EVENTO_NOME_FESTA,
                 Ativo = true,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
 
             await InserirNaBase(new Evento
             {
-                Nome = "festa",
+                Nome = EVENTO_NOME_FESTA,
                 TipoCalendarioId = 1,
                 TipoEventoId = 1,
-                UeId = "1",
+                UeId = UE_CODIGO_1,
                 Letivo = letivo,
-                DreId = "1",
+                DreId = DRE_CODIGO_1,
                 DataInicio = new DateTime(2022, 02, 10),
                 DataFim = new DateTime(2022, 02, 10),
                 Status = EntidadeStatus.Aprovado,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
@@ -150,14 +220,14 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new AtribuicaoEsporadica
             {
-                UeId = "1",
-                ProfessorRf = "2222222",
+                UeId =UE_CODIGO_1,
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 AnoLetivo = 2022,
-                DreId = "1",
+                DreId = DRE_CODIGO_1,
                 DataInicio = new DateTime(2022, 01, 10),
                 DataFim = new DateTime(2022, 01, 10),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
@@ -167,27 +237,27 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new AtribuicaoCJ
             {
-                TurmaId = "1",
-                DreId = "1",
-                UeId = "1",
-                ProfessorRf = "2222222",
+                TurmaId = TURMA_CODIGO_1,
+                DreId =DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 DisciplinaId = 1106,
                 Modalidade = Modalidade.EducacaoInfantil,
                 Substituir = true,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
         }
 
-        protected async Task CriaAula(string rf = "2222222")
+        protected async Task CriaAula(string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             await InserirNaBase(new Aula
             {
-                UeId = "1",
-                DisciplinaId = "1106",
-                TurmaId = "1",
+                UeId = UE_CODIGO_1,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_1106_CODIGO.ToString(),
+                TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
                 ProfessorRf = rf,
                 Quantidade = 3,
@@ -195,8 +265,8 @@ namespace SME.SGP.TesteIntegracao
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
                 CriadoEm = new DateTime(2022, 02, 10),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
                 Migrado = false,
                 AulaCJ = false
@@ -207,21 +277,20 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new Usuario
             {
-                Id = 29,
-                Login = "2222222",
-                CodigoRf = "2222222",
-                Nome = "João Usuário",
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
+                Login = USUARIO_PROFESSOR_LOGIN_2222222,
+                CodigoRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                Nome = USUARIO_PROFESSOR_NOME_2222222,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new Usuario
             {
-                Login = "1111111",
-                CodigoRf = "1111111",
-                Nome = "Maria Usuário",
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
+                Login = USUARIO_PROFESSOR_LOGIN_1111111,
+                CodigoRf = USUARIO_PROFESSOR_CODIGO_RF_1111111,
+                Nome = USUARIO_PROFESSOR_NOME_1111111,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -230,13 +299,13 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Turma
             {
                 UeId = 1,
-                Ano = "2",
-                CodigoTurma = "1",
+                Ano = TURMA_ANO_2,
+                CodigoTurma = TURMA_CODIGO_1,
                 Historica = true,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = 2022,
-                Semestre = 2,
-                Nome = "Turma Nome 1"
+                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                Semestre = SEMESTRE_2,
+                Nome = TURMA_NOME_1
             });
         }
 
@@ -244,14 +313,14 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = 2022,
-                Nome = "Ano Letivo 202",
+                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                Nome = ANO_LETIVO_2022_NOME,
                 Periodo = Periodo.Semestral,
                 Modalidade = tipoCalendario,
                 Situacao = true,
                 CriadoEm = DateTime.Now,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
                 Migrado = false
             });
@@ -268,39 +337,35 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new Dre
             {
-                Id = 1,
-                CodigoDre = "1",
-                Abreviacao = "DRE AB",
-                Nome = "DRE AB"
+                CodigoDre = DRE_CODIGO_1,
+                Abreviacao = DRE_NOME_1,
+                Nome = DRE_NOME_1
             });
             await InserirNaBase(new Ue
             {
-                Id = 1,
-                CodigoUe = "1",
+                CodigoUe = UE_CODIGO_1,
                 DreId = 1,
-                Nome = "Nome da UE",
+                Nome = UE_NOME_1,
             });
 
             await InserirNaBase(new PrioridadePerfil
             {
-                Id = 1,
-                CodigoPerfil = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                NomePerfil = "Professor",
-                Ordem = 290,
+                CodigoPerfil = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
+                NomePerfil = PROFESSOR,
+                Ordem = ORDEM_290,
                 Tipo = TipoPerfil.UE,
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
 
             await InserirNaBase(new PrioridadePerfil
             {
-                Id = 2,
-                CodigoPerfil = new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
-                NomePerfil = "Professor CJ",
-                Ordem = 320,
+                CodigoPerfil = Guid.Parse(PerfilUsuario.CJ.Name()),
+                NomePerfil = PROFESSOR_CJ,
+                Ordem = ORDEM_320,
                 Tipo = TipoPerfil.UE,
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -308,26 +373,24 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new PeriodoEscolar
             {
-                Id = 1,
                 TipoCalendarioId = 1,
-                Bimestre = 2,
+                Bimestre = SEMESTRE_2,
                 PeriodoInicio = new DateTime(2022, 01, 10),
                 PeriodoFim = DateTime.Now.AddYears(1),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
             });
         }
 
-
         private async Task CriaComponenteCurricular()
         {
-            await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
-            await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
-            await InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_1106_CODIGO, COMPONENTE_CURRICULAR_PORTUGUES_1106_CODIGO, CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE,REGENCIA_CLASSE_INFANTIL,REGENCIA_INFATIL_EMEI_4H);
         }
     }
 }
