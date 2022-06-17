@@ -90,26 +90,26 @@ namespace SME.SGP.Aplicacao
 
         private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto)
         {
-            var agrupamentoUe = responsavelEscolaDreDto.GroupBy(x => x.EscolaId);
-            foreach (var item in agrupamentoUe)
+            var agrupamentoUe = responsavelEscolaDreDto.GroupBy(x => x.EscolaId).ToList();
+            for (int i = 0; i < agrupamentoUe.Count; i++)
             {
                 var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
 
-                var itemTipo = item.Select(e => e.TipoAtribuicao);
+                var itemTipo = agrupamentoUe[i].Select(e => e.TipoAtribuicao);
                 var naotemTipo = tipos.Except(itemTipo).ToList();
 
-                foreach (var itemCodigo in naotemTipo)
+                for (int n = 0; n < naotemTipo.Count; n++)
                 {
                     var registro = new SupervisorEscolasDreDto
                     {
-                        Id = item.FirstOrDefault().Id,
-                        DreId = item.FirstOrDefault().DreId,
-                        EscolaId = item.FirstOrDefault().EscolaId,
-                        TipoAtribuicao = itemCodigo,
+                        Id = agrupamentoUe[i].FirstOrDefault().Id,
+                        DreId = agrupamentoUe[i].FirstOrDefault().DreId,
+                        EscolaId = agrupamentoUe[i].FirstOrDefault().EscolaId,
+                        TipoAtribuicao = naotemTipo[n],
                         SupervisorId = null,
-                        TipoEscola = item.FirstOrDefault().TipoEscola,
-                        UeNome = item.FirstOrDefault().UeNome,
-                        DreNome = item.FirstOrDefault().DreNome,
+                        TipoEscola = agrupamentoUe[i].FirstOrDefault().TipoEscola,
+                        UeNome = agrupamentoUe[i].FirstOrDefault().UeNome,
+                        DreNome = agrupamentoUe[i].FirstOrDefault().DreNome,
                         Excluido = false
                     };
                     responsavelEscolaDreDto.Add(registro);
@@ -141,35 +141,10 @@ namespace SME.SGP.Aplicacao
 
         private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
-            //var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
-
             ResponsavelRetornoDto listaResponsaveis = null;
-
-            //if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
-            //    listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
-
-            //var supervisoresTipo = supervisoresEscolasDres
-            //    .GroupBy(a => new { a.SupervisorId, a.Tipo, a.Excluido,a.EscolaId })
-            //    .Select(g => g.Key);
 
             foreach (var supervisor in supervisoresEscolasDres)
             {
-
-                //var supervisorEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisor.SupervisorId).ToList();
-
-                //var idsEscolas = supervisorEscolas.Select(a => a.EscolaId).ToList();
-
-                //IEnumerable<UnidadeEscolarDto> escolas = new List<UnidadeEscolarDto>();
-
-                //if (idsEscolas.Count > 0)
-                //{
-                //    escolas = from t in listaEscolas
-                //              where idsEscolas.Contains(t.CodigoUe)
-                //              select new UnidadeEscolarDto() { Codigo = t.CodigoUe, Nome = $"{t.TipoEscola.ShortName()} {t.Nome}" };
-                //}
-
-                //var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisor.SupervisorId);
-
                 switch (supervisor.TipoAtribuicao)
                 {
                     case (int)TipoResponsavelAtribuicao.PsicologoEscolar:
@@ -177,14 +152,14 @@ namespace SME.SGP.Aplicacao
                     case (int)TipoResponsavelAtribuicao.AssistenteSocial:
                         {
                             var nomesFuncionariosAtribuidos = servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor.SupervisorId }).Result;
-                            if (nomesFuncionariosAtribuidos.Count() > 0)
+                            if (nomesFuncionariosAtribuidos.Any())
                                 listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
                             break;
                         }
                     default:
                         {
                             var nomesServidoresAtribuidos = servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor.SupervisorId }).Result;
-                            if (nomesServidoresAtribuidos.Count() > 0)
+                            if (nomesServidoresAtribuidos.Any())
                                 listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
                             break;
                         }
@@ -214,14 +189,13 @@ namespace SME.SGP.Aplicacao
 
         private static string ObterTipoResponsavelDescricao(int tipo)
         {
-
             var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Where(w => (int)w == tipo)
                 .Select(d => new { descricao = d.Name() })
                 .FirstOrDefault()?.descricao;
 
-            return tipoDescricao != null ? tipoDescricao : "NÃO ATRIBUÍDO";
+            return tipoDescricao != null ? tipoDescricao :null;
         }
 
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
