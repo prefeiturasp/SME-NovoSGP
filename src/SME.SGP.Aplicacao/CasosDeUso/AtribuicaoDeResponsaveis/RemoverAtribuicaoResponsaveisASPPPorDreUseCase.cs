@@ -69,9 +69,9 @@ namespace SME.SGP.Aplicacao
         {
             var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
 
-            var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
-            var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
-            var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+            var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+            var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
+            var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.UsuarioId.ToString()).Contains(s.SupervisorId));
 
             if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
                 listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
                 CriadoRF = dto.CriadoRF,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoAtribuicao
             };
         }
     }

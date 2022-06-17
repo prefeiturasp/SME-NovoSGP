@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
         {
 
             if (responsaveisEOL != null)
-                reponsaveisPAAI = reponsaveisPAAI.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.PAAI && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
+                reponsaveisPAAI = reponsaveisPAAI.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PAAI && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
             foreach (var supervisor in reponsaveisPAAI)
             {
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
                 CriadoRF = dto.CriadoRF,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoAtribuicao
             };
         }
     }

@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
                             .ObterPorId(atribuicao.Id);
 
                         supervisorEscolaDre.Excluido = false;
-                        supervisorEscolaDre.Tipo = atribuicao.Tipo;
+                        supervisorEscolaDre.Tipo = atribuicao.TipoAtribuicao;
 
                         await repositorioSupervisorEscolaDre.SalvarAsync(supervisorEscolaDre);
                     }
