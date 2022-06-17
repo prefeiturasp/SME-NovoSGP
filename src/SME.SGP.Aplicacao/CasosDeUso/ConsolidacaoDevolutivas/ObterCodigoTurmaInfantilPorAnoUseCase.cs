@@ -23,9 +23,11 @@ namespace SME.SGP.Aplicacao
                 var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(filtro.AnoAtual));
 
                 if (turmasInfantil.Count() > 0)
-                    await PublicarMensagemTurmaIdsDevolutivas(turmasInfantil,filtro.AnoAtual);
-                return true;
-
+                {
+                    await PublicarMensagemTurmaIdsDevolutivas(turmasInfantil, filtro.AnoAtual);
+                    return true;
+                }
+                return false;
             }
             catch (Exception ex)
             {

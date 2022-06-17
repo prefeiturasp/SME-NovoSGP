@@ -24,10 +24,9 @@ namespace SME.SGP.Aplicacao
 
                 var turmasIds = await mediator.Send(new ObterTurmasComDevolutivaPorAulaTurmaIdQuery(filtro.TurmaId));
 
-                if (turmasIds.Count() > 0 && turmasIds.FirstOrDefault() != 0)
-                {
+                if (turmasIds.Any() && turmasIds.FirstOrDefault() != 0)
                     await mediator.Send(new LimparConsolidacaoDevolutivasCommand(turmasIds.ToArray()));
-                }
+
                 await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(filtro);
                 await AtualizarDataExecucao(filtro.AnoLetivo);
                 return true;
