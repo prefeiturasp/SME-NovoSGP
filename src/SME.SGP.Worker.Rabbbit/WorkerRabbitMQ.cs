@@ -250,6 +250,10 @@ namespace SME.SGP.Worker.RabbitMQ
 
             ///Consolidação de Devolutivas
             comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil", typeof(IConsolidarDevolutivasPorTurmaInfantilUseCase)));
+            
+            comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil - Turma", typeof(IObterCodigoTurmaInfantilPorAnoUseCase)));
+            comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilAula, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil - Aula", typeof(IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase)));
+
             comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new ComandoRabbit("Consolidar Devolutivas Turmas ", typeof(IConsolidarDevolutivasPorTurmaUseCase)));
 
             comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoCarregar, new ComandoRabbit("Carregar UEs para consolidação de Diarios de Bordo", typeof(IConsolidarDiariosBordoCarregarUseCase)));

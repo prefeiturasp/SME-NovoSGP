@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.TurmasIds)
                 .NotEmpty()
-                .WithMessage("O ano deve ser informado para limpar a consolidação de devolutivas das turmas");
+                .WithMessage("A turma deve ser informada para limpar a consolidação de devolutivas");
         }
     }
 }
