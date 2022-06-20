@@ -400,7 +400,6 @@ namespace SME.SGP.Dados.Repositorios
                 dataAula = dataAula.Date,
                 aulaNomal = TipoAula.Normal
             }) ?? 0;
-            database.Conexao.Close();
 
             return qtd;
         }
@@ -454,7 +453,6 @@ namespace SME.SGP.Dados.Repositorios
                 aulaNomal = TipoAula.Normal,
                 dataExcecao
             }) ?? 0;
-            database.Conexao.Close();
 
             return qtd;
         }

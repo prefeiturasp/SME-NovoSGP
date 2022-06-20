@@ -83,19 +83,5 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula no final de semana");
         }
-
-        [Fact]
-        public async Task O_professor_nao_pode_fazer_alteracao_na_turma()
-        {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-
-            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
-            dto.DataAula = new DateTime(2022, 02, 02);
-
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-            excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
-        }
     }
 }
