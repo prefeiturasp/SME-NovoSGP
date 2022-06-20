@@ -123,10 +123,10 @@ namespace SME.SGP.Api
             ConfiguraGoogleClassroomSync(services);
             ConfiguraRabbitParaLogs(services);
 
-            var registraDependencias = new RegistraDependencias();
+            var registraDependencias = new RegistrarDependencias();
             registraDependencias.Registrar(services, Configuration);
+            registraDependencias.RegistrarHttpClients(services, Configuration);
 
-            RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services); 
 

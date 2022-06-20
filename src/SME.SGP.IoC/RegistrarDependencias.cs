@@ -36,7 +36,7 @@ using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
-    public class RegistraDependencias //Raphael. Tirei o static para facilitar o teste
+    public class RegistrarDependencias //Raphael. Tirei o static para facilitar o teste
     {
         public virtual void Registrar(IServiceCollection services, IConfiguration configuration)
         {
@@ -49,10 +49,48 @@ namespace SME.SGP.IoC
             RegistrarConsultas(services);
             RegistrarServicos(services);
             RegistrarCasosDeUso(services);
-            RegistrarCasoDeUsoRabbitSgp(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
+
             RegistrarMapeamentos.Registrar();
+        }
+
+        public virtual void RegistrarParaWorkers(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddHttpContextAccessor();
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
+            services.AddMemoryCache();
+
+            RegistrarHttpClients(services, configuration);
+            RegistrarPolicies(services);
+            RegistrarGoogleClassroomSync(services, configuration);
+            RegistrarConsumoFilas(services, configuration);
+
+            RegistrarRepositorios(services);
+            RegistrarContextos(services);
+            RegistrarComandos(services);
+            RegistrarConsultas(services);
+            RegistrarServicos(services);
+            RegistrarRabbit(services, configuration);
+            RegistrarTelemetria(services, configuration);
+
+            RegistrarMapeamentos.Registrar();
+        }
+
+        public virtual void RegistrarConsumoFilas(IServiceCollection services, IConfiguration configuration)
+        {
+            services.ConfigurarConsumoFilas(configuration);
+        }
+
+        public virtual void RegistrarHttpClients(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AdicionarHttpClients(configuration);
+        }
+
+        public virtual void RegistrarGoogleClassroomSync(IServiceCollection services, IConfiguration configuration)
+        {
+            services.ConfigurarGoogleClassroomSync(configuration);
         }
 
         protected virtual void RegistrarComandos(IServiceCollection services)
@@ -497,14 +535,38 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         }
 
-        protected virtual void RegistrarCasoDeUsoRabbitSgp(IServiceCollection services)
+        public virtual void RegistrarCasoDeUsoAEERabbitSgp(IServiceCollection services)
         {
             services.RegistrarAEEUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoAulaRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarAulaUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoFechamentoRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarFechamentoUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoFrequenciaRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarFrequenciaUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoInstitucionalRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarInstitucionalUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoPendenciasRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarPendenciasUseCaseRabbitSgp();
+        }
+
+        public virtual void RegistrarCasoDeUsoRabbitSgp(IServiceCollection services)
+        {
             services.RegistrarUseCaseRabbitSgp();
         }
 
@@ -1006,7 +1068,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterPeriodoAtribuicaoPorUeUseCase, ObterPeriodoAtribuicaoPorUeUseCase>();
             services.TryAddScoped<IExcluirAtribuicaoEsporadicaUseCase, ExcluirAtribuicaoEsporadicaUseCase>();
 
-
             services.TryAddScoped<IObterAnosLetivosAtribuicaoCJUseCase, ObterAnosLetivosAtribuicaoCJUseCase>();
             services.TryAddScoped<IObterProfessoresTitularesECjsUseCase, ObterProfessoresTitularesECjsUseCase>();
             services.TryAddScoped<ISalvarAtribuicaoCJUseCase, SalvarAtribuicaoCJUseCase>();
@@ -1066,9 +1127,17 @@ namespace SME.SGP.IoC
             // NAAPA - Frequência turma evasão
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+
+            RegistrarCasoDeUsoAEERabbitSgp(services);
+            RegistrarCasoDeUsoAulaRabbitSgp(services);
+            RegistrarCasoDeUsoFechamentoRabbitSgp(services);
+            RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
+            RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
+            RegistrarCasoDeUsoPendenciasRabbitSgp(services);
+            RegistrarCasoDeUsoRabbitSgp(services);
         }
 
-        private void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
+        public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
         {
             services.ConfigurarTelemetria(configuration);
         }
@@ -1078,7 +1147,7 @@ namespace SME.SGP.IoC
             services.AddPolicies();
         }
 
-        private static void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
+        public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
             if (configuration == null)
                 return;

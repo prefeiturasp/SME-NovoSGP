@@ -2,7 +2,6 @@
 {
     public static class RotasRabbitSgpFechamento
     {
-        public const string RotaNotificacaoUsuario = "sgp.notificacao.usuario";
         public const string ConsolidarTurmaFechamentoSync = "sgp.consolidacao.turma.fechamento.sync";
         public const string ConsolidarTurmaFechamentoComponenteTratar = "sgp.consolidacao.turma.fechamento.componente.tratar";        
         public const string ConsolidarTurmaConselhoClasseSync = "sgp.consolidacao.turma.conselhoclasse.sync";
@@ -39,6 +38,6 @@
         public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
         public const string VerificarPendenciasFechamentoTurmaDisciplina = "sgp.verificar.pendencias.fechamento.turma.disciplina";
         public const string AlterarPeriodosComHierarquiaInferiorFechamento = "sgp.alterar.periodo.hierarquia.inferior.fechamento";
-        public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio"; // Fechamento
+        public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
     }
 }

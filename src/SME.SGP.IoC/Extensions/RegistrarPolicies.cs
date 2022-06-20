@@ -12,7 +12,7 @@ namespace SME.SGP.IoC
         {
             IPolicyRegistry<string> registry = services.AddPolicyRegistry();
 
-            Random jitterer = new Random();
+            Random jitterer = new();
             var policyFila = Policy.Handle<Exception>()
               .WaitAndRetryAsync(3,
                 retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))

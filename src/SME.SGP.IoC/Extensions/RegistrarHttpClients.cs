@@ -8,45 +8,24 @@ using System;
 using System.Net;
 using System.Net.Http;
 
-namespace SME.SGP.Aplicacao
+namespace SME.SGP.IoC
 {
-    public static class RegistraClientesHttp
+    internal static class RegistrarHttpClients
     {
-        public static void Registrar(IServiceCollection services, IConfiguration configuration)
+        internal static void AdicionarHttpClients(this IServiceCollection services, IConfiguration configuration)
         {
-            var policy = ObterPolicyBaseHttp();
-
             services.AddHttpClient<IServicoJurema, ServicoJurema>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiJurema").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
-            }).AddPolicyHandler(policy);
+            });
 
             services.AddHttpClient<IServicoEol, ServicoEOL>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlApiEOL").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
-            }).AddPolicyHandler(policy);
-
-            services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
-            {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-            }).AddPolicyHandler(policy);
-
-            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
-            {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-                c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
-            }).AddPolicyHandler(policy);
-
-            services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
-            {
-                c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
-                c.DefaultRequestHeaders.Add("Accept", "application/json");
-            }).AddPolicyHandler(policy);
+            });
 
             services.AddHttpClient(name: "servicoEOL", c =>
             {
@@ -54,7 +33,26 @@ namespace SME.SGP.Aplicacao
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-api-eol-key", configuration.GetSection("ApiKeyEolApi").Value);
 
-            }).AddPolicyHandler(policy);
+            }).AddPolicyHandler(GetRetryPolicy());
+
+            services.AddHttpClient<IServicoAcompanhamentoEscolar, ServicoAcompanhamentoEscolar>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
+
+            services.AddHttpClient(name: "servicoAcompanhamentoEscolar", c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiAE").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+                c.DefaultRequestHeaders.Add("x-integration-key", configuration.GetSection("AE_ChaveIntegracao").Value);
+            });
+
+            services.AddHttpClient<IServicoGithub, SevicoGithub>(c =>
+            {
+                c.BaseAddress = new Uri(configuration.GetSection("UrlApiGithub").Value);
+                c.DefaultRequestHeaders.Add("Accept", "application/json");
+            });
 
             var cookieContainer = new CookieContainer();
             var jasperCookieHandler = new JasperCookieHandler() { CookieContainer = cookieContainer };
@@ -72,31 +70,28 @@ namespace SME.SGP.Aplicacao
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new JasperCookieHandler() { CookieContainer = cookieContainer };
-            }).AddPolicyHandler(policy);
-
+            });
 
             services.AddHttpClient<IServicoServidorRelatorios, ServicoServidorRelatorios>(c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
-            }).AddPolicyHandler(policy);
+            });
 
             services.AddHttpClient(name: "servicoServidorRelatorios", c =>
             {
                 c.BaseAddress = new Uri(configuration.GetSection("UrlServidorRelatorios").Value);
                 c.DefaultRequestHeaders.Add("Accept", "application/json");
                 c.DefaultRequestHeaders.Add("x-sr-api-key", configuration.GetSection("ApiKeySr").Value);
-            }).AddPolicyHandler(policy);
+            });
         }
 
-        static IAsyncPolicy<HttpResponseMessage> ObterPolicyBaseHttp()
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
         {
             return HttpPolicyExtensions
-                 .HandleTransientHttpError()
-                 .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
-                 .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                                                                             retryAttempt)));
+                .HandleTransientHttpError()
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(3, retryAttempt)));
         }
     }
 }

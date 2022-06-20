@@ -13,7 +13,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class RegistradorDependencias : RegistraDependencias
+    public class RegistradorDependencias : RegistrarDependencias
     {
         protected override void RegistrarContextos(IServiceCollection services)
         {

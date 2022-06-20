@@ -2,6 +2,7 @@
 {
     public static class RotasRabbitSgp
     {
+        public const string RotaNotificacaoUsuario = "sgp.notificacao.usuario";
         public const string RotaNotificacaoNovaObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";
         public const string RotaNotificacaoNovaObservacaoDiarioBordo = "sgp.notificacao.nova.observacao.diariobordo";
         public const string RotaNovaNotificacaoObservacaoCartaIntencoes = "sgp.notificacao.nova.observacao.cartaintencoes";

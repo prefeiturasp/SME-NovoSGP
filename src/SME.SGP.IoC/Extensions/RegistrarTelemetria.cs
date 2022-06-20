@@ -24,8 +24,9 @@ namespace SME.SGP.IoC
                 DapperExtensionMethods.Init(servicoTelemetria);
 
                 services.AddSingleton(servicoTelemetria);
-                services.AddSingleton(options);
             });
+
+            services.AddSingleton<TelemetriaOptions>();
         }
     }
 }
