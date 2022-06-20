@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine(@"SELECT sed.id,
                                  sed.dre_id AS DreId,
-                                 sed.escola_id AS EscolaId,
+                                 sed.escola_id AS UeId,
                                  sed.supervisor_id AS SupervisorId,
                                  sed.criado_em AS CriadoEm,
                                  sed.criado_por AS CriadoPor,

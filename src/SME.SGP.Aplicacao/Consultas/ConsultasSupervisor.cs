@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
 
-            responsavelEscolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto.ToList());
+            //responsavelEscolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto.ToList());
 
             return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
 
@@ -110,7 +110,8 @@ namespace SME.SGP.Aplicacao
                         TipoEscola = agrupamentoUe[i].FirstOrDefault().TipoEscola,
                         UeNome = agrupamentoUe[i].FirstOrDefault().UeNome,
                         DreNome = agrupamentoUe[i].FirstOrDefault().DreNome,
-                        Excluido = false
+                        Excluido = false,
+                        UeId = agrupamentoUe[i].FirstOrDefault().UeId
                     };
                     responsavelEscolaDreDto.Add(registro);
                 }
@@ -176,6 +177,8 @@ namespace SME.SGP.Aplicacao
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
                     TipoResponsavelId = supervisor.TipoAtribuicao,
                     UeNome = $"{supervisor.TipoEscola.ShortName()} {supervisor.UeNome}",
+                    UeId = supervisor.UeId,
+                    DreId = supervisor.DreId,
                     DreNome = supervisor.DreNome,
                     AlteradoEm = supervisor.AlteradoEm,
                     AlteradoPor = supervisor.AlteradoPor,
