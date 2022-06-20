@@ -107,11 +107,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
         {
-            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var aula = ObterAula(tipoAula, recorrenciaAula);
-            if (ehRegente) aula.EhRegencia = true;
-
-            var retorno = await useCase.Executar(aula);
+            var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, ehRegente);
 
             retorno.ShouldNotBeNull();
 

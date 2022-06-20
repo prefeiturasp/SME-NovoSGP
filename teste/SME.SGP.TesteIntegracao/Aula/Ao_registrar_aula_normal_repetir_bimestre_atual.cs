@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
         {}
 
         [Fact]
-        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_cj_com_atribuicao_cj_e_com_atribuicao_fora_da_aula_espontanea_modalidade_fundamental()
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_cj_com_atribuicao_cj_e_com_atribuicao_espontanea_invalida_modalidade_fundamental()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
             excecao.Mensagens.FirstOrDefault().ShouldNotBeNullOrEmpty();
 
             excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");
-        }
+        }        
 
         public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_cj_modalidade_infantil()
         {
