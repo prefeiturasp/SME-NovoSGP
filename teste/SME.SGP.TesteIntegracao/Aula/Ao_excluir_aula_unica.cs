@@ -13,6 +13,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_excluir_aula_unica : AulaTeste
     {
+        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -34,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Exclui_aula_unica()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula();
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto();
@@ -52,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Aula_possui_avaliacao()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula();
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
             await CriarAtividadeAvaliativaFundamental();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
