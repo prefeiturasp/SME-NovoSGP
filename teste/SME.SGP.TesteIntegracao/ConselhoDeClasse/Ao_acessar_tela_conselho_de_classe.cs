@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao
 
             var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
             //Act
-            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao);
+            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao, dataMatricula.Year);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao
 
             var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
             //Act
-            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao);
+            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao, dataMatricula.Year);
 
             //Assert
             retorno.ShouldNotBeNull();
