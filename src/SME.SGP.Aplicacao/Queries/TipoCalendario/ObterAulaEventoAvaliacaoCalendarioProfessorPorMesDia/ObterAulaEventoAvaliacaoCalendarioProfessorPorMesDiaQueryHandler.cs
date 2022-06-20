@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                                                        where avaliacao.EhCj == aulaParaVisualizar.AulaCJ &&
                                                              disciplina.DisciplinaId == aulaParaVisualizar.DisciplinaId &&
                                                              (avaliacao.ProfessorRf == aulaParaVisualizar.ProfessorRf ||
-                                                             (professorTitular != null && professorTitular.ProfessorRf == avaliacao.ProfessorRf && !avaliacao.EhCj) || usuarioLogado.EhGestorEscolar())
+                                                             (professorTitular != null && !avaliacao.EhCj) || usuarioLogado.EhGestorEscolar())
                                                        select avaliacao);
 
                     if (atividadesAvaliativasDaAula.Any())
