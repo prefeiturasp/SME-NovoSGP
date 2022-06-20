@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.ComponenteCurricular
 {
     public class Ao_obter_componente_curricular : TesteBase
     {
-        private const long ID_COMPONENTE = 1;
+        private const long ID_MATEMATICA = 1;
         private const string NOME_COMPONENTE = "MATEMATICA";
         public Ao_obter_componente_curricular(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ComponenteCurricular
             await InserirNaBase("componente_curricular", "1", "512", "1", "1", "'MATEMATICA'", "false", "false", "true", "false", "false", "true", "' '", "''");
 
 
-            var nomeComponente = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(ID_COMPONENTE));
+            var nomeComponente = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(ID_MATEMATICA));
 
             nomeComponente.ShouldNotBeEmpty();
             nomeComponente.ShouldBe(NOME_COMPONENTE);
