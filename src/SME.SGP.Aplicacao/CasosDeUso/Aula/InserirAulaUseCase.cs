@@ -19,6 +19,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoBaseDto> Executar(PersistirAulaDto inserirAulaDto)
         {
+            var mensagemDeExcecao = string.Empty;
+
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
@@ -63,9 +65,10 @@ namespace SME.SGP.Aplicacao
                     }
                     catch (Exception ex)
                     {
+                        mensagemDeExcecao = ex.Message;
                         await mediator.Send(new SalvarLogViaRabbitCommand("Criação de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                        
                     }
-                    return new RetornoBaseDto("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");
+                    return new RetornoBaseDto($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {mensagemDeExcecao}");
                 }
             }
             else
