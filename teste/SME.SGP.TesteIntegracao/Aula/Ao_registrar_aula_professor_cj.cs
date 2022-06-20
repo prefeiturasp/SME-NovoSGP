@@ -3,6 +3,7 @@ using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,6 +11,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
+        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -18,20 +21,20 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAtribuicaoCJ();
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
         }
 
         [Fact]
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAtribuicaoCJ();
-            await CriarAtribuicaoEsporadica();
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await CriarAtribuicaoEsporadica(new DateTime(2022, 01, 10), new DateTime(2022, 01, 10));
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Você não possui permissão para cadastrar aulas neste período");
@@ -43,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -54,10 +57,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Nao_pode_cadastrar_aula_data_com_evento_nao_letivo()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CrieEvento(EventoLetivo.Nao);
+            await CrieEvento(EventoLetivo.Nao, new System.DateTime(2022, 02, 10), new System.DateTime(2022, 02, 10));
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
