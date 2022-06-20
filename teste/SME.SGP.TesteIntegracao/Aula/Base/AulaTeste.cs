@@ -9,6 +9,7 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -99,9 +100,10 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ValidarInserirAulaUseCaseBasico(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
+        protected async Task<RetornoBaseDto> ValidarInserirAulaUseCaseBasico(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var aula = ObterAula(tipoAula, recorrenciaAula);
@@ -115,6 +117,8 @@ namespace SME.SGP.TesteIntegracao
 
             aulasCadastradas.ShouldNotBeEmpty();
             aulasCadastradas.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            return retorno;
         }
 
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
@@ -155,6 +159,26 @@ namespace SME.SGP.TesteIntegracao
         protected string ObterPerfilCJ()
         {
             return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
+        }
+
+        protected string ObterPerfilCJInfantil()
+        {
+            return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
+        }
+
+        protected string ObterPerfilCP()
+        {
+            return Guid.Parse(PerfilUsuario.CP.Name()).ToString();
+        }
+
+        protected string ObterPerfilAD()
+        {
+            return Guid.Parse(PerfilUsuario.AD.Name()).ToString();
+        }
+
+        protected string ObterPerfilDiretor()
+        {
+            return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
         }
 
         protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula)
@@ -219,16 +243,16 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtribuicaoEsporadica()
+        protected async Task CriarAtribuicaoEsporadica(DateTime dataInicio, DateTime dataFim)
         {
             await InserirNaBase(new AtribuicaoEsporadica
             {
-                UeId =UE_CODIGO_1,
+                UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 AnoLetivo = ANO_LETIVO_2022_NUMERO,
                 DreId = DRE_CODIGO_1,
-                DataInicio = new DateTime(2022, 01, 10),
-                DataFim = new DateTime(2022, 01, 10),
+                DataInicio = dataInicio,
+                DataFim = dataFim,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
@@ -236,7 +260,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtribuicaoCJ()
+        protected async Task CriarAtribuicaoCJ(Modalidade modalidade)
         {
             await InserirNaBase(new AtribuicaoCJ
             {
@@ -245,7 +269,7 @@ namespace SME.SGP.TesteIntegracao
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_1106,
-                Modalidade = Modalidade.EducacaoInfantil,
+                Modalidade = modalidade,
                 Substituir = true,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,

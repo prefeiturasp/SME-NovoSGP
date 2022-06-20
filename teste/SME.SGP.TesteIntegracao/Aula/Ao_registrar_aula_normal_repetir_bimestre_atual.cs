@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,87 +11,53 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
         public Ao_registrar_aula_normal_repetir_bimestre_atual(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
-        [Fact]
-        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_com_professor_modalidade_fundamental()
+        //[Fact]
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_cj_com_atribuicao_cj_e_sem_atribuicao_espontanea_modalidade_fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+
+            await CriarAtribuicaoCJ(Modalidade.Fundamental);
+
+            await CriarAtribuicaoEsporadica(new DateTime(2022, 01, 10), new DateTime(2022, 01, 10));
+
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+
+        }
+
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_cj_modalidade_infantil()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJInfantil(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
+
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+
+        }
+
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_professor_modalidade_fundamental()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
         }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_com_professor_regente_modalidade_eja()
-        //{
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_diretor_escolar_cp_modalidade_fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCP(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    await ValidarInserirAulaUseCaseBasico(true);
-        //}
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+        }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_unica_regente_professor_educacao_infantil()
-        //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_diretor_escolar_ad_modalidade_fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilAD(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    await ExecuteTesteRegistre(true);
-        //}
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+        }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_unica_professor_CP()
-        //{
-        //    await CarregueBase(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+        public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_como_diretor_modalidade_fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilDiretor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    await ExecuteTesteRegistre();
-        //}
-
-        //[Fact]
-        //public async Task Ao_registrar_aula_com_evento_letivo()
-        //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-        //    await CrieEvento(EventoLetivo.Sim);
-
-        //    await ExecuteTesteRegistre();
-        //}
-
-        //[Fact]
-        //public async Task Nao_e_possivel_cadastrar_aula_com_periodo_encerrado()
-        //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
-        //    await CriarPeriodoEscolarEncerrado();
-
-        //    var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-        //    var dto = ObtenhaDtoAula();
-
-        //    var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-        //    excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
-        //}
-
-        //[Fact]
-        //public async Task Nao_e_possivel_cadastrar_aula_no_domingo()
-        //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-
-        //    var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-        //    var dto = ObtenhaDtoAula();
-        //    dto.DataAula = new DateTime(2022, 02, 13);
-
-        //    var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-        //    excecao.Message.ShouldBe("Não é possível cadastrar aula no final de semana");
-        //}
-
-        //[Fact]
-        //public async Task O_professor_nao_pode_fazer_alteracao_na_turma()
-        //{
-        //    await CarregueBase(ObtenhaPerfilEspecialista(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-
-        //    var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-        //    var dto = ObtenhaDtoAula();
-        //    dto.DataAula = new DateTime(2022, 02, 02);
-
-        //    var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-        //    excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
-        //}
+            var retorno = await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual);
+        }
     }
 }

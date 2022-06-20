@@ -3,6 +3,7 @@ using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAtribuicaoCJ();
+            await CriarAtribuicaoCJ(Modalidade.Fundamental);
 
             await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
@@ -27,8 +28,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAtribuicaoCJ();
-            await CriarAtribuicaoEsporadica();
+            await CriarAtribuicaoCJ(Modalidade.Fundamental);
+            await CriarAtribuicaoEsporadica(new DateTime(2022, 01, 10), new DateTime(2022, 01, 10));
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica);
