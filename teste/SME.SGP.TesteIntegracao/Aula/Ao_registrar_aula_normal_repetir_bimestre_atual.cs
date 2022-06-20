@@ -10,9 +10,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
     public class Ao_registrar_aula_normal_repetir_bimestre_atual : AulaTeste
     {
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
-        private const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
-
         public Ao_registrar_aula_normal_repetir_bimestre_atual(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 

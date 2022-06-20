@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
+namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {
@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
             aula.Quantidade = 4;
 
             await ValideAulaEnviadaParaAprovacao(aula);
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10), true);
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
             aula.Quantidade = 2;
             aula.EhRegencia = true;
 

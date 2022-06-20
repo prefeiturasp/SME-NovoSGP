@@ -11,8 +11,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
     public class Ao_validar_grade_para_registro_de_aula : AulaTeste
     {
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
-
         public Ao_validar_grade_para_registro_de_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
 
@@ -37,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10),"1111111");
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica, "1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
@@ -53,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10),"1111111");
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica, "1111111");
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
