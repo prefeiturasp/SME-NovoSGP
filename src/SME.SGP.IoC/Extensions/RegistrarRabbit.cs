@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Infra.Utilitarios;
 
@@ -19,8 +20,10 @@ namespace SME.SGP.IoC
         {
             services.AddOptions<ConfiguracaoRabbitOptions>()
                 .Bind(configuration.GetSection(nameof(ConfiguracaoRabbitOptions)), c => c.BindNonPublicProperties = true)
-                .Configure(options =>
+                .Services.AddSingleton(serviceProvider =>
                 {
+                    var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
+
                     var factory = new ConnectionFactory
                     {
                         HostName = options.HostName,
@@ -29,10 +32,11 @@ namespace SME.SGP.IoC
                         VirtualHost = options.VirtualHost
                     };
 
-                    services.AddSingleton(factory);                    
+                    return factory;
                 });
 
             services.AddSingleton<ConfiguracaoRabbitOptions>();
+            services.AddSingleton<ConfiguracaoRabbitLogOptions>();
         }
     }
 }

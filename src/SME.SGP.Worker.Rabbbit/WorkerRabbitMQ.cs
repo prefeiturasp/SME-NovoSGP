@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -13,30 +14,34 @@ namespace SME.SGP.Worker.RabbitMQ
     {
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
-            TelemetriaOptions telemetriaOptions,
-            ConsumoFilasOptions consumoFilasOptions,
+            IOptions<TelemetriaOptions> telemetriaOptions,
+            IOptions<ConsumoFilasOptions> consumoFilasOptions,
             ConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitMQ",
                 typeof(RotasRabbitSgp))
         {
         }
-        
-        private void RegistrarFilaComErro()
+
+        private void RegistrarUseCasesRelatorioComErro()
         {
             foreach (var rota in typeof(RotasRabbitSgp).ObterConstantesPublicas<string>().Where(a => a.Contains("sgp.relatorios.erro")))
                 Comandos.Add(rota, new ComandoRabbit("Notificar relatório com erro", typeof(IReceberRelatorioComErroUseCase)));
         }
 
-        protected override void RegistrarUseCasesImpl()
+        private void RegistrarUseCasesRelatorios()
         {
-            Comandos.Add(RotasRabbitSgp.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaRelatoriosProntos, new ComandoRabbit("Receber dados do relatório", typeof(IReceberRelatorioProntoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaRelatoriosProntosApp, new ComandoRabbit("Receber dados do relatório do Escola Aqui", typeof(IReceberRelatorioProntoEscolaAquiUseCase)));
-
-            RegistrarFilaComErro();
-
             Comandos.Add(RotasRabbitSgp.RotaRelatorioCorrelacaoCopiar, new ComandoRabbit("Copiar e gerar novo código de correlação", typeof(ICopiarCodigoCorrelacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaRelatorioCorrelacaoInserir, new ComandoRabbit("Inserir novo código de correlação", typeof(IInserirCodigoCorrelacaoUseCase)));
+
+            RegistrarUseCasesRelatorioComErro();
+        }
+
+        protected override void RegistrarUseCasesImpl()
+        {
+            RegistrarUseCasesRelatorios();
+
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoNovaObservacaoDiarioBordo, new ComandoRabbit("Notificar usuário sobre nova observação no diário de bordo", typeof(INotificarDiarioBordoObservacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoAlterarObservacaoDiarioBordo, new ComandoRabbit("Alterar as notificações dos usuários excluídos das observação no diário de bordo", typeof(IAlterarNotificacaoObservacaoDiarioBordoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaNovaNotificacaoObservacaoCartaIntencoes, new ComandoRabbit("Notificar usuário sobre nova observação na carta de intenções", typeof(ISalvarNotificacaoCartaIntencoesObservacaoUseCase)));

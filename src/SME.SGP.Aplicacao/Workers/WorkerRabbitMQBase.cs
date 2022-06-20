@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -33,15 +34,15 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria, 
-            TelemetriaOptions telemetriaOptions,
-            ConsumoFilasOptions consumoFilasOptions,
+            IOptions<TelemetriaOptions> telemetriaOptions,
+            IOptions<ConsumoFilasOptions> consumoFilasOptions,
             ConnectionFactory factory,
             string apmTransactionType,
             Type tipoRotas)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
-            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
+            this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
 
             if (consumoFilasOptions == null)
                 throw new ArgumentNullException(nameof(consumoFilasOptions));
@@ -56,9 +57,12 @@ namespace SME.SGP.Aplicacao.Workers
 
             var conexaoRabbit = factory.CreateConnection();
 
+            if (conexaoRabbit == null)
+                throw new ArgumentNullException(nameof(conexaoRabbit));
+
             canalRabbit = conexaoRabbit.CreateModel();
 
-            canalRabbit.BasicQos(0, consumoFilasOptions.Qos, false);
+            canalRabbit.BasicQos(0, consumoFilasOptions.Value.Qos, false);
 
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
@@ -74,7 +78,7 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected virtual void DeclararFilasSgp()
         {
-            DeclararFilasPorRota(ExchangeSgpRabbit.SgpLogs);
+            //DeclararFilasPorRota(ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 

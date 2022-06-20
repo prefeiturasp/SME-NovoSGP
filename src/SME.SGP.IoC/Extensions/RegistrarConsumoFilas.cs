@@ -9,7 +9,7 @@ namespace SME.SGP.IoC
         internal static void ConfigurarConsumoFilas(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions<ConsumoFilasOptions>()
-                .Bind(configuration.GetSection(nameof(ConsumoFilasOptions)), c => c.BindNonPublicProperties = true);
+                .Bind(configuration.GetSection("ConsumoFilas"), c => c.BindNonPublicProperties = true);
 
             services.AddSingleton<ConsumoFilasOptions>();
         }

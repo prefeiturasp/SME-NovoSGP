@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
@@ -12,8 +13,8 @@ namespace SME.SGP.Aula.Worker
     {
         public WorkerRabbitAula(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
-            TelemetriaOptions telemetriaOptions,
-            ConsumoFilasOptions consumoFilasOptions,
+            IOptions<TelemetriaOptions> telemetriaOptions,
+            IOptions<ConsumoFilasOptions> consumoFilasOptions,
             ConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAula", typeof(RotasRabbitSgpAula))
         {

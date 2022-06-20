@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Workers;
@@ -11,10 +12,11 @@ namespace SME.SGP.AEE.Worker
     {
         public WorkerRabbitAEE(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria, 
-            TelemetriaOptions telemetriaOptions, 
-            ConsumoFilasOptions consumoFilasOptions, 
+            IOptions<TelemetriaOptions> telemetriaOptions, 
+            IOptions<ConsumoFilasOptions> consumoFilasOptions, 
             ConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
-                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAEE", typeof(RotasRabbitSgpAEE))
+                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAEE",
+                typeof(RotasRabbitSgpAEE))
         {
         }
 
