@@ -43,6 +43,8 @@ namespace SME.SGP.TesteIntegracao
         
         private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
+        private const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
+        private const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
@@ -211,6 +213,12 @@ namespace SME.SGP.TesteIntegracao
                 {
                     Codigo = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                     Descricao = COMPONENTE_CURRICULAR_PORTUGUES_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
+                    Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
                 };
 
             return null;
