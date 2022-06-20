@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriarAtribuicaoCJ(Modalidade.Fundamental);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]

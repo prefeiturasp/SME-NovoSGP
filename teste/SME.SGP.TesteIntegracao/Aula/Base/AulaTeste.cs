@@ -10,6 +10,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -101,9 +102,10 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task<RetornoBaseDto> ValidarInserirAulaUseCaseBasico(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var aula = ObterAula(tipoAula, recorrenciaAula);
@@ -119,6 +121,15 @@ namespace SME.SGP.TesteIntegracao
             aulasCadastradas.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             return retorno;
+        }
+
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, bool ehRegente = false)
+        {
+            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
+            var aula = ObterAula(tipoAula, recorrenciaAula);
+            if (ehRegente) aula.EhRegencia = true;
+
+            return await useCase.Executar(aula);
         }
 
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
@@ -403,7 +414,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoCalendarioId = 1,
                 Bimestre = SEMESTRE_2,
                 PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = DateTime.Now.AddYears(1),
+                PeriodoFim = new DateTime(2022, 12, 31),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,

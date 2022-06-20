@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica,true);
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CrieEvento(EventoLetivo.Sim);
 
-            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica);
         }
 
         [Fact]
