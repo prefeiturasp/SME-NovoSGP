@@ -62,5 +62,23 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
         }
+
+        [Fact]
+        public async Task Cadastrar_aula_para_regencia_de_classe_Fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarAtribuicaoCJ();
+
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica, true);
+        }
+
+        [Fact]
+        public async Task Cadastrar_aula_para_regencia_de_classe_EJA()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await CriarAtribuicaoCJ();
+
+            await ValidarInserirAulaUseCaseBasico(TipoAula.Normal, RecorrenciaAula.AulaUnica, true);
+        }
     }
 }
