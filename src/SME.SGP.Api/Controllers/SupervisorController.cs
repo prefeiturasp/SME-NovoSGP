@@ -79,12 +79,12 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{supervisoresId}/dre/{dreId}")]
-        [ProducesResponseType(typeof(IEnumerable<ResponsavelEscolasDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarResponsavelDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult ObterResponsavelEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
+        public IActionResult ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId)
         {
-            var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);
+            var listaretorno = consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId);
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);
