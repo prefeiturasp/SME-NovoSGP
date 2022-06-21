@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao
         private const int ANO_LETIVO_2022_NUMERO = 2022;
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
 
-        private const int SEMESTRE_2 = 2;
+        protected const int SEMESTRE_2 = 2;
 
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
@@ -88,7 +88,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const int QUANTIDADE_3 = 3;
 
-        private const int BIMESTRE_2 = 2;
+        protected const int BIMESTRE_1 = 1;
+        protected const int BIMESTRE_2 = 2;
+        protected const int BIMESTRE_3 = 3;
+        protected const int BIMESTRE_4 = 4;
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -129,12 +132,12 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(aula);
         }
 
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, bool criarPeriodo = true, long tipoCalendarioId = 1)
         {
-            await CriarItensComuns(criarPeriodo);
-            CriarClaimUsuario(perfil);
-            await CriarUsuarios();
             await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();            
             await CriarTurma(modalidade);
         }
 
@@ -367,7 +370,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
+        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -384,10 +387,10 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarItensComuns(bool criarPeriodo)
+        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
             await CriarPadrao();
-            if (criarPeriodo) await CriarPeriodoEscolar();
+            if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
             await CriarComponenteCurricular();
         }
 
@@ -427,14 +430,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarPeriodoEscolar()
+        protected async Task CriarPeriodoEscolar(DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
             await InserirNaBase(new PeriodoEscolar
             {
-                TipoCalendarioId = 1,
-                Bimestre = SEMESTRE_2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = new DateTime(2022, 12, 31),
+                TipoCalendarioId = tipoCalendarioId,
+                Bimestre = bimestre,
+                PeriodoInicio = dataInicio,
+                PeriodoFim = dataFim,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,

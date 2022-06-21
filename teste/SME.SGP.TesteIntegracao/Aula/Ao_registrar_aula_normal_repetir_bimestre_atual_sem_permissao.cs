@@ -11,6 +11,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
     public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaMockSemPermissao
     {
         private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
 
         public Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -20,9 +22,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
         {
             var mensagemEsperada = "Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
                     
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new DateTime(2022, 02, 10));
+            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
 
             excecao.ExistemErros.ShouldBeTrue();
 

@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -12,6 +13,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
+
         public Ao_registrar_aula_reposicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -19,15 +23,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_especialista()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_especialista_com_aprovacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
             var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
             aula.Quantidade = 4;
@@ -38,15 +42,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10), true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, true);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe_com_aprovacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
             var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
             aula.Quantidade = 2;

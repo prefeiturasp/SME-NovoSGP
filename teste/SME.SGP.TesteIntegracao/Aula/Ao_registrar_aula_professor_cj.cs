@@ -11,6 +11,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
+
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -18,21 +21,21 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
         [Fact]
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await CriarAtribuicaoEsporadica(new DateTime(2022, 01, 10), new DateTime(2022, 01, 10));
+            await CriarAtribuicaoEsporadica(dataInicio, dataInicio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Você não possui permissão para cadastrar aulas neste período");
@@ -41,10 +44,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Professor_CJ_nao_pode_criar_aulas()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -54,11 +57,11 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Nao_pode_cadastrar_aula_data_com_evento_nao_letivo()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CrieEvento(EventoLetivo.Nao, new System.DateTime(2022, 02, 10), new System.DateTime(2022, 02, 10));
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CrieEvento(EventoLetivo.Nao, dataInicio, dataInicio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
