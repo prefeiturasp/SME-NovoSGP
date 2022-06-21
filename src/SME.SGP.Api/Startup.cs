@@ -119,6 +119,7 @@ namespace SME.SGP.Api
             registraDependencias.Registrar(services, Configuration);
             registraDependencias.RegistrarGoogleClassroomSync(services, Configuration);
             registraDependencias.RegistrarHttpClients(services, Configuration);
+            registraDependencias.RegistrarPolicies(services);
 
             RegistraAutenticacao.Registrar(services, Configuration);
             RegistrarMvc.Registrar(services); 
