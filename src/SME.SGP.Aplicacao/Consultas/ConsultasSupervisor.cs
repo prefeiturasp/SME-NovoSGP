@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                         TipoEscola = agrupamentoUe[i].FirstOrDefault().TipoEscola,
                         UeNome = agrupamentoUe[i].FirstOrDefault().UeNome,
                         DreNome = agrupamentoUe[i].FirstOrDefault().DreNome,
-                        Excluido = false
+                        AtribuicaoExcluida = false
                     };
                     responsavelEscolaDreDto.Add(registro);
                 }
@@ -171,8 +171,8 @@ namespace SME.SGP.Aplicacao
                 yield return new ResponsavelEscolasDto()
                 {
                     Id = supervisor.Id,
-                    Responsavel = supervisor.Excluido ? null : nomeResponsavel,
-                    ResponsavelId = supervisor.Excluido ? null : supervisor.SupervisorId,
+                    Responsavel = supervisor.AtribuicaoExcluida ? null : nomeResponsavel,
+                    ResponsavelId = supervisor.AtribuicaoExcluida ? null : supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
                     TipoResponsavelId = supervisor.TipoAtribuicao,
                     UeNome = $"{supervisor.TipoEscola.ShortName()} {supervisor.UeNome}",
@@ -206,7 +206,7 @@ namespace SME.SGP.Aplicacao
                 SupervisorId = dto.SupervisorId,
                 EscolaId = dto.EscolaId,
                 Id = dto.Id,
-                Excluido = dto.Excluido,
+                Excluido = dto.AtribuicaoExcluida,
                 AlteradoEm = dto.AlteradoEm,
                 AlteradoPor = dto.AlteradoPor,
                 AlteradoRF = dto.AlteradoRF,
