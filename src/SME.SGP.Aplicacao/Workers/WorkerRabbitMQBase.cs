@@ -50,16 +50,10 @@ namespace SME.SGP.Aplicacao.Workers
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
 
-            ////TODO: REVER
             var scope = serviceScopeFactory.CreateScope();
             mediator = scope.ServiceProvider.GetService<IMediator>();
-            ////
 
-            var conexaoRabbit = factory.CreateConnection();
-
-            if (conexaoRabbit == null)
-                throw new ArgumentNullException(nameof(conexaoRabbit));
-
+            conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
 
             canalRabbit.BasicQos(0, consumoFilasOptions.Value.Qos, false);
@@ -78,7 +72,6 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected virtual void DeclararFilasSgp()
         {
-            //DeclararFilasPorRota(ExchangeSgpRabbit.SgpLogs);
             DeclararFilasPorRota(ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
         }
 
