@@ -11,7 +11,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
-    public class Ao_excluir_aula_unica : AulaTeste
+    public class Ao_excluir_aula_unica : AulaMockComponentePortugues
     {
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -60,49 +60,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
-        }
-
-        private async Task CriarAtividadeAvaliativaFundamental()
-        {
-            await InserirNaBase(new TipoAvaliacao
-            {
-                Id = 1,
-                Nome = "Avaliação bimestral",
-                Descricao = "Avaliação bimestral",
-                Situacao = true,
-                AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new AtividadeAvaliativa
-            {
-                Id = 1,
-                DreId = "1",
-                UeId = "1",
-                ProfessorRf = "2222222",
-                TurmaId = "1",
-                Categoria = CategoriaAtividadeAvaliativa.Normal,
-                TipoAvaliacaoId = 1,
-                NomeAvaliacao = "Avaliação 04",
-                DescricaoAvaliacao = "Avaliação 04",
-                DataAvaliacao = new DateTime(2022, 02, 10),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new AtividadeAvaliativaDisciplina
-            {
-                Id = 1,
-                AtividadeAvaliativaId = 1,
-                DisciplinaId = "1106",
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
         }
     }
 }

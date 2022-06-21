@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
 {
-    public class Ao_registrar_aula_reposicao : AulaTeste
+    public class Ao_registrar_aula_reposicao : AulaMockComponentePortugues
     {
         public Ao_registrar_aula_reposicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {

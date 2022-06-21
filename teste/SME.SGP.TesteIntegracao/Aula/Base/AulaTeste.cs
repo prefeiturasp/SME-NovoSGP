@@ -349,7 +349,7 @@ namespace SME.SGP.TesteIntegracao
             return new ExcluirAulaDto()
             {
                 AulaId = 1,
-                RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
+                RecorrenciaAula = recorrencia
             };
         }
         protected async Task CriarTurma(Modalidade modalidade)
@@ -364,6 +364,49 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = ANO_LETIVO_2022_NUMERO,
                 Semestre = SEMESTRE_2,
                 Nome = TURMA_NOME_1
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativaFundamental()
+        {
+            await InserirNaBase(new TipoAvaliacao
+            {
+                Id = 1,
+                Nome = "Avaliação bimestral",
+                Descricao = "Avaliação bimestral",
+                Situacao = true,
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new AtividadeAvaliativa
+            {
+                Id = 1,
+                DreId = "1",
+                UeId = "1",
+                ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                TurmaId = TURMA_CODIGO_1,
+                Categoria = CategoriaAtividadeAvaliativa.Normal,
+                TipoAvaliacaoId = 1,
+                NomeAvaliacao = "Avaliação 04",
+                DescricaoAvaliacao = "Avaliação 04",
+                DataAvaliacao = new DateTime(2022, 02, 10),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new AtividadeAvaliativaDisciplina
+            {
+                Id = 1,
+                AtividadeAvaliativaId = 1,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now
             });
         }
 

@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
-    public class Ao_validar_grade_para_registro_de_aula : AulaTeste
+    public class Ao_validar_grade_para_registro_de_aula : AulaMockComponentePortugues
     {
         public Ao_validar_grade_para_registro_de_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
                 GradeId=1,
                 Ano=2,
                 QuantidadeAulas= quantidadeAula,
-                ComponenteCurricularId= 1106,
+                ComponenteCurricularId= COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now
