@@ -11,8 +11,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
-
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

@@ -13,8 +13,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_excluir_aula_unica : AulaTeste
     {
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
-
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -26,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarUsuarios();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto();
+            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não foi possivél localizar a aula de id : 1");
@@ -36,10 +34,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Exclui_aula_unica()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto();
+            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -54,23 +52,14 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Aula_possui_avaliacao()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
             await CriarAtividadeAvaliativaFundamental();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto();
+            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
-        }
-
-        private ExcluirAulaDto ObtenhaDto()
-        {
-            return new ExcluirAulaDto()
-            {
-                AulaId = 1,
-                RecorrenciaAula = RecorrenciaAula.AulaUnica
-            };
         }
 
         private async Task CriarAtividadeAvaliativaFundamental()

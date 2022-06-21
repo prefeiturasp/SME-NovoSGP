@@ -40,10 +40,10 @@ namespace SME.SGP.TesteIntegracao
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
 
         private const int SEMESTRE_2 = 2;
-        
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+
+        protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
-        private const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
+        protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         private const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
@@ -103,6 +103,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula,long componentecurricularId, DateTime dataAula, bool ehRegente = false)
@@ -206,6 +207,11 @@ namespace SME.SGP.TesteIntegracao
             };
         }
 
+        protected PersistirAulaDto ObterAulaPortugues(TipoAula tipoAula, RecorrenciaAula recorrenciaAula)
+        {
+            return ObterAula(tipoAula, recorrenciaAula, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+        }
+
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
         {
             if (componenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138)
@@ -304,26 +310,17 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
-            await InserirNaBase(new Aula
-            {
-                UeId = UE_CODIGO_1,
-                DisciplinaId = componenteCurricularCodigo,
-                TurmaId = TURMA_CODIGO_1,
-                TipoCalendarioId = 1,
-                ProfessorRf = rf,
-                Quantidade = QUANTIDADE_3,
-                DataAula = dataAula,
-                RecorrenciaAula = 0,
-                TipoAula = TipoAula.Normal,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                Excluido = false,
-                Migrado = false,
-                AulaCJ = false
-            });
+            await InserirNaBase(ObtenhaAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
+        }
+
+        protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
+        {
+            var aula = ObtenhaAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            aula.AulaPaiId = 1;
+
+            await InserirNaBase(aula);
         }
 
         protected async Task CriarUsuarios()
@@ -347,6 +344,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+        protected ExcluirAulaDto ObtenhaDto(RecorrenciaAula recorrencia)
+        {
+            return new ExcluirAulaDto()
+            {
+                AulaId = 1,
+                RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
+            };
+        }
         protected async Task CriarTurma(Modalidade modalidade)
         {
             await InserirNaBase(new Turma
@@ -444,6 +449,28 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE,REGENCIA_CLASSE_INFANTIL,REGENCIA_INFATIL_EMEI_4H);
+        }
+
+        private Aula ObtenhaAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            return new Aula
+            {
+                UeId = UE_CODIGO_1,
+                DisciplinaId = componenteCurricularCodigo,
+                TurmaId = TURMA_CODIGO_1,
+                TipoCalendarioId = 1,
+                ProfessorRf = rf,
+                Quantidade = QUANTIDADE_3,
+                DataAula = dataAula,
+                RecorrenciaAula = recorrencia,
+                TipoAula = TipoAula.Normal,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Migrado = false,
+                AulaCJ = false
+            };
         }
     }
 }
