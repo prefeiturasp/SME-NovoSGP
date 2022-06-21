@@ -18,18 +18,15 @@ namespace SME.SGP.IoC
             services.AddApplicationInsightsTelemetry(configuration);
 
             services.AddOptions<TelemetriaOptions>()
-                .Bind(configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true)
-                .Services.AddSingleton(serviceProvider =>
-                {
-                    var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
-                    var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-                    var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+                .Bind(configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
 
-                    DapperExtensionMethods.Init(servicoTelemetria);
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            DapperExtensionMethods.Init(servicoTelemetria);
 
-                    return servicoTelemetria;
-                });
-
+            services.AddSingleton(servicoTelemetria);
             services.AddSingleton<TelemetriaOptions>();
             services.AddSingleton<IServicoTelemetria, ServicoTelemetria>();
         }
