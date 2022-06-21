@@ -49,6 +49,11 @@ namespace SME.SGP.TesteIntegracao
         private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
         private const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
 
+        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
+        private const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
+
+
+
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
@@ -123,7 +128,7 @@ namespace SME.SGP.TesteIntegracao
             return retorno;
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula ,bool ehRegente = false, long tipoCalendarioId = 1)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, bool ehRegente = false, long tipoCalendarioId = 1)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId);
@@ -228,6 +233,18 @@ namespace SME.SGP.TesteIntegracao
                 {
                     Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
                     Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
                 };
 
             return null;
