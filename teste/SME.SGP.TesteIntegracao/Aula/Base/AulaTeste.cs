@@ -384,7 +384,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarItensComuns(bool criarPeriodo)
+        protected async Task CriarItensComuns(bool criarPeriodo)
         {
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar();
