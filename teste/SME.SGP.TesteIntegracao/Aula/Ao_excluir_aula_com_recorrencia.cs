@@ -10,10 +10,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 {
-    public class Ao_excluir_aula_com_recorrencia : AulaMockComponentePortugues
+    public class Ao_excluir_aula_com_recorrencia : AulaTeste
     {
         private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
 
         public Ao_excluir_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -35,9 +34,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         public async Task Aula_com_avaliacao_vinculada()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.RepetirBimestreAtual);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.RepetirBimestreAtual);
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
-            await CriarAtividadeAvaliativaFundamental();
+            await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto(RecorrenciaAula.RepetirBimestreAtual);
@@ -54,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         protected async Task Excluir_aula_com_regencia(RecorrenciaAula recorrencia)
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), recorrencia);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, recorrencia);
             await CriaAulaRecorrentePortugues(recorrencia);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();

@@ -39,20 +39,18 @@ namespace SME.SGP.TesteIntegracao
         private const int ANO_LETIVO_2022_NUMERO = 2022;
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
 
-        protected const int SEMESTRE_2 = 2;
+        protected const int SEMESTRE_1 = 1;
 
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         private const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
-        private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
+        protected const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
         private const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
 
-        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
+        protected const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
         private const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
-
-
 
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
@@ -115,11 +113,12 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
         {
-            var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
+             var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
 
             retorno.ShouldNotBeNull();
 
@@ -151,7 +150,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
         {
-            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(2022, 05, 02), new DateTime(2022, 07, 08), SEMESTRE_2);
+            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(2022, 05, 02), new DateTime(2022, 07, 08), SEMESTRE_1);
         }
 
         protected void CriarClaimUsuario(string perfil)
@@ -221,11 +220,6 @@ namespace SME.SGP.TesteIntegracao
                 CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
                 NomeComponenteCurricular = componenteCurricular.Descricao
             };
-        }
-
-        protected PersistirAulaDto ObterAulaPortugues(TipoAula tipoAula, RecorrenciaAula recorrenciaAula)
-        {
-            return ObterAula(tipoAula, recorrenciaAula, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -390,12 +384,12 @@ namespace SME.SGP.TesteIntegracao
                 Historica = true,
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = ANO_LETIVO_2022_NUMERO,
-                Semestre = SEMESTRE_2,
+                Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
         }
 
-        protected async Task CriarAtividadeAvaliativaFundamental()
+        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
             await InserirNaBase(new TipoAvaliacao
             {
@@ -421,7 +415,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
-                DataAvaliacao = new DateTime(2022, 02, 10),
+                DataAvaliacao = dataAvaliacao,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now

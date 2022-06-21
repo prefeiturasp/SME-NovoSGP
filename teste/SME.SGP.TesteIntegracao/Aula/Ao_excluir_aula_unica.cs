@@ -2,7 +2,6 @@
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -11,7 +10,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
-    public class Ao_excluir_aula_unica : AulaMockComponentePortugues
+    public class Ao_excluir_aula_unica : AulaTeste
     {
         private DateTime dataInicio = new DateTime(2022, 05, 02);
         private DateTime dataFim = new DateTime(2022, 07, 08);
@@ -56,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
-            await CriarAtividadeAvaliativaFundamental();
+            await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);

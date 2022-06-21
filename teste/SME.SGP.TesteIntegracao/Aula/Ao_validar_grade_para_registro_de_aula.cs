@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
-    public class Ao_validar_grade_para_registro_de_aula : AulaMockComponentePortugues
+    public class Ao_validar_grade_para_registro_de_aula : AulaTeste
     {
         private DateTime dataInicio = new DateTime(2022, 05, 02);
         private DateTime dataFim = new DateTime(2022, 07, 08);

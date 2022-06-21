@@ -11,7 +11,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
 {
-    public class Ao_registrar_aula_reposicao : AulaMockComponentePortugues
+    public class Ao_registrar_aula_reposicao : AulaTeste
     {
         private DateTime dataInicio = new DateTime(2022, 05, 02);
         private DateTime dataFim = new DateTime(2022, 07, 08);
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             aula.Quantidade = 4;
 
             await ValideAulaEnviadaParaAprovacao(aula);
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio, true);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            var aula = ObterAulaPortugues(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio);
             aula.Quantidade = 2;
             aula.EhRegencia = true;
 
