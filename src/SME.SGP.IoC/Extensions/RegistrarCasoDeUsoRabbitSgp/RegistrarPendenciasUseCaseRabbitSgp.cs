@@ -2,8 +2,6 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -20,13 +18,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUseCase, RemoverAtribuicaoPendenciasUsuariosUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeUseCase, RemoverAtribuicaoPendenciasUsuariosUeUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase, RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase>();
-
-            #region ATENÇÃO - Use Cases injetados em processos consumidos pelo o worker
-            // TODO
-            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
-            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
-
-            #endregion
         }
     }
 }

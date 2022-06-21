@@ -18,6 +18,9 @@ namespace SME.SGP.IoC
 
         internal static void ConfigurarRabbit(this IServiceCollection services, IConfiguration configuration)
         {
+            if (configuration == null)
+                return;
+
             services.AddOptions<ConfiguracaoRabbitOptions>()
                 .Bind(configuration.GetSection(nameof(ConfiguracaoRabbitOptions)), c => c.BindNonPublicProperties = true)
                 .Services.AddSingleton<IConnectionFactory>(serviceProvider =>

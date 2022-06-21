@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -40,9 +38,9 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidarDiariosBordoPorUeTratarUseCase, ConsolidarDiariosBordoPorUeTratarUseCase>();
             services.TryAddScoped<IConsolidarRegistrosPedagogicosPorUeTratarUseCase, ConsolidarRegistrosPedagogicosPorUeTratarUseCase>();
             services.TryAddScoped<IConsolidarRegistrosPedagogicosPorTurmaTratarUseCase, ConsolidarRegistrosPedagogicosPorTurmaTratarUseCase>();
-            services.TryAddScoped<IRabbitDeadletterSgpSyncUseCase, RabbitDeadletterSgpSyncUseCase>(); // TODO verificar se essa fila é necessário registrar
+            services.TryAddScoped<IRabbitDeadletterSgpSyncUseCase, RabbitDeadletterSgpSyncUseCase>(); // TODO [Fernando Groeler] verificar se essa fila é necessário registrar
             services.TryAddScoped<IRabbitDeadletterSgpTratarUseCase, RabbitDeadletterSgpTratarUseCase>();
-            services.TryAddScoped<IRabbitDeadletterSrTratarUseCase, RabbitDeadletterSrTratarUseCase>(); // TODO verificar se essa fila é necessário registrar
+            services.TryAddScoped<IRabbitDeadletterSrTratarUseCase, RabbitDeadletterSrTratarUseCase>(); // TODO [Fernando Groeler] verificar se essa fila é necessário registrar
             services.TryAddScoped<IConsolidacaoMediaRegistrosIndividuaisTurmaUseCase, ConsolidacaoMediaRegistrosIndividuaisTurmaUseCase>();
             services.TryAddScoped<IConsolidacaoMediaRegistrosIndividuaisUseCase, ConsolidacaoMediaRegistrosIndividuaisUseCase>();
             services.TryAddScoped<IConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase, ConsolidacaoAcompanhamentoAprendizagemAlunosSyncUseCase>();
@@ -68,13 +66,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, CarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, SyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<IAtualizarUltimoLoginUsuarioUseCase, AtualizarUltimoLoginUsuarioUseCase>();
-
-            #region ATENÇÃO - Use Cases injetados em processos consumidos pelo o worker
-            // TODO
-            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
-            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
-
-            #endregion
         }
     }
 }

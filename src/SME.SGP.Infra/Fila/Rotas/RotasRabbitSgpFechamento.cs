@@ -17,7 +17,7 @@
         public const string RotaExecutaAtualizacaoSituacaoConselhoClasse = "sgp.conselho.classe.situacao.atualizar";
         public const string NotificacaoPeriodoFechamentoReaberturaIniciando = "sgp.periodo.fechamento.reabertura.iniciando";
         public const string NotificacaoPeriodoFechamentoReaberturaEncerrando = "sgp.periodo.fechamento.reabertura.encerrando";
-        // TODO Não localizei referência dessa fila public const string NotificacaoPeriodoFechamentoReaberturaUE = "sgp.periodo.fechamento.reabertura.ue";
+        // TODO [Fernando Groeler] Não localizei referência dessa fila public const string NotificacaoPeriodoFechamentoReaberturaUE = "sgp.periodo.fechamento.reabertura.ue";
         public const string VerificaPendenciasFechamentoTurma = "sgp.fechamento.turma.pendencia.verificar";
         public const string RotaExecutaVerificacaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.verificacao";
         public const string RotaExecutaExclusaoPendenciasAusenciaFechamento = "sgp.pendencias.bimestre.ausencia.fechamento.excluir";
@@ -28,7 +28,7 @@
         public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.abertura.fim.periodo.notificar.ue";
         public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
         public const string RotaNotificacaoUeFechamentosInsuficientes = "sgp.fechamento.insuficiente.notificar";
-        // TODO Não localizei referência dessa fila public const string RotaNotificacaoPeriodoFechamento = "sgp.periodo.fechamento.notificar";
+        // TODO [Fernando Groeler] Não localizei referência dessa fila public const string RotaNotificacaoPeriodoFechamento = "sgp.periodo.fechamento.notificar";
         public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
         public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
         public const string RotaNotificacaoFechamentoReabertura = "sgp.fechamento.reabertura.notificacao";

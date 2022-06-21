@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.IoC
 {
@@ -26,13 +24,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase, ExecutarSincronizacaoConsolidacaoMatriculasTurmasUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalTurmaTratarUseCase, ExecutarSincronizacaoInstitucionalTurmaTratarUseCase>();
             services.TryAddScoped<IExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase, ExecutarSincronizacaoInstitucionalTurmaExcluirTurmaExtintaUseCase>();
-
-            #region ATENÇÃO - Use Cases injetados em processos consumidos pelo o worker
-            // TODO
-            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
-            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
-
-            #endregion
         }
     }
 }

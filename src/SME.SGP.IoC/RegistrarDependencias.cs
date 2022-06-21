@@ -72,6 +72,7 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
+            RegistrarCasosDeUsoSgpERabbitSgp(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
 
@@ -535,7 +536,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
             services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
-            // todo: services.TryAddScoped<IServicoTelemetria, ServicoTelemetria>();
         }
 
         public virtual void RegistrarCasoDeUsoAEERabbitSgp(IServiceCollection services)
@@ -617,7 +617,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioNotasEConceitosFinaisUseCase, RelatorioNotasEConceitosFinaisUseCase>();
             services.TryAddScoped<IRelatorioAtribuicaoCJUseCase, RelatorioAtribuicaoCJUseCase>();
             services.TryAddScoped<IObterJustificativasAlunoPorComponenteCurricularUseCase, ObterJustificativasAlunoPorComponenteCurricularUseCase>();
-            // TODO services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
 
             services.TryAddScoped<IExcluirDevolutivaUseCase, ExcluirDevolutivaUseCase>();
             services.TryAddScoped<IObterListaDevolutivasPorTurmaComponenteUseCase, ObterListaDevolutivasPorTurmaComponenteUseCase>();
@@ -715,7 +714,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotalAulasNaoLancamNotaUseCase, ObterTotalAulasNaoLancamNotaUseCase>();
             services.TryAddScoped<IObterTotalCompensacoesComponenteNaoLancaNotaUseCase, ObterTotalCompensacoesComponenteNaoLancaNotaUseCase>();
             services.TryAddScoped<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase, ObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
-            services.AddScoped<IObterRecomendacoesAlunoFamiliaUseCase, ObterRecomendacoesAlunoFamiliaUseCase>();
+            services.TryAddScoped<IObterRecomendacoesAlunoFamiliaUseCase, ObterRecomendacoesAlunoFamiliaUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
@@ -945,7 +944,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IInserirOcorrenciaUseCase, InserirOcorrenciaUseCase>();
             services.TryAddScoped<IObterOcorrenciasPorAlunoUseCase, ObterOcorrenciasPorAlunoUseCase>();
             services.TryAddScoped<IRelatorioOcorrenciasUseCase, RelatorioOcorrenciasUseCase>();
-            // TODO: services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
 
             // Itinerancia
             services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();
@@ -1127,6 +1125,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
 
+            RegistrarCasosDeUsoSgpERabbitSgp(services);
+
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
             RegistrarCasoDeUsoFechamentoRabbitSgp(services);
@@ -1134,6 +1134,12 @@ namespace SME.SGP.IoC
             RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
             RegistrarCasoDeUsoPendenciasRabbitSgp(services);
             RegistrarCasoDeUsoRabbitSgp(services);
+        }
+
+        public virtual void RegistrarCasosDeUsoSgpERabbitSgp(IServiceCollection services)
+        {
+            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
+            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
         }
 
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)

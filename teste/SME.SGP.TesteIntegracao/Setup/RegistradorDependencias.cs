@@ -11,6 +11,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
+
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class RegistradorDependencias : RegistrarDependencias
@@ -25,19 +26,21 @@ namespace SME.SGP.TesteIntegracao.Setup
                 var contextoAplicacao = provider.GetService<IContextoAplicacao>();
                 return new SgpContext(connection, contextoAplicacao);
             });
+
             services.TryAddScoped<ISgpContextConsultas>(provider =>
             {
                 var connection = provider.GetService<IDbConnection>();
                 var contextoAplicacao = provider.GetService<IContextoAplicacao>();
                 return new SgpContextConsultas(connection, contextoAplicacao);
             });
+
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
             base.RegistrarPolicies(services);
         }
 
         protected override void RegistrarServicos(IServiceCollection services)
         {
-            services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
+            services.TryAddSingleton<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             base.RegistrarServicos(services);
         }
