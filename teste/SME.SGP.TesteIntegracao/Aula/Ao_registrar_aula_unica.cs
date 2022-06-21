@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Ao_registrar_aula_unica_regente_professor_educacao_infantil()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(Perfis.PERFIL_PROFESSOR_INFANTIL.ToString(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, dataInicio, dataFim, BIMESTRE_2);
 
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio, true);
         }
