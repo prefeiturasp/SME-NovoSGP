@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao.Workers
             IServicoTelemetria servicoTelemetria, 
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            ConnectionFactory factory,
+            IConnectionFactory factory,
             string apmTransactionType,
             Type tipoRotas)
         {

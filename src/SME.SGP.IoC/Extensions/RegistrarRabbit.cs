@@ -20,7 +20,7 @@ namespace SME.SGP.IoC
         {
             services.AddOptions<ConfiguracaoRabbitOptions>()
                 .Bind(configuration.GetSection(nameof(ConfiguracaoRabbitOptions)), c => c.BindNonPublicProperties = true)
-                .Services.AddSingleton(serviceProvider =>
+                .Services.AddSingleton<IConnectionFactory>(serviceProvider =>
                 {
                     var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
 

@@ -13,8 +13,8 @@ namespace SME.SGP.AEE.Worker
         public WorkerRabbitAEE(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria, 
             IOptions<TelemetriaOptions> telemetriaOptions, 
-            IOptions<ConsumoFilasOptions> consumoFilasOptions, 
-            ConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
+            IOptions<ConsumoFilasOptions> consumoFilasOptions,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAEE",
                 typeof(RotasRabbitSgpAEE))
         {

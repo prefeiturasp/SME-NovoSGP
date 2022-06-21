@@ -15,7 +15,7 @@ namespace SME.SGP.Frequencia.Worker
             IServicoTelemetria servicoTelemetria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            ConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFrequencia",
                 typeof(RotasRabbitSgpFrequencia))
         {
