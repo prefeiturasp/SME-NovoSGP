@@ -16,44 +16,44 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrente
         {
         }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_reposicao_professor_especialista()
-        //{
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+        [Fact]
+        public async Task Ao_registrar_aula_reposicao_professor_especialista()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
-        //}
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+        }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_reposicao_professor_especialista_com_aprovacao()
-        //{
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+        [Fact]
+        public async Task Ao_registrar_aula_reposicao_professor_especialista_com_aprovacao()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
-        //    aula.Quantidade = 4;
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            aula.Quantidade = 4;
 
-        //    await ValideAulaEnviadaParaAprovacao(aula);
-        //}
+            await ValideAulaEnviadaParaAprovacao(aula);
+        }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe()
-        //{
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+        [Fact]
+        public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, true);
-        //}
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, true);
+        }
 
-        //[Fact]
-        //public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe_com_aprovacao()
-        //{
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+        [Fact]
+        public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe_com_aprovacao()
+        {
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
-        //    var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
-        //    aula.Quantidade = 2;
-        //    aula.EhRegencia = true;
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica);
+            aula.Quantidade = 2;
+            aula.EhRegencia = true;
 
-        //    await ValideAulaEnviadaParaAprovacao(aula);
-        //}
+            await ValideAulaEnviadaParaAprovacao(aula);
+        }
 
         private async Task ValideAulaEnviadaParaAprovacao(PersistirAulaDto aula)
         {
