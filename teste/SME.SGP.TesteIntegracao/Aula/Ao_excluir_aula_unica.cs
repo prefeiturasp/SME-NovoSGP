@@ -2,7 +2,6 @@
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -56,56 +55,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
-            await CriarAtividadeAvaliativaFundamental();
+            await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
-        }
-
-        private async Task CriarAtividadeAvaliativaFundamental()
-        {
-            await InserirNaBase(new TipoAvaliacao
-            {
-                Id = 1,
-                Nome = "Avaliação bimestral",
-                Descricao = "Avaliação bimestral",
-                Situacao = true,
-                AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new AtividadeAvaliativa
-            {
-                Id = 1,
-                DreId = "1",
-                UeId = "1",
-                ProfessorRf = "2222222",
-                TurmaId = "1",
-                Categoria = CategoriaAtividadeAvaliativa.Normal,
-                TipoAvaliacaoId = 1,
-                NomeAvaliacao = "Avaliação 04",
-                DescricaoAvaliacao = "Avaliação 04",
-                DataAvaliacao = new DateTime(2022, 02, 10),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new AtividadeAvaliativaDisciplina
-            {
-                Id = 1,
-                AtividadeAvaliativaId = 1,
-                DisciplinaId = "1106",
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now
-            });
         }
     }
 }
