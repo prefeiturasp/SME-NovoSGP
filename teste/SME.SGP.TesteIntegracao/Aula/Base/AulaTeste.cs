@@ -352,7 +352,7 @@ namespace SME.SGP.TesteIntegracao
                 RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
             };
         }
-        private async Task CriarTurma(Modalidade modalidade)
+        protected async Task CriarTurma(Modalidade modalidade)
         {
             await InserirNaBase(new Turma
             {

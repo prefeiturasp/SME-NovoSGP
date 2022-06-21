@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 {
-    public class Ao_excluir_aula_com_recorrencia : AulaTeste
+    public class Ao_excluir_aula_com_recorrencia : AulaMockComponentePortugues
     {
         public Ao_excluir_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
