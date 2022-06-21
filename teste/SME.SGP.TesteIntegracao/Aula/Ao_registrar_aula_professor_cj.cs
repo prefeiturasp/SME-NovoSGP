@@ -12,7 +12,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
         private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
-        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1213 = 1113;
+        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
         private DateTime DATA_10_02_2022 = new DateTime(2022, 02, 10);
 
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -81,9 +81,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Cadastrar_aula_para_regencia_de_classe_EJA()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
-            await CriarAtribuicaoCJ(Modalidade.EJA, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1213);
+            await CriarAtribuicaoCJ(Modalidade.EJA, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113);
 
-            var excecao = await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1213, DATA_10_02_2022, true);
+            var excecao = await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113, DATA_10_02_2022, true);
         }
 
         [Fact]
