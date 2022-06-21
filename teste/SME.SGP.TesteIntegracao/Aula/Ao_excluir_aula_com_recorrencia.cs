@@ -2,12 +2,8 @@
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -24,9 +20,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.RepetirBimestreAtual);
+            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
+            var dto = ObtenhaDto(RecorrenciaAula.RepetirBimestreAtual);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
