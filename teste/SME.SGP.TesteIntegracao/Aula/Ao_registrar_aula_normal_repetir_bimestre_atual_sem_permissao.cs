@@ -8,7 +8,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
-    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaMockSemPermissao
+    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaTeste
     {
         private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private DateTime dataInicio = new DateTime(2022, 05, 02);
