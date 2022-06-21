@@ -10,6 +10,8 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake;
+using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -115,6 +117,9 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(ObterUsuarioLogadoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<AlterarAulaRecorrenteCommand, bool>), typeof(AlterarAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
@@ -145,7 +150,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarTipoCalendario(tipoCalendario);
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
             CriarClaimUsuario(perfil);
-            await CriarUsuarios();            
+            await CriarUsuarios();
             await CriarTurma(modalidade);
         }
 
@@ -205,6 +210,7 @@ namespace SME.SGP.TesteIntegracao
             var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
             return new PersistirAulaDto()
             {
+                Id = 1,
                 CodigoTurma = TURMA_CODIGO_1,
                 Quantidade = 1,
                 TipoAula = tipoAula,
@@ -480,6 +486,7 @@ namespace SME.SGP.TesteIntegracao
         {
             return new Aula
             {
+                Id = 1,
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
                 TurmaId = TURMA_CODIGO_1,
