@@ -123,10 +123,10 @@ namespace SME.SGP.TesteIntegracao
             return retorno;
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, bool ehRegente = false)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula ,bool ehRegente = false, long tipoCalendarioId = 1)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula);
+            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId);
             if (ehRegente) aula.EhRegencia = true;
 
             return await useCase.Executar(aula);
@@ -192,7 +192,7 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
         }
 
-        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula)
+        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)
         {
             var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
             return new PersistirAulaDto()
@@ -204,7 +204,7 @@ namespace SME.SGP.TesteIntegracao
                 DisciplinaCompartilhadaId = componenteCurricularId,
                 CodigoUe = UE_CODIGO_1,
                 RecorrenciaAula = recorrenciaAula,
-                TipoCalendarioId = 1,
+                TipoCalendarioId = tipoCalendarioId,
                 CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
                 NomeComponenteCurricular = componenteCurricular.Descricao
             };
