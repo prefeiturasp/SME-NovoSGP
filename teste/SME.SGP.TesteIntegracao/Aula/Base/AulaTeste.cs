@@ -347,7 +347,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarTurma(Modalidade modalidade)
+        protected async Task CriarTurma(Modalidade modalidade)
         {
             await InserirNaBase(new Turma
             {
@@ -379,7 +379,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarItensComuns(bool criarPeriodo)
+        protected async Task CriarItensComuns(bool criarPeriodo)
         {
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar();
