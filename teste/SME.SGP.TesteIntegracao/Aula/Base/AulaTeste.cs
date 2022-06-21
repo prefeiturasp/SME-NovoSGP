@@ -39,12 +39,20 @@ namespace SME.SGP.TesteIntegracao
         private const int ANO_LETIVO_2022_NUMERO = 2022;
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
 
-        private const int SEMESTRE_2 = 2;
+        protected const int SEMESTRE_2 = 2;
 
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         private const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         private const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
+
+        private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
+        private const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
+
+        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
+        private const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
+
+
 
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
@@ -65,7 +73,7 @@ namespace SME.SGP.TesteIntegracao
         private const string UE_NOME_1 = "Nome da UE";
 
         private const string DRE_CODIGO_1 = "1";
-        private const string DRE_NOME_1 = "DRE 1";        
+        private const string DRE_NOME_1 = "DRE 1";
 
         private const string SISTEMA_NOME = "Sistema";
         private const string SISTEMA_CODIGO_RF = "1";
@@ -88,7 +96,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const int QUANTIDADE_3 = 3;
 
-        private const int BIMESTRE_2 = 2;
+        protected const int BIMESTRE_1 = 1;
+        protected const int BIMESTRE_2 = 2;
+        protected const int BIMESTRE_3 = 3;
+        protected const int BIMESTRE_4 = 4;
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -106,7 +117,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula,long componentecurricularId, DateTime dataAula, bool ehRegente = false)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
         {
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
 
@@ -120,22 +131,27 @@ namespace SME.SGP.TesteIntegracao
             return retorno;
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula ,bool ehRegente = false)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, bool ehRegente = false, long tipoCalendarioId = 1)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula);
+            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId);
             if (ehRegente) aula.EhRegencia = true;
 
             return await useCase.Executar(aula);
         }
 
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, bool criarPeriodo = true, long tipoCalendarioId = 1)
         {
-            await CriarItensComuns(criarPeriodo);
-            CriarClaimUsuario(perfil);
-            await CriarUsuarios();
             await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();            
             await CriarTurma(modalidade);
+        }
+
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
+        {
+            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(2022, 05, 02), new DateTime(2022, 07, 08), SEMESTRE_2);
         }
 
         protected void CriarClaimUsuario(string perfil)
@@ -189,7 +205,7 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
         }
 
-        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula)
+        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)
         {
             var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
             return new PersistirAulaDto()
@@ -201,7 +217,7 @@ namespace SME.SGP.TesteIntegracao
                 DisciplinaCompartilhadaId = componenteCurricularId,
                 CodigoUe = UE_CODIGO_1,
                 RecorrenciaAula = recorrenciaAula,
-                TipoCalendarioId = 1,
+                TipoCalendarioId = tipoCalendarioId,
                 CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
                 NomeComponenteCurricular = componenteCurricular.Descricao
             };
@@ -225,6 +241,18 @@ namespace SME.SGP.TesteIntegracao
                 {
                     Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
                     Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
                 };
 
             return null;
@@ -292,12 +320,12 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtribuicaoCJ(Modalidade modalidade,long componenteCurricularId, bool substituir = true)
+        protected async Task CriarAtribuicaoCJ(Modalidade modalidade, long componenteCurricularId, bool substituir = true)
         {
             await InserirNaBase(new AtribuicaoCJ
             {
                 TurmaId = TURMA_CODIGO_1,
-                DreId =DRE_CODIGO_1,
+                DreId = DRE_CODIGO_1,
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 DisciplinaId = componenteCurricularId,
@@ -410,7 +438,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
+        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
         {
             await InserirNaBase(new TipoCalendario
             {
@@ -427,10 +455,10 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarItensComuns(bool criarPeriodo)
+        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
             await CriarPadrao();
-            if (criarPeriodo) await CriarPeriodoEscolar();
+            if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
             await CriarComponenteCurricular();
         }
 
@@ -470,14 +498,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarPeriodoEscolar()
+        protected async Task CriarPeriodoEscolar(DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
             await InserirNaBase(new PeriodoEscolar
             {
-                TipoCalendarioId = 1,
-                Bimestre = SEMESTRE_2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = new DateTime(2022, 12, 31),
+                TipoCalendarioId = tipoCalendarioId,
+                Bimestre = bimestre,
+                PeriodoInicio = dataInicio,
+                PeriodoFim = dataFim,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
@@ -491,7 +519,9 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE,REGENCIA_CLASSE_INFANTIL,REGENCIA_INFATIL_EMEI_4H);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
         }
 
         private Aula ObtenhaAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)

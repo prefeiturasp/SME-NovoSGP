@@ -13,6 +13,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_excluir_aula_unica : AulaMockComponentePortugues
     {
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
+
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -33,8 +36,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Exclui_aula_unica()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
             var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
@@ -51,8 +54,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Aula_possui_avaliacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
             await CriarAtividadeAvaliativaFundamental();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();

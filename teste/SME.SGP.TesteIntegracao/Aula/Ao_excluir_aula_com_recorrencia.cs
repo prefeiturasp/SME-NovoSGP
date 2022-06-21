@@ -3,6 +3,7 @@ using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -11,6 +12,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 {
     public class Ao_excluir_aula_com_recorrencia : AulaMockComponentePortugues
     {
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
+
         public Ao_excluir_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
