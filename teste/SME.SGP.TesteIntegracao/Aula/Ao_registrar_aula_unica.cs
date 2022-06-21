@@ -11,6 +11,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_unica : AulaTeste
     {
+        private DateTime dataInicio = new DateTime(2022, 05, 02);
+        private DateTime dataFim = new DateTime(2022, 07, 08);
+
         public Ao_registrar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -18,52 +21,52 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Ao_registrar_aula_unica_professor_especialista()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_unica_regente_professor_EJA()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10), true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, true);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_unica_regente_professor_educacao_infantil()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10), true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, true);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_unica_professor_CP()
         {
-            await CriarDadosBasicosAula(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_com_evento_letivo()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CrieEvento(EventoLetivo.Sim, new System.DateTime(2022, 02, 10), new System.DateTime(2022, 02, 10));
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CrieEvento(EventoLetivo.Sim, dataInicio, dataInicio);
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
         [Fact]
         public async Task Nao_e_possivel_cadastrar_aula_com_periodo_encerrado()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2, false);
             await CriarPeriodoEscolarEncerrado();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -73,10 +76,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Nao_e_possivel_cadastrar_aula_no_domingo()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.DataAula = new DateTime(2022, 02, 13);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
