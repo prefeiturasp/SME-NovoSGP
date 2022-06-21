@@ -12,8 +12,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_alterar_aula_unica : AulaTeste
     {
-        private const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
-
         public Ao_alterar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -22,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ja_existe_aula_criada_no_dia_para_o_componente()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,new System.DateTime(2022,02,10));
@@ -38,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
             await CriarPeriodoEscolarEncerrado();
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
@@ -53,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Altera_aula()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10));
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
@@ -74,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Altera_aula_regente_diferente_do_atual()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10),"1111111");
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), RecorrenciaAula.AulaUnica, "1111111");
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, new System.DateTime(2022, 02, 10));
