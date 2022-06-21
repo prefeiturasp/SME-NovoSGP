@@ -16,7 +16,8 @@ namespace SME.SGP.Aula.Worker
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
-                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAula", typeof(RotasRabbitSgpAula))
+                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAula",
+                typeof(RotasRabbitSgpAula))
         {
         }
 
