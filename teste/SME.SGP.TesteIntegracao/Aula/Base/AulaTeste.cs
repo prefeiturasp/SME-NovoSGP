@@ -46,6 +46,14 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         private const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
+        private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
+        private const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
+
+        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
+        private const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
+
+
+
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
@@ -65,7 +73,7 @@ namespace SME.SGP.TesteIntegracao
         private const string UE_NOME_1 = "Nome da UE";
 
         private const string DRE_CODIGO_1 = "1";
-        private const string DRE_NOME_1 = "DRE 1";        
+        private const string DRE_NOME_1 = "DRE 1";
 
         private const string SISTEMA_NOME = "Sistema";
         private const string SISTEMA_CODIGO_RF = "1";
@@ -109,7 +117,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula,long componentecurricularId, DateTime dataAula, bool ehRegente = false)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
         {
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
 
@@ -123,7 +131,7 @@ namespace SME.SGP.TesteIntegracao
             return retorno;
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula ,bool ehRegente = false, long tipoCalendarioId = 1)
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, bool ehRegente = false, long tipoCalendarioId = 1)
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId);
@@ -229,6 +237,18 @@ namespace SME.SGP.TesteIntegracao
                     Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
                     Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
                 };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME
+                };
+            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113)
+                return new ComponenteCurricularDto()
+                {
+                    Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
+                    Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
+                };
 
             return null;
         }
@@ -295,12 +315,12 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtribuicaoCJ(Modalidade modalidade,long componenteCurricularId, bool substituir = true)
+        protected async Task CriarAtribuicaoCJ(Modalidade modalidade, long componenteCurricularId, bool substituir = true)
         {
             await InserirNaBase(new AtribuicaoCJ
             {
                 TurmaId = TURMA_CODIGO_1,
-                DreId =DRE_CODIGO_1,
+                DreId = DRE_CODIGO_1,
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 DisciplinaId = componenteCurricularId,
@@ -451,7 +471,9 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE,REGENCIA_CLASSE_INFANTIL,REGENCIA_INFATIL_EMEI_4H);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
         }
 
         private Aula ObtenhaAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)

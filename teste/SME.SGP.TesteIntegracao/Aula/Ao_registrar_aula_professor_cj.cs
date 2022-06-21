@@ -11,6 +11,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
+        private const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
+        private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
+        private DateTime DATA_10_02_2022 = new DateTime(2022, 02, 10);
+
         private DateTime dataInicio = new DateTime(2022, 05, 02);
         private DateTime dataFim = new DateTime(2022, 07, 08);
 
@@ -65,6 +69,33 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!");
+        }
+
+        [Fact]
+        public async Task Cadastrar_aula_para_regencia_de_classe_Fundamental()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
+
+            var excecao = await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_10_02_2022, true);
+        }
+
+        [Fact]
+        public async Task Cadastrar_aula_para_regencia_de_classe_EJA()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await CriarAtribuicaoCJ(Modalidade.EJA, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113);
+
+            var excecao = await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113, DATA_10_02_2022, true);
+        }
+
+        [Fact]
+        public async Task Cadastrar_aula_para_componente_nao_regencia()
+        {
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await CriarAtribuicaoCJ(Modalidade.Medio, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            var excecao = await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_10_02_2022, false);
         }
     }
 }
