@@ -96,6 +96,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
+
             foreach (var notaAprovacao in notasAprovacao)
             {
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
@@ -109,6 +111,7 @@ namespace SME.SGP.Aplicacao
                 {
 
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularEhRegencia}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
@@ -118,7 +121,9 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
+
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularEhRegencia}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
@@ -146,6 +151,8 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Usuário que alterou</b></td>");
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
+
+            notasAprovacao = notasAprovacao.OrderBy(n => n.WfAprovacao.AlteradoEm).ThenBy(n => n.WfAprovacao.CriadoEm);
 
             foreach (var notaAprovacao in notasAprovacao)
             {

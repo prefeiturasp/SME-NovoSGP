@@ -228,5 +228,15 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(new RetornoBaseDto("Encaminhamento devolvido com sucesso"));
         }
+
+        [HttpGet]
+        [Route("obterpaai")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAI([FromQuery] string codigoDre, [FromServices] IObterPAAIPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoDre));
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -438,6 +438,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     {
                         new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
                         new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "1111111",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),
                     }
                 },
                 new PerfisApiEolDto
