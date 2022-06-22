@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                 turma.AnoLetivo.Equals(DateTime.Today.Year))
             {
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+                if (periodoAtual != null) plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
             }
 
             return plano;
