@@ -27,15 +27,20 @@ namespace SME.SGP.Aplicacao
             long tipoCalendarioId;
 
             if (request.TipoCalendarioId == 0)
-                tipoCalendarioId = await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo
-                                        , request.Turma.ModalidadeTipoCalendario
-                                        , request.Turma.Semestre);
-            else tipoCalendarioId = request.TipoCalendarioId;
+            {
+                tipoCalendarioId = await repositorioTipoCalendario.ObterIdPorAnoLetivoEModalidadeAsync(request.Turma.AnoLetivo,
+                    request.Turma.ModalidadeTipoCalendario, request.Turma.Semestre);
+            }
+            else
+            {
+                tipoCalendarioId = request.TipoCalendarioId;
+            }
 
             if (tipoCalendarioId == 0)
                 throw new NegocioException($"Tipo de calendário para turma {request.Turma.CodigoTurma} não localizado!");
 
-            var periodoEmAberto = await repositorioPeriodoEscolar.PeriodoEmAbertoAsync(tipoCalendarioId, request.DataReferencia, request.Bimestre, request.EhAnoLetivo, request.Turma.EhTurmaInfantil);
+            var periodoEmAberto = await repositorioPeriodoEscolar.PeriodoEmAbertoAsync(tipoCalendarioId, request.DataReferencia,
+                request.Bimestre, request.EhAnoLetivo, request.Turma.EhTurmaInfantil);
 
             return periodoEmAberto || await TurmaEmPeriodoDeFechamento(request.Turma, tipoCalendarioId, request.DataReferencia, request.Bimestre);
         }

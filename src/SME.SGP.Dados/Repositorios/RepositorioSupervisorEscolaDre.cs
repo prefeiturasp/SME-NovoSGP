@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido, tipo");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where 1 = 1");
 
@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido, tipo");
+            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where excluido = false");
 
@@ -61,33 +61,37 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine(@"SELECT id,
-                                   tipo,
-                                   dre_id AS DreId,
-                                   escola_id AS EscolaId,
-                                   supervisor_id AS SupervisorId,
-                                   criado_em AS CriadoEm,
-                                   criado_por AS CriadoPor,
-                                   alterado_em AS AlteradoEm,
-                                   alterado_por AS AlteradoPor,
-                                   criado_rf AS CriadoRf,
-                                   alterado_rf AS AlteradoRf,
-                                   excluido,
-                                   COALESCE(NULL,tipo,0) AS tipo
+            query.AppendLine(@"SELECT sed.id,
+                                 sed.dre_id AS DreId,
+                                 sed.escola_id AS EscolaId,
+                                 sed.supervisor_id AS SupervisorId,
+                                 sed.criado_em AS CriadoEm,
+                                 sed.criado_por AS CriadoPor,
+                                 sed.alterado_em AS AlteradoEm,
+                                 sed.alterado_por AS AlteradoPor,
+                                 sed.criado_rf AS CriadoRf,
+                                 sed.alterado_rf AS AlteradoRf,
+                                 sed.excluido AtribuicaoExcluida,
+                                 sed.tipo AS TipoAtribuicao,
+                                 d.abreviacao  AS DreNome,
+                                 u.nome AS UeNome,
+                                 u.tipo_escola AS TipoEscola
                             FROM supervisor_escola_dre sed
-                            WHERE excluido = FALSE
-                              AND dre_id = @dre ");
+                             INNER JOIN dre d ON sed.dre_id = d.dre_id
+                             INNER JOIN ue u ON u.ue_id  = sed.escola_id 
+                            WHERE sed.dre_id = @dre ");
 
             if (!string.IsNullOrEmpty(filtro.UeCodigo))
-                query.AppendLine(" and escola_id = @ue ");
+                query.AppendLine(" and sed.escola_id = @ue ");
 
             if (filtro.TipoCodigo > 0)
-                query.AppendLine(" and tipo = @tipo ");
-            else if(filtro.TipoCodigo == 0)
-                query.AppendLine(" AND tipo IS NULL ");
+                query.AppendLine(" and sed.tipo = @tipo ");
 
             if(!string.IsNullOrEmpty(filtro.SupervisorId))
-                query.AppendLine(" AND supervisor_id = ANY(@supervisor) ");
+                query.AppendLine(" AND sed.supervisor_id = ANY(@supervisor)  AND sed.excluido = False ");
+
+            if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel)
+                query.AppendLine(" AND sed.excluido = true ");
 
             var parametros = new
             {
@@ -101,19 +105,21 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorDreAsync(string codigoDre,
-            TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+            TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
             StringBuilder query = new();
 
             query.AppendLine("select id, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId, criado_em as CriadoEm," +
                 "criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, " +
-                "alterado_rf as AlteradoRF, excluido as Excluido, tipo");
+                "alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
 
             query.AppendLine("from supervisor_escola_dre sed");
 
             query.AppendLine("where dre_id = @codigoDre " +
-                "and excluido = false " +
-                "and tipo = @tipoResponsavelAtribuicao");
+                "and excluido = false ");
+
+            if (tipoResponsavelAtribuicao != null)
+                query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }
@@ -122,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido, tipo");
+            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where escola_id = @ueId and excluido = false");
 
@@ -134,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as Excluido, tipo");
+            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where escola_id = @ueId and excluido = false");
 

@@ -26,16 +26,13 @@ namespace SME.SGP.Aplicacao
             {
                 var codigoDre = param.ObterObjetoMensagem<string>();
 
-                var responsavelPAAI = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
+                var reponsaveisPAAI = await mediator.Send(new ObterSupervisoresPorDreAsyncQuery(codigoDre, TipoResponsavelAtribuicao.PAAI));
 
-                if (responsavelPAAI.Any())
+                if (reponsaveisPAAI.Any())
                 {
-                    var funcionariosEOL = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(Perfis.PERFIL_PAAI, codigoDre));
+                    var responsaveisEOL = await mediator.Send(new ObterFuncionariosPorPerfilDreQuery(Perfis.PERFIL_PAAI, codigoDre));
 
-                    if (funcionariosEOL != null && funcionariosEOL.Any())
-                    {
-                        return await RemoverPAAISemAtribuicao(responsavelPAAI, funcionariosEOL);
-                    }
+                    return await RemoverPAAISemAtribuicao(reponsaveisPAAI, responsaveisEOL);
                 }
                 return true;
             }
@@ -46,28 +43,18 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<bool> RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres, IEnumerable<UsuarioEolRetornoDto> supervisoresEol)
+        private async Task<bool> RemoverPAAISemAtribuicao(IEnumerable<SupervisorEscolasDreDto> reponsaveisPAAI, IEnumerable<UsuarioEolRetornoDto> responsaveisEOL)
         {
 
-            if (supervisoresEol != null)
-            {
-                supervisoresEscolasDres = supervisoresEscolasDres
-                    .Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.PAAI &&
-                        !supervisoresEol.Select(e => e.CodigoRf)
-                    .Contains(s.SupervisorId));
-            }
+            if (responsaveisEOL != null)
+                reponsaveisPAAI = reponsaveisPAAI.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PAAI && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
-            if (supervisoresEscolasDres != null && supervisoresEscolasDres.Any())
+            foreach (var supervisor in reponsaveisPAAI)
             {
-                foreach (var supervisor in supervisoresEscolasDres)
-                {
-                    var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                    await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
-                }
-                return true;
+                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
             }
-            await mediator.Send(new SalvarLogViaRabbitCommand("Não foram encontrados responsáveis para atribuição no EOL", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, "Responsável PAAI"));
-            return false;
+            return true;
         }
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
         {
@@ -77,14 +64,14 @@ namespace SME.SGP.Aplicacao
                 SupervisorId = dto.SupervisorId,
                 EscolaId = dto.EscolaId,
                 Id = dto.Id,
-                Excluido = dto.Excluido,
+                Excluido = dto.AtribuicaoExcluida,
                 AlteradoEm = dto.AlteradoEm,
                 AlteradoPor = dto.AlteradoPor,
                 AlteradoRF = dto.AlteradoRF,
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
                 CriadoRF = dto.CriadoRF,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoAtribuicao
             };
         }
     }

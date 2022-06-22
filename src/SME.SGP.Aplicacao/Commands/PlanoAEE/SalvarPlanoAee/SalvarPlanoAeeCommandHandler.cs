@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao.Commands
                 AlunoNome = request.AlunoNome,
                 Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>(),
                 ResponsavelId = responsavelId
-        };
+            };
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()

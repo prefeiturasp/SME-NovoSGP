@@ -2,11 +2,9 @@
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 

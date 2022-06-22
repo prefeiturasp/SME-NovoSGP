@@ -44,10 +44,10 @@ namespace SME.SGP.TesteIntegracao
         private const int NOTA_7 = 7;
         private const int NOTA_9 = 9;
 
-        private const string ALUNO_CODIGO_4182555 = "4182555";
-        private const string ALUNO_CODIGO_4182556 = "4182556";
-        private const string ALUNO_CODIGO_4182557 = "4182557";
-        private const string ALUNO_FAKE_111111 = "111111";
+        private const string ALUNO_CODIGO_2222222 = "2222222";
+        private const string ALUNO_CODIGO_3333333 = "3333333";
+        private const string ALUNO_CODIGO_4444444 = "4444444";
+        private const string ALUNO_CODIGO_11223344 = "11223344";
 
         private const string MENSAGEM_NOTIFICACAO_WF_APROVACAO = "Foram criadas 4 aula(s) de reposição de Língua Portuguesa na turma 7B da DERVILLE ALLEGRETTI, PROF. (DIRETORIA REGIONAL DE EDUCACAO JACANA/TREMEMBE). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='https://dev-novosgp.sme.prefeitura.sp.gov.br/calendario-escolar/calendario-professor/cadastro-aula/editar/:0/'>aqui</a>.";
 
@@ -128,7 +128,8 @@ namespace SME.SGP.TesteIntegracao
             };
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
-            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_FAKE_111111, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
             
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -420,7 +421,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182555,
+                AlunoCodigo = ALUNO_CODIGO_2222222,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
@@ -439,7 +440,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182556,
+                AlunoCodigo = ALUNO_CODIGO_3333333,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
@@ -458,7 +459,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182557,
+                AlunoCodigo = ALUNO_CODIGO_4444444,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,

@@ -104,9 +104,9 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase(new Usuario
             {
                 Id = 29,
-                Login = "6926886",
-                CodigoRf = "6926886",
-                Nome = "ESTER CUSTODIA DOS SANTOS",
+                Login = "2222222",
+                CodigoRf = "2222222",
+                Nome = "João Usuário",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 DisciplinaId = "1114",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "6926886",
+                ProfessorRf = "2222222",
                 Quantidade = 1,
                 DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
@@ -175,7 +175,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 DisciplinaId = "1106",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "6926886",
+                ProfessorRf = "2222222",
                 Quantidade = 1,
                 DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
@@ -202,10 +202,10 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "ESTER CUSTODIA DOS SANTOS");
-            variaveis.Add("UsuarioLogado", "6926886");
-            variaveis.Add("RF", "6926886");
-            variaveis.Add("login", "6926886");
+            variaveis.Add("NomeUsuario", "João Usuário");
+            variaveis.Add("UsuarioLogado", "2222222");
+            variaveis.Add("RF", "2222222");
+            variaveis.Add("login", "2222222");
 
             if (incluirAdm)
             {
@@ -213,7 +213,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             }
 
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "6926886", Type = "rf" },
+                new InternalClaim { Value = "2222222", Type = "rf" },
                 new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
@@ -242,7 +242,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TurmaId = "1",
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = "6926886",
+                ProfessorRf = "2222222",
                 DisciplinaId = 1106,
                 Modalidade = Modalidade.CIEJA,
                 Substituir = true,

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<ResponsavelRetornoDto>> ObterNomesResponsaveisAtribuidos(IEnumerable<SupervisorEscolasDreDto> responsaveisAtribuidos,
-            TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+            TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
             var listaNomesResponsaveisAtribuidos = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(listaNomesResponsaveisAtribuidos);
         }
 
-        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        private async Task<IEnumerable<ResponsavelRetornoDto>> ObterResponsaveisEolOuCoreSSO(string dreCodigo, TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
         {
             var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
 
@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaResponsaveis = new List<SupervisorDto>();
 
-            if ((int)filtro.TipoResponsavelAtribuicao == 0)
+            if ((int)filtro?.TipoResponsavelAtribuicao == 0)
                 return listaResponsaveis;
 
             var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);

@@ -1171,8 +1171,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
 
-
-
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {
             var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}?CodigoDre={filtroFuncionariosDto.CodigoDRE}&CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");

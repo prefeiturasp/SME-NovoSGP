@@ -29,13 +29,13 @@ namespace SME.SGP.TesteIntegracao
 
             var dto = new FiltroFuncionarioDto()
             {
-                CodigoRF = "6926886"
+                CodigoRF = "2222222"
             };
 
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeEmpty();
-            retorno.First().CodigoRf.ShouldBe("6926886");
+            retorno.First().CodigoRf.ShouldBe("2222222");
         }
     }
 }

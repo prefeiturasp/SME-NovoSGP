@@ -4,6 +4,6 @@ namespace SME.SGP.Infra
 {
     public class FiltroObterResponsaveisDto
     {
-        public TipoResponsavelAtribuicao TipoResponsavelAtribuicao { get; set; }
+        public TipoResponsavelAtribuicao? TipoResponsavelAtribuicao { get; set; }
     }
 }

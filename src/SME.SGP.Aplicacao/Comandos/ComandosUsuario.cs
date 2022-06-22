@@ -296,6 +296,8 @@ namespace SME.SGP.Aplicacao
 
             var dto = await ObtenhaAutenticacao(retornoAutenticacaoEol, login, claims);
 
+            dto.AdministradorSuporte = new AdministradorSuporteDto() { Login = usuarioLogado.Login, Nome = usuarioLogado.Nome };
+
             repositorioSuporteUsuario.Salvar(new SuporteUsuario()
             {
                 UsuarioAdministrador = usuarioLogado.Login,

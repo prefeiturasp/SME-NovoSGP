@@ -103,15 +103,15 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.UESIds == null || (!atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && !atribuicao.Excluido))
+                    if (atribuicaoSupervisorEscolaDto.UESIds == null || (!atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
                         await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.Id);
-                    else if (atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && atribuicao.Excluido)
+                    else if (atribuicaoSupervisorEscolaDto.UESIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)
                     {
                         var supervisorEscolaDre = repositorioSupervisorEscolaDre
                             .ObterPorId(atribuicao.Id);
 
                         supervisorEscolaDre.Excluido = false;
-                        supervisorEscolaDre.Tipo = atribuicao.Tipo;
+                        supervisorEscolaDre.Tipo = atribuicao.TipoAtribuicao;
 
                         await repositorioSupervisorEscolaDre.SalvarAsync(supervisorEscolaDre);
                     }
