@@ -13,10 +13,10 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         private const long TIPO_CALENDARIO_999999 = 999999;
         private const long TIPO_CALENDARIO_1 = 1;
 
-        private readonly DateTime DATA_02_05_2022 = new(2022, 05, 02);
-        private readonly DateTime DATA_08_07_2022 = new(2022, 07, 08);
-        private readonly DateTime DATA_03_10_2022 = new(2022, 10, 03);
-        private readonly DateTime DATA_19_06_2022 = new(2022, 06, 19);        
+        private readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private readonly DateTime DATA_03_10 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
+        private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);        
 
         public Ao_registrar_aula_verifica_se_pode_cadastrar_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
@@ -26,9 +26,9 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         {
             var mensagemEsperada = "Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Não foi possível obter os períodos deste tipo de calendário.";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2);
 
-            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05_2022, false, TIPO_CALENDARIO_999999);
+            var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05, false, TIPO_CALENDARIO_999999);
 
             excecao.ExistemErros.ShouldBeTrue();
 
@@ -38,11 +38,11 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         }
 
         [Fact]
-        public async Task Nao_pode_cadastrar_aula_quando_existe_aula_normal()
+        public async Task Nao_pode_cadastrar_aula_normal_quando_existe_aula_normal()
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await InserirNaBase(new Aula() 
             {
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                 TipoCalendarioId = 1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 Quantidade = 1,
-                DataAula = DATA_02_05_2022,
+                DataAula = DATA_02_05,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Normal,
                 CriadoEm = DateTime.Now,
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                 Status = EntidadeStatus.Aprovado
             });
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05_2022, false, TIPO_CALENDARIO_999999));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05, false, TIPO_CALENDARIO_999999));
 
             excecao.Message.ShouldNotBeNullOrEmpty();
 
@@ -70,11 +70,11 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         }
 
         [Fact]
-        public async Task Nao_pode_cadastrar_aula_quando_existe_aula_reposicao()
+        public async Task Nao_pode_cadastrar_aula_reposicao_quando_existe_aula_reposicao()
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await InserirNaBase(new Aula()
             {
@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                 TipoCalendarioId = 1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 Quantidade = 1,
-                DataAula = DATA_02_05_2022,
+                DataAula = DATA_02_05,
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Reposicao,
                 CriadoEm = DateTime.Now,
@@ -94,7 +94,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                 Status = EntidadeStatus.Aprovado
             });
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05_2022, false, TIPO_CALENDARIO_999999));
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05, false, TIPO_CALENDARIO_999999));
 
             excecao.Message.ShouldNotBeNullOrEmpty();
 
@@ -106,12 +106,12 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal,
                                                                      RecorrenciaAula.RepetirBimestreAtual,
                                                                      COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                                     DATA_03_10_2022,
+                                                                     DATA_03_10,
                                                                      TIPO_CALENDARIO_1,
                                                                      TURMA_CODIGO_1,
                                                                      UE_CODIGO_1));
@@ -126,12 +126,12 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Reposicao,
                                                                      RecorrenciaAula.RepetirBimestreAtual,
                                                                      COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                                     DATA_03_10_2022,
+                                                                     DATA_03_10,
                                                                      TIPO_CALENDARIO_1,
                                                                      TURMA_CODIGO_1,
                                                                      UE_CODIGO_1));
@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES, 
                                           EventoLocalOcorrencia.SMEUE,
@@ -157,8 +157,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_21);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Nao,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_1,
@@ -169,7 +169,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal,
                                                                      RecorrenciaAula.RepetirBimestreAtual,
                                                                      COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                                     DATA_19_06_2022,
+                                                                     DATA_19_06,
                                                                      TIPO_CALENDARIO_1,
                                                                      TURMA_CODIGO_1,
                                                                      UE_CODIGO_1));
@@ -184,7 +184,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         {
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
 
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES,
                                           EventoLocalOcorrencia.SMEUE,
@@ -195,8 +195,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_21);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Nao,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_1,
@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => InserirAulaUseCaseSemValidacaoBasica(TipoAula.Reposicao,
                                                                      RecorrenciaAula.RepetirBimestreAtual,
                                                                      COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                                     DATA_19_06_2022,
+                                                                     DATA_19_06,
                                                                      TIPO_CALENDARIO_1,
                                                                      TURMA_CODIGO_1,
                                                                      UE_CODIGO_1));
@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         [Fact]
         public async Task Pode_cadastrar_aula_reposicao_quando_nao_tem_evento_letivo_dia_mas_tem_evento_reposicao_aula()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES,
                                           EventoLocalOcorrencia.SMEUE,
@@ -231,8 +231,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_21);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Nao,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_1,
@@ -249,8 +249,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_13);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Nao,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_2,
@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                       EntidadeStatus.Aprovado);
 
 
-            var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06_2022);
+            var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06);
 
             retorno.PodeCadastrarAula.ShouldBeTrue();
         }
@@ -267,7 +267,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         [Fact]
         public async Task Pode_cadastrar_aula_reposicao_quando_nao_tem_evento_letivo_dia_mas_tem_evento_reposicao_dia()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_2022, DATA_08_07_2022, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
             await CriarEventoTipoResumido(SUSPENSAO_DE_ATIVIDADES,
                                           EventoLocalOcorrencia.SMEUE,
@@ -278,8 +278,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_21);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Nao,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_1,
@@ -296,8 +296,8 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                           TIPO_EVENTO_14);
 
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
-                                      DATA_19_06_2022,
-                                      DATA_19_06_2022,
+                                      DATA_19_06,
+                                      DATA_19_06,
                                       EventoLetivo.Sim,
                                       TIPO_CALENDARIO_1,
                                       TIPO_EVENTO_2,
@@ -306,7 +306,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
                                       EntidadeStatus.Aprovado);
 
 
-            var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06_2022);
+            var retorno = await PodeCadastrarAulaUseCase(TipoAula.Reposicao, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_19_06);
 
             retorno.PodeCadastrarAula.ShouldBeTrue();
         }
