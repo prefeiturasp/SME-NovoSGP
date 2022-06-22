@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                    if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
+                  if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
                         await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.AtribuicaoSupervisorId);
 
                     else if (atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)
