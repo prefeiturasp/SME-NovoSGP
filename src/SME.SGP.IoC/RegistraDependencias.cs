@@ -1059,7 +1059,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IDevolverPlanoAEEUseCase, DevolverPlanoAEEUseCase>();
             services.TryAddScoped<ITransferirPendenciaParaNovoResponsavelUseCase, TransferirPendenciaParaNovoResponsavelUseCase>();
             services.TryAddScoped<IAtribuirResponsavelGeralDoPlanoUseCase, AtribuirResponsavelGeralDoPlanoUseCase>();
-;
+
             //Notificacoes EncaminhamentoAEE
             services.TryAddScoped<INotificacaoConclusaoEncaminhamentoAEEUseCase, NotificacaoConclusaoEncaminhamentoAEEUseCase>();
             services.TryAddScoped<INotificacaoEncerramentoEncaminhamentoAEEUseCase, NotificacaoEncerramentoEncaminhamentoAEEUseCase>();
