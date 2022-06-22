@@ -32,9 +32,13 @@ namespace SME.SGP.TesteIntegracao
         private const string USUARIO_CLAIM_TIPO_RF = "rf";
         private const string USUARIO_CLAIM_TIPO_PERFIL = "perfil";
 
-        private const string TURMA_CODIGO_1 = "1";
-        private const string TURMA_NOME_1 = "Turma Nome 1";
-        private const string TURMA_ANO_2 = "2";
+        protected const string TURMA_CODIGO_1 = "1";
+        protected const string TURMA_NOME_1 = "Turma Nome 1";
+
+        protected const string TURMA_CODIGO_2 = "2";
+        protected const string TURMA_NOME_2 = "Turma Nome 2";
+
+        protected const string TURMA_ANO_2 = "2";
 
         private const int ANO_LETIVO_2022_NUMERO = 2022;
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
@@ -52,8 +56,6 @@ namespace SME.SGP.TesteIntegracao
         private const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
         private const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
 
-
-
         private const string COMPONENTE_CURRICULAR = "componente_curricular";
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
@@ -69,24 +71,24 @@ namespace SME.SGP.TesteIntegracao
         private const string FALSE = "false";
         private const string TRUE = "true";
 
-        private const string UE_CODIGO_1 = "1";
-        private const string UE_NOME_1 = "Nome da UE";
+        protected const string UE_CODIGO_1 = "1";
+        protected const string UE_NOME_1 = "Nome da UE";
 
-        private const string DRE_CODIGO_1 = "1";
-        private const string DRE_NOME_1 = "DRE 1";
+        protected const string DRE_CODIGO_1 = "1";
+        protected const string DRE_NOME_1 = "DRE 1";
 
-        private const string SISTEMA_NOME = "Sistema";
-        private const string SISTEMA_CODIGO_RF = "1";
+        protected const string SISTEMA_NOME = "Sistema";
+        protected const string SISTEMA_CODIGO_RF = "1";
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
-        private const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
-        private const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
-        private const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
+        protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
+        protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
+        protected const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
 
-        private const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
-        private const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
-        private const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
+        protected const string USUARIO_PROFESSOR_LOGIN_1111111 = "1111111";
+        protected const string USUARIO_PROFESSOR_CODIGO_RF_1111111 = "1111111";
+        protected const string USUARIO_PROFESSOR_NOME_1111111 = "Nome do usuário 1111111";
 
         private const string PROFESSOR = "Professor";
         private const int ORDEM_290 = 290;
@@ -100,6 +102,12 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_2 = 2;
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
+
+        protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
+        protected const long TIPO_EVENTO_21 = 21;
+        protected const long TIPO_EVENTO_1 = 1;
+        protected const string SUSPENSAO_DE_ATIVIDADES = "Suspensão de Atividades";
+
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -135,6 +143,15 @@ namespace SME.SGP.TesteIntegracao
         {
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId);
+            if (ehRegente) aula.EhRegencia = true;
+
+            return await useCase.Executar(aula);
+        }
+
+        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo, bool ehRegente = false)
+        {
+            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
+            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId, turmaCodigo, ueCodigo);
             if (ehRegente) aula.EhRegencia = true;
 
             return await useCase.Executar(aula);
@@ -211,6 +228,24 @@ namespace SME.SGP.TesteIntegracao
                 DataAula = dataAula,
                 DisciplinaCompartilhadaId = componenteCurricularId,
                 CodigoUe = UE_CODIGO_1,
+                RecorrenciaAula = recorrenciaAula,
+                TipoCalendarioId = tipoCalendarioId,
+                CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
+                NomeComponenteCurricular = componenteCurricular.Descricao
+            };
+        }
+
+        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo)
+        {
+            var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
+            return new PersistirAulaDto()
+            {
+                CodigoTurma = turmaCodigo,
+                Quantidade = 1,
+                TipoAula = tipoAula,
+                DataAula = dataAula,
+                DisciplinaCompartilhadaId = componenteCurricularId,
+                CodigoUe = ueCodigo,
                 RecorrenciaAula = recorrenciaAula,
                 TipoCalendarioId = tipoCalendarioId,
                 CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
@@ -406,6 +441,62 @@ namespace SME.SGP.TesteIntegracao
                 Migrado = false
             });
         }
+
+        protected async Task CriarEventoResumido(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus)
+        {
+            await CriarEvento(nomeEvento,dataInicio,dataFim,eventoLetivo,tipoCalendarioId,tipoEventoId,dreId,ueId,eventoStatus,null,null,null,null);
+        }
+
+        protected async Task CriarEvento(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus, long? workflowAprovacaoId, TipoPerfil? tipoPerfil, long? eventoPaiId, long? feriadoId, bool migrado = false)
+        {
+            await InserirNaBase(new Evento
+            {
+                Nome = nomeEvento,
+                DataInicio = dataInicio,
+                DataFim = dataFim,
+                Letivo = eventoLetivo,
+                TipoCalendarioId = tipoCalendarioId,
+                TipoEventoId = tipoEventoId,
+                DreId = dreId,
+                UeId = ueId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Status = eventoStatus,
+                WorkflowAprovacaoId = workflowAprovacaoId,
+                Migrado = migrado,
+                TipoPerfilCadastro = tipoPerfil,
+                EventoPaiId = eventoPaiId,
+                FeriadoId = feriadoId
+            });
+        }
+
+        protected async Task CriarEventoTipoResumido(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, long codigo)
+        {
+            await CriarEventoTipo(descricao, localOcorrencia, concomitancia, tipoData, dependencia, letivo, true,false,codigo,false, false);
+        }
+
+        protected async Task CriarEventoTipo(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, bool ativo, bool excluido, long codigo, bool somenteLeitura, bool eventoEscolaAqui)
+        {
+            await InserirNaBase(new EventoTipo() 
+            {
+                Descricao = descricao, 
+                LocalOcorrencia = localOcorrencia, 
+                Concomitancia = concomitancia, 
+                TipoData = tipoData, 
+                Dependencia = dependencia, 
+                Letivo = letivo, 
+                Ativo = ativo, 
+                Excluido = excluido, 
+                Codigo = codigo, 
+                SomenteLeitura = somenteLeitura, 
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
+
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
