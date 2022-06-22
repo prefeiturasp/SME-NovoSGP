@@ -53,8 +53,11 @@ namespace SME.SGP.Aplicacao
                 if (!temEventoLetivoNoDia)
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
             }
-           
-            if (!temEventoLetivoNoDia)
+
+            // Evento não letivo
+            var temEventoNaoLetivoNoDia = await repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+
+            if (!temEventoLetivoNoDia && temEventoNaoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
 
             var mesmoAnoLetivo = DateTime.Today.Year == request.DataAula.Year;
