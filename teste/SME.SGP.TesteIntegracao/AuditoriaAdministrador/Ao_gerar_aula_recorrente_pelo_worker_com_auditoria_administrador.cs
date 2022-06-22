@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new DateTime(2022, 02, 10),
+                                                            new (DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                                                             5,
                                                             "1",
                                                             1106,

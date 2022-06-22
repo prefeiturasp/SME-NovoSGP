@@ -12,8 +12,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_excluir_aula_unica : AulaTeste
     {
-        private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
+        private DateTime dataInicio = new (DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime dataFim = new (DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {

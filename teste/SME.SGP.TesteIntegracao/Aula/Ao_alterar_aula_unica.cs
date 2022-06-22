@@ -12,8 +12,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_alterar_aula_unica : AulaTeste
     {
-        private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
+        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_alterar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Ja_existe_aula_criada_no_dia_para_o_componente()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim,BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IAlterarAulaUseCase>();

@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             {
                 CodigoTurma = "1",
                 CodigoComponenteCurricular = 1106,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new (DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 Quantidade = 1,
                 CodigoUe = "1",
                 TipoAula = TipoAula.Normal,

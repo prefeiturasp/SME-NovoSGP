@@ -11,8 +11,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_unica : AulaTeste
     {
-        private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
+        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
-            dto.DataAula = new DateTime(2022, 05, 08);
+            dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 08);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
