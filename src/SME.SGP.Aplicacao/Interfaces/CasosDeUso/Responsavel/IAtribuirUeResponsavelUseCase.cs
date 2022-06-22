@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IAtribuirUeResponsavelUseCase : IUseCase<AtribuicaoResponsavelUEDto, bool>
+    public interface IAtribuirUeResponsavelUseCase : IUseCase<AtribuicaoResponsavelUEDto, SalvarAtribuicaoResponsavelStatus>
     {
     }
 }

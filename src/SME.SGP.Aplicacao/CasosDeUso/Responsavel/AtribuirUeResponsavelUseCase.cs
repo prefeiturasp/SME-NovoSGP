@@ -20,43 +20,56 @@ namespace SME.SGP.Aplicacao
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
         }
 
-        public async Task<bool> Executar(AtribuicaoResponsavelUEDto atribuicaoResponsavelUe)
+        public async Task<SalvarAtribuicaoResponsavelStatus> Executar(AtribuicaoResponsavelUEDto atribuicaoResponsavelUe)
         {
             try
             {
-                await ValidarDados(atribuicaoResponsavelUe);
+                var validacao = await ValidarDados(atribuicaoResponsavelUe);
 
-                var escolasAtribuidas = await repositorioSupervisorEscolaDre
-                    .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, true);
+                if (string.IsNullOrEmpty(validacao))
+                {
+                    var escolasAtribuidas = await repositorioSupervisorEscolaDre
+                            .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, true);
 
-                await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
-                AtribuirEscolas(atribuicaoResponsavelUe);
-                return true;
+                    await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
+                    AtribuirEscolas(atribuicaoResponsavelUe);
+                }
+                return new SalvarAtribuicaoResponsavelStatus { AtribuidoComSucesso = string.IsNullOrEmpty(validacao), Mensagem = validacao };
             }
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao Atribuir responsável", LogNivel.Critico, LogContexto.AtribuicaoReponsavel, ex.Message));
-                return false;
+                return new SalvarAtribuicaoResponsavelStatus { AtribuidoComSucesso = false, Mensagem = "Erro ao Atribuir responsável" };
             }
         }
 
-        private async Task ValidarDados(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
+        private async Task<string> ValidarDados(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
+            var retorno = string.Empty;
+            foreach (var ueCodigo in atribuicaoSupervisorEscolaDto.UesIds)
+            {
+                var existe = await repositorioSupervisorEscolaDre.VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe((int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao, ueCodigo, atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.ResponsavelId);
+                if (existe > 0)
+                {
+                    var ueJaAtribuida = await mediator.Send(new ObterUeComDrePorCodigoQuery(ueCodigo));
+                    retorno = $"A UE {ueJaAtribuida.TipoEscola.ShortName()} {ueJaAtribuida.Nome} já está atribuída para outro responsável com o tipo {atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao.Name()}.";
+                }
+            }
             var dre = await mediator.Send(new ObterDREIdPorCodigoQuery(atribuicaoSupervisorEscolaDto.DreId));
 
             if (dre < 1)
-                throw new NegocioException($"A DRE {atribuicaoSupervisorEscolaDto.DreId} não foi localizada.");
+                retorno = $"A DRE {atribuicaoSupervisorEscolaDto.DreId} não foi localizada.";
 
             atribuicaoSupervisorEscolaDto.UesIds
-                .ForEach(ue =>
+                .ForEach(async ue =>
                 {
-                    var ueLocalizada = mediator.Send(new ObterUeComDrePorCodigoQuery(ue)).Result;
+                    var ueLocalizada = await mediator.Send(new ObterUeComDrePorCodigoQuery(ue));
 
                     if (ueLocalizada == null)
-                        throw new NegocioException($"A UE {ue} não foi localizada.");
+                        retorno = $"A UE {ue} não foi localizada.";
 
                     if (!ueLocalizada.Dre.CodigoDre.Equals(atribuicaoSupervisorEscolaDto.DreId))
-                        throw new NegocioException($"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.");
+                        retorno = $"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.";
                 });
 
             var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
@@ -69,8 +82,9 @@ namespace SME.SGP.Aplicacao
                 atribuicaoSupervisorEscolaDto.UesIds.Clear();
                 await AjustarRegistrosExistentes(atribuicaoSupervisorEscolaDto, atribuicaoExistentes);
 
-                throw new NegocioException($"O supervisor {atribuicaoSupervisorEscolaDto.ResponsavelId} não é valido para essa atribuição.");
+                retorno = $"O supervisor {atribuicaoSupervisorEscolaDto.ResponsavelId} não é valido para essa atribuição.";
             }
+            return retorno;
         }
 
         private void AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
@@ -98,12 +112,12 @@ namespace SME.SGP.Aplicacao
                 foreach (var atribuicao in escolasAtribuidas)
                 {
                     if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
-                        await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.Id);
+                        await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.AtribuicaoSupervisorId);
 
                     else if (atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)
                     {
                         var supervisorEscolaDre = repositorioSupervisorEscolaDre
-                            .ObterPorId(atribuicao.Id);
+                            .ObterPorId(atribuicao.AtribuicaoSupervisorId);
 
                         supervisorEscolaDre.Excluido = false;
                         supervisorEscolaDre.SupervisorId = atribuicaoSupervisorEscolaDto.ResponsavelId;

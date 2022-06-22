@@ -27,12 +27,18 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost("atribuir-ue")]
         [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(SalvarAtribuicaoResponsavelStatus), 601)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
         public async Task<IActionResult> AtribuirUE(AtribuicaoResponsavelUEDto atribuicaoResponsavelUEDto,
             [FromServices] IAtribuirUeResponsavelUseCase useCase)
         {
-            return Ok(await useCase.Executar(atribuicaoResponsavelUEDto));
+            var criarAtribuicao = await useCase.Executar(atribuicaoResponsavelUEDto);
+            if (!criarAtribuicao.AtribuidoComSucesso)
+                return StatusCode(601, criarAtribuicao);
+
+            return Ok(criarAtribuicao);
         }
 
         [HttpGet("vinculo-lista")]
@@ -82,9 +88,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarResponsavelDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId)
+        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId)
         {
-            var listaretorno = consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId);
+            var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId);
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);

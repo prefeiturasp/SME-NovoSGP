@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao
             mediator = new Mock<IMediator>();
             repositorioSupervisorEscolaDre = new Mock<IRepositorioSupervisorEscolaDre>();
             unitOfWork = new Mock<IUnitOfWork>();
-            atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object, unitOfWork.Object);
+            atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object);
         }
 
         [Fact]
