@@ -11,8 +11,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
-        private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
+        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await CriarAtribuicaoEsporadica(new DateTime(2022, 01, 10), new DateTime(2022, 01, 10));
+            await CriarAtribuicaoEsporadica(new(DateTimeExtension.HorarioBrasilia().Year, 01, 10), new(DateTimeExtension.HorarioBrasilia().Year, 01, 10));
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
