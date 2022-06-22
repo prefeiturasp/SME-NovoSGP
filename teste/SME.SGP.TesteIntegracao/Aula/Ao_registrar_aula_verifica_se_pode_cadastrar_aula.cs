@@ -1,13 +1,12 @@
 ﻿using Shouldly;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
+namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
 {
     public class Ao_registrar_aula_verifica_se_pode_cadastrar_aula : AulaTeste
     {
