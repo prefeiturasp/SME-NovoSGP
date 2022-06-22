@@ -260,7 +260,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriaTipoAvaliacao()
+        protected async Task CriaTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao)
         {
             await InserirNaBase(new TipoAvaliacao
             {
@@ -269,16 +269,16 @@ namespace SME.SGP.TesteIntegracao
                 Descricao = "Avaliação bimestral",
                 Situacao = true,
                 AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                Codigo = tipoAvalicao,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now
             });
         }
 
-        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
+        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral)
         {
-            await CriaTipoAvaliacao();
+            await CriaTipoAvaliacao(tipoAvalicao);
 
             await InserirNaBase(new AtividadeAvaliativa
             {
