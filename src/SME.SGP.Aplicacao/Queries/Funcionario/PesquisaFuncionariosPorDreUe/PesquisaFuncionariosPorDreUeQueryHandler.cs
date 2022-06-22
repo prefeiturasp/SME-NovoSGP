@@ -45,6 +45,9 @@ namespace SME.SGP.Aplicacao
                 .Distinct()
                 .ToList();
 
+            if (!rfs.Any())
+                return Enumerable.Empty<UsuarioEolRetornoDto>();
+
             var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(rfs));
 
             if (usuarios != null)
