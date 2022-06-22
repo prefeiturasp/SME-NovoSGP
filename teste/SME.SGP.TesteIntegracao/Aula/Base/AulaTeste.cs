@@ -20,6 +20,10 @@ namespace SME.SGP.TesteIntegracao
     {
         private const int QUANTIDADE_3 = 3;
 
+        private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+
+        private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
+
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -36,6 +40,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
+            
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
@@ -204,6 +210,56 @@ namespace SME.SGP.TesteIntegracao
                 Migrado = false,
                 AulaCJ = false
             };
+        }
+
+        protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
+        {
+            await InserirNaBase(new FechamentoReabertura() 
+            {
+                Descricao = "Reabrir Geral",
+                Inicio = DATA_01_01,
+                Fim = DATA_31_12,
+                TipoCalendarioId = tipoCalendarioId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
         }
     }
 }

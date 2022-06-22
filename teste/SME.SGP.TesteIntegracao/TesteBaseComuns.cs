@@ -140,6 +140,11 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
         }
 
+        protected string ObterPerfilProfessorInfantil()
+        {
+            return Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name()).ToString();
+        }
+
         protected string ObterPerfilCP()
         {
             return Guid.Parse(PerfilUsuario.CP.Name()).ToString();
