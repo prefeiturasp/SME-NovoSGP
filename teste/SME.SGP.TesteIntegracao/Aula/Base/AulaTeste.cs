@@ -70,6 +70,29 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(aula);
         }
 
+        protected async Task<CadastroAulaDto> PodeCadastrarAulaUseCase(TipoAula tipoAula, string turmaCodigo, long componenteCurricularId, DateTime dataAula, bool ehRegente = false)
+        {
+            var useCase = ServiceProvider.GetService<IPodeCadastrarAulaUseCase>();
+
+            var filtroPodeCadastrarAulaDto = ObterFiltroPodeCadastrarAulaDto(tipoAula, turmaCodigo, componenteCurricularId, dataAula, ehRegente);
+
+            return await useCase.Executar(filtroPodeCadastrarAulaDto);
+        }
+
+        private FiltroPodeCadastrarAulaDto ObterFiltroPodeCadastrarAulaDto(TipoAula tipoAula, string turmaCodigo, long componenteCurricular, DateTime dataAula, bool ehRegencia, long aulaId = 0)
+        {
+            return new FiltroPodeCadastrarAulaDto()
+            { 
+                AulaId = aulaId,
+                ComponenteCurricular = componenteCurricular,
+                DataAula = dataAula,
+                EhRegencia = ehRegencia,
+                TipoAula = tipoAula,
+                TurmaCodigo = turmaCodigo
+            };
+
+        }
+
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, bool criarPeriodo = true, long tipoCalendarioId = 1)
         {
             await CriarTipoCalendario(tipoCalendario);

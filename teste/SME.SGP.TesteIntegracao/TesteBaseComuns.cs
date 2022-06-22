@@ -92,8 +92,13 @@ namespace SME.SGP.TesteIntegracao
         protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
         protected const long TIPO_EVENTO_21 = 21;
         protected const long TIPO_EVENTO_1 = 1;
+        protected const long TIPO_EVENTO_2 = 2;
+        protected const long TIPO_EVENTO_13 = 13;
+        protected const long TIPO_EVENTO_14 = 14;
         protected const string SUSPENSAO_DE_ATIVIDADES = "Suspensão de Atividades";
-
+        protected const string REPOSICAO_AULA = "Reposição de Aula";
+        protected const string REPOSICAO_DIA = "Reposição Dia";
+        protected const string REPOSICAO_AULA_DE_GREVE = "Reposição de Aula de Greve";
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
