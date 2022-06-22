@@ -62,8 +62,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string UE_CODIGO_1 = "1";
         private const string UE_NOME_1 = "Nome da UE";
 
-        private const string DRE_CODIGO_1 = "1";
-        private const string DRE_NOME_1 = "DRE 1";
+        protected const string DRE_CODIGO_1 = "1";
+        protected const string DRE_NOME_1 = "DRE 1";
 
         protected const string SISTEMA_NOME = "Sistema";
         protected const string SISTEMA_CODIGO_RF = "1";
@@ -89,6 +89,16 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
 
+        protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
+        protected const long TIPO_EVENTO_21 = 21;
+        protected const long TIPO_EVENTO_1 = 1;
+        protected const long TIPO_EVENTO_2 = 2;
+        protected const long TIPO_EVENTO_13 = 13;
+        protected const long TIPO_EVENTO_14 = 14;
+        protected const string SUSPENSAO_DE_ATIVIDADES = "Suspensão de Atividades";
+        protected const string REPOSICAO_AULA = "Reposição de Aula";
+        protected const string REPOSICAO_DIA = "Reposição Dia";
+        protected const string REPOSICAO_AULA_DE_GREVE = "Reposição de Aula de Greve";
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -160,7 +170,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CrieEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento)
+        protected async Task CriarEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento)
         {
             await InserirNaBase(new EventoTipo
             {
@@ -186,6 +196,61 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 Migrado = false
+            });
+        }
+
+        protected async Task CriarEventoTipoResumido(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, long codigo)
+        {
+            await CriarEventoTipo(descricao, localOcorrencia, concomitancia, tipoData, dependencia, letivo, true, false, codigo, false, false);
+        }
+
+        protected async Task CriarEventoTipo(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, bool ativo, bool excluido, long codigo, bool somenteLeitura, bool eventoEscolaAqui)
+        {
+            await InserirNaBase(new EventoTipo()
+            {
+                Descricao = descricao,
+                LocalOcorrencia = localOcorrencia,
+                Concomitancia = concomitancia,
+                TipoData = tipoData,
+                Dependencia = dependencia,
+                Letivo = letivo,
+                Ativo = ativo,
+                Excluido = excluido,
+                Codigo = codigo,
+                SomenteLeitura = somenteLeitura,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
+
+        protected async Task CriarEventoResumido(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus)
+        {
+            await CriarEvento(nomeEvento, dataInicio, dataFim, eventoLetivo, tipoCalendarioId, tipoEventoId, dreId, ueId, eventoStatus, null, null, null, null);
+        }
+
+        protected async Task CriarEvento(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus, long? workflowAprovacaoId, TipoPerfil? tipoPerfil, long? eventoPaiId, long? feriadoId, bool migrado = false)
+        {
+            await InserirNaBase(new Evento
+            {
+                Nome = nomeEvento,
+                DataInicio = dataInicio,
+                DataFim = dataFim,
+                Letivo = eventoLetivo,
+                TipoCalendarioId = tipoCalendarioId,
+                TipoEventoId = tipoEventoId,
+                DreId = dreId,
+                UeId = ueId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Status = eventoStatus,
+                WorkflowAprovacaoId = workflowAprovacaoId,
+                Migrado = migrado,
+                TipoPerfilCadastro = tipoPerfil,
+                EventoPaiId = eventoPaiId,
+                FeriadoId = feriadoId
             });
         }
 
@@ -243,6 +308,14 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+        }
+        protected ExcluirAulaDto ObterDto(RecorrenciaAula recorrencia)
+        {
+            return new ExcluirAulaDto()
+            {
+                AulaId = 1,
+                RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
+            };
         }
 
         protected async Task CriarTurma(Modalidade modalidade)

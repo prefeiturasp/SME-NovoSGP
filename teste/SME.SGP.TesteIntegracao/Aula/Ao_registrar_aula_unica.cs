@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ao_registrar_aula_com_evento_letivo()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-            await CrieEvento(EventoLetivo.Sim, dataInicio, dataInicio);
+            await CriarEvento(EventoLetivo.Sim, dataInicio, dataInicio);
 
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }

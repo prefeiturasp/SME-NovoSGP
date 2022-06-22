@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(RecorrenciaAula.RepetirBimestreAtual);
+            var dto = ObterDto(RecorrenciaAula.RepetirBimestreAtual);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             await CriaAulaRecorrentePortugues(recorrencia);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(recorrencia);
+            var dto = ObterDto(recorrencia);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();

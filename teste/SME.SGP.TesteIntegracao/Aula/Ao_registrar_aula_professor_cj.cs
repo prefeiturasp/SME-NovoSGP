@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Nao_pode_cadastrar_aula_data_com_evento_nao_letivo()
         {
             await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-            await CrieEvento(EventoLetivo.Nao, dataInicio, dataInicio);
+            await CriarEvento(EventoLetivo.Nao, dataInicio, dataInicio);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
