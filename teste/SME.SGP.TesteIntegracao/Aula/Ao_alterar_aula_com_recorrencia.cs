@@ -14,17 +14,22 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 {
     public class Ao_alterar_aula_com_recorrencia : AulaTeste
     {
-        private DateTime DATA_INICIO = new DateTime(DateTime.Now.Year, 05, 02);
-        private DateTime DATA_FIM = new DateTime(DateTime.Now.Year, 07, 08);
-        private DateTime DATA_INICIO_BIMESTRE_2 = new DateTime(DateTime.Now.Year, 07, 11);
-        private DateTime DATA_FIM_BIMESTRE_2 = new DateTime(DateTime.Now.Year, 09, 26);
+        private DateTime DATA_INICIO = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_FIM = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        private DateTime DATA_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
+        private DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
+        private DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         public Ao_alterar_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
         public async Task Altera_quantidade_de_aulas_com_recorrencia_no_bimestre_atual()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_INICIO, RecorrenciaAula.RepetirBimestreAtual);
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
@@ -40,9 +45,12 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         [Fact]
         public async Task Altera_quantidade_de_aulas_com_recorrenciapara_todos_bimestres()
         {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_2, BIMESTRE_1);
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_1);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_INICIO, RecorrenciaAula.RepetirTodosBimestres);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_1, false);
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirTodosBimestres);
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
@@ -54,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 
             retorno.ShouldNotBeNull();
             listaNotificao.ShouldNotBeEmpty();
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 5 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 17 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
         }
     }
