@@ -15,8 +15,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
     {
         private DateTime dataInicio = new DateTime(2022, 05, 02);
         private DateTime dataFim = new DateTime(2022, 07, 08);
-        private const string COMPONENTE_INVALIDO = "0";
-
+        
         public Ao_registrar_avaliacao_para_professor_especialista(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -24,10 +23,10 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         [Fact]
         public async Task Registrar_avaliacao_para_professor_especialista()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, dataInicio);
 
             var retorno = await comando.Inserir(dto);
 
@@ -42,23 +41,33 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         [Fact]
         public async Task Componente_curricular_nao_encontrado()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObtenhaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, dataInicio);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(dto));
 
             excecao.Message.ShouldBe("Componente curricular não encontrado no EOL.");
         }
 
-        [Fact]
-        public async Task Registrar_mais_de_um_avaliacao_no_mesmo_dia_para_professor_especialista_nao_permite()
+        public async Task Registrar_avaliacao_para_professor_especialista_multidiciplinar()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-            await CriarAtividadeAvaliativaFundamental(dataInicio, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+        }
 
-
+        private CriacaoDeDadosDto ObterCriacaoDeDadosDto()
+        {
+            return new CriacaoDeDadosDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                ModalidadeTurma = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TipoCalendarioId = 1,
+                DataInicio = dataInicio,
+                DataFim = dataFim,
+                TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                Bimestre = BIMESTRE_2
+            };
         }
     }
 }
