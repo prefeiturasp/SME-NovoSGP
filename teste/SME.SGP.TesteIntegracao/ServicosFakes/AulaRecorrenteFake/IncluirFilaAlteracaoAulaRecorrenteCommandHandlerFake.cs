@@ -20,7 +20,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake
         }
         public async Task<bool> Handle(IncluirFilaAlteracaoAulaRecorrenteCommand request, CancellationToken cancellationToken)
         {
-            var command = new AlterarAulaRecorrenteCommand(request.Usuario,
+
+            await mediator.Send(new AlterarAulaRecorrenteCommand(request.Usuario,
                                                request.AulaId,
                                                request.DataAula,
                                                request.Quantidade,
@@ -31,11 +32,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake
                                                request.TipoAula,
                                                request.CodigoUe,
                                                request.EhRegencia,
-                                               request.RecorrenciaAula);
-            await mediator.Send(command);
-
-            //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAlterarAulaRecorrencia, command, Guid.NewGuid(), request.Usuario));
-
+                                               request.RecorrenciaAula));
             return true;
         }
     }
