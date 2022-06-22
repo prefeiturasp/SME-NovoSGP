@@ -14,10 +14,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 {
     public class Ao_alterar_aula_com_recorrencia : AulaTeste
     {
-        private DateTime DATA_INICIO = new DateTime(2022, 05, 02);
-        private DateTime DATA_FIM = new DateTime(2022, 07, 08);
-        private DateTime DATA_INICIO_BIMESTRE_2 = new DateTime(2022, 07, 11);
-        private DateTime DATA_FIM_BIMESTRE_2 = new DateTime(2022, 09, 26);
+        private DateTime DATA_INICIO = new DateTime(DateTime.Now.Year, 05, 02);
+        private DateTime DATA_FIM = new DateTime(DateTime.Now.Year, 07, 08);
+        private DateTime DATA_INICIO_BIMESTRE_2 = new DateTime(DateTime.Now.Year, 07, 11);
+        private DateTime DATA_FIM_BIMESTRE_2 = new DateTime(DateTime.Now.Year, 09, 26);
         public Ao_alterar_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
@@ -32,6 +32,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             aula.DataAula = new DateTime(2022, 06, 27);
             var retorno = await usecase.Executar(aula);
             var listaNotificao = ObterTodos<Notificacao>();
+
             retorno.ShouldNotBeNull();
             listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 2 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
         }
@@ -43,12 +44,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_1);
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_INICIO, RecorrenciaAula.RepetirTodosBimestres);
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirTodosBimestres);
+
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, DATA_INICIO);
             aula.DataAula = new DateTime(2022, 08, 26);
+
             var retorno = await usecase.Executar(aula);
-            retorno.ShouldNotBeNull();
             var listaNotificao = ObterTodos<Notificacao>();
+
+            retorno.ShouldNotBeNull();
             listaNotificao.ShouldNotBeEmpty();
             listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 5 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
