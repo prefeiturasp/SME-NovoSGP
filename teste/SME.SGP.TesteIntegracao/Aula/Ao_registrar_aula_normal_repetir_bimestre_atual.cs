@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
-    public class Ao_registrar_aula_normal_repetir_bimestre_atual : AulaMockComponentePortugues
+    public class Ao_registrar_aula_normal_repetir_bimestre_atual : AulaTeste
     {
         private const long TIPO_CALENDARIO_999999 = 999999;
         private const long TIPO_CALENDARIO_1 = 1;
