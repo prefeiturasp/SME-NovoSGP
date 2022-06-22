@@ -195,6 +195,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
                                           EventoLetivo.Nao,
                                           TIPO_EVENTO_21);
 
+                        
             await CriarEventoResumido(EVENTO_NAO_LETIVO,
                                       DATA_19_06_2022,
                                       DATA_19_06_2022,
@@ -217,25 +218,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 
             excecao.Message.ShouldBeEquivalentTo(mensagemEsperada);
         }
-        //[Fact]
-        //public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_professor_sem_dias_para_incluir_aula_recorrente_modalidade_fundamental()
-        //{
-        //    Não conseguido validar essa exceçõa em função da condição 'fimRecorrencia = periodos.Where(a => a.PeriodoFim >= request.DataInicio)' nesse ObterFimPeriodoRecorrenciaQueryHandler  
-        //    var mensagemEsperada = "Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Não foi possível obter dias para incluir aulas recorrentes.";
 
-        //    await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-
-        //    await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
-
-        //    await CriarPeriodoEscolar(new DateTime(2022, 01, 01), new DateTime(2022, 01, 15), BIMESTRE_1, 2);
-
-        //    var excecao = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, false, 2);
-
-        //    excecao.ExistemErros.ShouldBeTrue();
-
-        //    excecao.Mensagens.FirstOrDefault().ShouldNotBeNullOrEmpty();
-
-        //    excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo(mensagemEsperada);
-        //}
     }
 }

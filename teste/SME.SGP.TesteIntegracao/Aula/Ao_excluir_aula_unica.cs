@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarUsuarios();
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
+            var dto = ObterDto(RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não foi possivél localizar a aula de id : 1");
@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
+            var dto = ObterDto(RecorrenciaAula.AulaUnica);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObtenhaDto(RecorrenciaAula.AulaUnica);
+            var dto = ObterDto(RecorrenciaAula.AulaUnica);
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");

@@ -101,6 +101,23 @@ namespace SME.SGP.TesteIntegracao
                 NomeComponenteCurricular = componenteCurricular.Descricao
             };
         }
+        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo)
+        {
+            var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
+            return new PersistirAulaDto()
+            {
+                CodigoTurma = turmaCodigo,
+                Quantidade = 1,
+                TipoAula = tipoAula,
+                DataAula = dataAula,
+                DisciplinaCompartilhadaId = componenteCurricularId,
+                CodigoUe = ueCodigo,
+                RecorrenciaAula = recorrenciaAula,
+                TipoCalendarioId = tipoCalendarioId,
+                CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
+                NomeComponenteCurricular = componenteCurricular.Descricao
+            };
+        }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
         {
@@ -134,28 +151,17 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
-            await InserirNaBase(ObtenhaAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
+            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
         }
 
         protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
         {
-            var aula = ObtenhaAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
             aula.AulaPaiId = 1;
 
             await InserirNaBase(aula);
         }
-
-
-        protected ExcluirAulaDto ObtenhaDto(RecorrenciaAula recorrencia)
-        {
-            return new ExcluirAulaDto()
-            {
-                AulaId = 1,
-                RecorrenciaAula = recorrencia
-            };
-        }
-
-        private Aula ObtenhaAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Aula
             {
