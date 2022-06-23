@@ -443,6 +443,26 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105);
         }
 
+        protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId) 
+        {
+            await InserirNaBase(new Aula()
+            {
+                UeId = ueCodigo,
+                DisciplinaId = disciplinaCodigo,
+                TurmaId = turmaCodigo,
+                TipoCalendarioId = tipoCalendarioId,
+                ProfessorRf = professorRf,
+                Quantidade = 1,
+                DataAula = dataAula,
+                RecorrenciaAula = recorrenciaAula,
+                TipoAula = tipoAula,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+            });
+        }
+
         protected async Task CriarPeriodoEscolarReabertura(long tipoCalendarioId)
         {
             await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1, tipoCalendarioId);
