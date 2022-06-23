@@ -9,6 +9,9 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+        protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
+        protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
+        private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         private const string REABERTURA_GERAL = "Reabrir Geral";
 
@@ -38,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 DisciplinaId = componente,
                 TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
-                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
+                ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
                 Quantidade = quantidade,
                 DataAula = dataAula,
                 RecorrenciaAula = 0,
@@ -60,9 +63,9 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 DreId = DRE_CODIGO_1,
                 TurmaId = TURMA_CODIGO_1,
                 DisciplinasId = new string[] { componente },
-                Descricao = string.Empty,
-                Nome = PROVA,
-                CategoriaId = categoria,
+                Descricao = "",
+                Nome = NOME_ATIVIDADE_AVALIATIVA,
+                CategoriaId = categoria,    
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };
@@ -73,10 +76,10 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             return new FiltroAtividadeAvaliativaDto()
             {
                 UeID = UE_CODIGO_1,
-                TurmaId = TURMA_CODIGO_1,
-                DreId = DRE_CODIGO_1,
-                TipoAvaliacaoId = 1,
-                Nome = TESTE,
+                TurmaId = DRE_CODIGO_1,
+                DreId = TURMA_CODIGO_1,
+                TipoAvaliacaoId = TIPO_CALENDARIO_ID,
+                Nome = NOME_ATIVIDADE_AVALIATIVA,
                 DataAvaliacao = dataAvaliacao,
                 DisciplinasId = !string.IsNullOrEmpty(componente) ? new string[] { componente } : Array.Empty<string>()
             };
@@ -99,7 +102,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public long TipoCalendarioId { get; set; }
             public TipoAvaliacaoCodigo TipoAvaliacao { get; set; }
             public bool CriarPeriodo { get; set; }
-
             public bool CriarComponente { get; set; }
         }
 
