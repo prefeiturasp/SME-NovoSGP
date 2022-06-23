@@ -9,8 +9,11 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+
         protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
+        
         protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
+        
         private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -49,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             });
         }
 
-        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao)
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
         {
             return new AtividadeAvaliativaDto()
             {
@@ -61,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 Nome = NOME_ATIVIDADE_AVALIATIVA,
                 CategoriaId = categoria,    
                 DataAvaliacao = dataAvaliacao,
-                TipoAvaliacaoId = 1
+                TipoAvaliacaoId = (long)tipoAvaliacao
             };
         }
 
@@ -98,5 +101,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public bool CriarPeriodo { get; set; }
             public bool CriarComponente { get; set; }
         }
+
+        
     }
 }

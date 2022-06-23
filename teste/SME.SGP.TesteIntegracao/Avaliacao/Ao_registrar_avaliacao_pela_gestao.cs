@@ -45,7 +45,11 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil, false));
             await CriarComponenteCurricular(TRUE, FALSE, FALSE, TRUE);
 
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05);
+            var dto = ObterAtividadeAvaliativaDto(
+                        COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), 
+                        CategoriaAtividadeAvaliativa.Normal, 
+                        DATA_02_05, 
+                        TipoAvaliacaoCodigo.AvaliacaoBimestral);
             dto.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
 
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(perfil, dto);
@@ -60,7 +64,11 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil, true));
 
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05);
+            var dto = ObterAtividadeAvaliativaDto(
+                            COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), 
+                            CategoriaAtividadeAvaliativa.Normal, 
+                            DATA_02_05, 
+                            TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(perfil, dto);
         }
