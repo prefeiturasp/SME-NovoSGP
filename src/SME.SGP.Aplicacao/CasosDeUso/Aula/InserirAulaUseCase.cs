@@ -23,6 +23,9 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            if (inserirAulaDto.TipoAula == TipoAula.Reposicao && inserirAulaDto.RecorrenciaAula != RecorrenciaAula.AulaUnica)
+                throw new NegocioException("Não é possível cadastrar aula de reposição com recorrência!");
+
             var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
                 inserirAulaDto.CodigoTurma,
                 inserirAulaDto.CodigoComponenteCurricular,
