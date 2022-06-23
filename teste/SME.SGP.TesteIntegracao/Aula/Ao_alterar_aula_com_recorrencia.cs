@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         }
 
         [Fact]
-        public async Task Altera_quantidade_de_aulas_com_recorrenciapara_todos_bimestres()
+        public async Task Altera_quantidade_de_aulas_com_recorrencia_para_todos_bimestres()
         {
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_1, false);
