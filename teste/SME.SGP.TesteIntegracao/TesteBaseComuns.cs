@@ -40,8 +40,8 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
-        protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1213 = 1105;
-        protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1213 = "'Regência de Classe Fund I - 5H'";
+        protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105 = 1105;
+        protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105 = "'Regência de Classe Fund I - 5H'";
 
         protected const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
@@ -53,10 +53,17 @@ namespace SME.SGP.TesteIntegracao
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
 
+        protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
+        protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
+        protected const string COMPONENTE_HISTORIA_ID_7 = "7";
+        protected const string COMPONENTE_LINGUA_PORTUGUESA_ID_138 = "138";
+        protected const string COMPONENTE_MATEMATICA_ID_138 = "2";
+
         private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
         private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
 
         private const string CODIGO_1 = "1";
+        private const string NULO = "null";
 
         protected const string PROVA = "Prova";
         protected const string TESTE = "Teste";
@@ -369,7 +376,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
-            if (criarComponente) await CriarComponenteCurricular(FALSE, TRUE, FALSE, TRUE);
+            if (criarComponente) await CriarComponenteCurricular();
         }
 
         protected async Task CriarPadrao()
@@ -423,15 +430,17 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarComponenteCurricular(string ehRegente, string ehTerritorio, string permiteFrequencia, string permiteLancamento)
+        protected async Task CriarComponenteCurricular()
         {
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, ehRegente, FALSE, ehTerritorio, FALSE, permiteFrequencia, permiteLancamento, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, ehRegente, FALSE, ehTerritorio, FALSE, permiteFrequencia, permiteLancamento, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105);
         }
 
         protected async Task CriarPeriodoEscolarReabertura(long tipoCalendarioId)

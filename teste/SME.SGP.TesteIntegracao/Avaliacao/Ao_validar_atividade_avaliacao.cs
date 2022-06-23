@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(true, false));
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarComponenteCurricular(TRUE, FALSE, FALSE, TRUE);
+            await CriarComponenteCurricular();
             await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
             await CriarAtividadeAvaliativaRegencia();
 
