@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosPendencia = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
 
-            if (dadosPendencia.PendenciaId > 0)
+            if(dadosPendencia.PendenciaId > 0)
                 await RemovePendencias(dadosPendencia.PendenciaId);
 
             if (await ParametroGeracaoPendenciaAtivo())
