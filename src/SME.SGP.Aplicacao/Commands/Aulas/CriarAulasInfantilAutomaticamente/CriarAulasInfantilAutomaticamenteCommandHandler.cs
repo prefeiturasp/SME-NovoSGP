@@ -168,7 +168,8 @@ namespace SME.SGP.Aplicacao
                     .Where(a => a.DataAula.Date.Equals(aula.DataAula.Date) && !a.Excluido)
                     .ToList();
 
-                var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula)) ||
+                var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula) &&
+                                    !diasLetivos.Any(d => d.Data == aula.DataAula)) ||
                                     !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
