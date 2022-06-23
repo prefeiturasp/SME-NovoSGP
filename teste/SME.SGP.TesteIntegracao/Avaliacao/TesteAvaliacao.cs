@@ -13,11 +13,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
-
-        protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
-        
-        protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
-        
         private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -27,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         protected async Task CriarDadosBasicos(CriacaoDeDadosDto dadosBasicosDto)
         {
             await CriarTipoCalendario(dadosBasicosDto.TipoCalendario);
-            await CriarItensComuns(dadosBasicosDto.CriarPeriodo, dadosBasicosDto.DataInicio, dadosBasicosDto.DataFim, dadosBasicosDto.Bimestre, dadosBasicosDto.TipoCalendarioId, dadosBasicosDto.CriarComponente);
+            await CriarItensComuns(dadosBasicosDto.CriarPeriodo, dadosBasicosDto.DataInicio, dadosBasicosDto.DataFim, dadosBasicosDto.Bimestre, dadosBasicosDto.TipoCalendarioId);
             CriarClaimUsuario(dadosBasicosDto.Perfil);
             await CriarUsuarios();
             await CriarTurma(dadosBasicosDto.ModalidadeTurma);
@@ -85,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
-            protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
         {
             return new AtividadeAvaliativaDto()
             {
@@ -100,6 +95,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };
         }
+
         protected AtividadeAvaliativaDto ObterAtividadeAvaliativaRegenciaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string[] disciplinaRegencia)
         {
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(componente, categoria, dataAvaliacao, tipoAvaliacao);
@@ -129,7 +125,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public CriacaoDeDadosDto()
             {
                 this.CriarPeriodo = true;
-                this.CriarComponente = true;
             }
 
             public string Perfil { get; set; }
@@ -141,7 +136,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public long TipoCalendarioId { get; set; }
             public TipoAvaliacaoCodigo TipoAvaliacao { get; set; }
             public bool CriarPeriodo { get; set; }
-            public bool CriarComponente { get; set; }
         }
 
         
