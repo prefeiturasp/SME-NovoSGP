@@ -2,6 +2,7 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -31,7 +32,13 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaRegenciaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral, disciplinaRegencia);
 
-            //await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa);
+
+            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+
+            await Should.NotThrowAsync(() => doExecutar());
 
             var retorno = await comando.Inserir(atividadeAvaliativa);
 
@@ -40,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
 
             atividadeAvaliativas.ShouldNotBeEmpty();
-            
+
             atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             var atividadeAvaliativasRegencia = ObterTodos<AtividadeAvaliativaRegencia>();
@@ -56,7 +63,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             atividadeAvaliativasDisciplina.Count().ShouldBeEquivalentTo(1);
 
         }
-
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto()
         {

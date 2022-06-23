@@ -106,6 +106,21 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             return atividadeAvaliativa;
         }
 
+        protected static FiltroAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativa)
+        {
+            return new FiltroAtividadeAvaliativaDto()
+            {
+                DataAvaliacao = atividadeAvaliativa.DataAvaliacao,
+                DisciplinaContidaRegenciaId = atividadeAvaliativa.DisciplinaContidaRegenciaId,
+                DisciplinasId = atividadeAvaliativa.DisciplinasId,
+                DreId = atividadeAvaliativa.DreId,
+                Nome = atividadeAvaliativa.Nome,
+                TipoAvaliacaoId = int.Parse(atividadeAvaliativa.TipoAvaliacaoId.ToString()),
+                TurmaId = atividadeAvaliativa.TurmaId,
+                UeID = atividadeAvaliativa.UeId
+            };
+        }
+
         protected FiltroAtividadeAvaliativaDto ObterFiltro(string componente, DateTime dataAvaliacao)
         {
             return new FiltroAtividadeAvaliativaDto()
