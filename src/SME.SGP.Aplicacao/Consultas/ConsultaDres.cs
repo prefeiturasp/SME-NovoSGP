@@ -45,14 +45,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
+            var uesParaAtribuicao = await repositorioSupervisorEscolaDre.ObterListaUEsParaNovaAtribuicaoPorCodigoDre(dreId);
+            if (!uesParaAtribuicao.Any())
+                new List<UnidadeEscolarDto>() { new UnidadeEscolarDto() };
 
-            var escolasPorDre = await repositorioAbrangencia.ObterUes(dreId, login, perfil);
-
-            var supervisoresEscolasDres = await repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
-
-            return TrataEscolasSemSupervisores(escolasPorDre, supervisoresEscolasDres);
+            return TrataEscolasSemSupervisores(uesParaAtribuicao);
         }
 
         public IEnumerable<DreConsultaDto> ObterTodos()
@@ -75,22 +72,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<AbrangenciaUeRetorno> escolasPorDre,
-                    IEnumerable<SupervisorEscolasDreDto> supervisoresEscolas)
+        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<UnidadeEscolarResponsavelDto> uesParaAtribuicao)
         {
-            var escolasComSupervisor = supervisoresEscolas?
-                .Select(a => a.EscolaId)
-                .ToList();
-
-            List<AbrangenciaUeRetorno> escolasSemSupervisor = null;
-            if (escolasComSupervisor != null)
+            foreach (var item in uesParaAtribuicao)
             {
-                escolasSemSupervisor = escolasPorDre?
-                    .Where(a => !escolasComSupervisor.Contains(a.Codigo))
-                    .ToList();
+                yield return new UnidadeEscolarDto
+                {
+                    Codigo = item.Codigo,
+                    Nome = item.Nome
+                };
             }
-
-            return escolasSemSupervisor?.OrderBy(c=>c.Nome).Select(t => new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome });
         }
     }
 }

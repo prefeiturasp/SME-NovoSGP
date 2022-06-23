@@ -16,6 +16,8 @@ namespace SME.SGP.Infra
         public int? TipoResponsavelId { get; set; }
         public long? Id { get; set; }
         public string UeNome { get; set; }
+        public string UeId { get; set; }
         public string DreNome { get; set; }
+        public string DreId { get; set; }
     }
 }

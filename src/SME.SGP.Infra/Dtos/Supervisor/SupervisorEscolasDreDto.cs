@@ -4,8 +4,9 @@ namespace SME.SGP.Infra
 {
     public class SupervisorEscolasDreDto : AuditoriaDto
     {
-        public long Id { get; set; }
+        public long AtribuicaoSupervisorId { get; set; }
         public string DreId { get; set; }
+        public string UeId { get; set; }
         public string EscolaId { get; set; }
         public int TipoAtribuicao { get; set; }
         public string SupervisorId { get; set; }

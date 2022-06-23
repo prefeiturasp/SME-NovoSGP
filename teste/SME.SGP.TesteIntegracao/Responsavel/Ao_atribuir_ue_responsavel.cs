@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao
             mediator = new Mock<IMediator>();
             repositorioSupervisorEscolaDre = new Mock<IRepositorioSupervisorEscolaDre>();
             unitOfWork = new Mock<IUnitOfWork>();
-            atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object, unitOfWork.Object);
+            atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object);
         }
 
         [Fact]
@@ -35,9 +35,9 @@ namespace SME.SGP.TesteIntegracao
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
                 DreId = "1",
-                SupervisorId = "1",
+                ResponsavelId = "1",
                 TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.SupervisorEscolar,
-                UESIds = new()
+                UesIds = new()
                 {
                     "1",
                     "2",
@@ -70,9 +70,9 @@ namespace SME.SGP.TesteIntegracao
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
                 DreId = "1",
-                SupervisorId = "2",
+                ResponsavelId = "2",
                 TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.PAAI,
-                UESIds = new()
+                UesIds = new()
                 {
                     "1",
                     "2",
@@ -107,9 +107,9 @@ namespace SME.SGP.TesteIntegracao
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
                 DreId = "1",
-                SupervisorId = "3",
+                ResponsavelId = "3",
                 TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.PsicologoEscolar,
-                UESIds = new()
+                UesIds = new()
                 {
                     "1",
                     "2",
@@ -144,9 +144,9 @@ namespace SME.SGP.TesteIntegracao
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
                 DreId = "1",
-                SupervisorId = "4",
+                ResponsavelId = "4",
                 TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.Psicopedagogo,
-                UESIds = new()
+                UesIds = new()
                 {
                     "1",
                     "2",
@@ -179,9 +179,9 @@ namespace SME.SGP.TesteIntegracao
             var responsavelUe = new AtribuicaoResponsavelUEDto()
             {
                 DreId = "1",
-                SupervisorId = "5",
+                ResponsavelId = "5",
                 TipoResponsavelAtribuicao = TipoResponsavelAtribuicao.AssistenteSocial,
-                UESIds = new()
+                UesIds = new()
                 {
                     "1",
                     "2",
