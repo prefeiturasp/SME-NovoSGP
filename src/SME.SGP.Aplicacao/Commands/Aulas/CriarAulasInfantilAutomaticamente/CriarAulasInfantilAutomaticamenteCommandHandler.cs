@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula) &&
-                                    !diasLetivos.Any(d => d.Data == aula.DataAula)) ||
+                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && aula.DadosComplementares.PossuiFrequencia) ||
                                     !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
