@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string UE_CODIGO_1 = "1";
         private const string UE_NOME_1 = "Nome da UE";
 
-        private const string DRE_CODIGO_1 = "1";
+        protected const string DRE_CODIGO_1 = "1";
         private const string DRE_NOME_1 = "DRE 1";
 
         protected const string SISTEMA_NOME = "Sistema";
@@ -88,6 +88,8 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_2 = 2;
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
+
+        protected const int TIPO_CALENDARIO_ID = 1;
 
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -270,13 +272,13 @@ namespace SME.SGP.TesteIntegracao
                 Situacao = true,
                 AvaliacoesNecessariasPorBimestre = 1,
                 Codigo = tipoAvalicao,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
         }
 
-        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral)
+        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral, bool ehRegencia = false)
         {
             await CriaTipoAvaliacao(tipoAvalicao);
 
@@ -292,8 +294,9 @@ namespace SME.SGP.TesteIntegracao
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
                 DataAvaliacao = dataAvaliacao,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                EhRegencia = ehRegencia,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
 
@@ -302,11 +305,25 @@ namespace SME.SGP.TesteIntegracao
                 Id = 1,
                 AtividadeAvaliativaId = 1,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
         }
+
+        protected async Task CriarAtividadeAvaliativaRegencia() {
+
+            await InserirNaBase(new AtividadeAvaliativaRegencia
+            {
+                Id = 1,
+                AtividadeAvaliativaId = 1,
+                DisciplinaContidaRegenciaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                DisciplinaContidaRegenciaNome = COMPONENTE_CURRICULAR_PORTUGUES_NOME,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+        } 
 
         protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
         {

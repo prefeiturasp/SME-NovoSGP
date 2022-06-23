@@ -2,20 +2,15 @@
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Avaliacao
+namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_especialista : TesteAvaliacao
     {
-        private DateTime dataInicio = new DateTime(2022, 05, 02);
-        private DateTime dataFim = new DateTime(2022, 07, 08);
-        
         public Ao_registrar_avaliacao_para_professor_especialista(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -44,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, DATA_02_05);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(dto));
 
@@ -62,9 +57,9 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
                 Perfil = ObterPerfilProfessor(),
                 ModalidadeTurma = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                TipoCalendarioId = 1,
-                DataInicio = dataInicio,
-                DataFim = dataFim,
+                TipoCalendarioId = TIPO_CALENDARIO_ID,
+                DataInicio = DATA_02_05,
+                DataFim = DATA_08_07,
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_2
             };

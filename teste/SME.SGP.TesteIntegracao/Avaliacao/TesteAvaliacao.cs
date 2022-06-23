@@ -2,16 +2,16 @@
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.Avaliacao
+namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+        protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
+        protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
+        private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -31,11 +31,11 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         {
             await InserirNaBase(new Aula
             {
-                UeId = "1",
+                UeId = UE_CODIGO_1,
                 DisciplinaId = componente,
-                TurmaId = "1",
+                TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
-                ProfessorRf = "2222222",
+                ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
                 Quantidade = quantidade,
                 DataAula = dataAula,
                 RecorrenciaAula = 0,
@@ -53,13 +53,13 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         {
             return new AtividadeAvaliativaDto()
             {
-                UeId = "1",
-                DreId = "1",
-                TurmaId = "1",
+                UeId = UE_CODIGO_1,
+                DreId = DRE_CODIGO_1,
+                TurmaId = TURMA_CODIGO_1,
                 DisciplinasId = new string[] { componente },
                 Descricao = "",
-                Nome = "Prova",
-                CategoriaId = categoria,
+                Nome = NOME_ATIVIDADE_AVALIATIVA,
+                CategoriaId = categoria,    
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = 1
             };
@@ -69,11 +69,11 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         {
             return new FiltroAtividadeAvaliativaDto()
             {
-                UeID = "1",
-                TurmaId = "1",
-                DreId = "1",
-                TipoAvaliacaoId = 1,
-                Nome = "teste",
+                UeID = UE_CODIGO_1,
+                TurmaId = DRE_CODIGO_1,
+                DreId = TURMA_CODIGO_1,
+                TipoAvaliacaoId = TIPO_CALENDARIO_ID,
+                Nome = NOME_ATIVIDADE_AVALIATIVA,
                 DataAvaliacao = dataAvaliacao,
                 DisciplinasId = !string.IsNullOrEmpty(componente) ? new string[] { componente } : Array.Empty<string>()
             };
@@ -96,7 +96,6 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             public long TipoCalendarioId { get; set; }
             public TipoAvaliacaoCodigo TipoAvaliacao { get; set; }
             public bool CriarPeriodo { get; set; }
-
             public bool CriarComponente { get; set; }
         }
     }
