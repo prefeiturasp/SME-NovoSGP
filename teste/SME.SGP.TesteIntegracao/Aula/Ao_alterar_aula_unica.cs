@@ -29,6 +29,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.Id = 2;
 
+            await CriarPeriodoEscolarEAbertura();
+
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Já existe uma aula criada neste dia para este componente curricular");
@@ -61,6 +63,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             dto.Id = 1;
             dto.Quantidade = 1;
 
+            await CriarPeriodoEscolarEAbertura();
+
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -83,6 +87,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             dto.Quantidade = 1;
             dto.EhRegencia = true;
 
+            await CriarPeriodoEscolarEAbertura();
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -91,6 +96,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().Quantidade.ShouldBe(1);
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }
