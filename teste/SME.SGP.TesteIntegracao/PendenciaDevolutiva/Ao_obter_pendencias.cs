@@ -178,6 +178,32 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 ComponenteCurricularId = 512,
                 TurmaId = 1
             });
+            await InserirNaBase(new Aula()
+            {
+                Id = 1,
+                UeId = "1",
+                DisciplinaId = "512",
+                TurmaId = "1",
+                TipoCalendarioId = 1,
+                ProfessorRf = "Sistema",
+                Quantidade = 1,
+                DataAula = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                CriadoPor = "Sistema",
+                CriadoRF = "Sistema",
+                Excluido = false,
+                Migrado = false,
+                Status = EntidadeStatus.Aprovado,
+                AulaCJ = false
+            });
+            await InserirNaBase(new PendenciaAula()
+            {
+                Id=1,
+                AulaId = 1,
+                PendenciaId = 1,
+                Motivo = "Motivo"
+            });
 
             await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", "'2022-06-07'", "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
         }
