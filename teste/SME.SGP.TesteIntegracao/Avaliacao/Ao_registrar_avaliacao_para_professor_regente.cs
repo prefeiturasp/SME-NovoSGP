@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaRegenciaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral, disciplinaRegencia);
 
-            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+            //await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
 
             var retorno = await comando.Inserir(atividadeAvaliativa);
 
