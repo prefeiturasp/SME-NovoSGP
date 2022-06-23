@@ -17,13 +17,11 @@ namespace SME.SGP.TesteIntegracao
         private readonly AtribuirUeResponsavelUseCase atribuirUeResponsavelUseCase;
         private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioSupervisorEscolaDre> repositorioSupervisorEscolaDre;
-        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public Ao_atribuir_ue_responsavel(CollectionFixture collectionFixture) : base(collectionFixture)
         {
             mediator = new Mock<IMediator>();
             repositorioSupervisorEscolaDre = new Mock<IRepositorioSupervisorEscolaDre>();
-            unitOfWork = new Mock<IUnitOfWork>();
             atribuirUeResponsavelUseCase = new AtribuirUeResponsavelUseCase(mediator.Object, repositorioSupervisorEscolaDre.Object);
         }
 
@@ -59,7 +57,6 @@ namespace SME.SGP.TesteIntegracao
 
             await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -96,7 +93,6 @@ namespace SME.SGP.TesteIntegracao
 
             await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -133,7 +129,6 @@ namespace SME.SGP.TesteIntegracao
 
             await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -168,7 +163,6 @@ namespace SME.SGP.TesteIntegracao
 
             await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         [Fact]
@@ -203,7 +197,6 @@ namespace SME.SGP.TesteIntegracao
 
             await atribuirUeResponsavelUseCase.Executar(responsavelUe);
 
-            unitOfWork.Verify(c => c.PersistirTransacao(), Times.Once);
         }
 
         private async Task CriarItensBasicos()
