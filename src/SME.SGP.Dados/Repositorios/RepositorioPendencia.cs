@@ -291,7 +291,7 @@ namespace SME.SGP.Dados.Repositorios
                             WHERE pu.pendencia_id = any(@pendencias)
                             and situacao = 1
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
-                            and p.tipo in (7,8,9,10,17) and not p.excluido";
+                            and p.tipo in (7,8,9,10,17,19) and not p.excluido";
                     break;
                 
                 case TipoPendenciaGrupo.AEE:
