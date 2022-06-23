@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05);
 
             var retorno = await comando.Inserir(dto);
 
