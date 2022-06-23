@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 
             var useCase = ServiceProvider.GetService<IObterPendenciasUseCase>();
 
-            var resultados = await useCase.Executar("1", 3, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
+            var resultados = await useCase.Executar("1", (int)TipoPendencia.Devolutiva, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
 
             resultados.Items.ShouldNotBeNull();
             resultados.Items.Count().ShouldBe(1);
