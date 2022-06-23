@@ -1,7 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
@@ -52,7 +56,36 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             });
         }
 
-        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
+        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfil(AtividadeAvaliativaDto dto)
+        {
+            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
+
+            var retorno = await comando.Inserir(dto);
+
+            retorno.ShouldNotBeNull();
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
+
+            atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
+            atividadeAvaliativasDiciplina.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(AtividadeAvaliativaDto dto)
+        {
+            await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativaRegencia>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+            protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
         {
             return new AtividadeAvaliativaDto()
             {
