@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Avaliacao
+namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
     public class Ao_validar_atividade_avaliacao : TesteAvaliacao
     {

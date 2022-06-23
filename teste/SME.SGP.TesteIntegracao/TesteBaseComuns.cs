@@ -40,6 +40,9 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
+        protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1213 = 1105;
+        protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1213 = "'Regência de Classe Fund I - 5H'";
+
         protected const long COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213 = 1213;
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
 
@@ -55,6 +58,9 @@ namespace SME.SGP.TesteIntegracao
 
         private const string CODIGO_1 = "1";
 
+        protected const string PROVA = "Prova";
+        protected const string TESTE = "Teste";
+
         private const string ED_INF_EMEI_4_HS = "'ED.INF. EMEI 4 HS'";
         private const string REGENCIA_CLASSE_INFANTIL = "'Regência de Classe Infantil'";
         private const string REGENCIA_INFATIL_EMEI_4H = "'REGÊNCIA INFANTIL EMEI 4H'";
@@ -62,8 +68,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string UE_CODIGO_1 = "1";
         private const string UE_NOME_1 = "Nome da UE";
 
-        private const string DRE_CODIGO_1 = "1";
-        private const string DRE_NOME_1 = "DRE 1";
+        protected const string DRE_CODIGO_1 = "1";
+        protected const string DRE_NOME_1 = "DRE 1";
 
         protected const string SISTEMA_NOME = "Sistema";
         protected const string SISTEMA_CODIGO_RF = "1";

@@ -2,16 +2,19 @@
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.Avaliacao
+namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+
+        private const string REABERTURA_GERAL = "Reabrir Geral";
+
+        private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+
+        private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -31,11 +34,11 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         {
             await InserirNaBase(new Aula
             {
-                UeId = "1",
+                UeId = UE_CODIGO_1,
                 DisciplinaId = componente,
-                TurmaId = "1",
+                TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
-                ProfessorRf = "2222222",
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
                 Quantidade = quantidade,
                 DataAula = dataAula,
                 RecorrenciaAula = 0,
@@ -49,19 +52,19 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             });
         }
 
-        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao)
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
         {
             return new AtividadeAvaliativaDto()
             {
-                UeId = "1",
-                DreId = "1",
-                TurmaId = "1",
+                UeId = UE_CODIGO_1,
+                DreId = DRE_CODIGO_1,
+                TurmaId = TURMA_CODIGO_1,
                 DisciplinasId = new string[] { componente },
-                Descricao = "",
-                Nome = "Prova",
+                Descricao = string.Empty,
+                Nome = PROVA,
                 CategoriaId = categoria,
                 DataAvaliacao = dataAvaliacao,
-                TipoAvaliacaoId = 1
+                TipoAvaliacaoId = (long)tipoAvaliacao
             };
         }
 
@@ -69,11 +72,11 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         {
             return new FiltroAtividadeAvaliativaDto()
             {
-                UeID = "1",
-                TurmaId = "1",
-                DreId = "1",
+                UeID = UE_CODIGO_1,
+                TurmaId = TURMA_CODIGO_1,
+                DreId = DRE_CODIGO_1,
                 TipoAvaliacaoId = 1,
-                Nome = "teste",
+                Nome = TESTE,
                 DataAvaliacao = dataAvaliacao,
                 DisciplinasId = !string.IsNullOrEmpty(componente) ? new string[] { componente } : Array.Empty<string>()
             };
@@ -98,6 +101,56 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             public bool CriarPeriodo { get; set; }
 
             public bool CriarComponente { get; set; }
+        }
+
+        protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
+        {
+            await InserirNaBase(new FechamentoReabertura()
+            {
+                Descricao = REABERTURA_GERAL,
+                Inicio = DATA_01_01,
+                Fim = DATA_31_12,
+                TipoCalendarioId = tipoCalendarioId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
         }
     }
 }

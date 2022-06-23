@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Avaliacao
+namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_especialista : TesteAvaliacao
     {
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, dataInicio, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var retorno = await comando.Inserir(dto);
 
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, dataInicio);
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_INVALIDO, CategoriaAtividadeAvaliativa.Normal, dataInicio, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(dto));
 
