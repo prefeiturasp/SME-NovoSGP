@@ -1,18 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 {
-    public class Ao_registrar_avaliacao_pela_gestao : TesteAvaliacao
+    public class Ao_registrar_avaliacao_pela_gestao_e_cj : TesteAvaliacao
     {
-        public Ao_registrar_avaliacao_pela_gestao(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_registrar_avaliacao_pela_gestao_e_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -38,6 +33,18 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         public async Task Registrar_avaliacao_para_gestor_diretor_regente_de_classe()
         {
             await ExecuteTesteResgistrarAvaliacaoPorRegencia(ObterPerfilDiretor());
+        }
+
+        [Fact]
+        public async Task Registrar_avaliacao_professor_cj()
+        {
+            await ExecuteTesteResgistrarAvaliacao(ObterPerfilCJ());
+        }
+
+        [Fact]
+        public async Task Registrar_avaliacao_professor_cj_regente()
+        {
+            await ExecuteTesteResgistrarAvaliacaoPorRegencia(ObterPerfilCJ());
         }
 
         private async Task ExecuteTesteResgistrarAvaliacaoPorRegencia(string perfil)
