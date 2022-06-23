@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         private async Task ExecuteTesteResgistrarAvaliacaoPorRegencia(string perfil)
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil, false));
-            await CriarComponenteCurricular(TRUE, FALSE, FALSE, TRUE);
+            await CriarComponenteCurricular();
 
             var dto = ObterAtividadeAvaliativaDto(
                         COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), 

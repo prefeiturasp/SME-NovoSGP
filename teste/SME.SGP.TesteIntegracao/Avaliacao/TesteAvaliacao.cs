@@ -24,14 +24,14 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
         }
 
-        protected async Task CriarDadosBasicos(CriacaoDeDadosDto dto)
+        protected async Task CriarDadosBasicos(CriacaoDeDadosDto dadosBasicosDto)
         {
-            await CriarTipoCalendario(dto.TipoCalendario);
-            await CriarItensComuns(dto.CriarPeriodo, dto.DataInicio, dto.DataFim, dto.Bimestre, dto.TipoCalendarioId, dto.CriarComponente);
-            CriarClaimUsuario(dto.Perfil);
+            await CriarTipoCalendario(dadosBasicosDto.TipoCalendario);
+            await CriarItensComuns(dadosBasicosDto.CriarPeriodo, dadosBasicosDto.DataInicio, dadosBasicosDto.DataFim, dadosBasicosDto.Bimestre, dadosBasicosDto.TipoCalendarioId, dadosBasicosDto.CriarComponente);
+            CriarClaimUsuario(dadosBasicosDto.Perfil);
             await CriarUsuarios();
-            await CriarTurma(dto.ModalidadeTurma);
-            await CriaTipoAvaliacao(dto.TipoAvaliacao);
+            await CriarTurma(dadosBasicosDto.ModalidadeTurma);
+            await CriaTipoAvaliacao(dadosBasicosDto.TipoAvaliacao);
         }
 
         protected async Task CrieAula(string componente, DateTime dataAula,int quantidade = 1, bool aulaCJ = false)
@@ -99,6 +99,15 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };
+        }
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaRegenciaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string[] disciplinaRegencia)
+        {
+            var atividadeAvaliativa = ObterAtividadeAvaliativaDto(componente, categoria, dataAvaliacao, tipoAvaliacao);
+
+            atividadeAvaliativa.DisciplinaContidaRegenciaId = disciplinaRegencia;
+            atividadeAvaliativa.EhRegencia = true;
+
+            return atividadeAvaliativa;
         }
 
         protected FiltroAtividadeAvaliativaDto ObterFiltro(string componente, DateTime dataAvaliacao)
