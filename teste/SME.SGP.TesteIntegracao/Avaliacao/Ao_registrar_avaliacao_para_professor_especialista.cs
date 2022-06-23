@@ -20,17 +20,9 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
-            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
-            var retorno = await comando.Inserir(dto);
-
-            retorno.ShouldNotBeNull();
-
-            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
-
-            atividadeAvaliativas.ShouldNotBeEmpty();
-            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+            await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
         }
 
         [Fact]

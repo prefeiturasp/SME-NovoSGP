@@ -1,7 +1,11 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
@@ -9,11 +13,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
-
-        protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
-        
-        protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
-        
         private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -23,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         protected async Task CriarDadosBasicos(CriacaoDeDadosDto dadosBasicosDto)
         {
             await CriarTipoCalendario(dadosBasicosDto.TipoCalendario);
-            await CriarItensComuns(dadosBasicosDto.CriarPeriodo, dadosBasicosDto.DataInicio, dadosBasicosDto.DataFim, dadosBasicosDto.Bimestre, dadosBasicosDto.TipoCalendarioId, dadosBasicosDto.CriarComponente);
+            await CriarItensComuns(dadosBasicosDto.CriarPeriodo, dadosBasicosDto.DataInicio, dadosBasicosDto.DataFim, dadosBasicosDto.Bimestre, dadosBasicosDto.TipoCalendarioId);
             CriarClaimUsuario(dadosBasicosDto.Perfil);
             await CriarUsuarios();
             await CriarTurma(dadosBasicosDto.ModalidadeTurma);
@@ -52,6 +51,35 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             });
         }
 
+        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfil(AtividadeAvaliativaDto dto)
+        {
+            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
+
+            var retorno = await comando.Inserir(dto);
+
+            retorno.ShouldNotBeNull();
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
+
+            atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
+            atividadeAvaliativasDiciplina.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(AtividadeAvaliativaDto dto)
+        {
+            await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativaRegencia>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
         protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
         {
             return new AtividadeAvaliativaDto()
@@ -67,6 +95,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };
         }
+
         protected AtividadeAvaliativaDto ObterAtividadeAvaliativaRegenciaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string[] disciplinaRegencia)
         {
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(componente, categoria, dataAvaliacao, tipoAvaliacao);
@@ -111,7 +140,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public CriacaoDeDadosDto()
             {
                 this.CriarPeriodo = true;
-                this.CriarComponente = true;
             }
 
             public string Perfil { get; set; }
@@ -123,7 +151,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public long TipoCalendarioId { get; set; }
             public TipoAvaliacaoCodigo TipoAvaliacao { get; set; }
             public bool CriarPeriodo { get; set; }
-            public bool CriarComponente { get; set; }
         }
 
         

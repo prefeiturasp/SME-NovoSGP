@@ -372,11 +372,11 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarComponente = true)
+        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
-            if (criarComponente) await CriarComponenteCurricular();
+            await CriarComponenteCurricular();
         }
 
         protected async Task CriarPadrao()

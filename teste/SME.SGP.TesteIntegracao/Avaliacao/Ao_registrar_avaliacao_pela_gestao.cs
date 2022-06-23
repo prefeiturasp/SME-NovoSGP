@@ -42,8 +42,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
         private async Task ExecuteTesteResgistrarAvaliacaoPorRegencia(string perfil)
         {
-            await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil, false));
-            await CriarComponenteCurricular();
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
 
             var dto = ObterAtividadeAvaliativaDto(
                         COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), 
@@ -52,17 +51,12 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                         TipoAvaliacaoCodigo.AvaliacaoBimestral);
             dto.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
 
-            await ExecuteTesteResgistrarAvaliacaoPorPerfil(perfil, dto);
-
-            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativaRegencia>();
-
-            atividadeAvaliativas.ShouldNotBeEmpty();
-            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+            await ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(dto);
         }
 
         private async Task ExecuteTesteResgistrarAvaliacao(string perfil)
         {
-            await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil, true));
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
 
             var dto = ObterAtividadeAvaliativaDto(
                             COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), 
@@ -70,24 +64,10 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                             DATA_02_05, 
                             TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
-            await ExecuteTesteResgistrarAvaliacaoPorPerfil(perfil, dto);
+            await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
         }
 
-        private async Task ExecuteTesteResgistrarAvaliacaoPorPerfil(string perfil, AtividadeAvaliativaDto dto)
-        {
-            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-
-            var retorno = await comando.Inserir(dto);
-
-            retorno.ShouldNotBeNull();
-
-            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
-
-            atividadeAvaliativas.ShouldNotBeEmpty();
-            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
-        }
-
-        private CriacaoDeDadosDto ObterCriacaoDeDadosDto(string perfil, bool criaComponente)
+        private CriacaoDeDadosDto ObterCriacaoDeDadosDto(string perfil)
         {
             return new CriacaoDeDadosDto()
             {
@@ -98,8 +78,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 DataInicio = DATA_02_05,
                 DataFim = DATA_08_07,
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
-                Bimestre = BIMESTRE_2,
-                CriarComponente = criaComponente
+                Bimestre = BIMESTRE_2
             };
         }
     }

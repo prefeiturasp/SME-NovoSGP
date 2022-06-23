@@ -83,9 +83,8 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         [Fact]
         public async Task Existe_atividade_avaliativa_cadastrada_para_essa_data_e_componente_para_regencia()
         {
-            await CriarDadosBasicos(ObterCriacaoDeDadosDto(true, false));
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarComponenteCurricular();
             await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
             await CriarAtividadeAvaliativaRegencia();
 
@@ -97,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             excecao.Message.ShouldBe("Já existe atividade avaliativa cadastrada para essa data e componente curricular.");
         }
 
-        private CriacaoDeDadosDto ObterCriacaoDeDadosDto(bool criaPeriodo = true, bool criaComponente = true)
+        private CriacaoDeDadosDto ObterCriacaoDeDadosDto(bool criaPeriodo = true)
         {
             return new CriacaoDeDadosDto()
             {
@@ -109,8 +108,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 DataFim = DATA_08_07,
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_2,
-                CriarPeriodo = criaPeriodo,
-                CriarComponente = criaComponente
+                CriarPeriodo = criaPeriodo
             };
         }
     }
