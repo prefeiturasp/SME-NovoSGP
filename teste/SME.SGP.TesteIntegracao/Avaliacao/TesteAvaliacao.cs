@@ -9,15 +9,12 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+
         protected DateTime DATA_02_05 = new DateTime(DateTime.Now.Year, 05, 02);
+        
         protected DateTime DATA_08_07 = new DateTime(DateTime.Now.Year, 07, 08);
+        
         private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
-
-        private const string REABERTURA_GERAL = "Reabrir Geral";
-
-        private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
-
-        private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -105,54 +102,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public bool CriarComponente { get; set; }
         }
 
-        protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
-        {
-            await InserirNaBase(new FechamentoReabertura()
-            {
-                Descricao = REABERTURA_GERAL,
-                Inicio = DATA_01_01,
-                Fim = DATA_31_12,
-                TipoCalendarioId = tipoCalendarioId,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-
-            await InserirNaBase(new FechamentoReaberturaBimestre()
-            {
-                FechamentoAberturaId = 1,
-                Bimestre = BIMESTRE_1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-
-            await InserirNaBase(new FechamentoReaberturaBimestre()
-            {
-                FechamentoAberturaId = 1,
-                Bimestre = BIMESTRE_2,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-
-            await InserirNaBase(new FechamentoReaberturaBimestre()
-            {
-                FechamentoAberturaId = 1,
-                Bimestre = BIMESTRE_3,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-
-            await InserirNaBase(new FechamentoReaberturaBimestre()
-            {
-                FechamentoAberturaId = 1,
-                Bimestre = BIMESTRE_4,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-            });
-        }
+        
     }
 }
