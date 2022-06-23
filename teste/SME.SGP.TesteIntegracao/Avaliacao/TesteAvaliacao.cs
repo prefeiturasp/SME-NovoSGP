@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
         protected async Task CriarDadosBasicos(CriacaoDeDadosDto dto)
         {
             await CriarTipoCalendario(dto.TipoCalendario);
-            await CriarItensComuns(dto.CriarPeriodo, dto.DataInicio, dto.DataFim, dto.Bimestre, dto.TipoCalendarioId);
+            await CriarItensComuns(dto.CriarPeriodo, dto.DataInicio, dto.DataFim, dto.Bimestre, dto.TipoCalendarioId, dto.CriarComponente);
             CriarClaimUsuario(dto.Perfil);
             await CriarUsuarios();
             await CriarTurma(dto.ModalidadeTurma);
@@ -34,9 +34,9 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
                 UeId = "1",
                 DisciplinaId = componente,
                 TurmaId = "1",
-                TipoCalendarioId = quantidade,
+                TipoCalendarioId = 1,
                 ProfessorRf = "2222222",
-                Quantidade = 1,
+                Quantidade = quantidade,
                 DataAula = dataAula,
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
@@ -84,6 +84,7 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             public CriacaoDeDadosDto()
             {
                 this.CriarPeriodo = true;
+                this.CriarComponente = true;
             }
 
             public string Perfil { get; set; }
@@ -95,6 +96,8 @@ namespace SME.SGP.TesteIntegracao.Avaliacao
             public long TipoCalendarioId { get; set; }
             public TipoAvaliacaoCodigo TipoAvaliacao { get; set; }
             public bool CriarPeriodo { get; set; }
+
+            public bool CriarComponente { get; set; }
         }
     }
 }

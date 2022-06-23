@@ -30,8 +30,8 @@ namespace SME.SGP.TesteIntegracao
 
         private const int ANO_LETIVO_2022_NUMERO = 2022;
         private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
-        private const string FALSE = "false";
-        private const string TRUE = "true";
+        protected const string FALSE = "false";
+        protected const string TRUE = "true";
 
         protected const int SEMESTRE_1 = 1;
 
@@ -325,11 +325,11 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
+        protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarComponente = true)
         {
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
-            await CriarComponenteCurricular();
+            if (criarComponente) await CriarComponenteCurricular(FALSE, TRUE, FALSE, TRUE);
         }
 
         protected async Task CriarPadrao()
@@ -383,15 +383,15 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        private async Task CriarComponenteCurricular()
+        protected async Task CriarComponenteCurricular(string ehRegente, string ehTerritorio, string permiteFrequencia, string permiteLancamento)
         {
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, ehRegente, FALSE, ehTerritorio, FALSE, permiteFrequencia, permiteLancamento, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
 
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, ehRegente, FALSE, ehTerritorio, FALSE, permiteFrequencia, permiteLancamento, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
         }
     }
 }
