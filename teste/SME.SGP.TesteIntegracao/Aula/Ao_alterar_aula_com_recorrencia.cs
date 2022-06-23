@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         private DateTime DATA_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
         private DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         private DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
+        private long TIPO_CALENDARIO_1 = 1;
         public Ao_alterar_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
         [Fact]
@@ -35,6 +36,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_INICIO);
             aula.DataAula = new DateTime(2022, 06, 27);
+
+            await CriarPeriodoEscolarEAbertura();
+
             var retorno = await usecase.Executar(aula);
             var listaNotificao = ObterTodos<Notificacao>();
 
@@ -45,10 +49,6 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
         [Fact]
         public async Task Altera_quantidade_de_aulas_com_recorrenciapara_todos_bimestres()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO, DATA_FIM, BIMESTRE_1, false);
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirTodosBimestres);
@@ -57,6 +57,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, DATA_INICIO);
             aula.DataAula = new DateTime(2022, 08, 26);
 
+            await CriarPeriodoEscolarEAbertura();
+
             var retorno = await usecase.Executar(aula);
             var listaNotificao = ObterTodos<Notificacao>();
 
@@ -64,6 +66,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             listaNotificao.ShouldNotBeEmpty();
             listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 17 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }
