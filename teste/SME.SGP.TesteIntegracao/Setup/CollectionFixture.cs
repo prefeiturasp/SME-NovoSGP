@@ -33,7 +33,8 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.AddSingleton<IConfiguration>(config);
             services.AddMemoryCache();
             new RegistradorDependencias().Registrar(services, null);
-
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         public void BuildServiceProvider()

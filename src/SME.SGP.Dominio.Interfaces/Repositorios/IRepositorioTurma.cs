@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Turma>> SincronizarAsync(IEnumerable<Turma> entidades, IEnumerable<Ue> ues);
         Task<bool> AtualizarTurmaParaHistorica(string turmaId);
         Task<bool> SalvarAsync(TurmaParaSyncInstitucionalDto turma, long ueId);
-        Task ExcluirTurmaExtintaAsync(string turmaCodigo, long turmaId);
+        Task ExcluirTurmaExtintaAsync(long turmaId);
         Task<bool> AtualizarTurmaSincronizacaoInstitucionalAsync(TurmaParaSyncInstitucionalDto turma, bool deveMarcarHistorica = false);
     }
 }

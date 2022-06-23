@@ -428,7 +428,7 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 sql.AppendLine($@"select
-	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia THEN 1
+	                          CASE WHEN rf.id is null and cc.permite_registro_frequencia and turma.etapa_eja = 0 THEN 1
                                     ELSE 0
                               END PossuiPendenciaFrequencia,
                                0 PossuiPendenciaPlanoAula 

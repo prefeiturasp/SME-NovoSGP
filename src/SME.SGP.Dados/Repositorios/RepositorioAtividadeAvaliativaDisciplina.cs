@@ -106,13 +106,10 @@ namespace SME.SGP.Dados.Repositorios
 
             using (var conexao = new NpgsqlConnection(connectionString))
             {
-
-                await conexao.OpenAsync();
-                var totalizador = await conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
+                var totalizador = await database.Conexao.QueryAsync<ComponentesRegenciaComAtividadeAvaliativaDto>(query.ToString(), new
                 {
                     atividadesAvaliativasId
                 });
-                conexao.Close();
                 return totalizador;
             }
         }
