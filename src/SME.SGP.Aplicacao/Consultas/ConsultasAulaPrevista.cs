@@ -139,7 +139,7 @@ namespace SME.SGP.Aplicacao
                         QuantidadeCJ = x.CriadasCJ,
                         QuantidadeTitular = x.CriadasTitular
                     },
-                    Cumpridas = x.LancaFrequencia ? x.Cumpridas : x.CumpridasSemFrequencia,
+                    Cumpridas = x.LancaFrequencia || x.Cumpridas > 0 ? x.Cumpridas : x.CumpridasSemFrequencia,
                     Inicio = x.Inicio,
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },

@@ -150,8 +150,7 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
 
             usuario.AtualizaUltimoLogin();
-
-            repositorioUsuario.Salvar(usuario);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario));
 
             await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
 
