@@ -38,8 +38,21 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             excecao.Message.ShouldBe("Componente curricular não encontrado no EOL.");
         }
 
+        [Fact]
         public async Task Registrar_avaliacao_para_professor_especialista_multidiciplinar()
         {
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
+
+            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+            dto.DisciplinasId = new string[] { COMPONENTE_GEOGRAFIA_ID_8, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString() };
+
+            await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
+
+            var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
+
+            atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
+            atividadeAvaliativasDiciplina.FindAll(disciplina => disciplina.DisciplinaId == COMPONENTE_GEOGRAFIA_ID_8 || 
+                                                                disciplina.DisciplinaId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()).Count().ShouldBe(2);
         }
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto()

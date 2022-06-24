@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
@@ -85,8 +85,8 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
-            await CriarAtividadeAvaliativaRegencia();
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
+            await CriarAtividadeAvaliativaRegencia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), COMPONENTE_CURRICULAR_PORTUGUES_NOME);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);

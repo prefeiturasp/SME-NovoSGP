@@ -308,7 +308,13 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral, bool ehRegencia = false)
+        protected async Task CriarAtividadeAvaliativaFundamental(
+                                    DateTime dataAvaliacao, 
+                                    string componente, 
+                                    TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                                    bool ehRegencia = false, 
+                                    bool ehCj = false,
+                                    string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
         {
             await CriaTipoAvaliacao(tipoAvalicao);
 
@@ -317,7 +323,7 @@ namespace SME.SGP.TesteIntegracao
                 Id = 1,
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                ProfessorRf = rf,
                 TurmaId = TURMA_CODIGO_1,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = 1,
@@ -325,6 +331,7 @@ namespace SME.SGP.TesteIntegracao
                 DescricaoAvaliacao = "Avaliação 04",
                 DataAvaliacao = dataAvaliacao,
                 EhRegencia = ehRegencia,
+                EhCj = ehCj,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -334,14 +341,14 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 AtividadeAvaliativaId = 1,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                DisciplinaId = componente,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
         }
 
-        protected async Task CriarAtividadeAvaliativaRegencia() {
+        protected async Task CriarAtividadeAvaliativaRegencia(string componente, string nomeComponente) {
 
             await InserirNaBase(new AtividadeAvaliativaRegencia
             {
@@ -437,6 +444,8 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_GEOGRAFIA_ID_8, NULO, CODIGO_1, CODIGO_1, ED_INF_EMEI_4_HS, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, REGENCIA_CLASSE_INFANTIL, REGENCIA_INFATIL_EMEI_4H);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
             
