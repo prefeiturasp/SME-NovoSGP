@@ -29,6 +29,7 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
+
             services.TryAddScoped<ISgpContext>(provider =>
             {
                 var connection = provider.GetService<IDbConnection>();

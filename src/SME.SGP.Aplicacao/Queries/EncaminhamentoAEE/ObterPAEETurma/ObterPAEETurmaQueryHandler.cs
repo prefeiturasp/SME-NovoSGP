@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterPAEETurmaQuery request, CancellationToken cancellationToken)
         {
-            var funcionariosUe = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery("", "", request.CodigoDRE, request.CodigoUE));
+            var funcionariosUe = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery("", "", request.CodigoDRE, request.CodigoUE), cancellationToken);
 
             var atividadeFuncaoPAEE = 6;
             return funcionariosUe.Where(c => c.CodigoFuncaoAtividade == atividadeFuncaoPAEE);
