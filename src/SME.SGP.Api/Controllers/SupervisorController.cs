@@ -50,6 +50,15 @@ namespace SME.SGP.Api.Controllers
             return Ok(await consultasSupervisor.ObterAtribuicaoResponsavel(filtro));
         }
 
+        [HttpGet("lista-ues/{dreCodigo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ListaUesConsultaAtribuicaoResponsavelDto), 200)]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterListaUesFiltroPorDre(string dreCodigo)
+        {
+            return Ok(await consultasSupervisor.ObterListaDeUesFiltroPrincipal(dreCodigo));
+        }
+
         [HttpGet("tipo-responsavel")]
         public IActionResult ObterListTipoReponsavel()
         {
