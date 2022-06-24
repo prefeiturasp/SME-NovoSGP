@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -31,6 +32,11 @@ namespace SME.SGP.TesteIntegracao
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
                 typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+        }
+
+        protected void RegistraFake(Type tipoRequestHandler, Type tipoClasseHandler)
+        {
+            _collectionFixture.services.Replace(new ServiceDescriptor(tipoRequestHandler, tipoClasseHandler, ServiceLifetime.Scoped));
         }
 
         public Task InserirNaBase<T>(IEnumerable<T> objetos) where T : class, new()
