@@ -1,5 +1,10 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -8,13 +13,13 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
-    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaTeste
+    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaMockSemPermissao
     {
         private DateTime DATA_02_05 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_08_07 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao(CollectionFixture collectionFixture) : base(collectionFixture)
-        { }
+        {}
 
         [Fact]
         public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_professor_nao_pode_fazer_alteracoes_modalidade_fundamental()
