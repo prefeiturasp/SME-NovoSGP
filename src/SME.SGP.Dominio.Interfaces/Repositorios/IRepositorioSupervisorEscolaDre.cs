@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo);
         Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo);
         Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo);
+        Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo);
     }
 }
