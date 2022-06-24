@@ -54,8 +54,6 @@ namespace SME.SGP.TesteIntegracao
         private const string USUARIO_LOGIN_PAAI_1 = "PAAI_1";
         private const string USUARIO_PAAI_1 = "USUARIO PAAI 1";
 
-        private const long USUARIO_ID_PAEE_EOL = 99;
-
         private const string NOME_PERFIL_CP = "CP";
 
         private const long ID_ENCAMINHAMENTO_AEE_NAO_EXISTENTE = 99;
@@ -230,60 +228,6 @@ namespace SME.SGP.TesteIntegracao
             var pendenciaPerfilCEFAI = ObterTodos<PendenciaPerfil>();
             pendenciaPerfilCEFAI.Any().ShouldBeTrue();
             pendenciaPerfilCEFAI.Any(a => a.PerfilCodigo == PerfilUsuario.CP).ShouldBeTrue();
-
-            /*
-            var mediator = ServiceProvider.GetService<IMediator>();
-
-            await CriarTurmaRegularFundamental();
-
-            await CriarUsuarioLogadoEPerfil();
-
-            await CriarEncaminhamentoEPendencia();
-
-            await CriarParametrosSistema();
-
-            CriarClaimFundamental();
-
-            await InserirNaBase(new Usuario()
-            {
-                CodigoRf = USUARIO_CODIGO_RF_PAEE_1,
-                Login = USUARIO_LOGIN_PAEE_1,
-                Nome = USUARIO_PAEE_1,
-                PerfilAtual = Perfis.PERFIL_PAEE,
-                CriadoPor = "",
-                CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            });
-
-            var encaminhamentoAee = ObterTodos<EncaminhamentoAEE>();
-
-            var retorno = await mediator.Send(new EnviarParaAnaliseEncaminhamentoAEECommand(encaminhamentoAee.FirstOrDefault().Id));
-            
-            //Deve retornar true no retorno do command de análise
-            retorno.ShouldBeTrue();
-            encaminhamentoAee.Any().ShouldBeTrue();
-            encaminhamentoAee.Any(a => a.Situacao == Dominio.Enumerados.SituacaoAEE.Analise).ShouldBeTrue();
-
-            //Deve gerar uma pendência do tipo AEE
-            var pendencia = ObterTodos<Pendencia>();
-            pendencia.Any(a => a.Tipo == TipoPendencia.AEE).ShouldBeTrue();
-
-            //Deve gerar a pendência para o usuário PAEE proveniente do EOL
-            var pendenciaUsuarios = ObterTodos<PendenciaUsuario>();
-            pendenciaUsuarios.Any().ShouldBeTrue();
-            pendenciaUsuarios.Any(a => a.UsuarioId == USUARIO_ID_PAEE_EOL).ShouldBeTrue();
-
-            //Deve gerar a pendência do encaminhamento
-            var pendenciaEncaminhamentoAEE = ObterTodos<PendenciaEncaminhamentoAEE>();
-            pendenciaEncaminhamentoAEE.Any(a => a.EncaminhamentoAEEId == encaminhamentoAee.FirstOrDefault().Id).ShouldBeTrue();
-
-            //Deleta a pendencia_encaminhamento_aee
-            //delete from pendencia_perfil_usuario where pendencia_perfil_id = @pendenciaPerfilId
-            //await mediator.Send(new ExcluirPendenciaPerfilCommand(request.PendenciaId));
-            //await mediator.Send(new ExcluirPendenciaPorIdCommand(request.PendenciaId));
-
-            //Como tem um PAAE, não pode inserir para CP nem CEFAI
-            */
         }
 
         private async Task CriarResponsavelPAAI()
