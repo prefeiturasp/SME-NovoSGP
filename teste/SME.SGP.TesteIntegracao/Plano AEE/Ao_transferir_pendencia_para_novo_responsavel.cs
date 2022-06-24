@@ -59,10 +59,10 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new PlanoAEE()
             {
                 Id = 1,
-                AlunoCodigo = "7128291",
+                AlunoCodigo = "11223344",
                 ResponsavelId = 1,
                 TurmaId = 1,
-                AlunoNome = "ANA RITA",
+                AlunoNome = "Maria Aluno teste",
                 Questoes = new List<PlanoAEEQuestao>(),
                 Situacao = SituacaoPlanoAEE.ParecerCP,
                 CriadoPor = "",
@@ -73,9 +73,9 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new Usuario
             {
                 Id = 2,
-                Login = "6118232",
-                CodigoRf = "6118232",
-                Nome = "MARLEI LUCIANE BERNUN",
+                Login = "1234567",
+                CodigoRf = "1234567",
+                Nome = "Maria dos testes",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });

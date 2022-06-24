@@ -6,5 +6,6 @@
         public int? TipoCodigo { get; set; }
         public string UeCodigo { get; set; }
         public string SupervisorId { get; set; }
+        public bool UESemResponsavel { get; set; }
     }
 }

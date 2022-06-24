@@ -1,18 +1,16 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using MediatR;
-using SME.SGP.Infra;
-using System.Text.Json;
-using System.Collections.Generic;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -44,10 +42,10 @@ namespace SME.SGP.TesteIntegracao
         private const int NOTA_7 = 7;
         private const int NOTA_9 = 9;
 
-        private const string ALUNO_CODIGO_4182555 = "4182555";
-        private const string ALUNO_CODIGO_4182556 = "4182556";
-        private const string ALUNO_CODIGO_4182557 = "4182557";
-        private const string ALUNO_FAKE_111111 = "111111";
+        private const string ALUNO_CODIGO_2222222 = "2222222";
+        private const string ALUNO_CODIGO_3333333 = "3333333";
+        private const string ALUNO_CODIGO_4444444 = "4444444";
+        private const string ALUNO_CODIGO_11223344 = "11223344";
 
         private const string MENSAGEM_NOTIFICACAO_WF_APROVACAO = "Foram criadas 4 aula(s) de reposição de Língua Portuguesa na turma 7B da DERVILLE ALLEGRETTI, PROF. (DIRETORIA REGIONAL DE EDUCACAO JACANA/TREMEMBE). Para que esta aula seja considerada válida você precisa aceitar esta notificação. Para visualizar a aula clique  <a href='https://dev-novosgp.sme.prefeitura.sp.gov.br/calendario-escolar/calendario-professor/cadastro-aula/editar/:0/'>aqui</a>.";
 
@@ -106,30 +104,30 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = System.DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-               
+
             });
 
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 2,
                 Nota = NOTA_8,
-                CriadoEm = System.DateTime.Now,
+                CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-                
+
             });
 
             var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
             var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
-            var componenteCurricular = new ComponenteCurricular()
+            var componenteCurricular = new Dominio.ComponenteCurricular()
             {
                 Descricao = COMPONENTE_CURRICULAR_MATEMATICA,
                 EhRegenciaClasse = false
             };
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
-            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_FAKE_111111, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
-            
+            listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
+
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
@@ -187,7 +185,7 @@ namespace SME.SGP.TesteIntegracao
             resultadoWfAprovacao.Count().ShouldBe(1);
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeFalse();
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeTrue();
-        }        
+        }
 
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_sem_aprovacao_id()
@@ -238,7 +236,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_com_aprovacao_id()
         {
-            
+
             var mediator = ServiceProvider.GetService<IMediator>();
 
             await CirarDadosBasicos();
@@ -252,7 +250,7 @@ namespace SME.SGP.TesteIntegracao
                 new FechamentoNotaDto()
                 {
                     Id = 1,
-                    Nota = NOTA_9,                    
+                    Nota = NOTA_9,
                 },
                 new FechamentoNotaDto()
                 {
@@ -420,7 +418,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182555,
+                AlunoCodigo = ALUNO_CODIGO_2222222,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
@@ -439,7 +437,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182556,
+                AlunoCodigo = ALUNO_CODIGO_3333333,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
@@ -458,7 +456,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new FechamentoAluno()
             {
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = ALUNO_CODIGO_4182557,
+                AlunoCodigo = ALUNO_CODIGO_4444444,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,

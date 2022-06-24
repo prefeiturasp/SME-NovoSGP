@@ -28,8 +28,8 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             var dto = new PlanoAEEPersistenciaDto()
             {
-                AlunoCodigo = "7128291",
-                ResponsavelRF = "6926886",
+                AlunoCodigo = "11223344",
+                ResponsavelRF = "2222222",
                 TurmaId = 1,
                 TurmaCodigo = "1",
                 Questoes = new List<PlanoAEEQuestaoDto>(),

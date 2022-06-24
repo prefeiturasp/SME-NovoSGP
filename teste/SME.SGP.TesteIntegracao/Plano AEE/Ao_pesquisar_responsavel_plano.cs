@@ -1,19 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Shouldly;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.TesteIntegracao.Plano_AEE
 {
-    public class Ao_pesquisar_responsavel_plano : TesteBase
+    public class Ao_pesquisar_responsavel_plano : PlanoAEETesteBase
     {
         private readonly ItensBasicosBuilder _builder;
 

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,10 +28,8 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                await mediator.Send(new LimparConsolidacaoFrequenciaAlunoPorTurmasEMesesCommand(new long[] { turmaId }, new int[] { filtro.Mes }));
-
-                foreach (var frequencia in frequenciasAlunosTurmaEMes)
-                    await RegistrarConsolidacaoFrequenciaAlunoMensal(frequencia, filtro.Mes);
+                var consolidacoesExistentesDaTurma = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(turmaId, filtro.Mes));
+                await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes);
 
                 unitOfWork.PersistirTransacao();
             }
@@ -53,6 +52,32 @@ namespace SME.SGP.Aplicacao
         {            
             await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(frequencia.TurmaId, frequencia.AlunoCodigo,
                 mes, frequencia.Percentual, frequencia.QuantidadeAulas, frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
+        }
+
+        private async Task AtualizaAlunos(IEnumerable<ConsolidacaoFrequenciaAlunoMensalDto> consolidacoesExistentes, IEnumerable<RegistroFrequenciaAlunoPorTurmaEMesDto> frequenciasAtuais, int mes)
+        {
+            foreach(var frequencia in frequenciasAtuais)
+            {
+                var dadosAlteradosAluno = consolidacoesExistentes.FirstOrDefault(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo) && a.Percentual != frequencia.Percentual);
+                if (dadosAlteradosAluno != null)
+                {
+                    await mediator.Send(new AlterarConsolidacaoFrequenciaAlunoMensalCommand(dadosAlteradosAluno.Id, frequencia.Percentual, frequencia.QuantidadeAulas,
+                                        frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
+                }
+                else
+                {
+                    if (!consolidacoesExistentes.Any(a => a.AlunoCodigo.Contains(frequencia.AlunoCodigo)) || !consolidacoesExistentes.Any())
+                        await mediator.Send(new RegistrarConsolidacaoFrequenciaAlunoMensalCommand(frequencia.TurmaId, frequencia.AlunoCodigo, mes, frequencia.Percentual, frequencia.QuantidadeAulas,
+                                                                                                  frequencia.QuantidadeAusencias, frequencia.QuantidadeCompensacoes));
+                }
+            }
+
+            foreach(var consolidacao in consolidacoesExistentes)
+            {
+                var validaAlunoAtivo = frequenciasAtuais.Any(a => a.AlunoCodigo == consolidacao.AlunoCodigo);
+                if (!validaAlunoAtivo)
+                    await mediator.Send(new RemoverConsolidacaoAlunoFrequenciaMensalCommand() { ConsolidacaoId = consolidacao.Id });
+            }
         }
     }
 }

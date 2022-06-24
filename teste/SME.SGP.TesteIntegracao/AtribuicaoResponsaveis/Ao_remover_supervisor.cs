@@ -1,23 +1,18 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao.Integracoes;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
 {
-    public class Ao_remover_supervisor : TesteBase
+    public class Ao_remover_supervisor : AtribuicaoResponsavelTesteBase
     {
+        #region Constantes
         const string DRE_CODIGO_1 = "1";
         const string DRE_CODIGO_2 = "2";
         const string SUPERVISOR_ID_1 = "1";
@@ -26,6 +21,7 @@ namespace SME.SGP.TesteIntegracao
         const string SUPERVISOR_RF_01 = "1";
         const string SUPERVISOR_RF_02 = "2";
         const string SUPERVISOR_RF_03 = "3";
+        #endregion
 
         public Ao_remover_supervisor(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
@@ -83,6 +79,7 @@ namespace SME.SGP.TesteIntegracao
             Assert.True(registrosAposUseCase.Count(x => x.Excluido) == 0);
 
         }
+
         [Fact]
         public async Task Deve_retornar_true_quando_nao_excluir_nada_no_SGP()
         {
@@ -95,6 +92,8 @@ namespace SME.SGP.TesteIntegracao
             //Assert
             Assert.True(retorno);
         }
+
+        #region Cargas
         public async Task InserirDre(string codigoDre)
         {
             await InserirNaBase(new Dre()
@@ -122,8 +121,6 @@ namespace SME.SGP.TesteIntegracao
             });
 
         }
-
-
-
+        #endregion
     }
 }

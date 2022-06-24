@@ -113,6 +113,7 @@ namespace SME.SGP.Dados
                                             pa.id as PlanoAulaId,
                                             pa.criado_em as PlanoAulaCriadoEm,
                                             a.professor_rf as RFProfessor,
+                                            u.nome as NomeProfessor,
                                             t.modalidade_codigo as ModalidadeCodigo,
                                             a.*
                                         from aula a
@@ -123,6 +124,7 @@ namespace SME.SGP.Dados
                                                                             and  not rf.excluido)
                                             left join plano_aula pa on (pa.aula_id = a.id
                                                                     and  not pa.excluido)
+                                            left join usuario u on u.rf_codigo = a.professor_rf                     
 
                                         where not a.excluido
                                         and t.turma_id = @turmaCodigo
@@ -144,18 +146,19 @@ namespace SME.SGP.Dados
                                     ),
                                     componentesCurricularesInfantisAulas as (
                                         select distinct cc.*,
-                                            a.*,null as RFProfessorInfantil
+                                            a.*,null as RFProfessorInfantil, u.nome
                                         from componentesCurricularesInfantis cc
                                             left join lateral (select * from aulas) a on true
+                                            left join usuario u on u.rf_codigo = a.professor_rf
                                        where cc.componentecurricularid = Any(@componentesCurricularesIds)
                                     ),
                                     countDiarioBordo as (
-	                                    select cc.AulaId,
-	                                           cc.ComponenteCurricularId,	       
-	                                           cc.data_aula,
-	                                           db.criado_em,
-	                                           db.id
-	                                      from componentesCurricularesInfantisAulas cc
+                                        select cc.AulaId,
+                                               cc.ComponenteCurricularId,	       
+                                               cc.data_aula,
+                                               db.criado_em,
+                                               db.id
+                                          from componentesCurricularesInfantisAulas cc
                                                left join diario_bordo db on (db.aula_id = cc.AulaId 
                                                                         and  db.componente_curricular_id = cc.ComponenteCurricularId)  
                                          where ((not db.excluido) or (db.id is null))
@@ -174,12 +177,13 @@ namespace SME.SGP.Dados
                                         count(distinct cd.AulaId) filter (where cd.id is null) as DiarioBordoPendentes,
                                         count(distinct cc.AulaId) filter (where cc.PlanoAulaId is null and cc.ModalidadeCodigo != 1) as PlanoAulaPendentes,
                                         cc.RFProfessorInfantil as RFProfessor,
+                                        cc.Nome as NomeProfessor,
                                         cc.ModalidadeCodigo
                                     from componentesCurricularesInfantisAulas cc
                                          left join countDiarioBordo cd on (cd.AulaId = cc.AulaId 
                                                                       and cd.ComponenteCurricularId = cc.ComponenteCurricularId)
                                     group by cc.PeriodoEscolarId, cc.Bimestre, cc.TurmaId, cc.TurmaCodigo, cc.AnoLetivo, 
-	                                    cc.ComponenteCurricularId, cc.RFProfessorInfantil, cc.ModalidadeCodigo                                
+                                        cc.ComponenteCurricularId, cc.RFProfessorInfantil, cc.Nome, cc.ModalidadeCodigo                                
 
                                     union all
 
@@ -197,11 +201,12 @@ namespace SME.SGP.Dados
                                         0 as DiarioBordoPendentes,
                                         count(a.AulaId) filter (where a.PlanoAulaId is null) as PlanoAulaPendentes,
                                         a.RFProfessor,
+                                        a.NomeProfessor,
                                         a.ModalidadeCodigo 
                                     from aulas a
                                     where a.ModalidadeCodigo <> 1
                                     group by a.PeriodoEscolarId, a.Bimestre, a.TurmaId, a.TurmaCodigo, a.AnoLetivo,
-	                                    a.DisciplinaId, a.RFProfessor, a.ModalidadeCodigo";
+                                        a.DisciplinaId, a.RFProfessor, a.NomeProfessor, a.ModalidadeCodigo ";
                 
             return await database.Conexao.QueryAsync<ConsolidacaoRegistrosPedagogicosDto>(query, new { turmaCodigo, anoLetivo, componentesCurricularesIds });
         }

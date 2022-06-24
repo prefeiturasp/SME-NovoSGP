@@ -295,12 +295,12 @@ namespace SME.SGP.Aplicacao
 
                             if (listaFechamentoNotaEmAprovacao.Any())
                             {
-                                var dadosNota = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id);
-                                if(dadosNota != null)
+                                var listaFiltrada = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id);
+                                if (listaFiltrada != null)
                                 {
-                                    double notaConceitoWF = dadosNota.NotaEmAprovacao;
+                                    double notaConceitoWF = listaFiltrada.NotaEmAprovacao;
                                     VerificaNotaEmAprovacao(notaConceitoWF, nota);
-                                } 
+                                }
                             }
 
                             notaConceitoAluno.NotasBimestre.Add(nota);

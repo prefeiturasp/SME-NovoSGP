@@ -10,10 +10,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.AtribuicaoResponsaveis
 {
-    public class Ao_remover_atribuicao_aspp : TesteBase
+    public class Ao_remover_atribuicao_aspp : AtribuicaoResponsavelTesteBase
     {
+        #region Constants
         private const string DRE_CODIGO_1 = "1";
         private const string DRE_CODIGO_2 = "2";
         private const string PSICOLOGO_RESPONSAVEL_ID = "3";
@@ -30,6 +31,7 @@ namespace SME.SGP.TesteIntegracao
         private const string ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID_2 = "6";
         private const string ASSISTENTE_SOCIAL_RESPONSAVEL_ID_3 = "8";
         private const string ASSISTENTE_SOCIAL_RESPONSAVEL_RF_ID_3 = "8";
+        #endregion
 
         public Ao_remover_atribuicao_aspp(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -109,6 +111,7 @@ namespace SME.SGP.TesteIntegracao
             Assert.True(retorno);
         }
 
+        #region Cargas
         public async Task InserirDre(string codigoDre)
         {
             await InserirNaBase(new Dre()
@@ -164,5 +167,6 @@ namespace SME.SGP.TesteIntegracao
                 Excluido = false
             });
         }
+        #endregion
     }
 }

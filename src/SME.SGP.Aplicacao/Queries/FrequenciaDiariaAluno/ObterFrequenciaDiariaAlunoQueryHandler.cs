@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                     DataAula = item.DataAula,
                     QuantidadeAulas = item.TotalAulasNoDia,
                     QuantidadePresenca = item.TotalPresencas,
-                    QuantidadeAusencia = item.TotalAusencias > 0 ? item.TotalAusencias : (item.TotalAulasNoDia - item.TotalAusencias),
+                    QuantidadeAusencia = item.TotalAusencias,
                     QuantidadeRemoto = item.TotalRemotos,
                     Motivo = !string.IsNullOrEmpty(item.MotivoAusencia) ? UtilRegex.RemoverTagsHtml(item.MotivoAusencia) : string.Empty,
                 };

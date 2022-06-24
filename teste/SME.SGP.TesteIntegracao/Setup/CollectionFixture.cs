@@ -14,39 +14,33 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable
+    public class CollectionFixture : IDisposable 
     {
-        private readonly IServiceCollection _services;
+        public readonly IServiceCollection services;
         public readonly InMemoryDatabase Database;
-        public readonly ServiceProvider ServiceProvider;
+        public ServiceProvider ServiceProvider;
 
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            _services = new ServiceCollection();
+            services = new ServiceCollection();
 
             Database = new InMemoryDatabase();
-            _services.AddScoped<IDbConnection>(x => Database.Conexao);
+            services.AddScoped<IDbConnection>(x => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            _services.AddSingleton<IConfiguration>(config);
-            _services.AddMemoryCache();
-            new RegistradorDependencias().Registrar(_services, null);
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
-                typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            _services.AddMockPlanoAEE();
-            ReplaceQueriesFake();
-            ServiceProvider = _services.BuildServiceProvider();
-            DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
+            services.AddSingleton<IConfiguration>(config);
+            services.AddMemoryCache();
+            new RegistradorDependencias().Registrar(services, null);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>), typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        public void ReplaceQueriesFake()
+        public void BuildServiceProvider()
         {
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
+            ServiceProvider = services.BuildServiceProvider();
+            DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
 
         public void Dispose()

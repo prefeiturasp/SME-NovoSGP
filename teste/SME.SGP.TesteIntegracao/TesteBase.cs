@@ -1,7 +1,11 @@
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
@@ -18,6 +22,15 @@ namespace SME.SGP.TesteIntegracao
         {
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
+
+            RegistrarFakes(_collectionFixture.services);
+            _collectionFixture.BuildServiceProvider();
+        }
+
+        protected virtual void RegistrarFakes(IServiceCollection services)
+        {
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
+                typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         public Task InserirNaBase<T>(IEnumerable<T> objetos) where T : class, new()

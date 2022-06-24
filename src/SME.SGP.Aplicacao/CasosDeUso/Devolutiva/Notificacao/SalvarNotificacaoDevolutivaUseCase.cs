@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
         private string MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdfsincrono/RelatorioDevolutiva.pdf/{codigoRelatorio}";
+            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/RelatorioDevolutiva.pdf/{codigoRelatorio}";
             return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
         }
         private async Task<Guid> SolicitarRelatorioDevolutiva(long devolutivaId, long ueId, string codigoTurma, Usuario usuarioLogado)

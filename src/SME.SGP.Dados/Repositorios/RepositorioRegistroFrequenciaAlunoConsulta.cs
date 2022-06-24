@@ -117,9 +117,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"           
                     select
-	                count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 1) as TotalPresencas,
-                    count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 2) as TotalAusencias,
-                    count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (where rfa.valor = 3) as TotalRemotos,
+	                count(distinct(rf.aula_id*rfa.numero_aula)) filter (where rfa.valor = 1) as TotalPresencas,
+                    count(distinct(rf.aula_id*rfa.numero_aula)) filter (where rfa.valor = 2) as TotalAusencias,
+                    count(distinct(rf.aula_id*rfa.numero_aula)) filter (where rfa.valor = 3) as TotalRemotos,
 	                p.id as PeriodoEscolarId,
 	                p.periodo_inicio as PeriodoInicio,
 	                p.periodo_fim as PeriodoFim,
