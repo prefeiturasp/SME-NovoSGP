@@ -13,7 +13,8 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
-        private const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
+        protected const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
+        protected const string NOME_ATIVIDADE_AVALIATIVA_2 = "Nome atividade avaliativa 2";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -80,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
-        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao)
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string nome = NOME_ATIVIDADE_AVALIATIVA)
         {
             return new AtividadeAvaliativaDto()
             {
@@ -89,16 +90,16 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TurmaId = TURMA_CODIGO_1,
                 DisciplinasId = new string[] { componente },
                 Descricao = "",
-                Nome = NOME_ATIVIDADE_AVALIATIVA,
+                Nome = nome,
                 CategoriaId = categoria,    
                 DataAvaliacao = dataAvaliacao,
                 TipoAvaliacaoId = (long)tipoAvaliacao
             };
         }
 
-        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaRegenciaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string[] disciplinaRegencia)
+        protected AtividadeAvaliativaDto ObterAtividadeAvaliativaRegenciaDto(string componente, CategoriaAtividadeAvaliativa categoria, DateTime dataAvaliacao, TipoAvaliacaoCodigo tipoAvaliacao, string[] disciplinaRegencia, string nome = NOME_ATIVIDADE_AVALIATIVA)
         {
-            var atividadeAvaliativa = ObterAtividadeAvaliativaDto(componente, categoria, dataAvaliacao, tipoAvaliacao);
+            var atividadeAvaliativa = ObterAtividadeAvaliativaDto(componente, categoria, dataAvaliacao, tipoAvaliacao, nome);
 
             atividadeAvaliativa.DisciplinaContidaRegenciaId = disciplinaRegencia;
             atividadeAvaliativa.EhRegencia = true;
