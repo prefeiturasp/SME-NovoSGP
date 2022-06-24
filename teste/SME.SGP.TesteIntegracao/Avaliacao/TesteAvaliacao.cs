@@ -1,8 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -18,8 +21,14 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-        }
 
+        }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PodePersistirTurmaDisciplinaQuery, bool>), typeof(PodePersistirTurmaDisciplinaQueryHandlerFakeRetornaFalso), ServiceLifetime.Scoped));
+        }
         protected async Task CriarDadosBasicos(CriacaoDeDadosDto dadosBasicosDto)
         {
             await CriarTipoCalendario(dadosBasicosDto.TipoCalendario);
@@ -30,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             await CriaTipoAvaliacao(dadosBasicosDto.TipoAvaliacao);
         }
 
-        protected async Task CrieAula(string componente, DateTime dataAula,int quantidade = 1, bool aulaCJ = false)
+        protected async Task CrieAula(string componente, DateTime dataAula, int quantidade = 1, bool aulaCJ = false)
         {
             await InserirNaBase(new Aula
             {
@@ -155,6 +164,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public bool CriarPeriodo { get; set; }
         }
 
-        
+
     }
 }

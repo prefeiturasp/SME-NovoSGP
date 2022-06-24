@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
             await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
             var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
@@ -84,13 +84,13 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         public async Task Existe_atividade_avaliativa_cadastrada_para_essa_data_e_componente_para_regencia()
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
-            await CrieAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
-            await CriarAtividadeAvaliativaRegencia();
+            await CrieAula(COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), DATA_02_05);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), TipoAvaliacaoCodigo.AvaliacaoBimestral, true);
+            await CriarAtividadeAvaliativaRegencia(COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
 
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterFiltro(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05);
-            dto.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString() };
+            var dto = ObterFiltro(COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), DATA_02_05);
+            dto.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Validar(dto));
 
             excecao.Message.ShouldBe("Já existe atividade avaliativa cadastrada para essa data e componente curricular.");
