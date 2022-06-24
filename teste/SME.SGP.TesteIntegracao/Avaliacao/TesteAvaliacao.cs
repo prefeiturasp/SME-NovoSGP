@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             return atividadeAvaliativa;
         }
 
-        protected static FiltroAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativa)
+        protected static FiltroAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(AtividadeAvaliativaDto atividadeAvaliativa, int avaliacaoId = 0)
         {
             return new FiltroAtividadeAvaliativaDto()
             {
@@ -118,7 +118,8 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 Nome = atividadeAvaliativa.Nome,
                 TipoAvaliacaoId = int.Parse(atividadeAvaliativa.TipoAvaliacaoId.ToString()),
                 TurmaId = atividadeAvaliativa.TurmaId,
-                UeID = atividadeAvaliativa.UeId
+                UeID = atividadeAvaliativa.UeId,
+                Id = avaliacaoId
             };
         }
 

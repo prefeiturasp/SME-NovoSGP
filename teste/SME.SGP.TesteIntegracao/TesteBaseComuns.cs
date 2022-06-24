@@ -26,6 +26,10 @@ namespace SME.SGP.TesteIntegracao
 
         protected const string TURMA_CODIGO_1 = "1";
         private const string TURMA_NOME_1 = "Turma Nome 1";
+
+        protected const string TURMA_CODIGO_2 = "2";
+        private const string TURMA_NOME_2 = "Turma Nome 2";
+
         protected const string TURMA_ANO_2 = "2";
 
         private const int ANO_LETIVO_2022_NUMERO = 2022;
@@ -40,6 +44,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
+
+        protected const string COMPONENTE_CURRICULAR_MATEMATICA_NOME = "'MATEMATICA'";
 
         protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105 = 1105;
         protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105 = "'Regência de Classe Fund I - 5H'";
@@ -61,18 +67,20 @@ namespace SME.SGP.TesteIntegracao
         private const string COMPONENTE_CURRICULAR_AREA_CONHECIMENTO = "componente_curricular_area_conhecimento";
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
         private const string AREA_DE_CONHECIMENTO_8 = "'Área de conhecimento 8'";
+        private const string AREA_DE_CONHECIMENTO_2 = "'Área de conhecimento 2'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
         protected const string COMPONENTE_LINGUA_PORTUGUESA_ID_138 = "138";
-        protected const string COMPONENTE_MATEMATICA_ID_138 = "2";
+        protected const string COMPONENTE_MATEMATICA_ID_2 = "2";
 
         private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
         private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
         private const string GRUPO_MATRIZ_8 = "'Grupo matriz 8'";
 
         private const string CODIGO_1 = "1";
+        private const string CODIGO_2 = "2";
         private const string CODIGO_8 = "8";
         private const string NULO = "null";
 
@@ -449,9 +457,13 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
 
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
+
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_8, GRUPO_MATRIZ_8);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_MATEMATICA_ID_2.ToString(), NULO, CODIGO_1, CODIGO_2, COMPONENTE_CURRICULAR_MATEMATICA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_MATEMATICA_NOME, NULO);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_EOL, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, NULO);
             
