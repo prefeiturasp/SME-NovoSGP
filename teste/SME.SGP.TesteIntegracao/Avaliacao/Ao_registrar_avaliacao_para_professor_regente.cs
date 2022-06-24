@@ -66,6 +66,51 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
         }
 
+        [Fact]
+        public async Task Registrar_avaliacao_para_professor_regente_eja()
+        {
+            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
+
+            var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
+
+            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+
+            await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), TIPO_CALENDARIO_1);
+
+            string[] disciplinaRegencia = { COMPONENTE_CIENCIAS_ID_89, COMPONENTE_GEOGRAFIA_ID_8, COMPONENTE_HISTORIA_ID_7, COMPONENTE_LINGUA_PORTUGUESA_ID_138 };
+
+            var atividadeAvaliativa = ObterAtividadeAvaliativaRegenciaDto(COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral, disciplinaRegencia);
+
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa);
+
+            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+
+            await Should.NotThrowAsync(() => doExecutar());
+
+            var retorno = await comando.Inserir(atividadeAvaliativa);
+
+            retorno.ShouldNotBeNull();
+
+            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
+
+            atividadeAvaliativas.ShouldNotBeEmpty();
+
+            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var atividadeAvaliativasRegencia = ObterTodos<AtividadeAvaliativaRegencia>();
+
+            atividadeAvaliativasRegencia.ShouldNotBeEmpty();
+
+            atividadeAvaliativasRegencia.Count().ShouldBeEquivalentTo(4);
+
+            var atividadeAvaliativasDisciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
+
+            atividadeAvaliativasDisciplina.ShouldNotBeEmpty();
+
+            atividadeAvaliativasDisciplina.Count().ShouldBeEquivalentTo(1);
+
+        }
+
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto()
         {
             return new CriacaoDeDadosDto()
