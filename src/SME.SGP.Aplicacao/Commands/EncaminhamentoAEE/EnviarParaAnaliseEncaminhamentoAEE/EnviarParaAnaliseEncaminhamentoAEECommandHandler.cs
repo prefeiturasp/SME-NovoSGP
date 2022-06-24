@@ -24,35 +24,34 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(EnviarParaAnaliseEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId));
+            var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId), cancellationToken);
 
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
             if (turma == null)
                 throw new NegocioException("turma não encontrada");
 
-
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;           
 
-            var funcionarioPAEE = await mediator.Send(new ObterPAEETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+            var funcionarioPAEE = await mediator.Send(new ObterPAEETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe), cancellationToken);
 
-            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI));
+            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
             if (funcionarioPAEE != null && funcionarioPAEE.Count() == 1)
             {
                 await GerarPendenciaPAEEPAAI(encaminhamentoAEE, funcionarioPAEE.FirstOrDefault().CodigoRf);
             }
-            else if(funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
+            else if (funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
             {
                 await GerarPendenciaPAEEPAAI(encaminhamentoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf);
             }
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
-            await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));            
+            await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id), cancellationToken);            
 
             await GerarPendenciasEncaminhamentoAEE(encaminhamentoAEE, funcionarioPAEE);
 
@@ -63,6 +62,7 @@ namespace SME.SGP.Aplicacao
         {
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
             encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(CodigoRf));
+
             if (await ParametroGeracaoPendenciaAtivo())
                 await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
         }
