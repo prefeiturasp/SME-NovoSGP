@@ -35,11 +35,11 @@ namespace SME.SGP.Aplicacao
                 NomeServidor = request.Nome,
             };
 
-            return await CarregarUsuarioId(await mediator.Send(new ObterFuncionariosPorDreEolQuery(usuario.PerfilAtual, filtro.CodigoDRE,
+            return await CarregarUsuarioId(request, await mediator.Send(new ObterFuncionariosPorDreEolQuery(usuario.PerfilAtual, filtro.CodigoDRE,
                 filtro.CodigoUE, filtro.CodigoRF, filtro.NomeServidor), cancellationToken));
         }
 
-        private async Task<IEnumerable<UsuarioEolRetornoDto>> CarregarUsuarioId(IEnumerable<UsuarioEolRetornoDto> funcionarios)
+        private async Task<IEnumerable<UsuarioEolRetornoDto>> CarregarUsuarioId(PesquisaFuncionariosPorDreUeQuery request, IEnumerable<UsuarioEolRetornoDto> funcionarios)
         {
             var rfs = funcionarios.Select(a => a.CodigoRf)
                 .Distinct()
@@ -55,6 +55,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var funcionario in funcionarios)
                 {
                     funcionario.UsuarioId = usuarios.FirstOrDefault(a => a.CodigoRf == funcionario.CodigoRf)?.Id ?? 0;
+                    funcionario.PodeEditar = (bool)request.Usuario?.EhCoordenadorCEFAI();
                 }
             }
 
