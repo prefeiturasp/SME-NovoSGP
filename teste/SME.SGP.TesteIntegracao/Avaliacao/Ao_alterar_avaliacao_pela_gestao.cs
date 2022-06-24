@@ -90,19 +90,8 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             TipoAvaliacaoCodigo.AvaliacaoBimestral);
             atividadeAvaliativa.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
 
-            await comando.Inserir(atividadeAvaliativa);
-
-            atividadeAvaliativa.Descricao = DESCRICAO;
-
-            var retorno = await comando.Alterar(atividadeAvaliativa, 1);
-
-            retorno.ShouldNotBeNull();
-
-            var atividadeAvaliativas = ObterTodos<AtividadeAvaliativa>();
-
-            atividadeAvaliativas.ShouldNotBeEmpty();
-
-            atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(atividadeAvaliativa));
+            excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto(string perfil)
