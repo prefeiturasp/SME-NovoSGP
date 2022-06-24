@@ -111,7 +111,8 @@ namespace SME.SGP.Dados.Repositorios
                             FROM supervisor_escola_dre sed
                              INNER JOIN dre d ON sed.dre_id = d.dre_id
                              INNER JOIN ue u ON u.ue_id  = sed.escola_id 
-                            WHERE sed.dre_id = @dreCodigo ");
+                            WHERE sed.dre_id = @dreCodigo 
+                            ORDER BY u.tipo_escola ,u.nome ");
 
             var consulta = await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { dreCodigo });
             return consulta.ToList();
@@ -251,6 +252,23 @@ namespace SME.SGP.Dados.Repositorios
                     anoLetivo,
                     tipoResponsavelAtribuicao
                 });
+        }
+
+        public async Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo)
+        {
+            var sql = new StringBuilder(@"SELECT 
+                               u.id ,
+                               u.ue_id AS Codigo,
+	                           u.nome AS NomeSimples,
+	                           u.tipo_escola AS TipoEscola 
+                           FROM ue u
+                           INNER JOIN dre d ON u.dre_id =d.id
+                           INNER JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id 
+                           WHERE d.dre_id  = @dreCodigo
+                           GROUP BY u.id 
+                           ORDER BY u.tipo_escola,u.nome ");
+
+            return await database.Conexao.QueryAsync<ListaUesConsultaAtribuicaoResponsavelDto>(sql.ToString(), new {dreCodigo});
         }
     }
 }

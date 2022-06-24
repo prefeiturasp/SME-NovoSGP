@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
 
-            var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto.ToList(), filtro);
-            return MapearResponsavelEscolaDre(escolaDreDto.OrderBy(x => x.UeNome));
+            var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto, filtro);
+            return MapearResponsavelEscolaDre(escolaDreDto);
         }
 
         private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto, FiltroObterSupervisorEscolasDto filtro)
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
                                 UeNome = supervisorEscolasDreDto.FirstOrDefault().UeNome,
                                 DreNome = supervisorEscolasDreDto.FirstOrDefault().DreNome,
                                 AtribuicaoExcluida = true,
-                                UeId = supervisorEscolasDreDto.FirstOrDefault().UeId
+                                UeId = supervisorEscolasDreDto.FirstOrDefault().UeId,
                             };
                             responsavelEscolaDreDto.Add(registro);
                         }
@@ -143,7 +143,7 @@ namespace SME.SGP.Aplicacao
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
             }
             
-            return responsavelEscolaDreDto;
+            return responsavelEscolaDreDto.OrderBy(x => x.Nome).ToList();
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao
                     ResponsavelId = supervisor.AtribuicaoExcluida ? null : supervisor.SupervisorId,
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
                     TipoResponsavelId = supervisor.TipoAtribuicao,
-                    UeNome = $"{supervisor.TipoEscola.ShortName()} {supervisor.UeNome}",
+                    UeNome = supervisor.Nome,
                     UeId = supervisor.UeId,
                     DreId = supervisor.DreId,
                     DreNome = supervisor.DreNome,
@@ -306,6 +306,13 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+        }
+
+        public async Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo)
+        {
+            var consulta = await repositorioSupervisorEscolaDre.ObterListaDeUesFiltroPrincipal(dreCodigo);
+
+            return consulta.OrderBy(x => x.Nome);
         }
     }
 }
