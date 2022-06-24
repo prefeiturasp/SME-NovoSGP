@@ -46,12 +46,12 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
-            
+
         }
 
         protected async Task<RetornoBaseDto> InserirAulaUseCaseComValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componentecurricularId, DateTime dataAula, bool ehRegente = false)
         {
-             var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
+            var retorno = await InserirAulaUseCaseSemValidacaoBasica(tipoAula, recorrenciaAula, componentecurricularId, dataAula, ehRegente);
 
             retorno.ShouldNotBeNull();
 
@@ -93,7 +93,7 @@ namespace SME.SGP.TesteIntegracao
         private FiltroPodeCadastrarAulaDto ObterFiltroPodeCadastrarAulaDto(TipoAula tipoAula, string turmaCodigo, long componenteCurricular, DateTime dataAula, bool ehRegencia, long aulaId = 0)
         {
             return new FiltroPodeCadastrarAulaDto()
-            { 
+            {
                 AulaId = aulaId,
                 ComponenteCurricular = componenteCurricular,
                 DataAula = dataAula,
@@ -218,10 +218,18 @@ namespace SME.SGP.TesteIntegracao
                 AulaCJ = false
             };
         }
+        protected ExcluirAulaDto ObterExcluirAulaDto(RecorrenciaAula recorrencia)
+        {
+            return new ExcluirAulaDto()
+            {
+                AulaId = 1,
+                RecorrenciaAula = recorrencia
+            };
+        }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
         {
-            await InserirNaBase(new FechamentoReabertura() 
+            await InserirNaBase(new FechamentoReabertura()
             {
                 Descricao = REABERTURA_GERAL,
                 Inicio = DATA_01_01,

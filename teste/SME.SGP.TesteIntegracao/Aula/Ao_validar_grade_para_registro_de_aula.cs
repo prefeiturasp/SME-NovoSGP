@@ -11,8 +11,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
     public class Ao_validar_grade_para_registro_de_aula : AulaTeste
     {
-        private DateTime dataInicio = new (DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime dataFim = new (DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_validar_grade_para_registro_de_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -29,6 +29,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.Quantidade = 2;
 
+            await CriarPeriodoEscolarEAbertura();
+
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Quantidade de aulas superior ao limíte de aulas da grade.");
@@ -44,7 +46,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.EhRegencia = true;
-      
+
+            await CriarPeriodoEscolarEAbertura();
+
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Para regência de EJA só é permitido a criação de 5 aulas por dia.");
@@ -60,6 +64,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.EhRegencia = true;
+
+            await CriarPeriodoEscolarEAbertura();
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
@@ -89,14 +95,23 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 
             await InserirNaBase(new GradeDisciplina
             {
-                GradeId=1,
-                Ano=2,
-                QuantidadeAulas= quantidadeAula,
-                ComponenteCurricularId= COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                GradeId = 1,
+                Ano = 2,
+                QuantidadeAulas = quantidadeAula,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now
             });
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }

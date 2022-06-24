@@ -39,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             await CriarAtividadeAvaliativaFundamental(dataInicio);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObterDto(RecorrenciaAula.RepetirBimestreAtual);
+            var dto = ObterExcluirAulaDto(RecorrenciaAula.RepetirBimestreAtual);
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -57,7 +57,10 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             await CriaAulaRecorrentePortugues(recorrencia);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
-            var dto = ObterDto(recorrencia);
+            var dto = ObterExcluirAulaDto(recorrencia);
+
+            await CriarPeriodoEscolarEAbertura();
+
             var retorno = await useCase.Executar(dto);
 
             retorno.ShouldNotBeNull();
@@ -66,6 +69,15 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().Excluido.ShouldBe(true);
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }

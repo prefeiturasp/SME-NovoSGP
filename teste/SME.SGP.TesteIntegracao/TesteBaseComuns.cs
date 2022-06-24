@@ -100,6 +100,16 @@ namespace SME.SGP.TesteIntegracao
         protected const string REPOSICAO_DIA = "Reposição Dia";
         protected const string REPOSICAO_AULA_DE_GREVE = "Reposição de Aula de Greve";
 
+        protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected DateTime DATA_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        protected DateTime DATA_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
+        protected DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
+        protected DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
+        protected long TIPO_CALENDARIO_1 = 1;
+
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -314,14 +324,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-        protected ExcluirAulaDto ObterDto(RecorrenciaAula recorrencia)
-        {
-            return new ExcluirAulaDto()
-            {
-                AulaId = 1,
-                RecorrenciaAula = RecorrenciaAula.RepetirBimestreAtual
-            };
-        }
+
 
         protected async Task CriarTurma(Modalidade modalidade)
         {

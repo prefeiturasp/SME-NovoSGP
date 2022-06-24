@@ -23,6 +23,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
 
+            await CriarPeriodoEscolarEAbertura();
+
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
 
@@ -30,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ao_registrar_aula_unica_regente_professor_EJA()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, dataInicio, dataFim, 1);
+
+            await CriarPeriodoEscolarEAbertura();
 
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113, dataInicio, true);
         }
@@ -39,6 +43,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(Perfis.PERFIL_PROFESSOR_INFANTIL.ToString(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, dataInicio, dataFim, BIMESTRE_2);
 
+            await CriarPeriodoEscolarEAbertura();
+
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio, true);
         }
 
@@ -46,6 +52,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public async Task Ao_registrar_aula_unica_professor_CP()
         {
             await CriarDadosBasicosAula(Perfis.PERFIL_CP.ToString(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+
+            await CriarPeriodoEscolarEAbertura();
 
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
@@ -55,6 +63,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
             await CriarEvento(EventoLetivo.Sim, dataInicio, dataInicio);
+
+            await CriarPeriodoEscolarEAbertura();
 
             await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
         }
@@ -82,9 +92,20 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
             dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 08);
 
+            await CriarPeriodoEscolarEAbertura();
+
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
             excecao.Message.ShouldBe("Não é possível cadastrar aula no final de semana");
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }
