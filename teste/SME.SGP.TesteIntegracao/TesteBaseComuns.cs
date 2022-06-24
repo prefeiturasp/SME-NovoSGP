@@ -366,8 +366,8 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 AtividadeAvaliativaId = 1,
-                DisciplinaContidaRegenciaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                DisciplinaContidaRegenciaNome = COMPONENTE_CURRICULAR_PORTUGUES_NOME,
+                DisciplinaContidaRegenciaId = componente,
+                DisciplinaContidaRegenciaNome = nomeComponente,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
