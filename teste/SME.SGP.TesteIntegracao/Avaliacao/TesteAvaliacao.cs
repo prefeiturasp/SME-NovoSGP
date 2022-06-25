@@ -20,15 +20,15 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         protected const string NOME_ATIVIDADE_AVALIATIVA_2 = "Nome atividade avaliativa 2";
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
-        {
+        {}
 
-        }
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PodePersistirTurmaDisciplinaQuery, bool>), typeof(PodePersistirTurmaDisciplinaQueryHandlerFakeRetornaFalso), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PodePersistirTurmaDisciplinaQuery, bool>), typeof(PodePersistirTurmaDisciplinaQueryHandlerFakeRetornaTrue), ServiceLifetime.Scoped));
         }
+
         protected async Task CriarDadosBasicos(CriacaoDeDadosDto dadosBasicosDto)
         {
             await CriarTipoCalendario(dadosBasicosDto.TipoCalendario);

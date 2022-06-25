@@ -469,10 +469,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            //if (usuario == null)
-            //    usuario = await servicoUsuario.ObterUsuarioLogado();
-            //if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-
             if (!usuario.EhProfessorCj() && !await mediator.Send(new PodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula.Ticks)))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
