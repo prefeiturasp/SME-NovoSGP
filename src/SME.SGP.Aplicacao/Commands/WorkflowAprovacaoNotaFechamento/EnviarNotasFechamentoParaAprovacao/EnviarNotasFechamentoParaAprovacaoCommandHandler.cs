@@ -73,24 +73,29 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new StringBuilder();
             var bimestre = (periodoEscolar?.Bimestre ?? 0) == 0 ? "bimestre final" : $"{periodoEscolar.Bimestre}º bimestre";
-            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} do componente curricular {componenteSgp.Nome} da turma {turma.Nome} da ");
+            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} de {turma.AnoLetivo} da turma {turma.Nome} da ");
             mensagem.Append($"{turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) ");
-            mensagem.Append($"de {turma.AnoLetivo} foram alterados pelo Professor {usuarioLogado.Nome} ");
+            mensagem.Append($"foram alterados pelo Professor {usuarioLogado.Nome} ");
             mensagem.Append($"({usuarioLogado.CodigoRf}) em {DateTime.Now.ToString("dd/MM/yyyy")} às {DateTime.Now.ToString("HH:mm")} para o(s) seguinte(s) estudantes(s):</p>");
+            long[] codigoAlunos = new long[notasAprovacao.Count];
+            for (int i = 0; i < notasAprovacao.Count; i++)
+            {
+                codigoAlunos[i] = long.Parse(notasAprovacao[i].CodigoAluno);
+            }
 
-            var alunosTurma = await servicoEol.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunosTurma = await mediator.Send( new ObterAlunosEolPorCodigosQuery(codigoAlunos));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
 
             mensagem.AppendLine(componenteSgp.Regencia ?
-                await MontarTabelaNotasRegencia(alunosTurma, notasAprovacao, lancaNota) :
-                MontarTabelaNotas(alunosTurma, notasAprovacao));
+                MontarTabelaNotasRegencia(alunosTurma, notasAprovacao, lancaNota, componentes) :
+                MontarTabelaNotas(alunosTurma, notasAprovacao, componentes));
             return mensagem.ToString();
         }
 
 
-        private async Task<string> MontarTabelaNotasRegencia(IEnumerable<AlunoPorTurmaResposta> alunosTurma, List<FechamentoNotaDto> notasAprovacao, bool lancaNota)
+        private string MontarTabelaNotasRegencia(IEnumerable<TurmasDoAlunoDto> alunosTurma, List<FechamentoNotaDto> notasAprovacao, bool lancaNota, IEnumerable<ComponenteCurricularDto> componentes)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesQuery());
-
+         
             var mensagem = new StringBuilder();
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
@@ -102,7 +107,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var notaAprovacao in notasAprovacao)
             {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == Convert.ToInt32(notaAprovacao.CodigoAluno));
 
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
@@ -128,30 +133,33 @@ namespace SME.SGP.Aplicacao
             return mensagem.ToString();
         }
 
-        private string MontarTabelaNotas(IEnumerable<AlunoPorTurmaResposta> alunosTurma, List<FechamentoNotaDto> notasAprovacao)
+        private string MontarTabelaNotas(IEnumerable<TurmasDoAlunoDto> alunosTurma, List<FechamentoNotaDto> notasAprovacao, IEnumerable<ComponenteCurricularDto> componentes)
         {
             var mensagem = new StringBuilder();
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
-            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
+            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>"); 
+            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente Curricular</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
             mensagem.AppendLine("</tr>");
 
             foreach (var notaAprovacao in notasAprovacao)
             {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == Convert.ToInt32(notaAprovacao.CodigoAluno));
 
                 mensagem.AppendLine("<tr>");
                 mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.CodigoAluno})</td>");
 
                 if (!notaAprovacao.ConceitoId.HasValue)
                 {
+                    mensagem.Append($"<td style='padding: 5px; text-align:left;'>{ObterNomeComponente(componentes, notaAprovacao.DisciplinaId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota)}</td>");
                 }
                 else
                 {
+                    mensagem.Append($"<td style='padding: 5px; text-align:left;'>{ObterNomeComponente(componentes, notaAprovacao.DisciplinaId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoIdAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
                 }
