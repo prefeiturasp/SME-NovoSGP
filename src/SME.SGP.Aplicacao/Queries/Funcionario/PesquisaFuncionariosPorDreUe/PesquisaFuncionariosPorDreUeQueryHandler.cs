@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var funcionario in funcionarios)
                 {
                     funcionario.UsuarioId = usuarios.FirstOrDefault(a => a.CodigoRf == funcionario.CodigoRf)?.Id ?? 0;
-                    funcionario.PodeEditar = (bool)request.Usuario?.EhCoordenadorCEFAI();
+                    funcionario.PodeEditar = request.Usuario != null && request.Usuario.EhCoordenadorCEFAI();
                 }
             }
 
