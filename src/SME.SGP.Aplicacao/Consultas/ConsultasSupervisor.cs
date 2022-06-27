@@ -217,25 +217,6 @@ namespace SME.SGP.Aplicacao
                 };
 
                 listaRetorno.Add(itemRetorno);
-
-                //yield return new ResponsavelEscolasDto()
-                //{
-                //    Id = supervisor.AtribuicaoSupervisorId,
-                //    Responsavel = supervisor.AtribuicaoExcluida ? null : nomeResponsavel,
-                //    ResponsavelId = supervisor.AtribuicaoExcluida ? null : supervisor.SupervisorId,
-                //    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
-                //    TipoResponsavelId = supervisor.TipoAtribuicao,
-                //    UeNome = supervisor.Nome,
-                //    UeId = supervisor.UeId,
-                //    DreId = supervisor.DreId,
-                //    DreNome = supervisor.DreNome,
-                //    AlteradoEm = supervisor.AlteradoEm,
-                //    AlteradoPor = supervisor.AlteradoPor,
-                //    AlteradoRF = supervisor.AlteradoRF,
-                //    CriadoEm = supervisor.CriadoEm,
-                //    CriadoPor = supervisor.CriadoPor,
-                //    CriadoRF = supervisor.CriadoRF,
-                //};
             }
             return listaRetorno;
         }
