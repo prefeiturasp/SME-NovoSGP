@@ -33,10 +33,7 @@ namespace SME.SGP.Aplicacao
                     var matriculas = await mediator
                         .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
-                    var turma = await ObterTurma(planoAEE.TurmaId);
-
-                    var jsonTurma = JsonConvert.SerializeObject(turma);
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao, LogContexto.WorkerRabbit));
+                    var turma = await ObterTurma(planoAEE.TurmaId);                    
 
                     if (turma == null)
                         throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
@@ -147,6 +144,9 @@ namespace SME.SGP.Aplicacao
 
         private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, ref AlunoPorTurmaResposta ultimaMatricula)
         {
+            var jsonTurma = JsonConvert.SerializeObject(turma);
+            mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao, LogContexto.WorkerRabbit)).Wait();
+
             var matriculasAnoTurma = mediator
                 .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma?.AnoLetivo ?? DateTime.Today.Year)).Result;
 
