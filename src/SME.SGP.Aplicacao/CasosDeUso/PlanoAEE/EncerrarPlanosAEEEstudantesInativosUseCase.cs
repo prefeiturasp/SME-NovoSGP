@@ -143,6 +143,8 @@ namespace SME.SGP.Aplicacao
 
         private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, ref AlunoPorTurmaResposta ultimaMatricula)
         {
+            mediator.Send(new SalvarLogViaRabbitCommand($"Aluno códdigo: {alunoCodigo} / ano letivo turma: {turma.AnoLetivo}", LogNivel.Informacao, LogContexto.WorkerRabbit)).Wait();
+
             var matriculasAnoTurma = mediator
                 .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma.AnoLetivo)).Result;
 
