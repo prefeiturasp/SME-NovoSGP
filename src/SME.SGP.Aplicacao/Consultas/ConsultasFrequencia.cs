@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -15,15 +14,9 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
-        private readonly IConsultasTurma consultasTurma;
-        private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioFrequenciaConsulta repositorioFrequencia;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioTurma repositorioTurma;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
-        private readonly IServicoAluno servicoAluno;
-        private readonly IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase;
         private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
@@ -32,29 +25,17 @@ namespace SME.SGP.Aplicacao
         public ConsultasFrequencia(IMediator mediator,
                                    IServicoEol servicoEOL,
                                    IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                                    IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
+                                   IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                    IConsultasTipoCalendario consultasTipoCalendario,
-                                   IConsultasTurma consultasTurma,
-                                   IRepositorioAula repositorioAula,
                                    IRepositorioFrequenciaConsulta repositorioFrequencia,
-                                   IRepositorioTurma repositorioTurma,
-                                   IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
-                                   IRepositorioParametrosSistema repositorioParametrosSistema,
-                                   IServicoAluno servicoAluno,
-                                   IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase obterInformacoesDeFrequenciaAlunoPorSemestreUseCase)
+                                   IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
-            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioFrequencia = repositorioFrequencia ?? throw new ArgumentNullException(nameof(repositorioFrequencia));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.servicoAluno = servicoAluno ?? throw new ArgumentNullException(nameof(servicoAluno));
-            this.obterInformacoesDeFrequenciaAlunoPorSemestreUseCase = obterInformacoesDeFrequenciaAlunoPorSemestreUseCase ?? throw new ArgumentNullException(nameof(obterInformacoesDeFrequenciaAlunoPorSemestreUseCase));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
