@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = request.EncaminhamentoAEE;
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
             if (request.EhCEFAI)
             {

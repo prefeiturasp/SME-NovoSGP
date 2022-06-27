@@ -1027,6 +1027,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterOcorrenciasPorAlunoUseCase, ObterOcorrenciasPorAlunoUseCase>();
             services.TryAddScoped<IRelatorioOcorrenciasUseCase, RelatorioOcorrenciasUseCase>();
             services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
+            services.TryAddScoped<IObterPAAIPorDreUseCase, ObterPAAIPorDreUseCase>();
 
             // Itinerancia
             services.TryAddScoped<IObterObjetivosBaseUseCase, ObterObjetivosBaseUseCase>();

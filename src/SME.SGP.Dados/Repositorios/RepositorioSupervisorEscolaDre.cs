@@ -270,5 +270,15 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ListaUesConsultaAtribuicaoResponsavelDto>(sql.ToString(), new {dreCodigo});
         }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        {
+            var query = @" select sed.supervisor_id as codigoRf
+                            from supervisor_escola_dre sed
+                            where sed.escola_id = @codigoUe
+                            and sed.tipo = @tipoResponsavelAtribuicao ";
+
+            return (await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(query, new { codigoUe, tipoResponsavelAtribuicao }));
+        }
     }
 }

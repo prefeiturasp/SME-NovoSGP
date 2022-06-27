@@ -88,12 +88,13 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await InserirNaBase(new Usuario()
             {
                 Id = 1,
-                Login = "8888888",
-                CodigoRf = "8888888",
+                Login = "1111111",
+                CodigoRf = "1111111",
                 Nome = "Usuario CP",
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
-                AlteradoRF = "0"
+                AlteradoRF = "0",
+                PerfilAtual = Perfis.PERFIL_CP
             });
 
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
@@ -101,20 +102,30 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             var variaveis = new Dictionary<string, object>
             {
                 { "NomeUsuario", "Usuario CP" },
-                { "UsuarioLogado", "8888888" },
-                { "RF", "8888888" },
-                { "login", "8888888" },
+                { "UsuarioLogado", "1111111" },
+                { "RF", "1111111" },
+                { "login", "1111111" },
                 {
                     "Claims", new List<InternalClaim> {
-                        new InternalClaim { Value = "8888888", Type = "rf" },
-                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
+                        new InternalClaim { Value = "1111111", Type = "rf" },
+                        new InternalClaim { Value = Perfis.PERFIL_CP.ToString(), Type = "perfil" }
                     }
                 }
             };
 
             contextoAplicacao.AdicionarVariaveis(variaveis);
-        }
 
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 240,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "CP",
+                CodigoPerfil = Perfis.PERFIL_CP,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
+                CriadoRF = "Sistema"
+            });
+        }
 
         private async Task CriarItensBasicosPendenciaDevolutiva()
         {
