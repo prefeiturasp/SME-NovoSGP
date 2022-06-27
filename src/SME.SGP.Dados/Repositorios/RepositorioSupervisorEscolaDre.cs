@@ -35,6 +35,22 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId })).AsList();
         }
 
+        public async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[]uesCodigos,int tipoAtribuicao)
+        {
+            StringBuilder query = new(@"SELECT 
+                                            Id,
+                                            escola_id UeCodigo,
+                                            criado_por AS CriadoPor,
+                                            criado_rf AS CriadoRF
+                                        FROM supervisor_escola_dre sed 
+                                        WHERE excluido  
+                                        AND sed.dre_id = @dreCodigo 
+                                        AND sed.escola_id = ANY(@uesCodigos)
+                                        AND sed.tipo = @tipoAtribuicao ");
+
+            return await database.Conexao.QueryAsync<ExisteAtribuicaoExcluidaDto>(query.ToString(), new { dreCodigo, uesCodigos, tipoAtribuicao });
+        }
+
         public async Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo)
         {
             StringBuilder query = new(@"SELECT
