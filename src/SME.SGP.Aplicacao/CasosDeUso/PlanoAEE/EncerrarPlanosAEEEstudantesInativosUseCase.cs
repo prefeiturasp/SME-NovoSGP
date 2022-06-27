@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     var turma = await ObterTurma(planoAEE.TurmaId);
 
                     var jsonTurma = JsonConvert.SerializeObject(turma);
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao, LogContexto.WorkerRabbit));
 
                     if (turma == null)
                         throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
