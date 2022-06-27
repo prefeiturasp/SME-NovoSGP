@@ -60,17 +60,17 @@ namespace SME.SGP.Aplicacao
             if (dre < 1)
                 retorno = $"A DRE {atribuicaoSupervisorEscolaDto.DreId} não foi localizada.";
 
-            atribuicaoSupervisorEscolaDto.UesIds
-                .ForEach(async ue =>
-                {
-                    var ueLocalizada = await mediator.Send(new ObterUeComDrePorCodigoQuery(ue));
 
-                    if (ueLocalizada == null)
-                        retorno = $"A UE {ue} não foi localizada.";
+            foreach (var ue in atribuicaoSupervisorEscolaDto.UesIds)
+            {
+                var ueLocalizada = await mediator.Send(new ObterUeComDrePorCodigoQuery(ue));
 
-                    if (!ueLocalizada.Dre.CodigoDre.Equals(atribuicaoSupervisorEscolaDto.DreId))
-                        retorno = $"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.";
-                });
+                if (ueLocalizada == null)
+                    retorno = $"A UE {ue} não foi localizada.";
+
+                if (!ueLocalizada.Dre.CodigoDre.Equals(atribuicaoSupervisorEscolaDto.DreId))
+                    retorno = $"A UE {ue} não pertence a DRE {atribuicaoSupervisorEscolaDto.DreId}.";
+            }
 
             var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(atribuicaoSupervisorEscolaDto.DreId, atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
 
@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
         {
             if (atribuicaoSupervisorEscolaDto.UesIds != null)
             {
-                var atribuicoes =  await VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto);
+                var atribuicoes = await VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto);
 
                 foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UesIds)
                 {
@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
-                  if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
+                    if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
                         await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.AtribuicaoSupervisorId);
 
                     else if (atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)
