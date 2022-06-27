@@ -34,11 +34,6 @@ namespace SME.SGP.TesteIntegracao
                 typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected void RegistraFake(Type tipoRequestHandler, Type tipoClasseHandler)
-        {
-            _collectionFixture.services.Replace(new ServiceDescriptor(tipoRequestHandler, tipoClasseHandler, ServiceLifetime.Scoped));
-        }
-
         public Task InserirNaBase<T>(IEnumerable<T> objetos) where T : class, new()
         {
             _collectionFixture.Database.Inserir(objetos);
