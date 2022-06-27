@@ -345,7 +345,6 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new TipoAvaliacao
             {
-                Id = 1,
                 Nome = "Avaliação bimestral",
                 Descricao = "Avaliação bimestral",
                 Situacao = true,
@@ -358,7 +357,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new AtividadeAvaliativa
             {
-                Id = 1,
                 DreId = "1",
                 UeId = "1",
                 ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
@@ -375,7 +373,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
-                Id = 1,
                 AtividadeAvaliativaId = 1,
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 CriadoPor = "Sistema",

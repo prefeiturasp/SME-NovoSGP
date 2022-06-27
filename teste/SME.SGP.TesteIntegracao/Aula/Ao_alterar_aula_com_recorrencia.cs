@@ -1,12 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,6 +21,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 
         public Ao_alterar_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
+
         [Fact]
         public async Task Altera_quantidade_de_aulas_com_recorrencia_no_bimestre_atual()
         {
@@ -28,6 +37,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_INICIO);
             aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 27);
+            aula.Id = 1;
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -48,6 +58,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, DATA_INICIO);
             aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 26);
+            aula.Id = 1;
 
             await CriarPeriodoEscolarEAbertura();
 

@@ -64,14 +64,14 @@ namespace SME.SGP.Aplicacao
                                                                              inserirAulaDto.EhRegencia,
                                                                              inserirAulaDto.RecorrenciaAula));
 
-                        return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
+                        return await Task.FromResult(new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                     }
                     catch (Exception ex)
                     {
                         mensagemDeExcecao = ex.Message;
                         await mediator.Send(new SalvarLogViaRabbitCommand("Criação de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                        
                     }
-                    return new RetornoBaseDto($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {mensagemDeExcecao}");
+                    return await Task.FromResult(new RetornoBaseDto($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {mensagemDeExcecao}"));
                 }
             }
             else

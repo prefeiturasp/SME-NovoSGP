@@ -1,5 +1,10 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -28,6 +33,13 @@ namespace SME.SGP.TesteIntegracao.TestarCadastrarAulaRepetirTodosBimestres
 
         public Ao_registrar_aula_repetir_todos_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Deve_permitir_cadastrar_aula_normal_bimestral_professor_especialista_fundamental()

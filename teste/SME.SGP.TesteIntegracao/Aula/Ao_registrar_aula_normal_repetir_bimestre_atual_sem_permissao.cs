@@ -13,13 +13,20 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
 {
-    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaMockSemPermissao
+    public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaTeste
     {
         private DateTime DATA_02_05 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_08_07 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_professor_nao_pode_fazer_alteracoes_modalidade_fundamental()

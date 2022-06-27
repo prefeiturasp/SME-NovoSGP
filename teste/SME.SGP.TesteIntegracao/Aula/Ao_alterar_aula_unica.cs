@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
 using System;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MediatR;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
@@ -18,6 +22,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public Ao_alterar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
+
 
         [Fact]
         public async Task Ja_existe_aula_criada_no_dia_para_o_componente()

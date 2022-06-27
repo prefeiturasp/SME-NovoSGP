@@ -123,7 +123,6 @@ namespace SME.SGP.TesteIntegracao
             var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
             return new PersistirAulaDto()
             {
-                Id = 1,
                 CodigoTurma = TURMA_CODIGO_1,
                 Quantidade = 1,
                 TipoAula = tipoAula,
@@ -200,7 +199,6 @@ namespace SME.SGP.TesteIntegracao
         {
             return new Aula
             {
-                Id = 1,
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
                 TurmaId = TURMA_CODIGO_1,

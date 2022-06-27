@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MediatR;
 
 namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
@@ -23,6 +25,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         public Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador(CollectionFixture testFixture) : base(testFixture)
         {
             _buider = new ItensBasicosBuilder(this);
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]

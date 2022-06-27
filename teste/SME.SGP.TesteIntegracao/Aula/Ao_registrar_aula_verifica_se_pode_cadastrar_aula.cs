@@ -1,5 +1,10 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -20,6 +25,13 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
 
         public Ao_registrar_aula_verifica_se_pode_cadastrar_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Nao_pode_cadastrar_aula_normal_sem_periodo_escolar()
@@ -72,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         [Fact]
         public async Task Nao_pode_cadastrar_aula_reposicao_quando_existe_aula_reposicao()
         {
-            var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
+            var mensagemEsperada = "Não é possível cadastrar aula de reposição com recorrência!";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
@@ -124,7 +136,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         [Fact]
         public async Task Nao_pode_cadastrar_aula_reposicao_quando_nao_encontra_tipo_calendario()
         {
-            var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
+            var mensagemEsperada = "Não é possível cadastrar aula de reposição com recorrência!";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
@@ -182,7 +194,7 @@ namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
         [Fact]
         public async Task Nao_pode_cadastrar_aula_reposicao_quando_nao_tem_evento_letivo_dia()
         {
-            var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Reposição' para o dia selecionado!";
+            var mensagemEsperada = "Não é possível cadastrar aula de reposição com recorrência!";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1);
 
