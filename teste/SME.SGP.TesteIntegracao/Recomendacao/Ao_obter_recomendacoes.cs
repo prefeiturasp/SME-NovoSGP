@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
                 Recomendacao = "Recomendação aluno teste 1",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             }) ;
@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 2,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
                 Recomendacao = "Recomendação aluno teste 2",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
                 Recomendacao = "Recomendação família teste 1",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 2,
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
                 Recomendacao = "Recomendação família teste 2",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -131,10 +131,10 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 1,
                 Excluido = false,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
-                Nome = "Calendário teste 2022",
+                Nome = "Calendário teste ano atual",
                 Periodo = Periodo.Anual,
                 Situacao = true,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -143,10 +143,10 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
             {
                 Id = 1,
                 Bimestre = 1,
-                PeriodoFim = new DateTime(2022, 01, 05),
-                PeriodoInicio = new DateTime(2022, 01, 02),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 05),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 02),
                 TipoCalendarioId = 1,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
                 Recomendacao = "Recomendação aluno teste",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
             {
                 Id = 1,
                 Nome = "Dre Teste",
-                DataAtualizacao = new DateTime(2020, 1, 1),
+                DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-2).Year, 1, 1),
             });
 
             await InserirNaBase(new Ue()
@@ -173,13 +173,13 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 1,
                 DreId = 1,
                 Nome = "Ue Teste",
-                DataAtualizacao = new DateTime(2020, 1, 1),
+                DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-2).Year, 1, 1),
             });
 
             await InserirNaBase(new Turma()
             {
                 Id = 1,
-                DataAtualizacao = new DateTime(2022, 1, 1),
+                DataAtualizacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1, 1),
                 Historica = false,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 UeId = 1
@@ -192,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 PeriodoEscolarId = 1,
                 TurmaId = 1,
                 Excluido = false,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -203,7 +203,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 FechamentoTurmaId = 1,
                 Situacao = SituacaoConselhoClasse.EmAndamento,
                 Excluido = false,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -218,7 +218,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 AnotacoesPedagogicas = "",
                 Migrado = false,
                 Excluido = false,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -235,7 +235,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 2,
                 Recomendacao = "recomendação família teste 2",
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -245,7 +245,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 4,
                 Recomendacao = "recomendação familia teste 1",
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 Id = 3,
                 Recomendacao = "recomendação aluno teste 2",
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });

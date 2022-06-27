@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
         {
-            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(2022, 05, 02), new DateTime(2022, 07, 08), SEMESTRE_1);
+            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), SEMESTRE_1);
         }
 
         protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)
@@ -191,7 +191,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
         {
-            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(2022, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
             aula.AulaPaiId = 1;
 
             await InserirNaBase(aula);

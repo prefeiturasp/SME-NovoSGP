@@ -54,14 +54,14 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 Ano = "1",
                 CodigoTurma = "1",
                 ModalidadeCodigo = Modalidade.Fundamental,
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
-                AnoLetivo = 2022,
-                Nome = "Calendário Teste 2022",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Calendário Teste Ano Atual",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Periodo = Periodo.Anual,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -74,8 +74,8 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 3,
-                PeriodoInicio = new DateTime(2022, 06, 01),
-                PeriodoFim = new DateTime(2022, 08, 30),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 01),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 30),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -179,7 +179,8 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 TurmaId = 1
             });
 
-            await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", "'2022-06-07'", "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
+            var dataPendencia = $"'{new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 07).ToString("yyyy-MM-dd")}'";
+            await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", dataPendencia, "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
         }
     }
 }

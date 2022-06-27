@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario

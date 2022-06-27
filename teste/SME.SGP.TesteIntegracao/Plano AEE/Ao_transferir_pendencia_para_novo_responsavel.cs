@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 Titulo = "Pendência plano AEE",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEE()
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 Situacao = SituacaoPlanoAEE.ParecerCP,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Usuario
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 PlanoAEEId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PendenciaUsuario
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 UsuarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
         }
     }

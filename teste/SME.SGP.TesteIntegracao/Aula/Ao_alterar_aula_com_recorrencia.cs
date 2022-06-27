@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_INICIO);
-            aula.DataAula = new DateTime(2022, 06, 27);
+            aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 27);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
             var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, DATA_INICIO);
-            aula.DataAula = new DateTime(2022, 08, 26);
+            aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 26);
 
             await CriarPeriodoEscolarEAbertura();
 

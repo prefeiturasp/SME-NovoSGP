@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Titulo = "Pendência plano AEE",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEE()
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Situacao = SituacaoPlanoAEE.Validado,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEEVersao
@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Numero = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Questionario
@@ -94,7 +94,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Tipo = TipoQuestionario.PlanoAEE,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Questao
@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Tipo = TipoQuestao.PeriodoEscolar,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEEQuestao
@@ -114,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 QuestaoId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
 
             });
 
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 Texto = "1",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Usuario
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 PlanoAEEId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PendenciaUsuario
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 UsuarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
         }
     }

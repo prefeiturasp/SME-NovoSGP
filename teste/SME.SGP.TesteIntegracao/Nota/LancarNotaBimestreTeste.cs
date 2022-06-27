@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 Ano = "2",
                 CodigoTurma = "1",
                 Historica = true,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 Nome = "Turma Nome 2"
             });
@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 CodigoTurma = "1",
                 Historica = true,
                 ModalidadeCodigo = Modalidade.EJA,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 2,
                 Nome = "Turma Nome 1"
             });
@@ -142,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
                 PeriodoFim = DateTime.Now.AddYears(1),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -192,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 Id = 1,
                 Nome = "Avaliação bimestral",
                 Descricao = "Avaliação bimestral",
-                CriadoEm = new DateTime(2019, 12, 19),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-3).Year, 12, 19),
                 Situacao = true,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -363,8 +363,8 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
-                CriadoEm = new DateTime(2022, 02, 10),
-                DataAvaliacao = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                DataAvaliacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoRF = "2222222",
                 CriadoPor = "João Usuário"
             });
@@ -390,8 +390,8 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
-                CriadoEm = new DateTime(2022, 02, 10),
-                DataAvaliacao = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                DataAvaliacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoRF = "6737544",
                 CriadoPor = "GENILDO CLEBER DA SILVA"
             });
@@ -409,8 +409,8 @@ namespace SME.SGP.TesteIntegracao.TestarNota
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = 2022,
-                Nome = "Ano Letivo 202",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Ano Letivo Ano Atual",
                 Periodo = Periodo.Semestral,
                 Modalidade = ModalidadeTipoCalendario.EJA,
                 Situacao = true,
@@ -425,8 +425,8 @@ namespace SME.SGP.TesteIntegracao.TestarNota
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = 2022,
-                Nome = "Ano Letivo 202",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Ano Letivo Ano Atual",
                 Periodo = Periodo.Semestral,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
@@ -468,7 +468,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Descricao = "Media final para aprovacão no bimestre",
                 Valor = "5",
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF= "1",
@@ -480,7 +480,7 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
                 Descricao = "Media final para aprovacão no bimestre",
                 Valor = "50",
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -497,10 +497,10 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 TipoCalendarioId = 1,
                 ProfessorRf = "2222222",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
@@ -519,10 +519,10 @@ namespace SME.SGP.TesteIntegracao.TestarNota
                 TipoCalendarioId = 1,
                 ProfessorRf = "6737544",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,

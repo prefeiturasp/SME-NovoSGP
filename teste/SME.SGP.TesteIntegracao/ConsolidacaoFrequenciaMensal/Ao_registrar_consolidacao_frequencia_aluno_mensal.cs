@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(2022, 04, 26),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1
             });
 
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(2022, 04, 26),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1
             });
 
@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario

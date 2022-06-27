@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Medio,
                 DreCodigo = "-99",
                 UeCodigo = "-99"
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio,
                 UeCodigo = "-99"
@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Medio,
                 DreCodigo = "-99",
                 UeCodigo = "-99"
@@ -120,7 +120,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio,
                 UeCodigo = "-99"
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
@@ -196,7 +196,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Medio,
                 Nome = "7A"
             });
@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 UeId = 2,
                 Ano = "1",
                 CodigoTurma = "2",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Medio,
                 Nome = "8A"
             });

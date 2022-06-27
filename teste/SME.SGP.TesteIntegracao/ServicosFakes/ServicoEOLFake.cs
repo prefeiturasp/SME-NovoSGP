@@ -239,7 +239,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new DadosTurmaEolDto
             {
                 Ano = '\u0000',
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Codigo = 2366531,
                 CodigoModalidade = 0,
                 DataFim = null,

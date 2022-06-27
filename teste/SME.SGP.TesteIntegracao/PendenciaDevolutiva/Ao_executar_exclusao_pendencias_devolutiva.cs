@@ -159,14 +159,14 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 Ano = "1",
                 CodigoTurma = "1",
                 ModalidadeCodigo = Modalidade.Fundamental,
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
-                AnoLetivo = 2022,
-                Nome = "Calendário Teste 2022",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Calendário Teste Ano Atual",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Periodo = Periodo.Anual,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

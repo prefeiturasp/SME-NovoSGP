@@ -28,8 +28,8 @@ namespace SME.SGP.TesteIntegracao
         private const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
 
-        private const int ANO_LETIVO_2022_NUMERO = 2022;
-        private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
+        private int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
+        private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
         private const string FALSE = "false";
         private const string TRUE = "true";
 
@@ -176,8 +176,8 @@ namespace SME.SGP.TesteIntegracao
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = BIMESTRE_2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = new DateTime(2022, 02, 5),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 5),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
@@ -275,7 +275,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 DreId = DRE_CODIGO_1,
                 DataInicio = dataInicio,
                 DataFim = dataFim,
@@ -335,7 +335,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = true,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
@@ -388,8 +388,8 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
-                Nome = ANO_LETIVO_2022_NOME,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                Nome = ANO_LETIVO_Ano_Atual_NOME,
                 Periodo = Periodo.Semestral,
                 Modalidade = tipoCalendario,
                 Situacao = true,

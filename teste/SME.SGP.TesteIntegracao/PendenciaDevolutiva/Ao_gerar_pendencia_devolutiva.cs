@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Tipo = TipoParametroSistema.GerarPendenciaDevolutivaSemDiarioBordo,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = false,
                 Descricao = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Valor = "",
@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "DataInicioGeracaoPendencias",
                 Tipo = TipoParametroSistema.DataInicioGeracaoPendencias,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "DataInicioGeracaoPendencias",
                 Valor = "",
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Tipo = TipoParametroSistema.GerarPendenciaDevolutivaSemDiarioBordo,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Valor = "",
@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "DataInicioGeracaoPendencias",
                 Tipo = TipoParametroSistema.DataInicioGeracaoPendencias,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = false,
                 Descricao = "DataInicioGeracaoPendencias",
                 Valor = "",
@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Tipo = TipoParametroSistema.GerarPendenciaDevolutivaSemDiarioBordo,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "GerarPendenciaDevolutivaSemDiarioBordo",
                 Valor = "",
@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "DataInicioGeracaoPendencias",
                 Tipo = TipoParametroSistema.DataInicioGeracaoPendencias,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "DataInicioGeracaoPendencias",
                 Valor = "",
@@ -157,7 +157,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "PeriodoDeDiasDevolutiva",
                 Tipo = TipoParametroSistema.PeriodoDeDiasDevolutiva,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "PeriodoDeDiasDevolutiva",
                 Valor = "25",
@@ -182,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             await InserirNaBase(new Turma()
             {
                 Ano = "7",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 CodigoTurma = "2345678",
                 TipoTurma = TipoTurma.Regular,
                 DataAtualizacao = DateTime.Now,
@@ -203,7 +203,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             });
             await InserirNaBase(new TipoCalendario()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false,
                 Migrado = true,
                 Modalidade = ModalidadeTipoCalendario.Infantil,
@@ -256,7 +256,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Nome = "PeriodoDeDiasDevolutiva",
                 Tipo = TipoParametroSistema.PeriodoDeDiasDevolutiva,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Ativo = true,
                 Descricao = "PeriodoDeDiasDevolutiva",
                 Valor = "25",
@@ -281,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             await InserirNaBase(new Turma()
             {
                 Ano = "7",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 CodigoTurma = "2345678",
                 TipoTurma = TipoTurma.Regular,
                 DataAtualizacao = DateTime.Now,
@@ -302,7 +302,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             });
             await InserirNaBase(new TipoCalendario()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false,
                 Migrado = true,
                 Modalidade = ModalidadeTipoCalendario.Infantil,
@@ -321,7 +321,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 TipoCalendarioId = 1,
                 ProfessorRf = "8019347",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 01, 04),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 04),
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Normal,
                 CriadoEm = DateTime.Now,
@@ -337,7 +337,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 TipoCalendarioId = 1,
                 ProfessorRf = "8019347",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 01, 04),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 04),
                 RecorrenciaAula = RecorrenciaAula.AulaUnica,
                 TipoAula = TipoAula.Normal,
                 CriadoEm = DateTime.Now,
@@ -349,8 +349,8 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Migrado = true,
                 Bimestre = 1,
-                PeriodoInicio = new DateTime(2022, 02, 07),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 07),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 TipoCalendarioId = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
@@ -360,8 +360,8 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
             {
                 Migrado = true,
                 Bimestre = 2,
-                PeriodoInicio = new DateTime(2022, 05, 02),
-                PeriodoFim = new DateTime(2022, 07, 22),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 22),
                 TipoCalendarioId = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
