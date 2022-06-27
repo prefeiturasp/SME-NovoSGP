@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -33,6 +34,9 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
                     var turma = await ObterTurma(planoAEE.TurmaId);
+
+                    var jsonTurma = JsonConvert.SerializeObject(turma);
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao, LogContexto.WorkerRabbit));
 
                     if (turma == null)
                         throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
