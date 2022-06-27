@@ -230,7 +230,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("obterpaai")]
+        [Route("paai")]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]

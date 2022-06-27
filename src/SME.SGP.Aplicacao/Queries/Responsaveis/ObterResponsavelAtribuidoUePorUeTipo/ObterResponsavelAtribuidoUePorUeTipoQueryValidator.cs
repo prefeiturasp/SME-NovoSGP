@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.CodigoUe)
                 .NotEmpty()
-                .WithMessage("O código da Ue deve ser informado.");
+                .WithMessage("O código da Ue deve ser informado para obter responsáveis atribuídos à escola.");
 
             RuleFor(c => c.TipoResponsavelAtribuicao)
                 .IsInEnum()
