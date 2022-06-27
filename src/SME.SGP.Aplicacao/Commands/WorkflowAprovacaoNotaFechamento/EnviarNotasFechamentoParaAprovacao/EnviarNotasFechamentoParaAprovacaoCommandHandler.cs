@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var mensagem = new StringBuilder();
             var bimestre = (periodoEscolar?.Bimestre ?? 0) == 0 ? "bimestre final" : $"{periodoEscolar.Bimestre}º bimestre";
-            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} de {turma.AnoLetivo} da turma {turma.Nome} da ");
+            mensagem.Append($"<p>{notaConceitoMensagem} do {bimestre} de {turma.AnoLetivo} da turma {turma.ModalidadeCodigo.ObterNomeCurto()}-{turma.Nome} da ");
             mensagem.Append($"{turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) ");
             mensagem.Append($"foram alterados pelo Professor {usuarioLogado.Nome} ");
             mensagem.Append($"({usuarioLogado.CodigoRf}) em {DateTime.Now.ToString("dd/MM/yyyy")} às {DateTime.Now.ToString("HH:mm")} para o(s) seguinte(s) estudantes(s):</p>");
