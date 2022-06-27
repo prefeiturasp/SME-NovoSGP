@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                             .ObtemPorDreESupervisor(atribuicaoResponsavelUe.DreId, atribuicaoResponsavelUe.ResponsavelId, true);
 
                     await AjustarRegistrosExistentes(atribuicaoResponsavelUe, escolasAtribuidas);
-                    AtribuirEscolas(atribuicaoResponsavelUe);
+                    await AtribuirEscolas(atribuicaoResponsavelUe);
                 }
                 return new SalvarAtribuicaoResponsavelStatus { AtribuidoComSucesso = string.IsNullOrEmpty(validacao), Mensagem = validacao };
             }
@@ -87,14 +87,20 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private void AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
+        private async Task AtribuirEscolas(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
         {
             if (atribuicaoSupervisorEscolaDto.UesIds != null)
             {
+                var atribuicoes =  await VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto);
+
                 foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UesIds)
                 {
+                    var atribuicao = atribuicoes?.Where(x => x.UeCodigo == codigoEscolaDto)?.FirstOrDefault();
                     repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
                     {
+                        Id = atribuicao?.Id ?? 0,
+                        CriadoPor = atribuicao?.CriadoPor ?? null,
+                        CriadoRF = atribuicao?.CriadoRF ?? null,
                         DreId = atribuicaoSupervisorEscolaDto.DreId,
                         SupervisorId = atribuicaoSupervisorEscolaDto.ResponsavelId,
                         EscolaId = codigoEscolaDto,
@@ -102,6 +108,12 @@ namespace SME.SGP.Aplicacao
                     });
                 }
             }
+        }
+
+        private async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto)
+        {
+            return await repositorioSupervisorEscolaDre.VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto.DreId,
+                                atribuicaoSupervisorEscolaDto.UesIds.ToArray(), (int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
         }
 
         private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto,

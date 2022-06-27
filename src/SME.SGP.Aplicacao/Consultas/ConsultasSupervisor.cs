@@ -170,6 +170,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             ResponsavelRetornoDto listaResponsaveis = null;
+            var listaRetorno = new List<ResponsavelEscolasDto>();
 
             foreach (var supervisor in supervisoresEscolasDres)
             {
@@ -196,8 +197,7 @@ namespace SME.SGP.Aplicacao
                 string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 
-
-                yield return new ResponsavelEscolasDto()
+                var itemRetorno = new ResponsavelEscolasDto()
                 {
                     Id = supervisor.AtribuicaoSupervisorId,
                     Responsavel = supervisor.AtribuicaoExcluida ? null : nomeResponsavel,
@@ -215,7 +215,29 @@ namespace SME.SGP.Aplicacao
                     CriadoPor = supervisor.CriadoPor,
                     CriadoRF = supervisor.CriadoRF,
                 };
+
+                listaRetorno.Add(itemRetorno);
+
+                //yield return new ResponsavelEscolasDto()
+                //{
+                //    Id = supervisor.AtribuicaoSupervisorId,
+                //    Responsavel = supervisor.AtribuicaoExcluida ? null : nomeResponsavel,
+                //    ResponsavelId = supervisor.AtribuicaoExcluida ? null : supervisor.SupervisorId,
+                //    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
+                //    TipoResponsavelId = supervisor.TipoAtribuicao,
+                //    UeNome = supervisor.Nome,
+                //    UeId = supervisor.UeId,
+                //    DreId = supervisor.DreId,
+                //    DreNome = supervisor.DreNome,
+                //    AlteradoEm = supervisor.AlteradoEm,
+                //    AlteradoPor = supervisor.AlteradoPor,
+                //    AlteradoRF = supervisor.AlteradoRF,
+                //    CriadoEm = supervisor.CriadoEm,
+                //    CriadoPor = supervisor.CriadoPor,
+                //    CriadoRF = supervisor.CriadoRF,
+                //};
             }
+            return listaRetorno;
         }
 
         private static string ObterTipoResponsavelDescricao(int tipo)
