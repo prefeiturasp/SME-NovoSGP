@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ResponsavelEscolasDto> lista = new List<ResponsavelEscolasDto>();
 
             if (responsaveisEscolasDres.Any())
-                lista = MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
+                lista = await MapearResponsavelEscolaDre(responsaveisEscolasDres);
 
             return lista;
         }
@@ -93,7 +93,7 @@ namespace SME.SGP.Aplicacao
 
 
             var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto, filtro);
-            return MapearResponsavelEscolaDre(escolaDreDto);
+            return await MapearResponsavelEscolaDre(escolaDreDto);
         }
 
         private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto, FiltroObterSupervisorEscolasDto filtro)
@@ -167,53 +167,54 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
+        private async Task<IEnumerable<ResponsavelEscolasDto>> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
             ResponsavelRetornoDto listaResponsaveis = null;
             var listaRetorno = new List<ResponsavelEscolasDto>();
 
-            foreach (var supervisor in supervisoresEscolasDres)
+            var supervisor = supervisoresEscolasDres.ToList();
+            var totalRegistros = supervisor.Count;
+            for (int i = 0; i < totalRegistros; i++)
             {
-                switch (supervisor.TipoAtribuicao)
+                switch (supervisor[i].TipoAtribuicao)
                 {
                     case (int)TipoResponsavelAtribuicao.PsicologoEscolar:
                     case (int)TipoResponsavelAtribuicao.Psicopedagogo:
                     case (int)TipoResponsavelAtribuicao.AssistenteSocial:
                         {
-                            var nomesFuncionariosAtribuidos = servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor.SupervisorId }).Result;
+                            var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
                             if (nomesFuncionariosAtribuidos.Any())
                                 listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
                             break;
                         }
                     default:
                         {
-                            var nomesServidoresAtribuidos = servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor.SupervisorId }).Result;
+                            var nomesServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor[i].SupervisorId });
                             if (nomesServidoresAtribuidos.Any())
                                 listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
                             break;
                         }
                 }
-
                 string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 
                 var itemRetorno = new ResponsavelEscolasDto()
                 {
-                    Id = supervisor.AtribuicaoSupervisorId,
-                    Responsavel = supervisor.AtribuicaoExcluida ? null : nomeResponsavel,
-                    ResponsavelId = supervisor.AtribuicaoExcluida ? null : supervisor.SupervisorId,
-                    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.TipoAtribuicao),
-                    TipoResponsavelId = supervisor.TipoAtribuicao,
-                    UeNome = supervisor.Nome,
-                    UeId = supervisor.UeId,
-                    DreId = supervisor.DreId,
-                    DreNome = supervisor.DreNome,
-                    AlteradoEm = supervisor.AlteradoEm,
-                    AlteradoPor = supervisor.AlteradoPor,
-                    AlteradoRF = supervisor.AlteradoRF,
-                    CriadoEm = supervisor.CriadoEm,
-                    CriadoPor = supervisor.CriadoPor,
-                    CriadoRF = supervisor.CriadoRF,
+                    Id = supervisor[i].AtribuicaoSupervisorId,
+                    Responsavel = supervisor[i].AtribuicaoExcluida ? null : nomeResponsavel,
+                    ResponsavelId = supervisor[i].AtribuicaoExcluida ? null : supervisor[i].SupervisorId,
+                    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor[i].TipoAtribuicao),
+                    TipoResponsavelId = supervisor[i].TipoAtribuicao,
+                    UeNome = supervisor[i].Nome,
+                    UeId = supervisor[i].UeId,
+                    DreId = supervisor[i].DreId,
+                    DreNome = supervisor[i].DreNome,
+                    AlteradoEm = supervisor[i].AlteradoEm,
+                    AlteradoPor = supervisor[i].AlteradoPor,
+                    AlteradoRF = supervisor[i].AlteradoRF,
+                    CriadoEm = supervisor[i].CriadoEm,
+                    CriadoPor = supervisor[i].CriadoPor,
+                    CriadoRF = supervisor[i].CriadoRF,
                 };
 
                 listaRetorno.Add(itemRetorno);
