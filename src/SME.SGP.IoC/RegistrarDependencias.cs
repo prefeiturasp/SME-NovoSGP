@@ -72,7 +72,6 @@ namespace SME.SGP.IoC
             RegistrarComandos(services);
             RegistrarConsultas(services);
             RegistrarServicos(services);
-            RegistrarCasosDeUsoSgpERabbitSgp(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
 
@@ -505,6 +504,8 @@ namespace SME.SGP.IoC
 
             // Consolidação Matrícula Turma
             services.TryAddScoped<IRepositorioConsolidacaoMatriculaTurma, RepositorioConsolidacaoMatriculaTurma>();
+
+            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1125,7 +1126,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
 
-            RegistrarCasosDeUsoSgpERabbitSgp(services);
+            services.TryAddScoped<IVerificarExistenciaRelatorioPorCodigoUseCase, VerificarExistenciaRelatorioPorCodigoUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
@@ -1134,12 +1135,6 @@ namespace SME.SGP.IoC
             RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
             RegistrarCasoDeUsoPendenciasRabbitSgp(services);
             RegistrarCasoDeUsoRabbitSgp(services);
-        }
-
-        public virtual void RegistrarCasosDeUsoSgpERabbitSgp(IServiceCollection services)
-        {
-            services.TryAddScoped<IObterDataCriacaoRelatorioUseCase, ObterDataCriacaoRelatorioUseCase>();
-            services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
         }
 
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)

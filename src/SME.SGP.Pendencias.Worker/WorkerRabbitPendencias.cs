@@ -21,7 +21,7 @@ namespace SME.SGP.Pendencias.Worker
         {
         }
 
-        protected override void RegistrarUseCasesImpl()
+        protected override void RegistrarUseCasesDoWorker()
         {
             Comandos.Add(RotasRabbitSgpPendencias.PendenciasGerais, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.PendenciasGeraisCalendario, new ComandoRabbit("Pendencias gerais", typeof(IExecutaVerificacaoPendenciasGeraisCalendarioUseCase)));

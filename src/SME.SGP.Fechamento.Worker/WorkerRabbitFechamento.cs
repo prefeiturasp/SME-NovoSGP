@@ -21,7 +21,7 @@ namespace SME.SGP.Fechamento.Worker
         {
         }
 
-        protected override void RegistrarUseCasesImpl()
+        protected override void RegistrarUseCasesDoWorker()
         {
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));

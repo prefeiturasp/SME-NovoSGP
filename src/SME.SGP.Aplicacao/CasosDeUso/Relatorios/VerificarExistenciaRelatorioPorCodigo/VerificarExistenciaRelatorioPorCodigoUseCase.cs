@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDataCriacaoRelatorioUseCase : AbstractUseCase, IObterDataCriacaoRelatorioUseCase
+    public class VerificarExistenciaRelatorioPorCodigoUseCase : AbstractUseCase, IVerificarExistenciaRelatorioPorCodigoUseCase
     {
-        public ObterDataCriacaoRelatorioUseCase(MediatR.IMediator mediator) : base(mediator)
+        public VerificarExistenciaRelatorioPorCodigoUseCase(MediatR.IMediator mediator) : base(mediator)
         {
         }
 
@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
             bool relatorioExiste = false;
             const int tempoParaExclusaoDoRelatorio = 24;
             var dataCriacaoRelatorio = await mediator.Send(new ObterDataCriacaoRelatorioPorCodigoQuery(codigoRelatorio));
+
             if (dataCriacaoRelatorio != null)
             {
                 var tempoEmHorasDaCriacao = CalcularTempoEmHoras(dataCriacaoRelatorio.CriadoEm);
@@ -21,10 +22,11 @@ namespace SME.SGP.Aplicacao
                 if (tempoEmHorasDaCriacao < tempoParaExclusaoDoRelatorio)
                     relatorioExiste = true;
             }
+
             return relatorioExiste;
         }
 
-        private double CalcularTempoEmHoras(DateTime criadoEm)
+        private static double CalcularTempoEmHoras(DateTime criadoEm)
         {
             TimeSpan tempo = DateTime.Now - criadoEm;
             return tempo.TotalHours;

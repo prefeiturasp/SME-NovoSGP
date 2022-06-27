@@ -8,15 +8,15 @@ using Xunit;
 
 namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 {
-    public class ObterDataCriacaoRelatorioUseCaseTeste
+    public class VerificarExistenciaRelatorioPorCodigoUseCaseTeste
     {
         private readonly Mock<IMediator> mediator;
-        private readonly ObterDataCriacaoRelatorioUseCase useCase;
+        private readonly VerificarExistenciaRelatorioPorCodigoUseCase useCase;
 
-        public ObterDataCriacaoRelatorioUseCaseTeste()
+        public VerificarExistenciaRelatorioPorCodigoUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            useCase = new ObterDataCriacaoRelatorioUseCase(mediator.Object);
+            useCase = new VerificarExistenciaRelatorioPorCodigoUseCase(mediator.Object);
         }
 
         [Fact]
@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 CriadoEm = DateTime.Parse("2022-03-01"),
             };
+
             mediator.Setup(a => a.Send(It.IsAny<ObterDataCriacaoRelatorioPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(relatorioCorrelacao);
             var retorno = await useCase.Executar(Guid.NewGuid());
 
@@ -45,6 +46,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             Assert.True(retorno);
         }
+
         [Fact]
         public async Task Consultar_Relatorio_Nao_Encontrado_Na_Base()
         {

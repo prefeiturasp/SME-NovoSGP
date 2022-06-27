@@ -20,7 +20,7 @@ namespace SME.SGP.AEE.Worker
         {
         }
 
-        protected override void RegistrarUseCasesImpl()
+        protected override void RegistrarUseCasesDoWorker()
         {
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoRegistroConclusaoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para registro de conclusão do Encaminhamento AEE", typeof(INotificacaoConclusaoEncaminhamentoAEEUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoEncerramentoEncaminhamentoAEE, new ComandoRabbit("Executa notificação para encerramento do Encaminhamento AEE", typeof(INotificacaoEncerramentoEncaminhamentoAEEUseCase)));

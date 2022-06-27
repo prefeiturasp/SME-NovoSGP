@@ -38,7 +38,7 @@ namespace SME.SGP.Worker.RabbitMQ
             RegistrarUseCasesRelatorioComErro();
         }
 
-        protected override void RegistrarUseCasesImpl()
+        protected override void RegistrarUseCasesDoWorker()
         {
             RegistrarUseCasesRelatorios();
 

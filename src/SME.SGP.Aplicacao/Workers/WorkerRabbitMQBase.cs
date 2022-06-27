@@ -78,10 +78,10 @@ namespace SME.SGP.Aplicacao.Workers
         protected virtual void RegistrarUseCases()
         {
             Comandos.Add(RotasRabbitSgp.RotaNotificacaoUsuario, new ComandoRabbit("Notificar usuário", typeof(INotificarUsuarioUseCase)));
-            RegistrarUseCasesImpl();
+            RegistrarUseCasesDoWorker();
         }
 
-        protected abstract void RegistrarUseCasesImpl();
+        protected abstract void RegistrarUseCasesDoWorker();
 
         protected void DeclararFilasPorRota(string exchange, string exchangeDeadLetter = "")
         {
