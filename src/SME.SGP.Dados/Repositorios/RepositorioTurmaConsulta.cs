@@ -138,7 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
+            }, new { turmaId }, splitOn: "UeId, DreId")).FirstOrDefault();
         }
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
