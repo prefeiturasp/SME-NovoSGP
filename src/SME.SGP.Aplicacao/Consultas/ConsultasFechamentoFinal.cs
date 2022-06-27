@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.EventoData = ultimoPeriodoEscolar.PeriodoFim;
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 

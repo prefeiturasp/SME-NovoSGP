@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public int Bimestre { get; set; }
 
         [Required(ErrorMessage = "A quantidade de aulas previstas deve ser informada")]
-        [Range(0, 99, ErrorMessage = "A quantidade de aulas previstas deve ser maior que zero")]
+        [Range(0, 999, ErrorMessage = "A quantidade de aulas previstas deve ser maior que zero")]
         public int Quantidade { get; set; }
     }
 }
