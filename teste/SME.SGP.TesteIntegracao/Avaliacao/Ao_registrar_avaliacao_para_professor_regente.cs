@@ -19,8 +19,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     {
         private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
-        private const long TIPO_CALENDARIO_1 = 1;
-
         private const int NUMERO_0 = 0;
         private const int NUMERO_1 = 1;
         private const int NUMERO_2 = 2;
@@ -42,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
-            //await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
 
             await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), TIPO_CALENDARIO_1);
 
@@ -120,7 +118,9 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         [Fact]
         public async Task Deve_permitir_copiar_avaliacao_para_uma_outra_turma_para_professor_especialista()
         {
-            await CriarDadosBasicos(ObterCriacaoDeDadosDto());
+            var dadosCriacao = ObterCriacaoDeDadosDto();
+
+            await CriarDadosBasicos(dadosCriacao);
 
             await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
 
@@ -128,36 +128,18 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
-            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_0, NUMERO_1);
-
             await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_2, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+
+            await CriarTurma(dadosCriacao.ModalidadeTurma, TURMA_CODIGO_2);
+
+            var turmas = ObterTodos<Turma>();
+
+            await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_0, NUMERO_1);
 
             atividadeAvaliativa.TurmasParaCopiar = new List<CopiarAtividadeAvaliativaDto>() { new CopiarAtividadeAvaliativaDto() { TurmaId = TURMA_CODIGO_2, DataAtividadeAvaliativa = DATA_24_01}};
 
             await ValidarAtualizacaoAvaliacao(atividadeAvaliativa, NUMERO_2, NUMERO_0, NUMERO_2, NUMERO_1);
         }
-
-        //[Fact]
-        //public async Task Nao_deve_permitir_copiar_avaliacao_para_uma_outra_turma_para_professor_especialista_com_componente_diferente()
-        //{
-        //    await CriarDadosBasicos(ObterCriacaoDeDadosDto());
-
-        //    await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
-
-        //    await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
-
-        //    var atividadeAvaliativa = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral);
-
-        //    await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_0, NUMERO_1);
-
-        //    await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_2, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
-
-        //    await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_2, UE_CODIGO_1, COMPONENTE_MATEMATICA_ID_2.ToString(), TIPO_CALENDARIO_1);
-
-        //    atividadeAvaliativa.TurmasParaCopiar = new List<CopiarAtividadeAvaliativaDto>() { new CopiarAtividadeAvaliativaDto() { TurmaId = TURMA_CODIGO_2, DataAtividadeAvaliativa = DATA_24_01 } };
-
-        //    await ValidarAtualizacaoAvaliacao(atividadeAvaliativa, NUMERO_2, NUMERO_0, NUMERO_2, NUMERO_1);
-        //}
 
         private async Task ValidarInsercaoAvaliacao(AtividadeAvaliativaDto atividadeAvaliativa, int qtdeAtividadeAvaliativa, int qtdeAtividadeRegencia, int qtdeAtividadeDisciplina, bool ehRegencia = false)
         {
@@ -229,11 +211,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
             async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
 
-            await comando.Validar(filtroAtividadeAvaliativa);
-            //if (gerarExcecao)
-            //    await Should.ThrowAsync<NegocioException>(() => doExecutar());
-            //else
-                await Should.NotThrowAsync(() => doExecutar());
+            await Should.NotThrowAsync(() => doExecutar());
 
             return comando;
         }

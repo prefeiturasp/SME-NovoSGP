@@ -27,6 +27,10 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
 
             var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
+            await CriarPeriodoEscolarEAbertura();
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
         }
 
@@ -49,7 +53,12 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
             var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+
             dto.DisciplinasId = new string[] { COMPONENTE_GEOGRAFIA_ID_8, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString() };
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolarEAbertura();
 
             await ExecuteTesteResgistrarAvaliacaoPorPerfil(dto);
 
@@ -73,6 +82,19 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_2
             };
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_25_07, DATA_30_09, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_03_10, DATA_22_12, BIMESTRE_4);
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_ID);
         }
     }
 }

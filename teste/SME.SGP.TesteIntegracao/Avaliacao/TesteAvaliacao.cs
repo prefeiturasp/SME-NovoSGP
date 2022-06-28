@@ -16,8 +16,12 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
         protected const string COMPONENTE_INVALIDO = "0";
+
         protected const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
+
         protected const string NOME_ATIVIDADE_AVALIATIVA_2 = "Nome atividade avaliativa 2";
+
+        protected const long TIPO_CALENDARIO_1 = 1;
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
@@ -61,11 +65,13 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             });
         }
 
-        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfil(AtividadeAvaliativaDto dto)
+        protected async Task ExecuteTesteResgistrarAvaliacaoPorPerfil(AtividadeAvaliativaDto atividadeAvaliativa)
         {
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
 
-            var retorno = await comando.Inserir(dto);
+            await Validar(comando, atividadeAvaliativa);
+
+            var retorno = await comando.Inserir(atividadeAvaliativa);
 
             retorno.ShouldNotBeNull();
 
@@ -164,6 +170,13 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             public bool CriarPeriodo { get; set; }
         }
 
+        private static async Task Validar(IComandosAtividadeAvaliativa comando, Infra.AtividadeAvaliativaDto atividadeAvaliativa, int avaliacaoId = 0)
+        {
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa, avaliacaoId);
 
+            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+
+            await Should.NotThrowAsync(() => doExecutar());
+        }
     }
 }

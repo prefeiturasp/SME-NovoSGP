@@ -140,6 +140,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
+        protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);        
+
         protected const string REABERTURA_GERAL = "Reabrir Geral";
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -304,6 +306,21 @@ namespace SME.SGP.TesteIntegracao
                 UeId = 1,
                 Ano = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_1,
+                Historica = true,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1
+            });
+        }
+
+        protected async Task CriarTurma(Modalidade modalidade, string turmaCodigo)
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = TURMA_ANO_2,
+                CodigoTurma = turmaCodigo,
                 Historica = true,
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = ANO_LETIVO_2022_NUMERO,
@@ -482,7 +499,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), NULO, CODIGO_1, CODIGO_8, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_EOL_1114, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_NOME_1114, NULO);
         }
 
-        protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId) 
+        protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false) 
         {
             await InserirNaBase(new Aula()
             {
@@ -499,6 +516,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
+                AulaCJ = aulaCJ
             });
         }
 

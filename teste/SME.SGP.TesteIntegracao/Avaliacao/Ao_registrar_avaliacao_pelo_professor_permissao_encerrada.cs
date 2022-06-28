@@ -28,11 +28,28 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
+            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
-            var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(dto));
+
+            var atividadeAvaliativa = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+
+            await Validar(comando, atividadeAvaliativa);
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(atividadeAvaliativa));
 
             excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+        }
+
+        private static async Task Validar(IComandosAtividadeAvaliativa comando, Infra.AtividadeAvaliativaDto atividadeAvaliativa)
+        {
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa);
+
+            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+
+            await Should.NotThrowAsync(() => doExecutar());
         }
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto()

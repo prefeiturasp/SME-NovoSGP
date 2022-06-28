@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
@@ -41,18 +38,22 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         [Fact]
         public async Task Registrar_avaliacao_professor_cj()
         {
-            await ExecuteTesteResgistrarAvaliacao(ObterPerfilCJ());
+            await ExecuteTesteResgistrarAvaliacao(ObterPerfilCJ(), true);
         }
 
         [Fact]
         public async Task Registrar_avaliacao_professor_cj_regente()
         {
-            await ExecuteTesteResgistrarAvaliacaoPorRegencia(ObterPerfilCJ());
+            await ExecuteTesteResgistrarAvaliacaoPorRegencia(ObterPerfilCJ(), true);
         }
 
-        private async Task ExecuteTesteResgistrarAvaliacaoPorRegencia(string perfil)
+        private async Task ExecuteTesteResgistrarAvaliacaoPorRegencia(string perfil, bool ehCJ = false)
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
+
+            await CriarPeriodoEscolarEAbertura();
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), TIPO_CALENDARIO_1,ehCJ);
 
             var dto = ObterAtividadeAvaliativaDto(
                         COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), 
@@ -64,9 +65,13 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             await ExecuteTesteResgistrarAvaliacaoPorPerfilRegente(dto);
         }
 
-        private async Task ExecuteTesteResgistrarAvaliacao(string perfil)
+        private async Task ExecuteTesteResgistrarAvaliacao(string perfil, bool ehCJ = false)
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
+
+            await CriarPeriodoEscolarEAbertura();
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1, ehCJ);
 
             var dto = ObterAtividadeAvaliativaDto(
                             COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), 
@@ -90,6 +95,19 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_2
             };
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_25_07, DATA_30_09, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_03_10, DATA_22_12, BIMESTRE_4);
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_ID);
         }
     }
 }

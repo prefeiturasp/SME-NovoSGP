@@ -17,7 +17,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
     {
         private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
-        private const long TIPO_CALENDARIO_1 = 1;
         private const string DESCRICAO = "OUTRA DESCRICAO";
 
         public Ao_alterar_avaliacao_pela_gestao(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -56,7 +55,9 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         private async Task ExecutarTesteParaGestor(string perfil)
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(perfil));
-            await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), TIPO_CALENDARIO_1);
+
+            await CriarAula(DATA_02_05, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), TIPO_CALENDARIO_1);
+
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(
@@ -64,11 +65,18 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             CategoriaAtividadeAvaliativa.Normal,
             DATA_02_05,
             TipoAvaliacaoCodigo.AvaliacaoBimestral);
+
             atividadeAvaliativa.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
+
+            await CriarPeriodoEscolarEAbertura();
+
+            await Validar(comando, atividadeAvaliativa);
 
             await comando.Inserir(atividadeAvaliativa);
 
             atividadeAvaliativa.Descricao = DESCRICAO;
+
+            await Validar(comando, atividadeAvaliativa,1);
 
             var retorno = await comando.Alterar(atividadeAvaliativa, 1);
 
@@ -79,6 +87,15 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             atividadeAvaliativas.ShouldNotBeEmpty();
 
             atividadeAvaliativas.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+        private static async Task Validar(IComandosAtividadeAvaliativa comando, Infra.AtividadeAvaliativaDto atividadeAvaliativa, int avaliacaoId = 0)
+        {
+            var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa, avaliacaoId);
+
+            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+
+            await Should.NotThrowAsync(() => doExecutar());
         }
 
         private async Task ExecutarTesteParaNaoGestor(string perfil)
@@ -111,6 +128,19 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_2
             };
+        }
+
+        private async Task CriarPeriodoEscolarEAbertura()
+        {
+            await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_25_07, DATA_30_09, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_03_10, DATA_22_12, BIMESTRE_4);
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_ID);
         }
     }
 }
