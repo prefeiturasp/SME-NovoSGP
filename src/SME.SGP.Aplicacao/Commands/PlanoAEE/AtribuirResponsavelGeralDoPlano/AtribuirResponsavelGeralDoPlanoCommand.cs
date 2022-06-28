@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.PlanoAEEId)
                    .GreaterThan(0)
-                    .WithMessage("O Id do Plano AEE deve ser informado!");
+                    .WithMessage("O Id do Plano AEE deve ser informado para atribuição do responsável do plano!");
             RuleFor(x => x.ResponsavelRF)
                    .NotEmpty()
-                   .WithMessage("O RF do responsável deve ser informado!");
+                   .WithMessage("O RF do responsável deve ser informado para atribuição do responsável do plano!");
         }
     }
 }
