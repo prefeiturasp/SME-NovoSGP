@@ -88,7 +88,6 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao.Equals(tipoResponsavel) && x.AtribuicaoExcluida);
-                var ad = retorno.Where(x => x.Codigo.Equals("400001"));
                 return retorno.OrderBy(x => x.Nome).ToList();
             }
             catch (Exception ex)
