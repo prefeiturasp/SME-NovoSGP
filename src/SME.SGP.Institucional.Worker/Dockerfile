@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["SME.SGP.Institucional.Worker/SME.SGP.Institucional.Worker.csproj", "SME.SGP.Institucional.Worker/"]
+COPY ["src/SME.SGP.Institucional.Worker/SME.SGP.Institucional.Worker.csproj", "src/SME.SGP.Institucional.Worker/"]
 RUN dotnet restore "SME.SGP.Institucional.Worker/SME.SGP.Institucional.Worker.csproj"
 COPY . .
-WORKDIR "/src/SME.SGP.Institucional.Worker"
+WORKDIR "/src/src/SME.SGP.Institucional.Worker"
 RUN dotnet build "SME.SGP.Institucional.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
