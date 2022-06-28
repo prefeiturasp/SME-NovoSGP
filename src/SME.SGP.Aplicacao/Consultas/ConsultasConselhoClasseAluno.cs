@@ -189,7 +189,12 @@ namespace SME.SGP.Aplicacao
                 consideraHistorico = alunoNaTurma.Inativo;
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
                 if (!turmasCodigos.Any())
+                {
                     turmasCodigos = new string[1] { turma.CodigoTurma };
+
+                    if (!codigoTurma.Equals(turma.CodigoTurma))
+                        turmasCodigos = new string[2] { codigoTurma, turma.CodigoTurma };
+                }
                 else if (!turmasCodigos.Contains(codigoTurma))
                     turmasCodigos = turmasCodigos.Concat(new string[] { codigoTurma }).ToArray();
 
