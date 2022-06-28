@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             if (!await ParametroGeracaoPendenciaAtivo())
                 return;
 
-            var ehCEFAI = ((!funcionarioPAEE.Any()) && (encaminhamentoAEE.ResponsavelId == 0));
+            var ehCEFAI = ((!funcionarioPAEE.Any()) && ((encaminhamentoAEE.ResponsavelId == 0) || (encaminhamentoAEE.ResponsavelId == null)));
 
             if (ehCEFAI)
             {
