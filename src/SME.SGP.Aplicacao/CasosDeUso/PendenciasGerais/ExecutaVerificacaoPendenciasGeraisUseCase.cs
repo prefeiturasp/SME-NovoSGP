@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisAulas, null));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisCalendario, null));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.PendenciasGeraisEventos, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.PendenciasGeraisAulas, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.PendenciasGeraisCalendario, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.PendenciasGeraisEventos, null));
 
             return true;
         }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,15 +16,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
-        private readonly IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio;
         private readonly IRepositorioTipoRelatorio repositorioTipoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio, IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao,
+            IContextoAplicacao contextoAplicacao, IMediator mediator,
+            IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
         {
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
-            this.obterDataCriacaoRelatorio = obterDataCriacaoRelatorio ?? throw new System.ArgumentNullException(nameof(obterDataCriacaoRelatorio));
-            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioTipoRelatorio));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new ArgumentNullException(nameof(repositorioTipoRelatorio));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
@@ -34,25 +33,27 @@ namespace SME.SGP.Aplicacao
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
                 (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, this.Paginacao));
 
-            var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>();
-            retornoPaginadoDto.TotalRegistros = retorno.TotalRegistros;
-            retornoPaginadoDto.TotalPaginas = retorno.TotalPaginas;
+            var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>
+            {
+                TotalRegistros = retorno.TotalRegistros,
+                TotalPaginas = retorno.TotalPaginas,
 
-            retornoPaginadoDto.Items = from r in retorno.Items
-                                       select new NotificacaoBasicaDto()
-                                       {
-                                           Id = r.Id,
-                                           Titulo = r.Titulo,
-                                           Data = r.CriadoEm,
-                                           DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
-                                           Status = r.Status,
-                                           Categoria = r.Categoria,
-                                           DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
-                                           Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                                           Codigo = r.Codigo,
-                                           PodeRemover = r.PodeRemover,
-                                           PodeMarcarComoLida = r.DeveMarcarComoLido
-                                       };
+                Items = from r in retorno.Items
+                    select new NotificacaoBasicaDto()
+                    {
+                        Id = r.Id,
+                        Titulo = r.Titulo,
+                        Data = r.CriadoEm,
+                        DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
+                        Status = r.Status,
+                        Categoria = r.Categoria,
+                        DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
+                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                        Codigo = r.Codigo,
+                        PodeRemover = r.PodeRemover,
+                        PodeMarcarComoLida = r.DeveMarcarComoLido
+                    }
+            };
 
             return retornoPaginadoDto;
         }
@@ -81,6 +82,12 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
+            if (Regex.Match(notificacao.Mensagem, "<a [^>]*?>").Success && notificacao.Mensagem.Contains("Para visualizar a aula clique"))
+            {
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"Para visualizar a aula clique(\s)?.", "", RegexOptions.IgnoreCase);
+                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"<a [^>]*?>(.*?)<\/a>?.", "");
+            }
+            
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
 
@@ -123,6 +130,7 @@ namespace SME.SGP.Aplicacao
             string codigoRelatorio = string.Empty;
             int tipoRelatorio = 0;
             bool relatorioExiste = true;
+
             if (NotificacaoTipo.Relatorio == retorno.Tipo)
                 codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
 
@@ -159,14 +167,15 @@ namespace SME.SGP.Aplicacao
         private static string ObterCodigoArquivo(string mensagem)
         {
             string pattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-            Regex rg = new Regex(pattern);
+            Regex rg = new(pattern);
             var codigo = rg.Match(mensagem);
             return codigo.ToString();
         }
+
         private async Task<bool> VerificarSeArquivoExiste(string codigoArquivo)
         {
             var guidRelatorio = new Guid(codigoArquivo);
-            return await obterDataCriacaoRelatorio.Executar(guidRelatorio);
+            return await mediator.Send(new VerificarExistenciaRelatorioPorCodigoQuery(guidRelatorio));
         }
     }
 }

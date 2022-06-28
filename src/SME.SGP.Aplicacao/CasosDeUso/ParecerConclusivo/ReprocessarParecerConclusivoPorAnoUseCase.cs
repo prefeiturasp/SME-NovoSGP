@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             var dres = await mediator.Send(new ObterIdsDresQuery());
             foreach(var dreId in dres)
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarParecerConclusivoAlunoPorDre, new FiltroDreUeTurmaDto(anoLetivo, dreId), Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorDre, new FiltroDreUeTurmaDto(anoLetivo, dreId), Guid.NewGuid(), null));
             }
         }
     }

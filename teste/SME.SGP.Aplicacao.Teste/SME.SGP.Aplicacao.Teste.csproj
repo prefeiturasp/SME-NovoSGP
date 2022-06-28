@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CasosDeUso\ConselhodeClasse\**" />
+    <EmbeddedResource Remove="CasosDeUso\ConselhodeClasse\**" />
+    <None Remove="CasosDeUso\ConselhodeClasse\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="coverlet.collector" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,7 +42,6 @@
 
   <ItemGroup>
     <Folder Include="ArquivosTestes\" />
-    <Folder Include="CasosDeUso\ConselhodeClasse\" />
   </ItemGroup>
 
   <ItemGroup>

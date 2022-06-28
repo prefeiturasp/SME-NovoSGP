@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                         unitOfWork.PersistirTransacao();
 
                         if (pendencia.Id > 0 || pendenciaExiste.PendenciaId > 0)
-                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id > 0 ? pendencia.Id : pendenciaExiste.PendenciaId, turma.UeId), Guid.NewGuid()));
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id > 0 ? pendencia.Id : pendenciaExiste.PendenciaId, turma.UeId), Guid.NewGuid()));
 
                         return true;
                     }

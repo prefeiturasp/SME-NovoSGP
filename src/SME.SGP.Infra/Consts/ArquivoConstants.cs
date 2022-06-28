@@ -1,6 +1,6 @@
-﻿namespace SME.SGP.Infra.Consts
+﻿namespace SME.SGP.Infra
 {
-    public static class ArquivoContants
+    public static class ArquivoConstants
     {
         public const string PastaTemporaria = "/temp/";
         public const string PastaAquivosTemporaria = "/Arquivos/temp/";
