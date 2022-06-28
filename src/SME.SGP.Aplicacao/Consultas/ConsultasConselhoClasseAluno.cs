@@ -200,7 +200,9 @@ namespace SME.SGP.Aplicacao
                     if (!codigoTurma.Equals(turma.CodigoTurma))
                         turmasCodigos = new string[2] { codigoTurma, turma.CodigoTurma };
                 }
-                    
+                else if (!turmasCodigos.Contains(codigoTurma))
+                    turmasCodigos = turmasCodigos.Concat(new string[] { codigoTurma }).ToArray();
+
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
                 if (conselhosClassesIds != null && !conselhosClassesIds.Any())
                     conselhosClassesIds = new long[1] { conselhoClasseId };
