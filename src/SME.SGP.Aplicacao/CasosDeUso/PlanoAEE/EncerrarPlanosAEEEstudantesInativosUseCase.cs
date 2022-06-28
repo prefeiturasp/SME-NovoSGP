@@ -166,8 +166,8 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataSituacao)
                     .FirstOrDefault(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
 
-                return turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
-                       (turma.EhTurmaInfantil && !turmaAtual.EhTurmaInfantil);
+                return turma.Ue.CodigoUe != turmaAtual?.Ue.CodigoUe &&
+                       (turma.EhTurmaInfantil && (!turmaAtual?.EhTurmaInfantil ?? turma.EhTurmaInfantil));
             }
 
             return false;
