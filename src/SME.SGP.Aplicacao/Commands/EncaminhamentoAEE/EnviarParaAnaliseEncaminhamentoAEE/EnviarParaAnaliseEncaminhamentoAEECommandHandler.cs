@@ -41,13 +41,9 @@ namespace SME.SGP.Aplicacao
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
             if (funcionarioPAEE != null && funcionarioPAEE.Count() == 1)
-            {
-                await GerarPendenciaPAEEPAAI(encaminhamentoAEE, funcionarioPAEE.FirstOrDefault().CodigoRf);
-            }
+                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionarioPAEE.FirstOrDefault().CodigoRf);
             else if (funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
-            {
-                await GerarPendenciaPAEEPAAI(encaminhamentoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf);
-            }
+                await AtribuirResponsavelPAEEPAAI(encaminhamentoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf);
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
 
@@ -58,13 +54,10 @@ namespace SME.SGP.Aplicacao
             return idEntidadeEncaminhamento != 0;
         }
 
-        private async Task GerarPendenciaPAEEPAAI(EncaminhamentoAEE encaminhamentoAEE, string CodigoRf)
+        private async Task AtribuirResponsavelPAEEPAAI(EncaminhamentoAEE encaminhamentoAEE, string CodigoRf)
         {
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Analise;
             encaminhamentoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(CodigoRf));
-
-            if (await ParametroGeracaoPendenciaAtivo())
-                await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
         }
 
         private async Task GerarPendenciasEncaminhamentoAEE(EncaminhamentoAEE encaminhamentoAEE, IEnumerable<UsuarioEolRetornoDto> funcionarioPAEE)
@@ -72,13 +65,17 @@ namespace SME.SGP.Aplicacao
             if (!await ParametroGeracaoPendenciaAtivo())
                 return;
 
-            if (!funcionarioPAEE.Any())
+            var ehCEFAI = ((!funcionarioPAEE.Any()) && (encaminhamentoAEE.ResponsavelId == 0));
+
+            if (ehCEFAI)
             {
                 await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, true));
             }
-
-            if (funcionarioPAEE.Count() > 1)
+            else
             {
+                if (encaminhamentoAEE.ResponsavelId > 0)
+                    await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+
                 await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, false));
             }
         }
