@@ -113,9 +113,9 @@ namespace SME.SGP.TesteIntegracao
             await CriarTurma(modalidade);
         }
 
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
+        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
         {
-            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), SEMESTRE_1);
+            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), BIMESTRE_1, criarPeriodo);
         }
 
         protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)

@@ -17,8 +17,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {
-        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_reposicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -34,19 +34,20 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_especialista()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_especialista_com_aprovacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
-            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+
             aula.Quantidade = 4;
 
             await CriarPeriodoEscolarEAbertura();
@@ -57,20 +58,22 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio, true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_02_05, true);
         }
 
         [Fact]
         public async Task Ao_registrar_aula_reposicao_professor_regente_de_classe_com_aprovacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
-            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio);
+            var aula = ObterAula(TipoAula.Reposicao, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_02_05);
+
             aula.Quantidade = 2;
+
             aula.EhRegencia = true;
 
             await CriarPeriodoEscolarEAbertura();
@@ -81,7 +84,9 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
         private async Task ValideAulaEnviadaParaAprovacao(PersistirAulaDto aula)
         {
             await CriarPeriodoEscolarEAbertura();
+
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
+
             var retorno = await useCase.Executar(aula);
 
             retorno.ShouldNotBeNull();
@@ -91,15 +96,20 @@ namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
             var aulasCadastradas = ObterTodos<Aula>();
 
             aulasCadastradas.ShouldNotBeEmpty();
+
             aulasCadastradas.FirstOrDefault().Status.ShouldBe(EntidadeStatus.AguardandoAprovacao);
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }

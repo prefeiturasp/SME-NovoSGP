@@ -319,8 +319,11 @@ namespace SME.SGP.TesteIntegracao.TestarCadastrarAulaRepetirBimestre
         private async Task CriarPeriodoEscolarEPeriodoReabertura()
         {
             await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1, TIPO_CALENDARIO_1);
+
             await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2, TIPO_CALENDARIO_1);
+
             await CriarPeriodoEscolar(DATA_25_07, DATA_30_09, BIMESTRE_3, TIPO_CALENDARIO_1);
+
             await CriarPeriodoEscolar(DATA_03_10, DATA_22_12, BIMESTRE_4, TIPO_CALENDARIO_1);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);

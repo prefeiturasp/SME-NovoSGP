@@ -15,8 +15,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
 {
     public class Ao_validar_grade_para_registro_de_aula : AulaTeste
     {
-        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_validar_grade_para_registro_de_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -33,11 +33,14 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         [Fact]
         public async Task Quantidade_aulas_superior_ao_limite_de_aulas_da_grade()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
             await CriarGrade();
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+
             dto.Quantidade = 2;
 
             await CriarPeriodoEscolarEAbertura();
@@ -50,12 +53,16 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         [Fact]
         public async Task EJA_so_permite_criacao_de_5_aulas()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, dataInicio, dataFim, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica, "1111111");
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, USUARIO_PROFESSOR_CODIGO_RF_1111111);
+
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+
             dto.EhRegencia = true;
 
             await CriarPeriodoEscolarEAbertura();
@@ -68,12 +75,16 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         [Fact]
         public async Task Regencia_classe_permite_criacao_de_uma_aula()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), dataInicio, RecorrenciaAula.AulaUnica, "1111111");
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, USUARIO_PROFESSOR_CODIGO_RF_1111111);
+
             await CriarGrade(5);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+
             dto.EhRegencia = true;
 
             await CriarPeriodoEscolarEAbertura();
@@ -119,9 +130,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnicaGrade
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }

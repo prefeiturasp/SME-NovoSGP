@@ -15,8 +15,8 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {
-        private DateTime dataInicio = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime dataFim = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
 
         public Ao_registrar_aula_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -32,23 +32,29 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Ao_registrar_aula_unica_professor_CJ()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
         }
 
         [Fact]
         public async Task Professor_CJ_sem_permissao_para_cadastrar_atribuicao_encerrada()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            
             await CriarAtribuicaoEsporadica(new(DateTimeExtension.HorarioBrasilia().Year, 01, 10), new(DateTimeExtension.HorarioBrasilia().Year, 01, 10));
 
+            await CriarPeriodoEscolarEAbertura();
+
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+            
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -60,10 +66,11 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Professor_CJ_nao_pode_criar_aulas()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -75,11 +82,13 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Nao_pode_cadastrar_aula_data_com_evento_nao_letivo()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_2);
-            await CriarEvento(EventoLetivo.Nao, dataInicio, dataInicio);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
+
+            await CriarEvento(EventoLetivo.Nao, DATA_02_05, DATA_02_05);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio);
+
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -91,42 +100,49 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
         [Fact]
         public async Task Cadastrar_aula_para_regencia_de_classe_Fundamental()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataInicio, dataFim, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_1, false);
+
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, dataInicio, true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_02_05, true);
         }
 
         [Fact]
         public async Task Cadastrar_aula_para_regencia_de_classe_EJA()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, dataInicio, dataFim, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, DATA_02_05, DATA_07_08, BIMESTRE_1, false);
+
             await CriarAtribuicaoCJ(Modalidade.EJA, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113, dataInicio, true);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113, DATA_02_05, true);
         }
 
         [Fact]
         public async Task Cadastrar_aula_para_componente_nao_regencia()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, dataInicio, dataFim, BIMESTRE_1);
+            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.EJA, ModalidadeTipoCalendario.EJA, DATA_02_05, DATA_07_08, BIMESTRE_1, false);
+
             await CriarAtribuicaoCJ(Modalidade.Medio, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await CriarPeriodoEscolarEAbertura();
 
-            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataInicio, false);
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05, false);
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
