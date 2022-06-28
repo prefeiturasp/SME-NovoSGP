@@ -144,9 +144,6 @@ namespace SME.SGP.Aplicacao
 
         private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, ref AlunoPorTurmaResposta ultimaMatricula)
         {
-            var jsonTurma = JsonConvert.SerializeObject(turma);
-            mediator.Send(new SalvarLogViaRabbitCommand($"Dados da turma: {jsonTurma}", LogNivel.Informacao, LogContexto.WorkerRabbit)).Wait();
-
             var matriculasAnoTurma = mediator
                 .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma?.AnoLetivo ?? DateTime.Today.Year)).Result;
 
