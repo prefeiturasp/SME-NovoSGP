@@ -99,6 +99,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string REPOSICAO_AULA = "Reposição de Aula";
         protected const string REPOSICAO_DIA = "Reposição Dia";
         protected const string REPOSICAO_AULA_DE_GREVE = "Reposição de Aula de Greve";
+        protected const string LIBERACAO_EXCEPCIONAL = "Liberação excepcional";
 
         protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);

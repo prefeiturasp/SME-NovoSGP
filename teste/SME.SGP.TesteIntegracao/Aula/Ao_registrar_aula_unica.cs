@@ -115,6 +115,56 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
             excecao.Message.ShouldBe("Não é possível cadastrar aula no final de semana");
         }
 
+        [Fact]
+        public async Task Registrar_aula_com_evento_liberacao_e_evento_letivo_no_domingo()
+        {
+            var dataDomingo = DateTimeExtension.ObterDomingo(DATA_02_05);
+            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, dataDomingo, DATA_07_08, BIMESTRE_2);
+            await CriaEventoNoDomingo(dataDomingo);
+            await CriarPeriodoEscolarEAbertura();
+
+            await InserirAulaUseCaseComValidacaoBasica(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, dataDomingo);
+        }
+
+        private async Task CriaEventoNoDomingo(DateTime data)
+        {
+            await CriarEventoTipoResumido(REPOSICAO_AULA,
+                              EventoLocalOcorrencia.UE,
+                              true,
+                              EventoTipoData.Unico,
+                              false,
+                              EventoLetivo.Sim,
+                              (long)TipoEvento.ReposicaoDeAula);
+
+            await CriarEventoResumido(REPOSICAO_AULA,
+                                      data,
+                                      data,
+                                      EventoLetivo.Sim,
+                                      TIPO_CALENDARIO_1,
+                                      TIPO_EVENTO_1,
+                                      DRE_CODIGO_1,
+                                      UE_CODIGO_1,
+                                      EntidadeStatus.Aprovado);
+
+            await CriarEventoTipoResumido(LIBERACAO_EXCEPCIONAL,
+                  EventoLocalOcorrencia.UE,
+                  true,
+                  EventoTipoData.Unico,
+                  false,
+                  EventoLetivo.Sim,
+                  (long)TipoEvento.LiberacaoExcepcional);
+
+            await CriarEventoResumido(LIBERACAO_EXCEPCIONAL,
+                          data,
+                          data,
+                          EventoLetivo.Sim,
+                          TIPO_CALENDARIO_1,
+                          TIPO_EVENTO_2,
+                          DRE_CODIGO_1,
+                          UE_CODIGO_1,
+                          EntidadeStatus.Aprovado);
+        }
+
         private async Task CriarPeriodoEscolarEAbertura()
         {
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);

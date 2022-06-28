@@ -1358,5 +1358,36 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(query.ToString(), parametros);
 
         }
+
+        public async Task<bool> DataPossuiEventoDeLiberacaoEoutroEventoLetivo(long tipoCalendarioId, DateTime data, string ueId)
+        {
+            var query = @"SELECT 1
+                         FROM evento e
+                         INNER JOIN evento_tipo et on et.id = e.tipo_evento_id
+                         LEFT JOIN (SELECT e.id 
+                                   FROM evento e 
+                                   INNER JOIN evento_tipo et ON et.id = e.tipo_evento_id
+                                   WHERE (et.codigo = @codigoLiberacaoExcepcional)) liberacao ON liberacao.id = e.id
+                         LEFT JOIN (SELECT e.id 
+                                    FROM evento e 
+                                    INNER JOIN evento_tipo et ON et.id = e.tipo_evento_id
+                                    WHERE (et.codigo <> @codigoLiberacaoExcepcional)) outros ON outros.id = e.id
+                         WHERE e.excluido = false
+                            AND e.letivo = @eventoLetivo
+                            AND e.tipo_calendario_id = @tipoCalendarioId
+                            AND ((e.dre_id is null and e.ue_id is null) OR (e.ue_id = @ueId))
+                            AND e.data_inicio <= @dataAula
+	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
+                            HAVING Count(liberacao.id) >= 1 AND Count(outros.id) >= 1";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
+            {
+                tipoCalendarioId,
+                dataAula = data.Date,
+                ueId,
+                codigoLiberacaoExcepcional = TipoEvento.LiberacaoExcepcional,
+                eventoLetivo = EventoLetivo.Sim
+            });
+        }
     }
 }
