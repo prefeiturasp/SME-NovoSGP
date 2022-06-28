@@ -7,7 +7,7 @@ namespace SME.SGP.Infra
         public string Codigo { get; set; }
         public string UeNome { get; set; }
         public TipoEscola TipoEscola { get; set; }
-        public int TipoAtribuicao { get; set; }
+        public TipoResponsavelAtribuicao TipoAtribuicao { get; set; }
         public bool AtribuicaoExcluida { get; set; }
 
         public string Nome

@@ -58,27 +58,27 @@ namespace SME.SGP.Aplicacao
 
         private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
         {
-
+            var novaLista = new List<UnidadeEscolarSemAtribuicaolDto>();
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
             .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
 
 
-            for (int i = 0; i < uesParaAtribuicao.Count; i++)
+            foreach (var ue in uesParaAtribuicao.ToList())
             {
-                var codUE = uesParaAtribuicao[i].Codigo;
+                var codUE = ue.Codigo;
                 var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
-                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => t.TipoAtribuicao);
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
                 if (quantidadeTipos.Count() < tipos.Count())
                 {
                     var naotemTipo = tipos.Except(quantidadeTipos).ToList();
-                    for (int n = 0; n < naotemTipo.Count; n++)
+                    foreach (var tipo in naotemTipo)
                     {
                         var registro = new UnidadeEscolarSemAtribuicaolDto
                         {
-                            Codigo = uesParaAtribuicao[i].Codigo,
-                            UeNome = uesParaAtribuicao[i].UeNome,
-                            TipoEscola = uesParaAtribuicao[i].TipoEscola,
-                            TipoAtribuicao = naotemTipo[n],
+                            Codigo = ue.Codigo,
+                            UeNome = ue.UeNome,
+                            TipoEscola = ue.TipoEscola,
+                            TipoAtribuicao = (TipoResponsavelAtribuicao)tipo,
                             AtribuicaoExcluida = true
                         };
                         uesParaAtribuicao.Add(registro);
@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao.Equals(tipoResponsavel) && x.AtribuicaoExcluida);
+            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
             return retorno.OrderBy(x => x.Nome).ToList();
         }
 
