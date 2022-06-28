@@ -1,11 +1,8 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,9 +20,11 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         public async Task Alterar_avaliacao_para_professor_especialista()
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto(ObterPerfilProfessor()));
+
             await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TipoAvaliacaoCodigo.AvaliacaoMensal);
 
             var dto = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_02_05, TipoAvaliacaoCodigo.AvaliacaoBimestral);
+
             dto.DisciplinasId = new string[] { COMPONENTE_GEOGRAFIA_ID_8, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString() };
 
             await ExecuteTesteAlterarAvaliacaoPorPerfil(dto);
@@ -33,6 +32,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
             var atividadeAvaliativasDiciplina = ObterTodos<AtividadeAvaliativaDisciplina>();
 
             atividadeAvaliativasDiciplina.ShouldNotBeEmpty();
+
             atividadeAvaliativasDiciplina.Exists(disciplina => disciplina.DisciplinaId == COMPONENTE_GEOGRAFIA_ID_8).ShouldBe(true);
         }
 

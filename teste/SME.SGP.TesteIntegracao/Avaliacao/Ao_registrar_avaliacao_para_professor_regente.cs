@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         {
             await CriarDadosBasicos(ObterCriacaoDeDadosDto());
 
-            await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
+            //await CriarPeriodoEscolarReabertura(TIPO_CALENDARIO_1);
 
             await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), TIPO_CALENDARIO_1);
 
