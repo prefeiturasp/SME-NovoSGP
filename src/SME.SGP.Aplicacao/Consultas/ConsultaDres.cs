@@ -58,44 +58,36 @@ namespace SME.SGP.Aplicacao
 
         private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
         {
-            try
+
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
+            .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+
+
+            for (int i = 0; i < uesParaAtribuicao.Count; i++)
             {
-                var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
-                .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
-
-
-                for (int i = 0; i < uesParaAtribuicao.Count; i++)
+                var codUE = uesParaAtribuicao[i].Codigo;
+                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => t.TipoAtribuicao);
+                if (quantidadeTipos.Count() < tipos.Count())
                 {
-                    var codUE = uesParaAtribuicao[i].Codigo;
-                    var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
-                    var quantidadeTipos = uesParaAtribuicaoDto.Select(t => t.TipoAtribuicao);
-                    if (quantidadeTipos.Count() < tipos.Count())
+                    var naotemTipo = tipos.Except(quantidadeTipos).ToList();
+                    for (int n = 0; n < naotemTipo.Count; n++)
                     {
-                        var naotemTipo = tipos.Except(quantidadeTipos).ToList();
-                        for (int n = 0; n < naotemTipo.Count; n++)
+                        var registro = new UnidadeEscolarSemAtribuicaolDto
                         {
-                            var registro = new UnidadeEscolarSemAtribuicaolDto
-                            {
-                                Codigo = uesParaAtribuicao[i].Codigo,
-                                UeNome = uesParaAtribuicao[i].UeNome,
-                                TipoEscola = uesParaAtribuicao[i].TipoEscola,
-                                TipoAtribuicao = naotemTipo[n],
-                                AtribuicaoExcluida = true
-                            };
-                            uesParaAtribuicao.Add(registro);
-                        }
+                            Codigo = uesParaAtribuicao[i].Codigo,
+                            UeNome = uesParaAtribuicao[i].UeNome,
+                            TipoEscola = uesParaAtribuicao[i].TipoEscola,
+                            TipoAtribuicao = naotemTipo[n],
+                            AtribuicaoExcluida = true
+                        };
+                        uesParaAtribuicao.Add(registro);
                     }
                 }
-
-                var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao.Equals(tipoResponsavel) && x.AtribuicaoExcluida);
-                return retorno.OrderBy(x => x.Nome).ToList();
-            }
-            catch (Exception ex)
-            {
-
-                throw;
             }
 
+            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao.Equals(tipoResponsavel) && x.AtribuicaoExcluida);
+            return retorno.OrderBy(x => x.Nome).ToList();
         }
 
         public IEnumerable<DreConsultaDto> ObterTodos()
