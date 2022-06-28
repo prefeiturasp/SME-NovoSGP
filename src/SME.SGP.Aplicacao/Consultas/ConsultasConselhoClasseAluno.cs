@@ -190,6 +190,9 @@ namespace SME.SGP.Aplicacao
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
                 if (!turmasCodigos.Any())
                     turmasCodigos = new string[1] { turma.CodigoTurma };
+                else if (!turmasCodigos.Contains(codigoTurma))
+                    turmasCodigos = turmasCodigos.Concat(new string[] { codigoTurma }).ToArray();
+
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
                 if (conselhosClassesIds != null && !conselhosClassesIds.Any())
                     conselhosClassesIds = new long[1] { conselhoClasseId };
