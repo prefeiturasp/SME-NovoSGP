@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (frequenciasPersistir.Any())
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
 
             return true;
         }

@@ -291,7 +291,7 @@ namespace SME.SGP.Dominio.Servicos
                         Bimestre = entidadeDto.Bimestre,
                         AlunosComNotaAlterada = alunosComNotaAlterada
                     };
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
                 }
 
                 await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 if (turmaId > 0)
                 {
                     matricula.TurmaId = turmaId;
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.ConsolidacaoMatriculasTurmasSync, matricula, Guid.NewGuid(), null));
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                     {
                         matricula.TurmaId = turmaId;
 
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.ConsolidacaoMatriculasTurmasSync, matricula, new Guid(), null));
 
                     }
                 }

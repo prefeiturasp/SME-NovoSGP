@@ -44,13 +44,13 @@ namespace SME.SGP.Aplicacao
 
             var filas = new string[]
             {
-                RotasRabbitSgp.NotificacoesDaAulaExcluir,
-                RotasRabbitSgp.FrequenciaDaAulaExcluir,
-                RotasRabbitSgp.PlanoAulaDaAulaExcluir,
-                RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir,
+                RotasRabbitSgpAula.NotificacoesDaAulaExcluir,
+                RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir,
+                RotasRabbitSgpAula.PlanoAulaDaAulaExcluir,
+                RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir,
                 RotasRabbitSgp.DiarioBordoDaAulaExcluir,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciaDiarioBordoAula
+                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula,
+                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula
             };
 
             await PulicaFilaSgp(filas, aula.Id, request.Usuario);
