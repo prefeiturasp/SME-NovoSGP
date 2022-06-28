@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
             // Evento Letivo
             var temEventoLetivoNoDia = await repositorioEvento
-                .EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+                .DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
 
             // Domingo
             if (request.DataAula.FimDeSemana())
