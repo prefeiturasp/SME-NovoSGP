@@ -99,6 +99,7 @@ namespace SME.SGP.Aplicacao
         private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto, FiltroObterSupervisorEscolasDto filtro)
         {
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+            string[] listaCodigoSupervisor = filtro.SupervisorId !=null ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
             if (responsavelEscolaDreDto.Count() > 0)
             {
                 for (int i = 0; i < responsavelEscolaDreDto.Count; i++)
@@ -135,9 +136,9 @@ namespace SME.SGP.Aplicacao
                 
                 if (filtro.TipoCodigo > 0)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.TipoAtribuicao == filtro.TipoCodigo).ToList();
-                
-                if (!string.IsNullOrEmpty(filtro.SupervisorId))
-                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.SupervisorId == filtro.SupervisorId && !x.AtribuicaoExcluida).ToList();
+
+                if (listaCodigoSupervisor.Any())
+                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
                 
                 if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel || filtro.UESemResponsavel)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
