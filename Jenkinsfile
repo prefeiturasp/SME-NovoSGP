@@ -64,7 +64,7 @@ pipeline {
               dockerImage2.push()
 	      dockerImage3.push()
               }
-              sh "docker rmi $imagename1 $imagename2"
+              sh "docker rmi $imagename1 $imagename2 $imagename3"
             }
           }
         }

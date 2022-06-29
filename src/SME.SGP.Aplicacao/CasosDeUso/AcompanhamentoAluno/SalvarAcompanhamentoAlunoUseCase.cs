@@ -51,11 +51,16 @@ namespace SME.SGP.Aplicacao
                 var moverArquivoPercursoIndividual = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, entidade.PercursoIndividual, percursoIndividual));
                 entidade.PercursoIndividual = moverArquivoPercursoIndividual;
             }
+            else
+                entidade.PercursoIndividual = percursoIndividual;
+
             if (!string.IsNullOrEmpty(observacoes))
             {
                 var moverArquivoObservacoes = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.AcompanhamentoAluno, entidade.Observacoes, observacoes));
                 entidade.Observacoes = moverArquivoObservacoes;
             }
+            else
+                entidade.Observacoes = observacoes;
 
             if (!string.IsNullOrEmpty(percursoIndividualAtual))
             {
