@@ -73,10 +73,14 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (encaminhamentoAEE.ResponsavelId > 0)
-                    await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
+                if (funcionarioPAEE.Count() > 1)
+                {
+                    await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, false));
+                    return;
+                }
 
-                await mediator.Send(new GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommand(encaminhamentoAEE, false));
+                if ((encaminhamentoAEE.ResponsavelId != null) && (encaminhamentoAEE.ResponsavelId > 0))
+                    await mediator.Send(new GerarPendenciaPAEEEncaminhamentoAEECommand(encaminhamentoAEE));
             }
         }
 
