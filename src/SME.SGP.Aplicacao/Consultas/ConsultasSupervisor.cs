@@ -62,12 +62,12 @@ namespace SME.SGP.Aplicacao
             return lista;
         }
 
-        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string supervisoresId, string dreId)
+        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string supervisoresId, string dreId, int tipoResponsavel)
         {
-            if (string.IsNullOrEmpty(supervisoresId) || string.IsNullOrEmpty(dreId))
-                throw new NegocioException("Necessário informar o Código da DRE e o Código do Responsável");
+            if (string.IsNullOrEmpty(supervisoresId) || string.IsNullOrEmpty(dreId) || tipoResponsavel == 0)
+                throw new NegocioException("Necessário informar o Código da DRE o Código do Responsável e o Tipo de responsável");
 
-            var responsaveisEscolasDres = await repositorioSupervisorEscolaDre.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId);
+            var responsaveisEscolasDres = await repositorioSupervisorEscolaDre.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId, tipoResponsavel);
 
             if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
                 return Enumerable.Empty<UnidadeEscolarResponsavelDto>();

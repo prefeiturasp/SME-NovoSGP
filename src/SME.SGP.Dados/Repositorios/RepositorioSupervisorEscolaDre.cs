@@ -66,29 +66,32 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new {tipo,ueCodigo,dreCodigo,responsavelCodigo });
         }
 
-        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo)
+        public async Task<IEnumerable<UnidadeEscolarSemAtribuicaolDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo)
         {
             StringBuilder query = new(@"SELECT
                                             sed.escola_id AS Codigo,
                                             u.nome AS UeNome,
-                                            u.tipo_escola AS TipoEscola
+                                            u.tipo_escola AS TipoEscola,
+                                            tipo AS TipoAtribuicao,
+                                            excluido AS AtribuicaoExcluida
                                         FROM
 	                                        supervisor_escola_dre sed
 	                                        INNER JOIN dre d ON sed.dre_id = d.dre_id
                                             INNER JOIN ue u ON u.ue_id  = sed.escola_id 
                                         WHERE sed.dre_id = @dreCodigo
-                                        GROUP BY sed.escola_id,u.nome,u.tipo_escola 
+                                        GROUP BY sed.escola_id,u.nome,u.tipo_escola,tipo,excluido  
                                         ORDER BY u.nome ");
-            return await database.Conexao.QueryAsync<UnidadeEscolarResponsavelDto>(query.ToString(), new { dreCodigo });
+            return await database.Conexao.QueryAsync<UnidadeEscolarSemAtribuicaolDto>(query.ToString(), new { dreCodigo });
         }
 
 
-        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string dreId, string supervisoresId)
+        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string dreId, string supervisoresId, int tipoResponsavel)
         {
             StringBuilder query = new(@"SELECT        
                                             sed.escola_id AS Codigo,
                                             u.nome AS UeNome,
                                             u.tipo_escola AS TipoEscola,
+                                            sed.tipo,
                                             sed.criado_em AS CriadoEm,
                                             sed.criado_por AS CriadoPor,
                                             sed.alterado_em AS AlteradoEm,
@@ -100,9 +103,10 @@ namespace SME.SGP.Dados.Repositorios
                                         INNER JOIN ue u ON u.ue_id  = sed.escola_id 
                                         where excluido = false 
                                         and sed.supervisor_id = @supervisoresId 
+                                        and sed.tipo = @tipoResponsavel
                                          and sed.dre_id = @dreId ");
 
-            return await database.Conexao.QueryAsync<UnidadeEscolarResponsavelDto>(query.ToString(), new { dreId, supervisoresId });
+            return await database.Conexao.QueryAsync<UnidadeEscolarResponsavelDto>(query.ToString(), new { dreId, supervisoresId, tipoResponsavel });
         }
         public async Task<List<SupervisorEscolasDreDto>> ObterTodosAtribuicaoResponsavelPorDreCodigo(string dreCodigo)
         {

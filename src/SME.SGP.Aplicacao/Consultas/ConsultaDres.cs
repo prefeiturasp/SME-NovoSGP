@@ -1,7 +1,9 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,13 +45,49 @@ namespace SME.SGP.Aplicacao
             return lista;
         }
 
-        public async Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId)
+        public async Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId, int tipoResponsavel)
         {
             var uesParaAtribuicao = await repositorioSupervisorEscolaDre.ObterListaUEsParaNovaAtribuicaoPorCodigoDre(dreId);
             if (!uesParaAtribuicao.Any())
-                new List<UnidadeEscolarDto>() { new UnidadeEscolarDto() };
+                return new List<UnidadeEscolarDto>() { new UnidadeEscolarDto() };
 
-            return TrataEscolasSemSupervisores(uesParaAtribuicao);
+            var listaUesParaAtribuicao = AdicionarTiposNaoExistente(uesParaAtribuicao.ToList(), tipoResponsavel);
+
+            return TrataEscolasSemSupervisores(listaUesParaAtribuicao);
+        }
+
+        private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
+        {
+            var novaLista = new List<UnidadeEscolarSemAtribuicaolDto>();
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
+            .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+
+
+            foreach (var ue in uesParaAtribuicao.ToList())
+            {
+                var codUE = ue.Codigo;
+                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
+                if (quantidadeTipos.Count() < tipos.Count())
+                {
+                    var naotemTipo = tipos.Except(quantidadeTipos).ToList();
+                    foreach (var tipo in naotemTipo)
+                    {
+                        var registro = new UnidadeEscolarSemAtribuicaolDto
+                        {
+                            Codigo = ue.Codigo,
+                            UeNome = ue.UeNome,
+                            TipoEscola = ue.TipoEscola,
+                            TipoAtribuicao = (TipoResponsavelAtribuicao)tipo,
+                            AtribuicaoExcluida = true
+                        };
+                        uesParaAtribuicao.Add(registro);
+                    }
+                }
+            }
+
+            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
+            return retorno.OrderBy(x => x.Nome).ToList();
         }
 
         public IEnumerable<DreConsultaDto> ObterTodos()
@@ -72,7 +110,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<UnidadeEscolarResponsavelDto> uesParaAtribuicao)
+        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao)
         {
             foreach (var item in uesParaAtribuicao)
             {
