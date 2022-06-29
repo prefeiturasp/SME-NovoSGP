@@ -93,13 +93,13 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(204);
         }
 
-        [HttpGet("{supervisoresId}/dre/{dreId}")]
+        [HttpGet("{supervisoresId}/dre/{dreId}/{tipoResponsavel}")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarResponsavelDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId)
+        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId,int tipoResponsavel)
         {
-            var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId);
+            var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId, tipoResponsavel);
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);

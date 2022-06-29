@@ -72,6 +72,7 @@ namespace SME.SGP.Dados.Repositorios
                                                       from pendencia p                                                      
                                                       inner join pendencia_encaminhamento_aee eaee ON eaee.pendencia_id = p.id
                                                       inner join encaminhamento_aee aee on eaee.encaminhamento_aee_id = aee.id
+                                                      inner join pendencia_usuario pu2 on p.id = pu2.pendencia_id and pu2.usuario_id = :usuarioId
                                                       where not p.excluido
                                                        and aee.responsavel_id = @usuarioId
                                                        and p.situacao = @situacao) t order by CriadoEm desc"
