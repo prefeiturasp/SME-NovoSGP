@@ -61,9 +61,13 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");
+                    throw new NegocioException("Aluno não localizado");               
 
-                turma = entidadePlano.Turma;
+                turma = await mediator
+                    .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
+
+                if (turma.TipoTurma == TipoTurma.Programa && entidadePlano.Turma.AnoLetivo == anoLetivo)
+                    turma = entidadePlano.Turma;
 
                 var aluno = new AlunoReduzidoDto()
                 {
