@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(long planoAEEId, string responsavelRF)
+        public async Task<bool> Executar(long planoAEEId, string responsavelRF, string responsavelNome)
         {
-            return await mediator.Send(new AtribuirResponsavelGeralDoPlanoCommand(planoAEEId, responsavelRF));
+            return await mediator.Send(new AtribuirResponsavelGeralDoPlanoCommand(planoAEEId, responsavelRF, responsavelNome));
         }
     }
 }
