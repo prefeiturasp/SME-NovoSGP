@@ -102,13 +102,8 @@ namespace SME.SGP.Aplicacao
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.CodigoAluno);
                 string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
                 string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
-                var horaNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
-                var dataNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy"); 
-                if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
-                {
-                    horaNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("HH:mm:ss");
-                    dataNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("dd/MM/yyyy");
-                }
+                var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(notaAprovacao);
+               
                 mensagem.AppendLine("<tr>");
                 
                 if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue && lancaNota)
@@ -161,13 +156,8 @@ namespace SME.SGP.Aplicacao
 
                 string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
                 string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
-                var horaNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
-                var dataNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy");
-                if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
-                {
-                    horaNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("HH:mm:ss");
-                    dataNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("dd/MM/yyyy");
-                }
+                var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(notaAprovacao);
+               
                 mensagem.AppendLine("<tr>");
 
                 if (!notaAprovacao.ConceitoAnteriorId.HasValue)
@@ -195,6 +185,17 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine("<p>Você precisa aceitar esta notificação para que a alteração seja considerada válida.</p>");
 
             return mensagem.ToString();
+        }
+        private static (string dataNotificacao, string horaNotificacao) RetornarDataHoraNotificacao(WfAprovacaoNotaFechamentoTurmaDto notaAprovacao)
+        {
+           var dataformatada = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy");
+           var horaformatada = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
+            if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
+            {
+                dataformatada = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("dd/MM/yyyy");
+                horaformatada = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("HH:mm:ss");
+            }
+            return (dataformatada, horaformatada);
         }
         private string ObterNota(double? nota)
         {
