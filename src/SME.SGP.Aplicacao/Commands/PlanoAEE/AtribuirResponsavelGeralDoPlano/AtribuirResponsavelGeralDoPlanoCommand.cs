@@ -5,14 +5,16 @@ namespace SME.SGP.Aplicacao
 {
     public class AtribuirResponsavelGeralDoPlanoCommand : IRequest<bool>
     {
-        public AtribuirResponsavelGeralDoPlanoCommand(long planoAEEId, string responsavelRF)
+        public AtribuirResponsavelGeralDoPlanoCommand(long planoAEEId, string responsavelRF, string responsavelNome)
         {
             PlanoAEEId = planoAEEId;
             ResponsavelRF = responsavelRF;
+            ResponsavelNome = responsavelNome;
         }
 
         public long PlanoAEEId { get; set; }
         public string ResponsavelRF { get; set; }
+        public string ResponsavelNome { get; set; }
     }
 
     public class AtribuirResponsavelGeralDoPlanoCommandValidator : AbstractValidator<AtribuirResponsavelGeralDoPlanoCommand>

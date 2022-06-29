@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (planoAEE == null)
                 throw new NegocioException("O Plano AEE informado não foi encontrado");
 
-            planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
+            planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF, request.ResponsavelNome));
 
             await repositorioPlanoAEE.SalvarAsync(planoAEE);
 

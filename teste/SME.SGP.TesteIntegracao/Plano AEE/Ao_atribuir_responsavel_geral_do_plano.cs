@@ -14,6 +14,8 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
     public class Ao_atribuir_responsavel_geral_do_plano : TesteBase
     {
         private readonly ItensBasicosBuilder _builder;
+        private const string RF_NOVO = "8888888";
+        private const string NOME_NOVO_USUARIO = "Novo usuário";
 
         public Ao_atribuir_responsavel_geral_do_plano(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -29,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             var useCase = ServiceProvider.GetService<IAtribuirResponsavelGeralDoPlanoUseCase>();
  
-            var retorno = await useCase.Executar(1, "8888888");
+            var retorno = await useCase.Executar(1, RF_NOVO, string.Empty);
 
             retorno.ShouldBe(true);
 
@@ -37,6 +39,29 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().ResponsavelId.ShouldBe(2);
+        }
+
+        [Fact]
+        public async Task Deve_atribuir_responsavel_criando_usuario()
+        {
+            await _builder.CriaItensComunsEja();
+            await CriaPlanoAee();
+
+            var useCase = ServiceProvider.GetService<IAtribuirResponsavelGeralDoPlanoUseCase>();
+
+            var retorno = await useCase.Executar(1, RF_NOVO, NOME_NOVO_USUARIO);
+
+            retorno.ShouldBe(true);
+
+            var lista = ObterTodos<PlanoAEE>();
+
+            lista.ShouldNotBeEmpty();
+            lista.FirstOrDefault().ResponsavelId.ShouldBe(2);
+
+            var listaUsuario = ObterTodos<Usuario>();
+
+            listaUsuario.ShouldNotBeEmpty();
+            listaUsuario.Exists(usuario => usuario.Nome == NOME_NOVO_USUARIO).ShouldBe(true);
         }
 
         private async Task CriaPlanoAee()
@@ -61,9 +86,9 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             await InserirNaBase(new Usuario
             {
                 Id = 2,
-                Login = "8888888",
-                CodigoRf = "8888888",
-                Nome = "Usuario CP",
+                Login = RF_NOVO,
+                CodigoRf = RF_NOVO,
+                Nome = NOME_NOVO_USUARIO,
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
                 AlteradoRF = "0"
