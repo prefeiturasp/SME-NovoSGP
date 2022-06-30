@@ -131,7 +131,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                if (!string.IsNullOrEmpty(filtro.UeCodigo))
+                if (!string.IsNullOrEmpty(filtro.UeCodigo) && !filtro.UESemResponsavel)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.UeId == filtro.UeCodigo).ToList();
                 
                 if (filtro.TipoCodigo > 0)
