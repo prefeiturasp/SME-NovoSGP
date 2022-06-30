@@ -23,13 +23,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<PodeCadastrarAulaPorDataRetornoDto> Handle(ObterPodeCadastrarAulaPorDataQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.Turma.CodigoTurma), cancellationToken);
 
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
-            
+
             if (periodoEscolar == null)
             {
                 var eventoReposicaoAulaNoDia = await repositorioEvento
@@ -46,7 +47,7 @@ namespace SME.SGP.Aplicacao
             if (request.DataAula.FimDeSemana())
             {
                 var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
-                
+
                 if (!temEventoLetivoDeLiberacao)
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
             }
