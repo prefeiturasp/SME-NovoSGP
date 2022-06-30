@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao
         {
             var responsavel = new ResponsavelDto();
 
-            var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(id));
+            var usuario = await mediator.Send(new ObterUsuarioPorIdSemPerfilQuery(id));
 
             if (usuario != null)
             {
