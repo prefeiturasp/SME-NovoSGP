@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
 
                     if (!codigoTurma.Equals(turma.CodigoTurma))
                         turmasCodigos = new string[2] { codigoTurma, turma.CodigoTurma };
-                }
+                }       
                 else if (!turmasCodigos.Contains(turma.CodigoTurma))
                     turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
 
