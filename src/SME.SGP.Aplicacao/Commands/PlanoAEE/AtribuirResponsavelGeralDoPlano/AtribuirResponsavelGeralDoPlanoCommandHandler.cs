@@ -12,11 +12,13 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public AtribuirResponsavelGeralDoPlanoCommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE)
+        public AtribuirResponsavelGeralDoPlanoCommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IServicoUsuario servicoUsuario)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
         }
 
         public async Task<bool> Handle(AtribuirResponsavelGeralDoPlanoCommand request, CancellationToken cancellationToken)
@@ -26,7 +28,9 @@ namespace SME.SGP.Aplicacao
             if (planoAEE == null)
                 throw new NegocioException("O Plano AEE informado não foi encontrado");
 
-            planoAEE.ResponsavelId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF, request.ResponsavelNome));
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(request.ResponsavelRF, String.Empty, request.ResponsavelNome);
+
+            planoAEE.ResponsavelId = usuario.Id;
 
             await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
