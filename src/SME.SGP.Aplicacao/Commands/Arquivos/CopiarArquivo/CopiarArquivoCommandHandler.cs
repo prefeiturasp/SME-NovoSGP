@@ -23,8 +23,15 @@ namespace SME.SGP.Aplicacao
         {
             var caminhoBase = UtilArquivo.ObterDiretorioBase();
             var nomeArquivo = Path.GetFileName(request.Nome);
-
-            var caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
+            string caminhoArquivoOriginal;
+            if (request.TipoArquivoOriginal == TipoArquivo.temp)
+            {
+                caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name());
+            }
+            else
+            {
+                caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
+            }
             var caminhoArquivoDestino = Path.Combine(caminhoBase, request.TipoArquivoDestino.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
             CopiarArquivo(caminhoArquivoOriginal, caminhoArquivoDestino, nomeArquivo);
             await SalvarCopiaArquivo(request.TipoArquivoDestino, request.Nome);
