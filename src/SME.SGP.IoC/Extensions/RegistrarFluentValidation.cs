@@ -4,9 +4,9 @@ using System;
 
 namespace SME.SGP.IoC
 {
-    public static class RegistrarFluentValidation
+    internal static class RegistrarFluentValidation
     {
-        public static void AdicionarValidadoresFluentValidation(this IServiceCollection services)
+        internal static void AdicionarValidadoresFluentValidation(this IServiceCollection services)
         {
             var assemblyInfra = AppDomain.CurrentDomain.Load("SME.SGP.Infra");
 

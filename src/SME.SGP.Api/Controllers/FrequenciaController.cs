@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> Notificar()
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
             
             return Ok();
         }

@@ -25,13 +25,13 @@ namespace SME.SGP.Aplicacao
             var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
             var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual)?request.TextoEditorAtual:string.Empty).Cast<Match>().Select(c => c.Value).ToList();
             var diferenca = novo.Any() ? novo.Except(atual) : new  List<string>();
-            
+                                    
             foreach (var item in diferenca)
             {
                 enderecoFuncionalidade = await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
             }
 
-            string textoNovo = request.TextoEditorNovo.Replace(ArquivoContants.PastaTemporaria, enderecoFuncionalidade);
+            string textoNovo = request.TextoEditorNovo.Replace(ArquivoConstants.PastaTemporaria, enderecoFuncionalidade);
             return textoNovo.ToString();
 
         }
