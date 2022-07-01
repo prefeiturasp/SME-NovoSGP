@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -17,18 +17,20 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IRepositorioCache repositorioCache;
 
         public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
             IServicoEol servicoEOL,
             IRepositorioAbrangencia repositorioAbrangencia,
             IServicoUsuario servicoUsuario,
-            IRepositorioUeConsulta repositorioUe)
+            IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<ResponsavelEscolasDto>> ObterPorDre(string dreId)
@@ -55,19 +57,22 @@ namespace SME.SGP.Aplicacao
             IEnumerable<ResponsavelEscolasDto> lista = new List<ResponsavelEscolasDto>();
 
             if (responsaveisEscolasDres.Any())
-                lista = MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
+                lista = await MapearResponsavelEscolaDre(responsaveisEscolasDres);
 
             return lista;
         }
 
-        public IEnumerable<ResponsavelEscolasDto> ObterPorDreESupervisores(string[] supervisoresId, string dreId)
+        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string supervisoresId, string dreId, int tipoResponsavel)
         {
-            var responsaveisEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisores(dreId, supervisoresId);
+            if (string.IsNullOrEmpty(supervisoresId) || string.IsNullOrEmpty(dreId) || tipoResponsavel == 0)
+                throw new NegocioException("Necessário informar o Código da DRE o Código do Responsável e o Tipo de responsável");
+
+            var responsaveisEscolasDres = await repositorioSupervisorEscolaDre.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId, tipoResponsavel);
 
             if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
-                return Enumerable.Empty<ResponsavelEscolasDto>();
+                return Enumerable.Empty<UnidadeEscolarResponsavelDto>();
             else
-                return MapearResponsavelEscolaDre(responsaveisEscolasDres).ToList();
+                return responsaveisEscolasDres;
         }
 
         public async Task<IEnumerable<ResponsavelEscolasDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
@@ -76,42 +81,70 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(filtro.DreCodigo))
                 throw new NegocioException("Necessário informar o Codigo da DRE");
 
-            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObterAtribuicaoResponsavel(filtro);
+            return await ListaDeAtribuicaoResponsavel(filtro);
+        }
+
+        private async Task<IEnumerable<ResponsavelEscolasDto>> ListaDeAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
+        {
+            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo); ;
 
             if (responsavelEscolaDreDto == null)
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
 
 
-            responsavelEscolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto.ToList());
-
-            return MapearResponsavelEscolaDre(responsavelEscolaDreDto);
-                 
+            var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto, filtro);
+            return await MapearResponsavelEscolaDre(escolaDreDto);
         }
 
-        private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto)
+        private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto, FiltroObterSupervisorEscolasDto filtro)
         {
-            var agrupamentoUe = responsavelEscolaDreDto.GroupBy(x => x.EscolaId);
-            foreach (var item in agrupamentoUe)
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+            string[] listaCodigoSupervisor = filtro.SupervisorId !=null ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
+            if (responsavelEscolaDreDto.Count() > 0)
             {
-               var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
-                
-                var itemTipo = item.Select(e => e.Tipo);
-                var naotemTipo = tipos.Except(itemTipo).ToList();
-
-                foreach (var itemCodigo in naotemTipo)
+                for (int i = 0; i < responsavelEscolaDreDto.Count; i++)
                 {
-                    var registro = new SupervisorEscolasDreDto
+                    var codUE = responsavelEscolaDreDto[i].UeId;
+                    var supervisorEscolasDreDto = responsavelEscolaDreDto.Where(x => x.UeId == codUE);
+                    var quantidadeTipos = supervisorEscolasDreDto.Select(t => t.TipoAtribuicao);
+                    if (quantidadeTipos.Count() < tipos.Count())
                     {
-                        DreId = item.FirstOrDefault().DreId,
-                        EscolaId = item.FirstOrDefault().EscolaId,
-                        Tipo = itemCodigo,
-                        SupervisorId = null,
-                        Excluido = false
-                    };
-                    responsavelEscolaDreDto.Add(registro);
+                        var naotemTipo = tipos.Except(quantidadeTipos).ToList();
+
+                        for (int n = 0; n < naotemTipo.Count; n++)
+                        {
+                            var registro = new SupervisorEscolasDreDto
+                            {
+                                AtribuicaoSupervisorId = supervisorEscolasDreDto.FirstOrDefault().AtribuicaoSupervisorId,
+                                DreId = supervisorEscolasDreDto.FirstOrDefault().DreId,
+                                EscolaId = supervisorEscolasDreDto.FirstOrDefault().EscolaId,
+                                TipoAtribuicao = naotemTipo[n],
+                                SupervisorId = null,
+                                TipoEscola = supervisorEscolasDreDto.FirstOrDefault().TipoEscola,
+                                UeNome = supervisorEscolasDreDto.FirstOrDefault().UeNome,
+                                DreNome = supervisorEscolasDreDto.FirstOrDefault().DreNome,
+                                AtribuicaoExcluida = true,
+                                UeId = supervisorEscolasDreDto.FirstOrDefault().UeId,
+                            };
+                            responsavelEscolaDreDto.Add(registro);
+                        }
+                    }
                 }
+
+                if (!string.IsNullOrEmpty(filtro.UeCodigo) && !filtro.UESemResponsavel)
+                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.UeId == filtro.UeCodigo).ToList();
+                
+                if (filtro.TipoCodigo > 0)
+                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.TipoAtribuicao == filtro.TipoCodigo).ToList();
+
+                if (listaCodigoSupervisor.Any())
+                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
+                
+                if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel || filtro.UESemResponsavel)
+                    responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
             }
-            return responsavelEscolaDreDto;
+            
+            return responsavelEscolaDreDto.OrderBy(x => x.Nome).ToList();
         }
 
         private static void TrataEscolasSemResponsaveis(IEnumerable<AbrangenciaUeRetorno> escolasPorDre, List<ResponsavelEscolasDto> listaRetorno)
@@ -135,105 +168,70 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<ResponsavelEscolasDto> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
+        private async Task<IEnumerable<ResponsavelEscolasDto>> MapearResponsavelEscolaDre(IEnumerable<SupervisorEscolasDreDto> supervisoresEscolasDres)
         {
-            var listaEscolas = repositorioUe.ListarPorCodigos(supervisoresEscolasDres.Select(a => a.EscolaId).ToArray());
+            ResponsavelRetornoDto listaResponsaveis = null;
+            var listaRetorno = new List<ResponsavelEscolasDto>();
 
-            var listaResponsaveis = Enumerable.Empty<ResponsavelRetornoDto>().ToList();
-
-            if (supervisoresEscolasDres.Count() == 1 && string.IsNullOrEmpty(supervisoresEscolasDres.FirstOrDefault().SupervisorId))
-                listaResponsaveis.Add(new ResponsavelRetornoDto() { CodigoRfOuLogin = "", NomeServidor = "NÃO ATRIBUÍDO" });
-
-            var supervisoresTipo = supervisoresEscolasDres
-                .GroupBy(a => new { a.SupervisorId, a.Tipo, a.Excluido,a.EscolaId })
-                .Select(g => g.Key);
-
-            foreach (var supervisor in supervisoresTipo)
+            var supervisor = supervisoresEscolasDres.ToList();
+            var totalRegistros = supervisor.Count;
+            for (int i = 0; i < totalRegistros; i++)
             {
-
-                var supervisorEscolas = supervisoresEscolasDres.Where(a => a.SupervisorId == supervisor.SupervisorId).ToList();
-
-                var idsEscolas = supervisorEscolas.Select(a => a.EscolaId).ToList();
-
-                IEnumerable<UnidadeEscolarDto> escolas = new List<UnidadeEscolarDto>();
-
-                if (idsEscolas.Count > 0)
-                {
-                    escolas = from t in listaEscolas
-                              where idsEscolas.Contains(t.CodigoUe)
-                              select new UnidadeEscolarDto() { Codigo = t.CodigoUe, Nome = $"{t.TipoEscola.ShortName()} {t.Nome}" };
-                }
-
-                var auditoria = supervisoresEscolasDres.FirstOrDefault(c => c.SupervisorId == supervisor.SupervisorId);
-
-                switch (supervisor.Tipo)
+                switch (supervisor[i].TipoAtribuicao)
                 {
                     case (int)TipoResponsavelAtribuicao.PsicologoEscolar:
                     case (int)TipoResponsavelAtribuicao.Psicopedagogo:
                     case (int)TipoResponsavelAtribuicao.AssistenteSocial:
                         {
-                            var nomesFuncionariosAtribuidos = servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor.SupervisorId }).Result;
-
-                            foreach (var funcionario in nomesFuncionariosAtribuidos)
-                            {
-                                listaResponsaveis.Add(new ResponsavelRetornoDto()
-                                {
-                                    CodigoRfOuLogin = funcionario.Login,
-                                    NomeServidor = funcionario.NomeServidor
-                                });
-                            }
-
+                            var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
+                            if (nomesFuncionariosAtribuidos.Any())
+                                listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };
                             break;
                         }
                     default:
                         {
-                            var nomesServidoresAtribuidos = servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor.SupervisorId }).Result;
-
-                            foreach (var item in nomesServidoresAtribuidos)
-                            {
-                                listaResponsaveis.Add(new ResponsavelRetornoDto()
-                                {
-                                    CodigoRfOuLogin = item.CodigoRF,
-                                    NomeServidor = item.Nome
-                                });
-                            }
-
+                            var nomesServidoresAtribuidos = await servicoEOL.ObterListaNomePorListaRF(new List<string> { supervisor[i].SupervisorId });
+                            if (nomesServidoresAtribuidos.Any())
+                                listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesServidoresAtribuidos.FirstOrDefault().CodigoRF, NomeServidor = nomesServidoresAtribuidos.FirstOrDefault().Nome };
                             break;
                         }
                 }
-
-                var responsavelRetorno = listaResponsaveis.FirstOrDefault(a => a.CodigoRfOuLogin == supervisor.SupervisorId);
-
-                string nomeResponsavel = responsavelRetorno != null ? responsavelRetorno.NomeServidor + " - " + responsavelRetorno.CodigoRfOuLogin
+                string nomeResponsavel = listaResponsaveis != null ? listaResponsaveis.NomeServidor + " - " + listaResponsaveis.CodigoRfOuLogin
                                          : string.Empty;
 
-                yield return new ResponsavelEscolasDto()
+                var itemRetorno = new ResponsavelEscolasDto()
                 {
-                    Responsavel = supervisor.Excluido ? null : nomeResponsavel ,
-                    ResponsavelId = supervisor.Excluido? null : supervisor.SupervisorId,
-                    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor.Tipo),
-                    TipoResponsavelId = supervisor.Tipo,
-                    Escolas = escolas.ToList(),
-                    AlteradoEm = auditoria.AlteradoEm,
-                    AlteradoPor = auditoria.AlteradoPor,
-                    AlteradoRF = auditoria.AlteradoRF,
-                    CriadoEm = auditoria.CriadoEm,
-                    CriadoPor = auditoria.CriadoPor,
-                    CriadoRF = auditoria.CriadoRF
+                    Id = supervisor[i].AtribuicaoSupervisorId,
+                    Responsavel = supervisor[i].AtribuicaoExcluida ? null : nomeResponsavel,
+                    ResponsavelId = supervisor[i].AtribuicaoExcluida ? null : supervisor[i].SupervisorId,
+                    TipoResponsavel = ObterTipoResponsavelDescricao(supervisor[i].TipoAtribuicao),
+                    TipoResponsavelId = supervisor[i].TipoAtribuicao,
+                    UeNome = supervisor[i].Nome,
+                    UeId = supervisor[i].UeId,
+                    DreId = supervisor[i].DreId,
+                    DreNome = supervisor[i].DreNome,
+                    AlteradoEm = supervisor[i].AlteradoEm,
+                    AlteradoPor = supervisor[i].AlteradoPor,
+                    AlteradoRF = supervisor[i].AlteradoRF,
+                    CriadoEm = supervisor[i].CriadoEm,
+                    CriadoPor = supervisor[i].CriadoPor,
+                    CriadoRF = supervisor[i].CriadoRF,
                 };
+
+                listaRetorno.Add(itemRetorno);
             }
+            return listaRetorno;
         }
 
         private static string ObterTipoResponsavelDescricao(int tipo)
         {
-
             var tipoDescricao = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
                 .Cast<TipoResponsavelAtribuicao>()
                 .Where(w => (int)w == tipo)
                 .Select(d => new { descricao = d.Name() })
                 .FirstOrDefault()?.descricao;
 
-            return tipoDescricao != null ? tipoDescricao : "NÃO ATRIBUÍDO";
+            return tipoDescricao != null ? tipoDescricao : null;
         }
 
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
@@ -243,15 +241,15 @@ namespace SME.SGP.Aplicacao
                 DreId = dto.DreId,
                 SupervisorId = dto.SupervisorId,
                 EscolaId = dto.EscolaId,
-                Id = dto.Id,
-                Excluido = dto.Excluido,
+                Id = dto.AtribuicaoSupervisorId,
+                Excluido = dto.AtribuicaoExcluida,
                 AlteradoEm = dto.AlteradoEm,
                 AlteradoPor = dto.AlteradoPor,
                 AlteradoRF = dto.AlteradoRF,
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
                 CriadoRF = dto.CriadoRF,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoAtribuicao
             };
         }
 
@@ -296,7 +294,7 @@ namespace SME.SGP.Aplicacao
             if (supervisoresEol != null)
             {
                 supervisoresSemAtribuicao = supervisoresEscolasDres
-                    .Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.SupervisorEscolar &&
+                    .Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar &&
                         !supervisoresEol.Select(e => e.CodigoRf)
                     .Contains(s.SupervisorId));
             }
@@ -305,7 +303,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var supervisor in supervisoresSemAtribuicao)
                 {
-                    if (supervisor.Tipo == (int)TipoResponsavelAtribuicao.SupervisorEscolar)
+                    if (supervisor.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar)
                     {
                         var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
                         supervisorEntidadeExclusao.Excluir();
@@ -313,6 +311,13 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+        }
+
+        public async Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo)
+        {
+            var consulta = await repositorioSupervisorEscolaDre.ObterListaDeUesFiltroPrincipal(dreCodigo);
+
+            return consulta.OrderBy(x => x.Nome);
         }
     }
 }

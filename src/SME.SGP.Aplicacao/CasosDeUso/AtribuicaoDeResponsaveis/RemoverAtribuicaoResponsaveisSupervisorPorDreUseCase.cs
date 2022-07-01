@@ -47,7 +47,7 @@ namespace SME.SGP.Aplicacao
             var responsavelSupervisor = responsaveisSGP;
 
             if (responsaveisEOL != null)
-                responsavelSupervisor = responsavelSupervisor.Where(s => s.Tipo == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
+                responsavelSupervisor = responsavelSupervisor.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.SupervisorEscolar && !responsaveisEOL.Select(e => e.CodigoRf).Contains(s.SupervisorId));
 
             foreach (var supervisor in responsavelSupervisor)
             {
@@ -63,15 +63,15 @@ namespace SME.SGP.Aplicacao
                 DreId = dto.DreId,
                 SupervisorId = dto.SupervisorId,
                 EscolaId = dto.EscolaId,
-                Id = dto.Id,
-                Excluido = dto.Excluido,
+                Id = dto.AtribuicaoSupervisorId,
+                Excluido = dto.AtribuicaoExcluida,
                 AlteradoEm = dto.AlteradoEm,
                 AlteradoPor = dto.AlteradoPor,
                 AlteradoRF = dto.AlteradoRF,
                 CriadoEm = dto.CriadoEm,
                 CriadoPor = dto.CriadoPor,
                 CriadoRF = dto.CriadoRF,
-                Tipo = dto.Tipo
+                Tipo = dto.TipoAtribuicao
             };
         }
     }

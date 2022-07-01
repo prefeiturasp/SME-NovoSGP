@@ -72,6 +72,9 @@ namespace SME.SGP.Dominio
         CartaIntencoes = 22,
 
         [Display(Name ="registro/poa")]
-        RegistroPOA = 23,        
+        RegistroPOA = 23,
+
+        [Display(Name = "temp")]
+        temp = 99
     }
 }

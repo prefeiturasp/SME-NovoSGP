@@ -323,7 +323,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo,
-            DateTime dataDoEvento, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
+            DateTime dataDoEvento, long tipoCalendarioId, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false)
 
         {
             StringBuilder query = new StringBuilder();
@@ -363,6 +363,7 @@ namespace SME.SGP.Dados.Repositorios
 
             query.AppendLine("and e.dre_id = @dreCodigo and e.ue_id = @ueCodigo");
             query.AppendLine("and @dataDoEvento between symmetric e.data_inicio ::date and e.data_fim ::date");
+            query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
 
 
             if (VisualizarEventosSME)
@@ -397,6 +398,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and et.excluido = false");
                 query.AppendLine("and e.dre_id is null and e.ue_id is null");
                 query.AppendLine("and @dataDoEvento between symmetric e.data_inicio ::date and e.data_fim ::date");
+                query.AppendLine("and e.tipo_calendario_id = @tipoCalendarioId");
             }
 
             return await database.Conexao.QueryAsync<Evento, EventoTipo, Dre, Ue, Evento>(query.ToString(), (evento, eventoTipo, dre, ue) =>
@@ -411,7 +413,8 @@ namespace SME.SGP.Dados.Repositorios
             {
                 dreCodigo,
                 ueCodigo,
-                dataDoEvento
+                dataDoEvento,
+                tipoCalendarioId
             });
 
         }
@@ -727,8 +730,8 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
             queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
-            queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE(TO_CHAR('{dataInicio.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
-            queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE(TO_CHAR('{dataFim.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
+            queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE('{dataInicio.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
+            queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE('{dataFim.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
             queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")},");
             queryNova.AppendLine($"{usuario.EhPerfilSME()},");

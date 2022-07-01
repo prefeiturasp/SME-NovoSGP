@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
         {
             var listaResponsaveis = new List<SupervisorDto>();
 
-            if ((int)filtro.TipoResponsavelAtribuicao == 0)
+            if ((int)filtro?.TipoResponsavelAtribuicao == 0)
                 return listaResponsaveis;
 
             var responsaveisEolOuCoreSSO = await ObterResponsaveisEolOuCoreSSO(filtro.DreCodigo, filtro.TipoResponsavelAtribuicao);

@@ -19,7 +19,8 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
+                typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
     }
 }

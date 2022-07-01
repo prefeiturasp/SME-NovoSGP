@@ -1,4 +1,4 @@
-﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -449,7 +449,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "8888888",
+                    CodigoRf = "1111111",
                     Perfis = new List<Guid>
                     {
                         new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),

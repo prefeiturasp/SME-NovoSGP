@@ -104,22 +104,22 @@ namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
                 CriadoEm = System.DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-               
+
             });
 
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 2,
                 Nota = NOTA_8,
-                CriadoEm = System.DateTime.Now,
+                CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-                
+
             });
 
             var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
             var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
-            var componenteCurricular = new ComponenteCurricular()
+            var componenteCurricular = new Dominio.ComponenteCurricular()
             {
                 Descricao = COMPONENTE_CURRICULAR_MATEMATICA,
                 EhRegenciaClasse = false
@@ -127,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
             listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
-            
+
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
@@ -185,7 +185,7 @@ namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
             resultadoWfAprovacao.Count().ShouldBe(1);
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeFalse();
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeTrue();
-        }        
+        }
 
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_sem_aprovacao_id()
@@ -236,7 +236,7 @@ namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_com_aprovacao_id()
         {
-            
+
             var mediator = ServiceProvider.GetService<IMediator>();
 
             await CirarDadosBasicos();
@@ -250,7 +250,7 @@ namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
                 new FechamentoNotaDto()
                 {
                     Id = 1,
-                    Nota = NOTA_9,                    
+                    Nota = NOTA_9,
                 },
                 new FechamentoNotaDto()
                 {

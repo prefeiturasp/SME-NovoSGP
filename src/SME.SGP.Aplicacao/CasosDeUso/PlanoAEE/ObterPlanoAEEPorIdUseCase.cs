@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var alunoPorTurmaResposta = await mediator
-                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false));
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false, entidadePlano.Turma?.CodigoTurma));
 
                 if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
                 {
@@ -61,10 +61,13 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");
+                    throw new NegocioException("Aluno não localizado");               
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
+
+                if (turma.TipoTurma == TipoTurma.Programa && entidadePlano.Turma.AnoLetivo == anoLetivo)
+                    turma = entidadePlano.Turma;
 
                 var aluno = new AlunoReduzidoDto()
                 {
@@ -135,7 +138,7 @@ namespace SME.SGP.Aplicacao
                 turma.AnoLetivo.Equals(DateTime.Today.Year))
             {
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+                if (periodoAtual != null) plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
             }
 
             return plano;

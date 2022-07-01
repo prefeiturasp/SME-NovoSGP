@@ -150,8 +150,7 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
 
             usuario.AtualizaUltimoLogin();
-
-            repositorioUsuario.Salvar(usuario);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario));
 
             await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
 
@@ -295,6 +294,8 @@ namespace SME.SGP.Aplicacao
             claims.Add(new Claim("nome_adm_suporte", usuarioLogado.Nome));
 
             var dto = await ObtenhaAutenticacao(retornoAutenticacaoEol, login, claims);
+
+            dto.AdministradorSuporte = new AdministradorSuporteDto() { Login = usuarioLogado.Login, Nome = usuarioLogado.Nome };
 
             repositorioSuporteUsuario.Salvar(new SuporteUsuario()
             {

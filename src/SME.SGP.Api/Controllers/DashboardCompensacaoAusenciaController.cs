@@ -27,7 +27,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(GraficoCompensacaoAusenciaDto), 200)]
         [Permissao(Permissao.DF_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterTotalCompensacoesConsideradas(int anoLetivo, long dreId, long ueId, int modalidade, int bimestre, [FromQuery] int semestre, [FromServices] IObterDadosDashboardTotalAtividadesCompensacaoUseCase useCase)
+        public async Task<IActionResult> ObterTotalCompensacoesConsideradas(int anoLetivo, long dreId, long ueId, int modalidade, [FromQuery] int bimestre, int semestre, [FromServices] IObterDadosDashboardTotalAtividadesCompensacaoUseCase useCase)
         {
             return Ok(await useCase.Executar(anoLetivo, dreId, ueId, modalidade, bimestre, semestre));
         }
