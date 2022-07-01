@@ -1,16 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Threading.Tasks;
 using Xunit;
-using System.Linq;
-using System;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 
 
 namespace SME.SGP.TesteIntegracao.Frequencia
@@ -24,15 +16,13 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        [Fact]
+        //[Fact]
         public async Task Ao_registrar_frenquecia_professor_cj_ensino_fundamental()
         {
-            await CriarDadosBasicosAula(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, false);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await CriarPeriodoEscolarEAberturaPadrao();
 
-            await InserirFrequenciaUseCaseBasica();
+            await InserirFrequenciaUseCaseComValidacaoBasica(ObtenhaFrenqueciaDto());
         }
     }
 }

@@ -22,6 +22,16 @@ namespace SME.SGP.TesteIntegracao
     {
         private const int QUANTIDADE_3 = 3;
 
+        protected const long AULA_ID_1 = 1;
+
+        protected const int NUMERO_AULAS_1 = 1;
+
+        protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
+        protected const string TIPO_FREQUENCIA_FALTOU = "F";
+        protected const string TIPO_FREQUENCIA_REMOTO = "R";
+
+        protected const string CODIGO_ALUNO_99999 = "99999";        
+
         private const string REABERTURA_GERAL = "Reabrir Geral";
 
         private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
@@ -48,96 +58,52 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
-
         }
 
-        protected async Task<AuditoriaDto> InserirFrequenciaUseCaseBasica()
+        protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
         {
-            var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
-            var frequencia = ObterFrequencia();
-
-            var retorno = await useCase.Executar(frequencia);
+            var retorno = await InserirFrequenciaUseCaseSemValidacaoBasica(frequenciaDto);
 
             retorno.ShouldNotBeNull();
 
-            var aulasCadastradas = ObterTodos<RegistroFrequencia>();
+            var frenquencia = ObterTodos<RegistroFrequencia>();
 
-            aulasCadastradas.ShouldNotBeEmpty();
-            aulasCadastradas.Count().ShouldBeGreaterThanOrEqualTo(1);
+            frenquencia.ShouldNotBeEmpty();
+            frenquencia.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             return retorno;
         }
 
-        protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo, bool ehRegente = false)
+        protected async Task<AuditoriaDto> InserirFrequenciaUseCaseSemValidacaoBasica(FrequenciaDto frequenciaDto)
         {
-            var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
-            var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId, turmaCodigo, ueCodigo);
-            if (ehRegente) aula.EhRegencia = true;
+            var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
-            return await useCase.Executar(aula);
+            return await useCase.Executar(frequenciaDto);
         }
 
-        protected async Task<CadastroAulaDto> PodeCadastrarAulaUseCase(TipoAula tipoAula, string turmaCodigo, long componenteCurricularId, DateTime dataAula, bool ehRegente = false)
-        {
-            var useCase = ServiceProvider.GetService<IPodeCadastrarAulaUseCase>();
-
-            var filtroPodeCadastrarAulaDto = ObterFiltroPodeCadastrarAulaDto(tipoAula, turmaCodigo, componenteCurricularId, dataAula, ehRegente);
-
-            return await useCase.Executar(filtroPodeCadastrarAulaDto);
-        }
-
-        private FiltroPodeCadastrarAulaDto ObterFiltroPodeCadastrarAulaDto(TipoAula tipoAula, string turmaCodigo, long componenteCurricular, DateTime dataAula, bool ehRegencia, long aulaId = 0)
-        {
-            return new FiltroPodeCadastrarAulaDto()
-            {
-                AulaId = aulaId,
-                ComponenteCurricular = componenteCurricular,
-                DataAula = dataAula,
-                EhRegencia = ehRegencia,
-                TipoAula = tipoAula,
-                TurmaCodigo = turmaCodigo
-            };
-
-        }
-
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, bool criarPeriodo = true, long tipoCalendarioId = 1)
+        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular ,bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
         {
             await CriarTipoCalendario(tipoCalendario);
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
             CriarClaimUsuario(perfil);
             await CriarUsuarios();
             await CriarTurma(modalidade);
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica);
+            if (criarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
         }
 
-        protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
+        protected async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), BIMESTRE_1, criarPeriodo);
-        }
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
 
-        protected FrequenciaDto ObterFrequencia()
-        {
-            var frenquencia = new FrequenciaDto(AULA_ID);
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            frenquencia.ListaFrequencia = ObtenhaListaDeFrequenciaAluno();
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            return frenquencia;
-        }
-        protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo)
-        {
-            var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
-            return new PersistirAulaDto()
-            {
-                CodigoTurma = turmaCodigo,
-                Quantidade = 1,
-                TipoAula = tipoAula,
-                DataAula = dataAula,
-                DisciplinaCompartilhadaId = componenteCurricularId,
-                CodigoUe = ueCodigo,
-                RecorrenciaAula = recorrenciaAula,
-                TipoCalendarioId = tipoCalendarioId,
-                CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
-                NomeComponenteCurricular = componenteCurricular.Descricao
-            };
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -175,13 +141,6 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
         }
 
-        protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
-        {
-            var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
-            aula.AulaPaiId = 1;
-
-            await InserirNaBase(aula);
-        }
         private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Aula
@@ -202,15 +161,7 @@ namespace SME.SGP.TesteIntegracao
                 Migrado = false,
                 AulaCJ = false
             };
-        }
-        protected ExcluirAulaDto ObterExcluirAulaDto(RecorrenciaAula recorrencia)
-        {
-            return new ExcluirAulaDto()
-            {
-                AulaId = 1,
-                RecorrenciaAula = recorrencia
-            };
-        }
+        } 
 
         protected async Task CriarPeriodoEscolarEAberturaPadrao()
         {
@@ -273,6 +224,15 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
+        }
+
+        protected FrequenciaDto ObtenhaFrenqueciaDto()
+        {
+            var frenquencia = new FrequenciaDto(AULA_ID_1);
+
+            frenquencia.ListaFrequencia = ObtenhaListaDeFrequenciaAluno();
+
+            return frenquencia;
         }
 
         private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
