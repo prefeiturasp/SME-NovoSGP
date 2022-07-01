@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,9 +9,27 @@ namespace SME.SGP.TesteIntegracao
 {
     public class IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake : IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>
     {
-        public Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
+        public readonly IMediator mediator;
+        private readonly IConsolidarFrequenciaAlunoPorTurmaEMesUseCase consolidarFrequenciaAlunoPorTurmaEMesUseCase;
+        private readonly ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase;
+        
+
+        public IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake(IMediator mediator,IConsolidarFrequenciaAlunoPorTurmaEMesUseCase consolidarFrequenciaAlunoPorTurmaEMesUseCase, ICalculoFrequenciaTurmaDisciplinaUseCase calculoFrequenciaTurmaDisciplinaUseCase)  
         {
-            return Task.FromResult(true);
+            this.calculoFrequenciaTurmaDisciplinaUseCase = calculoFrequenciaTurmaDisciplinaUseCase ?? throw new ArgumentNullException(nameof(calculoFrequenciaTurmaDisciplinaUseCase));
+            this.consolidarFrequenciaAlunoPorTurmaEMesUseCase = consolidarFrequenciaAlunoPorTurmaEMesUseCase ?? throw new ArgumentNullException(nameof(consolidarFrequenciaAlunoPorTurmaEMesUseCase));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
+        {
+            var calculo = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId);
+            await calculoFrequenciaTurmaDisciplinaUseCase.Executar(new MensagemRabbit(calculo));
+
+            var consolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month);
+            await consolidarFrequenciaAlunoPorTurmaEMesUseCase.Executar(new MensagemRabbit(consolidacao));
+
+            return true;
         }
     }
 }
