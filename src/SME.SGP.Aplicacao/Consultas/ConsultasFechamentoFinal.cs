@@ -77,9 +77,9 @@ namespace SME.SGP.Aplicacao
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
 
-            retorno.EventoData = ultimoPeriodoEscolar.PeriodoFim;
+            retorno.EventoData = ultimoPeriodoEscolar.PeriodoInicio;
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 

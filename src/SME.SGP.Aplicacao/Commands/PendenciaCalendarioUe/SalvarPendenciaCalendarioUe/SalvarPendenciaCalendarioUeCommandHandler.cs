@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
                 throw;
             }
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.Ue.Id), Guid.NewGuid()));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.Ue.Id), Guid.NewGuid()));
             return idPendenciaCalendarioUe;
         }
 

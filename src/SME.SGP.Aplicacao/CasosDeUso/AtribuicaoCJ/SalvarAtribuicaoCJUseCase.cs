@@ -24,10 +24,6 @@ namespace SME.SGP.Aplicacao
 
             await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
-            var professorValidoNoEol = await mediator.Send(new ValidarProfessorEOLQuery(atribuicaoCJPersistenciaDto.UsuarioRf));
-            if (!professorValidoNoEol)
-                throw new NegocioException("Este professor não é válido para ser CJ.");
-
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atribuicaoCJPersistenciaDto.TurmaId));
 
             var professoresTitularesDisciplinasEol = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));

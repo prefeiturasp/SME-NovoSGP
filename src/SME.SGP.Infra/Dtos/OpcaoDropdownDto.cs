@@ -8,6 +8,8 @@
             Descricao = descricao;
         }
 
+        public OpcaoDropdownDto() {}
+
         public string Valor { get; set; }
         public string Descricao { get; set; }
     }

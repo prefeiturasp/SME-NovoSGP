@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var listaCompensacoes = await repositorioCompensacaoAusencia.Listar(Paginacao, turmaId, disciplinaId, bimestre, nomeAtividade);
 
             // Busca os nomes de alunos do EOL por turma
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId);
+            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId, true);
 
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {

@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra.Dtos
+﻿using System;
+
+namespace SME.SGP.Infra.Dtos
 {
     public class ConsolidacaoDevolutivaTurmaDTO
     {
@@ -23,6 +25,11 @@
         public int AnoLetivo { get; set; }
         public long UeId { get; set; }
         public long Id { get; set; }
+        public int AnoAtual { get; set; }
+        public DevolutivaTurmaDTO()
+        {
+            AnoAtual = DateTime.Now.Year;
+        }
     }
 
     public class FiltroDevolutivaTurmaDTO

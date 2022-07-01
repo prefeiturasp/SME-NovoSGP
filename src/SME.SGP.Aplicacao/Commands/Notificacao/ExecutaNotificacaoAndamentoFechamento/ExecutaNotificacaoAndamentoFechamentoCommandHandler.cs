@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     PeriodoEscolarId = periodoEscolar.Id
                 };
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAndamentoFechamentoPorUe, dto, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoAndamentoFechamentoPorUe, dto, Guid.NewGuid(), null));
             }
         }
     }

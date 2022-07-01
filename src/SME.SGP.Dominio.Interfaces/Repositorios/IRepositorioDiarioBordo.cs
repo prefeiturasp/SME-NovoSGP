@@ -38,6 +38,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<QuantidadeTotalDiariosPendentesEPreenchidosPorAnoOuTurmaDTO>> ObterQuantidadeTotalDeDiariosPreenchidosEPendentesPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade, bool ehPerfilSMEDRE);
         Task<IEnumerable<QuantidadeDiariosDeBordoComDevolutivaEDevolutivaPendentePorTurmaAnoDto>> ObterDiariosDeBordoComDevolutivaEDevolutivaPendenteAsync(int anoLetivo, Modalidade modalidade, DateTime dataAula, long? dreId, long? ueId);
 
-        Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string codigoDisciplina, long tipoCalendarioId, DateTime[] datasConsideradas);
+        Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas);
     }
 }

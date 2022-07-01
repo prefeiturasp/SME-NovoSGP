@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
                 string urlBase = Request.Host.Value;
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{urlBase}{Request.PathBase}{ArquivoContants.PastaAquivosTemporaria}", 
+                        $"https://{urlBase}{Request.PathBase}{ArquivoConstants.PastaAquivosTemporaria}", 
                         Dominio.TipoArquivo.Editor));
             }
             return BadRequest();

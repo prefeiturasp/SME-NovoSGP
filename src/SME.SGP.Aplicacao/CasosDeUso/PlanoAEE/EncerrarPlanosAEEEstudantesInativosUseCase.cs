@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -26,27 +27,40 @@ namespace SME.SGP.Aplicacao
             var anoLetivo = DateTime.Today.Year;
 
             if (planosAtivos != null && planosAtivos.Any())
+            {
                 foreach (var planoAEE in planosAtivos)
                 {
-                    var matriculas = await mediator.Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo));
-                    var turma = await ObterTurma(planoAEE.TurmaId);
-                    var etapaConcluida = false;
-                    AlunoPorTurmaResposta ultimaMatricula = null;
+                    var matriculas = await mediator
+                        .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
+                    var turma = await ObterTurma(planoAEE.TurmaId);                    
+
+                    if (turma == null)
+                        throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
+
+                    var etapaConcluida = false;
+                    var transferenciaUe = false;
+                    AlunoPorTurmaResposta ultimaMatricula = null;
+                    AlunoPorTurmaResposta registroMatriculaTurmaAnterior = null;
+                    
                     if (turma != null && (turma.AnoLetivo != anoLetivo))
                         etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, ref ultimaMatricula);
 
-                    if ((!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true) || etapaConcluida)
+                    if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
+                        transferenciaUe = DeterminaTransferenciaUe(matriculas, ref registroMatriculaTurmaAnterior);
+
+                    if ((!matriculas?.Any(a => a.EstaAtivo(DateTime.Today)) ?? true) || etapaConcluida || transferenciaUe)
                     {
                         if (ultimaMatricula == null)
                             ultimaMatricula = matriculas?.OrderByDescending(a => a.DataSituacao).FirstOrDefault();
 
-                        await EncerrarPlanoAEE(planoAEE, ultimaMatricula?.SituacaoMatricula ?? "Inativo", ultimaMatricula?.DataSituacao ?? DateTime.Now);
+                        await EncerrarPlanoAEE(planoAEE, registroMatriculaTurmaAnterior?.SituacaoMatricula ?? ultimaMatricula?.SituacaoMatricula ?? "Inativo", registroMatriculaTurmaAnterior?.DataSituacao ?? ultimaMatricula?.DataSituacao ?? DateTime.Now);
                     }
                 }
+            }
 
             return true;
-        }
+        }      
 
         private async Task EncerrarPlanoAEE(PlanoAEE planoAEE, string situacaoMatricula, DateTime dataSituacao)
         {
@@ -131,7 +145,7 @@ namespace SME.SGP.Aplicacao
         private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, ref AlunoPorTurmaResposta ultimaMatricula)
         {
             var matriculasAnoTurma = mediator
-                .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma.AnoLetivo)).Result;
+                .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma?.AnoLetivo ?? DateTime.Today.Year)).Result;
 
             var concluiuTurma = matriculasAnoTurma
                 .Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
@@ -149,11 +163,28 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataSituacao)
                     .FirstOrDefault(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
 
-                return turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
-                       (turma.EhTurmaInfantil && !turmaAtual.EhTurmaInfantil);
+                return turma.Ue.CodigoUe != turmaAtual?.Ue.CodigoUe &&
+                       (turma.EhTurmaInfantil && (!turmaAtual?.EhTurmaInfantil ?? turma.EhTurmaInfantil));
             }
 
             return false;
+        }
+
+        private bool DeterminaTransferenciaUe(IEnumerable<AlunoPorTurmaResposta> matriculas, ref AlunoPorTurmaResposta registroMatriculaTurmaAnterior)
+        {
+            var registroMatriculaMaisRecente = matriculas
+                .OrderBy(m => m.DataSituacao)
+                .Last();
+
+            registroMatriculaTurmaAnterior = matriculas
+                .Where(m => !m.CodigoTurma.Equals(registroMatriculaMaisRecente.CodigoTurma))
+                .OrderBy(m => m.DataSituacao)
+                .Last();
+
+            return (registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido ||
+                    registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Deslocamento ||
+                    registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.TransferidoSED) &&
+                   !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola);
         }
     }
 }

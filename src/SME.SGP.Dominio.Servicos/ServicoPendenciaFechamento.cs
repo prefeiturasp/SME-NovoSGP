@@ -407,7 +407,7 @@ namespace SME.SGP.Dominio.Servicos
             if (pendenciaFechamento == null)
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.VerificaPendenciasFechamentoTurma,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.VerificaPendenciasFechamentoTurma,
                                                            new VerificaPendenciasFechamentoCommand(pendenciaFechamento.FechamentoId),
                                                            Guid.NewGuid(),
                                                            null, 

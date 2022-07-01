@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
 
                     var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(dadoTurma.TurmaCodigo));
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaNotificacaoExclusaoAulasComFrequencia,
                         new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada.Select(ae => ae.data)), Guid.NewGuid(), null));
 
                     aulasAExcluirComFrequenciaRegistrada.Clear();
@@ -207,7 +207,7 @@ namespace SME.SGP.Aplicacao
 
         private int CriarAulas(List<Aula> aulasACriar, int contadorAulasCriadas)
         {
-            repositorioAula.SalvarVarias(aulasACriar);
+            //repositorioAula.SalvarVarias(aulasACriar);
             contadorAulasCriadas = contadorAulasCriadas + aulasACriar.Count;
             aulasACriar.Clear();
             return contadorAulasCriadas;

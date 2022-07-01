@@ -499,7 +499,7 @@ namespace SME.SGP.Dados.Repositorios
                 : @"group by
                         t.ano";
 
-        public async Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string codigoDisciplina, long tipoCalendarioId, DateTime[] datasConsideradas)
+        public async Task<IEnumerable<DiarioBordo>> ObterIdDiarioBordoAulasExcluidas(string codigoTurma, string[] codigosDisciplinas, long tipoCalendarioId, DateTime[] datasConsideradas)
         {
             var sqlQuery = new StringBuilder();
             sqlQuery.AppendLine("select distinct db.id,");
@@ -511,7 +511,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("			on db.aula_id = a.id");
             sqlQuery.AppendLine("where a.excluido and");
             sqlQuery.AppendLine("	a.turma_id = @codigoTurma and");
-            sqlQuery.AppendLine("	a.disciplina_id = @codigoDisciplina and");
+            sqlQuery.AppendLine("	a.disciplina_id = any(@codigosDisciplinas) and");
             sqlQuery.AppendLine("	a.tipo_calendario_id = @tipoCalendarioId and");
             sqlQuery.AppendLine("	a.data_aula = any(@datasConsideradas);");
 
@@ -523,7 +523,7 @@ namespace SME.SGP.Dados.Repositorios
                 }, new
                 {
                     codigoTurma,
-                    codigoDisciplina,
+                    codigosDisciplinas,
                     tipoCalendarioId,
                     datasConsideradas
                 }, splitOn: "id");
