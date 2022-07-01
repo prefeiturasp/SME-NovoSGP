@@ -66,10 +66,21 @@ namespace SME.SGP.TesteIntegracao
 
             retorno.ShouldNotBeNull();
 
-            //var aulasCadastradas = ObterTodos<Aula>();
+            var registroFrequencia = ObterTodos<RegistroFrequencia>();
+            registroFrequencia.ShouldNotBeEmpty();
+            registroFrequencia.Count().ShouldBeGreaterThanOrEqualTo(1);
 
-            //aulasCadastradas.ShouldNotBeEmpty();
-            //aulasCadastradas.Count().ShouldBeGreaterThanOrEqualTo(1);
+            var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
+            registroFrequenciaAluno.ShouldNotBeEmpty();
+            registroFrequenciaAluno.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
+            consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
+            consolidacaoFrequenciaAlunoMensal.Count().ShouldBeGreaterThanOrEqualTo(1);
+
+            var consolidacaoDashBoardFrequencias = ObterTodos<ConsolidacaoDashBoardFrequencia>();
+            consolidacaoDashBoardFrequencias.ShouldNotBeEmpty();
+            consolidacaoDashBoardFrequencias.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             return retorno;
         }
