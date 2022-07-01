@@ -19,34 +19,27 @@ namespace SME.SGP.Dados.Repositorios
 
         public virtual async Task<long> SalvarAsync(ComunicadoTipoEscola comunicadoTipoEscola)
         {
-            try
+            var sqlQuery = new StringBuilder();
+
+            if (comunicadoTipoEscola.Id > 0)
+                await database.Conexao.UpdateAsync(comunicadoTipoEscola);
+            else
             {
-                var sqlQuery = new StringBuilder();
+                sqlQuery.AppendLine("insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido)");
+                sqlQuery.AppendLine("values (@comunicadoId, @tipoEscola, @excluido)");
+                sqlQuery.AppendLine("returning id;");
 
-                if (comunicadoTipoEscola.Id > 0)
-                    await database.Conexao.UpdateAsync(comunicadoTipoEscola);
-                else
-                {
-                    sqlQuery.AppendLine("insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido)");
-                    sqlQuery.AppendLine("values (@comunicadoId, @tipoEscola, @excluido)");
-                    sqlQuery.AppendLine("returning id;");
-
-                    comunicadoTipoEscola.Id = (long)await database.Conexao
-                        .ExecuteScalarAsync(sqlQuery.ToString(),
-                        new
-                        {
-                            comunicadoId = comunicadoTipoEscola.ComunicadoId,
-                            tipoEscola = comunicadoTipoEscola.TipoEscola,
-                            excluido = false
-                        });
-                }
-
-                return comunicadoTipoEscola.Id;
+                comunicadoTipoEscola.Id = (long)await database.Conexao
+                    .ExecuteScalarAsync(sqlQuery.ToString(),
+                    new
+                    {
+                        comunicadoId = comunicadoTipoEscola.ComunicadoId,
+                        tipoEscola = comunicadoTipoEscola.TipoEscola,
+                        excluido = false
+                    });
             }
-            catch (System.Exception ex)
-            {
-                throw;
-            }
+
+            return comunicadoTipoEscola.Id;
         }
         public async Task<bool> ExcluirPorIdComunicado(long id)
         {
