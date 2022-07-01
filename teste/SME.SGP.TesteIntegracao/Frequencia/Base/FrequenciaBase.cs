@@ -92,15 +92,6 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(frequenciaDto);
         }
 
-        //protected async Task<RetornoBaseDto> InserirAulaUseCaseSemValidacaoBasica(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId, string turmaCodigo, string ueCodigo, bool ehRegente = false)
-        //{
-        //    var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
-        //    var aula = ObterAula(tipoAula, recorrenciaAula, componenteCurricularId, dataAula, tipoCalendarioId, turmaCodigo, ueCodigo);
-        //    if (ehRegente) aula.EhRegencia = true;
-
-        //    return await useCase.Executar(aula);
-        //}
-
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular ,bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
         {
             await CriarTipoCalendario(tipoCalendario);
@@ -110,7 +101,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarTurma(modalidade);
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica);
             if (criarPeriodoEscolarEAbertura)
-                CriarPeriodoEscolarEAbertura();
+                await CriarPeriodoEscolarEAbertura();
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()
@@ -183,6 +174,19 @@ namespace SME.SGP.TesteIntegracao
             };
         } 
 
+        protected async Task CriarPeriodoEscolarEAberturaPadrao()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+        }
+
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
         {
             await InserirNaBase(new FechamentoReabertura()
@@ -231,6 +235,37 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
+        }
+
+        protected FrequenciaDto ObtenhaFrenqueciaDto()
+        {
+            var frenquencia = new FrequenciaDto(AULA_ID_1);
+
+            frenquencia.ListaFrequencia = ObtenhaListaDeFrequenciaAluno();
+
+            return frenquencia;
+        }
+
+        private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
+        {
+            var lista = new List<RegistroFrequenciaAlunoDto>();
+            var aulas = ObtenhaFrenquenciaAula();
+
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "3", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "4", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+
+            return lista;
+        }
+
+        private List<FrequenciaAulaDto> ObtenhaFrenquenciaAula()
+        {
+            var lista = new List<FrequenciaAulaDto>();
+
+            lista.Add(new FrequenciaAulaDto() { NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName() });
+
+            return lista;
         }
     }
 }
