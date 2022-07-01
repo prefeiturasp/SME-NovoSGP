@@ -12,7 +12,7 @@ using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.AulaUnica
+namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_inserir_aula_unica_com_predefinicao : FrequenciaBase
     {
