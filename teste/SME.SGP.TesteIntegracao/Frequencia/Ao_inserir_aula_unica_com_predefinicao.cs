@@ -1,18 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao.Interfaces;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using System.Linq;
-using System;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.TesteIntegracao.ServicosFakes;
-using SME.SGP.Infra;
-using System.Collections.Generic;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
