@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
+namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
 {
     public class Ao_obter_recomendacoes : TesteBase
     {
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
         {
             var useCase = ServiceProvider.GetService<IObterRecomendacoesAlunoFamiliaUseCase>();
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 CriadoRF = ""
             }) ;
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 2,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
         {
             var useCase = ServiceProvider.GetService<IObterRecomendacoesAlunoFamiliaUseCase>();
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 2,
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
@@ -151,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 1,
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
@@ -230,7 +230,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 ConselhoClasseRecomendacaoId = 1
             });
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 2,
                 Recomendacao = "recomendação família teste 2",
@@ -240,7 +240,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 4,
                 Recomendacao = "recomendação familia teste 1",
@@ -250,7 +250,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseRecomendacao
                 CriadoRF = ""
             });
 
-            await InserirNaBase(new ConselhoClasseRecomendacao()
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Id = 3,
                 Recomendacao = "recomendação aluno teste 2",

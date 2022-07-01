@@ -6,7 +6,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 
-namespace SME.SGP.TesteIntegracao.TestarAtribuicaoResponsavel
+namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
 {
     public class AtribuicaoResponsavelTesteBase : TesteBase
     {

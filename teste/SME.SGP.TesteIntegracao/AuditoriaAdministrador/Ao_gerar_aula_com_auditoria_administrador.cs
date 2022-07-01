@@ -12,7 +12,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaUnica
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_gerar_aula_com_auditoria_administrador : TesteBase
     {

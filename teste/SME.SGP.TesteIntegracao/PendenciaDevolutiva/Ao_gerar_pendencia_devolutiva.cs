@@ -10,7 +10,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
+namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 {
     public class Ao_gerar_pendencia_devolutiva : TesteBase
     {

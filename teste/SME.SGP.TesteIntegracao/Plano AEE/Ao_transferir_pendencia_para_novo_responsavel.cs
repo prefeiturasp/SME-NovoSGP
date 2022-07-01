@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_transferir_pendencia_para_novo_responsavel : TesteBase
     {
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var lista = ObterTodos<PendenciaUsuario>();
+            var lista = ObterTodos<Dominio.PendenciaUsuario>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().UsuarioId.ShouldBe(2);
@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PlanoAEE()
+            await InserirNaBase(new Dominio.PlanoAEE()
             {
                 Id = 1,
                 AlunoCodigo = "11223344",
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
                 CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PendenciaUsuario
+            await InserirNaBase(new Dominio.PendenciaUsuario
             {
                 PendenciaId = 1,
                 UsuarioId = 1,

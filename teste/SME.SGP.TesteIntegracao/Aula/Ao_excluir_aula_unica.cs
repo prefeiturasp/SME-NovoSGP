@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaUnica
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_excluir_aula_unica : AulaTeste
     {
@@ -30,9 +30,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             var dto = ObterExcluirAulaDto(RecorrenciaAula.AulaUnica);
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-            excecao.Message.ShouldBe("Não foi possivél localizar a aula de id : 1");
+            await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
         }
 
         [Fact]

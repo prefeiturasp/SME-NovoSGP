@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarFrequencia
+namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class RetornarTotalAulasNaoRealizamFrequenciaTeste : TesteBase
     {
@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequencia
             await CriarAulaSemFrequencia();
 
             //Act
-            var controller = new ConselhoClasseController();
+            var controller = new Api.Controllers.ConselhoClasseController();
             var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("2370993",useCase);
 
             //Assert

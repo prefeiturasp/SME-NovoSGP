@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarTipoResponsavel
+namespace SME.SGP.TesteIntegracao.TipoResponsavel
 {
     public class Ao_obter_lista_tipo_responsavel : TesteBase
     {

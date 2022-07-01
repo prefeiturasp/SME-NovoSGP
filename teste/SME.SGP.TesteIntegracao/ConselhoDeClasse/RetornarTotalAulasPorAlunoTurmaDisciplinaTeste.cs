@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
+namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 {
     public class RetornarTotalAulasPorAlunoTurmaDisciplinaTeste : TesteBase
     {
@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 25510725,
                 PeriodoInicio = new DateTime(2020, 02, 05),

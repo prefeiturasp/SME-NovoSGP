@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarCadastrarAulaRepetirBimestre
+namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirBimestre
 {
     public class Ao_registrar_aula_repetir_Bimestre : AulaTeste
     {

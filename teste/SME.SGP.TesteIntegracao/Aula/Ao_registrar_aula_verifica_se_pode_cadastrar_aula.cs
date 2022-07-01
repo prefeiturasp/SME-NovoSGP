@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPodeCadastrarAula
+namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 {
     public class Ao_registrar_aula_verifica_se_pode_cadastrar_aula : AulaTeste
     {

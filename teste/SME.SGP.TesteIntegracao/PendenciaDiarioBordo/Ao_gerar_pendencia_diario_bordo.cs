@@ -11,7 +11,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPendenciaDiarioBordo
+namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 {
     public class Ao_gerar_pendencia_diario_bordo : TesteBase
     {

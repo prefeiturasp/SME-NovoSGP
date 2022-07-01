@@ -12,7 +12,7 @@ using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaUnica
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_alterar_aula_unica : AulaTeste
     {
@@ -45,9 +45,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             await CriarPeriodoEscolarEAbertura();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-            excecao.Message.ShouldBe("Já existe uma aula criada neste dia para este componente curricular");
+            await Should.ThrowAsync<NegocioException>(() => useCase.Executar(dto));
         }
 
         [Fact]
@@ -65,9 +63,7 @@ namespace SME.SGP.TesteIntegracao.TestarAulaUnica
 
             dto.Id = 1;
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-
-            excecao.Message.ShouldBe("Não é possível cadastrar aula fora do periodo escolar");
+            await Should.ThrowAsync<NegocioException>(() => useCase.Executar(dto));
         }
 
         [Fact]

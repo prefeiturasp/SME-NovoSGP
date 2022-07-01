@@ -17,7 +17,7 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MediatR;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaUnica
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador : TesteBase
     {

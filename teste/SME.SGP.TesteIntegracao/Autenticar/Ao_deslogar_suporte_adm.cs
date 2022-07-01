@@ -6,7 +6,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarSuporteAdm
+namespace SME.SGP.TesteIntegracao.SuporteAdm
 {
     public class Ao_deslogar_suporte_adm : TesteBase
     {

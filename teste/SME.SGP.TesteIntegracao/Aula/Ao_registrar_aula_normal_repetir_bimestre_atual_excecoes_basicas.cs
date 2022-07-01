@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaBimestreAtual
+namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 {
     public class Ao_registrar_aula_normal_repetir_bimestre_atual_excecoes_basicas : AulaTeste
     {

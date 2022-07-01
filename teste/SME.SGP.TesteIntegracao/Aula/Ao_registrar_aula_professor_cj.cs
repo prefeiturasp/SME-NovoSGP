@@ -11,7 +11,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaUnica
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_registrar_aula_professor_cj : AulaTeste
     {

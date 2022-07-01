@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaRecorrencia
+namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 {
     public class Ao_alterar_aula_com_recorrencia : AulaTeste
     {

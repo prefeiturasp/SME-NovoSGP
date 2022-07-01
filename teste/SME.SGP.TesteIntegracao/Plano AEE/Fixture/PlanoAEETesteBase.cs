@@ -7,7 +7,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 
-namespace SME.SGP.TesteIntegracao.TestarPlanoAEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class PlanoAEETesteBase : TesteBase
     {

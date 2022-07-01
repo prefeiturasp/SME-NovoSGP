@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
+namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 {
     public class Ao_obter_frequencia_turma_evasao : TesteBase
     {
@@ -223,7 +223,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
 
         private async Task CriarRegistrosParaConsulta()
         {
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -232,7 +232,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 0
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -241,7 +241,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 0
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -250,7 +250,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 2
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -268,7 +268,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -277,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -286,7 +286,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaTurmaEvasao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,

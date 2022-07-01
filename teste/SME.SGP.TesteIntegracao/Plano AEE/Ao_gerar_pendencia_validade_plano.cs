@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
+namespace SME.SGP.TesteIntegracao.PlanoAEEPendenciaUsuario
 {
     public class Ao_gerar_pendencia_validade_plano : TesteBase
     {
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
 
             await useCase.Executar(new MensagemRabbit());
 
-            var lista = ObterTodos<PendenciaUsuario>();
+            var lista = ObterTodos<Dominio.PendenciaUsuario>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().UsuarioId.ShouldBe(1);
@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PlanoAEE()
+            await InserirNaBase(new Dominio.PlanoAEE()
             {
                 Id = 1,
                 AlunoCodigo = "11223344",
@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.TestarPlanoAEEPendenciaUsuario
                 CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PendenciaUsuario
+            await InserirNaBase(new Dominio.PendenciaUsuario
             {
                 PendenciaId = 1,
                 UsuarioId = 1,

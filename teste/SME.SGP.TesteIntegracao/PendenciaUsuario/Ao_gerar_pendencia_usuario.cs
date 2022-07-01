@@ -9,7 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPendenciaUsuario
+namespace SME.SGP.TesteIntegracao.PendenciaUsuario
 {
     public class Ao_gerar_pendencia_usuario : TesteBase
     {
@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaUsuario
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            await InserirNaBase(new PendenciaUsuario()
+            await InserirNaBase(new Dominio.PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,

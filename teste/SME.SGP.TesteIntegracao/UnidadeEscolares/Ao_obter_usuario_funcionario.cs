@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarUsuarioFuncionario
+namespace SME.SGP.TesteIntegracao.UsuarioFuncionario
 {
     public class Ao_obter_usuario_funcionario : TesteBase
     {

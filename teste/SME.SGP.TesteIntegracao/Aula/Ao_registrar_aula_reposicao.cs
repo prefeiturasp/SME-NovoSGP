@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAulaReposicao
+namespace SME.SGP.TesteIntegracao.AulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {

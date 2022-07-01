@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
+namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 {
     public class RetornarTotalCompensacoesNaoLancamNotaTeste : TesteBase
     {
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
             await CriarCompensacaoQueNaoLancaNota();
 
             //Act
-            var controller = new ConselhoClasseController();
+            var controller = new Api.Controllers.ConselhoClasseController();
             var retorno = await controller.ObterTotalCompensacoesComponentesNaoLancamNota("2370993", 1, useCase);
 
             //Assert
@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 2084687593,
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),

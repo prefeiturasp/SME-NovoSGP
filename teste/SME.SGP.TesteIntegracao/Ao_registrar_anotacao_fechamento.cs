@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAnotacaoFechamentoAluno
+namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
 {
     public class Ao_registrar_anotacao_fechamento : TesteBase
     {
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.TestarAnotacaoFechamentoAluno
 
             await CarregarDados();
 
-            var anotacaoFechamento = new AnotacaoFechamentoAluno()
+            var anotacaoFechamento = new Dominio.AnotacaoFechamentoAluno()
             {
                 FechamentoAlunoId = 1,
                 Anotacao = "Anotação teste",
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.TestarAnotacaoFechamentoAluno
 
             await mediator.Send(new SalvarAnotacaoFechamentoAlunoCommand(anotacaoFechamento));
 
-            var retorno = ObterTodos<AnotacaoFechamentoAluno>();
+            var retorno = ObterTodos<Dominio.AnotacaoFechamentoAluno>();
 
             retorno.ShouldNotBeEmpty();
             retorno.First().FechamentoAlunoId.ShouldBe(1, "Anotação salva com sucesso!");

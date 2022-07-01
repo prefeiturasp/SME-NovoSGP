@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAtribuicaoResponsavel
+namespace SME.SGP.TesteIntegracao.AtribuicaoResponsavel
 {
     public class Ao_remover_atribuicao_aspp : AtribuicaoResponsavelTesteBase
     {

@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
+namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
 {
     public class Ao_registrar_consolidacao_frequencia_aluno_mensal : TesteBase
     {
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.TestarConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 

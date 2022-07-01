@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
+namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 {
     public class RetornarTotalAulasNaoLancamNotaTeste : TesteBase
     {
@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
             await CriarAulaQueNaoLancaNota();
 
             //Act
-            var controller = new ConselhoClasseController();
+            var controller = new Api.Controllers.ConselhoClasseController();
             var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("2370993", 1, "6579272", useCase);
 
             //Assert
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.TestarConselhoClasseController
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 2084687593,
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),

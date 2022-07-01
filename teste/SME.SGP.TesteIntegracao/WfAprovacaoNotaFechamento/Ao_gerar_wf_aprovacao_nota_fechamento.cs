@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarWorkFlowAprovacaoNotaFechamento
+namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 {
     public class Ao_gerar_wf_aprovacao_nota_fechamento : TesteBase
     {

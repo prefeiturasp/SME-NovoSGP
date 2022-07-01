@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
+namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 {
     public class Ao_obter_pendencias : TesteBase
     {
@@ -166,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
 
             await InserirNaBase(pendenciaPerfil);
 
-            await InserirNaBase(new PendenciaUsuario()
+            await InserirNaBase(new Dominio.PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,
@@ -208,7 +208,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaDevolutiva
                 Status = EntidadeStatus.Aprovado,
                 AulaCJ = false
             });
-            await InserirNaBase(new PendenciaAula()
+            await InserirNaBase(new Dominio.PendenciaAula()
             {
                 Id=1,
                 AulaId = 1,

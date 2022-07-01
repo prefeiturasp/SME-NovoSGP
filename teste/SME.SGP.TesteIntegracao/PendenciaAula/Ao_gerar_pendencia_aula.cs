@@ -13,7 +13,7 @@ using SME.SGP.Dominio;
 using MediatR;
 using System.Linq;
 
-namespace SME.SGP.TesteIntegracao.TestarPendenciaAula
+namespace SME.SGP.TesteIntegracao.PendenciaAula
 {
     public class Ao_gerar_pendencia_aula : TesteBase
     {
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaAula
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01),
             });
 
-            await InserirNaBase(new PendenciaAula()
+            await InserirNaBase(new Dominio.PendenciaAula()
             {
                 Id = 1,
                 AulaId = 1,
@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.TestarPendenciaAula
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            await InserirNaBase(new PendenciaUsuario()
+            await InserirNaBase(new Dominio.PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,

@@ -11,7 +11,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
+namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 {
     public class Ao_calcular_frequencia : TesteBase
     {
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -141,7 +141,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -217,7 +217,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -326,7 +326,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -412,7 +412,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -480,7 +480,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
@@ -570,7 +570,7 @@ namespace SME.SGP.TesteIntegracao.TestarFrequenciaAluno
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
             
-            var frequencias = ObterTodos<FrequenciaAluno>();
+            var frequencias = ObterTodos<Dominio.FrequenciaAluno>();
             
             frequencias.ShouldNotBeEmpty();
 
