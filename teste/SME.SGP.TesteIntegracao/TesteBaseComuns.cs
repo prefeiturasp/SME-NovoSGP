@@ -36,6 +36,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int SEMESTRE_1 = 1;
 
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+        protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_139 = 139;
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Português";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
@@ -130,6 +131,8 @@ namespace SME.SGP.TesteIntegracao
         protected const long VIOLENCIA_NA_AREA_ONDE_MORA_8 = 8;
         protected const long CALAMIDADE_PUBLICA_QUE_ATINGIU_A_ESCOLA_OU_EXIGIU_O_USO_DO_ESPAÇO_COMO_ABRIGAMENTO_9 = 9;
         protected const long ESCOLA_FECHADA_POR_SITUACAO_DE_VIOLENCIA_10 = 10;
+
+        protected const string ANOTACAO_FREQUENCIA_ALUNO = "Lorem Ipsum";
 
         protected readonly CollectionFixture collectionFixture;
 

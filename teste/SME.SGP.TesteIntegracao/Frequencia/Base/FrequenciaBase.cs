@@ -37,10 +37,11 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
 
         protected const string CODIGO_ALUNO_99999 = "99999";        
+        protected const string CODIGO_ALUNO_77777 = "77777";        
 
         private const string REABERTURA_GERAL = "Reabrir Geral";
 
-        private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+        protected readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
 
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
@@ -53,6 +54,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
+        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year-6, 03, 07);
 
         protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -106,6 +108,25 @@ namespace SME.SGP.TesteIntegracao
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
             return await useCase.Executar(frequenciaDto);
+        }
+
+        protected async Task<AuditoriaDto> SalvarAnotacaoFrequenciaAlunoUseCase(SalvarAnotacaoFrequenciaAlunoDto salvarAnotacaoFrequenciaAlunoDto)
+        {
+            var useCase = ServiceProvider.GetService<ISalvarAnotacaoFrequenciaAlunoUseCase>();
+
+            return await useCase.Executar(salvarAnotacaoFrequenciaAlunoDto);
+        }
+
+        protected  async Task<bool> ExcluirAnotacaoFrequenciaAlunoUseCase(long id)
+        {
+            var useCase = ServiceProvider.GetService<IExcluirAnotacaoFrequenciaAlunoUseCase>();
+            return await useCase.Executar(id);
+        }
+
+        protected async Task<bool> AlterarAnotacaoFrequenciaAlunoUseCase(AlterarAnotacaoFrequenciaAlunoDto param)
+        {
+            var useCase = ServiceProvider.GetService<IAlterarAnotacaoFrequenciaAlunoUseCase>();
+            return await useCase.Executar(param);
         }
 
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
@@ -210,9 +231,9 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
-        protected async Task CriarMotivosAusencias(string descricao)
+        protected async Task CriarMotivoAusencia(string descricao)
         {
-            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
+            await InserirNaBase(new MotivoAusencia() {Descricao = descricao });
         }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)

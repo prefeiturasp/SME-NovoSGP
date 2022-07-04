@@ -22,11 +22,12 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 
         public const string Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data = "Você não pode fazer alterações ou inclusões nesta turma, componente e data.";
 
-        public const string Crianca_nao_encontrada_anotacao = "Criança não encontrada";
+        public const string Crianca_nao_encontrada_anotacao = "Criança não encontrada.";
 
-        public const string Aluno_nao_encontrado_anotacao = "Aluno não encontrado";
+        public const string Aluno_nao_encontrado_anotacao = "Aluno não encontrado.";
 
         public const string Aula_nao_encontrada_anotacao = "Aula não encontrada.";
         public const string Motivo_ausencia_nao_encontrado = "O motivo de ausência informado não foi localizado.";
+        public const string Anotacao_nao_localizada_com_id_informado = "Anotação não localizada com o Id informado";
     }
 }
