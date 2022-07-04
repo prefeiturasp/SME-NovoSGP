@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
 
             foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
-                await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
+                await repositorioFrequenciaPreDefinida.Atualizar(frequenciaPreDefinida);
         }
 
 
