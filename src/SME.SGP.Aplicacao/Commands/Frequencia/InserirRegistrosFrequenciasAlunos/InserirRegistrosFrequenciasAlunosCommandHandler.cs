@@ -57,25 +57,8 @@ namespace SME.SGP.Aplicacao
         {
             await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
 
-
             foreach (var frequenciaAluno in dicionario[ALTERAR])
-                await repositorioRegistroFrequenciaAluno.SalvarAsync(item);
-
-            foreach(var frequenciaAluno in dicionario[ALTERAR])
-                await repositorioRegistroFrequenciaAluno.SalvarAsync(item);
-            //{
-            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //}
-            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //}
-            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //}
-
-            foreach(var frequenciaAluno in dicionario[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //{
-            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //}
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
