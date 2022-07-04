@@ -51,6 +51,9 @@ namespace SME.SGP.TesteIntegracao
         protected const decimal PERCENTUAL_100 = 100.0M;
         protected const decimal PERCENTUAL_ZERO = 0.00M;
 
+        protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
+
         protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -103,6 +106,14 @@ namespace SME.SGP.TesteIntegracao
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
             return await useCase.Executar(frequenciaDto);
+        }
+
+        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();
         }
 
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular, int quantidadeAula = QUANTIDADE_3, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
