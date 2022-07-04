@@ -37,14 +37,14 @@ namespace SME.SGP.Dados.Repositorios
                           end as data,
                           case 
                             when afa.alterado_rf is null then afa.criado_rf
-                            when afa.alterado_rf is not null thena fa.alterado_rf
+                            when afa.alterado_rf is not null then afa.alterado_rf
                           end as professorrf
                         from fechamento_turma_disciplina ftd 
                         inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                         inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id 
                         inner join anotacao_fechamento_aluno afa on afa.fechamento_aluno_id = fa.id
                         inner join turma t on ft.turma_id = t.id 
-                        where not ftd.excluido and not fa.excluido 
+                        where not ftd.excluido and not afa.excluido 
                          and fa.aluno_codigo = @alunoCodigo
                          and ft.periodo_escolar_id = @periodoId    
                          and t.turma_id =  ANY(@turmasCodigos)
