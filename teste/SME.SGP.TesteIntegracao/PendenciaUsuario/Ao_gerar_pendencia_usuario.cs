@@ -9,7 +9,7 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.PendenciaUsuario
 {
     public class Ao_gerar_pendencia_usuario : TesteBase
     {
@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao
                 Titulo = "Aula sem Diario de Bordo registrado",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 03, 01)
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
             });
 
             await InserirNaBase(new Usuario()
@@ -42,17 +42,17 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            await InserirNaBase(new PendenciaUsuario()
+            await InserirNaBase(new Dominio.PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,
                 PendenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             var existePendenciaUsuario = await mediator.Send(new ObterPendenciasUsuarioPorPendenciaUsuarioIdQuery(1, 1));

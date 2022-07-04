@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             retorno.ShouldBe(true);
 
-            var lista = ObterTodos<PlanoAEE>();
+            var lista = ObterTodos<Dominio.PlanoAEE>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().ResponsavelId.ShouldBe(2);
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             retorno.ShouldBe(true);
 
-            var lista = ObterTodos<PlanoAEE>();
+            var lista = ObterTodos<Dominio.PlanoAEE>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().ResponsavelId.ShouldBe(2);
@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
         private async Task CriaPlanoAee()
         {
-            await InserirNaBase(new PlanoAEE()
+            await InserirNaBase(new Dominio.PlanoAEE()
             {
                 Id = 1,
                 AlunoCodigo = "11223344",

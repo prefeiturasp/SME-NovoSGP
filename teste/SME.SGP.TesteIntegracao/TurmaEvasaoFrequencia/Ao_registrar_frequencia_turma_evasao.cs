@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 {
     public class Ao_registrar_frequencia_turma_evasao : TesteBase
     {
@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<FrequenciaTurmaEvasao>();
+            var consolidacoes = ObterTodos<Dominio.FrequenciaTurmaEvasao>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao
 
         private async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
         {
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -53,7 +53,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeCompensacoes = 0
             });
 
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeCompensacoes = 0
             });
 
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeCompensacoes = 0
             });
 
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeCompensacoes = 0
             });
 
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeCompensacoes = 0
             });
 
-            await InserirNaBase(new ConsolidacaoFrequenciaAlunoMensal()
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
                 TurmaId = 1,
@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario

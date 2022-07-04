@@ -188,7 +188,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularProfessorRf(DateTime data, string turmaId, string disciplinaId, string professorRf)
         {
-            var query = @"select *
+            var query = @"select *, tipo_aula as TipoAula
                  from aula
                 where not excluido
                   and DATE(data_aula) = @data
@@ -400,7 +400,6 @@ namespace SME.SGP.Dados.Repositorios
                 dataAula = dataAula.Date,
                 aulaNomal = TipoAula.Normal
             }) ?? 0;
-            database.Conexao.Close();
 
             return qtd;
         }
@@ -454,7 +453,6 @@ namespace SME.SGP.Dados.Repositorios
                 aulaNomal = TipoAula.Normal,
                 dataExcecao
             }) ?? 0;
-            database.Conexao.Close();
 
             return qtd;
         }
