@@ -119,6 +119,18 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected long TIPO_CALENDARIO_1 = 1;
+
+        protected const long ATESTADO_MEDICO_DO_ALUNO_1 = 1;
+        protected const long ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2 = 2;
+        protected const long DOENCA_NA_FAMILIA_SEM_ATESTADO_3 = 3;
+        protected const long OBITO_DE_PESSOA_DA_FAMILIA_4 = 4;
+        protected const long INEXISTENCIA_DE_PESSOA_PARA_LEVAR_A_ESCOLA_5 = 5;
+        protected const long ENCHENTE_6 = 6;
+        protected const long FALTA_DE_TRANSPORTE_7 = 7;
+        protected const long VIOLENCIA_NA_AREA_ONDE_MORA_8 = 8;
+        protected const long CALAMIDADE_PUBLICA_QUE_ATINGIU_A_ESCOLA_OU_EXIGIU_O_USO_DO_ESPAÇO_COMO_ABRIGAMENTO_9 = 9;
+        protected const long ESCOLA_FECHADA_POR_SITUACAO_DE_VIOLENCIA_10 = 10;
+
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)

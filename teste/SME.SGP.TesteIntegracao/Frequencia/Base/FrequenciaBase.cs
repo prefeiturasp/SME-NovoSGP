@@ -194,6 +194,10 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
+        protected async Task CriarMotivosAusencias(string descricao)
+        {
+            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
+        }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
         {

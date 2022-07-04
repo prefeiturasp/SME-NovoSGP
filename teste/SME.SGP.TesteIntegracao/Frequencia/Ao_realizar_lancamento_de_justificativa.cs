@@ -1,4 +1,10 @@
-﻿using SME.SGP.TesteIntegracao.Setup;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,13 +18,37 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         public Ao_realizar_lancamento_de_justificativa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-
         }
 
         [Fact]
         public async Task Criar_justificativa_somente_com_motivo()
         {
+            await CriarMotivosAusencias(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
+            var useCase = ServiceProvider.GetService<ISalvarAnotacaoFrequenciaAlunoUseCase>();
+            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
+            {
+                MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                CodigoAluno = CODIGO_ALUNO_99999,
+                EhInfantil = false
+            };
 
+            var salvar = useCase.Executar(parametrosFrontEnd);
+            //var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
+
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Aula_nao_encontrada_anotacao);
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Crianca_nao_encontrada_anotacao);
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Aluno_nao_encontrado_anotacao);
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Aula_nao_encontrada_anotacao);
+            //excecao.Message.ShouldNotBe(MensagensNegocioFrequencia.Motivo_ausencia_nao_encontrado);
+
+            salvar.ShouldBeNull(salvar.Exception.ToString());
+            salvar.IsCompletedSuccessfully.ShouldBeTrue();
+            //salvar.ShouldBe(salvar.Id > 0);
         }
         [Fact]
         public async Task Criar_justificativa_somente_com_descricao()
