@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarMotivosAusencias(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
             var useCase = ServiceProvider.GetService<ISalvarAnotacaoFrequenciaAlunoUseCase>();
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
