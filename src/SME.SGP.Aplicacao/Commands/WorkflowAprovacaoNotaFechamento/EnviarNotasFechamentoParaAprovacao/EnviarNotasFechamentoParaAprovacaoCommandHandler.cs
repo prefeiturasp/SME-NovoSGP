@@ -1,11 +1,7 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,21 +23,17 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var notaFechamento in request.NotasAprovacao)
             {
-                if(notaFechamento.Id > 0)
-                {
-                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id));
+                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id), cancellationToken);
 
-                    await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
-                    {
-                        FechamentoNotaId = notaFechamento.Id,
-                        Nota = notaFechamento.Nota,
-                        ConceitoId = notaFechamento.ConceitoId,
-                        CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                        CriadoPor = request.Usuario.Nome,
-                        CriadoRF = request.Usuario.CodigoRf,
-                    });
-                }
-                   
+                await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
+                {
+                    FechamentoNotaId = notaFechamento.Id,
+                    Nota = notaFechamento.Nota,
+                    ConceitoId = notaFechamento.ConceitoId,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = request.Usuario.Nome,
+                    CriadoRF = request.Usuario.CodigoRf,
+                });
             }
         } 
     }
