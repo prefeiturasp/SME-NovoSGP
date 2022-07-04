@@ -48,7 +48,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 
                             inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                             inner join componente_curricular cc on cc.id = fn.disciplina_id 
-                            inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
+                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                             where wf_aprovacao_id is null";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamentoTurmaDto, WfAprovacaoNotaFechamento, WfAprovacaoNotaFechamentoTurmaDto>(query, (wfAprovacaoDto, wfAprovacaoNotaFechamento) =>
