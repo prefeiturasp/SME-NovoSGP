@@ -77,7 +77,7 @@ namespace SME.SGP.Aplicacao
                 await repositorioFrequenciaPreDefinida.Salvar(item);
 
             foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
-                await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
+                await repositorioFrequenciaPreDefinida.Atualizar(frequenciaPreDefinida);
         }
 
         private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)

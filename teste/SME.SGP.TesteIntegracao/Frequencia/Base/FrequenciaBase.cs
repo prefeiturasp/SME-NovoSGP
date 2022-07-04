@@ -25,6 +25,12 @@ namespace SME.SGP.TesteIntegracao
         protected const long AULA_ID_1 = 1;
 
         protected const int NUMERO_AULAS_1 = 1;
+        protected const int NUMERO_AULAS_2 = 2;
+        protected const int NUMERO_AULAS_3 = 3;
+
+        protected const int QTDE_1 = 1;
+        protected const int QTDE_2 = 2;
+        protected const int QTDE_3 = 3;
 
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
@@ -38,8 +44,15 @@ namespace SME.SGP.TesteIntegracao
 
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
-        protected DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        protected DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected const int ZERO = 0;
+
+        protected const long TURMA_ID_1 = 1;
+
+        protected const decimal PERCENTUAL_100 = 100.0M;
+        protected const decimal PERCENTUAL_ZERO = 0.00M;
+
+        protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
 
         protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -95,15 +108,6 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(frequenciaDto);
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular ,bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
-        {
-            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
-            await CriarTurma(modalidade);
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica);
-            if (criarPeriodoEscolarEAbertura)
-                await CriarPeriodoEscolarEAbertura();
-        }
-
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
             await CriarTipoCalendario(tipoCalendario);
@@ -112,15 +116,27 @@ namespace SME.SGP.TesteIntegracao
             await CriarUsuarios();
         }
 
+        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular, int quantidadeAula = QUANTIDADE_3, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();
+            await CriarTurma(modalidade);
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+            if (criarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
+        }
+
         protected async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
@@ -155,12 +171,12 @@ namespace SME.SGP.TesteIntegracao
             return null;
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
-            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
+            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
 
-        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Aula
             {
@@ -169,7 +185,7 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = TURMA_CODIGO_1,
                 TipoCalendarioId = 1,
                 ProfessorRf = rf,
-                Quantidade = QUANTIDADE_3,
+                Quantidade = quantidadeAula,
                 DataAula = dataAula,
                 RecorrenciaAula = recorrencia,
                 TipoAula = TipoAula.Normal,
@@ -184,13 +200,13 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarPeriodoEscolarEAberturaPadrao()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
@@ -278,6 +294,37 @@ namespace SME.SGP.TesteIntegracao
             lista.Add(new FrequenciaAulaDto() { NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName() });
 
             return lista;
+        }
+
+        protected async Task InserirFrequenciaUseCaseComValidacaoCompleta(FrequenciaDto frequencia, TipoFrequencia tipoFrequenciaPreDefinida, TipoFrequencia tipoFrequenciaRegistrada, decimal percentualFrequencia, int numeroAulas, int qtdeAusencias, int qtdeCompensacoes)
+        {
+            await InserirFrequenciaUseCaseSemValidacaoBasica(frequencia);
+
+            var frequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
+            frequenciaPreDefinida.ShouldNotBeEmpty();
+            frequenciaPreDefinida.FirstOrDefault().TipoFrequencia.Equals(tipoFrequenciaPreDefinida).ShouldBeTrue();
+
+            var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
+            registroFrequenciaAluno.ShouldNotBeEmpty();
+            (registroFrequenciaAluno.FirstOrDefault().Valor == (int)tipoFrequenciaRegistrada).ShouldBeTrue();
+
+            var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
+            consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
+            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().Percentual == percentualFrequencia).ShouldBeTrue();
+            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeAulas == numeroAulas).ShouldBeTrue();
+            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeAusencias == qtdeAusencias).ShouldBeTrue();
+            (consolidacaoFrequenciaAlunoMensal.FirstOrDefault().QuantidadeCompensacoes == qtdeCompensacoes).ShouldBeTrue();
+        }
+
+        protected async Task CriarPredefinicaoAluno(string codigoAluno, TipoFrequencia tipoFrequencia, long componenteCurricularId, long turmaId)
+        {
+            await InserirNaBase(new FrequenciaPreDefinida()
+            {
+                CodigoAluno = codigoAluno,
+                TipoFrequencia = tipoFrequencia,
+                ComponenteCurricularId = componenteCurricularId,
+                TurmaId = turmaId
+            });
         }
     }
 }
