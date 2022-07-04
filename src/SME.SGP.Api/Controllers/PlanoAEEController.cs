@@ -197,5 +197,14 @@ namespace SME.SGP.Api.Controllers
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));
             return Ok();
         }
+
+        [HttpPost("atribuir-responsavel-plano")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> AtribuirResponsavelGeralDoPlano([FromBody] AtribuirResponsavelPlanoAEEDto parametros, [FromServices] IAtribuirResponsavelGeralDoPlanoUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF, parametros.ReponsavelNome));
+        }
     }
 }

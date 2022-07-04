@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_excluir_avaliacao_pela_gestao_e_professor : TesteAvaliacao
     {

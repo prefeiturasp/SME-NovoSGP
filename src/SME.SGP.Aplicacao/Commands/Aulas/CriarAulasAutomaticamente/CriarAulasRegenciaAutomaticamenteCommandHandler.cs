@@ -209,7 +209,7 @@ namespace SME.SGP.Aplicacao
 
         private int CriarAulas(List<Aula> aulasACriar, int contadorAulasCriadas)
         {
-            repositorioAula.SalvarVarias(aulasACriar);
+            //repositorioAula.SalvarVarias(aulasACriar);
             contadorAulasCriadas = contadorAulasCriadas + aulasACriar.Count;
             aulasACriar.Clear();
             return contadorAulasCriadas;

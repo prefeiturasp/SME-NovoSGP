@@ -6,7 +6,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_validar_atividade_avaliacao : TesteAvaliacao
     {

@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_regente : TesteAvaliacao
     {

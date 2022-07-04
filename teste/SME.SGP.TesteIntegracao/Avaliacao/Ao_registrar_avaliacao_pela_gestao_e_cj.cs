@@ -3,7 +3,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_pela_gestao_e_cj : TesteAvaliacao
     {

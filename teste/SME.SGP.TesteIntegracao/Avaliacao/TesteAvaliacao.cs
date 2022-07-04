@@ -11,7 +11,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public abstract class TesteAvaliacao : TesteBaseComuns
     {
@@ -20,8 +20,6 @@ namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
         protected const string NOME_ATIVIDADE_AVALIATIVA = "Nome atividade avaliativa";
 
         protected const string NOME_ATIVIDADE_AVALIATIVA_2 = "Nome atividade avaliativa 2";
-
-        protected const long TIPO_CALENDARIO_1 = 1;
 
         protected TesteAvaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         {}

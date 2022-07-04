@@ -7,7 +7,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class PlanoAEETesteBase : TesteBase
     {
@@ -19,7 +19,8 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
+                typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
     }
 }

@@ -61,38 +61,6 @@ namespace SME.SGP.TesteIntegracao.Setup
             await CriaItensComunsEja(false);
         }
 
-        public async Task CriarUsuarioLogadoCP()
-        {
-            await _teste.InserirNaBase(new Usuario
-            {
-                Id = 1,
-                Login = "8888888",
-                CodigoRf = "8888888",
-                Nome = "Usuario CP",
-                CriadoPor = "Sistema",
-                CriadoRF = "0",
-                AlteradoRF = "0"
-            });
-
-            var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
-
-            var variaveis = new Dictionary<string, object>
-            {
-                { "NomeUsuario", "Usuario CP" },
-                { "UsuarioLogado", "8888888" },
-                { "RF", "8888888" },
-                { "login", "8888888" },
-                {
-                    "Claims", new List<InternalClaim> {
-                        new InternalClaim { Value = "8888888", Type = "rf" },
-                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
-                    }
-                }
-            };
-
-            contextoAplicacao.AdicionarVariaveis(variaveis);
-        }
-
         public async Task CriaItensComunsEja(bool incluirAdm)
         {
             CriarClaimRegenciaEja(incluirAdm);
@@ -118,15 +86,15 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CodigoTurma = "1",
                 Historica = true,
                 ModalidadeCodigo = Modalidade.EJA,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 2,
                 Nome = "Turma Nome 1"
             });
 
             await _teste.InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = 2022,
-                Nome = "Ano Letivo 202",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Ano Letivo Ano Atual",
                 Periodo = Periodo.Semestral,
                 Modalidade = ModalidadeTipoCalendario.EJA,
                 Situacao = true,
@@ -145,10 +113,10 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TipoCalendarioId = 1,
                 ProfessorRf = "2222222",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
@@ -177,10 +145,10 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TipoCalendarioId = 1,
                 ProfessorRf = "2222222",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
@@ -196,6 +164,22 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
 
             await _teste.InserirNaBase("componente_curricular", "1106", "1106", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
+        }
+
+        public async Task CriarPeriodoEscolar()
+        {
+            await _teste.InserirNaBase(new PeriodoEscolar
+            {
+                Id = 1,
+                TipoCalendarioId = 1,
+                Bimestre = 2,
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                PeriodoFim = DateTime.Now.AddYears(1),
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now,
+                Migrado = false
+            });
         }
 
         private void CriarClaimRegenciaEja(bool incluirAdm)
@@ -217,22 +201,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
-        }
-
-        private async Task CriarPeriodoEscolar()
-        {
-            await _teste.InserirNaBase(new PeriodoEscolar
-            {
-                Id = 1,
-                TipoCalendarioId = 1,
-                Bimestre = 2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = DateTime.Now.AddYears(1),
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
-                CriadoEm = DateTime.Now,
-                Migrado = false
-            });
         }
 
         private async Task CriaAtribuicaoCJ()

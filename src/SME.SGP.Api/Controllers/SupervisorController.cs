@@ -27,12 +27,18 @@ namespace SME.SGP.Api.Controllers
 
         [HttpPost("atribuir-ue")]
         [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(SalvarAtribuicaoResponsavelStatus), 601)]
         [Permissao(Permissao.ARP_I, Permissao.ARP_A, Policy = "Bearer")]
         public async Task<IActionResult> AtribuirUE(AtribuicaoResponsavelUEDto atribuicaoResponsavelUEDto,
             [FromServices] IAtribuirUeResponsavelUseCase useCase)
         {
-            return Ok(await useCase.Executar(atribuicaoResponsavelUEDto));
+            var criarAtribuicao = await useCase.Executar(atribuicaoResponsavelUEDto);
+            if (!criarAtribuicao.AtribuidoComSucesso)
+                return StatusCode(601, criarAtribuicao);
+
+            return Ok(criarAtribuicao);
         }
 
         [HttpGet("vinculo-lista")]
@@ -42,6 +48,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterAtribuicaoResponsavelLista([FromQuery] FiltroObterSupervisorEscolasDto filtro)
         {
             return Ok(await consultasSupervisor.ObterAtribuicaoResponsavel(filtro));
+        }
+
+        [HttpGet("lista-ues/{dreCodigo}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(ListaUesConsultaAtribuicaoResponsavelDto), 200)]
+        [Permissao(Permissao.ARP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterListaUesFiltroPorDre(string dreCodigo)
+        {
+            return Ok(await consultasSupervisor.ObterListaDeUesFiltroPrincipal(dreCodigo));
         }
 
         [HttpGet("tipo-responsavel")]
@@ -78,13 +93,13 @@ namespace SME.SGP.Api.Controllers
                 return StatusCode(204);
         }
 
-        [HttpGet("{supervisoresId}/dre/{dreId}")]
-        [ProducesResponseType(typeof(IEnumerable<ResponsavelEscolasDto>), 200)]
+        [HttpGet("{supervisoresId}/dre/{dreId}/{tipoResponsavel}")]
+        [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarResponsavelDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.ARP_C, Policy = "Bearer")]
-        public IActionResult ObterResponsavelEEscolasPorSupervisoresEDre(string supervisoresId, string dreId)
+        public async Task<IActionResult> ObterUesAtribuidasAoResponsavel(string supervisoresId, string dreId,int tipoResponsavel)
         {
-            var listaretorno = consultasSupervisor.ObterPorDreESupervisores(supervisoresId.Split(","), dreId);
+            var listaretorno = await consultasSupervisor.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(supervisoresId, dreId, tipoResponsavel);
 
             if (listaretorno == null)
                 return new StatusCodeResult(204);

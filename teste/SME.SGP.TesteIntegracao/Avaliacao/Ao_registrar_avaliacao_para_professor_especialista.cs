@@ -1,18 +1,13 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.TestarAvaliacaoAula
+namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_especialista : TesteAvaliacao
     {

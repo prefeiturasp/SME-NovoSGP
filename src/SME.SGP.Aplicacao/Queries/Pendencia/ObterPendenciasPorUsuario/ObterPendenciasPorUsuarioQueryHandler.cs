@@ -160,7 +160,7 @@ namespace SME.SGP.Aplicacao
                 {
                     Tipo = pendencia.Tipo.GroupName(),
                     Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = descricao,
+                    Detalhe = !string.IsNullOrEmpty(descricao) ? descricao : !string.IsNullOrEmpty(pendencia.Descricao) ? pendencia.Descricao : "",
                     Turma = ObterNomeTurma(turma),
                     Bimestre = await ObterBimestreTurma(pendencia)
                 }

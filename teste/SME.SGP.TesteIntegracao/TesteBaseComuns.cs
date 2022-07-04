@@ -32,8 +32,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected const string TURMA_ANO_2 = "2";
 
-        private const int ANO_LETIVO_2022_NUMERO = 2022;
-        private const string ANO_LETIVO_2022_NOME = "Ano Letivo 2022";
+        private int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
+        private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
         protected const string FALSE = "false";
         protected const string TRUE = "true";
 
@@ -122,6 +122,17 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
 
+        protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
+        protected const long TIPO_EVENTO_21 = 21;
+        protected const long TIPO_EVENTO_1 = 1;
+        protected const long TIPO_EVENTO_2 = 2;
+        protected const long TIPO_EVENTO_13 = 13;
+        protected const long TIPO_EVENTO_14 = 14;
+        protected const string SUSPENSAO_DE_ATIVIDADES = "Suspensão de Atividades";
+        protected const string REPOSICAO_AULA = "Reposição de Aula";
+        protected const string REPOSICAO_DIA = "Reposição Dia";
+        protected const string REPOSICAO_AULA_DE_GREVE = "Reposição de Aula de Greve";
+        protected const string LIBERACAO_EXCEPCIONAL = "Liberação excepcional";
         protected const int TIPO_CALENDARIO_ID = 1;
 
         protected readonly DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
@@ -143,6 +154,15 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);        
 
         protected const string REABERTURA_GERAL = "Reabrir Geral";
+        protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected DateTime DATA_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected DateTime DATA_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
+        protected DateTime DATA_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
+        protected DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
+        protected DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
+        protected long TIPO_CALENDARIO_1 = 1;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -184,6 +204,11 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
         }
 
+        protected string ObterPerfilProfessorInfantil()
+        {
+            return Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.Name()).ToString();
+        }
+
         protected string ObterPerfilCP()
         {
             return Guid.Parse(PerfilUsuario.CP.Name()).ToString();
@@ -205,8 +230,8 @@ namespace SME.SGP.TesteIntegracao
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = BIMESTRE_2,
-                PeriodoInicio = new DateTime(2022, 01, 10),
-                PeriodoFim = new DateTime(2022, 02, 5),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 5),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
@@ -214,7 +239,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CrieEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento)
+        protected async Task CriarEvento(EventoLetivo letivo, DateTime dataInicioEvento, DateTime dataFimEvento)
         {
             await InserirNaBase(new EventoTipo
             {
@@ -243,13 +268,68 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+        protected async Task CriarEventoTipoResumido(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, long codigo)
+        {
+            await CriarEventoTipo(descricao, localOcorrencia, concomitancia, tipoData, dependencia, letivo, true, false, codigo, false, false);
+        }
+
+        protected async Task CriarEventoTipo(string descricao, EventoLocalOcorrencia localOcorrencia, bool concomitancia, EventoTipoData tipoData, bool dependencia, EventoLetivo letivo, bool ativo, bool excluido, long codigo, bool somenteLeitura, bool eventoEscolaAqui)
+        {
+            await InserirNaBase(new EventoTipo()
+            {
+                Descricao = descricao,
+                LocalOcorrencia = localOcorrencia,
+                Concomitancia = concomitancia,
+                TipoData = tipoData,
+                Dependencia = dependencia,
+                Letivo = letivo,
+                Ativo = ativo,
+                Excluido = excluido,
+                Codigo = codigo,
+                SomenteLeitura = somenteLeitura,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
+
+        protected async Task CriarEventoResumido(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus)
+        {
+            await CriarEvento(nomeEvento, dataInicio, dataFim, eventoLetivo, tipoCalendarioId, tipoEventoId, dreId, ueId, eventoStatus, null, null, null, null);
+        }
+
+        protected async Task CriarEvento(string nomeEvento, DateTime dataInicio, DateTime dataFim, EventoLetivo eventoLetivo, long tipoCalendarioId, long tipoEventoId, string dreId, string ueId, EntidadeStatus eventoStatus, long? workflowAprovacaoId, TipoPerfil? tipoPerfil, long? eventoPaiId, long? feriadoId, bool migrado = false)
+        {
+            await InserirNaBase(new Evento
+            {
+                Nome = nomeEvento,
+                DataInicio = dataInicio,
+                DataFim = dataFim,
+                Letivo = eventoLetivo,
+                TipoCalendarioId = tipoCalendarioId,
+                TipoEventoId = tipoEventoId,
+                DreId = dreId,
+                UeId = ueId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Status = eventoStatus,
+                WorkflowAprovacaoId = workflowAprovacaoId,
+                Migrado = migrado,
+                TipoPerfilCadastro = tipoPerfil,
+                EventoPaiId = eventoPaiId,
+                FeriadoId = feriadoId
+            });
+        }
+
         protected async Task CriarAtribuicaoEsporadica(DateTime dataInicio, DateTime dataFim)
         {
             await InserirNaBase(new AtribuicaoEsporadica
             {
                 UeId = UE_CODIGO_1,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 DreId = DRE_CODIGO_1,
                 DataInicio = dataInicio,
                 DataFim = dataFim,
@@ -299,6 +379,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+
         protected async Task CriarTurma(Modalidade modalidade)
         {
             await InserirNaBase(new Turma
@@ -308,7 +389,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = true,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,                
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
@@ -323,7 +404,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = turmaCodigo,
                 Historica = true,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
@@ -397,14 +478,14 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
-        } 
+        }
 
         protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = ANO_LETIVO_2022_NUMERO,
-                Nome = ANO_LETIVO_2022_NOME,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                Nome = ANO_LETIVO_Ano_Atual_NOME,
                 Periodo = Periodo.Semestral,
                 Modalidade = tipoCalendario,
                 Situacao = true,
@@ -497,6 +578,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_CICLO_ALFAB_INTERD_5HRS_EOL_1105, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, NULO);
             
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), NULO, CODIGO_1, CODIGO_8, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_EOL_1114, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_NOME_1114, NULO);
+
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false) 
@@ -569,6 +651,8 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
+
+
 
             await InserirNaBase(new FechamentoReaberturaBimestre()
             {

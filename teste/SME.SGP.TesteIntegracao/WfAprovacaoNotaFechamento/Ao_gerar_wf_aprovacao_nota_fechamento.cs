@@ -1,20 +1,18 @@
 ﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using MediatR;
-using SME.SGP.Infra;
-using System.Text.Json;
-using System.Collections.Generic;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 {
     public class Ao_gerar_wf_aprovacao_nota_fechamento : TesteBase
     {
@@ -30,7 +28,7 @@ namespace SME.SGP.TesteIntegracao
         private const string TURMA_CODIGO = "2261179";
         private const string TURMA_ANO = "7";
 
-        private const string TIPO_CALDENDARIO_NOME = "Calendário Escolar de 2022";
+        private const string TIPO_CALDENDARIO_NOME = "Calendário Escolar de Ano Atual";
 
         private const string COMPONENTE_CURRICULAR_MATEMATICA = "Matemática";
 
@@ -106,22 +104,22 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = System.DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-               
+
             });
 
             await InserirNaBase(new WfAprovacaoNotaFechamento()
             {
                 FechamentoNotaId = 2,
                 Nota = NOTA_8,
-                CriadoEm = System.DateTime.Now,
+                CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
-                
+
             });
 
             var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
             var wfAprovacaoNotaFechamento = ObterTodos<WfAprovacaoNotaFechamento>();
-            var componenteCurricular = new ComponenteCurricular()
+            var componenteCurricular = new Dominio.ComponenteCurricular()
             {
                 Descricao = COMPONENTE_CURRICULAR_MATEMATICA,
                 EhRegenciaClasse = false
@@ -129,7 +127,7 @@ namespace SME.SGP.TesteIntegracao
 
             var listaTurmasWfAprovacao = new List<WfAprovacaoNotaFechamentoTurmaDto>();
             listaTurmasWfAprovacao.Add(new WfAprovacaoNotaFechamentoTurmaDto() { WfAprovacao = wfAprovacaoNotaFechamento.FirstOrDefault(), TurmaId = 1, Bimestre = 1, CodigoAluno = ALUNO_CODIGO_11223344, ComponenteCurricularDescricao = COMPONENTE_CURRICULAR_MATEMATICA, ComponenteCurricularEhRegencia = false, NotaAnterior = 4, FechamentoTurmaDisciplinaId = 1 });
-            
+
             var jsonMensagem = JsonSerializer.Serialize(listaTurmasWfAprovacao);
             bool validaFila = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
@@ -187,7 +185,7 @@ namespace SME.SGP.TesteIntegracao
             resultadoWfAprovacao.Count().ShouldBe(1);
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is null).ShouldBeFalse();
             resultadoWfAprovacao.Any(a => a.WfAprovacaoId is not null).ShouldBeTrue();
-        }        
+        }
 
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_sem_aprovacao_id()
@@ -238,7 +236,7 @@ namespace SME.SGP.TesteIntegracao
         [Fact]
         public async Task Deve_permitir_salvar_nota_fechamento_bimestral_final_tela_com_aprovacao_id()
         {
-            
+
             var mediator = ServiceProvider.GetService<IMediator>();
 
             await CirarDadosBasicos();
@@ -252,7 +250,7 @@ namespace SME.SGP.TesteIntegracao
                 new FechamentoNotaDto()
                 {
                     Id = 1,
-                    Nota = NOTA_9,                    
+                    Nota = NOTA_9,
                 },
                 new FechamentoNotaDto()
                 {
@@ -292,7 +290,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 UeId = UE_CODIGO,
                 DreId = DRE_CODIGO,
-                Ano = 2022,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
                 NotificacaoTipo = NotificacaoTipo.Fechamento,
                 NotifacaoMensagem = MENSAGEM_NOTIFICACAO_WF_APROVACAO,
                 NotifacaoTitulo = MENSAGEM_TITULO_WF_APROVACAO,
@@ -367,7 +365,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = TURMA_NOME,
                 CodigoTurma = TURMA_CODIGO,
                 Ano = TURMA_ANO,
-                AnoLetivo = 2021,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1,
@@ -380,22 +378,22 @@ namespace SME.SGP.TesteIntegracao
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 06, 06),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 06),
                 Nome = TIPO_CALDENDARIO_NOME,
                 Periodo = Periodo.Anual,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false
             });
 
             await InserirNaBase(new PeriodoEscolar()
             {
                 Bimestre = 1,
-                PeriodoFim = new DateTime(2022, 08, 20),
-                PeriodoInicio = new DateTime(2022, 02, 01),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 20),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01),
                 TipoCalendarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new FechamentoTurma()

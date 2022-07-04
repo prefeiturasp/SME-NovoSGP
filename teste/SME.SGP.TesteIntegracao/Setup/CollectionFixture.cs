@@ -1,44 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Text;
-using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using System;
+using System.Data;
+using System.Text;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class CollectionFixture : IDisposable 
     {
-        public readonly IServiceCollection services;
-        public readonly InMemoryDatabase Database;
-        public ServiceProvider ServiceProvider;
+        public IServiceCollection Services { get; }
+        public InMemoryDatabase Database { get; }
+        public ServiceProvider ServiceProvider { get; set; }
 
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            services = new ServiceCollection();
+            Services = new ServiceCollection();
 
             Database = new InMemoryDatabase();
-            services.AddScoped<IDbConnection>(x => Database.Conexao);
+            Services.AddScoped<IDbConnection>(x => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            services.AddSingleton<IConfiguration>(config);
-            services.AddMemoryCache();
-            new RegistradorDependencias().Registrar(services, null);
 
+            Services.AddSingleton<IConfiguration>(config);
+            Services.AddMemoryCache();
+
+            new RegistradorDependencias().Registrar(Services, null);
         }
 
         public void BuildServiceProvider()
         {
-            ServiceProvider = services.BuildServiceProvider();
+            ServiceProvider = Services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
 

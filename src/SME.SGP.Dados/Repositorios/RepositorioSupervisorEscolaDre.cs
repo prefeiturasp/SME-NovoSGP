@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
+            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao ");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where 1 = 1");
 
@@ -35,35 +35,115 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { supervisorId, dreId })).AsList();
         }
 
-        public IEnumerable<SupervisorEscolasDreDto> ObtemPorDreESupervisores(string dreId, string[] supervisoresId)
+        public async Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[]uesCodigos,int tipoAtribuicao)
+        {
+            StringBuilder query = new(@"SELECT 
+                                            Id,
+                                            escola_id UeCodigo,
+                                            criado_por AS CriadoPor,
+                                            criado_rf AS CriadoRF
+                                        FROM supervisor_escola_dre sed 
+                                        WHERE excluido  
+                                        AND sed.dre_id = @dreCodigo 
+                                        AND sed.escola_id = ANY(@uesCodigos)
+                                        AND sed.tipo = @tipoAtribuicao ");
+
+            return await database.Conexao.QueryAsync<ExisteAtribuicaoExcluidaDto>(query.ToString(), new { dreCodigo, uesCodigos, tipoAtribuicao });
+        }
+
+        public async Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo)
+        {
+            StringBuilder query = new(@"SELECT
+	                                        count(*)
+                                        FROM
+                                         supervisor_escola_dre sed
+                                        WHERE  NOT sed.excluido  
+                                        AND tipo = @tipo
+                                        AND sed.dre_id = @dreCodigo
+                                        AND sed.escola_id = @ueCodigo
+                                        AND sed.supervisor_id  <> @responsavelCodigo ");
+
+            return await database.Conexao.QueryFirstAsync<int>(query.ToString(), new {tipo,ueCodigo,dreCodigo,responsavelCodigo });
+        }
+
+        public async Task<IEnumerable<UnidadeEscolarSemAtribuicaolDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo)
+        {
+            StringBuilder query = new(@"SELECT
+                                            sed.escola_id AS Codigo,
+                                            u.nome AS UeNome,
+                                            u.tipo_escola AS TipoEscola,
+                                            tipo AS TipoAtribuicao,
+                                            excluido AS AtribuicaoExcluida
+                                        FROM
+	                                        supervisor_escola_dre sed
+	                                        INNER JOIN dre d ON sed.dre_id = d.dre_id
+                                            INNER JOIN ue u ON u.ue_id  = sed.escola_id 
+                                        WHERE sed.dre_id = @dreCodigo
+                                        GROUP BY sed.escola_id,u.nome,u.tipo_escola,tipo,excluido  
+                                        ORDER BY u.nome ");
+            return await database.Conexao.QueryAsync<UnidadeEscolarSemAtribuicaolDto>(query.ToString(), new { dreCodigo });
+        }
+
+
+        public async Task<IEnumerable<UnidadeEscolarResponsavelDto>> ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(string dreId, string supervisoresId, int tipoResponsavel)
+        {
+            StringBuilder query = new(@"SELECT        
+                                            sed.escola_id AS Codigo,
+                                            u.nome AS UeNome,
+                                            u.tipo_escola AS TipoEscola,
+                                            sed.tipo,
+                                            sed.criado_em AS CriadoEm,
+                                            sed.criado_por AS CriadoPor,
+                                            sed.alterado_em AS AlteradoEm,
+                                            sed.alterado_por AS AlteradoPor,
+                                            sed.criado_rf AS CriadoRf,
+                                            sed.alterado_rf AS AlteradoRf
+                                       FROM supervisor_escola_dre sed
+                                        INNER JOIN dre d ON sed.dre_id = d.dre_id
+                                        INNER JOIN ue u ON u.ue_id  = sed.escola_id 
+                                        where excluido = false 
+                                        and sed.supervisor_id = @supervisoresId 
+                                        and sed.tipo = @tipoResponsavel
+                                         and sed.dre_id = @dreId ");
+
+            return await database.Conexao.QueryAsync<UnidadeEscolarResponsavelDto>(query.ToString(), new { dreId, supervisoresId, tipoResponsavel });
+        }
+        public async Task<List<SupervisorEscolasDreDto>> ObterTodosAtribuicaoResponsavelPorDreCodigo(string dreCodigo)
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id, escola_id, supervisor_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
-            query.AppendLine("from supervisor_escola_dre sed");
-            query.AppendLine("where excluido = false");
+            query.AppendLine(@"SELECT 
+                                sed.id as AtribuicaoSupervisorId,
+                                 sed.dre_id AS DreId,
+                                 sed.escola_id AS UeId,
+                                 sed.supervisor_id AS SupervisorId,
+                                 sed.criado_em AS CriadoEm,
+                                 sed.criado_por AS CriadoPor,
+                                 sed.alterado_em AS AlteradoEm,
+                                 sed.alterado_por AS AlteradoPor,
+                                 sed.criado_rf AS CriadoRf,
+                                 sed.alterado_rf AS AlteradoRf,
+                                 sed.excluido AtribuicaoExcluida,
+                                 sed.tipo AS TipoAtribuicao,
+                                 d.abreviacao  AS DreNome,
+                                 u.nome AS UeNome,
+                                 u.tipo_escola AS TipoEscola
+                            FROM supervisor_escola_dre sed
+                             INNER JOIN dre d ON sed.dre_id = d.dre_id
+                             INNER JOIN ue u ON u.ue_id  = sed.escola_id 
+                            WHERE sed.dre_id = @dreCodigo 
+                            ORDER BY u.tipo_escola ,u.nome ");
 
-            if (supervisoresId.Length > 0)
-            {
-                var idsSupervisores = from a in supervisoresId
-                                      select $"'{a}'";
-
-                query.AppendLine($"and sed.supervisor_id in ({string.Join(",", idsSupervisores)})");
-            }
-
-            if (!string.IsNullOrEmpty(dreId))
-                query.AppendLine("and sed.dre_id = @dreId");
-
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { dreId }).AsList();
+            var consulta = await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { dreCodigo });
+            return consulta.ToList();
         }
-
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
             StringBuilder query = new();
 
-            query.AppendLine(@"SELECT sed.id,
+            query.AppendLine(@"SELECT sed.id as AtribuicaoSupervisorId,
                                  sed.dre_id AS DreId,
-                                 sed.escola_id AS EscolaId,
+                                 sed.escola_id AS UeId,
                                  sed.supervisor_id AS SupervisorId,
                                  sed.criado_em AS CriadoEm,
                                  sed.criado_por AS CriadoPor,
@@ -109,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId, criado_em as CriadoEm," +
+            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id as DreId, escola_id as EscolaId, supervisor_id as SupervisorId, criado_em as CriadoEm," +
                 "criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, " +
                 "alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
 
@@ -124,30 +204,29 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }
 
-        public IEnumerable<SupervisorEscolasDreDto> ObtemSupervisoresPorUe(string ueId)
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUe(string ueId)
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
+            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where escola_id = @ueId and excluido = false");
 
-            return database.Conexao.Query<SupervisorEscolasDreDto>(query.ToString(), new { ueId })
-                .AsList();
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
 
-        public Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string ueId)
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUeAsync(string ueId)
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
+            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
             query.AppendLine("from supervisor_escola_dre sed");
             query.AppendLine("where escola_id = @ueId and excluido = false");
 
-            return database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { ueId });
         }
 
-        public Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo)
+        public async Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string rfSupervisor, bool consideraHistorico, int anoLetivo)
         {
             var sqlQuery = new StringBuilder();
 
@@ -184,7 +263,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
 
-            return database.Conexao
+            return await database.Conexao
                 .QueryAsync<DadosAbrangenciaSupervisorDto>(sqlQuery.ToString(),
                 new
                 {
@@ -193,6 +272,34 @@ namespace SME.SGP.Dados.Repositorios
                     anoLetivo,
                     tipoResponsavelAtribuicao
                 });
+        }
+
+        public async Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo)
+        {
+            var sql = new StringBuilder(@"SELECT 
+                               u.id ,
+                               u.ue_id AS Codigo,
+	                           u.nome AS NomeSimples,
+	                           u.tipo_escola AS TipoEscola 
+                           FROM ue u
+                           INNER JOIN dre d ON u.dre_id =d.id
+                           INNER JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id 
+                           WHERE d.dre_id  = @dreCodigo
+                           GROUP BY u.id 
+                           ORDER BY u.tipo_escola,u.nome ");
+
+            return await database.Conexao.QueryAsync<ListaUesConsultaAtribuicaoResponsavelDto>(sql.ToString(), new {dreCodigo});
+        }
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterResponsavelAtribuidoUePorUeTipo(string codigoUe, TipoResponsavelAtribuicao tipoResponsavelAtribuicao)
+        {
+            var query = @" select sed.supervisor_id as codigoRf
+                            from supervisor_escola_dre sed
+                            where sed.escola_id = @codigoUe
+                            and sed.tipo = @tipoResponsavelAtribuicao
+                            and not sed.excluido";
+
+            return (await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(query, new { codigoUe, tipoResponsavelAtribuicao }));
         }
     }
 }

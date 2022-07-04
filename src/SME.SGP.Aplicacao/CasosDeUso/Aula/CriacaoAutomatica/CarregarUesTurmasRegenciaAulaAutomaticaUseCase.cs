@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterDiasForaDoPeriodoEscolarQuery(periodosEscolares));
 
             var diasLetivosENaoLetivos = await mediator
-                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, true));
+                .Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId));
 
             var uesCodigos = turma != null ? new string[] { turma.Ue.CodigoUe } : await mediator
                 .Send(new ObterUesCodigosPorModalidadeEAnoLetivoQuery(modalidade, anoAtual, pagina));

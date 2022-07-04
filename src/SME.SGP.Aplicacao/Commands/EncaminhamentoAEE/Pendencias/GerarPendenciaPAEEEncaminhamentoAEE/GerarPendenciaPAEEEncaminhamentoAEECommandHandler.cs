@@ -1,12 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,7 +16,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
-
 
         public GerarPendenciaPAEEEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration, 
             IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
@@ -36,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = request.EncaminhamentoAEE;
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
             var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
             var hostAplicacao = configuration["UrlFrontEnd"];

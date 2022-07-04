@@ -11,16 +11,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     {
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorDreEolQuery request, CancellationToken cancellationToken)
         {
-            return new List<UsuarioEolRetornoDto>
-            { 
-                new UsuarioEolRetornoDto()
-                {   
-                    UsuarioId = 1,
-                    CodigoFuncaoAtividade = 0,
-                    CodigoRf = "1",
-                    NomeServidor = "Maria da Silva" 
-                }
-            };
+            return await Task.FromResult(new List<UsuarioEolRetornoDto>
+                { 
+                    new UsuarioEolRetornoDto()
+                    {   
+                        UsuarioId = 1,
+                        CodigoFuncaoAtividade = 0,
+                        CodigoRf = "1",
+                        NomeServidor = "Maria da Silva" 
+                    }
+                });
         }
     }
 }
