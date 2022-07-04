@@ -127,7 +127,12 @@ namespace SME.SGP.Aplicacao
                                     ValidarNotasFechamento2020(fechamentoNota);
 
                                 if (emAprovacao)
+                                {
+                                    fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
+                                    fechamentoNota.FechamentoAluno = fechamentoAluno;
+                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                                     AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo);
+                                }
                                 else
                                 {
                                     if (fechamentoNota != null)
