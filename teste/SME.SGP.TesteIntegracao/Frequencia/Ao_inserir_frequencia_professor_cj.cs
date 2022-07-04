@@ -13,7 +13,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        [Fact]
+        //[Fact]
         public async Task Ao_registrar_frenquecia_professor_cj_ensino_fundamental()
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await InserirFrequenciaUseCaseComValidacaoBasica(ObtenhaFrenqueciaDto());
         }
 
-        [Fact]
+        //[Fact]
         public async Task Ao_registrar_frequencia_professor_CJ_ensino_infantil()
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString());

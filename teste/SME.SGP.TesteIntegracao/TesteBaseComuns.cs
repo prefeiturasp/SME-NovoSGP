@@ -109,6 +109,11 @@ namespace SME.SGP.TesteIntegracao
 
         protected const int AULA_ID = 1;
         protected const int QUANTIDADE_AULA = 1;
+        protected const int QUANTIDADE_AULA_2 = 2;
+        protected const int QUANTIDADE_AULA_3 = 3;
+        protected const int QUANTIDADE_AULA_4 = 4;
+        protected const string CODIGO_ALUNO_1 = "1";
+        protected const string CODIGO_ALUNO_2 = "2";
 
         protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
