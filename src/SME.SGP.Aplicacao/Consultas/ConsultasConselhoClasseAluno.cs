@@ -259,7 +259,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares != null)
             {
                 var dataInicioPrimeiroBimestre = periodosEscolares.Where(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).FirstOrDefault().PeriodoInicio;
-                dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= dataInicioPrimeiroBimestre);
+                dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.SituacaoCodigo != SituacaoMatriculaAluno.VinculoIndevido && d.DataSituacao >= dataInicioPrimeiroBimestre);
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
