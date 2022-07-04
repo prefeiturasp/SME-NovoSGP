@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Turma_informada_nao_foi_encontrada()
         {
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await CriarAtribuicaoEsporadica(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4);
+            await CriarAtribuicaoEsporadica(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4);
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 

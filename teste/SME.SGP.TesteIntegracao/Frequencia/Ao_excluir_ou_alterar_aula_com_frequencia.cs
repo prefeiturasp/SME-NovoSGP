@@ -19,11 +19,11 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
         public async Task Ao_excluir_aula_com_frequencia_e_calculo()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_2, DATA_INICIO_BIMESTRE_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true);
             await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
             await CrieRegistroDeFrenquencia();
-            await CrieFrenquenciaAluno(CODIGO_ALUNO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_2);
-            await CrieFrenquenciaAluno(CODIGO_ALUNO_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_2);
+            await CrieFrenquenciaAluno(CODIGO_ALUNO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CrieFrenquenciaAluno(CODIGO_ALUNO_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
 
@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Ao_diminuir_quantidade_de_aula_a_frequencia_deve_ser_excluida()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_2, DATA_INICIO_BIMESTRE_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_2);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_2);
             await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
             await CrieRegistroDeFrenquencia();
 
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
         public async Task Ao_aumentar_quantidade_de_aula_a_frequencia_anterior_deve_ser_replicada()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_2, DATA_INICIO_BIMESTRE_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_4);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_4);
             await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
             await CrieRegistroDeFrenquencia();
 
