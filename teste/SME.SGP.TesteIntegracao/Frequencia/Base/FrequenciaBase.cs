@@ -21,9 +21,7 @@ namespace SME.SGP.TesteIntegracao
     public abstract class FrequenciaBase : TesteBaseComuns
     {
         private const int QUANTIDADE_3 = 3;
-
         protected const long AULA_ID_1 = 1;
-
         protected const int NUMERO_AULAS_1 = 1;
         protected const int NUMERO_AULAS_2 = 2;
         protected const int NUMERO_AULAS_3 = 3;
@@ -67,7 +65,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
@@ -76,6 +74,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -131,22 +131,19 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
-            await CriarTipoCalendario(tipoCalendario);
-            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
-            CriarClaimUsuario(perfil);
-            await CriarUsuarios();
+            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
+            await CriarTurma(modalidade);
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+            if (criarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular, int quantidadeAula = QUANTIDADE_3, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
+        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
             await CriarTipoCalendario(tipoCalendario);
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
             CriarClaimUsuario(perfil);
             await CriarUsuarios();
-            await CriarTurma(modalidade);
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
-            if (criarPeriodoEscolarEAbertura)
-                await CriarPeriodoEscolarEAbertura();
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()
@@ -192,7 +189,7 @@ namespace SME.SGP.TesteIntegracao
             return null;
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
@@ -295,7 +292,82 @@ namespace SME.SGP.TesteIntegracao
             return frenquencia;
         }
 
-        private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
+        protected async Task CrieFrenquenciaAluno(string codigoAluno, string disciplina, DateTime dataInicio, DateTime dataFim, int bimestre)
+        {
+            await InserirNaBase(new Dominio.FrequenciaAluno()
+            {
+                CodigoAluno = codigoAluno,
+                DisciplinaId = disciplina,
+                PeriodoEscolarId = TIPO_CALENDARIO_1,
+                TurmaId = TURMA_CODIGO_1,
+                PeriodoInicio = dataInicio,
+                PeriodoFim = dataFim,
+                Bimestre = bimestre,
+                Tipo = TipoFrequenciaAluno.PorDisciplina,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
+
+        protected async Task CrieRegistroDeFrenquencia()
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID_1,
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA_2);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA_3);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_2);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA_3);
+        }
+
+        protected async Task CriarRegistrosConsolidacaoFrequenciaAlunoMensal()
+        {
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
+            {
+                Id = 1,
+                TurmaId = 1,
+                AlunoCodigo = "1",
+                Mes = 5,
+                Percentual = 50,
+                QuantidadeAulas = 10,
+                QuantidadeAusencias = 5,
+                QuantidadeCompensacoes = 0
+            });
+
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
+            {
+                Id = 1,
+                TurmaId = 1,
+                AlunoCodigo = "2",
+                Mes = 5,
+                Percentual = 80,
+                QuantidadeAulas = 10,
+                QuantidadeAusencias = 8,
+                QuantidadeCompensacoes = 0
+            });
+
+            await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
+            {
+                Id = 1,
+                TurmaId =  1,
+                AlunoCodigo = "3",
+                Mes = 5,
+                Percentual = 40,
+                QuantidadeAulas = 10,
+                QuantidadeAusencias = 6,
+                QuantidadeCompensacoes = 0
+            });
+        }
+
+
+            private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
         {
             var lista = new List<RegistroFrequenciaAlunoDto>();
             var aulas = ObtenhaFrenquenciaAula();
@@ -345,6 +417,20 @@ namespace SME.SGP.TesteIntegracao
                 TipoFrequencia = tipoFrequencia,
                 ComponenteCurricularId = componenteCurricularId,
                 TurmaId = turmaId
+            });
+        }
+
+        private async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula)
+        {
+            await InserirNaBase(new RegistroFrequenciaAluno
+            {
+                Id = 1,
+                CodigoAluno = codigoAluno,
+                RegistroFrequenciaId = 1,
+                CriadoPor = "",
+                CriadoRF = "",
+                Valor = (int)TipoFrequencia.F,
+                NumeroAula = numeroAula
             });
         }
     }

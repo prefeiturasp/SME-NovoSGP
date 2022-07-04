@@ -55,30 +55,20 @@ namespace SME.SGP.Aplicacao
 
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
         {
-            //await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
 
-            //TODO: REMOVER E MANTER o BULK INSERT (MANTIDO AGORA SOMENTE PARA TESTES EVOLUIREM)    
-            foreach (var item in dicionario[INSERIR])
-                await repositorioRegistroFrequenciaAluno.SalvarAsync(item);
-
-            foreach(var frequenciaAluno in dicionario[ALTERAR])
+            foreach (var frequenciaAluno in dicionario[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //{
-            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            //}
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
         {
-            //await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
-
-            //TODO: REMOVER E MANTER o BULK INSERT (MANTIDO AGORA SOMENTE PARA TESTES EVOLUIREM)
-            foreach (var item in dicionario[INSERIR])
-                await repositorioFrequenciaPreDefinida.Salvar(item);
+            await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
 
             foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
                 await repositorioFrequenciaPreDefinida.Atualizar(frequenciaPreDefinida);
         }
+
 
         private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
@@ -102,7 +92,8 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.Valor = (int)presenca;
                             dicionario[ALTERAR].Add(frequenciaAluno);
                         }
-                    } else
+                    }
+                    else
                     {
                         var novafrequencia = new RegistroFrequenciaAluno()
                         {
@@ -135,9 +126,9 @@ namespace SME.SGP.Aplicacao
 
                 if (frequenciaDefinida != null)
                 {
-                        frequenciaDefinida.TipoFrequencia = tipoFrequencia;
-                        dicionario[ALTERAR].Add(frequenciaDefinida);
-                } 
+                    frequenciaDefinida.TipoFrequencia = tipoFrequencia;
+                    dicionario[ALTERAR].Add(frequenciaDefinida);
+                }
                 else
                 {
                     var frequenciaPreDefinida = new FrequenciaPreDefinida()
