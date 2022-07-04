@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
             var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local()));
 
             if (!usuario.EhProfessorCj() && !podePersistirTurma)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data);
         }
     }
 }

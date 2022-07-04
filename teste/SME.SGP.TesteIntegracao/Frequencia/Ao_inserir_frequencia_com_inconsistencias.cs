@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
@@ -45,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Turma_informada_nao_foi_encontrada()
         {
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
@@ -59,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            await CriarAtribuicaoEsporadica(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4);
+            await CriarAtribuicaoEsporadica(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4);
 
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
@@ -92,7 +95,24 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
         }
 
+        [Fact]
+        public async Task Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data()
+        {
+            collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
+                    typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
 
-        //VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerSemPermissaoFake
+            collectionFixture.BuildServiceProvider();
+
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(ObtenhaFrenqueciaDto()));
+
+            excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data);
+        }
+
+
+
     }
 }
