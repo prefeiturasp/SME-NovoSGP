@@ -50,21 +50,70 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
             await CriarTipoCalendario(tipoCalendario);
+
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+
             CriarClaimUsuario(perfil);
+
             await CriarUsuarios();
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
+        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, int quantidadeAula, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
         {
             await CriarTipoCalendario(tipoCalendario);
+            
             await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            
             CriarClaimUsuario(perfil);
+            
             await CriarUsuarios();
+            
             await CriarTurma(modalidade);
+            
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+            
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
+            
+            await CriarParametrosNotas();
+        }
+
+        private async Task CriarParametrosNotas()
+        {
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
+
+            await InserirNaBase(new ParametrosSistema() 
+            { 
+                Nome = DATA_INICIO_SGP, 
+                Tipo = TipoParametroSistema.DataInicioSGP, 
+                Valor = dataAtual.Year.ToString(), 
+                Ano = dataAtual.Year, 
+                Ativo = true, 
+                CriadoEm = dataAtual, 
+                CriadoRF = SISTEMA_CODIGO_RF 
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = DATA_INICIO_SGP,
+                Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
+                Valor = NUMERO_50,
+                Ano = dataAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtual,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = DATA_INICIO_SGP,
+                Tipo = TipoParametroSistema.MediaBimestre,
+                Valor = NUMERO_5,
+                Ano = dataAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtual,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()

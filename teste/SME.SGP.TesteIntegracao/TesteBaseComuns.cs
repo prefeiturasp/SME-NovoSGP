@@ -111,6 +111,10 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected long TIPO_CALENDARIO_1 = 1;
 
+        protected string DATA_INICIO_SGP = "DataInicioSGP";
+        protected string NUMERO_50 = "50";
+        protected string NUMERO_5 = "5";
+
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
