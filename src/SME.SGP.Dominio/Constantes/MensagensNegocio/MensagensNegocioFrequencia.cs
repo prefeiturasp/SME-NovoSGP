@@ -17,5 +17,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string Nao_e_permitido_registro_de_frequencia_para_este_componente = "Não é permitido registro de frequência para este componente curricular.";
 
         public const string Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao = "Não é possível registrar a frequência pois esse componente curricular não permite substituição.";
+
+        public const string Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data = "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
     }
 }
