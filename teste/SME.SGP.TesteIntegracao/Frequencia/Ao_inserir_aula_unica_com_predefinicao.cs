@@ -34,17 +34,17 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false);
 
             var frequencia = new FrequenciaDto()
+            {
+                AulaId = AULA_ID_1,
+                ListaFrequencia = new List<RegistroFrequenciaAlunoDto>()
                 {
-                    AulaId = AULA_ID_1,
-                    ListaFrequencia = new List<RegistroFrequenciaAlunoDto>()
-                    {
-                       new RegistroFrequenciaAlunoDto() {
-                           Aulas = new List<FrequenciaAulaDto>() { new FrequenciaAulaDto() { NumeroAula = NUMERO_AULAS_1, TipoFrequencia = TIPO_FREQUENCIA_COMPARECEU}},
-                           CodigoAluno = CODIGO_ALUNO_99999,
-                           TipoFrequenciaPreDefinido = TIPO_FREQUENCIA_COMPARECEU
-                       },
-                    }
-                };
+                    new RegistroFrequenciaAlunoDto() {
+                        Aulas = new List<FrequenciaAulaDto>() { new FrequenciaAulaDto() { NumeroAula = NUMERO_AULAS_1, TipoFrequencia = TIPO_FREQUENCIA_COMPARECEU}},
+                        CodigoAluno = CODIGO_ALUNO_99999,
+                        TipoFrequenciaPreDefinido = TIPO_FREQUENCIA_COMPARECEU
+                    },
+                }
+            };
 
             await InserirFrequenciaUseCaseComValidacaoBasica(frequencia);
         }        

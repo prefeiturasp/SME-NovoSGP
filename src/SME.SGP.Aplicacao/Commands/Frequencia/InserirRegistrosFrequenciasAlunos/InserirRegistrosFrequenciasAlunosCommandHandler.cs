@@ -55,22 +55,29 @@ namespace SME.SGP.Aplicacao
 
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
         {
-            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
-            
+            //await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+
+            //TODO: REMOVER E MANTER o BULK INSERT (MANTIDO AGORA SOMENTE PARA TESTES EVOLUIREM)    
+            foreach (var item in dicionario[INSERIR])
+                await repositorioRegistroFrequenciaAluno.SalvarAsync(item);
+
             foreach(var frequenciaAluno in dicionario[ALTERAR])
-            {
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            }
+            //{
+            //    await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
+            //}
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
         {
-            await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
+            //await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
+
+            //TODO: REMOVER E MANTER o BULK INSERT (MANTIDO AGORA SOMENTE PARA TESTES EVOLUIREM)
+            foreach (var item in dicionario[INSERIR])
+                await repositorioFrequenciaPreDefinida.Salvar(item);
 
             foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
-            {
                 await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
-            }
         }
 
         private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)

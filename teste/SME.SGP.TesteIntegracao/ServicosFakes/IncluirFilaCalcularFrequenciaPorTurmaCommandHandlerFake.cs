@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -24,10 +25,10 @@ namespace SME.SGP.TesteIntegracao
         public async Task<bool> Handle(IncluirFilaCalcularFrequenciaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var calculo = new CalcularFrequenciaPorTurmaCommand(request.Alunos, request.DataAula, request.TurmaId, request.DisciplinaId);
-            await calculoFrequenciaTurmaDisciplinaUseCase.Executar(new MensagemRabbit(calculo));
+            await calculoFrequenciaTurmaDisciplinaUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(calculo)));
 
             var consolidacao = new FiltroConsolidacaoFrequenciaAlunoMensal(request.TurmaId, request.DataAula.Month);
-            await consolidarFrequenciaAlunoPorTurmaEMesUseCase.Executar(new MensagemRabbit(consolidacao));
+            await consolidarFrequenciaAlunoPorTurmaEMesUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(consolidacao)));
 
             return true;
         }

@@ -38,6 +38,9 @@ namespace SME.SGP.TesteIntegracao
 
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
+        protected DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
+        protected DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+
         protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -94,14 +97,19 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre,DateTime dataAula,string componenteCurricular ,bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
         {
-            await CriarTipoCalendario(tipoCalendario);
-            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
-            CriarClaimUsuario(perfil);
-            await CriarUsuarios();
+            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
             await CriarTurma(modalidade);
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
+        }
+
+        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()

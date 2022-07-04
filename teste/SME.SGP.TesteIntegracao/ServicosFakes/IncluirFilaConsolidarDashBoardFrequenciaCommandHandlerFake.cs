@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace SME.SGP.TesteIntegracao
                 TipoPeriodo = request.TipoPeriodo
             };
 
-            await consolidacaoDashBoardFrequenciaPorDataETipoUseCase.Executar(new MensagemRabbit(filtro));
+            await consolidacaoDashBoardFrequenciaPorDataETipoUseCase.Executar(new MensagemRabbit(JsonSerializer.Serialize(filtro)));
 
             return true;
         }
