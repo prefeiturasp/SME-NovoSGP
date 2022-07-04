@@ -3,14 +3,11 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.UsuarioFuncionario
 {
     public class Ao_obter_usuario_funcionario : TesteBase
     {

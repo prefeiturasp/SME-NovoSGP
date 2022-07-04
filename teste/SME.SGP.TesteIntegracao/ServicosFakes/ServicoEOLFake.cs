@@ -197,9 +197,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
         {
-            throw new NotImplementedException();
+            return new List<ComponenteCurricularEol>()
+            {
+                new ComponenteCurricularEol()
+                {
+                    Codigo = 1106,
+                    TerritorioSaber = false
+                }
+            };
         }
 
         public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
@@ -232,7 +239,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return new DadosTurmaEolDto
             {
                 Ano = '\u0000',
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Codigo = 2366531,
                 CodigoModalidade = 0,
                 DataFim = null,

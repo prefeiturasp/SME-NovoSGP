@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.PlanoAEEPendenciaUsuario
 {
     public class Ao_gerar_pendencia_validade_plano : TesteBase
     {
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             await useCase.Executar(new MensagemRabbit());
 
-            var lista = ObterTodos<PendenciaUsuario>();
+            var lista = ObterTodos<Dominio.PendenciaUsuario>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().UsuarioId.ShouldBe(1);
@@ -62,10 +62,10 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Titulo = "Pendência plano AEE",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PlanoAEE()
+            await InserirNaBase(new Dominio.PlanoAEE()
             {
                 Id = 1,
                 AlunoCodigo = "11223344",
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Situacao = SituacaoPlanoAEE.Validado,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEEVersao
@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Numero = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Questionario
@@ -94,7 +94,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Tipo = TipoQuestionario.PlanoAEE,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Questao
@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Tipo = TipoQuestao.PeriodoEscolar,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new PlanoAEEQuestao
@@ -114,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 QuestaoId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
 
             });
 
@@ -124,7 +124,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Texto = "1",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Usuario
@@ -143,16 +143,16 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 PlanoAEEId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PendenciaUsuario
+            await InserirNaBase(new Dominio.PendenciaUsuario
             {
                 PendenciaId = 1,
                 UsuarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
         }
     }

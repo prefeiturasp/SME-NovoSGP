@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
 {
     public class Ao_registrar_consolidacao_frequencia_aluno_mensal : TesteBase
     {
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(2022, 04, 26),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1
             });
 
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -89,7 +89,7 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(2022, 04, 26),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1
             });
 
@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario
@@ -255,7 +255,7 @@ namespace SME.SGP.TesteIntegracao
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 

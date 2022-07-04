@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
-            
+
             if (periodoEscolar == null)
             {
                 var eventoReposicaoAulaNoDia = await repositorioEvento
@@ -43,19 +43,19 @@ namespace SME.SGP.Aplicacao
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
             }
 
-            // Evento Letivo
-            var temEventoLetivoNoDia = await repositorioEvento
-                .EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
-
             // Domingo
             if (request.DataAula.FimDeSemana())
-            {                
-                if (!temEventoLetivoNoDia)
+            {
+                var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
+
+                if (!temEventoLetivoDeLiberacao)
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
             }
 
             // Evento não letivo
             var temEventoNaoLetivoNoDia = await repositorioEvento.EhEventoNaoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
+            // Evento Letivo
+            var temEventoLetivoNoDia = await repositorioEvento.EhEventoLetivoPorTipoDeCalendarioDataDreUe(request.TipoCalendarioId, request.DataAula, request.DreCodigo, request.UeCodigo);
 
             if (!temEventoLetivoNoDia && temEventoNaoLetivoNoDia)
                 return new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois existe um evento de dia não letivo");
