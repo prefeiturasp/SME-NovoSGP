@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
 
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarPeriodoEscolarEAbertura();
 
