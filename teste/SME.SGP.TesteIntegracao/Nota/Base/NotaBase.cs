@@ -47,34 +47,28 @@ namespace SME.SGP.TesteIntegracao.Nota
             return await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto);
         }
 
-        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
+        protected async Task CriarDadosBase(ValoresDadosBasicosDto dto)
         {
-            await CriarTipoCalendario(tipoCalendario);
+            await CriarTipoCalendario(dto.TipoCalendario);
 
-            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            await CriarItensComuns(dto.CriarPeriodo, dto.DataInicio, dto.DataFim, dto.Bimestre, dto.TipoCalendarioId);
 
-            CriarClaimUsuario(perfil);
+            CriarClaimUsuario(dto.Perfil);
 
             await CriarUsuarios();
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, int quantidadeAula, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true)
+        protected async Task CriarDadosBasicos(ValoresDadosBasicosDto dto)
         {
-            await CriarTipoCalendario(tipoCalendario);
-            
-            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
-            
-            CriarClaimUsuario(perfil);
-            
-            await CriarUsuarios();
-            
-            await CriarTurma(modalidade);
-            
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
-            
-            if (criarPeriodoEscolarEAbertura)
+            await CriarDadosBase(dto);
+
+            await CriarTurma(dto.Modalidade);
+
+            await CriarAula(dto.ComponenteCurricular, dto.DataAula, RecorrenciaAula.AulaUnica, dto.QuantidadeAula);
+
+            if (dto.CriarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
-            
+
             await CriarParametrosNotas();
         }
 
@@ -84,35 +78,54 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await InserirNaBase(new ParametrosSistema() 
             { 
-                Nome = DATA_INICIO_SGP, 
+                Nome = DATA_INICIO_SGP,
+                Descricao = DATA_INICIO_SGP,
                 Tipo = TipoParametroSistema.DataInicioSGP, 
                 Valor = dataAtual.Year.ToString(), 
                 Ano = dataAtual.Year, 
                 Ativo = true, 
                 CriadoEm = dataAtual, 
-                CriadoRF = SISTEMA_CODIGO_RF 
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
             });
 
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = DATA_INICIO_SGP,
+                Descricao = DATA_INICIO_SGP,
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
                 Valor = NUMERO_50,
                 Ano = dataAtual.Year,
                 Ativo = true,
                 CriadoEm = dataAtual,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
             });
 
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = DATA_INICIO_SGP,
+                Descricao = DATA_INICIO_SGP,
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Valor = NUMERO_5,
                 Ano = dataAtual.Year,
                 Ativo = true,
                 CriadoEm = dataAtual,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+        }
+
+        protected async Task CriarAbrangenciaCj()
+        {
+            await InserirNaBase(new Abrangencia
+            {
+                UsuarioId = 1,
+                DreId = 1,
+                UeId = 1,
+                TurmaId = 1,
+                Historico = false,
+                Perfil = new Guid(ObterPerfilCJ())
             });
         }
 
@@ -262,6 +275,28 @@ namespace SME.SGP.TesteIntegracao.Nota
                 ComponenteCurricularId = componenteCurricularId,
                 TurmaId = turmaId
             });
+        }
+        protected class ValoresDadosBasicosDto
+        {
+            public ValoresDadosBasicosDto()
+            {
+                CriarPeriodo = true;
+                TipoCalendarioId = 1;
+                CriarPeriodoEscolarEAbertura = true;
+            }
+
+            public string Perfil { get; set; }
+            public Modalidade Modalidade { get; set; }
+            public ModalidadeTipoCalendario TipoCalendario { get; set; }
+            public DateTime DataInicio { get; set; }
+            public DateTime DataFim { get; set; }
+            public int Bimestre { get; set; }
+            public DateTime DataAula { get; set; }
+            public string ComponenteCurricular { get; set; }
+            public int QuantidadeAula { get; set; }
+            public bool CriarPeriodo { get; set; }
+            public long TipoCalendarioId { get; set; }
+            public bool CriarPeriodoEscolarEAbertura { get; set; }
         }
     }
 }

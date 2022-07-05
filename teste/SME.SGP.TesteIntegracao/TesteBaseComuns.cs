@@ -348,6 +348,11 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
+            await CriarAtividadeAvaliativa(dataAvaliacao, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_CODIGO_RF_2222222);
+        }
+
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente, string rf)
+        {
             await InserirNaBase(new TipoAvaliacao
             {
                 Nome = "Avaliação bimestral",
@@ -364,7 +369,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
+                ProfessorRf = rf,
                 TurmaId = TURMA_CODIGO_1,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = 1,
@@ -379,7 +384,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
                 AtividadeAvaliativaId = 1,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                DisciplinaId = componente,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now
