@@ -503,8 +503,10 @@ namespace SME.SGP.Aplicacao
             var fechamentoAlunos = new List<FechamentoAluno>();
 
             if (fechamentoTurmaDisciplinaId > 0)
+            {
                 fechamentoAlunos = (await mediator.Send(new ObterFechamentoAlunoPorDisciplinaIdQuery(fechamentoTurmaDisciplinaId))).ToList();
-
+                fechamentoAlunos = fechamentoAlunos.Where(x => fechamentoNotasDto.Select(x => x.CodigoAluno).ToList().Contains(x.AlunoCodigo)).ToList();
+            }
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
