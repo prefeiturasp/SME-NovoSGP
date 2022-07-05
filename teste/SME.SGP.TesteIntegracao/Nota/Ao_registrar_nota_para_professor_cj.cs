@@ -22,23 +22,21 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Ao_lancar_nota_numerica_pelo_professor_cj_com_avaliacoes_do_professor_titular_do_cj()
         {
-            var dtoBase = new ValoresDadosBasicosDto()
+            var filtroNota = new FiltroNotasDto()
             {
                 Perfil = ObterPerfilCJ(),
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                DataInicio = DATA_INICIO_BIMESTRE_2,
-                DataFim = DATA_FIM_BIMESTRE_2,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
-                DataAula = DATA_INICIO_BIMESTRE_2,
-                QuantidadeAula = 2
+                ComponenteCurricular = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString()
             };
 
-            await CriarDadosBasicos(dtoBase);
+            await CriarDadosBase(filtroNota);
+
+            await CriarAula(filtroNota.ComponenteCurricular, DATA_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+
             await CriarAtividadeAvaliativa(DATA_INICIO_BIMESTRE_2, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), USUARIO_PROFESSOR_LOGIN_2222222);
             await CriarAtividadeAvaliativa(DATA_INICIO_BIMESTRE_2, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), USUARIO_PROFESSOR_LOGIN_1111111);
-            await CriarAbrangenciaCj();
 
             var dto = new NotaConceitoListaDto()
             {

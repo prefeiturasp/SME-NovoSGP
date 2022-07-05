@@ -28,6 +28,15 @@ namespace SME.SGP.TesteIntegracao
         private const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
 
+        protected const long TURMA_ID_1 = 1;
+        protected const long TURMA_ID_2 = 2;
+
+        protected const long DRE_ID_1 = 1;
+        protected const long UE_ID_1 = 1;
+
+        protected const long USUARIO_ID_1 = 1;
+        protected const long USUARIO_ID_2 = 2;
+
         private int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
         private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
         private const string FALSE = "false";
@@ -114,6 +123,35 @@ namespace SME.SGP.TesteIntegracao
         protected string DATA_INICIO_SGP = "DataInicioSGP";
         protected string NUMERO_50 = "50";
         protected string NUMERO_5 = "5";
+        protected string PERCENTUAL_ALUNOS_INSUFICIENTES = "PERCENTUAL_ALUNOS_INSUFICIENTES";
+        protected string MEDIA_BIMESTRAL = "MEDIA_BIMESTRAL";
+
+        protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
+        protected DateTime DATA_29_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
+
+        protected const int NUMERO_AULA_1 = 1;
+        protected const int NUMERO_AULA_2 = 2;
+
+        protected const string ALFABETIZACAO = "ALFABETIZACAO";
+        protected const string INTERDISCIPLINAR = "INTERDISCIPLINAR";
+        protected const string AUTORAL = "AUTORAL";
+        protected const string MEDIO = "MEDIO";
+        protected const string EJA_ALFABETIZACAO = "EJA_ALFABETIZACAO";
+        protected const string EJA_BASICA = "EJA_BASICA";
+        protected const string EJA_COMPLEMENTAR = "EJA_COMPLEMENTAR";
+        protected const string EJA_FINAL = "EJA_FINAL";
+
+        protected const string ANO_1 = "1";
+        protected const string ANO_2 = "2";
+        protected const string ANO_3 = "3";
+        protected const string ANO_4 = "4";
+        protected const string ANO_5 = "5";
+        protected const string ANO_6 = "6";
+        protected const string ANO_7 = "7";
+        protected const string ANO_8 = "8";
+        protected const string ANO_9 = "9";
+
+        protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -413,6 +451,63 @@ namespace SME.SGP.TesteIntegracao
             await CriarPadrao();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
             await CriarComponenteCurricular();
+        }
+
+        protected async Task CriarDreUePerfilComponenteCurricular()
+        {
+            await CriarPadrao();
+            await CriarComponenteCurricular();
+        }
+
+        protected async Task CriaTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao)
+        {
+            await InserirNaBase(new TipoAvaliacao
+            {
+                Id = 1,
+                Nome = "Avaliação bimestral",
+                Descricao = "Avaliação bimestral",
+                Situacao = true,
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = tipoAvalicao,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente,TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral, bool ehRegencia = false,
+                                                      bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
+        {
+            await CriaTipoAvaliacao(tipoAvalicao);
+
+            await InserirNaBase(new AtividadeAvaliativa
+            {
+                Id = 1,
+                DreId = "1",
+                UeId = "1",
+                ProfessorRf = rf,
+                TurmaId = TURMA_CODIGO_1,
+                Categoria = CategoriaAtividadeAvaliativa.Normal,
+                TipoAvaliacaoId = 1,
+                NomeAvaliacao = "Avaliação 04",
+                DescricaoAvaliacao = "Avaliação 04",
+                DataAvaliacao = dataAvaliacao,
+                EhRegencia = ehRegencia,
+                EhCj = ehCj,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new AtividadeAvaliativaDisciplina
+            {
+                Id = 1,
+                AtividadeAvaliativaId = 1,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
         protected async Task CriarPadrao()
