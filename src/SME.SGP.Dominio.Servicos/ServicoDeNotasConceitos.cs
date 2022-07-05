@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -323,7 +324,7 @@ namespace SME.SGP.Dominio
 
                 if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
                     (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
-                    throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+                    throw new NegocioException(MensagensNegocioLancamentoNota.Somente_o_professor_que_criou_a_avaliacao_pode_atribuir_nota);
             }
         }
 

@@ -151,6 +151,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string ANO_8 = "8";
         protected const string ANO_9 = "9";
 
+        protected readonly long ATIVIDADE_AVALIATIVA_1 = 1;
+        protected readonly long ATIVIDADE_AVALIATIVA_2 = 2;
+
         protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -386,10 +389,11 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
-            await CriarAtividadeAvaliativa(dataAvaliacao, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_CODIGO_RF_2222222);
+            await CrieTipoAtividade();
+            await CriarAtividadeAvaliativa(dataAvaliacao, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_CODIGO_RF_2222222, false, ATIVIDADE_AVALIATIVA_1);
         }
 
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente, string rf)
+        protected async Task CrieTipoAtividade()
         {
             await InserirNaBase(new TipoAvaliacao
             {
@@ -402,7 +406,10 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "1",
                 CriadoEm = DateTime.Now
             });
+        }
 
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente, string rf, bool ehCj, long idAtividade)
+        {
             await InserirNaBase(new AtividadeAvaliativa
             {
                 DreId = "1",
@@ -410,6 +417,7 @@ namespace SME.SGP.TesteIntegracao
                 ProfessorRf = rf,
                 TurmaId = TURMA_CODIGO_1,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
+                EhCj = ehCj,
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
@@ -421,7 +429,7 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
-                AtividadeAvaliativaId = 1,
+                AtividadeAvaliativaId = idAtividade,
                 DisciplinaId = componente,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",

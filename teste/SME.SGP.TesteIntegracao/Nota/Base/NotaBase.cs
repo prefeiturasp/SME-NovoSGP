@@ -38,9 +38,6 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected readonly string ALUNO_CODIGO_9 = "9";
         protected readonly string ALUNO_CODIGO_10 = "10";
 
-        protected readonly long ATIVIDADE_AVALIATIVA_1 = 1;
-        protected readonly long ATIVIDADE_AVALIATIVA_2 = 2;
-
         protected readonly double NOTA_1 = 1;
         protected readonly double NOTA_2 = 2;
         protected readonly double NOTA_3 = 3;
@@ -632,7 +629,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId,string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
         {
             await InserirNaBase(new AtividadeAvaliativa
             {
