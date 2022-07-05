@@ -795,6 +795,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return resultadoFiltrado;
         }
+
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
         {
             var sqlQuery = @"select distinct u.login
