@@ -188,7 +188,7 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                var componentesCurriculares = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(codigoTurma, usuario.Login, usuario.PerfilAtual);
+                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery(codigoTurma, usuario.Login, usuario.PerfilAtual));
 
                 if (turma.ModalidadeCodigo == Modalidade.EJA)
                     componentesCurriculares = RemoverEdFisicaEJA(componentesCurriculares);
