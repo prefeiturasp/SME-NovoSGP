@@ -24,6 +24,10 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 
         public const string Crianca_nao_encontrada_anotacao = "Criança não encontrada.";
 
+        public const string Crianca_nao_ativa = "Criança não ativa na turma.";
+
+        public const string Aluno_nao_ativo = "Aluno não ativo na turma.";
+
         public const string Aluno_nao_encontrado_anotacao = "Aluno não encontrado.";
 
         public const string Aula_nao_encontrada_anotacao = "Aula não encontrada.";
