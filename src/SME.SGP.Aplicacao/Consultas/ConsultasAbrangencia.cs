@@ -178,14 +178,12 @@ namespace SME.SGP.Aplicacao
            
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
 
-            result = modalidade == Modalidade.EducacaoInfantil ? await ChecaTurmasCEMEI(result, codigoUe) : result;
-
-
+            result = modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, codigoUe) : result;
 
             return OrdernarTurmasItinerario(result);
         }
 
-        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> ChecaTurmasCEMEI(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoUe)
+        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> VerificaTurmasCEMEI(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoUe)
         {
             var tipoEscola = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUe));
 
