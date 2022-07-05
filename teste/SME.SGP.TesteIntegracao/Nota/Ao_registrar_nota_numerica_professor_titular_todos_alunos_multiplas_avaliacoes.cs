@@ -35,9 +35,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_1,
                 ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolar = true,
-                CriarPeriodoAbertura = true,
+                TipoNota = TipoNota.Nota
             };
 
             await CriarDadosBase(filtroNota);

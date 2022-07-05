@@ -123,17 +123,20 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarAbrangencia(filtroNota.Perfil);
 
-            await CriarCiclo();
+            await CriarCiclo(filtroNota.Modalidade);
 
-            await CriarNotasTipoEParametros();
+            await CriaNotaTipoValor();
+
+            await CriarNotasTipoEParametros((int)filtroNota.TipoNota);
         }
 
-        private async Task CriarNotasTipoEParametros()
+        private async Task CriaNotaTipoValor()
         {
             await InserirNaBase(new NotaTipoValor()
             {
+                Id = 1,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 TipoNota = TipoNota.Nota,
                 Descricao = NOTA,
                 CriadoEm = DateTime.Now,
@@ -143,19 +146,23 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await InserirNaBase(new NotaTipoValor()
             {
+                Id = 2,
                 Ativo = true,
                 InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                TipoNota = TipoNota.Nota,
+                TipoNota = TipoNota.Conceito,
                 Descricao = CONCEITO,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+        }
 
+        private async Task CriarNotasTipoEParametros(int tipoNota)
+        {
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 1,
-                TipoNotaId = 2,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -168,7 +175,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 2,
-                TipoNotaId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -181,7 +188,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 3,
-                TipoNotaId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -194,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 4,
-                TipoNotaId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -206,8 +213,8 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
-                CicloId = 5,
-                TipoNotaId = 2,
+                CicloId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -219,8 +226,8 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
-                CicloId = 6,
-                TipoNotaId = 2,
+                CicloId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -233,7 +240,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 7,
-                TipoNotaId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -246,7 +253,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 8,
-                TipoNotaId = 1,
+                TipoNotaId = tipoNota,
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
@@ -270,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        private async Task CriarCiclo()
+        private async Task CriarCiclo(Modalidade modalidade)
         {
             await InserirNaBase(new Ciclo()
             {
@@ -284,21 +291,21 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 CicloId = 1,
                 Ano = ANO_1,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 1,
                 Ano = ANO_2,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 1,
                 Ano = ANO_3,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new Ciclo()
@@ -313,21 +320,21 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 CicloId = 2,
                 Ano = ANO_4,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 2,
                 Ano = ANO_5,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 2,
                 Ano = ANO_6,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new Ciclo()
@@ -342,21 +349,21 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 CicloId = 3,
                 Ano = ANO_7,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 3,
                 Ano = ANO_8,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
             
             await InserirNaBase(new CicloAno()
             {
                 CicloId = 3,
                 Ano = ANO_9,
-                Modalidade = Modalidade.Fundamental
+                Modalidade = modalidade
             });
 
             await InserirNaBase(new Ciclo()
@@ -657,12 +664,54 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoEm = DateTime.Now
             });
         }
+        protected async Task CriaConceito()
+        {
+            await InserirNaBase(new Conceito()
+            {
+                Descricao = "Excelente",
+                Aprovado = true,
+                Ativo = true,
+                InicioVigencia = DATA_01_01,
+                FimVigencia = DATA_31_12,
+                Valor = "E",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Conceito()
+            {
+                Descricao = "Bom",
+                Aprovado = true,
+                Ativo = true,
+                InicioVigencia = DATA_01_01,
+                FimVigencia = DATA_31_12,
+                Valor = "B",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Conceito()
+            {
+                Descricao = "Ruim",
+                Aprovado = true,
+                Ativo = true,
+                InicioVigencia = DATA_01_01,
+                FimVigencia = DATA_31_12,
+                Valor = "R",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
         protected class FiltroNotasDto
         {
             public FiltroNotasDto()
             {
                 CriarPeriodoEscolar = true;
-                TipoCalendarioId = 1;
+                TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
             }
 
@@ -674,6 +723,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             public long TipoCalendarioId { get; set; }
             public bool CriarPeriodoEscolar { get; set; }
             public bool CriarPeriodoAbertura { get; set; }
+            public TipoNota TipoNota { get; set; }
         }
     }
 }
