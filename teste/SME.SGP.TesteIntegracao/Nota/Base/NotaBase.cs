@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -59,7 +60,8 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
 
-
+        protected readonly string NOTA = "NOTA";
+        protected readonly string CONCEITO = "CONCEITO";
 
         protected NotaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -122,6 +124,150 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAbrangencia(filtroNota.Perfil);
 
             await CriarCiclo();
+
+            await CriarNotasTipoEParametros();
+        }
+
+        private async Task CriarNotasTipoEParametros()
+        {
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                TipoNota = TipoNota.Nota,
+                Descricao = NOTA,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                TipoNota = TipoNota.Nota,
+                Descricao = CONCEITO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 1,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 2,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 3,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 4,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 5,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 6,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 7,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 8,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaParametro()
+            {
+                Minima = 0,
+                Media = 5,
+                Maxima = 10,
+                Incremento = 0.5,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarCiclo()
@@ -313,26 +459,26 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarPeriodoEscolar()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
         }
 
         protected async Task CriarPeriodoAbertura(long tipoCalendario)
@@ -399,13 +545,13 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected async Task CriarPeriodoEscolarEAberturaPadrao()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }

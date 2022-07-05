@@ -32,9 +32,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarAula(filtroNota.ComponenteCurricular, DATA_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
-            await CriarAtividadeAvaliativa(DATA_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222);
-            await CriarAtividadeAvaliativa(DATA_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111);
+            await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222);
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111);
 
             var dto = new NotaConceitoListaDto()
             {
@@ -44,9 +44,9 @@ namespace SME.SGP.TesteIntegracao.Nota
                 {
                     new NotaConceitoDto()
                     {
-                        AlunoId = "1",
+                        AlunoId = ALUNO_CODIGO_1,
                         Nota = 7,
-                        AtividadeAvaliativaId = 1
+                        AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
                     }
                 }
             };
