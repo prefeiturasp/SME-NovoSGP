@@ -26,6 +26,41 @@ namespace SME.SGP.TesteIntegracao.Nota
         private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
+        protected readonly string ALUNO_CODIGO_1 = "1";
+        protected readonly string ALUNO_CODIGO_2 = "2";
+        protected readonly string ALUNO_CODIGO_3 = "3";
+        protected readonly string ALUNO_CODIGO_4 = "4";
+        protected readonly string ALUNO_CODIGO_5 = "5";
+        protected readonly string ALUNO_CODIGO_6 = "6";
+        protected readonly string ALUNO_CODIGO_7 = "7";
+        protected readonly string ALUNO_CODIGO_8 = "8";
+        protected readonly string ALUNO_CODIGO_9 = "9";
+        protected readonly string ALUNO_CODIGO_10 = "10";
+
+        protected readonly long ATIVIDADE_AVALIATIVA_1 = 1;
+        protected readonly long ATIVIDADE_AVALIATIVA_2 = 2;
+
+        protected readonly double NOTA_1 = 1;
+        protected readonly double NOTA_2 = 2;
+        protected readonly double NOTA_3 = 3;
+        protected readonly double NOTA_4 = 4;
+        protected readonly double NOTA_5 = 5;
+        protected readonly double NOTA_6 = 6;
+        protected readonly double NOTA_7 = 7;
+        protected readonly double NOTA_8 = 8;
+        protected readonly double NOTA_9 = 9;
+        protected readonly double NOTA_10 = 10;
+
+        protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
+        protected readonly string AVALIACAO_NOME_2 = "Avaliação 2";
+
+        protected readonly long TIPO_AVALIACAO_CODIGO_1 = 1;
+        protected readonly long TIPO_AVALIACAO_CODIGO_2 = 2;
+
+        protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+
+
+
         protected NotaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -36,15 +71,200 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
         }
-        protected async Task<NotasConceitosRetornoDto> ExecutarNotasConceito(ListaNotasConceitosDto consultaListaNotasConceitosDto, NotaConceitoListaDto notaConceitoLista)
+
+        private (IComandosNotasConceitos, IObterNotasParaAvaliacoesUseCase) RetornarServicosBasicos()
         {
             var comandosNotasConceitos = ServiceProvider.GetService<IComandosNotasConceitos>();
 
             var obterNotasParaAvaliacoesUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
 
+            return (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase);
+        }
+
+        protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito)
+        {
+            var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
+
+            await comandosNotasConceitos.Salvar(notaconceito);
+
+            var retorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
+        }
+
+        protected async Task<NotasConceitosRetornoDto> ExecutarNotasConceito(ListaNotasConceitosDto consultaListaNotasConceitosDto, NotaConceitoListaDto notaConceitoLista)
+        {
+            var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
+
             await comandosNotasConceitos.Salvar(notaConceitoLista);
 
             return await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto);
+        }
+
+        protected async Task CriarDadosBase(FiltroNota filtroNota)
+        {
+            await CriarTipoCalendario(filtroNota.TipoCalendario);
+
+            await CriarDreUePerfilComponenteCurricular();
+
+            CriarClaimUsuario(filtroNota.Perfil);
+
+            await CriarUsuarios();
+
+            await CriarTurma(filtroNota.Modalidade);
+
+            if (filtroNota.CriarPeriodoEscolar)
+                await CriarPeriodoEscolar();
+
+            if (filtroNota.CriarPeriodoAbertura)
+                await CriarPeriodoAbertura(filtroNota.TipoCalendarioId);
+
+            await CriarParametrosNotas();
+
+            await CriarAbrangencia(filtroNota.Perfil);
+
+            await CriarCiclo();
+        }
+
+        private async Task CriarCiclo()
+        {
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = ALFABETIZACAO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 1,
+                Ano = ANO_1,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 1,
+                Ano = ANO_2,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 1,
+                Ano = ANO_3,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = INTERDISCIPLINAR,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 2,
+                Ano = ANO_4,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 2,
+                Ano = ANO_5,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 2,
+                Ano = ANO_6,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = AUTORAL,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 3,
+                Ano = ANO_7,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 3,
+                Ano = ANO_8,
+                Modalidade = Modalidade.Fundamental
+            });
+            
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 3,
+                Ano = ANO_9,
+                Modalidade = Modalidade.Fundamental
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = MEDIO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = EJA_ALFABETIZACAO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = EJA_BASICA,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = EJA_COMPLEMENTAR,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Ciclo()
+            {
+                Descricao = EJA_FINAL,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarAbrangencia(string perfil)
+        {
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = new Guid(perfil),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_ID_1
+            });
         }
 
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
@@ -85,34 +305,40 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new ParametrosSistema() 
             { 
                 Nome = DATA_INICIO_SGP, 
+                Descricao = DATA_INICIO_SGP,
                 Tipo = TipoParametroSistema.DataInicioSGP, 
                 Valor = dataAtual.Year.ToString(), 
                 Ano = dataAtual.Year, 
                 Ativo = true, 
                 CriadoEm = dataAtual, 
-                CriadoRF = SISTEMA_CODIGO_RF 
+                CriadoRF = SISTEMA_CODIGO_RF, 
+                CriadoPor = SISTEMA_NOME
             });
 
             await InserirNaBase(new ParametrosSistema()
             {
-                Nome = DATA_INICIO_SGP,
+                Nome = PERCENTUAL_ALUNOS_INSUFICIENTES,
+                Descricao = PERCENTUAL_ALUNOS_INSUFICIENTES,
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
                 Valor = NUMERO_50,
                 Ano = dataAtual.Year,
                 Ativo = true,
                 CriadoEm = dataAtual,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
             });
 
             await InserirNaBase(new ParametrosSistema()
             {
-                Nome = DATA_INICIO_SGP,
+                Nome = MEDIA_BIMESTRAL,
+                Descricao = MEDIA_BIMESTRAL,
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Valor = NUMERO_5,
                 Ano = dataAtual.Year,
                 Ativo = true,
                 CriadoEm = dataAtual,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
             });
         }
 
@@ -127,6 +353,22 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+        }
+
+        protected async Task CriarPeriodoEscolar()
+        {
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+        }
+
+        protected async Task CriarPeriodoAbertura(long tipoCalendario)
+        {
+            await CriarPeriodoReabertura(tipoCalendario);
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -251,16 +493,53 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
-        } 
+        }
 
-        protected async Task CriarPredefinicaoAluno(string codigoAluno, TipoFrequencia tipoFrequencia, long componenteCurricularId, long turmaId)
+        protected async Task CriarTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao, string descricaoAvaliacao)
         {
-            await InserirNaBase(new FrequenciaPreDefinida()
+            await InserirNaBase(new TipoAvaliacao
             {
-                CodigoAluno = codigoAluno,
-                TipoFrequencia = tipoFrequencia,
-                ComponenteCurricularId = componenteCurricularId,
-                TurmaId = turmaId
+                Nome = descricaoAvaliacao,
+                Descricao = descricaoAvaliacao,
+                Situacao = true,
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = tipoAvalicao,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId,string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
+        {
+            await InserirNaBase(new AtividadeAvaliativa
+            {
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                ProfessorRf = rf,
+                TurmaId = TURMA_CODIGO_1,
+                Categoria = CategoriaAtividadeAvaliativa.Normal,
+                TipoAvaliacaoId = TipoAvaliacaoId,
+                NomeAvaliacao = nomeAvaliacao,
+                DescricaoAvaliacao = nomeAvaliacao,
+                DataAvaliacao = dataAvaliacao,
+                EhRegencia = ehRegencia,
+                EhCj = ehCj,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativaDisciplina(long atividadeAvaliativaId, string componenteCurricular)
+        {
+            await InserirNaBase(new AtividadeAvaliativaDisciplina
+            {
+                AtividadeAvaliativaId = atividadeAvaliativaId,
+                DisciplinaId = componenteCurricular,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
     }
