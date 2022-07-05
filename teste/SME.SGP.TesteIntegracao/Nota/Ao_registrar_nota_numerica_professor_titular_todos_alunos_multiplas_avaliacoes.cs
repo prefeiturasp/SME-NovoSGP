@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             
         }
 
@@ -101,14 +102,11 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Semestre = SEMESTRE_1,
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
+                PeriodoInicioTicks = DATA_03_01_INICIO_BIMESTRE_1.Ticks,
+                PeriodoFimTicks = DATA_29_04_FIM_BIMESTRE_1.Ticks,
             };
 
             await ExecutarNotasConceito(notaconceito, listaNotaConceito);
-
-            //Criar 2 aulas e 2 avaliações
-
-            //var retorno = await ExecutarNotasConceito();
-
         }
     }
 }
