@@ -128,10 +128,9 @@ namespace SME.SGP.Aplicacao
 
                                 if (emAprovacao)
                                 {
-                                    fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
-                                    fechamentoNota.FechamentoAluno = fechamentoAluno;
-                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo);
+                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno})
+                                        .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
                                 }
                                 else
                                 {
@@ -175,8 +174,11 @@ namespace SME.SGP.Aplicacao
                             try
                             {
                                 if (emAprovacao)
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo);
-
+                                { 
+                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota, a.CodigoAluno })
+                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
+                                }
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
@@ -590,13 +592,13 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo)
+        private void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
                 Id = fechamentoNota.Id,
                 NotaAnterior = fechamentoNota.Nota != null ? fechamentoNota.Nota.Value : (double?)null,
-                Nota = fechamentoNota.Nota,
+                Nota = nota == null ? fechamentoNota.Nota.Value : nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId != null ? fechamentoNota.ConceitoId.Value : (long?)null,
                 ConceitoId = fechamentoNota.ConceitoId,
                 CodigoAluno = alunoCodigo,
