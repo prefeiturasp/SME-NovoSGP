@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             retorno.ShouldNotBeNull();
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 2 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 2 aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             listaNotificao.ShouldNotBeEmpty();
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 17 aulas do componente curricular Português para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 17 aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
         }
 

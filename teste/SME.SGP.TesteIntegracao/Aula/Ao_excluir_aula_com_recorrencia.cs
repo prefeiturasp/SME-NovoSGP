@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
             
-            await CriarAtividadeAvaliativaFundamental(DATA_02_05);
+            await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarPeriodoEscolarEAbertura();
 
