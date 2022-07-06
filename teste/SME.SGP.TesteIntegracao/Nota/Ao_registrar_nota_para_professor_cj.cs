@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Ao_lancar_nota_numerica_pelo_professor_cj_com_avaliacoes_do_professor_titular_do_cj()
         {
-            await CrieDados();
+            await CrieDados(TipoNota.Nota);
 
             var dto = new NotaConceitoListaDto()
             {
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Nao_pode_lancar_nota_numerica_pelo_professor_cj_com_avaliacoes_do_professor_diferente()
         {
-            await CrieDados();
+            await CrieDados(TipoNota.Nota);
 
             var dto = new NotaConceitoListaDto()
             {
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Ao_lancar_nota_conceito_pelo_professor_cj_com_avaliacoes_do_professor_titular_do_cj()
         {
-            await CrieDados();
+            await CrieDados(TipoNota.Conceito);
             await CriaConceito();
 
             var dto = new NotaConceitoListaDto()
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Nao_pode_lancar_nota_conceito_pelo_professor_cj_com_avaliacoes_do_professor_diferente()
         {
-            await CrieDados();
+            await CrieDados(TipoNota.Conceito);
             await CriaConceito();
 
             var dto = new NotaConceitoListaDto()
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await ExecuteExcecao(dto);
         }
 
-        private async Task CrieDados()
+        private async Task CrieDados(TipoNota tipo)
         {
             var filtroNota = new FiltroNotasDto()
             {
@@ -161,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
                 ComponenteCurricular = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
-                TipoNota = TipoNota.Nota
+                TipoNota = tipo
             };
 
             await CriarDadosBase(filtroNota);

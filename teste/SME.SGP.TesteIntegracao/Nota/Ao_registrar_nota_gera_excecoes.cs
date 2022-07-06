@@ -35,12 +35,13 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
                 TipoNota = TipoNota.Nota
             };
 
             await CriarDadosBase(filtroNota);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
 
             var dto = new NotaConceitoListaDto()
@@ -65,6 +66,25 @@ namespace SME.SGP.TesteIntegracao.Nota
             excecao.Message.ShouldBe(MensagensNegocioLancamentoNota.Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data);
         }
 
-  
+        //[Fact]
+        public async Task Periodo_escolar_da_atividade_avaliativa_nao_encontrado()
+        {
+            var filtroNota = new FiltroNotasDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_2,
+                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                TipoNota = TipoNota.Nota
+            };
+
+            await CriarDadosBase(filtroNota);
+            await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CrieTipoAtividade();
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+
+
+        }
     }
 }

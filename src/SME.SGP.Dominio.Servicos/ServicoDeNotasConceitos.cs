@@ -443,7 +443,7 @@ namespace SME.SGP.Dominio
             var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
 
             if (!usuario.EhProfessorCj() && !podePersistir)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data);
         }
     }
 }
