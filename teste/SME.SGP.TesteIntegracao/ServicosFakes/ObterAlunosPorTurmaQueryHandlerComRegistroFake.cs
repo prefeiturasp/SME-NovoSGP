@@ -12,6 +12,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class ObterAlunosPorTurmaQueryHandlerComRegistroFake : IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
+        const string CODIGO_ALUNO_1 = "1";
+        const string CODIGO_ALUNO_2 = "2";
+        const string CODIGO_ALUNO_3 = "3";
+        const string CODIGO_ALUNO_4 = "4";
+        const string NOME_ALUNO_1 = "Aluno teste 1";
+        const string NOME_ALUNO_2 = "Aluno teste 2";
+        const string NOME_ALUNO_3 = "Aluno teste 3";
+        const string NOME_ALUNO_4 = "Aluno teste 4";
+        const string SITUACAO_MATRICULA_ATIVA = "Ativo";
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaQuery request, CancellationToken cancellationToken)
         {
             return new List<AlunoPorTurmaResposta>
@@ -19,20 +29,20 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new AlunoPorTurmaResposta
                 {
                     Ano = 0,
-                    CodigoAluno = "1",
+                    CodigoAluno = CODIGO_ALUNO_1,
                     CodigoComponenteCurricular = 0,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
-                    DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                    DataSituacao = new DateTime(2021, 11, 09, 17, 25, 31),
-                    DataMatricula = new DateTime(2021, 11, 09, 17, 25, 31),
+                    DataNascimento = new DateTime(1959, 01, 16),
+                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
-                    NomeAluno = "Aluno teste 1",
+                    NomeAluno = NOME_ALUNO_1,
                     NomeSocialAluno = null,
                     NumeroAlunoChamada = 1,
                     ParecerConclusivo = null,
                     PossuiDeficiencia = false,
-                    SituacaoMatricula = "Ativo",
+                    SituacaoMatricula = SITUACAO_MATRICULA_ATIVA,
                     Transferencia_Interna = false,
                     TurmaEscola = null,
                     TurmaRemanejamento = null,
@@ -40,25 +50,25 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new DateTime(2018, 06, 22, 19, 02, 35),
+                    DataAtualizacaoContato = new DateTime(2018, 06, 22),
                 },
                 new AlunoPorTurmaResposta
                 {
                     Ano = 0,
-                    CodigoAluno = "2",
+                    CodigoAluno = CODIGO_ALUNO_2,
                     CodigoComponenteCurricular = 0,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
-                    DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                    DataSituacao = new DateTime(2021, 11, 09, 17, 25, 31),
-                    DataMatricula = new DateTime(2021, 11, 09, 17, 25, 31),
+                    DataNascimento = new DateTime(1959, 01, 16),
+                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
-                    NomeAluno = "Aluno teste 2",
+                    NomeAluno = NOME_ALUNO_2,
                     NomeSocialAluno = null,
                     NumeroAlunoChamada = 1,
                     ParecerConclusivo = null,
                     PossuiDeficiencia = false,
-                    SituacaoMatricula = "Ativo",
+                    SituacaoMatricula = SITUACAO_MATRICULA_ATIVA,
                     Transferencia_Interna = false,
                     TurmaEscola = null,
                     TurmaRemanejamento = null,
@@ -66,25 +76,25 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new DateTime(2018, 06, 22, 19, 02, 35),
+                    DataAtualizacaoContato = new(DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 },
                 new AlunoPorTurmaResposta
                 {
                     Ano = 0,
-                    CodigoAluno = "3",
+                    CodigoAluno = CODIGO_ALUNO_3,
                     CodigoComponenteCurricular = 0,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
-                    DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                    DataSituacao = new DateTime(2021, 11, 09, 17, 25, 31),
-                    DataMatricula = new DateTime(2021, 11, 09, 17, 25, 31),
+                    DataNascimento = new DateTime(1959, 01, 16),
+                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
-                    NomeAluno = "Aluno teste 3",
+                    NomeAluno = NOME_ALUNO_3,
                     NomeSocialAluno = null,
                     NumeroAlunoChamada = 1,
                     ParecerConclusivo = null,
                     PossuiDeficiencia = false,
-                    SituacaoMatricula = "Ativo",
+                    SituacaoMatricula = SITUACAO_MATRICULA_ATIVA,
                     Transferencia_Interna = false,
                     TurmaEscola = null,
                     TurmaRemanejamento = null,
@@ -92,25 +102,25 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new DateTime(2018, 06, 22, 19, 02, 35),
+                    DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 },
                 new AlunoPorTurmaResposta
                 {
                     Ano = 0,
-                    CodigoAluno = "4",
+                    CodigoAluno = CODIGO_ALUNO_4,
                     CodigoComponenteCurricular = 0,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
                     DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                    DataSituacao = new DateTime(2021, 11, 09, 17, 25, 31),
-                    DataMatricula = new DateTime(2021, 11, 09, 17, 25, 31),
+                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
-                    NomeAluno = "Aluno teste 4",
+                    NomeAluno = NOME_ALUNO_4,
                     NomeSocialAluno = null,
                     NumeroAlunoChamada = 1,
                     ParecerConclusivo = null,
                     PossuiDeficiencia = false,
-                    SituacaoMatricula = "Ativo",
+                    SituacaoMatricula = SITUACAO_MATRICULA_ATIVA,
                     Transferencia_Interna = false,
                     TurmaEscola = null,
                     TurmaRemanejamento = null,
@@ -118,7 +128,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new DateTime(2018, 06, 22, 19, 02, 35),
+                    DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 }
             };
         }

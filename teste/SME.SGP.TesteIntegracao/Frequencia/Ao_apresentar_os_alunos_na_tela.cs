@@ -1,15 +1,11 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,9 +13,12 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_apresentar_os_alunos_na_tela : FrequenciaBase
     {
-        public Ao_apresentar_os_alunos_na_tela(CollectionFixture collectionFixture) : base(collectionFixture) { }
-        protected readonly DateTime DATA_02_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 02);
+        public Ao_apresentar_os_alunos_na_tela(CollectionFixture collectionFixture) : base(collectionFixture)
+        {
+        }
 
+        protected readonly DateTime DATA_02_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 02);
+        private const string SITUACAO_15 = "15";
 
         [Fact]
         public async Task Alunos_novos_devem_aparecer_com_tooltip_durante_15_dias()
@@ -36,10 +35,14 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             };
 
             var retorno = await useCase.Executar(filtroFrequencia);
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_2);
 
-            var marcador = retorno.ListaFrequencia.FirstOrDefault(x => x.SituacaoMatricula == ((int)SituacaoMatriculaAluno.Ativo).ToString()).Marcador;
+            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.SituacaoMatricula == ((int)SituacaoMatriculaAluno.Ativo).ToString());
+            retornoAluno.DataSituacao.ShouldBeGreaterThanOrEqualTo(periodoEscolar.PeriodoInicio);
+            retornoAluno.DataSituacao.ShouldBeLessThanOrEqualTo(periodoEscolar.PeriodoFim);
 
-            marcador.ShouldNotBeNull();
+            retornoAluno.Marcador.ShouldNotBeNull();
         }
 
         [Fact]
@@ -56,10 +59,19 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
 
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_2);
+
             var retorno = await useCase.Executar(filtroFrequencia);
+
+            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_4);
+
+            retornoAluno.DataSituacao.ShouldBeGreaterThanOrEqualTo(periodoEscolar.PeriodoInicio);
+            retornoAluno.DataSituacao.ShouldBeLessThanOrEqualTo(periodoEscolar.PeriodoFim);
+
             var marcador = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_4).Marcador;
 
-            marcador.ShouldBeNull();
+            retornoAluno.Marcador.ShouldBeNull();
         }
 
         [Fact]
@@ -78,9 +90,10 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 
             var retorno = await useCase.Executar(filtroFrequencia);
 
-            var marcador = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_2).Marcador;
+            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_2);
 
-            marcador.ShouldNotBeNull();
+            retornoAluno.SituacaoMatricula.ShouldBe(SITUACAO_15);
+            retornoAluno.Marcador.ShouldNotBeNull();
         }
 
         [Fact]
@@ -97,13 +110,15 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
 
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_1);
+
             var retorno = await useCase.Executar(filtroFrequencia);
 
-            var aluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_3);
+            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_3);
 
-            aluno.Desabilitado.ShouldBeTrue();
+            retornoAluno.DataSituacao.ShouldBeLessThan(periodoEscolar.PeriodoInicio);
+            retornoAluno.Desabilitado.ShouldBeTrue();
         }
-
-
     }
 }

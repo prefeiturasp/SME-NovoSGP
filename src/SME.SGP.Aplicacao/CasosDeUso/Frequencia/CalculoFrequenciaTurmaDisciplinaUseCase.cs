@@ -18,20 +18,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            try
-            {
-                var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
-                if (comando == null)
-                    return false;
+            var comando = mensagemRabbit.ObterObjetoMensagem<CalcularFrequenciaPorTurmaCommand>();
+            if (comando == null)
+                return false;
 
-                await mediator.Send(comando);
-                return true;
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
+            await mediator.Send(comando);
+            return true;
         }
 
         public async Task IncluirCalculoFila(CalcularFrequenciaDto calcularFrequenciaDto)

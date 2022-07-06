@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,12 +13,20 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     public class ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake : IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
         protected readonly IMediator mediator;
-        const long TIPO_CALENDARIO_1 = 1;
+        private const long TIPO_CALENDARIO_1 = 1;
+        private const string CODIGO_ALUNO_1 = "1";
+        private const string CODIGO_ALUNO_2 = "2";
+        private const string CODIGO_ALUNO_3 = "3";
+        private const string CODIGO_ALUNO_4 = "4";
+        private const string SITUACAO_MATRICULA_1 = "1";
+        private const string SITUACAO_MATRICULA_4 = "4";
+        private const string SITUACAO_MATRICULA_15 = "15";
 
         public ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake(IMediator mediator)
         {
             this.mediator = mediator;
         }
+
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosAtivosPorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
             var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(TIPO_CALENDARIO_1, request.DataAula));
@@ -33,37 +40,35 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new AlunoPorTurmaResposta() {
                     Ano = DateTime.Now.Year ,
                     DataSituacao = periodoEscolar.PeriodoInicio > dataAtual ? dataAtual : periodoEscolar.PeriodoFim,
-                    CodigoAluno= "1",
-                    CodigoComponenteCurricular= 138,
-                    CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                    SituacaoMatricula = "1"
+                    CodigoAluno = CODIGO_ALUNO_1,
+                    CodigoComponenteCurricular = 138,
+                    CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
+                    SituacaoMatricula = SITUACAO_MATRICULA_1
                 },
                     new AlunoPorTurmaResposta() {
                     Ano = DateTime.Now.Year ,
                     DataSituacao = periodoEscolar.PeriodoInicio.AddDays(1),
-                    CodigoAluno= "4",
+                    CodigoAluno = CODIGO_ALUNO_4,
                     CodigoComponenteCurricular= 138,
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                    SituacaoMatricula = "1"
-
+                    SituacaoMatricula = SITUACAO_MATRICULA_1
                 },
                     new AlunoPorTurmaResposta() {
                     Ano = DateTime.Now.Year ,
                     DataSituacao = periodoEscolar.PeriodoInicio,
-                    CodigoAluno= "2",
+                    CodigoAluno = CODIGO_ALUNO_2,
                     CodigoComponenteCurricular= 138,
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
-                    SituacaoMatricula = "15"
+                    SituacaoMatricula = SITUACAO_MATRICULA_15
                 },
                     new AlunoPorTurmaResposta() {
                     Ano = DateTime.Now.Year ,
                     DataSituacao = primeiroBimestre.PeriodoInicio.AddDays(-1),
-                    CodigoAluno= "3",
+                    CodigoAluno= CODIGO_ALUNO_3,
                     CodigoComponenteCurricular= 138,
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.VinculoIndevido,
-                    SituacaoMatricula = "4"
+                    SituacaoMatricula = SITUACAO_MATRICULA_4
                 }
-
             };
         }
     }
