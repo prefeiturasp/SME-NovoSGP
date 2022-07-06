@@ -34,8 +34,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
 
-        protected const string CODIGO_ALUNO_99999 = "99999";        
-        protected const string CODIGO_ALUNO_77777 = "77777";        
+        protected const string CODIGO_ALUNO_99999 = "99999";
+        protected const string CODIGO_ALUNO_77777 = "77777";
 
         private const string REABERTURA_GERAL = "Reabrir Geral";
 
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
-        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year-6, 03, 07);
+        protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
 
         protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -74,7 +74,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValidacaoPodePersistirTurmaNasDatasQuery, List<PodePersistirNaDataRetornoEolDto>>), typeof(ObterValidacaoPodePersistirTurmaNasDatasQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
 
         }
 
@@ -117,7 +118,7 @@ namespace SME.SGP.TesteIntegracao
             return await useCase.Executar(salvarAnotacaoFrequenciaAlunoDto);
         }
 
-        protected  async Task<bool> ExcluirAnotacaoFrequenciaAlunoUseCase(long id)
+        protected async Task<bool> ExcluirAnotacaoFrequenciaAlunoUseCase(long id)
         {
             var useCase = ServiceProvider.GetService<IExcluirAnotacaoFrequenciaAlunoUseCase>();
             return await useCase.Executar(id);
@@ -214,7 +215,7 @@ namespace SME.SGP.TesteIntegracao
                 Migrado = false,
                 AulaCJ = false
             };
-        } 
+        }
 
         protected async Task CriarPeriodoEscolarEAberturaPadrao()
         {
@@ -230,7 +231,7 @@ namespace SME.SGP.TesteIntegracao
         }
         protected async Task CriarMotivoAusencia(string descricao)
         {
-            await InserirNaBase(new MotivoAusencia() {Descricao = descricao });
+            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
@@ -356,7 +357,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new Dominio.ConsolidacaoFrequenciaAlunoMensal()
             {
                 Id = 1,
-                TurmaId =  1,
+                TurmaId = 1,
                 AlunoCodigo = "3",
                 Mes = 5,
                 Percentual = 40,
@@ -367,7 +368,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-            private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
+        private List<RegistroFrequenciaAlunoDto> ObtenhaListaDeFrequenciaAluno()
         {
             var lista = new List<RegistroFrequenciaAlunoDto>();
             var aulas = ObtenhaFrenquenciaAula();
@@ -431,6 +432,37 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 Valor = (int)TipoFrequencia.F,
                 NumeroAula = numeroAula
+            });
+        }
+
+        protected async Task InserirParametroSistema()
+        {
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Id = 403,
+                Nome = "PercentualFrequenciaCritico",
+                Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                Descricao = "",
+                Valor = "75",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ativo = true,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "",
+                CriadoRF = ""
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Id = 402,
+                Nome = "PercentualFrequenciaAlerta",
+                Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
+                Descricao = "",
+                Valor = "80",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ativo = true,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "",
+                CriadoRF = ""
             });
         }
     }
