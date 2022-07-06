@@ -94,6 +94,8 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
 
+            var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
+
             foreach (var bimestre in notasConceitoRetorno.Bimestres)
             {
                 bimestre.Alunos.Any().ShouldBeTrue();
@@ -111,10 +113,21 @@ namespace SME.SGP.TesteIntegracao.Nota
                     foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
                     {
                         var notaAvaliacaoPrevista = notaconceito.NotasConceitos.FirstOrDefault(w => w.AlunoId.Equals(aluno.Id) && w.AtividadeAvaliativaId == notaAvaliacao.AtividadeAvaliativaId);
-                        notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
+
+                        if (ehNotaConceito)
+                            notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Conceito.ToString()).ShouldBeTrue();
+                        else
+                            notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
                     }
                 }
             }
+
+            var notasPersistidas = ObterTodos<NotaConceito>();
+
+            if (ehNotaConceito)
+                notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
+            else
+                notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse(); 
         }
 
         protected async Task<NotasConceitosRetornoDto> ExecutarNotasConceito(ListaNotasConceitosDto consultaListaNotasConceitosDto, NotaConceitoListaDto notaConceitoLista)
@@ -136,7 +149,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarUsuarios();
 
-            await CriarTurma(filtroNota.Modalidade);
+            await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma);
 
             if (filtroNota.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar();
@@ -798,6 +811,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             public bool CriarPeriodoEscolar { get; set; }
             public bool CriarPeriodoAbertura { get; set; }
             public TipoNota TipoNota { get; set; }
+            public string AnoTurma { get; set; }
         }
     }
 }
