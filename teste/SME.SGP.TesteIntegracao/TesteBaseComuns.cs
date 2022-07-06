@@ -139,7 +139,8 @@ namespace SME.SGP.TesteIntegracao
         protected const long CALAMIDADE_PUBLICA_QUE_ATINGIU_A_ESCOLA_OU_EXIGIU_O_USO_DO_ESPAÇO_COMO_ABRIGAMENTO_9 = 9;
         protected const long ESCOLA_FECHADA_POR_SITUACAO_DE_VIOLENCIA_10 = 10;
 
-        protected const string ANOTACAO_FREQUENCIA_ALUNO = "Lorem Ipsum";
+        protected const string DESCRICAO_FREQUENCIA_ALUNO_1 = "Lorem Ipsum";
+        protected const string DESCRICAO_FREQUENCIA_ALUNO_2 = "é um texto bastante conhecido";
 
         protected readonly CollectionFixture collectionFixture;
 

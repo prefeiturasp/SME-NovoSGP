@@ -34,8 +34,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
 
-        protected const string CODIGO_ALUNO_99999 = "99999";
-        protected const string CODIGO_ALUNO_77777 = "77777";
+        protected const string CODIGO_ALUNO_99999 = "99999";        
+        protected const string CODIGO_ALUNO_77777 = "77777";        
+        protected const string CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666 = "666666";        
 
         private const string REABERTURA_GERAL = "Reabrir Geral";
 
@@ -434,6 +435,81 @@ namespace SME.SGP.TesteIntegracao
                 NumeroAula = numeroAula
             });
         }
+
+        protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao()
+        {
+            await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
+            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+            var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
+            {
+                MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
+                Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                CodigoAluno = CODIGO_ALUNO_99999,
+                EhInfantil = false
+            };
+
+            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            return retorno.Id;
+        }
+
+        protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Motivo()
+        {
+            await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
+            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+            var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
+            {
+                MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                CodigoAluno = CODIGO_ALUNO_99999,
+                EhInfantil = false
+            };
+
+            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            return retorno.Id;
+        }
+
+        protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Descricao()
+        {
+            await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
+            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+            var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
+            {
+                Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                CodigoAluno = CODIGO_ALUNO_99999,
+                EhInfantil = false
+            };
+
+            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            return retorno.Id;
+        }
+
+        protected async Task<long> Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data()
+        {
+            await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
+            await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+            var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
+            {
+                MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
+                Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
+                AulaId = AULA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
+                CodigoAluno = CODIGO_ALUNO_99999,
+                EhInfantil = false
+            };
+
+            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            return retorno.Id;
+        }
+
 
         protected async Task InserirParametroSistema()
         {
