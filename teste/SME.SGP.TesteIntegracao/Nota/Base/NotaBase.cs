@@ -52,6 +52,17 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected readonly double NOTA_9 = 9;
         protected readonly double NOTA_10 = 10;
 
+        protected readonly long NOTA_CONCEITO_ID_1 = 1;
+        protected readonly long NOTA_CONCEITO_ID_2 = 2;
+        protected readonly long NOTA_CONCEITO_ID_3 = 3;
+        protected readonly long NOTA_CONCEITO_ID_4 = 4;
+        protected readonly long NOTA_CONCEITO_ID_5 = 5;
+        protected readonly long NOTA_CONCEITO_ID_6 = 6;
+        protected readonly long NOTA_CONCEITO_ID_7 = 7;
+        protected readonly long NOTA_CONCEITO_ID_8 = 8;
+        protected readonly long NOTA_CONCEITO_ID_9 = 9;
+        protected readonly long NOTA_CONCEITO_ID_10 = 10;
+
         protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
         protected readonly string AVALIACAO_NOME_2 = "Avaliação 2";
 
@@ -84,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             return (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase);
         }
 
-        protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito)
+        protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito, bool ehInclusao = true)
         {
             var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
 
@@ -98,18 +109,68 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
 
+            if (ehInclusao)
+                ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+            else
+                ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+
+            var notasPersistidas = ObterTodos<NotaConceito>();
+
+            if (ehNotaConceito)
+                notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
+            else
+                notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
+        }
+
+        private void ValidarAlteracaoNotas(NotaConceitoListaDto notaconceito, NotasConceitosRetornoDto notasConceitoRetorno, bool ehNotaConceito)
+        {
+            var alunosAlterados = notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct();
+
             foreach (var bimestre in notasConceitoRetorno.Bimestres)
             {
                 bimestre.Alunos.Any().ShouldBeTrue();
-                (bimestre.Alunos.Count() == notaconceito.NotasConceitos.Select(s=> s.AlunoId).Distinct().Count()).ShouldBeTrue();
+
+                var notaConceitoAlteracao = bimestre.Alunos.Where(w => alunosAlterados.Contains(w.Id)); 
+
+                (notaConceitoAlteracao.Select(s=> s.Id).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
+
+                foreach (var aluno in notaConceitoAlteracao)
+                {
+                    aluno.NotasAvaliacoes.Any().ShouldBeTrue();
+
+                    (aluno.NotasAvaliacoes.Select(s=> s.AtividadeAvaliativaId).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
+
+                    foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
+                    {
+                        var notaAvaliacaoPrevista = notaconceito.NotasConceitos.FirstOrDefault(w => w.AlunoId.Equals(aluno.Id) && w.AtividadeAvaliativaId == notaAvaliacao.AtividadeAvaliativaId);
+
+                        if (ehNotaConceito)
+                            notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Conceito.ToString()).ShouldBeTrue();
+                        else
+                            notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
+                    }
+                }
+            }
+        }
+
+        private void ValidarInclusaoNotas(NotaConceitoListaDto notaconceito, NotasConceitosRetornoDto notasConceitoRetorno, bool ehNotaConceito)
+        {
+            foreach (var bimestre in notasConceitoRetorno.Bimestres)
+            {
+                bimestre.Alunos.Any().ShouldBeTrue();
+
+                (bimestre.Alunos.Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
 
                 bimestre.Avaliacoes.Any().ShouldBeTrue();
+
                 (bimestre.Avaliacoes.Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
 
                 foreach (var aluno in bimestre.Alunos)
                 {
                     aluno.NotasAvaliacoes.Any().ShouldBeTrue();
+
                     (aluno.NotasAvaliacoes.Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
+
                     aluno.NotasAvaliacoes.Any().ShouldBeTrue();
 
                     foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
@@ -123,13 +184,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                     }
                 }
             }
-
-            var notasPersistidas = ObterTodos<NotaConceito>();
-
-            if (ehNotaConceito)
-                notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
-            else
-                notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse(); 
         }
 
         protected async Task<NotasConceitosRetornoDto> ExecutarNotasConceito(ListaNotasConceitosDto consultaListaNotasConceitosDto, NotaConceitoListaDto notaConceitoLista)
@@ -623,12 +677,12 @@ namespace SME.SGP.TesteIntegracao.Nota
             return null;
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
         {
-            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
+            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, aulaCj, tipoAula));
         }
 
-        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
         {
             return new Aula
             {
@@ -640,13 +694,13 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Quantidade = quantidadeAula,
                 DataAula = dataAula,
                 RecorrenciaAula = recorrencia,
-                TipoAula = TipoAula.Normal,
+                TipoAula = tipoAula,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
                 Migrado = false,
-                AulaCJ = false
+                AulaCJ = aulaCj
             };
         }
 

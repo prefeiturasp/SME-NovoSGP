@@ -30,30 +30,58 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Deve_permitir_alterar_nota_pelo_professor_titular()
         {
-            var filtroNota = ObterFiltroNotas();
+            var filtroNota = ObterFiltroNotas(TipoNota.Nota, ANO_7);
 
             await CriarEstruturaBaseDeNota(filtroNota);
+
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_1, NOTA_6);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_1, NOTA_7);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_1, NOTA_9);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_1, NOTA_8);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_1, NOTA_1);
+
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_2, NOTA_5);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_2, NOTA_4);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_2, NOTA_3);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_2, NOTA_2);
+            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_2, NOTA_10);
 
             var notaconceito = ObterNotaNumericaPersistencia(filtroNota);
 
             var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
 
-            await ExecutarNotasConceito(notaconceito, listaNotaConceito);
+            await ExecutarNotasConceito(notaconceito, listaNotaConceito, false);
         }
 
-        [Fact]
-        public async Task Deve_permitir_registrar_nota_conceito()
+        private async Task CriarNotaConceitoNaBase(FiltroNotasDto filtroNota, string alunoCodigo, long atividadeAvaliativaId, double? nota = null, long? conceitoId = null)
         {
-            var filtroNota = ObterFiltroNotas();
-
-            await CriarEstruturaBaseDeNota(filtroNota);
-
-            var notaconceito = ObterNotaConceitoPersistencia(filtroNota);
-
-            var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
-
-            await ExecutarNotasConceito(notaconceito, listaNotaConceito);
+            await InserirNaBase(new NotaConceito()
+            {
+                AlunoId = alunoCodigo,
+                AtividadeAvaliativaID = atividadeAvaliativaId,
+                Nota = nota,
+                ConceitoId = conceitoId,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                DisciplinaId = filtroNota.ComponenteCurricular,
+                TipoNota = filtroNota.TipoNota
+            });
         }
+
+        //[Fact]
+        //public async Task Deve_permitir_registrar_nota_conceito()
+        //{
+        //    var filtroNota = ObterFiltroNotas(TipoNota.Conceito, ANO_1);
+
+        //    await CriarEstruturaBaseDeNota(filtroNota);
+
+        //    var notaconceito = ObterNotaConceitoPersistencia(filtroNota);
+
+        //    var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
+
+        //    await ExecutarNotasConceito(notaconceito, listaNotaConceito);
+        //}
 
         private ListaNotasConceitosDto ObterNotaConceitoListar(FiltroNotasDto filtroNota)
         {
@@ -85,59 +113,49 @@ namespace SME.SGP.TesteIntegracao.Nota
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_9},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_8},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_7},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_6},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_5},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_4},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_3},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_2},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_1},
+                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_6},                   
 
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_9},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_10},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_7},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_8},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_5},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_6},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_3},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_4},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_1},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_2},
+                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_5},                    
                 }
             };
         }
 
-        private NotaConceitoListaDto ObterNotaConceitoPersistencia(FiltroNotasDto filtroNota)
-        {
-            return new NotaConceitoListaDto()
-            {
-                DisciplinaId = filtroNota.ComponenteCurricular,
-                TurmaId = TURMA_CODIGO_1,
-                NotasConceitos = new List<NotaConceitoDto>()
-                {
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1,Conceito = (int)ConceitoValores.P},
+        //private NotaConceitoListaDto ObterNotaConceitoPersistencia(FiltroNotasDto filtroNota)
+        //{
+        //    return new NotaConceitoListaDto()
+        //    {
+        //        DisciplinaId = filtroNota.ComponenteCurricular,
+        //        TurmaId = TURMA_CODIGO_1,
+        //        NotasConceitos = new List<NotaConceitoDto>()
+        //        {
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1,Conceito = (int)ConceitoValores.P},
 
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2,Conceito  =(int)ConceitoValores.S},
-                }
-            };
-        }
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_6, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_7, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_8, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_9, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.NS},
+        //            new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_10, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2,Conceito  =(int)ConceitoValores.S},
+        //        }
+        //    };
+        //}
 
         private async Task CriarEstruturaBaseDeNota(FiltroNotasDto filtroNota)
         {
@@ -160,7 +178,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_2, filtroNota.ComponenteCurricular);
         }
 
-        private FiltroNotasDto ObterFiltroNotas()
+        private FiltroNotasDto ObterFiltroNotas(TipoNota tipoNota, string anoTurma)
         {
             return new FiltroNotasDto()
             {
@@ -172,6 +190,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 CriarPeriodoEscolar = true,
                 CriarPeriodoAbertura = true,
+                TipoNota = tipoNota,
+                AnoTurma = anoTurma
             };
         }
     }
