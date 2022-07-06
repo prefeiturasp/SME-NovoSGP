@@ -169,7 +169,7 @@ namespace SME.SGP.Aplicacao
             {
                 responsavel.ResponsavelId = usuario.Id;
                 responsavel.ResponsavelRF = usuario.CodigoRf;
-                responsavel.ResponsavelNome = await ObtenhaNomeUsuarioCore(usuario);
+                responsavel.ResponsavelNome = usuario.Nome;
             }
 
             return responsavel;
@@ -183,18 +183,8 @@ namespace SME.SGP.Aplicacao
             {
                 ResponsavelId = usuario.Id,
                 ResponsavelRF = usuario.CodigoRf,
-                ResponsavelNome = await ObtenhaNomeUsuarioCore(usuario)
+                ResponsavelNome = usuario.Nome
             };
-        }
-
-        private async Task<string> ObtenhaNomeUsuarioCore(Usuario usuario)
-        {
-            var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(usuario.CodigoRf));
-
-            if (usuarioCoreSSO != null && !string.IsNullOrEmpty(usuarioCoreSSO.Nome))
-                return usuarioCoreSSO.Nome;
-
-            return usuario.Nome;
         }
     }
 }
