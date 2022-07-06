@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao
         private const string USUARIO_CLAIM_TIPO_PERFIL = "perfil";
 
         protected const string TURMA_CODIGO_1 = "1";
-        private const string TURMA_NOME_1 = "Turma Nome 1";
+        protected const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
 
         protected const long TURMA_ID_1 = 1;

@@ -28,6 +28,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
+        private int ANO_LETIVO_ANO_ANTERIOR_NUMERO = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
 
         protected readonly string ALUNO_CODIGO_1 = "1";
         protected readonly string ALUNO_CODIGO_2 = "2";
@@ -61,6 +62,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
+        private const string ANO_LETIVO_ANO_ANTERIOR_NOME = "Ano Letivo Ano Anterior";
 
         protected NotaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -141,15 +143,13 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected async Task CriarDadosBase(FiltroNotasDto filtroNota)
         {
-            await CriarTipoCalendario(filtroNota.TipoCalendario);
-
             await CriarDreUePerfilComponenteCurricular();
 
             CriarClaimUsuario(filtroNota.Perfil);
 
             await CriarUsuarios();
 
-            await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma);
+            await CriarTurmaTipoCalendario(filtroNota);
 
             if (filtroNota.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar();
@@ -164,6 +164,19 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarCiclo();
 
             await CriarNotasTipoEParametros();
+        }
+
+        protected async Task CriarTurmaTipoCalendario(FiltroNotasDto filtroNota)
+        {
+            if (filtroNota.CriarTurmaAnoAnterior)
+            {
+                await CriarTipoCalendarioAnoAnterior(filtroNota.TipoCalendario);
+                await CriarTurmaAnoAnterior(filtroNota.Modalidade, filtroNota.AnoTurma);
+            } else
+            {
+                await CriarTipoCalendario(filtroNota.TipoCalendario);
+                await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma);
+            }
         }
 
         private async Task CriarNotasTipoEParametros()
@@ -308,7 +321,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        private async Task CriarCiclo()
+        protected async Task CriarCiclo()
         {
             await InserirNaBase(new Ciclo()
             {
@@ -494,7 +507,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        private async Task CriarAbrangencia(string perfil)
+        protected async Task CriarAbrangencia(string perfil)
         {
             await InserirNaBase(new Abrangencia()
             {
@@ -793,6 +806,38 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
+        private async Task CriarTurmaAnoAnterior(Modalidade modalidade, string anoTurma)
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = anoTurma,
+                CodigoTurma = TURMA_CODIGO_1,
+                Historica = true,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = ANO_LETIVO_ANO_ANTERIOR_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1
+            });
+        }
+
+        private async Task CriarTipoCalendarioAnoAnterior(ModalidadeTipoCalendario tipoCalendario)
+        {
+            await InserirNaBase(new TipoCalendario
+            {
+                AnoLetivo = ANO_LETIVO_ANO_ANTERIOR_NUMERO,
+                Nome = ANO_LETIVO_ANO_ANTERIOR_NOME,
+                Periodo = Periodo.Semestral,
+                Modalidade = tipoCalendario,
+                Situacao = true,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Migrado = false
+            });
+        }
+
         protected class FiltroNotasDto
         {
             public FiltroNotasDto()
@@ -800,6 +845,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
+                CriarTurmaAnoAnterior = false;
             }
 
             public string Perfil { get; set; }
@@ -812,6 +858,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             public bool CriarPeriodoAbertura { get; set; }
             public TipoNota TipoNota { get; set; }
             public string AnoTurma { get; set; }
+            public bool CriarTurmaAnoAnterior { get; set; }
         }
     }
 }
