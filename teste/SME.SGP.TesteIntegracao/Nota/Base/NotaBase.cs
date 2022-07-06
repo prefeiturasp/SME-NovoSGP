@@ -392,12 +392,47 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 4,
+                Ano = ANO_1,
+                Modalidade = Modalidade.Medio
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 4,
+                Ano = ANO_2,
+                Modalidade = Modalidade.Medio
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 4,
+                Ano = ANO_3,
+                Modalidade = Modalidade.Medio
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 4,
+                Ano = ANO_4,
+                Modalidade = Modalidade.Medio
+            });
+
             await InserirNaBase(new Ciclo()
             {
                 Descricao = EJA_ALFABETIZACAO,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 5,
+                Ano = ANO_1,
+                Modalidade = Modalidade.EJA
             });
 
             await InserirNaBase(new Ciclo()
@@ -408,6 +443,13 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 6,
+                Ano = ANO_2,
+                Modalidade = Modalidade.EJA
+            });
+
             await InserirNaBase(new Ciclo()
             {
                 Descricao = EJA_COMPLEMENTAR,
@@ -416,12 +458,26 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 7,
+                Ano = ANO_3,
+                Modalidade = Modalidade.EJA
+            });
+
             await InserirNaBase(new Ciclo()
             {
                 Descricao = EJA_FINAL,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new CicloAno()
+            {
+                CicloId = 8,
+                Ano = ANO_4,
+                Modalidade = Modalidade.EJA
             });
         }
 
