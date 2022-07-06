@@ -598,7 +598,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
         protected async Task CriarComponenteCurricular()
-        {
+        { 
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
