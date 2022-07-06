@@ -170,7 +170,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 Ativo = true,
                 InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                TipoNota = TipoNota.Nota,
+                TipoNota = TipoNota.Conceito,
                 Descricao = CONCEITO,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
