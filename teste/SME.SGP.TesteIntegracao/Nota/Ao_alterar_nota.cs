@@ -12,9 +12,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_professor_titular_todos_alunos_multiplas_avaliacoes : NotaBase
+    public class Ao_alterar_nota : NotaBase
     {
-        public Ao_registrar_nota_professor_titular_todos_alunos_multiplas_avaliacoes(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_alterar_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -28,9 +28,9 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
 
         [Fact]
-        public async Task Deve_permitir_registrar_nota_numerica()
+        public async Task Deve_permitir_alterar_nota_pelo_professor_titular()
         {
-            var filtroNota = ObterFiltroNotas(ANO_7);
+            var filtroNota = ObterFiltroNotas();
 
             await CriarEstruturaBaseDeNota(filtroNota);
 
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         [Fact]
         public async Task Deve_permitir_registrar_nota_conceito()
         {
-            var filtroNota = ObterFiltroNotas(ANO_1);
+            var filtroNota = ObterFiltroNotas();
 
             await CriarEstruturaBaseDeNota(filtroNota);
 
@@ -160,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_2, filtroNota.ComponenteCurricular);
         }
 
-        private FiltroNotasDto ObterFiltroNotas(string anoTurma)
+        private FiltroNotasDto ObterFiltroNotas()
         {
             return new FiltroNotasDto()
             {
@@ -172,7 +172,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 CriarPeriodoEscolar = true,
                 CriarPeriodoAbertura = true,
-                AnoTurma = anoTurma
             };
         }
     }
