@@ -306,7 +306,7 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
 
             return compensacao;
         }
