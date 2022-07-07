@@ -170,9 +170,6 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, true, ATIVIDADE_AVALIATIVA_1);
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_2);
-
-
-            var notas = ObterTodos<AtividadeAvaliativa>();
         }
 
         private async Task ExecuteExcecao(NotaConceitoListaDto dto)
