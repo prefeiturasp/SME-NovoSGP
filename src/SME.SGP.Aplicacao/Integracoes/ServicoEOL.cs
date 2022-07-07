@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -1185,9 +1186,5 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
             return Enumerable.Empty<UsuarioEolRetornoDto>();
         }
-
-
-
-
     }
 }
