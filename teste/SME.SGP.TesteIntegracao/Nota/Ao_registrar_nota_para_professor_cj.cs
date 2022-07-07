@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -38,8 +40,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                 }
             };
 
-            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
-
             var comando = ServiceProvider.GetService<IComandosNotasConceitos>();
 
             await comando.Salvar(dto);
@@ -70,8 +70,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                     }
                 }
             };
-
-            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             await ExecuteExcecao(dto);
         }
@@ -108,8 +106,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                     },
                 }
             };
-
-            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             var comando = ServiceProvider.GetService<IComandosNotasConceitos>();
 
@@ -155,8 +151,6 @@ namespace SME.SGP.TesteIntegracao.Nota
                 }
             };
 
-            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
-
             await ExecuteExcecao(dto);
         }
 
@@ -175,6 +169,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarDadosBase(filtroNota);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CriarAtribuicaoCJ(filtroNota.Modalidade, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, true, ATIVIDADE_AVALIATIVA_1);
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_2);

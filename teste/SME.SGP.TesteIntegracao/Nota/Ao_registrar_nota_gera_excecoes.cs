@@ -5,6 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -24,27 +25,13 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
         }
 
-        [Fact]
-        public async Task Nao_lancar_nota_do_professor_com_atribuicao_encerrada()
+        protected override void RegistrarFakes(IServiceCollection services)
         {
-            _collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
-            _collectionFixture.BuildServiceProvider();
+            base.RegistrarFakes(services);
 
-            var filtroNota = new FiltroNotasDto()
-            {
-                Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
-                TipoNota = TipoNota.Nota
-            };
-
-            await CriarDadosBase(filtroNota);
-            await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
-            await CrieTipoAtividade();
-            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
-            await ExecuteExecao(MensagensNegocioLancamentoNota.Nao_pode_fazer_alteracoes_nesta_turma_componente_e_data, ObterNotaDtoPadrao());
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -56,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota
             };
 
@@ -76,9 +63,9 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota,
-                AnoTurma = ANO_2
+                AnoTurma = ANO_5
             };
 
             await CriarDadosBase(filtroNota);
@@ -88,6 +75,30 @@ namespace SME.SGP.TesteIntegracao.Nota
             await ExecuteExecao(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado, ObterNotaDtoPadrao());
         }
 
+        [Fact]
+        public async Task Nao_pode_lancar_nota_para_turma_com_bimestre_encerrado()
+        {
+            var filtroNota = new FiltroNotasDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_2,
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                TipoNota = TipoNota.Nota,
+                AnoTurma = ANO_5,
+                CriarPeriodoEscolar = false
+            };
+
+            await CriarDadosBase(filtroNota);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_2);
+            await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CrieTipoAtividade();
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+            await ExecuteExecao(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado, ObterNotaDtoPadrao());
+        }
+
+        [Fact]
         public async Task Nao_pode_lancar_nota_para_turma_de_ano_posterior()
         {
             var filtroNota = new FiltroNotasDto()
@@ -96,16 +107,17 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota,
-                AnoTurma = ANO_2,
+                AnoTurma = ANO_5,
                 ConsiderarAnoAnterior = true
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1), DATA_08_07_FIM_BIMESTRE_2.AddYears(-1), BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1), RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
+            await CrieTipoNotaAnoAnterior();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1), filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
             await ExecuteExecao(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado, ObterNotaDtoPadrao());
         }
@@ -119,9 +131,9 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota,
-                AnoTurma = ANO_2
+                AnoTurma = ANO_5
             };
 
             await CriarDadosBase(filtroNota);
@@ -131,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             var dto = new NotaConceitoListaDto()
             {
-                DisciplinaId = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TurmaId = TURMA_CODIGO_1,
                 NotasConceitos = new List<NotaConceitoDto>()
                 {
@@ -151,7 +163,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         public async Task Nao_foi_encontrado_o_ciclo_da_turma_informada()
         {
             await CriaBaseCustom();
-            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
             await CriarAbrangencia(ObterPerfilProfessor());
             await ExecuteExecao(MensagensNegocioLancamentoNota.Nao_foi_encontrado_o_ciclo_da_turma_informada, ObterNotaDtoPadrao());
         }
@@ -160,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         public async Task Nao_foi_encontrada_a_turma_informada_sem_abrangencia()
         {
             await CriaBaseCustom();
-            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
             await ExecuteExecao(MensagensNegocioLancamentoNota.Nao_foi_encontrada_a_turma_informada, ObterNotaDtoPadrao());
         }
 
@@ -168,7 +180,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         public async Task Nao_e_possivel_atribuir_nota_para_avaliacao_futura()
         {
             await CriaBaseCustom();
-            await CriarAtividadeAvaliativa(DATA_25_07_INICIO_BIMESTRE_3, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(DATA_25_07_INICIO_BIMESTRE_3, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
             await CriarAbrangencia(ObterPerfilProfessor());
             await ExecuteExecao(MensagensNegocioLancamentoNota.Nao_e_possivel_atribuir_nota_para_avaliacao_futura, ObterNotaDtoPadrao());
         }
@@ -198,9 +210,9 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota,
-                AnoTurma = ANO_2
+                AnoTurma = ANO_5
             };
 
             await CriarDreUePerfilComponenteCurricular();
@@ -216,7 +228,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             return new NotaConceitoListaDto()
             {
-                DisciplinaId = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TurmaId = TURMA_CODIGO_1,
                 NotasConceitos = new List<NotaConceitoDto>()
                 {
@@ -236,6 +248,33 @@ namespace SME.SGP.TesteIntegracao.Nota
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Salvar(dto));
 
             excecao.Message.ShouldBe(mensagem);
+        }
+
+        private async Task CrieTipoNotaAnoAnterior()
+        {
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01),
+                TipoNota = TipoNota.Nota,
+                Descricao = NOTA,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 2,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01),
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
     }
 }
