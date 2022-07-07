@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 ComponenteCurricular = COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(),
                 TipoNota = TipoNota.Nota,
                 AnoTurma = ANO_2,
-                CriarTurmaAnoAnterior = true
+                ConsiderarAnoAnterior = true
             };
 
             await CriarDadosBase(filtroNota);

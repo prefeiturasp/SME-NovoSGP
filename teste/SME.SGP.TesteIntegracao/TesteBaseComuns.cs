@@ -157,6 +157,9 @@ namespace SME.SGP.TesteIntegracao
         protected readonly long ATIVIDADE_AVALIATIVA_1 = 1;
         protected readonly long ATIVIDADE_AVALIATIVA_2 = 2;
 
+        protected int ANO_LETIVO_ANO_ANTERIOR_NUMERO = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+        protected const string ANO_LETIVO_ANO_ANTERIOR_NOME = "Ano Letivo Ano Anterior";
+
         protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -417,7 +420,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1
             });
@@ -473,12 +476,12 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario)
+        protected async Task CriarTipoCalendario(ModalidadeTipoCalendario tipoCalendario, bool considerarAnoAnterior = false)
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
-                Nome = ANO_LETIVO_Ano_Atual_NOME,
+                AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
                 Periodo = Periodo.Semestral,
                 Modalidade = tipoCalendario,
                 Situacao = true,
@@ -590,14 +593,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarPeriodoEscolar(DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
+        protected async Task CriarPeriodoEscolar(DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool considerarAnoAnterior = false)
         {
             await InserirNaBase(new PeriodoEscolar
             {
                 TipoCalendarioId = tipoCalendarioId,
                 Bimestre = bimestre,
-                PeriodoInicio = dataInicio,
-                PeriodoFim = dataFim,
+                PeriodoInicio = considerarAnoAnterior ? dataInicio.AddYears(-1) : dataInicio,
+                PeriodoFim = considerarAnoAnterior ? dataFim.AddYears(-1) : dataFim,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,

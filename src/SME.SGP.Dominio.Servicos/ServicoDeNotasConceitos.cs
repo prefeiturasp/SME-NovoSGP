@@ -351,6 +351,9 @@ namespace SME.SGP.Dominio
 
             var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
 
+            if (!existePeriodoEmAberto)
+                throw new NegocioException("Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
+
             foreach (var notaConceito in notasConceitos)
             {
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));

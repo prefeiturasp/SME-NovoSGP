@@ -28,7 +28,6 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
-        private int ANO_LETIVO_ANO_ANTERIOR_NUMERO = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
 
         protected readonly string ALUNO_CODIGO_1 = "1";
         protected readonly string ALUNO_CODIGO_2 = "2";
@@ -62,7 +61,6 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
-        private const string ANO_LETIVO_ANO_ANTERIOR_NOME = "Ano Letivo Ano Anterior";
 
         protected NotaBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -84,31 +82,40 @@ namespace SME.SGP.TesteIntegracao.Nota
             return (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase);
         }
 
-        protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito, bool ehInclusao = true)
+        protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito, bool ehInclusao = true, bool gerarExcecao = false)
         {
             var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
 
-            await comandosNotasConceitos.Salvar(notaconceito);
+            if (gerarExcecao)
+            {
+                async Task doExecutarSalvar() { await comandosNotasConceitos.Salvar(notaconceito); }
 
-            var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
-
-            notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
-
-            notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
-
-            var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
-
-            if (ehInclusao)
-                ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+                await Should.ThrowAsync<NegocioException>(() => doExecutarSalvar());
+            }
             else
-                ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+            {
+                await comandosNotasConceitos.Salvar(notaconceito);
 
-            var notasPersistidas = ObterTodos<NotaConceito>();
+                var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
 
-            if (ehNotaConceito)
-                notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
-            else
-                notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
+                notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
+
+                notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
+
+                var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
+
+                if (ehInclusao)
+                    ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+                else
+                    ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+
+                var notasPersistidas = ObterTodos<NotaConceito>();
+
+                if (ehNotaConceito)
+                    notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
+                else
+                    notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
+            }
         }
 
         private void ValidarAlteracaoNotas(NotaConceitoListaDto notaconceito, NotasConceitosRetornoDto notasConceitoRetorno, bool ehNotaConceito)
@@ -195,10 +202,10 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarTurmaTipoCalendario(filtroNota);
 
             if (filtroNota.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar();
+                await CriarPeriodoEscolar(filtroNota.ConsiderarAnoAnterior);
 
             if (filtroNota.CriarPeriodoAbertura)
-                await CriarPeriodoAbertura(filtroNota.TipoCalendarioId);
+                await CriarPeriodoAbertura(filtroNota);
 
             await CriarParametrosNotas();
 
@@ -206,28 +213,23 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarCiclo();
 
-            await CriarNotasTipoEParametros();
+            await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroNotasDto filtroNota)
         {
-            if (filtroNota.CriarTurmaAnoAnterior)
-            {
-                await CriarTipoCalendarioAnoAnterior(filtroNota.TipoCalendario);
-                await CriarTurmaAnoAnterior(filtroNota.Modalidade, filtroNota.AnoTurma);
-            } else
-            {
-                await CriarTipoCalendario(filtroNota.TipoCalendario);
-                await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma);
-            }
+            await CriarTipoCalendario(filtroNota.TipoCalendario, filtroNota.ConsiderarAnoAnterior);
+            await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma, filtroNota.ConsiderarAnoAnterior);
         }
 
-        private async Task CriarNotasTipoEParametros()
+        private async Task CriarNotasTipoEParametros(bool consideraAnoAnterior = false)
         {
+            var dataBase = consideraAnoAnterior ? new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01) : new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+
             await InserirNaBase(new NotaTipoValor()
             {
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 TipoNota = TipoNota.Nota,
                 Descricao = NOTA,
                 CriadoEm = DateTime.Now,
@@ -238,7 +240,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new NotaTipoValor()
             {
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 TipoNota = TipoNota.Conceito,
                 Descricao = CONCEITO,
                 CriadoEm = DateTime.Now,
@@ -253,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -266,7 +268,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -279,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -292,7 +294,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -305,7 +307,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -318,7 +320,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -331,7 +333,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -344,7 +346,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 QtdMinimaAvalicoes = 1,
                 PercentualAlerta = 50,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -357,7 +359,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Maxima = 10,
                 Incremento = 0.5,
                 Ativo = true,
-                InicioVigencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                InicioVigencia = dataBase,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -565,17 +567,32 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarParametrosNotas()
         {
-            var dataAtual = DateTimeExtension.HorarioBrasilia();
+            var dataAtualAnoAnterior =  DateTimeExtension.HorarioBrasilia().AddYears(-1);
+
+            var dataAtualAnoAtual = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new ParametrosSistema() 
             { 
                 Nome = DATA_INICIO_SGP,
                 Descricao = DATA_INICIO_SGP,
                 Tipo = TipoParametroSistema.DataInicioSGP, 
-                Valor = dataAtual.Year.ToString(), 
-                Ano = dataAtual.Year, 
+                Valor = dataAtualAnoAnterior.Year.ToString(), 
+                Ano = dataAtualAnoAnterior.Year, 
                 Ativo = true, 
-                CriadoEm = dataAtual, 
+                CriadoEm = dataAtualAnoAnterior, 
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = DATA_INICIO_SGP,
+                Descricao = DATA_INICIO_SGP,
+                Tipo = TipoParametroSistema.DataInicioSGP,
+                Valor = dataAtualAnoAtual.Year.ToString(),
+                Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
@@ -586,9 +603,22 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Descricao = PERCENTUAL_ALUNOS_INSUFICIENTES,
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
                 Valor = NUMERO_50,
-                Ano = dataAtual.Year,
+                Ano = dataAtualAnoAnterior.Year,
                 Ativo = true,
-                CriadoEm = dataAtual,
+                CriadoEm = dataAtualAnoAnterior,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = PERCENTUAL_ALUNOS_INSUFICIENTES,
+                Descricao = PERCENTUAL_ALUNOS_INSUFICIENTES,
+                Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
+                Valor = NUMERO_50,
+                Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
@@ -599,9 +629,22 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Descricao = MEDIA_BIMESTRAL,
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Valor = NUMERO_5,
-                Ano = dataAtual.Year,
+                Ano = dataAtualAnoAnterior.Year,
                 Ativo = true,
-                CriadoEm = dataAtual,
+                CriadoEm = dataAtualAnoAnterior,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = MEDIA_BIMESTRAL,
+                Descricao = MEDIA_BIMESTRAL,
+                Tipo = TipoParametroSistema.MediaBimestre,
+                Valor = NUMERO_5,
+                Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
@@ -620,20 +663,20 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
-        protected async Task CriarPeriodoEscolar()
+        protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1,considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
-        protected async Task CriarPeriodoAbertura(long tipoCalendario)
+        protected async Task CriarPeriodoAbertura(FiltroNotasDto filtroNotasDto)
         {
-            await CriarPeriodoReabertura(tipoCalendario);
+            await CriarPeriodoReabertura(filtroNotasDto.TipoCalendarioId, filtroNotasDto.ConsiderarAnoAnterior);
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -710,13 +753,13 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
-        protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
+        protected async Task CriarPeriodoReabertura(long tipoCalendarioId, bool considerarAnoAnterior = false)
         {
             await InserirNaBase(new FechamentoReabertura()
             {
                 Descricao = REABERTURA_GERAL,
-                Inicio = DATA_01_01,
-                Fim = DATA_31_12,
+                Inicio = considerarAnoAnterior ? DATA_01_01.AddYears(-1) : DATA_01_01,
+                Fim = considerarAnoAnterior ? DATA_31_12.AddYears(-1) : DATA_31_12,
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
@@ -775,13 +818,13 @@ namespace SME.SGP.TesteIntegracao.Nota
             });
         }
 
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string professorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
         {
             await InserirNaBase(new AtividadeAvaliativa
             {
                 DreId = DRE_CODIGO_1,
                 UeId = UE_CODIGO_1,
-                ProfessorRf = rf,
+                ProfessorRf = professorRf,
                 TurmaId = TURMA_CODIGO_1,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = TipoAvaliacaoId,
@@ -848,39 +891,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-
-        private async Task CriarTurmaAnoAnterior(Modalidade modalidade, string anoTurma)
-        {
-            await InserirNaBase(new Turma
-            {
-                UeId = 1,
-                Ano = anoTurma,
-                CodigoTurma = TURMA_CODIGO_1,
-                Historica = true,
-                ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_ANO_ANTERIOR_NUMERO,
-                Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1
-            });
-        }
-
-        private async Task CriarTipoCalendarioAnoAnterior(ModalidadeTipoCalendario tipoCalendario)
-        {
-            await InserirNaBase(new TipoCalendario
-            {
-                AnoLetivo = ANO_LETIVO_ANO_ANTERIOR_NUMERO,
-                Nome = ANO_LETIVO_ANO_ANTERIOR_NOME,
-                Periodo = Periodo.Semestral,
-                Modalidade = tipoCalendario,
-                Situacao = true,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                Excluido = false,
-                Migrado = false
-            });
-        }
-
+               
         protected class FiltroNotasDto
         {
             public FiltroNotasDto()
@@ -888,7 +899,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
-                CriarTurmaAnoAnterior = false;
+                ConsiderarAnoAnterior = false;                
             }
 
             public string Perfil { get; set; }
@@ -901,7 +912,8 @@ namespace SME.SGP.TesteIntegracao.Nota
             public bool CriarPeriodoAbertura { get; set; }
             public TipoNota TipoNota { get; set; }
             public string AnoTurma { get; set; }
-            public bool CriarTurmaAnoAnterior { get; set; }
+            public bool ConsiderarAnoAnterior { get; set; }
+            public string ProfessorRf { get; set; }
         }
     }
 }
