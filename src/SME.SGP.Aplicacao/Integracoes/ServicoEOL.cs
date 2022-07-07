@@ -813,20 +813,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> UsuarioAtribuicoesEolPorTurmaDisciplina(string codigoRf, IEnumerable<string> turmasIds, string disciplinaId)
-        {
-            var retorno = new List<UsuarioPossuiAtribuicaoEolDto>();
-            var resposta = await httpClient.PostAsync($"professores/{codigoRf}/disciplina/{disciplinaId}/turmas", new StringContent(JsonConvert.SerializeObject(turmasIds), Encoding.UTF8, "application/json-patch+json"));
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                retorno = JsonConvert.DeserializeObject<List<UsuarioPossuiAtribuicaoEolDto>>(json);
-            }
-            return retorno;
-
-        }
-
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             var dataString = data.ToString("s");
