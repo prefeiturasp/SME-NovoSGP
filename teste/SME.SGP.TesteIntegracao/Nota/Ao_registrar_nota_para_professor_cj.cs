@@ -38,6 +38,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 }
             };
 
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
+
             var comando = ServiceProvider.GetService<IComandosNotasConceitos>();
 
             await comando.Salvar(dto);
@@ -68,6 +70,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                     }
                 }
             };
+
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             await ExecuteExcecao(dto);
         }
@@ -104,6 +108,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                     },
                 }
             };
+
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             var comando = ServiceProvider.GetService<IComandosNotasConceitos>();
 
@@ -148,6 +154,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                     },
                 }
             };
+
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
             await ExecuteExcecao(dto);
         }

@@ -353,6 +353,24 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+        protected async Task CriarAtribuicaoCJ(Modalidade modalidade, long componenteCurricularId, string professorRf, bool substituir = true)
+        {
+            await InserirNaBase(new AtribuicaoCJ
+            {
+                TurmaId = TURMA_CODIGO_1,
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                ProfessorRf = professorRf,
+                DisciplinaId = componenteCurricularId,
+                Modalidade = modalidade,
+                Substituir = substituir,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                Migrado = false
+            });
+        }
+
         protected async Task CriarUsuarios()
         {
             await InserirNaBase(new Usuario

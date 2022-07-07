@@ -16,16 +16,17 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoDeNotasConceitos servicosDeNotasConceitos;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
+        private readonly IConsultasDisciplina consultasDisciplina;
 
         public ComandosNotasConceitos(IServicoDeNotasConceitos servicosDeNotasConceitos, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, IRepositorioNotasConceitosConsulta repositorioNotasConceitos, IServicoUsuario servicoUsuario,
-            IMediator mediator)
+            IMediator mediator, IConsultasDisciplina consultasDisciplina)
         {
             this.servicosDeNotasConceitos = servicosDeNotasConceitos ?? throw new System.ArgumentNullException(nameof(servicosDeNotasConceitos));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-
+            this.consultasDisciplina = consultasDisciplina ?? throw new System.ArgumentNullException(nameof(consultasDisciplina));
         }
 
         public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
@@ -39,6 +40,11 @@ namespace SME.SGP.Aplicacao
             var avaliacoes = notasConceitosDto
                 .Select(x => x.AtividadeAvaliativaId)
                 .ToList();
+
+            var disciplinasDoProfessorLogado = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(notaConceitoLista.TurmaId, true);
+
+            if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
+                throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
             var notasBanco = repositorioNotasConceitos
                 .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);

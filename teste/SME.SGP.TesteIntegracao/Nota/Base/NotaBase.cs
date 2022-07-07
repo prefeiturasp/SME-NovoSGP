@@ -52,17 +52,6 @@ namespace SME.SGP.TesteIntegracao.Nota
         protected readonly double NOTA_9 = 9;
         protected readonly double NOTA_10 = 10;
 
-        protected readonly long NOTA_CONCEITO_ID_1 = 1;
-        protected readonly long NOTA_CONCEITO_ID_2 = 2;
-        protected readonly long NOTA_CONCEITO_ID_3 = 3;
-        protected readonly long NOTA_CONCEITO_ID_4 = 4;
-        protected readonly long NOTA_CONCEITO_ID_5 = 5;
-        protected readonly long NOTA_CONCEITO_ID_6 = 6;
-        protected readonly long NOTA_CONCEITO_ID_7 = 7;
-        protected readonly long NOTA_CONCEITO_ID_8 = 8;
-        protected readonly long NOTA_CONCEITO_ID_9 = 9;
-        protected readonly long NOTA_CONCEITO_ID_10 = 10;
-
         protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
         protected readonly string AVALIACAO_NOME_2 = "Avaliação 2";
 
