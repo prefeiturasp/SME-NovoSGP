@@ -13,9 +13,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_para_cp_e_diretor : NotaBase
+    public class Ao_excluir_nota : NotaBase
     {
-        public Ao_registrar_nota_para_cp_e_diretor(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_excluir_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -29,36 +29,22 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
 
         [Fact]
-        public async Task Ao_lancar_nota_numerica_pelo_cp_com_avaliacoes_do_professor_titular()
+        public async Task Ao_limpar_nota_numerica()
         {
-            await CrieDados(ObterPerfilCP(), TipoNota.Nota, ANO_5);
-            await ExecuteTesteNota();
+            await CrieDados(TipoNota.Nota, ANO_5);
+            await SalvarNota(false);
+            await SalvarNota(true);
         }
 
         [Fact]
-        public async Task Ao_lancar_nota_numerica_pelo_diretor_com_avaliacoes_do_professor_titular()
+        public async Task Ao_limpar_nota_conceito()
         {
-            await CrieDados(ObterPerfilDiretor(), TipoNota.Nota, ANO_5);
-            await ExecuteTesteNota();
+            await CrieDados(TipoNota.Conceito, ANO_2);
+            await SalvarConceito(false);
+            await SalvarConceito(true);
         }
 
-        [Fact]
-        public async Task Ao_lancar_nota_conceito_pelo_cp_com_avaliacoes_do_professor_titular()
-        {
-            await CrieDados(ObterPerfilCP(), TipoNota.Conceito, ANO_2);
-            await CriaConceito();
-            await ExecuteTesteConceito();
-        }
-
-        [Fact]
-        public async Task Ao_lancar_nota_conceito_pelo_diretor_com_avaliacoes_do_professor_titular()
-        {
-            await CrieDados(ObterPerfilDiretor(), TipoNota.Conceito, ANO_2);
-            await CriaConceito();
-            await ExecuteTesteConceito();
-        }
-
-        private async Task ExecuteTesteNota()
+        private async Task SalvarConceito(bool limpaNota)
         {
             var dto = new NotaConceitoListaDto()
             {
@@ -69,48 +55,60 @@ namespace SME.SGP.TesteIntegracao.Nota
                     new NotaConceitoDto()
                     {
                         AlunoId = ALUNO_CODIGO_1,
-                        Nota = 7,
-                        AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
-                    }
-                }
-            };
-
-            await ExecuteTeste(TipoNota.Nota, dto);
-        }
-
-        private async Task ExecuteTesteConceito()
-        {
-            var dto = new NotaConceitoListaDto()
-            {
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                TurmaId = TURMA_CODIGO_1,
-                NotasConceitos = new List<NotaConceitoDto>()
-                {
-                    new NotaConceitoDto()
-                    {
-                        AlunoId = ALUNO_CODIGO_1,
-                        Conceito = 1,
+                        Conceito = limpaNota ? null : 1,
                         AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
                     },
                     new NotaConceitoDto()
                     {
                         AlunoId = ALUNO_CODIGO_2,
-                        Conceito = 2,
+                        Conceito = limpaNota ? null : 2,
                         AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
                     },
                      new NotaConceitoDto()
                     {
                         AlunoId = ALUNO_CODIGO_3,
-                        Conceito = 3,
+                        Conceito = limpaNota ? null : 3,
                         AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
                     },
                 }
             };
 
-            await ExecuteTeste(TipoNota.Conceito, dto);
+            await ExecuteTeste(TipoNota.Conceito, dto, limpaNota);
         }
 
-        private async Task ExecuteTeste(TipoNota tipoNota, NotaConceitoListaDto dto)
+        private async Task SalvarNota(bool limpaNota)
+        {
+            var dto = new NotaConceitoListaDto()
+            {
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                TurmaId = TURMA_CODIGO_1,
+                NotasConceitos = new List<NotaConceitoDto>()
+                {
+                    new NotaConceitoDto()
+                    {
+                        AlunoId = ALUNO_CODIGO_1,
+                        Nota = limpaNota ? null : 7,
+                        AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
+                    },
+                    new NotaConceitoDto()
+                    {
+                        AlunoId = ALUNO_CODIGO_2,
+                        Nota = limpaNota ? null : 8,
+                        AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
+                    },
+                    new NotaConceitoDto()
+                    {
+                        AlunoId = ALUNO_CODIGO_3,
+                        Nota = limpaNota ? null : 9,
+                        AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1
+                    }
+                }
+            };
+
+            await ExecuteTeste(TipoNota.Nota, dto, limpaNota);
+        }
+
+        private async Task ExecuteTeste(TipoNota tipoNota, NotaConceitoListaDto dto, bool ehNotaLimpa)
         {
             var comando = ServiceProvider.GetService<IComandosNotasConceitos>();
 
@@ -123,18 +121,38 @@ namespace SME.SGP.TesteIntegracao.Nota
             notas.Exists(nota => nota.TipoNota == tipoNota).ShouldBe(true);
             var nota = notas.FirstOrDefault(nota => nota.AlunoId == ALUNO_CODIGO_1);
             nota.ShouldNotBeNull();
-            if (tipoNota == TipoNota.Nota) { 
-                nota.Nota.ShouldBe(7);
-            } else {
-                nota.ConceitoId.ShouldBe(1);
-            }
+            TestaNota(tipoNota, nota, ehNotaLimpa);
         }
 
-        private async Task CrieDados(string perfil, TipoNota tipo, string anoTurma)
+        private void TestaNota(TipoNota tipoNota, NotaConceito nota, bool ehNotaLimpa)
+        {
+            if (ehNotaLimpa)
+                TestaNotaSemValor(tipoNota, nota);
+            else
+                TestaNotaComValor(tipoNota, nota);
+        }
+
+        private void TestaNotaComValor(TipoNota tipoNota, NotaConceito nota)
+        {
+            if (tipoNota == TipoNota.Nota)
+                nota.Nota.ShouldBe(7);
+            else
+                nota.ConceitoId.ShouldBe(1);
+        }
+
+        private void TestaNotaSemValor(TipoNota tipoNota, NotaConceito nota)
+        {
+            if (tipoNota == TipoNota.Nota)
+                nota.Nota.ShouldBeNull();
+            else
+                nota.ConceitoId.ShouldBeNull();
+        }
+
+        private async Task CrieDados(TipoNota tipo, string anoTurma)
         {
             var filtroNota = new FiltroNotasDto()
             {
-                Perfil = perfil,
+                Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
@@ -146,7 +164,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarDadosBase(filtroNota);
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
-            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_2222222, false, ATIVIDADE_AVALIATIVA_1);
         }
     }
 }
