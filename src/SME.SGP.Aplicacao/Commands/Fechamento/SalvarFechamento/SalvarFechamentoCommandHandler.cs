@@ -132,7 +132,11 @@ namespace SME.SGP.Aplicacao
                                     ValidarNotasFechamento2020(fechamentoNota);
 
                                 if (emAprovacao)
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo);
+                                {
+                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno})
+                                        .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
+                                }
                                 else
                                 {
                                     if (fechamentoNota != null)
@@ -176,8 +180,11 @@ namespace SME.SGP.Aplicacao
                             try
                             {
                                 if (emAprovacao)
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo);
-
+                                { 
+                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota, a.CodigoAluno })
+                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
+                                }
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
@@ -598,13 +605,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 
-        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo)
+        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
                 Id = fechamentoNota.Id,
                 NotaAnterior = fechamentoNota.Nota,
-                Nota = fechamentoNota.Nota,
+                Nota = nota == null ? fechamentoNota.Nota : nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId,
                 ConceitoId = fechamentoNota.ConceitoId,
                 CodigoAluno = alunoCodigo,
