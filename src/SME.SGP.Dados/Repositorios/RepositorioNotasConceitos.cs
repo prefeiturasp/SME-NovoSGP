@@ -1,6 +1,8 @@
-﻿using SME.SGP.Dominio;
+﻿//using Npgsql;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+//using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -22,7 +24,45 @@ namespace SME.SGP.Dados.Repositorios
                             where ft.id = @turmaFechamentoId and fn.disciplina_id = @disciplinaId and fa.aluno_codigo = @codigoAluno
                         order by w.id desc";
 
-            return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId,disciplinaId, codigoAluno });
+            return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
+        //public void SalvarListaNotaConceito(List<NotaConceito> entidade)
+        //{
+        //    var sql = @"copy notas_conceito (
+        //                        atividade_avaliativa,
+	       //                     aluno_id,
+	       //                     nota,
+	       //                     conceito,
+	       //                     tipo_nota,
+	       //                     criado_por,
+	       //                     criado_rf,
+	       //                     criado_em,
+	       //                     alterado_por,
+	       //                     alterado_rf,
+	       //                     alterado_em,
+	       //                     disciplina_id,
+	       //                     status_gsa)
+        //               from
+        //               stdin (FORMAT binary)";
+        //    using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+        //    {
+        //        foreach (var item in entidade)
+        //        {
+        //            writer.StartRow();
+        //            writer.Write(item.AtividadeAvaliativaID);
+        //            writer.Write(item.AlunoId);
+        //            writer.Write(item.Nota);
+        //            writer.Write(item.ConceitoId);
+        //            writer.Write(item.TipoNota);
+        //            writer.Write(item.CriadoEm);
+        //            writer.Write(item.CriadoPor ?? "Sistema");
+        //            writer.Write(item.CriadoRF ?? "Sistema");
+        //            writer.Write(item.DisciplinaId);
+        //            writer.Write(item.StatusGsa);
+
+        //        }
+        //        writer.Complete();
+        //    }
+        //}
     }
 }
