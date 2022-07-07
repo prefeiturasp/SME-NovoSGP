@@ -133,6 +133,7 @@ namespace SME.SGP.Dados.Repositorios
                                         inner join turma tu on tu.id = pa.turma_id 
                                         where pa.aluno_codigo = @codigoEstudante 
                                         and not pa.situacao = any(@situacoesDesconsideradas)
+                                        and not pa.excluido
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new
