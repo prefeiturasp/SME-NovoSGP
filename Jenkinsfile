@@ -6,12 +6,12 @@ pipeline {
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
       deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
       deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
-      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
-      deployment5 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-aula' : 'flag-worker-aula' }"
-      deployment6 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-fechamento' : 'flag-worker-fechamento' }"
-      deployment7 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-frequencia' : 'flag-worker-frequencia' }"
-      deployment8 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-institucional' : 'flag-worker-institucional' }"
-      deployment9 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-pendencias' : 'flag-worker-pendencias' }"
+      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
+      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
+      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
+      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
+      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
+      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
     }
   
     agent {
@@ -54,17 +54,34 @@ pipeline {
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
-              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"
-	      imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"   
+              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-geral"
+	          imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"
+              imagename4 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aee"
+              imagename5 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aula"
+              imagename6 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
+              imagename7 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
+              imagename8 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
+			  
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
               dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
-	      dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+			  dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+              dockerImage4 = docker.build(imagename3, "-f src/SME.SGP.AEE.Worker/Dockerfile .")
+              dockerImage5 = docker.build(imagename3, "-f src/SME.SGP.Aula.Worker/Dockerfile .")
+              dockerImage6 = docker.build(imagename3, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
+              dockerImage7 = docker.build(imagename3, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
+              dockerImage8 = docker.build(imagename3, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
+			  
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
               dockerImage2.push()
-	      dockerImage3.push()
+			  dockerImage3.push()
+              dockerImage4.push()
+              dockerImage5.push()
+              dockerImage6.push()
+              dockerImage7.push()
+              dockerImage8.push()
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3"
+              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8"
             }
           }
         }
