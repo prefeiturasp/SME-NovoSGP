@@ -759,7 +759,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 Descricao = REABERTURA_GERAL,
                 Inicio = considerarAnoAnterior ? DATA_01_01.AddYears(-1) : DATA_01_01,
-                Fim = considerarAnoAnterior ? DATA_31_12.AddYears(-1) : DATA_31_12,
+                Fim = DATA_31_12,
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
