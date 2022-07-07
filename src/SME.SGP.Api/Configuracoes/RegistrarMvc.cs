@@ -11,8 +11,10 @@ namespace SME.SGP.Api
 {
     public static class RegistrarMvc
     {
-        public static void Registrar(IServiceCollection services, ServiceProvider serviceProvider)
+        public static void Registrar(IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

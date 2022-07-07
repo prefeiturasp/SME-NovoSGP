@@ -4,15 +4,15 @@ using Polly.Registry;
 using SME.GoogleClassroom.Infra;
 using System;
 
-namespace SME.SGP.IoC.Extensions
+namespace SME.SGP.IoC
 {
-    public static class RegistrarPolicies
+    internal static class RegistrarPolicies
     {
-        public static void AddPolicies(this IServiceCollection services)
+        internal static void AddPolicies(this IServiceCollection services)
         {
             IPolicyRegistry<string> registry = services.AddPolicyRegistry();
 
-            Random jitterer = new Random();
+            Random jitterer = new();
             var policyFila = Policy.Handle<Exception>()
               .WaitAndRetryAsync(3,
                 retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))

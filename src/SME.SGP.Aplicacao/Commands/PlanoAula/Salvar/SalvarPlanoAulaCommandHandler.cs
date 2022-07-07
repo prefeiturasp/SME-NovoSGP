@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
-                planoAula = MapearParaDominio(planoAulaDto, planoAula);
+                planoAula = await MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
@@ -146,15 +146,15 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
+        private async Task<PlanoAula> MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
         {
             if (planoAula == null)
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.Descricao = await MoverRemoverExcluidos(planoDto.Descricao, planoAula.Descricao, TipoArquivo.PlanoAula); 
+            planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoDto.RecuperacaoAula, planoAula.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
+            planoAula.LicaoCasa = await MoverRemoverExcluidos(planoDto.LicaoCasa, planoAula.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
 
             return planoAula;
         }

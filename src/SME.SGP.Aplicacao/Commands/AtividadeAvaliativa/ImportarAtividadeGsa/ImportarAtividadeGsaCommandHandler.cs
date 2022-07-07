@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorCodigoTurmaComponenteEDataQuery(request.AtividadeGsa.TurmaId, request.AtividadeGsa.ComponenteCurricularId.ToString(), request.AtividadeGsa.DataCriacao));
 
             if (ReagendarImportacao(aula))
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaAtividadesSync,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtividadesSyncAgendado,
                                                                new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesSync, request.AtividadeGsa)));
             else
             {

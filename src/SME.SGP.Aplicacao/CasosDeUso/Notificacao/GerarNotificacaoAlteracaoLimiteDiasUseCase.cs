@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class GerarNotificacaoAlteracaoLimiteDiasUseCase : AbstractUseCase, IGerarNotificacaoAlteracaoLimiteDias
+    public class GerarNotificacaoAlteracaoLimiteDiasUseCase : AbstractUseCase, IGerarNotificacaoAlteracaoLimiteDiasUseCase
     {
         public class GerarNotificacaoAlteracaoLimiteDiasParametros
         {
