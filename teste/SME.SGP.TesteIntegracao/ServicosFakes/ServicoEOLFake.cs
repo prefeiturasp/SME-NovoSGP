@@ -673,6 +673,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
+        public Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> UsuarioAtribuicoesEolPorTurmaDisciplina(string codigoRf, IEnumerable<string> turmasIds, string disciplinaId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<bool> ValidarProfessor(string professorRf)
         {
             throw new NotImplementedException();

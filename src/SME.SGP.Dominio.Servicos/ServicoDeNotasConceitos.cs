@@ -302,13 +302,13 @@ namespace SME.SGP.Dominio
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
             var disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
 
-            foreach (var atividadeAvaliativa in atividadesAvaliativas)
-                await ValidarDataAvaliacaoECriador(atividadeAvaliativa, professorRf, disciplinaId, disciplinasEol, gestorEscolar);
+            await ValidarDataAvaliacaoECriador(atividadesAvaliativas, professorRf, disciplinaId, disciplinasEol, gestorEscolar);
         }
 
-        private async Task ValidarDataAvaliacaoECriador(AtividadeAvaliativa atividadeAvaliativa, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol, bool gestorEscolar)
+
+        private async Task ValidarDataAvaliacaoECriador(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol, bool gestorEscolar)
         {
-            if (atividadeAvaliativa.DataAvaliacao.Date > DateTime.Today)
+            if (atividadesAvaliativas.Where(x => x.DataAvaliacao.Date > DateTime.Today).Any())
                 throw new NegocioException("Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
             bool ehTitular = false;
@@ -319,10 +319,13 @@ namespace SME.SGP.Dominio
                     ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
                 var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
-                var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Convert.ToInt64(disciplinaId), atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuarioLogado));
 
-                if ((atividadeAvaliativa.EhCj && !atividadeAvaliativa.ProfessorRf.Equals(professorRf)) ||
-                    (!atividadeAvaliativa.EhCj && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
+                var atribuicaoEol = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery(Convert.ToInt64(disciplinaId), atividadesAvaliativas.Select(x => x.TurmaId), usuarioLogado));
+
+                var usuarioPossuiAtribuicaoNaTurmaNaData =  atividadesAvaliativas.Any(a => atribuicaoEol.Any(b => b.CodigoTurma.Equals(a.TurmaId) && b.DataAtribuicaoAula <= a.DataAvaliacao && b.DataDisponibilizacaoAulas >= a.DataAvaliacao));
+
+                if ((atividadesAvaliativas.Select(s => s.EhCj).Any() && !atividadesAvaliativas.Select(p => p.ProfessorRf.Equals(professorRf)).Any()) ||
+                    (!atividadesAvaliativas.Select(s => s.EhCj).Any() && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
                     throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
             }
         }
