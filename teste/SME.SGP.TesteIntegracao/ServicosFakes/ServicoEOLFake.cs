@@ -149,62 +149,185 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
         {
-            var alunos = new List<AlunoPorTurmaResposta> {
-                new AlunoPorTurmaResposta
+            var alunos = new List<AlunoPorTurmaResposta>();
+            if (!consideraInativos)
+            {
+                alunos = new List<AlunoPorTurmaResposta>
                 {
-                      Ano=0,
-                      CodigoAluno = "11223344",
-                      CodigoComponenteCurricular=0,
-                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(turmaId),
-                      DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= new DateTime(2021,11,09,17,25,31),
-                      DataMatricula= new DateTime(2021,11,09,17,25,31),
-                      EscolaTransferencia=null,
-                      NomeAluno="Maria Aluno teste",
-                      NomeSocialAluno=null,
-                      NumeroAlunoChamada=1,
-                      ParecerConclusivo=null,
-                      PossuiDeficiencia=false,
-                      SituacaoMatricula="Ativo",
-                      Transferencia_Interna=false,
-                      TurmaEscola=null,
-                      TurmaRemanejamento=null,
-                      TurmaTransferencia=null,
-                      NomeResponsavel="João teste",
-                      TipoResponsavel="4",
-                      CelularResponsavel="11961861993",
-                      DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
-                },
-                new AlunoPorTurmaResposta
+                    new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "11223344",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2021,11,09,17,25,31),
+                          DataMatricula= new DateTime(2021,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="Maria Aluno teste",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="Ativo",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="João teste",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                    },
+                    new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "6523614",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2021,11,09,17,25,31),
+                          DataMatricula= new DateTime(2021,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="Ativo",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                    }
+                };
+            }
+            else
+            {
+                alunos = new List<AlunoPorTurmaResposta>
                 {
-                      Ano=0,
-                      CodigoAluno = "6523614",
-                      CodigoComponenteCurricular=0,
-                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(turmaId),
-                      DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= new DateTime(2021,11,09,17,25,31),
-                      DataMatricula= new DateTime(2021,11,09,17,25,31),
-                      EscolaTransferencia=null,
-                      NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
-                      NomeSocialAluno=null,
-                      NumeroAlunoChamada=1,
-                      ParecerConclusivo=null,
-                      PossuiDeficiencia=false,
-                      SituacaoMatricula="Ativo",
-                      Transferencia_Interna=false,
-                      TurmaEscola=null,
-                      TurmaRemanejamento=null,
-                      TurmaTransferencia=null,
-                      NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
-                      TipoResponsavel="4",
-                      CelularResponsavel="11961861993",
-                      DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
-                }
-            };
-
+                    new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "6523616",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2021,11,09,17,25,31),
+                          DataMatricula= new DateTime(2021,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="Desistente",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                    }
+                };
+            }
             return alunos.Where(x => x.CodigoTurma.ToString() == turmaId);
+        }
+
+
+        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, string codigoAluno, bool consideraInativos = false)
+        {
+            var alunos = new List<AlunoPorTurmaResposta>
+            {
+               new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "11223344",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2021,11,09,17,25,31),
+                          DataMatricula= new DateTime(2021,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="Maria Aluno teste",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="Ativo",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="João teste",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                    },
+               new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "6523614",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2021,11,09,17,25,31),
+                          DataMatricula= new DateTime(2021,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="Ativo",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                    },
+               new AlunoPorTurmaResposta
+                    {
+                          Ano=0,
+                          CodigoAluno = "666666",
+                          CodigoComponenteCurricular=0,
+                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.PendenteRematricula,
+                          CodigoTurma=int.Parse(turmaId),
+                          DataNascimento=new DateTime(1959,01,16,00,00,00),
+                          DataSituacao= new DateTime(2000,11,09,17,25,31),
+                          DataMatricula= new DateTime(2018,11,09,17,25,31),
+                          EscolaTransferencia=null,
+                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
+                          NomeSocialAluno=null,
+                          NumeroAlunoChamada=1,
+                          ParecerConclusivo=null,
+                          PossuiDeficiencia=false,
+                          SituacaoMatricula="PendenteRematricula",
+                          Transferencia_Interna=false,
+                          TurmaEscola=null,
+                          TurmaRemanejamento=null,
+                          TurmaTransferencia=null,
+                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
+                          TipoResponsavel="4",
+                          CelularResponsavel="11961861993",
+                          DataAtualizacaoContato= new DateTime(2000,06,22,19,02,35),
+                    }
+            };
+            return alunos.Where(x => x.CodigoTurma.ToString() == turmaId && x.CodigoAluno == codigoAluno);
         }
 
         public Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
@@ -251,6 +374,10 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
         {
+            if (codidoAluno.Equals("77777"))
+                return ObterAlunosPorTurma("1", true);
+            if (codidoAluno.Equals("666666"))
+                return ObterAlunosPorTurma("1",codidoAluno, true);
             return ObterAlunosPorTurma("1");
         }
 
@@ -639,7 +766,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<bool> PodePersistirTurmaDisciplina(string professorRf, string codigoTurma, string disciplinaId, DateTime data)
         {
-
+            if (disciplinaId == "139")
+                return false;
             return true;
         }
 

@@ -12,6 +12,11 @@ namespace SME.SGP.Infra
             ListaFrequencia = new List<RegistroFrequenciaAlunoDto>();
         }
 
+        public FrequenciaDto()
+        {
+            ListaFrequencia = new List<RegistroFrequenciaAlunoDto>();
+        }
+
         public DateTime? AlteradoEm { get; set; }
 
         public string AlteradoPor { get; set; }

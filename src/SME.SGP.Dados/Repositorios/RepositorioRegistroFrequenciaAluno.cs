@@ -35,20 +35,9 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirVarios(List<long> idsParaExcluir)
         {
-            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
 
-            using (var conexao = (NpgsqlConnection)database.Conexao)
-            {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync(
-                    query,
-                    new
-                    {
-                        idsParaExcluir
-
-                    });
-                conexao.Close();
-            }
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
         public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
