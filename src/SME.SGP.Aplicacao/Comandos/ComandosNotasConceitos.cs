@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,7 +51,7 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
-            var atividades =  repositorioAtividadeAvaliativa
+            var atividades = repositorioAtividadeAvaliativa
                 .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
             foreach (var item in atividades)
