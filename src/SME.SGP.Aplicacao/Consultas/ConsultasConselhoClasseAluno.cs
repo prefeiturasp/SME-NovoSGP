@@ -422,7 +422,9 @@ namespace SME.SGP.Aplicacao
             if (turmaFechamento == null || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
 
-            var aluno = turmaFechamento.Last(a => a.CodigoAluno == alunoCodigo);
+            var turmaFechamentoOrdenada = turmaFechamento.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
+
+            var aluno = turmaFechamentoOrdenada.Last(a => a.CodigoAluno == alunoCodigo);
 
             if (aluno == null)
                 throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
