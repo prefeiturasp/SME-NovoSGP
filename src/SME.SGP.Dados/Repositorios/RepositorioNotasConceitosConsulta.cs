@@ -107,26 +107,34 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma)
         {
             var sql = @"select  
-                            id, 
-                            atividade_avaliativa, 
-                            aluno_id, 
-                            nota, 
-                            conceito, 
-                            tipo_nota, 
-                            criado_em,
-                            criado_por, 
-                            criado_rf, 
-                            alterado_em, 
-                            alterado_por, 
-                            alterado_rf,
-                            status_gsa 
+                            nc.id, 
+                            nc.atividade_avaliativa, 
+                            nc.aluno_id, 
+                            nc.nota, 
+                            nc.conceito, 
+                            nc.tipo_nota, 
+                            nc.criado_em,
+                            nc.criado_por, 
+                            nc.criado_rf, 
+                            nc.alterado_em, 
+                            nc.alterado_por, 
+                            nc.alterado_rf,
+                            nc.status_gsa 
                         from notas_conceito nc 
                         join atividade_avaliativa aa on nc.atividade_avaliativa  = aa.id 
                         join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id  = aa.id
                         join turma t on aa.turma_id = t.turma_id::text 
                         where aa.turma_id  = @codigoTurma";
 
-            return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
+            try
+            {
+                return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
+            }
+            catch (System.Exception e)
+            {
+
+                throw new System.Exception(e.Message);
+            }
         }
     }
 }
