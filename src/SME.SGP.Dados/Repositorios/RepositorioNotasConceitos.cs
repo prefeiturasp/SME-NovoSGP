@@ -1,8 +1,11 @@
-﻿//using Npgsql;
+﻿using Npgsql;
+using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-//using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -26,43 +29,53 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
-        //public void SalvarListaNotaConceito(List<NotaConceito> entidade)
-        //{
-        //    var sql = @"copy notas_conceito (
-        //                        atividade_avaliativa,
-	       //                     aluno_id,
-	       //                     nota,
-	       //                     conceito,
-	       //                     tipo_nota,
-	       //                     criado_por,
-	       //                     criado_rf,
-	       //                     criado_em,
-	       //                     alterado_por,
-	       //                     alterado_rf,
-	       //                     alterado_em,
-	       //                     disciplina_id,
-	       //                     status_gsa)
-        //               from
-        //               stdin (FORMAT binary)";
-        //    using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-        //    {
-        //        foreach (var item in entidade)
-        //        {
-        //            writer.StartRow();
-        //            writer.Write(item.AtividadeAvaliativaID);
-        //            writer.Write(item.AlunoId);
-        //            writer.Write(item.Nota);
-        //            writer.Write(item.ConceitoId);
-        //            writer.Write(item.TipoNota);
-        //            writer.Write(item.CriadoEm);
-        //            writer.Write(item.CriadoPor ?? "Sistema");
-        //            writer.Write(item.CriadoRF ?? "Sistema");
-        //            writer.Write(item.DisciplinaId);
-        //            writer.Write(item.StatusGsa);
+        public void SalvarListaNotaConceito(List<NotaConceito> entidade)
+        {
+            try
+            {
+                var lancaNota = entidade.First().Nota.HasValue;
 
-        //        }
-        //        writer.Complete();
-        //    }
-        //}
+                var sql = @$"copy notas_conceito (
+                                atividade_avaliativa,
+	                            aluno_id,
+	                            {(lancaNota ? "nota" : "conceito")},
+	                            tipo_nota,
+	                            criado_por,
+	                            criado_rf,
+	                            criado_em,
+	                            disciplina_id,
+	                            status_gsa)
+                       from
+                       stdin (FORMAT binary)";
+                using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
+                {
+                    foreach (var item in entidade)
+                    {
+                        
+                        writer.StartRow();
+                        writer.Write(item.AtividadeAvaliativaID, NpgsqlDbType.Bigint);
+                        writer.Write(item.AlunoId, NpgsqlDbType.Varchar);
+
+                        if (lancaNota)
+                            writer.Write((double)item.Nota, NpgsqlDbType.Numeric);
+                        else
+                            writer.Write((long)item.ConceitoId, NpgsqlDbType.Bigint);
+
+                        writer.Write((long)item.TipoNota, NpgsqlDbType.Bigint);
+                        writer.Write(item.CriadoPor ?? "Sistema");
+                        writer.Write(item.CriadoRF ?? "Sistema");
+                        writer.Write(item.CriadoEm);
+                        writer.Write(item.DisciplinaId, NpgsqlDbType.Varchar);
+                        writer.Write((int)item.StatusGsa, NpgsqlDbType.Integer);
+                    }
+                    writer.Complete();
+                }
+            }
+            catch (System.Exception ex)
+            {
+
+                throw;
+            }
+        }
     }
 }

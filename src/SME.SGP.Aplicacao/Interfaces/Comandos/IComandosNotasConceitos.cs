@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosNotasConceitos
     {
-        Task Salvar(NotaConceitoListaDto notaConceitoLista);
+        Task<AuditoriaDto> Salvar(NotaConceitoListaDto notaConceitoLista);
     }
 }

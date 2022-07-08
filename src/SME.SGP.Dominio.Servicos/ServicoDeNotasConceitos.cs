@@ -284,14 +284,14 @@ namespace SME.SGP.Dominio
             unitOfWork.IniciarTransacao();
 
             var registroComIdZero = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
+            var registroSemIdZero = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
 
-            foreach (var entidade in EntidadesSalvar)
+            foreach (var entidade in registroSemIdZero)
             {
-                if (entidade.Id >= 0 && entidade.ObterNota() == null)
-                    repositorioNotasConceitos.Remover(entidade);
+                repositorioNotasConceitos.Remover(entidade);
             }
-            //if (registroComIdZero.Any())
-            //     repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero);
+            if (registroComIdZero.Any())
+                repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero);
 
             unitOfWork.PersistirTransacao();
         }

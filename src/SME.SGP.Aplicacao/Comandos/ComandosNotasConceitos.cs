@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
+        public async Task<AuditoriaDto> Salvar(NotaConceitoListaDto notaConceitoLista)
         {
             var notasConceitosDto = notaConceitoLista.NotasConceitos;
 
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
-            var atividades =  repositorioAtividadeAvaliativa
+            var atividades = repositorioAtividadeAvaliativa
                 .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
             foreach (var item in atividades)
@@ -59,6 +59,8 @@ namespace SME.SGP.Aplicacao
                 if (aulaId != null)
                     await mediator.Send(new ExcluirPendenciaAulaCommand((long)aulaId, TipoPendencia.Avaliacao));
             }
+
+            return (AuditoriaDto)atividades.FirstOrDefault();
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)
