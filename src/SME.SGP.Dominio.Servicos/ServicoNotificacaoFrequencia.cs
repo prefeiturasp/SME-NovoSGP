@@ -94,47 +94,6 @@ namespace SME.SGP.Dominio.Servicos
             //await NotificaAlunosFaltososCargo(DiaRetroativo(dataReferencia, quantidadeDiasDiretor - 1), quantidadeDiasDiretor, Cargo.Diretor, tipoCalendario?.Id ?? 0);
         }
 
-        public async Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm)
-        {
-            int anoAtual = DateTime.Now.Year;
-
-            // Parametro do sistema de dias para notificacao
-            var qtdDiasParametroString = await repositorioParametrosSistema.ObterValorPorTipoEAno(
-                                                    TipoParametroSistema.QuantidadeDiasNotificarAlteracaoChamadaEfetivada,
-                                                   anoAtual);
-            var parseado = int.TryParse(qtdDiasParametroString, out int qtdDiasParametro);
-
-            if (!parseado)
-                return;
-
-            var qtdDiasAlteracao = (alteradoEm.Date - criadoEm.Date).TotalDays;
-
-            // Verifica se ultrapassou o limite de dias para alteração
-            if (qtdDiasAlteracao < qtdDiasParametro)
-                return;
-
-            var usuariosNotificacao = new List<(Cargo?, Usuario)>();
-
-            // Dados da Aula
-            var registroFrequencia = repositorioFrequencia.ObterAulaDaFrequencia(registroFrequenciaId);
-            MeusDadosDto professor = await servicoEOL.ObterMeusDados(registroFrequencia.ProfessorRf);
-
-            // Gestores
-            var usuarios = BuscaGestoresUe(registroFrequencia.CodigoUe);
-            if (usuarios != null)
-                usuariosNotificacao.AddRange(usuarios);
-
-            // Supervisores
-            usuarios = BuscaSupervisoresUe(registroFrequencia.CodigoUe, usuariosNotificacao.Select(u => u.Item1));
-            if (usuarios != null)
-                usuariosNotificacao.AddRange(usuarios);
-
-            foreach (var usuario in usuariosNotificacao)
-            {
-                NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
-            }
-
-        }
 
         public async Task NotificarAlunosFaltososBimestre()
         {

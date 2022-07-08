@@ -330,7 +330,6 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequenciaPorUe, new ComandoRabbit("Consolidação por UE para o dashboard geral (diário, semanal e mensal)", typeof(IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase)));
 
             comandos.Add(RotasRabbitSgp.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, new ComandoRabbit("Efetua a varredura em busca de fechamentos em processamento pendentes", typeof(IVarreduraFechamentosEmProcessamentoPendentesUseCase)));
-            comandos.Add(RotasRabbitSgp.NotificacaoFrequencia, new ComandoRabbit("Executar a notificacao de frequencia", typeof(INotificacaoFrequencia)));
             comandos.Add(RotasRabbitSgp.ExecutarTipoCalendario, new ComandoRabbit("Executar o tipo calendario", typeof(IExecutarTipoCalendario)));
             comandos.Add(RotasRabbitSgp.ExecutarGravarRecorrencia, new ComandoRabbit("Executar a gravação das recorrencias", typeof(IExecutarGravarRecorrencia)));
             comandos.Add(RotasRabbitSgp.GerarNotificacaoAlteracaoLimiteDias, new ComandoRabbit("Gera notificacao de alteracao de limite de dias", typeof(IGerarNotificacaoAlteracaoLimiteDias)));

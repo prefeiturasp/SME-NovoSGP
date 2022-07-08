@@ -196,7 +196,6 @@
         public const string RotaConsolidacaoDashBoardFrequenciaPorUe = "sgp.consolidacao.frequencia.dashboard.ue";
 
         public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
-        public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
         public const string ExecutarTipoCalendario = "sgp.executar.tipo.calendario";
         public const string ExecutarGravarRecorrencia = "sgp.executar.gravar.recorrencia";
         public const string GerarNotificacaoAlteracaoLimiteDias = "sgp.gerar.notificacao.alteracao.limite.dias";
