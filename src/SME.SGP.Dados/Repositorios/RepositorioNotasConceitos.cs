@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
-        public void SalvarListaNotaConceito(List<NotaConceito> entidade)
+        public void SalvarListaNotaConceito(List<NotaConceito> entidade, Usuario criadoPor)
         {
 
             var lancaNota = entidade.First().Nota.HasValue;
@@ -61,8 +61,8 @@ namespace SME.SGP.Dados.Repositorios
                         writer.Write((long)item.ConceitoId, NpgsqlDbType.Bigint);
 
                     writer.Write((long)item.TipoNota, NpgsqlDbType.Bigint);
-                    writer.Write(item.CriadoPor ?? "Sistema");
-                    writer.Write(item.CriadoRF ?? "Sistema");
+                    writer.Write(item.CriadoPor ?? criadoPor.Nome);
+                    writer.Write(item.CriadoRF ?? criadoPor.Login);
                     writer.Write(item.CriadoEm);
                     writer.Write(item.DisciplinaId, NpgsqlDbType.Varchar);
                     writer.Write((int)item.StatusGsa, NpgsqlDbType.Integer);

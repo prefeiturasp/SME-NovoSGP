@@ -147,7 +147,9 @@ namespace SME.SGP.Dominio
                 entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
             }
 
-            SalvarNoBanco(entidadesSalvar);
+            var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            SalvarNoBanco(entidadesSalvar, criadoPor);
 
             var alunosId = alunos
                 .Select(a => a.CodigoAluno)
@@ -279,7 +281,7 @@ namespace SME.SGP.Dominio
             return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
         }
 
-        private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)
+        private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
         {
             unitOfWork.IniciarTransacao();
 
@@ -291,7 +293,7 @@ namespace SME.SGP.Dominio
                 repositorioNotasConceitos.Remover(entidade);
             }
             if (registroComIdZero.Any())
-                repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero);
+                repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero, criadoPor);
 
             unitOfWork.PersistirTransacao();
         }
