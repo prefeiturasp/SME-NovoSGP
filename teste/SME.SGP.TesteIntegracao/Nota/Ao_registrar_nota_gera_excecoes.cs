@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 TipoNota = TipoNota.Nota,
                 AnoTurma = ANO_5,
-                CriarTurmaAnoAnterior = true
+                ConsiderarAnoAnterior = true
             };
 
             await CriarDadosBase(filtroNota);
