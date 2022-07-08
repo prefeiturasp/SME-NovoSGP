@@ -126,15 +126,7 @@ namespace SME.SGP.Dados.Repositorios
                         join turma t on aa.turma_id = t.turma_id::text 
                         where aa.turma_id  = @codigoTurma";
 
-            try
-            {
-                return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
-            }
-            catch (System.Exception e)
-            {
-
-                throw new System.Exception(e.Message);
-            }
+            return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
         }
     }
 }
