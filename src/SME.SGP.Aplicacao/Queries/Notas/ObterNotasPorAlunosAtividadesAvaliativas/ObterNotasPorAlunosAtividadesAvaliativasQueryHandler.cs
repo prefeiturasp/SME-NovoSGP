@@ -26,7 +26,6 @@ namespace SME.SGP.Aplicacao
         {
             var atividadeAvaliativas = await ObterCacheAtividadeAvaliativa(request);
 
-            
             return from aac in atividadeAvaliativas.ToList()
                    join aai in request.AtividadesAvaliativasId on aac.Id equals aai
                    select aac;
@@ -38,18 +37,11 @@ namespace SME.SGP.Aplicacao
             var atividadesAvaliativasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
             if (string.IsNullOrEmpty(atividadesAvaliativasNoCache))
-                return await CriarCacheAtividadeAvaliativaCommand(request.CodigoTurma, nomeChave);
-
-            return JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
-        }
-
-            if (string.IsNullOrEmpty(atividadesAvaliativasNoCache))
             {
                 return await mediator.Send(new CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand(request.CodigoTurma, nomeChave));
             }
-            else
-                atividadeAvaliativas = JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
-            return atividadeAvaliativas;
+
+            return JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
         }
     }
 }
