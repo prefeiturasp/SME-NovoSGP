@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +21,16 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<NotaConceito>> Handle(ObterNotasPorAlunosAtividadesAvaliativasQuery request, CancellationToken cancellationToken)
         {
+            var atividadeAvaliativas = await ObterCacheAtividadeAvaliativa(request);
+
+            
+            return from aac in atividadeAvaliativas.ToList()
+                   join aai in request.AtividadesAvaliativasId on aac.Id equals aai
+                   select aac;
+        }
+
+        private async Task<IEnumerable<NotaConceito>> ObterCacheAtividadeAvaliativa(ObterNotasPorAlunosAtividadesAvaliativasQuery request)
+        {
             var nomeChave = $"Atividade-Avaliativa-{request.CodigoTurma}";
             var atividadesAvaliativasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
@@ -32,7 +43,6 @@ namespace SME.SGP.Aplicacao
             }
             else
                 atividadeAvaliativas = JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
-
             return atividadeAvaliativas;
         }
     }
