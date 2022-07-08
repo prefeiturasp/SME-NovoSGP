@@ -22,6 +22,7 @@ namespace SME.SGP.TesteIntegracao
         private readonly string ALUNO_CODIGO_8 = "8";
         private readonly string ALUNO_CODIGO_9 = "9";
         private readonly string ALUNO_CODIGO_10 = "10";
+        private readonly string ALUNO_CODIGO_11 = "11";
 
         private readonly string ATIVO = "Ativo";
         private readonly string RESPONSAVEL = "RESPONSAVEL";
@@ -201,7 +202,25 @@ namespace SME.SGP.TesteIntegracao
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       CodigoTurma=int.Parse(request.CodigoTurma),
                       DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataSituacao= DateTimeExtension.HorarioBrasilia(),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_10,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_11,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
+                      CodigoTurma=int.Parse(request.CodigoTurma),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= DateTimeExtension.HorarioBrasilia(),
                       DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                       NomeAluno= ALUNO_CODIGO_10,
                       NumeroAlunoChamada=1,

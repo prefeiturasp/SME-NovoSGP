@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
 
         [Fact]
-        public async Task Nao_pode_lancar_nota_para_turma_de_ano_posterior()
+        public async Task Nao_pode_lancar_nota_para_turma_de_ano_anterior()
         {
             var filtroNota = new FiltroNotasDto()
             {
