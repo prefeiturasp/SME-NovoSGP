@@ -1281,7 +1281,6 @@ namespace SME.SGP.IoC
             //Período escolar integração
             services.TryAddScoped<IObterPeriodoEscolarAtualPorTurmaUseCase, ObterPeriodoEscolarAtualPorTurmaUseCase>();
 
-            services.TryAddScoped<INotificacaoFrequencia, NotificacaoFrequenciaUseCase>();
             services.TryAddScoped<IExecutarTipoCalendario, ExecutarTipoCalendarioUseCase>();
             services.TryAddScoped<IExecutarGravarRecorrencia, ExecutarGravarRecorrenciaUseCase>();
             services.TryAddScoped<IGerarNotificacaoAlteracaoLimiteDias, GerarNotificacaoAlteracaoLimiteDiasUseCase>();
