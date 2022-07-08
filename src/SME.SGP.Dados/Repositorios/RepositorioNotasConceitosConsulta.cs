@@ -106,7 +106,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma)
         {
-            var sql = @"select * from notas_conceito nc 
+            var sql = @"select  
+                            id, 
+                            atividade_avaliativa, 
+                            aluno_id, 
+                            nota, 
+                            conceito, 
+                            tipo_nota, 
+                            criado_em,
+                            criado_por, 
+                            criado_rf, 
+                            alterado_em, 
+                            alterado_por, 
+                            alterado_rf,
+                            status_gsa 
+                        from notas_conceito nc 
                         join atividade_avaliativa aa on nc.atividade_avaliativa  = aa.id 
                         join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id  = aa.id
                         join turma t on aa.turma_id = t.turma_id::text 
@@ -114,6 +128,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
         }
-
     }
 }
