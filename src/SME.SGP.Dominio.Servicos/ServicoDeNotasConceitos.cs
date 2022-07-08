@@ -153,7 +153,7 @@ namespace SME.SGP.Dominio
                 .Select(a => a.CodigoAluno)
                 .ToList();
 
-            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId);
+            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma);
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
@@ -171,10 +171,10 @@ namespace SME.SGP.Dominio
             return notaTipo;
         }
 
-        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId)
+        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId, string codigoTurma)
         {
             var dataAtual = DateTime.Now;
-            var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId));
+            var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId, codigoTurma));
 
             var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
 
