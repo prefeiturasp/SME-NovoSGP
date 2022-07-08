@@ -11,7 +11,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_excluir_ou_alterar_aula_com_frequencia : FrequenciaBase
+    public class Ao_excluir_ou_alterar_aula_com_frequencia : FrequenciaTesteBase
     {
         public Ao_excluir_ou_alterar_aula_com_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {

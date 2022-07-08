@@ -7,7 +7,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_inserir_frequencia_professor_cj : FrequenciaBase
+    public class Ao_inserir_frequencia_professor_cj : FrequenciaTesteBase
     {
         public Ao_inserir_frequencia_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
