@@ -41,30 +41,6 @@ namespace SME.SGP.TesteIntegracao
         }
 
         [Fact]
-        public async Task Nao_Deve_Exibir_Notas_Alunos_Inativos_Com_Situacao_Apos_PeriodoEscolar()
-        {
-            //Arrange
-            var inicioPeriodoEscolar = new DateTime(2022, 01, 03);
-            var fimPeriodoEscolar = new DateTime(2022, 04, 29);
-
-            await Criar_Nota_Fechamento(inicioPeriodoEscolar, fimPeriodoEscolar);
-
-            string[] codigoTurmas = { "1" };
-            var codigoAluno = "4853818";
-            var dataMatricula = new DateTime(2021, 10, 06);
-            var dataSituacao = new DateTime(2023, 03, 09);
-            const int BIMESTRE = 1;
-
-            var repositorio = ServiceProvider.GetService<IRepositorioFechamentoNotaConsulta>();
-            //Act
-            var retorno = await repositorio.ObterNotasAlunoPorTurmasCodigosBimestreAsync(codigoTurmas, codigoAluno, BIMESTRE, dataMatricula, dataSituacao, dataMatricula.Year);
-
-            //Assert
-            retorno.ShouldNotBeNull();
-            Assert.True(!retorno.Any());
-        }
-
-        [Fact]
         public async Task Nao_Deve_Exibir_Notas_Alunos_Inativos_Com_Situacao_Antes_do_PeriodoEscolar()
         {
             //Arrange
