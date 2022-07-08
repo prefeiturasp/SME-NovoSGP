@@ -43,6 +43,8 @@ namespace SME.SGP.Aplicacao
             var notasBanco = repositorioNotasConceitos
                 .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
 
+            var notaBanco = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(avaliacoes.ToArray(), alunos.ToArray(), notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId));
+
             var professorRf = servicoUsuario.ObterRf();
 
             if (notasBanco == null || !notasBanco.Any())
@@ -50,7 +52,7 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
-            var atividades =  repositorioAtividadeAvaliativa
+            var atividades = repositorioAtividadeAvaliativa
                 .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
             foreach (var item in atividades)

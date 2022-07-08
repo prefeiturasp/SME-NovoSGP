@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoEol servicoEOL;
         private readonly HttpClient httpClient;
-        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandler(HttpClient httpClient)
+        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandler(HttpClient httpClient, IServicoEol servicoEOL)
         {
             this.httpClient = httpClient;
             this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
