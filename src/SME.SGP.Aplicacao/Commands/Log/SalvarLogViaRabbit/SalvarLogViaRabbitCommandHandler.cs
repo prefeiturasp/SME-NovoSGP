@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SME.SGP.Infra;
@@ -15,10 +16,10 @@ namespace SME.SGP.Aplicacao
         private readonly ConfiguracaoRabbitLogOptions configuracaoRabbitOptions;
         private readonly IServicoTelemetria servicoTelemetria;
 
-        public SalvarLogViaRabbitCommandHandler(ConfiguracaoRabbitLogOptions configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
+        public SalvarLogViaRabbitCommandHandler(IOptions<ConfiguracaoRabbitLogOptions> configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
         {
-            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
-            this.servicoTelemetria = servicoTelemetria ?? throw new System.ArgumentNullException(nameof(servicoTelemetria));
+            this.configuracaoRabbitOptions = configuracaoRabbitOptions.Value ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
         public Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
         {

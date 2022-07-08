@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                     var dres = await mediator.Send(new ObterIdsDresQuery());
 
                     foreach (var dreId in dres)
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDre, new DreDto(dreId)));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDre, new DreDto(dreId)));
 
                     return true;
                 }

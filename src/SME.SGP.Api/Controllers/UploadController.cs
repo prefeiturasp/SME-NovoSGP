@@ -29,7 +29,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}{ArquivoContants.PastaAquivosTemporaria}", 
+                        $"https://{Request.Host}{Request.PathBase}{ArquivoConstants.PastaAquivosTemporaria}", 
                         Dominio.TipoArquivo.Editor));
             }
                 
