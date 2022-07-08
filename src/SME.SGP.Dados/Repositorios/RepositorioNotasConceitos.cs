@@ -31,11 +31,10 @@ namespace SME.SGP.Dados.Repositorios
         }
         public void SalvarListaNotaConceito(List<NotaConceito> entidade)
         {
-            try
-            {
-                var lancaNota = entidade.First().Nota.HasValue;
 
-                var sql = @$"copy notas_conceito (
+            var lancaNota = entidade.First().Nota.HasValue;
+
+            var sql = @$"copy notas_conceito (
                                 atividade_avaliativa,
 	                            aluno_id,
 	                            {(lancaNota ? "nota" : "conceito")},
@@ -47,35 +46,30 @@ namespace SME.SGP.Dados.Repositorios
 	                            status_gsa)
                        from
                        stdin (FORMAT binary)";
-                using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-                {
-                    foreach (var item in entidade)
-                    {
-                        
-                        writer.StartRow();
-                        writer.Write(item.AtividadeAvaliativaID, NpgsqlDbType.Bigint);
-                        writer.Write(item.AlunoId, NpgsqlDbType.Varchar);
-
-                        if (lancaNota)
-                            writer.Write((double)item.Nota, NpgsqlDbType.Numeric);
-                        else
-                            writer.Write((long)item.ConceitoId, NpgsqlDbType.Bigint);
-
-                        writer.Write((long)item.TipoNota, NpgsqlDbType.Bigint);
-                        writer.Write(item.CriadoPor ?? "Sistema");
-                        writer.Write(item.CriadoRF ?? "Sistema");
-                        writer.Write(item.CriadoEm);
-                        writer.Write(item.DisciplinaId, NpgsqlDbType.Varchar);
-                        writer.Write((int)item.StatusGsa, NpgsqlDbType.Integer);
-                    }
-                    writer.Complete();
-                }
-            }
-            catch (System.Exception ex)
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
+                foreach (var item in entidade)
+                {
 
-                throw;
+                    writer.StartRow();
+                    writer.Write(item.AtividadeAvaliativaID, NpgsqlDbType.Bigint);
+                    writer.Write(item.AlunoId, NpgsqlDbType.Varchar);
+
+                    if (lancaNota)
+                        writer.Write((double)item.Nota, NpgsqlDbType.Numeric);
+                    else
+                        writer.Write((long)item.ConceitoId, NpgsqlDbType.Bigint);
+
+                    writer.Write((long)item.TipoNota, NpgsqlDbType.Bigint);
+                    writer.Write(item.CriadoPor ?? "Sistema");
+                    writer.Write(item.CriadoRF ?? "Sistema");
+                    writer.Write(item.CriadoEm);
+                    writer.Write(item.DisciplinaId, NpgsqlDbType.Varchar);
+                    writer.Write((int)item.StatusGsa, NpgsqlDbType.Integer);
+                }
+                writer.Complete();
             }
+
         }
     }
 }

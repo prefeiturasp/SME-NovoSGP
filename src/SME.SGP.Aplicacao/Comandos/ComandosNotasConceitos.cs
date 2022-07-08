@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        public async Task<AuditoriaDto> Salvar(NotaConceitoListaDto notaConceitoLista)
+        public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
         {
             var notasConceitosDto = notaConceitoLista.NotasConceitos;
 
@@ -59,8 +60,6 @@ namespace SME.SGP.Aplicacao
                 if (aulaId != null)
                     await mediator.Send(new ExcluirPendenciaAulaCommand((long)aulaId, TipoPendencia.Avaliacao));
             }
-
-            return (AuditoriaDto)atividades.FirstOrDefault();
         }
 
         private async Task IncluirTodasNotas(IEnumerable<NotaConceitoDto> notasConceitosDto, string professorRf, string turmaId, string disiplinaId)
