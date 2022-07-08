@@ -14,7 +14,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_alterar_frequencia_pelo_professor_titular : FrequenciaBase
+    public class Ao_alterar_frequencia_pelo_professor_titular : FrequenciaTesteBase
     {
         private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);

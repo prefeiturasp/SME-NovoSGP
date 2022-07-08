@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
 {
-    public abstract class FrequenciaBase : TesteBaseComuns
+    public abstract class FrequenciaTesteBase : TesteBaseComuns
     {
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
         protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
 
-        protected FrequenciaBase(CollectionFixture collectionFixture) : base(collectionFixture)
+        protected FrequenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
         {
-            var retorno = await InserirFrequenciaUseCaseSemValidacaoBasica(frequenciaDto);
+            var retorno = await ExecutarInserirFrequenciaUseCaseSemValidacaoBasica(frequenciaDto);
 
             retorno.ShouldNotBeNull();
 
@@ -105,27 +105,27 @@ namespace SME.SGP.TesteIntegracao
             return retorno;
         }
 
-        protected async Task<AuditoriaDto> InserirFrequenciaUseCaseSemValidacaoBasica(FrequenciaDto frequenciaDto)
+        protected async Task<AuditoriaDto> ExecutarInserirFrequenciaUseCaseSemValidacaoBasica(FrequenciaDto frequenciaDto)
         {
             var useCase = ServiceProvider.GetService<IInserirFrequenciaUseCase>();
 
             return await useCase.Executar(frequenciaDto);
         }
 
-        protected async Task<AuditoriaDto> SalvarAnotacaoFrequenciaAlunoUseCase(SalvarAnotacaoFrequenciaAlunoDto salvarAnotacaoFrequenciaAlunoDto)
+        protected async Task<AuditoriaDto> ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(SalvarAnotacaoFrequenciaAlunoDto salvarAnotacaoFrequenciaAlunoDto)
         {
             var useCase = ServiceProvider.GetService<ISalvarAnotacaoFrequenciaAlunoUseCase>();
 
             return await useCase.Executar(salvarAnotacaoFrequenciaAlunoDto);
         }
 
-        protected async Task<bool> ExcluirAnotacaoFrequenciaAlunoUseCase(long id)
+        protected async Task<bool> ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(long id)
         {
             var useCase = ServiceProvider.GetService<IExcluirAnotacaoFrequenciaAlunoUseCase>();
             return await useCase.Executar(id);
         }
 
-        protected async Task<bool> AlterarAnotacaoFrequenciaAlunoUseCase(AlterarAnotacaoFrequenciaAlunoDto param)
+        protected async Task<bool> ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(AlterarAnotacaoFrequenciaAlunoDto param)
         {
             var useCase = ServiceProvider.GetService<IAlterarAnotacaoFrequenciaAlunoUseCase>();
             return await useCase.Executar(param);
@@ -393,7 +393,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task InserirFrequenciaUseCaseComValidacaoCompleta(FrequenciaDto frequencia, TipoFrequencia tipoFrequenciaPreDefinida, TipoFrequencia tipoFrequenciaRegistrada, decimal percentualFrequencia, int numeroAulas, int qtdeAusencias, int qtdeCompensacoes)
         {
-            await InserirFrequenciaUseCaseSemValidacaoBasica(frequencia);
+            await ExecutarInserirFrequenciaUseCaseSemValidacaoBasica(frequencia);
 
             var frequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
             frequenciaPreDefinida.ShouldNotBeEmpty();
@@ -451,7 +451,7 @@ namespace SME.SGP.TesteIntegracao
                 EhInfantil = false
             };
 
-            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            var retorno = await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
             return retorno.Id;
         }
 
@@ -469,7 +469,7 @@ namespace SME.SGP.TesteIntegracao
                 EhInfantil = false
             };
 
-            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            var retorno = await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
             return retorno.Id;
         }
 
@@ -487,7 +487,7 @@ namespace SME.SGP.TesteIntegracao
                 EhInfantil = false
             };
 
-            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            var retorno = await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
             return retorno.Id;
         }
 
@@ -506,7 +506,7 @@ namespace SME.SGP.TesteIntegracao
                 EhInfantil = false
             };
 
-            var retorno = await SalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
+            var retorno = await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd);
             return retorno.Id;
         }
 

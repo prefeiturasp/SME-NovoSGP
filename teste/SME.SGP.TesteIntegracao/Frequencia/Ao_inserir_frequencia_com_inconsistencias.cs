@@ -13,7 +13,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_inserir_frequencia_com_inconsistencias : FrequenciaBase
+    public class Ao_inserir_frequencia_com_inconsistencias : FrequenciaTesteBase
     {
 
         public Ao_inserir_frequencia_com_inconsistencias(CollectionFixture collectionFixture) : base(collectionFixture)

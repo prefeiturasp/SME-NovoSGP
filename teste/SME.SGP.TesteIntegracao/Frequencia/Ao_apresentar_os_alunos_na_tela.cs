@@ -11,7 +11,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_apresentar_os_alunos_na_tela : FrequenciaBase
+    public class Ao_apresentar_os_alunos_na_tela : FrequenciaTesteBase
     {
         public Ao_apresentar_os_alunos_na_tela(CollectionFixture collectionFixture) : base(collectionFixture)
         {

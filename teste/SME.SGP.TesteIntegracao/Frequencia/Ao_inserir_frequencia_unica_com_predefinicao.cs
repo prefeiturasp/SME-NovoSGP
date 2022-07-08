@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
 {
-    public class Ao_inserir_frequencia_unica_com_predefinicao : FrequenciaBase
+    public class Ao_inserir_frequencia_unica_com_predefinicao : FrequenciaTesteBase
     {
         public Ao_inserir_frequencia_unica_com_predefinicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
