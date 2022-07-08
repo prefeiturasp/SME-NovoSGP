@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand : IRequest<IEnumerable<NotaConceito>>
+    public class CriarCacheDeAvaliativaAvaliativaPorTurmaCommand : IRequest<IEnumerable<NotaConceito>>
     {
-        public CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand(string codigoTurma, string nomeChave)
+        public CriarCacheDeAvaliativaAvaliativaPorTurmaCommand(string codigoTurma, string nomeChave)
         {
             CodigoTurma = codigoTurma;
             NomeChave = nomeChave;

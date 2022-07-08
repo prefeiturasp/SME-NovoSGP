@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
             if (string.IsNullOrEmpty(atividadesAvaliativasNoCache))
             {
-                return await mediator.Send(new CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand(request.CodigoTurma, nomeChave));
+                return await mediator.Send(new CriarCacheDeAvaliativaAvaliativaPorTurmaCommand(request.CodigoTurma, nomeChave));
             }
 
             return JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);

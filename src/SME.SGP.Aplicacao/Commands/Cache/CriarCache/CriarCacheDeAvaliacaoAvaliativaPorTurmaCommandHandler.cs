@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class CriarCacheDeAvaliacaoAvaliativaPorTurmaCommandHandler : IRequestHandler<CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand, IEnumerable<NotaConceito>>
+    public class CriarCacheDeAvaliacaoAvaliativaPorTurmaCommandHandler : IRequestHandler<CriarCacheDeAvaliativaAvaliativaPorTurmaCommand, IEnumerable<NotaConceito>>
     {
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioNotasConceitosConsulta repositorioNotasConceitos;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
-        public async Task<IEnumerable<NotaConceito>> Handle(CriarCacheDeAvaliacaoAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<NotaConceito>> Handle(CriarCacheDeAvaliativaAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var atividadeAvaliativas = await repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(request.CodigoTurma);
             await repositorioCache.SalvarAsync(request.NomeChave, atividadeAvaliativas);
