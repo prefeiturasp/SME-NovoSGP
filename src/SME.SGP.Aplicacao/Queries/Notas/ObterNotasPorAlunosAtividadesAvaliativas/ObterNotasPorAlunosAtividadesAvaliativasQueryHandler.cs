@@ -34,16 +34,16 @@ namespace SME.SGP.Aplicacao
             var nomeChave = $"Atividade-Avaliativa-{request.CodigoTurma}";
             var atividadesAvaliativasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
-            IEnumerable<NotaConceito> atividadeAvaliativas;
-
             if (string.IsNullOrEmpty(atividadesAvaliativasNoCache))
-            {
-                atividadeAvaliativas = await repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(request.CodigoTurma);
-                await repositorioCache.SalvarAsync(nomeChave, atividadeAvaliativas);
-            }
-            else
-                atividadeAvaliativas = JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
-            return atividadeAvaliativas;
+                return await CriarCacheAtividadeAvaliativaCommand(request.CodigoTurma, nomeChave);
+
+            return JsonConvert.DeserializeObject<IEnumerable<NotaConceito>>(atividadesAvaliativasNoCache);
+        }
+
+        private async Task<IEnumerable<NotaConceito>> CriarCacheAtividadeAvaliativaCommand(string codigoTurma, string nomeChave)
+        {
+            return await repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(request.CodigoTurma);
+            await repositorioCache.SalvarAsync(nomeChave, atividadeAvaliativas);
         }
     }
 }
