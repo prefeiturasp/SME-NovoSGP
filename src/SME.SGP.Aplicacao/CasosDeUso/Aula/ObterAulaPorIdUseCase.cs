@@ -119,7 +119,6 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
                           || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
@@ -134,7 +133,7 @@ namespace SME.SGP.Aplicacao
                 .ObterComponentesCurricularesPorProfessorETurma(codigoTurma, false);
 
             return componentesCurricularesTurma
-                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
+                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ?
                     disciplinasInglesAtualizacao.codigoAntiga : disciplinasInglesAtualizacao.codigoNova;
         }
     }
