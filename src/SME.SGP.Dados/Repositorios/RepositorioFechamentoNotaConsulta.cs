@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and @dataMatricula <= pe.periodo_fim";
 
             if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
-                query += $@" and((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
+                query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
                              or @dataSituacao > pe.periodo_fim)";
 
             query += " and ftd.excluido != true";
