@@ -195,7 +195,34 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
+        
+        protected async Task CriarAula_Justificativa(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            await InserirNaBase(ObterAula_Justificativa(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
+        }
 
+        private Aula ObterAula_Justificativa(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            return new Aula
+            {
+                UeId = UE_CODIGO_1,
+                DisciplinaId = componenteCurricularCodigo,
+                TurmaId = TURMA_CODIGO_2,
+                TipoCalendarioId = 1,
+                ProfessorRf = rf,
+                Quantidade = quantidadeAula,
+                DataAula = dataAula,
+                RecorrenciaAula = recorrencia,
+                TipoAula = TipoAula.Normal,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Migrado = false,
+                AulaCJ = false
+            };
+        }
+        
         private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Aula

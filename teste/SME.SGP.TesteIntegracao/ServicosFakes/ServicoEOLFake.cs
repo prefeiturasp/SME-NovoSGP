@@ -375,9 +375,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         public Task<IEnumerable<AlunoPorTurmaResposta>> ObterDadosAluno(string codidoAluno, int anoLetivo, bool consideraHistorico, bool filtrarSituacao = true)
         {
             if (codidoAluno.Equals("77777"))
-                return ObterAlunosPorTurma("1", true);
+                return ObterAlunosPorTurma("2", true);
             if (codidoAluno.Equals("666666"))
-                return ObterAlunosPorTurma("1",codidoAluno, true);
+                return ObterAlunosPorTurma("2",codidoAluno, true);
             return ObterAlunosPorTurma("1");
         }
 

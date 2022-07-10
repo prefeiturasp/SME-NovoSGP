@@ -28,9 +28,11 @@ namespace SME.SGP.TesteIntegracao
         private const string TURMA_NOME_1 = "Turma Nome 1";
 
         protected const string TURMA_CODIGO_2 = "2";
+        protected const string TURMA_CODIGO_3 = "3";
         private const string TURMA_NOME_2 = "Turma Nome 2";
 
         protected const string TURMA_ANO_2 = "2";
+        protected const string TURMA_ANO_3 = "3";
 
         private int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
         private const string ANO_LETIVO_Ano_Atual_NOME = "Ano Letivo Ano Atual";
@@ -436,6 +438,21 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
+
+        protected async Task CriarTurma_Exclusao(Modalidade modalidade)
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = TURMA_ANO_3,
+                CodigoTurma = TURMA_CODIGO_3,
+                Historica = true,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1
+            });
+        }
         protected async Task CriarTurma(Modalidade modalidade, string turmaCodigo)
         {
             await InserirNaBase(new Turma

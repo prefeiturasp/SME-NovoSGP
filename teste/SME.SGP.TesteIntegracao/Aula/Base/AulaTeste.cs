@@ -113,11 +113,37 @@ namespace SME.SGP.TesteIntegracao
             await CriarTurma(modalidade);
         }
 
+        protected async Task CriarDadosBasicosAula_Exclusao(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, bool criarPeriodo = true, long tipoCalendarioId = 1)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
+            CriarClaimUsuario(perfil);
+            await CriarUsuarios();
+            await CriarTurma_Exclusao(modalidade);
+        }
+
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
         {
             await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), BIMESTRE_1, criarPeriodo);
         }
 
+        protected PersistirAulaDto ObterAula_Exclusao(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)
+        {
+            var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
+            return new PersistirAulaDto()
+            {
+                CodigoTurma = TURMA_CODIGO_3,
+                Quantidade = 1,
+                TipoAula = tipoAula,
+                DataAula = dataAula,
+                DisciplinaCompartilhadaId = componenteCurricularId,
+                CodigoUe = UE_CODIGO_1,
+                RecorrenciaAula = recorrenciaAula,
+                TipoCalendarioId = tipoCalendarioId,
+                CodigoComponenteCurricular = long.Parse(componenteCurricular.Codigo),
+                NomeComponenteCurricular = componenteCurricular.Descricao
+            };
+        }
         protected PersistirAulaDto ObterAula(TipoAula tipoAula, RecorrenciaAula recorrenciaAula, long componenteCurricularId, DateTime dataAula, long tipoCalendarioId = 1)
         {
             var componenteCurricular = ObterComponenteCurricular(componenteCurricularId);
@@ -188,6 +214,11 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, rf));
         }
 
+        protected async Task CriarAula_Exclusao(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            await InserirNaBase(ObterAula_Exclusao(componenteCurricularCodigo, dataAula, recorrencia, rf));
+        }
+
         protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
         {
             var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
@@ -195,13 +226,34 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(aula);
         }
+        private Aula ObterAula_Exclusao(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        {
+            return new Aula
+            {
+                UeId = UE_CODIGO_1,
+                DisciplinaId = componenteCurricularCodigo,
+                TurmaId = TURMA_CODIGO_3,
+                TipoCalendarioId = 1,
+                ProfessorRf = rf,
+                Quantidade = QUANTIDADE_3,
+                DataAula = dataAula,
+                RecorrenciaAula = recorrencia,
+                TipoAula = TipoAula.Normal,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Excluido = false,
+                Migrado = false,
+                AulaCJ = false
+            };
+        }
         private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
-                TurmaId = TURMA_CODIGO_1,
+                TurmaId = TURMA_CODIGO_2,
                 TipoCalendarioId = 1,
                 ProfessorRf = rf,
                 Quantidade = QUANTIDADE_3,

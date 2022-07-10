@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
             
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
+            await CriarAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
             
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
             

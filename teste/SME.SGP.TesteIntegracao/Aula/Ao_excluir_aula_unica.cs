@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -14,9 +16,11 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
     {
         private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+         private readonly Mock<IRepositorioAtividadeAvaliativa> repositorioAtividadeAvaliativa;
 
         public Ao_excluir_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+            repositorioAtividadeAvaliativa = new Mock<IRepositorioAtividadeAvaliativa>();
         }
 
         [Fact]
@@ -36,9 +40,10 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
         [Fact]
         public async Task Exclui_aula_unica()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
+            
+            await CriarDadosBasicosAula_Exclusao(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
 
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
 
             var useCase = ServiceProvider.GetService<IExcluirAulaUseCase>();
 
@@ -60,9 +65,10 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
         [Fact]
         public async Task Aula_possui_avaliacao()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
+            var repo = repositorioAtividadeAvaliativa.Setup(a => a.VerificarSeExisteAvaliacao(It.IsAny<DateTime>(), It.IsAny<string>(),It.IsAny<string>(),It.IsAny<string>(),It.IsAny<string>())).Returns(Task.FromResult(true));
+            await CriarDadosBasicosAula_Exclusao(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
 
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
+            await CriarAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.AulaUnica);
 
             await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
