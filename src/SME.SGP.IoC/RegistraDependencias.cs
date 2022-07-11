@@ -137,7 +137,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsultasAula, ConsultasAula>();
             services.TryAddScoped<IConsultasEventosAulasCalendario, ConsultasEventosAulasCalendario>();
             services.TryAddScoped<IConsultasGrade, ConsultasGrade>();
-            services.TryAddScoped<IConsultasFrequencia, ConsultasFrequencia>();
             services.TryAddScoped<IConsultasPlanoAula, ConsultasPlanoAula>();
             services.TryAddScoped<IConsultasObjetivoAprendizagemAula, ConsultasObjetivoAprendizagemAula>();
             services.TryAddScoped<IConsultasAtribuicaoEsporadica, ConsultasAtribuicaoEsporadica>();
