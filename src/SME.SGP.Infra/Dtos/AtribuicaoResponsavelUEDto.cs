@@ -10,10 +10,13 @@ namespace SME.SGP.Infra
         public string DreId { get; set; }
 
 
-        [Required(ErrorMessage = "O Supervisor deve ser informado")]
-        public string SupervisorId { get; set; }
+        [Required(ErrorMessage = "O Responsavel deve ser informado")]
+        public string ResponsavelId { get; set; }
 
-        public List<string> UESIds { get; set; }
+        public List<string> UesIds { get; set; }
+
+
+        [Required(ErrorMessage = "O Tipo da Atribuição deve ser informado")]
         public TipoResponsavelAtribuicao TipoResponsavelAtribuicao { get; set; }
     }
 }

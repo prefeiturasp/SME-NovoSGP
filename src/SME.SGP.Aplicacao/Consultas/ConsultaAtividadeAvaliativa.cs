@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
-            var podeEditarAvaliacao = usuarioLogado.EhProfessorCj() && atividade.EhCj || usuarioLogado.EhProfessor() && !atividade.EhCj;
+            var podeEditarAvaliacao = usuarioLogado.EhProfessorCj() && atividade.EhCj || usuarioLogado.EhProfessor() && !atividade.EhCj || usuarioLogado.EhGestorEscolar();
             
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);

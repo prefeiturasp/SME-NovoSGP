@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,11 +18,13 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
         private readonly IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio;
+        private readonly IRepositorioTipoRelatorio repositorioTipoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio) : base(contextoAplicacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio, IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
             this.obterDataCriacaoRelatorio = obterDataCriacaoRelatorio ?? throw new System.ArgumentNullException(nameof(obterDataCriacaoRelatorio));
+            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioTipoRelatorio));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -31,25 +34,27 @@ namespace SME.SGP.Aplicacao
                 filtroNotificacaoDto.UeId, (int)filtroNotificacaoDto.Status, filtroNotificacaoDto.TurmaId, filtroNotificacaoDto.UsuarioRf,
                 (int)filtroNotificacaoDto.Tipo, (int)filtroNotificacaoDto.Categoria, filtroNotificacaoDto.Titulo, filtroNotificacaoDto.Codigo, filtroNotificacaoDto.AnoLetivo, this.Paginacao));
 
-            var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>();
-            retornoPaginadoDto.TotalRegistros = retorno.TotalRegistros;
-            retornoPaginadoDto.TotalPaginas = retorno.TotalPaginas;
+            var retornoPaginadoDto = new PaginacaoResultadoDto<NotificacaoBasicaDto>
+            {
+                TotalRegistros = retorno.TotalRegistros,
+                TotalPaginas = retorno.TotalPaginas,
 
-            retornoPaginadoDto.Items = from r in retorno.Items
-                                       select new NotificacaoBasicaDto()
-                                       {
-                                           Id = r.Id,
-                                           Titulo = r.Titulo,
-                                           Data = r.CriadoEm,
-                                           DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
-                                           Status = r.Status,
-                                           Categoria = r.Categoria,
-                                           DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
-                                           Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                                           Codigo = r.Codigo,
-                                           PodeRemover = r.PodeRemover,
-                                           PodeMarcarComoLida = r.DeveMarcarComoLido
-                                       };
+                Items = from r in retorno.Items
+                        select new NotificacaoBasicaDto()
+                        {
+                            Id = r.Id,
+                            Titulo = r.Titulo,
+                            Data = r.CriadoEm,
+                            DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
+                            Status = r.Status,
+                            Categoria = r.Categoria,
+                            DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
+                            Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                            Codigo = r.Codigo,
+                            PodeRemover = r.PodeRemover,
+                            PodeMarcarComoLida = r.DeveMarcarComoLido
+                        }
+            };
 
             return retornoPaginadoDto;
         }
@@ -118,11 +123,17 @@ namespace SME.SGP.Aplicacao
         private async Task<NotificacaoDetalheDto> MapearEntidadeParaDetalheDto(Notificacao retorno)
         {
             string codigoRelatorio = string.Empty;
+            int tipoRelatorio = 0;
             bool relatorioExiste = true;
             if (NotificacaoTipo.Relatorio == retorno.Tipo)
                 codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
 
-            if (!string.IsNullOrEmpty(codigoRelatorio))
+            if (codigoRelatorio.Any())
+            {
+                tipoRelatorio = await repositorioTipoRelatorio.ObterTipoPorCodigo(codigoRelatorio);
+            }
+
+            if (!string.IsNullOrEmpty(codigoRelatorio) && (tipoRelatorio != (int)TipoRelatorio.Itinerancias))
                 relatorioExiste = await VerificarSeArquivoExiste(codigoRelatorio);
 
             return new NotificacaoDetalheDto()

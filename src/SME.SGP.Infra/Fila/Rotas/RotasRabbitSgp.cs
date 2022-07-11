@@ -193,6 +193,7 @@
         public const string RotaConsolidacaoDiariaDashBoardFrequencia = "sgp.consolidacao.diaria.frequencia.dashboard";
         public const string RotaConsolidacaoSemanalDashBoardFrequencia = "sgp.consolidacao.semanal.frequencia.dashboard";
         public const string RotaConsolidacaoMensalDashBoardFrequencia = "sgp.consolidacao.mensal.frequencia.dashboard";
+        public const string RotaConsolidacaoDashBoardFrequenciaPorUe = "sgp.consolidacao.frequencia.dashboard.ue";
 
         public const string VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes = "sgp.fechamento.turma.disciplina.processamento.varredura";
         public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
@@ -226,6 +227,8 @@
 
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoCarregar = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.carregar";
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";
+
+        public const string AtualizaUltimoLoginUsuario = "sgp.usuario.login.atualizar";
 
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorDre = "sgp.diario.bordo.pendencia.devolutiva.dre";
         public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe = "sgp.diario.bordo.pendencia.devolutiva.ue";

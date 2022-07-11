@@ -2,6 +2,7 @@
 {
     public class ConsolidacaoFrequenciaAlunoMensalDto
     {
+        public long Id { get; set; }
         public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public int Mes { get; set; }

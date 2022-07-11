@@ -56,11 +56,9 @@ namespace SME.SGP.Aplicacao
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
         {
             await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
-            
-            foreach(var frequenciaAluno in dicionario[ALTERAR])
-            {
+
+            foreach (var frequenciaAluno in dicionario[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);
-            }
         }
 
         private async Task CadastreFrequenciaPreDefinida(Dictionary<int, List<FrequenciaPreDefinida>> dicionario)
@@ -68,10 +66,9 @@ namespace SME.SGP.Aplicacao
             await repositorioFrequenciaPreDefinida.InserirVarios(dicionario[INSERIR]);
 
             foreach (var frequenciaPreDefinida in dicionario[ALTERAR])
-            {
-                await repositorioFrequenciaPreDefinida.Salvar(frequenciaPreDefinida);
-            }
+                await repositorioFrequenciaPreDefinida.Atualizar(frequenciaPreDefinida);
         }
+
 
         private async Task<Dictionary<int, List<RegistroFrequenciaAluno>>> ObtenhaDicionarioFrequenciaAlunoParaPersistir(InserirRegistrosFrequenciasAlunosCommand request)
         {
@@ -95,7 +92,8 @@ namespace SME.SGP.Aplicacao
                             frequenciaAluno.Valor = (int)presenca;
                             dicionario[ALTERAR].Add(frequenciaAluno);
                         }
-                    } else
+                    }
+                    else
                     {
                         var novafrequencia = new RegistroFrequenciaAluno()
                         {
@@ -128,12 +126,10 @@ namespace SME.SGP.Aplicacao
 
                 if (frequenciaDefinida != null)
                 {
-                    if (frequenciaDefinida.TipoFrequencia != tipoFrequencia)
-                    {
-                        frequenciaDefinida.TipoFrequencia = tipoFrequencia;
-                        dicionario[ALTERAR].Add(frequenciaDefinida);
-                    }
-                } else
+                    frequenciaDefinida.TipoFrequencia = tipoFrequencia;
+                    dicionario[ALTERAR].Add(frequenciaDefinida);
+                }
+                else
                 {
                     var frequenciaPreDefinida = new FrequenciaPreDefinida()
                     {

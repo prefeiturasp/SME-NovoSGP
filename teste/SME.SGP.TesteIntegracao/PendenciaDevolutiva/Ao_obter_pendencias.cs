@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 
             var useCase = ServiceProvider.GetService<IObterPendenciasUseCase>();
 
-            var resultados = await useCase.Executar("1", 3, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
+            var resultados = await useCase.Executar("1", (int)TipoPendenciaGrupo.DiarioClasse, "Devolutiva - CEMEI LEILA GALLACCI METZKER, PROFA (DRE  BT) - REGÊNCIA INFANTIL EMEI 4H");
 
             resultados.Items.ShouldNotBeNull();
             resultados.Items.Count().ShouldBe(1);
@@ -54,14 +54,14 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 Ano = "1",
                 CodigoTurma = "1",
                 ModalidadeCodigo = Modalidade.Fundamental,
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario()
             {
                 Id = 1,
-                AnoLetivo = 2022,
-                Nome = "Calendário Teste 2022",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Calendário Teste Ano Atual",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Periodo = Periodo.Anual,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -74,8 +74,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 3,
-                PeriodoInicio = new DateTime(2022, 06, 01),
-                PeriodoFim = new DateTime(2022, 08, 30),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 01),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 30),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
@@ -88,12 +88,13 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await InserirNaBase(new Usuario()
             {
                 Id = 1,
-                Login = "8888888",
-                CodigoRf = "8888888",
+                Login = "1111111",
+                CodigoRf = "1111111",
                 Nome = "Usuario CP",
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
-                AlteradoRF = "0"
+                AlteradoRF = "0",
+                PerfilAtual = Perfis.PERFIL_CP
             });
 
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
@@ -101,20 +102,30 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             var variaveis = new Dictionary<string, object>
             {
                 { "NomeUsuario", "Usuario CP" },
-                { "UsuarioLogado", "8888888" },
-                { "RF", "8888888" },
-                { "login", "8888888" },
+                { "UsuarioLogado", "1111111" },
+                { "RF", "1111111" },
+                { "login", "1111111" },
                 {
                     "Claims", new List<InternalClaim> {
-                        new InternalClaim { Value = "8888888", Type = "rf" },
-                        new InternalClaim { Value = "44E1E074-37D6-E911-ABD6-F81654FE895D", Type = "perfil" }
+                        new InternalClaim { Value = "1111111", Type = "rf" },
+                        new InternalClaim { Value = Perfis.PERFIL_CP.ToString(), Type = "perfil" }
                     }
                 }
             };
 
             contextoAplicacao.AdicionarVariaveis(variaveis);
-        }
 
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 240,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "CP",
+                CodigoPerfil = Perfis.PERFIL_CP,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
+                CriadoRF = "Sistema"
+            });
+        }
 
         private async Task CriarItensBasicosPendenciaDevolutiva()
         {
@@ -155,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 
             await InserirNaBase(pendenciaPerfil);
 
-            await InserirNaBase(new PendenciaUsuario()
+            await InserirNaBase(new Dominio.PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,
@@ -178,8 +189,35 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 ComponenteCurricularId = 512,
                 TurmaId = 1
             });
+            await InserirNaBase(new Aula()
+            {
+                Id = 1,
+                UeId = "1",
+                DisciplinaId = "512",
+                TurmaId = "1",
+                TipoCalendarioId = 1,
+                ProfessorRf = "Sistema",
+                Quantidade = 1,
+                DataAula = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                CriadoEm = DateTimeExtension.HorarioBrasilia().AddDays(-2),
+                CriadoPor = "Sistema",
+                CriadoRF = "Sistema",
+                Excluido = false,
+                Migrado = false,
+                Status = EntidadeStatus.Aprovado,
+                AulaCJ = false
+            });
+            await InserirNaBase(new Dominio.PendenciaAula()
+            {
+                Id=1,
+                AulaId = 1,
+                PendenciaId = 1,
+                Motivo = "Motivo"
+            });
 
-            await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", "'2022-06-07'", "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
+            var dataPendencia = $"'{new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 07).ToString("yyyy-MM-dd")}'";
+            await InserirNaBase("pendencia_registro_individual", "default", "''", "'0'", dataPendencia, "'Sistema'", "'0'", "'2022-06-07'", "1", "1");
         }
     }
 }

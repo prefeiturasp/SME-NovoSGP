@@ -23,11 +23,11 @@ namespace SME.SGP.Dados.Repositorios
                                 p.periodo_inicio as inicio, 
                                 p.periodo_fim as fim,
                                 apb.aulas_previstas as Previstas,
-                                cc.permite_registro_frequencia as LancaFrequencia,
+                                case when ap.disciplina_id in ('1060','1061') then false else cc.permite_registro_frequencia end as LancaFrequencia,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = false) as CriadasTitular,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.aula_cj = true) as CriadasCJ,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 1 and cc.permite_registro_frequencia and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Cumpridas,
-                                SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.data_aula <= now() and not cc.permite_registro_frequencia) as CumpridasSemFrequencia,
+                                SUM(a.quantidade) filter (where a.tipo_aula = 1 and a.data_aula <= now()) as CumpridasSemFrequencia,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 2 and cc.permite_registro_frequencia and exists (select 1 from registro_frequencia rf where rf.aula_id = a.id)) as Reposicoes,
                                 SUM(a.quantidade) filter (where a.tipo_aula = 2 and a.data_aula <= now() and not cc.permite_registro_frequencia) as ReposicoesSemFrequencia
                            from periodo_escolar p
@@ -43,7 +43,7 @@ namespace SME.SGP.Dados.Repositorios
 
         const string GroupOrderBy = @" group by p.bimestre, p.periodo_inicio, p.periodo_fim, apb.aulas_previstas, apb.Id,
                          	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
-                               ap.alterado_rf, ap.criado_rf, cc.permite_registro_frequencia; ";
+                               ap.alterado_rf, ap.criado_rf, cc.permite_registro_frequencia, ap.disciplina_id; ";
 
         public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao) : base(conexao)
         {

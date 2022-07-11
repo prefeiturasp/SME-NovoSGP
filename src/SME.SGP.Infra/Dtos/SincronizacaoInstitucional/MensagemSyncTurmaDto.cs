@@ -2,8 +2,10 @@
 {
     public class MensagemSyncTurmaDto
     {
-        public string UeId;
-        public long CodigoTurma;
+        public string UeId { get; set; }
+        public long CodigoTurma { get; set; }
+
+        public MensagemSyncTurmaDto() { }
 
         public MensagemSyncTurmaDto(string ueId, long codigoTurma)
         {

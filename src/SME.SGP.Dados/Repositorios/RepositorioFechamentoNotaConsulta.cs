@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and @dataMatricula <= pe.periodo_fim";
 
             if (dataSituacao.HasValue)
-                query += " and @dataSituacao >= pe.periodo_fim";
+                query += " and @dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio";
 
             query += " and ftd.excluido != true";
 
@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId,
-                                fn.conceito_id as ConceitoAnterior, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
+                                fn.conceito_id as ConceitoAnteriorId, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
                                 cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
                             inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
                             inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 

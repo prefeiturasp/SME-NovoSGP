@@ -77,9 +77,9 @@ namespace SME.SGP.Aplicacao
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
 
-            retorno.EventoData = ultimoPeriodoEscolar.PeriodoFim;
+            retorno.EventoData = ultimoPeriodoEscolar.PeriodoInicio;
 
-            var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
@@ -261,7 +261,10 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmaEComponente(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString());
 
-            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 100;
+            var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma, 
+                filtros.DisciplinaCodigo.ToString(), periodosEscolares.Select(c => c.Id).ToArray());
+
+            var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 0;
 
             if (frequenciaAluno != null && turma.AnoLetivo.Equals(2020))
                 percentualFrequencia = frequenciaAluno.PercentualFrequenciaFinal;
@@ -270,7 +273,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = aluno.NomeAluno,
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
-                Frequencia = percentualFrequencia.ToString(),
+                Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequencia.ToString() : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
                 NumeroChamada = aluno.NumeroAlunoChamada,
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
