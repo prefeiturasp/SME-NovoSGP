@@ -23,7 +23,8 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var notaFechamento in request.NotasAprovacao)
             {
-                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id), cancellationToken);
+                if (notaFechamento.Id > 0)
+                    await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoPorNotaCommand(notaFechamento.Id), cancellationToken);
 
                 await repositorioWfAprovacaoNotaFechamento.SalvarAsync(new WfAprovacaoNotaFechamento()
                 {
