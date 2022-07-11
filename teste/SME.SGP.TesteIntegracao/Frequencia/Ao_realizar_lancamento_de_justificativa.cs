@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retorno.Id > 0).ShouldBeTrue();
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_somente_com_motivo_Sem_Aula()
         {
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -118,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_encontrada_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Crianca_nao_ativa()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_ativo()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -170,7 +170,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Aluno_nao_encontrado_anotacao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Criar_justificativa_Motivo_ausencia_nao_encontrado()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
@@ -205,20 +205,20 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
 
-        //[Fact]
+        [Fact]
         public async Task Deve_Excluir_justificativa()
         {
            (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Excluir_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
             await Should.ThrowAsync<NegocioException>(() => ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(8));
         }
 
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Excluir_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             var criarJustificativa = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data();
@@ -287,7 +287,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Alterar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Dato()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
@@ -300,7 +300,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await Should.ThrowAsync<NegocioException>(() => ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
         }
 
-        //[Fact]
+        [Fact]
         public async Task Nao_Deve_Alterar_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
