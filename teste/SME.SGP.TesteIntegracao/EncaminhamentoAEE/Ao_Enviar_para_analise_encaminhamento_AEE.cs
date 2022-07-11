@@ -76,12 +76,7 @@ namespace SME.SGP.TesteIntegracao
 
             var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
 
-            async Task doExecutar()
-            {   
-                await useCase.Executar(ID_ENCAMINHAMENTO_AEE_NAO_EXISTENTE);
-            }
-
-            await Should.ThrowAsync<NegocioException>(() => doExecutar(), "O encaminhamento informado não foi encontrado");
+            await useCase.Executar(ID_ENCAMINHAMENTO_AEE_NAO_EXISTENTE).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]

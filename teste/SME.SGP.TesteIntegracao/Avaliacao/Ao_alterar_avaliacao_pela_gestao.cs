@@ -93,9 +93,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         {
             var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa, avaliacaoId);
 
-            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
-
-            await Should.NotThrowAsync(() => doExecutar());
+            await comando.Validar(filtroAtividadeAvaliativa).ShouldNotThrowAsync();
         }
 
         private async Task ExecutarTesteParaNaoGestor(string perfil)
@@ -111,8 +109,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
             TipoAvaliacaoCodigo.AvaliacaoBimestral);
             atividadeAvaliativa.DisciplinaContidaRegenciaId = new string[] { COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString() };
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(atividadeAvaliativa));
-            excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            await comando.Inserir(atividadeAvaliativa).ShouldThrowAsync<NegocioException>();
         }
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto(string perfil)

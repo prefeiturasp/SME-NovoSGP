@@ -610,7 +610,7 @@ namespace SME.SGP.Aplicacao
             {
                 Id = fechamentoNota.Id,
                 NotaAnterior = fechamentoNota.Nota,
-                Nota = nota == null ? fechamentoNota.Nota : nota,
+                Nota = nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId,
                 ConceitoId = fechamentoNota.ConceitoId,
                 CodigoAluno = alunoCodigo,
