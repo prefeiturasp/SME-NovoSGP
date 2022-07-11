@@ -147,7 +147,9 @@ namespace SME.SGP.Dominio
                 entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
             }
 
-            SalvarNoBanco(entidadesSalvar);
+            var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            SalvarNoBanco(entidadesSalvar, criadoPor);
 
             var alunosId = alunos
                 .Select(a => a.CodigoAluno)
@@ -279,17 +281,19 @@ namespace SME.SGP.Dominio
             return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
         }
 
-        private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar)
+        private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
         {
             unitOfWork.IniciarTransacao();
 
-            foreach (var entidade in EntidadesSalvar)
+            var registroComIdZero = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
+            var registroSemIdZero = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
+
+            foreach (var entidade in registroSemIdZero)
             {
-                if (entidade.Id >= 0 && entidade.ObterNota() == null)
-                    repositorioNotasConceitos.Remover(entidade);
-                else if (entidade.ObterNota() != null)
-                    repositorioNotasConceitos.Salvar(entidade);
+                repositorioNotasConceitos.Remover(entidade);
             }
+            if (registroComIdZero.Any())
+                repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero, criadoPor);
 
             unitOfWork.PersistirTransacao();
         }
@@ -322,7 +326,7 @@ namespace SME.SGP.Dominio
 
                 var atribuicaoEol = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery(Convert.ToInt64(disciplinaId), atividadesAvaliativas.Select(x => x.TurmaId), usuarioLogado));
 
-                var usuarioPossuiAtribuicaoNaTurmaNaData =  atividadesAvaliativas.Any(a => atribuicaoEol.Any(b => b.CodigoTurma.Equals(a.TurmaId) && b.DataAtribuicaoAula <= a.DataAvaliacao && b.DataDisponibilizacaoAulas >= a.DataAvaliacao));
+                var usuarioPossuiAtribuicaoNaTurmaNaData = atividadesAvaliativas.Any(a => atribuicaoEol.Any(b => b.CodigoTurma.Equals(a.TurmaId) && b.DataAtribuicaoAula <= a.DataAvaliacao && b.DataDisponibilizacaoAulas >= a.DataAvaliacao));
 
                 if ((atividadesAvaliativas.Select(s => s.EhCj).Any() && !atividadesAvaliativas.Select(p => p.ProfessorRf.Equals(professorRf)).Any()) ||
                     (!atividadesAvaliativas.Select(s => s.EhCj).Any() && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))

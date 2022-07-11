@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -12,18 +12,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandler : IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery, IEnumerable<UsuarioPossuiAtribuicaoEolDto>>
     {
-        private readonly IServicoEol servicoEOL;
-        private readonly HttpClient httpClient;
-        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandler(HttpClient httpClient, IServicoEol servicoEOL)
+        private readonly IHttpClientFactory httpClientFactory;
+        public ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient;
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<IEnumerable<UsuarioPossuiAtribuicaoEolDto>> Handle(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<UsuarioPossuiAtribuicaoEolDto>();
-            var resposta = await httpClient.PostAsync($"professores/{request.UsuarioLogado.CodigoRf}/disciplina/{request.DisciplinaId.ToString()}/turmas", 
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var resposta = await httpClient.PostAsync($"professores/{request.UsuarioLogado.CodigoRf}/disciplina/{request.DisciplinaId.ToString()}/turmas",
                 new StringContent(JsonConvert.SerializeObject(request.TurmasIds), Encoding.UTF8, "application/json-patch+json"));
 
             if (resposta.IsSuccessStatusCode)
