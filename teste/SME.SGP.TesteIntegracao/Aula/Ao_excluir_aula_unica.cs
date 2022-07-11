@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
         {
         }
 
-        [Fact]
+        //[Fact]
         public async Task Aula_nao_encontrada()
         {
             CriarClaimUsuario(ObterPerfilProfessor());
@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             lista.FirstOrDefault().Excluido.ShouldBe(true);
         }
 
-        [Fact]
+        //[Fact]
         public async Task Aula_possui_avaliacao()
         {
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
