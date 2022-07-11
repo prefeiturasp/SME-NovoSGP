@@ -34,7 +34,8 @@ namespace SME.SGP.Aplicacao
                             CriadoEm = DateTime.Today,
                             CriadoPor = "Sistema",
                             CriadoRF = "0",
-                            Valor = (int)TipoFrequencia.C
+                            Valor = (int)TipoFrequencia.C,
+                            AulaId = dadosAula.AulaId
                         };
                         frequenciasPersistir.Add(registro);
                     }
