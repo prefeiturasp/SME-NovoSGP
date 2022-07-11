@@ -68,7 +68,6 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
-
             await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
 
@@ -104,7 +103,6 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
-
             await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
