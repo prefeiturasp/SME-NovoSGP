@@ -13,9 +13,7 @@ namespace SME.SGP.Aplicacao
         public CriarCacheDeAtividadeAvaliativaPorTurmaCommand(string codigoTurma)
         {
             CodigoTurma = codigoTurma;
-            //NomeChave = nomeChave;
         }
         public string CodigoTurma { get; set; }
-        //public string NomeChave { get; set; }
     }
 }
