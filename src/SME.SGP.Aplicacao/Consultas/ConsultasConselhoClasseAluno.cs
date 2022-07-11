@@ -313,8 +313,8 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {
-                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);                        
-
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);     
+                        
                         var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
@@ -331,7 +331,7 @@ namespace SME.SGP.Aplicacao
                                 DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(),
                                 CodigoAluno = alunoCodigo,
                                 TurmaId = turma.CodigoTurma,
-                            };
+                            };                            
 
                             frequenciaAluno.TotalAulas = frequenciasAlunoParaTratar.Sum(a => a.TotalAulas);
                             frequenciaAluno.TotalAusencias = frequenciasAlunoParaTratar.Sum(a => a.TotalAusencias);
@@ -759,7 +759,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = percentualFrequencia < 0 || ((frequenciaAluno?.TotalAulas ?? 0) == 0 && (frequenciaAluno?.TotalAusencias ?? 0) == 0) ? null : percentualFrequencia.ToString(),
                 NotasFechamentos = ObterNotasComponente(componenteCurricularCodigo, periodoEscolar, notasFechamentoAluno),
                 NotaPosConselho = await ObterNotaPosConselho(componenteCurricularCodigo, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno, componenteLancaNota, visualizaNota),
-                Aulas = ExibirTotalAulas(totalAulas, componenteCurricularCodigo, codigoAluno)
+                Aulas = frequenciaAluno?.TotalAulas.ToString() ?? "0",                
             };
 
             if (!componentePermiteFrequencia)
