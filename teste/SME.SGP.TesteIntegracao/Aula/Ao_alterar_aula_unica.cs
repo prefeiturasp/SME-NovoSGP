@@ -45,7 +45,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             await CriarPeriodoEscolarEAbertura();
 
-            await Should.ThrowAsync<NegocioException>(() => useCase.Executar(dto));
+            await useCase.Executar(dto).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             dto.Id = 1;
 
-            await Should.ThrowAsync<NegocioException>(() => useCase.Executar(dto));
+            await useCase.Executar(dto).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
