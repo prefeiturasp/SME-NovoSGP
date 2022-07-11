@@ -100,7 +100,8 @@ namespace SME.SGP.Aplicacao
                             CodigoAluno = frequencia.CodigoAluno,
                             NumeroAula = aulaRegistrada.NumeroAula,
                             Valor = (int)presenca,
-                            RegistroFrequenciaId = request.RegistroFrequenciaId
+                            RegistroFrequenciaId = request.RegistroFrequenciaId,
+                            AulaId = request.AulaId
                         };
 
                         dicionario[INSERIR].Add(novafrequencia);
