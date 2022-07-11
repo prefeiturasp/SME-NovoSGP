@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
         }
         [Fact]
         public async Task Deve_Criar_justificativa_somente_com_motivo()
@@ -97,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 EhInfantil = false
             };
 
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -115,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 EhInfantil = false
             };
 
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -132,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_77777,
                 EhInfantil = true
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -149,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666,
                 EhInfantil = true
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -166,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666,
                 EhInfantil = false
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
 
@@ -184,7 +185,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_77777,
                 EhInfantil = false
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -201,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_99999,
                 EhInfantil = false
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
 
@@ -214,7 +215,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Nao_Deve_Excluir_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
-            await Should.ThrowAsync<NegocioException>(() => ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(8));
+            await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(8).ShouldThrowAsync<NegocioException>();
         }
 
 
@@ -223,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             var criarJustificativa = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data();
 
-            await Should.ThrowAsync<NegocioException>(() => ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(criarJustificativa));
+            await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(criarJustificativa).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -297,7 +298,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 Anotacao = DESCRICAO_FREQUENCIA_ALUNO_2,
                 Id = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data(),
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
@@ -309,7 +310,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
                 Id = 9,
             };
-            await Should.ThrowAsync<NegocioException>(() => ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd));
+            await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
     }
 }

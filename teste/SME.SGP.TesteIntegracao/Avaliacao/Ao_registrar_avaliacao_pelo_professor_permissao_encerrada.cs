@@ -47,9 +47,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         {
             var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa);
 
-            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
-
-            await Should.NotThrowAsync(() => doExecutar());
+            await comando.Validar(filtroAtividadeAvaliativa).ShouldNotThrowAsync();
         }
 
         private CriacaoDeDadosDto ObterCriacaoDeDadosDto()

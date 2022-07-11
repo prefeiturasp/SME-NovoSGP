@@ -209,9 +209,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
         {
             var comando = ServiceProvider.GetService<IComandosAtividadeAvaliativa>();
 
-            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
-
-            await Should.NotThrowAsync(() => doExecutar());
+            await comando.Validar(filtroAtividadeAvaliativa).ShouldNotThrowAsync();
 
             return comando;
         }
