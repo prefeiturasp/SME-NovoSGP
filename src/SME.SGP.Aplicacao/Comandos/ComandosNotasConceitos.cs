@@ -68,8 +68,8 @@ namespace SME.SGP.Aplicacao
                 .Select(x => ObterEntidadeInclusao(x))
                 .ToList();
 
-            await servicosDeNotasConceitos
-                .Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
+            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
@@ -104,6 +104,7 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
 }
