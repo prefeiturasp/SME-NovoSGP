@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_transferir_pendencia_para_novo_responsavel : TesteBase
     {
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var lista = ObterTodos<PendenciaUsuario>();
+            var lista = ObterTodos<Dominio.PendenciaUsuario>();
 
             lista.ShouldNotBeEmpty();
             lista.FirstOrDefault().UsuarioId.ShouldBe(2);
@@ -53,10 +53,10 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Titulo = "Pendência plano AEE",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PlanoAEE()
+            await InserirNaBase(new Dominio.PlanoAEE()
             {
                 Id = 1,
                 AlunoCodigo = "11223344",
@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 Situacao = SituacaoPlanoAEE.ParecerCP,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
             await InserirNaBase(new Usuario
@@ -86,16 +86,16 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
                 PlanoAEEId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
 
-            await InserirNaBase(new PendenciaUsuario
+            await InserirNaBase(new Dominio.PendenciaUsuario
             {
                 PendenciaId = 1,
                 UsuarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new System.DateTime(2022, 06, 08)
+                CriadoEm = new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 08)
             });
         }
     }

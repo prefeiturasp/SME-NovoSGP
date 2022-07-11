@@ -27,7 +27,8 @@ namespace SME.SGP.Aplicacao
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
                 DreCodigo = filtroAulasEventosCalendarioDto.DreCodigo,
-                DataConsulta = dataConsulta
+                DataConsulta = dataConsulta,
+                TipoCalendarioId = tipoCalendarioId
             });
 
             var aulasDoDia = await mediator.Send(new ObterAulasCalendarioProfessorPorMesDiaQuery()

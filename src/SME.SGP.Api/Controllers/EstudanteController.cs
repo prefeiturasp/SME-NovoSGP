@@ -50,9 +50,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(AlunoReduzidoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase)
+        public async Task<IActionResult> ObterAlunosPorCodigo(string codigoAluno, int anoLetivo, string codigoTurma, [FromServices] IObterAlunoPorCodigoEolEAnoLetivoUseCase useCase)
         {
-            return Ok(await useCase.Executar(codigoAluno, anoLetivo));
+            return Ok(await useCase.Executar(codigoAluno, anoLetivo, codigoTurma));
         }
 
         [HttpGet("{codigoAluno}/foto")]

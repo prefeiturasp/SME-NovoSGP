@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioTurmaConsulta.ObterPorCodigo(request.TurmaCodigo);
+            return await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
         }
     }
 }

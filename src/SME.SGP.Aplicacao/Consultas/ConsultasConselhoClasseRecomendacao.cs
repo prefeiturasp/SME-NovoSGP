@@ -158,15 +158,16 @@ namespace SME.SGP.Aplicacao
             var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId));
 
             var alunos = await mediator
-                            .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+                            .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
 
-            var inativo = alunos.First(a => a.CodigoAluno == alunoCodigo).Inativo;
-            if (bimestre.HasValue)
+            var alunoFiltrado = alunos.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
+            
+            if (bimestre.HasValue && alunoFiltrado != null)
             {
-                await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, inativo));
+                await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(alunoCodigo, turma.Id, bimestre.Value, alunoFiltrado.Inativo));
             }
 
             var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, bimestre, turma);

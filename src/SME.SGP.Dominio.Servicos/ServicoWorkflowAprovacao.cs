@@ -531,7 +531,7 @@ namespace SME.SGP.Dominio.Servicos
                         Titulo = $"Alteração em {notaConceitoTitulo} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
                         Tipo = NotificacaoTipo.Notas,
                         Codigo = codigoDaNotificacao,
-                        Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
+                        Mensagem = await MontaMensagemAprovacaoNotaFechamento(turma, bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa)
                     });
 
                 }
@@ -545,13 +545,13 @@ namespace SME.SGP.Dominio.Servicos
                 await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao.WfAprovacao));
         }
 
-        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, bool aprovado, string justificativa)
+        private async Task<string> MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, bool aprovado, string justificativa)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
             var bimestreFormatado = !bimestre.HasValue ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. {motivo}</p>");
+            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo} do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.ModalidadeCodigo.ObterNomeCurto()}-{turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
@@ -563,14 +563,23 @@ namespace SME.SGP.Dominio.Servicos
             mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+            var codigoAlunos = notasEmAprovacao.Select(x => long.Parse(x.CodigoAluno)).ToArray();
+            var alunosTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, true))).OrderBy(c => c.NomeAluno);
 
             foreach (var notaAprovacao in notasEmAprovacao)
             {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo);
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == (notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo));
+
                 string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
                 string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
                 DateTime? dataUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoEm == null ? notaAprovacao.WfAprovacao.CriadoEm : notaAprovacao.WfAprovacao.AlteradoEm;
+                var horaNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
+                var dataNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy");
+                if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
+                {
+                    horaNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("HH:mm:ss");
+                    dataNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("dd/MM/yyyy");
+                }
 
                 mensagem.AppendLine("<tr>");
                 
@@ -579,19 +588,19 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
                 }
                 else
                 {
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
-                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao}({horaNotificacao})  </td>");
                 }
 
                 mensagem.AppendLine("</tr>");

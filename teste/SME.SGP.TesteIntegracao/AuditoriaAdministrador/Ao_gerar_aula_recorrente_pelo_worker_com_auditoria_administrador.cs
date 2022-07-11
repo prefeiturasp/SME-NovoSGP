@@ -14,8 +14,10 @@ using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MediatR;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador : TesteBase
     {
@@ -23,6 +25,13 @@ namespace SME.SGP.TesteIntegracao
         public Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador(CollectionFixture testFixture) : base(testFixture)
         {
             _buider = new ItensBasicosBuilder(this);
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -46,7 +55,7 @@ namespace SME.SGP.TesteIntegracao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new DateTime(2022, 02, 10),
+                                                            new (DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                                                             5,
                                                             "1",
                                                             1106,

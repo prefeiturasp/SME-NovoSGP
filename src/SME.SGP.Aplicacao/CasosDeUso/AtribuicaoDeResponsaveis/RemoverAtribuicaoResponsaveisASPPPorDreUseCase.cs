@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
                 DreId = dto.DreId,
                 SupervisorId = dto.SupervisorId,
                 EscolaId = dto.EscolaId,
-                Id = dto.Id,
+                Id = dto.AtribuicaoSupervisorId,
                 Excluido = dto.AtribuicaoExcluida,
                 AlteradoEm = dto.AlteradoEm,
                 AlteradoPor = dto.AlteradoPor,

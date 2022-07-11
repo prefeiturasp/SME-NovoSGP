@@ -1,14 +1,18 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_gerar_aula_com_auditoria_administrador : TesteBase
     {
@@ -16,6 +20,13 @@ namespace SME.SGP.TesteIntegracao
         public Ao_gerar_aula_com_auditoria_administrador(CollectionFixture testFixture) : base(testFixture)
         {
             _buider = new ItensBasicosBuilder(this);
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -30,7 +41,7 @@ namespace SME.SGP.TesteIntegracao
             {
                 CodigoTurma = "1",
                 CodigoComponenteCurricular = 1106,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new (DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 Quantidade = 1,
                 CodigoUe = "1",
                 TipoAula = TipoAula.Normal,

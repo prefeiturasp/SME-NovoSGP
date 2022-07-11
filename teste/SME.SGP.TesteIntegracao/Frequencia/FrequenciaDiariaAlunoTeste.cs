@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Frequencia
+namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
 {
     public class FrequenciaDiariaAlunoTeste : TesteBase
     {
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
             });
 
             await InserirNaBase(new TipoCalendario
@@ -117,10 +117,10 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             {
                 Id = 1,
                 TipoCalendarioId = 1,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 Bimestre = 2,
-                CriadoEm = new DateTime(2021, 01, 15, 23, 48, 43),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
                 AlteradoEm = null,
                 AlteradoPor = "",
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(2022, 04, 26),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
                 Quantidade = 1,
                 
             });

@@ -81,12 +81,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento")]
+        [HttpGet("turmas/{codigoTurma}/disciplinas/planejamento/regencia/{temRegencia}")]
         [ProducesResponseType(typeof(IEnumerable<DisciplinaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PA_I, Permissao.PA_A, Permissao.PA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(string codigoTurma, long codigoDisciplina, bool turmaPrograma, bool regencia, [FromServices] IConsultasDisciplina consultasDisciplina)
+        public async Task<IActionResult> ObterDisciplinasParaPlanejamento(string codigoTurma, long codigoDisciplina, bool turmaPrograma, bool temRegencia, [FromServices] IConsultasDisciplina consultasDisciplina)
         {
-            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(codigoDisciplina, codigoTurma, turmaPrograma, regencia);
+            var retorno = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(codigoDisciplina, codigoTurma, turmaPrograma, temRegencia);
 
             return Ok(retorno);
         }
