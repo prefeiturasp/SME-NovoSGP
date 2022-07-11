@@ -10,12 +10,12 @@ namespace SME.SGP.Aplicacao
 {
     public class CriarCacheDeAtividadeAvaliativaPorTurmaCommand : IRequest<IEnumerable<NotaConceito>>
     {
-        public CriarCacheDeAtividadeAvaliativaPorTurmaCommand(string codigoTurma, string nomeChave)
+        public CriarCacheDeAtividadeAvaliativaPorTurmaCommand(string codigoTurma)
         {
             CodigoTurma = codigoTurma;
-            NomeChave = nomeChave;
+            //NomeChave = nomeChave;
         }
         public string CodigoTurma { get; set; }
-        public string NomeChave { get; set; }
+        //public string NomeChave { get; set; }
     }
 }

@@ -43,8 +43,6 @@ namespace SME.SGP.Aplicacao
             var notasBanco = repositorioNotasConceitos
                 .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
 
-            var notaBanco = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(avaliacoes.ToArray(), alunos.ToArray(), notaConceitoLista.DisciplinaId, notaConceitoLista.TurmaId));
-
             var professorRf = servicoUsuario.ObterRf();
 
             if (notasBanco == null || !notasBanco.Any())
@@ -105,6 +103,8 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
+
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
 }
