@@ -46,7 +46,6 @@ namespace SME.SGP.Aplicacao
                     relatorioEscolaAqui = false;
                     break;
             }
-
             unitOfWork.PersistirTransacao();
 
             if (relatorioEscolaAqui)

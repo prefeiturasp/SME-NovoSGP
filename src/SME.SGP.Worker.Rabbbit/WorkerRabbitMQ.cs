@@ -58,8 +58,6 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.RotaPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Gerar as pendências por ausência de registro individual", typeof(IGerarPendenciaAusenciaRegistroIndividualUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaAtualizarPendenciaAusenciaRegistroIndividual, new ComandoRabbit("Atualizar pendência por ausência de registro individual", typeof(IAtualizarPendenciaRegistroIndividualUseCase)));
             Comandos.Add(RotasRabbitSgp.NotificarCompensacaoAusencia, new ComandoRabbit("Notificar Compensação Ausência", typeof(INotificarCompensacaoAusenciaUseCase)));
-            Comandos.Add(RotasRabbitSgp.ConsolidarTurmaSync, new ComandoRabbit("Inicia processo de Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
-            Comandos.Add(RotasRabbitSgp.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
             Comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, new ComandoRabbit("Consolidar Devolutivas Turmas da Modalidade Infantil", typeof(IConsolidarDevolutivasPorTurmaInfantilUseCase)));
             Comandos.Add(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new ComandoRabbit("Consolidar Devolutivas Turmas ", typeof(IConsolidarDevolutivasPorTurmaUseCase)));
             Comandos.Add(RotasRabbitSgp.ConsolidarDiariosBordoCarregar, new ComandoRabbit("Carregar UEs para consolidação de Diarios de Bordo", typeof(IConsolidarDiariosBordoCarregarUseCase)));
@@ -95,6 +93,14 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoCarregar, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
             Comandos.Add(RotasRabbitSgp.AjusteImagesAcompanhamentoAprendizagemAlunoSync, new ComandoRabbit("Efetua a atualização da rota das imagens do acompanhamento aluno", typeof(ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase)));
             Comandos.Add(RotasRabbitSgp.AtualizaUltimoLoginUsuario, new ComandoRabbit("Efetua a atualização da data de ultimo login do usuario", typeof(IAtualizarUltimoLoginUsuarioUseCase)));
+            Comandos.Add(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorDre, new ComandoRabbit("Verificar se existe Pendências de Devolutivas por DRE", typeof(IReprocessarDiarioBordoPendenciaDevolutivaPorDreUseCase)));
+            Comandos.Add(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe, new ComandoRabbit("Verificar se existe Pendências de Devolutivas por UE", typeof(IReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase)));
+            Comandos.Add(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma, new ComandoRabbit("Verificar se existe Pendências de Devolutivas por Turma", typeof(IReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente, new ComandoRabbit("Verificar se existe Pendências de Devolutivas por Componente", typeof(IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase)));
+            Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveis, new ComandoRabbit("Remover Atribuição de Responsaveis por DRE", typeof(IRemoverAtribuicaoResponsaveisUseCase)));
+            Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - Supervisor por DRE", typeof(IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase)));
+            Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - PAAI por DRE", typeof(IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase)));
+            Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IRemoverAtribuicaoResponsaveisASPPPorDreUseCase)));
         }
     }
 }

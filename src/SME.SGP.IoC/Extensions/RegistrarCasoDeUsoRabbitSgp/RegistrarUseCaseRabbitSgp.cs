@@ -30,8 +30,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGerarPendenciaAusenciaRegistroIndividualUseCase, GerarPendenciaAusenciaRegistroIndividualUseCase>();
             services.TryAddScoped<IAtualizarPendenciaRegistroIndividualUseCase, AtualizarPendenciaRegistroIndividualUseCase>();
             services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
-            services.TryAddScoped<IExecutarConsolidacaoTurmaGeralUseCase, ExecutarConsolidacaoTurmaGeralUseCase>();
-            services.TryAddScoped<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
@@ -66,6 +64,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, CarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, SyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<IAtualizarUltimoLoginUsuarioUseCase, AtualizarUltimoLoginUsuarioUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorDreUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorDreUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorUeUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorTurmaUseCase>();
+            services.TryAddScoped<IReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase, ReprocessarDiarioBordoPendenciaDevolutivaPorComponenteUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisUseCase, RemoverAtribuicaoResponsaveisUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase, RemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
+            services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
         }
     }
 }

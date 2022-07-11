@@ -1,45 +1,43 @@
-﻿using System;
-using System.Data;
-using System.Text;
-using MediatR;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using System;
+using System.Data;
+using System.Text;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable
+    public class CollectionFixture : IDisposable 
     {
-        private readonly IServiceCollection _services;
-        public readonly InMemoryDatabase Database;
-        public readonly ServiceProvider ServiceProvider;
-        
+        public IServiceCollection Services { get; }
+        public InMemoryDatabase Database { get; }
+        public ServiceProvider ServiceProvider { get; set; }
+
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-            _services = new ServiceCollection();
+            Services = new ServiceCollection();
 
             Database = new InMemoryDatabase();
-            _services.AddScoped<IDbConnection>(x=> Database.Conexao);
+            Services.AddScoped<IDbConnection>(x => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
-            _services.AddSingleton<IConfiguration>(config);
-            _services.AddMemoryCache();
 
-            new RegistradorDependencias().Registrar(_services, null);
+            Services.AddSingleton<IConfiguration>(config);
+            Services.AddMemoryCache();
 
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
+            new RegistradorDependencias().Registrar(Services, null);
+        }
 
-            ServiceProvider = _services.BuildServiceProvider();
+        public void BuildServiceProvider()
+        {
+            ServiceProvider = Services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
+
         public void Dispose()
         {
             Database.Dispose();

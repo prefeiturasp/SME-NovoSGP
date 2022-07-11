@@ -69,6 +69,10 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("       , ea.id ");
                 sql.AppendLine("       , pa.situacao ");
                 sql.AppendLine("       , pa.criado_em");
+                sql.AppendLine("       , usu_responsavel.rf_codigo");
+                sql.AppendLine("       , usu_responsavel.nome");
+                sql.AppendLine("       , usu_paai_responsavel.rf_codigo");
+                sql.AppendLine("       , usu_paai_responsavel.nome");
                 sql.AppendLine("        order by pa.aluno_nome ");
             }
 
@@ -99,6 +103,10 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", pa.criado_em as CriadoEm ");
                 sql.AppendLine(", max(pav.numero) as Versao ");
                 sql.AppendLine(", max(pav.criado_em) as DataVersao ");
+                sql.AppendLine(", usu_responsavel.rf_codigo RfReponsavel ");
+                sql.AppendLine(", usu_responsavel.nome NomeReponsavel ");
+                sql.AppendLine(", usu_paai_responsavel.rf_codigo RfPaaiReponsavel ");
+                sql.AppendLine(", usu_paai_responsavel.nome NomePaaiReponsavel ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
@@ -106,6 +114,8 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" inner join turma t on t.id = pa.turma_id");
             sql.AppendLine(" inner join ue on t.ue_id = ue.id");
             sql.AppendLine(" inner join plano_aee_versao pav on pa.id = pav.plano_aee_id");
+            sql.AppendLine(" left join usuario usu_responsavel on usu_responsavel.id = pa.responsavel_id");
+            sql.AppendLine(" left join usuario usu_paai_responsavel on usu_paai_responsavel.id = pa.responsavel_paai_id");
         }
 
         private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao)

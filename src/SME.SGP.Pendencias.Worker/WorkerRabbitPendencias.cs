@@ -32,6 +32,7 @@ namespace SME.SGP.Pendencias.Worker
             Comandos.Add(RotasRabbitSgpPendencias.RotaRemoverAtribuicaoPendenciaUsuarios, new ComandoRabbit("Remover a atribuição de pendência aos usuários", typeof(IRemoverAtribuicaoPendenciasUsuariosUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaRemoverAtribuicaoPendenciaUsuariosUe, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE", typeof(IRemoverAtribuicaoPendenciasUsuariosUeUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaRemoverAtribuicaoPendenciaUsuariosUeFuncionario, new ComandoRabbit("Remover a atribuição de pendência aos usuários por UE e por Funcionário", typeof(IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDevolutiva, new ComandoRabbit("Executar exclusão de pendências de devolutivas", typeof(IExecutarExclusaoPendenciasDevolutivaUseCase)));
         }
     }
 }

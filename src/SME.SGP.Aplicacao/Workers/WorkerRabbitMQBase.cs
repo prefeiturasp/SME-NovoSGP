@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao.Workers
             }
         }
 
-        private async Task TratarMensagem(BasicDeliverEventArgs ea)
+        public async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;

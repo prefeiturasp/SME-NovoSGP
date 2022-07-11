@@ -39,6 +39,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificacaoPeriodoFechamentoReaberturaEncerrandoUseCase, NotificacaoPeriodoFechamentoReaberturaEncerrandoUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase, ExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
             services.TryAddScoped<IExecutarConsolidacaoTurmaFechamentoComponenteUseCase, ExecutarConsolidacaoTurmaFechamentoComponenteUseCase>();
+            services.TryAddScoped<INotificarAlteracaoNotaFechamentoAgrupadaUseCase, NotificarAlteracaoNotaFechamentoAgrupadaUseCase>();
+            services.TryAddScoped<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase, NotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoTurmaGeralUseCase, ExecutarConsolidacaoTurmaGeralUseCase>();
+            services.TryAddScoped<IExecutarConsolidacaoTurmaUseCase, ExecutarConsolidacaoTurmaUseCase>();
         }
     }
 }

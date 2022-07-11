@@ -5,11 +5,9 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Consts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Servicos
@@ -68,6 +66,7 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var fechamentoTurmaId = await repositorioFechamentoTurma.SalvarAsync(fechamentoFinal.FechamentoTurma);
                 fechamentoFinal.FechamentoTurmaId = fechamentoTurmaId;
+
                 var fechamentoTurmaDisciplinaId = await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoFinal);
 
                 foreach (var fechamentoAluno in fechamentoFinal.FechamentoAlunos)
@@ -87,9 +86,9 @@ namespace SME.SGP.Dominio.Servicos
 
                                 var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
 
-                                if (emAprovacao)
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
-                                else
+                                //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
+                                //   deve gerar o registro do fechamento da nota inicial.
+                                if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
                                 {
                                     // Registra Histórico de alteração de nota
                                     if (fechamentoNota != null)
@@ -113,6 +112,9 @@ namespace SME.SGP.Dominio.Servicos
 
                                     ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
+
+                                if (emAprovacao)
+                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
                             }
                             catch (NegocioException e)
                             {
@@ -134,9 +136,8 @@ namespace SME.SGP.Dominio.Servicos
                         await LogarErro(mensagem, e, LogNivel.Critico);
                         mensagens.Add(mensagem);
                     }
-
                 }
-                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurmaDisciplinaId, usuarioLogado, turma, componenteCurricular);
+                await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
                 foreach (var consolidacaoNotaAluno in consolidacaoNotasAlunos)
@@ -148,6 +149,12 @@ namespace SME.SGP.Dominio.Servicos
                 var auditoria = (AuditoriaPersistenciaDto)fechamentoFinal.FechamentoTurma;
                 auditoria.Mensagens = mensagens;
                 auditoria.EmAprovacao = notasEmAprovacao.Any();
+
+                if (emAprovacao)
+                    auditoria.MensagemConsistencia = $"{ tipoNota.TipoNota.Name()} registrados com sucesso.Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
+                else
+                    auditoria.MensagemConsistencia = $"Fechamento final salvo com sucesso.";
+
                 return auditoria;
             }
             catch (Exception e)
@@ -172,18 +179,18 @@ namespace SME.SGP.Dominio.Servicos
             });
         }
 
-        private FechamentoNota CarregarNota(FechamentoFinalSalvarItemDto notaDto, FechamentoAluno fechamentoAluno)
+        private static FechamentoNota CarregarNota(FechamentoFinalSalvarItemDto notaDto, FechamentoAluno fechamentoAluno)
             => fechamentoAluno.FechamentoNotas.FirstOrDefault(c => c.DisciplinaId == notaDto.ComponenteCurricularCodigo) ??
                 new FechamentoNota() { FechamentoAlunoId = fechamentoAluno.Id, FechamentoAluno = fechamentoAluno };
 
-        private void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, FechamentoFinalSalvarItemDto notaDto, string alunoCodigo)
+        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, FechamentoFinalSalvarItemDto notaDto, string alunoCodigo)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
                 Id = fechamentoNota.Id,
-                NotaAnterior = fechamentoNota.Nota != null ? fechamentoNota.Nota.Value : (double?)null,
+                NotaAnterior = fechamentoNota.Nota != null ? fechamentoNota.Nota.Value : null,
                 Nota = notaDto.Nota,
-                ConceitoIdAnterior = fechamentoNota.ConceitoId != null ? fechamentoNota.ConceitoId.Value : (long?)null,
+                ConceitoIdAnterior = fechamentoNota.ConceitoId != null ? fechamentoNota.ConceitoId.Value : null,
                 ConceitoId = notaDto.ConceitoId,
                 CodigoAluno = alunoCodigo
             });
@@ -199,10 +206,10 @@ namespace SME.SGP.Dominio.Servicos
             return componentes.FirstOrDefault();
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, long fechamentoTurmaDisciplinaId, Usuario usuarioLogado, Turma turma, DisciplinaDto componenteCurricular)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, Usuario usuarioLogado)
         {
             if (notasEmAprovacao.Any())
-                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, fechamentoTurmaDisciplinaId, null, usuarioLogado, componenteCurricular, turma));
+                await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
         }
 
         private Task LogarErro(string mensagem, Exception e, LogNivel nivel)

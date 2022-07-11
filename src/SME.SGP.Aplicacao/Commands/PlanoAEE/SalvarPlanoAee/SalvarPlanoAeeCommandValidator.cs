@@ -17,6 +17,10 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.AlunoNome)
                     .NotEmpty()
                     .WithMessage("O nome do estudante deve ser informado!");
+
+            RuleFor(x => x.PlanoAEEDto.ResponsavelRF)
+                   .NotEmpty()
+                   .WithMessage("O rf do responsável deve ser informado!");
         }
     }
 }

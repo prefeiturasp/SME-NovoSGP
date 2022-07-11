@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var listaRetorno = new List<FuncionarioDTO>();
 
             if (request.CodigoCargo == (int)Cargo.Supervisor)
-                return ObterSupervisoresUE(request.CodigoUE);
+                return await ObterSupervisoresUE(request.CodigoUE);
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
@@ -48,9 +48,9 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private IEnumerable<FuncionarioDTO> ObterSupervisoresUE(string codigoUE)
+        private async Task<IEnumerable<FuncionarioDTO>> ObterSupervisoresUE(string codigoUE)
         {
-            var supervisores = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUE);
+            var supervisores = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUE);
 
             return supervisores.Select(a => new FuncionarioDTO()
             {

@@ -1,7 +1,13 @@
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
@@ -12,11 +18,33 @@ namespace SME.SGP.TesteIntegracao
     {
         private readonly CollectionFixture _collectionFixture;
 
-        public ServiceProvider ServiceProvider {  get {  return _collectionFixture.ServiceProvider; } }
+        public ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
+
         public TesteBase(CollectionFixture collectionFixture)
         {
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
+
+            RegistrarFakes(_collectionFixture.Services);
+            _collectionFixture.BuildServiceProvider();
+        }
+
+        protected virtual void RegistrarFakes(IServiceCollection services)
+        {
+            RegistrarCommandFakes(services);
+            RegistrarQueryFakes(services);
+        }
+
+        private static void RegistrarCommandFakes(IServiceCollection services)
+        {
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>),typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
+        }
+
+        private static void RegistrarQueryFakes(IServiceCollection services)
+        {
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>),
+                typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         public Task InserirNaBase<T>(IEnumerable<T> objetos) where T : class, new()
@@ -30,6 +58,7 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(objeto);
             return Task.CompletedTask;
         }
+
         public Task InserirNaBase(string nomeTabela, params string[] campos)
         {
             _collectionFixture.Database.Inserir(nomeTabela, campos);
@@ -47,6 +76,5 @@ namespace SME.SGP.TesteIntegracao
         {
             return _collectionFixture.Database.ObterPorId<T, K>(id);
         }
-
     }
 }

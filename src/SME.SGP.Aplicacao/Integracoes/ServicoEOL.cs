@@ -192,6 +192,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 var json = await resposta.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<AbrangenciaCompactaVigenteRetornoEOLDTO>(json);
             }
+
             return null;
         }
 
@@ -255,6 +256,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             var chaveCache = ObterChaveCacheAlunosTurma(turmaId);
             var cacheAlunos = cache.Obter(chaveCache);
+
             if (cacheAlunos != null)
             {
                 alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
@@ -301,6 +303,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfil, realizarAgrupamentoComponente));
         }
+
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(string login, Guid idPerfil)
         {
             var url = $"v1/componentes-curriculares/funcionarios/{login}/perfis/{idPerfil}";
@@ -808,6 +811,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = resposta.Content.ReadAsStringAsync().Result;
             return JsonConvert.DeserializeObject<bool>(json);
         }
+
         public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             var dataString = data.ToString("s");
@@ -1136,5 +1140,54 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<IEnumerable<ProfessorTitularDisciplinaEol>>(json);
         }
+
+        public async Task<IEnumerable<FuncionarioUnidadeDto>> ObterListaNomePorListaLogin(IEnumerable<string> logins)
+        {
+            var resposta = await httpClient.PostAsync($"funcionarios/BuscarPorListaLogin",
+                new StringContent(JsonConvert.SerializeObject(logins), Encoding.UTF8, "application/json-patch+json"));
+
+            if (!resposta.IsSuccessStatusCode)
+                return null;
+
+            if (resposta.StatusCode == HttpStatusCode.NoContent)
+                return null;
+
+            var json = await resposta.Content.ReadAsStringAsync();
+
+            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json));
+        }
+
+        public async Task<AutenticacaoApiEolDto> ObtenhaAutenticacaoSemSenha(string login)
+        {
+            var url = $@"v1/autenticacao/AutenticarSemSenha/{login}";
+
+            var resposta = await httpClient.GetAsync(url);
+
+            if (!resposta.IsSuccessStatusCode)
+                throw new NegocioException($"Não foram encontrados dados do usuário {login}");
+
+
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
+        }
+
+
+
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
+        {
+            var resposta = await httpClient.GetAsync($@"funcionarios/perfis/{perfil}?CodigoDre={filtroFuncionariosDto.CodigoDRE}&CodigoUe={filtroFuncionariosDto.CodigoUE}&CodigoRf={filtroFuncionariosDto.CodigoRF}&NomeServidor={filtroFuncionariosDto.NomeServidor}");
+
+            if (resposta.IsSuccessStatusCode)
+            {
+                var json = await resposta.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<IEnumerable<UsuarioEolRetornoDto>>(json);
+
+            }
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
+
+
+
+
     }
 }

@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class RetornarTotalAulasNaoRealizamFrequenciaTeste : TesteBase
     {
@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAulaSemFrequencia();
 
             //Act
-            var controller = new ConselhoClasseController();
+            var controller = new Api.Controllers.ConselhoClasseController();
             var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("2370993",useCase);
 
             //Assert
@@ -93,10 +93,10 @@ namespace SME.SGP.TesteIntegracao
                 TipoCalendarioId = 1,
                 ProfessorRf = "6737544",
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,

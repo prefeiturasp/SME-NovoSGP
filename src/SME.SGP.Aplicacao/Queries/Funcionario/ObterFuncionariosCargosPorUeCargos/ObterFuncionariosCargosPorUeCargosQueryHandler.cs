@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
             if (request.cargosIdsDaUe.Any(a => a == (int)Cargo.Supervisor))
             {
-                var supervisores = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(request.UeCodigo);
+                var supervisores = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(request.UeCodigo);
                 if (supervisores.Any())
                 {
                     foreach (var supervisorParaAdicionar in supervisores)
