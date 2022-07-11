@@ -126,15 +126,15 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 bimestre.Alunos.Any().ShouldBeTrue();
 
-                var notaConceitoAlteracao = bimestre.Alunos.Where(w => alunosAlterados.Contains(w.Id)); 
+                var notaConceitoAlteracao = bimestre.Alunos.Where(w => alunosAlterados.Contains(w.Id));
 
-                (notaConceitoAlteracao.Select(s=> s.Id).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
+                (notaConceitoAlteracao.Select(s => s.Id).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
 
                 foreach (var aluno in notaConceitoAlteracao)
                 {
                     aluno.NotasAvaliacoes.Any().ShouldBeTrue();
 
-                    (aluno.NotasAvaliacoes.Select(s=> s.AtividadeAvaliativaId).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
+                    (aluno.NotasAvaliacoes.Select(s => s.AtividadeAvaliativaId).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
 
                     foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
                     {
@@ -567,19 +567,19 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarParametrosNotas()
         {
-            var dataAtualAnoAnterior =  DateTimeExtension.HorarioBrasilia().AddYears(-1);
+            var dataAtualAnoAnterior = DateTimeExtension.HorarioBrasilia().AddYears(-1);
 
             var dataAtualAnoAtual = DateTimeExtension.HorarioBrasilia();
 
-            await InserirNaBase(new ParametrosSistema() 
-            { 
+            await InserirNaBase(new ParametrosSistema()
+            {
                 Nome = DATA_INICIO_SGP,
                 Descricao = DATA_INICIO_SGP,
-                Tipo = TipoParametroSistema.DataInicioSGP, 
-                Valor = dataAtualAnoAnterior.Year.ToString(), 
-                Ano = dataAtualAnoAnterior.Year, 
-                Ativo = true, 
-                CriadoEm = dataAtualAnoAnterior, 
+                Tipo = TipoParametroSistema.DataInicioSGP,
+                Valor = dataAtualAnoAnterior.Year.ToString(),
+                Ano = dataAtualAnoAnterior.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAnterior,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
@@ -665,7 +665,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1,considerarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
@@ -891,7 +891,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-               
+
         protected class FiltroNotasDto
         {
             public FiltroNotasDto()
@@ -899,9 +899,9 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
-                ConsiderarAnoAnterior = false;                
+                ConsiderarAnoAnterior = false;
             }
-
+            public DateTime? DataReferencia { get; set; }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
