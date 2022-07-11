@@ -564,12 +564,11 @@ namespace SME.SGP.Dominio.Servicos
             mensagem.AppendLine("</tr>");
 
             var codigoAlunos = notasEmAprovacao.Select(x => long.Parse(x.CodigoAluno)).ToArray();
-
-            var alunosTurma = await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigoAlunos));
+            var alunosTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, true))).OrderBy(c => c.NomeAluno);
 
             foreach (var notaAprovacao in notasEmAprovacao)
             {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == Convert.ToInt32(notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo));
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == (notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo));
 
                 string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
                 string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
@@ -589,7 +588,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
@@ -598,7 +597,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
                     mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
                     mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
                     mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao}({horaNotificacao})  </td>");

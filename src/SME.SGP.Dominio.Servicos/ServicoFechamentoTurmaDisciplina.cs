@@ -201,6 +201,12 @@ namespace SME.SGP.Dominio.Servicos
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
 
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
+
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
+            var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
+
             await CarregarTurma(entidadeDto.TurmaId);
 
             // Valida periodo de fechamento
@@ -216,9 +222,7 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException($"Não localizado período de fechamento em aberto para turma informada no {entidadeDto.Bimestre}º Bimestre");
 
             await CarregaFechamentoTurma(fechamentoTurmaDisciplina, turmaFechamento, periodoEscolar);
-
-            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
+            
             var parametroAlteracaoNotaFechamento = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, turmaFechamento.AnoLetivo));
 
             // Valida Permissão do Professor na Turma/Disciplina            
@@ -262,6 +266,14 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                         await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                        
+                        if (emAprovacao)
+                        {
+                            var notaConceitoAprovacaoAluno = entidadeDto.NotaConceitoAlunos.Select(a => new { a.ConceitoId, a.CodigoAluno })
+                            .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                            AdicionaAprovacaoConceito(notasEnvioWfAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.ConceitoId);
+
+                        }
 
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
                     }
@@ -362,6 +374,21 @@ namespace SME.SGP.Dominio.Servicos
 
             return fechamentoAlunos;
         }
+        private async Task<bool> ExigeAprovacao(Turma turma, Usuario usuarioLogado)
+        {
+            return turma.AnoLetivo < DateTime.Today.Year
+                && !usuarioLogado.EhGestorEscolar()
+                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
+        }
+
+        private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
+            if (parametro == null)
+                throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
+
+            return parametro.Ativo;
+        }
 
         private async Task CarregaFechamentoTurma(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, PeriodoEscolar periodoEscolar)
         {
@@ -460,6 +487,20 @@ namespace SME.SGP.Dominio.Servicos
                 return true;
 
             return false;
+        }
+
+        private static void AdicionaAprovacaoConceito(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, long? conceitoId)
+        {
+            notasEmAprovacao.Add(new FechamentoNotaDto()
+            {
+                Id = fechamentoNota.Id,
+                NotaAnterior = fechamentoNota.Nota,
+                Nota = fechamentoNota.Nota,
+                ConceitoIdAnterior = fechamentoNota.ConceitoId,
+                ConceitoId = conceitoId == null ? fechamentoNota.ConceitoId : conceitoId,
+                CodigoAluno = alunoCodigo,
+                DisciplinaId = fechamentoNota.DisciplinaId
+            });
         }
 
         private FechamentoNota MapearParaEntidade(FechamentoNotaDto fechamentoNotaDto)
