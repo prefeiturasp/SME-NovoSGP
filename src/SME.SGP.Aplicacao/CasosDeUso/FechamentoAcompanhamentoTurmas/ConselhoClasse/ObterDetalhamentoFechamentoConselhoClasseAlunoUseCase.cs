@@ -13,12 +13,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase : AbstractUseCase, IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase
     {
-        private readonly IConsultasFrequencia consultasFrequencia;
-
-        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator, IConsultasFrequencia consultasFrequencia)
+        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator)
             : base(mediator)
         {
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
         }
 
         public async Task<IEnumerable<DetalhamentoComponentesCurricularesAlunoDto>> Executar(FiltroConselhoClasseConsolidadoDto filtro)
@@ -239,7 +236,7 @@ namespace SME.SGP.Aplicacao
             var notasFechamento = ObterNotasComponente(componenteCurricular.CodigoComponenteCurricular, periodoEscolar, notasFechamentoAluno);
             var notaPosConselho = ObterNotaPosConselho(componenteCurricular.CodigoComponenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
 
-            var parecerFinal = bimestre == 0 ? await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, componenteCurricular, anoLetivo) : null;
+            var parecerFinal = bimestre == 0 ? await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, componenteCurricular, anoLetivo)) : null;
 
             var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal?.Valor : (notasFechamento != null && notasFechamento.Any() &&
                                  notasFechamento.FirstOrDefault().NotaConceito != null ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null);
