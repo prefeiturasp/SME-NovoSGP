@@ -42,14 +42,14 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select distinct a.disciplina_id as ComponenteCurricularId, raa.codigo_aluno as AlunoCodigo
                         from registro_frequencia_aluno raa 
                        inner join aula a on a.id = raa.aula_id 
-                       where raa.valor = 2
+                       where raa.valor = @tipoFrequencia
                          and a.turma_id = @turmaCodigo
                          and a.data_aula between @dataInicio and @dataFim ");
 
             if (!string.IsNullOrEmpty(componenteCurricularId))
                 query.AppendLine("and a.disciplina_id = @componenteCurricularId");
 
-            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId });
+            return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
 	
 	                    from aula a
 	                      inner join turma t on t.turma_id = a.turma_id
-	                      left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = 2
+	                      left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = @tipoFrequencia
 	                    where not a.excluido
 	                      and a.data_aula >= @dataReferencia
 	                      and a.tipo_calendario_id = @tipoCalendarioId
@@ -85,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
 	                     , a.DataAula
 	                     , a.CodigoAluno";
 
-            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId });
+            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
@@ -151,7 +151,7 @@ namespace SME.SGP.Dados.Repositorios
                                     a.data_aula,
                                     count(raa.id) AS faltas
                              FROM registro_frequencia_aluno raa
-                             INNER JOIN aula a ON raa.aula_id = a.id AND raa.valor = 2
+                             INNER JOIN aula a ON raa.aula_id = a.id AND raa.valor = @tipoFrequencia
                              WHERE a.turma_id = @turmaCodigo
                                AND a.disciplina_id = @disciplinaCodigo
                                AND a.data_aula::date = ANY(@datas)
@@ -161,7 +161,7 @@ namespace SME.SGP.Dados.Repositorios
                                       a.data_aula) a
                           WHERE a.quantidade = a.faltas";
 
-            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos });
+            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)
@@ -199,11 +199,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"SELECT ra.*
                             FROM registro_frequencia_aluno ra
-                            INNER JOIN aula a ON a.id = ra.aula_id AND ra.valor = 2
+                            INNER JOIN aula a ON a.id = ra.aula_id AND ra.valor = @tipoFrequencia
                             WHERE ra.excluido = FALSE
                               AND a.id = @aulaId";
 
-            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId });
+            return database.Conexao.QueryAsync<RegistroAusenciaAluno>(query, new { aulaId,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<RegistroFrequencia> ObterRegistroFrequenciaPorAulaId(long aulaId)
@@ -254,7 +254,7 @@ namespace SME.SGP.Dados.Repositorios
                             INNER JOIN aula a ON a.id = afa.aula_id
                             INNER JOIN registro_frequencia_aluno raa ON raa.aula_id  = a.id
                             AND raa.codigo_aluno = afa.codigo_aluno
-                            AND raa.valor = 2
+                            AND raa.valor = @tipoFrequencia
                             INNER JOIN turma t ON t.turma_id = a.turma_id
                             INNER JOIN ue ON ue.id = t.ue_id
                             INNER JOIN dre ON dre.id = ue.dre_id
@@ -290,7 +290,8 @@ namespace SME.SGP.Dados.Repositorios
                 modalidade = (int)modalidade,
                 ano,
                 turmaId,
-                semestre
+                semestre,
+                tipoFrequencia = (int)TipoFrequencia.F
             });
         }
 
