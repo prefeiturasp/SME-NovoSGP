@@ -122,6 +122,12 @@ namespace SME.SGP.TesteIntegracao
             await CriarTurma_Exclusao(modalidade);
         }
 
+        protected async Task CriarDadosBasicosAula_Exclusao(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
+        {
+            await CriarDadosBasicosAula_Exclusao(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), BIMESTRE_1, criarPeriodo);
+        }
+        
+        
         protected async Task CriarDadosBasicosAula(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, bool criarPeriodo = true)
         {
             await CriarDadosBasicosAula(perfil, modalidade, tipoCalendario, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02), new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08), BIMESTRE_1, criarPeriodo);
@@ -222,6 +228,14 @@ namespace SME.SGP.TesteIntegracao
         protected async Task CriaAulaRecorrentePortugues(RecorrenciaAula recorrencia)
         {
             var aula = ObterAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
+            aula.AulaPaiId = 1;
+
+            await InserirNaBase(aula);
+        }
+        
+        protected async Task CriaAulaRecorrentePortugues_Exclusao(RecorrenciaAula recorrencia)
+        {
+            var aula = ObterAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), new System.DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10), recorrencia, USUARIO_PROFESSOR_LOGIN_2222222);
             aula.AulaPaiId = 1;
 
             await InserirNaBase(aula);

@@ -43,11 +43,11 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
         [Fact]
         public async Task Aula_com_avaliacao_vinculada()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+            await CriarDadosBasicosAula_Exclusao(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
             
             await CriarAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, RecorrenciaAula.RepetirBimestreAtual);
             
-            await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirBimestreAtual);
+            await CriaAulaRecorrentePortugues_Exclusao(RecorrenciaAula.RepetirBimestreAtual);
             
             await CriarAtividadeAvaliativaFundamental(DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
@@ -58,21 +58,18 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             var dto = ObterExcluirAulaDto(RecorrenciaAula.RepetirBimestreAtual);
             
             var retorno = await useCase.Executar(dto);
-
             retorno.ShouldNotBeNull();
 
             var lista = ObterTodos<Notificacao>();
-
             lista.ShouldNotBeEmpty();
-            
             lista.FirstOrDefault().Mensagem.ShouldContain("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
         }
 
         protected async Task Excluir_aula_com_regencia(RecorrenciaAula recorrencia)
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
+            await CriarDadosBasicosAula_Exclusao(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false);
 
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, recorrencia);
+            await CriarAula_Exclusao(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), DATA_02_05, recorrencia);
             
             await CriaAulaRecorrentePortugues(recorrencia);
 
