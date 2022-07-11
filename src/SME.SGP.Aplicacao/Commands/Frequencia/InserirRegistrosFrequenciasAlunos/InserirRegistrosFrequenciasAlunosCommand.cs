@@ -31,20 +31,20 @@ namespace SME.SGP.Aplicacao
         public InserirRegistrosFrequenciasAlunosCommandValidator()
         {
             RuleFor(x => x.Frequencias)
-               .NotEmpty()
-               .WithMessage("As frequencias precisam ser informadas");
+                .NotEmpty()
+                .WithMessage("As frequencias precisam ser informadas para criar o Registro de Frequência do Aluno");
             RuleFor(x => x.TurmaId)
-               .NotEmpty()
-               .WithMessage("A turma precisa ser informada");
+                .NotEmpty()
+                .WithMessage("A turma precisa ser informada para criar o Registro de Frequência do Aluno");
             RuleFor(x => x.AulaId)
-               .NotEmpty()
-               .WithMessage("A Aula precisa ser informada");
+                .NotEmpty()
+                .WithMessage("A Aula precisa ser informada para criar o Registro de Frequência do Aluno");
             RuleFor(x => x.ComponenteCurricularId)
-               .NotEmpty()
-               .WithMessage("O componente curricular precisa ser informado");
+                .NotEmpty()
+                .WithMessage("O componente curricular precisa ser informado para criar o Registro de Frequência do Aluno");
             RuleFor(x => x.RegistroFrequenciaId)
-              .NotEmpty()
-              .WithMessage("O registro de frequência precisa ser informado");
+                .NotEmpty()
+                .WithMessage("O código da frequência precisa ser informado para criar o Registro de Frequência do Aluno");
         }
     }
 }
