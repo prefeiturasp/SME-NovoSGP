@@ -125,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
@@ -161,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),
@@ -179,7 +179,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -197,7 +197,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
@@ -215,7 +215,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),
@@ -233,7 +233,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -251,7 +251,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
@@ -269,7 +269,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),

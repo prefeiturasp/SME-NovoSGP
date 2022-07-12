@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
 
             await InserirNaBase("componente_curricular", "512", "512", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "false", "false", "true", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 Id = 1,
                 UeId = "1",

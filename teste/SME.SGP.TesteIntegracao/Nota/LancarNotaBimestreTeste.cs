@@ -489,7 +489,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarAulaProfRegenciaEja()
         {
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "1114",
@@ -511,7 +511,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarAulaProfFundamental()
         {
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "9",
