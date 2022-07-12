@@ -211,11 +211,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
 
-            query.AppendLine("SELECT n.codigo");
+            query.AppendLine("SELECT max(n.codigo)");
             query.AppendLine("FROM notificacao n");
             query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
-            query.AppendLine("order by codigo desc");
-            query.AppendLine("limit 1");
 
             var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano });
             return codigos.FirstOrDefault();
