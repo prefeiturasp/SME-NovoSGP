@@ -85,8 +85,7 @@ namespace SME.SGP.Aplicacao
                     disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId)))
                     return true;
             }
-
-            var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
+            var disciplina = componentesUsuario?.FirstOrDefault(x => (x.Codigo % (10000)).ToString().Equals(aula.DisciplinaId, StringComparison.Ordinal));
 
             return disciplina != null;
         }
