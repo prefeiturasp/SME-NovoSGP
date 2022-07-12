@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
 
                     if (pendencia.Id > 0)
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
                 }
                 catch (Exception e)
                 {
@@ -111,7 +111,7 @@ namespace SME.SGP.Aplicacao
             await repositorioPendenciaEncaminhamentoAEE.SalvarAsync(pendenciaEncaminhamento);
 
             if (pendencia.Id > 0)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendencia.Id, turma.UeId), Guid.NewGuid()));
 
             return true;
         }

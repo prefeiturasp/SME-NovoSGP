@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private string ObterCaminhoArquivos(TipoArquivo tipo)
-            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoContants.PastaAquivos, tipo.Name());
+            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstants.PastaAquivos, tipo.Name());
 
     }
 }

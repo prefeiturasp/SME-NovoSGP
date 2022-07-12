@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand request, CancellationToken cancellationToken)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoEncerramentoEncaminhamentoAEE,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoEncerramentoEncaminhamentoAEE,
                 new NotificacaoEncaminhamentoAEEDto
                 {
                     EncaminhamentoAEEId = request.EncaminhamentoAEEId,

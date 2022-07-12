@@ -42,7 +42,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ft.turma_id as TurmaId, fa.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
-                                cc.eh_regencia as ComponenteCurricularEhRegencia,fn.conceito_id as ConceitoAnterior, wanf.* from wf_aprovacao_nota_fechamento wanf 
+                                cc.eh_regencia as ComponenteCurricularEhRegencia, fn.conceito_id as ConceitoAnteriorId, wanf.* 
+                            from wf_aprovacao_nota_fechamento wanf 
                             inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
                             inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
                             inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 

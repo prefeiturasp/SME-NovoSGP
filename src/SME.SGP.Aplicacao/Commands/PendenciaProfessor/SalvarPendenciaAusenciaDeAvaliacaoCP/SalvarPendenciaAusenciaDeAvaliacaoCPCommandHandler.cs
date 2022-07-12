@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         private async Task GerarPendenciaPerfil(long pendenciaId, long ueId)
         {
             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, new List<PerfilUsuario>() { PerfilUsuario.CP }));
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios,
                                                            new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ueId)));
         }
     }

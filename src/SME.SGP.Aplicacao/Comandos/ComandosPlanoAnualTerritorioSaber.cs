@@ -104,8 +104,8 @@ namespace SME.SGP.Aplicacao
             }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
-            planoAnualTerritorioSaber.Reflexao = reflexao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Reflexao = reflexao.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;

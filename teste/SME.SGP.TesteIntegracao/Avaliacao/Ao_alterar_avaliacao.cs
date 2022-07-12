@@ -69,13 +69,9 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var filtroAtividadeAvaliativa = ObterFiltroAtividadeAvaliativa(atividadeAvaliativa);
 
-            async Task doExecutar() { await comando.Validar(filtroAtividadeAvaliativa); }
+            await comando.Validar(filtroAtividadeAvaliativa).ShouldNotThrowAsync();
 
-            await Should.NotThrowAsync(() => doExecutar());
-
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Alterar(atividadeAvaliativa, 1));
-
-            excecao.Message.ShouldBe("Você não pode alterar esta Atividade Avaliativa.");
+            await comando.Alterar(atividadeAvaliativa, 1).ShouldThrowAsync<NegocioException>();
         }
 
         private async Task Executa_alterar_avaliacao_para_professor_regente_de_classe(string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)

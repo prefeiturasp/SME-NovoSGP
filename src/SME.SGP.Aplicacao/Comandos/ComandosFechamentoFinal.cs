@@ -45,12 +45,10 @@ namespace SME.SGP.Aplicacao
                 fechamentoFinalSalvarDto.Itens, emAprovacao);
 
             if (!auditoria.EmAprovacao)
-            {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
-                    new ConsolidacaoTurmaDto(turma.Id, 0),
-                    Guid.NewGuid(),
-                    null));
-            }
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
+                                                               new ConsolidacaoTurmaDto(turma.Id, 0),
+                                                               Guid.NewGuid(),
+                                                               null));
 
             return auditoria;
         }

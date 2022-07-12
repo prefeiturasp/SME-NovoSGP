@@ -19,6 +19,9 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
     {
         private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private const string TITULO_NOTIFICACAO = "Notificação Teste de Integração.";
+        private const string MENSAGEM_NOTIFICACAO = "Mensagem notificação Teste de Integração.";
+        private const string SISTEMA = "Sistema";
 
         public Ao_registrar_aula_reposicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -51,6 +54,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             aula.Quantidade = 4;
 
             await CriarPeriodoEscolarEAbertura();
+            await CriarNotificacao();
 
             await ValideAulaEnviadaParaAprovacao(aula);
         }
@@ -77,6 +81,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             aula.EhRegencia = true;
 
             await CriarPeriodoEscolarEAbertura();
+            await CriarNotificacao();
 
             await ValideAulaEnviadaParaAprovacao(aula);
         }
@@ -102,15 +107,34 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_1, DATA_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_2, DATA_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_3, DATA_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
-            await CriarPeriodoEscolar(DATA_INICIO_BIMESTRE_4, DATA_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+        }
+
+        private async Task CriarNotificacao()
+        {
+            await InserirNaBase(new Notificacao()
+            {
+                Id = 1,
+                Titulo = TITULO_NOTIFICACAO,
+                Mensagem = MENSAGEM_NOTIFICACAO,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = 1,
+                Excluida = false,
+                UsuarioId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA
+            });
         }
     }
 }
