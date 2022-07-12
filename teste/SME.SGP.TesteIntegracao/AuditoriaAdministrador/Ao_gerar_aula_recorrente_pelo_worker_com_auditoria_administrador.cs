@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             await _buider.CriaItensComunsEja();
             await _buider.CriaComponenteCurricularSemFrequencia();
 
-            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider); 
+            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider);
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var connection = new ConnectionFactoryFake();
 
@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new (DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                                                            new(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                                                             5,
                                                             "1",
                                                             1106,
@@ -84,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             };
 
             await worker.TratarMensagem(basic);
-            
+
             var listaDeAuditoria = ObterTodos<Auditoria>();
 
             listaDeAuditoria.ShouldNotBeEmpty();
