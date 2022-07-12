@@ -17,7 +17,6 @@ namespace SME.SGP.Dominio
         private readonly IConsultasAbrangencia consultasAbrangencia;
 
         private readonly string hostAplicacao;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
@@ -75,7 +74,6 @@ namespace SME.SGP.Dominio
             IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, 
             IUnitOfWork unitOfWork,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, 
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -94,7 +92,6 @@ namespace SME.SGP.Dominio
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -389,7 +386,7 @@ namespace SME.SGP.Dominio
                 notaConceito.DisciplinaId = disciplinaId;
                 if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) && notaConceito.Id.Equals(0))
                 {
-                    var atividadeDisciplinas = repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(atividadeAvaliativa.Id).Result;
+                    var atividadeDisciplinas = await mediator.Send(new ObterListaDeAtividadeAvaliativaDisciplinaPorIdAtividadeQuery(atividadeAvaliativa.Id));
                     foreach (var atividade in atividadeDisciplinas)
                     {
                         if (!atividade.DisciplinaId.Equals(disciplinaId))
