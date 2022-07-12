@@ -17,7 +17,6 @@ using Xunit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MediatR;
 using Microsoft.Extensions.Options;
-using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
 {
@@ -32,8 +31,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -42,21 +41,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             await _buider.CriaItensComunsEja();
             await _buider.CriaComponenteCurricularSemFrequencia();
 
-            await InserirNaBase(new Notificacao
-            {
-                Titulo = "Titulo",
-                Mensagem = "Mensagem",
-                Status = NotificacaoStatus.Aceita,
-                Categoria = NotificacaoCategoria.Aviso,
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = 1,
-                UsuarioId = 1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = "Sistema",
-                CriadoRF = "1"
-            });
-
-            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider); 
+            var scope = new WorkerServiceScopeFactoryFake(ServiceProvider);
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
             var connection = new ConnectionFactoryFake();
 
@@ -71,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                                                            new(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                                                             5,
                                                             "1",
                                                             1106,
@@ -99,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             };
 
             await worker.TratarMensagem(basic);
-            
+
             var listaDeAuditoria = ObterTodos<Auditoria>();
 
             listaDeAuditoria.ShouldNotBeEmpty();
