@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
 
                     await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {
                             CriadoRF = itinerancia.CriadoRF,

@@ -6,9 +6,9 @@ using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.IoC
 {
-    public static class RegistrarCache
+    internal static class RegistrarCache
     {
-        public static void AdicionarRedis(this IServiceCollection services, IConfiguration configuration, IServicoLog servicoLog)
+        internal static void AdicionarRedis(this IServiceCollection services, IConfiguration configuration, IServicoLog servicoLog)
         {
             services.AddSingleton<IConnectionMultiplexerSME>(
                 new ConnectionMultiplexerSME(configuration.GetConnectionString("SGP_Redis"), servicoLog));

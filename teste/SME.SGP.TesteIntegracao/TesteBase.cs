@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao
         {
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
+            _collectionFixture.IniciarServicos();
 
             RegistrarFakes(_collectionFixture.Services);
             _collectionFixture.BuildServiceProvider();
@@ -35,13 +36,13 @@ namespace SME.SGP.TesteIntegracao
             RegistrarQueryFakes(services);
         }
 
-        private static void RegistrarCommandFakes(IServiceCollection services)
+        protected virtual void RegistrarCommandFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>),typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        private static void RegistrarQueryFakes(IServiceCollection services)
+        protected virtual void RegistrarQueryFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>),
                 typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
