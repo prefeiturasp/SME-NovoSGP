@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
 
                 else
-                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => componentesCurricularesProfessor.Any(c => c.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
             }
         }
 
