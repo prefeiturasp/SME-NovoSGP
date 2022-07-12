@@ -267,10 +267,11 @@ namespace SME.SGP.Aplicacao
                             if (notaRegencia != null)
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
-                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;
-                                if (listaFechamentoNotaEmAprovacao.Any())
+                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;                             
+                                var listaFiltrada = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id);
+                                if (listaFiltrada != null)
                                 {
-                                    double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
+                                    double notaConceitoWF = listaFiltrada.NotaEmAprovacao;
                                     VerificaNotaEmAprovacao(notaConceitoWF, nota);
                                 }
                             }                            
