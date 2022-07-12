@@ -621,6 +621,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
             query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
             query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
+            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
