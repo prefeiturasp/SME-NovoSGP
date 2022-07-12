@@ -104,7 +104,8 @@ namespace SME.SGP.Dominio.Servicos
 
             var filtro = new FiltroObterSupervisorEscolasDto
             {
-                UeCodigo = turma.Ue.CodigoUe
+                UeCodigo = turma.Ue.CodigoUe,
+                DreCodigo = turma.Ue.Dre.CodigoDre
             };
             var listaSupervisores = await consultasSupervisor.ObterAtribuicaoResponsavel(filtro);
 
@@ -201,11 +202,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var fechamentoTurmaDisciplina = MapearParaEntidade(id, entidadeDto);
 
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
-
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-
-            var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
 
             await CarregarTurma(entidadeDto.TurmaId);
 
@@ -257,6 +254,10 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
+
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorId(fechamentoTurmaDisciplina.FechamentoTurma.TurmaId);
+                var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
+
                 foreach (var fechamentoAluno in fechamentoAlunos)
                 {
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id;
@@ -266,13 +267,12 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                         await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-                        
+
                         if (emAprovacao)
                         {
                             var notaConceitoAprovacaoAluno = entidadeDto.NotaConceitoAlunos.Select(a => new { a.ConceitoId, a.CodigoAluno })
                             .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
                             AdicionaAprovacaoConceito(notasEnvioWfAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.ConceitoId);
-
                         }
 
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
@@ -418,8 +418,10 @@ namespace SME.SGP.Dominio.Servicos
             var fechamentoAlunos = new List<FechamentoAluno>();
 
             if (fechamentoTurmaDisciplinaId > 0)
-                fechamentoAlunos = (await repositorioFechamentoAlunoConsulta.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId)).ToList();
-
+            {
+                fechamentoAlunos = (await mediator.Send(new ObterFechamentoAlunoPorDisciplinaIdQuery(fechamentoTurmaDisciplinaId)))
+                    .Where(x => fechamentoNotasDto.Any(a => a.CodigoAluno == x.AlunoCodigo)).ToList();
+            }
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
@@ -496,7 +498,7 @@ namespace SME.SGP.Dominio.Servicos
                 Id = fechamentoNota.Id,
                 NotaAnterior = fechamentoNota.Nota,
                 Nota = fechamentoNota.Nota,
-                ConceitoIdAnterior = fechamentoNota.ConceitoId,
+                ConceitoIdAnterior = fechamentoNota.ConceitoId != conceitoId ? fechamentoNota.ConceitoId : null,
                 ConceitoId = conceitoId == null ? fechamentoNota.ConceitoId : conceitoId,
                 CodigoAluno = alunoCodigo,
                 DisciplinaId = fechamentoNota.DisciplinaId
