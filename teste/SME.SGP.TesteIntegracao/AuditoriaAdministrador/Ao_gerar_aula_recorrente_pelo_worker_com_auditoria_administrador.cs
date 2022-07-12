@@ -19,7 +19,7 @@ using MediatR;
 using Microsoft.Extensions.Options;
 using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_gerar_aula_recorrente_pelo_worker_com_auditoria_administrador : TesteBase
     {
@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -41,6 +41,20 @@ namespace SME.SGP.TesteIntegracao
         {
             await _buider.CriaItensComunsEja();
             await _buider.CriaComponenteCurricularSemFrequencia();
+
+            await InserirNaBase(new Notificacao
+            {
+                Titulo = "Titulo",
+                Mensagem = "Mensagem",
+                Status = NotificacaoStatus.Aceita,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = 1,
+                UsuarioId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = "Sistema",
+                CriadoRF = "1"
+            });
 
             var scope = new WorkerServiceScopeFactoryFake(ServiceProvider); 
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
@@ -57,7 +71,7 @@ namespace SME.SGP.TesteIntegracao
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
             var comando = new InserirAulaRecorrenteCommand(usuario,
-                                                            new DateTime(2022, 02, 10),
+                                                            new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                                                             5,
                                                             "1",
                                                             1106,
