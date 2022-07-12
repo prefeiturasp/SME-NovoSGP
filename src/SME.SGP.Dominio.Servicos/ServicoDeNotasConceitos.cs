@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly string hostAplicacao;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
@@ -22,13 +21,12 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly string hostAplicacao;
 
         public Turma turma { get; set; }
 
@@ -64,18 +62,15 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(
             IServicoEol servicoEOL, 
-            //IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, 
             IRepositorioCiclo repositorioCiclo,
             IRepositorioConceitoConsulta repositorioConceito, 
             IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, 
             IUnitOfWork unitOfWork,
-            IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, 
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioTurmaConsulta repositorioTurma, 
-            IRepositorioParametrosSistema repositorioParametrosSistema,
             IServicoUsuario servicoUsuario, 
             IConfiguration configuration, 
             IMediator mediator)
@@ -88,8 +83,6 @@ namespace SME.SGP.Dominio
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
