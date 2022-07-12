@@ -17,7 +17,6 @@ namespace SME.SGP.Dominio
         private readonly IConsultasAbrangencia consultasAbrangencia;
 
         private readonly string hostAplicacao;
-        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
         private readonly IRepositorioAulaConsulta repositorioAula;
         private readonly IRepositorioCiclo repositorioCiclo;
@@ -67,18 +66,26 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
-            IRepositorioConceitoConsulta repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
-            IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
+        public ServicoDeNotasConceitos(
+            IServicoEol servicoEOL, 
+            IConsultasAbrangencia consultasAbrangencia,
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, 
+            IRepositorioCiclo repositorioCiclo,
+            IRepositorioConceitoConsulta repositorioConceito, 
+            IRepositorioNotaParametro repositorioNotaParametro,
+            IRepositorioNotasConceitos repositorioNotasConceitos, 
+            IUnitOfWork unitOfWork,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
-            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
+            IServicoNotificacao servicoNotificacao, 
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
+            IRepositorioAulaConsulta repositorioAula, 
+            IRepositorioTurmaConsulta repositorioTurma, 
+            IRepositorioParametrosSistema repositorioParametrosSistema,
+            IServicoUsuario servicoUsuario, 
+            IConfiguration configuration, 
+            IMediator mediator)
         {
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
@@ -110,8 +117,8 @@ namespace SME.SGP.Dominio
             var idsAtividadesAvaliativas = notasConceitos
                 .Select(x => x.AtividadeAvaliativaID);
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa
-                .ListarPorIds(idsAtividadesAvaliativas);
+            var atividadesAvaliativas =
+                await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
 
             var alunos = await servicoEOL
                 .ObterAlunosPorTurma(turmaId, true);
@@ -178,7 +185,7 @@ namespace SME.SGP.Dominio
             var dataAtual = DateTime.Now;
             var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId, codigoTurma));
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
+            var atividadesAvaliativas = await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
             var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
