@@ -471,7 +471,7 @@ namespace SME.SGP.Aplicacao
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
 
-            if (nota > 0)
+            if (nota >= 0)
             {
                 notasConceito.NotaConceito = nota;
                 notasConceito.EmAprovacao = true;
