@@ -34,13 +34,16 @@ namespace SME.SGP.Aplicacao
                 codigosTurmas.ToList().ForEach(ct =>
                 {
                     var componentesRegencia = mediator
-                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct))
+                        .Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(ct, situacaoConselho:true))
                         .Result;
-
-                    listaCodigosComponentes = listaCodigosComponentes
-                        .Concat(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
+                    if(componentesRegencia != null && componentesRegencia.Any())
+                        listaCodigosComponentes = listaCodigosComponentes
+                            .Concat(componentesRegencia.Select(cr => cr.CodigoComponenteCurricular));
                 });
             }
+
+            if (listaCodigosComponentes == null || !listaCodigosComponentes.Any())
+                return default;
 
             return await mediator
                 .Send(new ObterAreasConhecimentoComponenteCurricularQuery(listaCodigosComponentes.Distinct().ToArray()));
