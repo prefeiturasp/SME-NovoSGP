@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var agruparEmTurmaBimestre = wfSemAprovacao.GroupBy(w => new { w.TurmaId, w.Bimestre });
 
             foreach (var turmas in agruparEmTurmaBimestre)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAprovacaoFechamentoPorTurma, turmas, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamentoPorTurma, turmas, Guid.NewGuid(), null));
 
             return true;
         }

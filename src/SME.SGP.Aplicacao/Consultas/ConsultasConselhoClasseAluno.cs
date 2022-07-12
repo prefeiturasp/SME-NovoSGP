@@ -189,7 +189,15 @@ namespace SME.SGP.Aplicacao
                 consideraHistorico = alunoNaTurma.Inativo;
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
                 if (!turmasCodigos.Any())
+                {
                     turmasCodigos = new string[1] { turma.CodigoTurma };
+
+                    if (!codigoTurma.Equals(turma.CodigoTurma))
+                        turmasCodigos = new string[2] { codigoTurma, turma.CodigoTurma };
+                }       
+                else if (!turmasCodigos.Contains(turma.CodigoTurma))
+                    turmasCodigos = turmasCodigos.Concat(new string[] { turma.CodigoTurma }).ToArray();
+
                 conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
                 if (conselhosClassesIds != null && !conselhosClassesIds.Any())
                     conselhosClassesIds = new long[1] { conselhoClasseId };
@@ -246,7 +254,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares != null)
             {
                 var dataInicioPrimeiroBimestre = periodosEscolares.Where(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).FirstOrDefault().PeriodoInicio;
-                dadosAlunos = dadosAlunos.Where(d => d.SituacaoCodigo == SituacaoMatriculaAluno.Ativo || d.SituacaoCodigo != SituacaoMatriculaAluno.Ativo && d.DataSituacao >= dataInicioPrimeiroBimestre);
+                dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.SituacaoCodigo != SituacaoMatriculaAluno.VinculoIndevido && d.DataSituacao >= dataInicioPrimeiroBimestre);
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));

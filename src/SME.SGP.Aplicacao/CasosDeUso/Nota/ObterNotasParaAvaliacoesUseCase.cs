@@ -332,7 +332,7 @@ namespace SME.SGP.Aplicacao
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
-            
+            IEnumerable<DisciplinaDto> disciplinas;
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
             if (!componenteReferencia.Regencia)
@@ -357,8 +357,7 @@ namespace SME.SGP.Aplicacao
                 if (componenteReferencia.Regencia)
                 {
                     var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
-                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                    IEnumerable<DisciplinaDto> disciplinas;
+                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();                    
                     if (idsDisciplinas != null && idsDisciplinas.Any())
                         disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
                     else
@@ -369,6 +368,12 @@ namespace SME.SGP.Aplicacao
                                                                                             turmaCompleta.TipoTurma == TipoTurma.Programa,
                                                                                             componenteReferencia.Regencia);
                     }
+                    var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
+                    avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
+                }
+                else
+                {
+                    disciplinas = disciplinasNaoRegencia;
                     var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
                     avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                 }

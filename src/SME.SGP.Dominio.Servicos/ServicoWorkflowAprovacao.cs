@@ -255,7 +255,7 @@ namespace SME.SGP.Dominio.Servicos
                
             }
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
                                                new ConsolidacaoTurmaDto(fechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.TurmaId, 0),
                                                Guid.NewGuid(),
                                                null));
@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificarFechamentoReaberturaUEUseCase(FechamentoReabertura fechamentoReabertura)
         {
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
-            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual)), new Guid(), null));
+            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual)), new Guid(), null));
         }
 
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)

@@ -1,5 +1,6 @@
 ﻿using Elastic.Apm;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Diagnostics;
@@ -12,10 +13,10 @@ namespace SME.SGP.Infra
         private readonly TelemetryClient insightsClient;
         private readonly TelemetriaOptions telemetriaOptions;
 
-        public ServicoTelemetria(TelemetryClient insightsClient, TelemetriaOptions telemetriaOptions)
+        public ServicoTelemetria(TelemetryClient insightsClient, IOptions<TelemetriaOptions> telemetriaOptions)
         {
             this.insightsClient = insightsClient;
-            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
+            this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
         }
 
         public async Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")

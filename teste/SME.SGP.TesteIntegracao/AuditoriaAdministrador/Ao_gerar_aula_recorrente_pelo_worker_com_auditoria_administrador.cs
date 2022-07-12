@@ -16,6 +16,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MediatR;
+using Microsoft.Extensions.Options;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
 {
@@ -47,8 +48,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             var worker = new WorkerRabbitMQ(
                                 scope,
                                 telemetria,
-                                new TelemetriaOptions(),
-                                new ConsumoFilasOptions() { Padrao = true },
+                                Options.Create(new TelemetriaOptions()),
+                                Options.Create(new ConsumoFilasOptions()),
                                 connection);
 
             var servicoUsuario = ServiceProvider.GetService<IServicoUsuario>();

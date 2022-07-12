@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 var turmasUe = await mediator.Send(new ObterTurmasInfantilPorUEQuery(DateTimeExtension.HorarioBrasilia().Year, filtro.CodigoUe));
 
                 foreach (var turma in turmasUe)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurma, turma.TurmaCodigo));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordoTurma, turma.TurmaCodigo));
             }                
 
             return true;
