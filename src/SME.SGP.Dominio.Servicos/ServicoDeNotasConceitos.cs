@@ -14,8 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IConsultasAbrangencia consultasAbrangencia;
-
         private readonly string hostAplicacao;
         private readonly IRepositorioCiclo repositorioCiclo;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
@@ -66,7 +64,7 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(
             IServicoEol servicoEOL, 
-            IConsultasAbrangencia consultasAbrangencia,
+            //IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, 
             IRepositorioCiclo repositorioCiclo,
             IRepositorioConceitoConsulta repositorioConceito, 
@@ -83,7 +81,6 @@ namespace SME.SGP.Dominio
             IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
@@ -188,7 +185,7 @@ namespace SME.SGP.Dominio
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
                 var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(atividadeAvaliativa.TurmaId, true);
+                var turmaHistorica = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(atividadeAvaliativa.TurmaId, true));
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
                 var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
@@ -268,7 +265,7 @@ namespace SME.SGP.Dominio
 
         public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, bool consideraHistorico = false)
         {
-            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaCodigo, consideraHistorico);
+            var turma = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turmaCodigo, consideraHistorico));
 
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
@@ -341,7 +338,7 @@ namespace SME.SGP.Dominio
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);
+            var turmaHistorica = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
             var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
             var dataAtual = DateTime.Now;
