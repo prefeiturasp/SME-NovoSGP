@@ -198,7 +198,8 @@ namespace SME.SGP.Aplicacao.Workers
                     { "UsuarioLogado", mensagemRabbit.UsuarioLogadoRF },
                     { "RF", mensagemRabbit.UsuarioLogadoRF },
                     { "login", mensagemRabbit.UsuarioLogadoRF },
-                    { "Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } } }
+                    { "Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } } },
+                    { "Administrador", mensagemRabbit.Administrador }
                 };
 
                 contextoAplicacao.AdicionarVariaveis(variaveis);

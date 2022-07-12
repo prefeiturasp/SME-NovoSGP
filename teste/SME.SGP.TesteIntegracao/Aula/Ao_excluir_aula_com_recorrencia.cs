@@ -88,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             retorno.ShouldNotBeNull();
 
-            var lista = ObterTodos<Aula>();
+            var lista = ObterTodos<Dominio.Aula>();
 
             lista.ShouldNotBeEmpty();
 

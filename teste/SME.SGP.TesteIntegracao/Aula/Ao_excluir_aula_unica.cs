@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             retorno.ShouldNotBeNull();
 
-            var lista = ObterTodos<Aula>();
+            var lista = ObterTodos<Dominio.Aula>();
 
             lista.ShouldNotBeEmpty();
 

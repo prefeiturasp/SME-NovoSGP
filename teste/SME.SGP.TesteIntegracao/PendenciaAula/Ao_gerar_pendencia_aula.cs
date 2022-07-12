@@ -125,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Excluido = false
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),

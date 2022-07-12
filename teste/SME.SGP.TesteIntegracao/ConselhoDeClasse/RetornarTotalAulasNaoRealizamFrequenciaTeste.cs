@@ -85,7 +85,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 Nome = "Teste"
             });
 
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "1106",

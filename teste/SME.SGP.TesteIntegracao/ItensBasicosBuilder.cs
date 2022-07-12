@@ -105,7 +105,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Migrado = false
             });
 
-            await _teste.InserirNaBase(new Aula
+            await _teste.InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "1114",
@@ -137,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         public async Task CriaAulaSemFrequencia()
         {
-            await _teste.InserirNaBase(new Aula
+            await _teste.InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "1106",
