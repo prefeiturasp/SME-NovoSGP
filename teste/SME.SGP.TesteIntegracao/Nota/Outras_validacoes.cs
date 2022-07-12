@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -122,10 +123,13 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             filtroNota.CriarPeriodoAbertura = false;
             filtroNota.CriarPeriodoEscolar = false;
+
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             filtroNota.DataReferencia = dataAtual.AddDays(-15);
 
             await CriarEstruturaBaseDeNota(filtroNota);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+
             await CriarPeriodoEscolar(dataAtual.AddDays(-20), dataAtual.AddDays(-10), BIMESTRE_1);
             await CriarPeriodoEscolar(dataAtual.AddDays(10), dataAtual.AddDays(20), BIMESTRE_2);
             await CriarPeriodoEscolar(dataAtual.AddDays(25), dataAtual.AddDays(35), BIMESTRE_3);
@@ -146,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_2, NOTA_1);
 
             var notaconceito = ObterNotaNumericaPersistencia(filtroNota);
-            var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
+            var listaNotaConceito = ObterNotaConceitoListar(filtroNota, dataAtual.AddDays(-20), dataAtual.AddDays(-10));
 
             await ExecutarNotasConceito(notaconceito, listaNotaConceito, false);
             var notificacoes = ObterTodos<Notificacao>();
@@ -187,6 +191,23 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TurmaHistorico = false,
                 PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
                 PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_29_04_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_29_04_FIM_BIMESTRE_1.Ticks,
+            };
+        }
+        private ListaNotasConceitosDto ObterNotaConceitoListar(FiltroNotasDto filtroNota, DateTime periodoInicio, DateTime periodoFim)
+        {
+            return new ListaNotasConceitosDto()
+            {
+                TurmaId = long.Parse(TURMA_CODIGO_1),
+                AnoLetivo = filtroNota.ConsiderarAnoAnterior ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Year : DateTimeExtension.HorarioBrasilia().Year,
+                Bimestre = BIMESTRE_1,
+                DisciplinaCodigo = long.Parse(filtroNota.ComponenteCurricular),
+                Modalidade = filtroNota.Modalidade,
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
+                Semestre = SEMESTRE_1,
+                TurmaCodigo = TURMA_CODIGO_1,
+                TurmaHistorico = false,
+                PeriodoInicioTicks = periodoInicio.Ticks,
+                PeriodoFimTicks = periodoFim.Ticks,
             };
         }
 
@@ -273,7 +294,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_1, filtroNota.ComponenteCurricular);
 
-            dataAula = filtroNota.ConsiderarAnoAnterior ? DATA_04_01.AddYears(-1) : DATA_04_01;
+            dataAula = filtroNota.DataReferencia.HasValue ? filtroNota.DataReferencia.Value.AddDays(1) : filtroNota.ConsiderarAnoAnterior ? DATA_04_01.AddYears(-1) : DATA_04_01;
 
             await CriarAula(filtroNota.ComponenteCurricular, dataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1, filtroNota.ProfessorRf);
 

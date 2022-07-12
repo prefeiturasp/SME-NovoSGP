@@ -30,6 +30,7 @@ namespace SME.SGP.Dominio
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
         private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
+        private readonly IRepositorioFechamentoReabertura repositorioFechamentoReabertura;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -77,7 +78,8 @@ namespace SME.SGP.Dominio
             IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
             IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
+            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator,
+             IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -93,6 +95,7 @@ namespace SME.SGP.Dominio
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
+            this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -349,7 +352,10 @@ namespace SME.SGP.Dominio
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
-            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
+            var fechamentoReabertura = await repositorioFechamentoReabertura.ObterReaberturaFechamentoBimestrePorDataReferencia(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId);
+
+            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                || fechamentoReabertura == null;
 
             foreach (var notaConceito in notasConceitos)
             {
