@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -31,15 +32,15 @@ namespace SME.SGP.Aplicacao
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunosAtividadeAvaliativa,
-                                                               ObterFiltroAtividadeAvaliativa(filtro, atividadesAvaliativas, percentualAlunosInsuficientes, notasPorAvaliacao, filtro),
+                                                               ObterFiltroAtividadeAvaliativa(filtro, atividadesAvaliativas, percentualAlunosInsuficientes, notasPorAvaliacao.Key, notasPorAvaliacao.ToList()),
                                                                Guid.NewGuid(), null));
 
             return true;
         }
 
-        private FiltroValidarMediaAlunosAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(FiltroValidarMediaAlunosDto validarMediaAlunosDto, System.Collections.Generic.IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, IGrouping<long, NotaConceito> notasPorAvaliacao, FiltroValidarMediaAlunosDto filtroAtividadeAvaliativa)
+        private FiltroValidarMediaAlunosAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(FiltroValidarMediaAlunosDto filtroValidarMedia, System.Collections.Generic.IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, long notaChaveAvaliativa, IEnumerable<NotaConceito> notasPorAvaliacao)
         {
-            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notasPorAvaliacao, validarMediaAlunosDto.Usuario, validarMediaAlunosDto.DisciplinaId, filtroAtividadeAvaliativa);
+            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notaChaveAvaliativa, notasPorAvaliacao, filtroValidarMedia.Usuario, filtroValidarMedia.DisciplinaId, filtroValidarMedia.HostAplicacao);
         }
     }
 }

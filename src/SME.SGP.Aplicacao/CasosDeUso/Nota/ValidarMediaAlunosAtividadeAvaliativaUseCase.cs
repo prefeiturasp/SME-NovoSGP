@@ -8,12 +8,12 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
     public class ValidarMediaAlunosAtividadeAvaliativaUseCase : AbstractUseCase, IValidarMediaAlunosAtividadeAvaliativaUseCase
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
@@ -21,16 +21,15 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IRepositorioCiclo repositorioCiclo;
+        private readonly IServicoUsuario servicoUsuario;
 
-        public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IServicoEol servicoEOL, IRepositorioConceitoConsulta repositorioConceito, 
+        public ValidarMediaAlunosAtividadeAvaliativaUseCase(IMediator mediator, IRepositorioConceitoConsulta repositorioConceito, 
                                                             IConsultasAbrangencia consultasAbrangencia, IRepositorioNotaParametro repositorioNotaParametro,
                                                             IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma,
                                                             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-                                                            IServicoNotificacao servicoNotificacao, IRepositorioCiclo repositorioCiclo) : base(mediator)
+                                                            IRepositorioCiclo repositorioCiclo, IServicoUsuario servicoUsuario) : base(mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
@@ -38,7 +37,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
+            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
         }
 
@@ -48,13 +47,13 @@ namespace SME.SGP.Aplicacao
 
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
 
-            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.NotasPorAvaliacao.Key);
+            var atividadeAvaliativa = filtro.AtividadesAvaliativas.FirstOrDefault(x => x.Id == filtro.ChaveNotasPorAvaliacao);
             
             var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
             
-            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(atividadeAvaliativa.TurmaId, true);
+            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurmaComUsuario(atividadeAvaliativa.TurmaId, filtro.Usuario, true);
             
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
+            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, turmaHistorica != null);
             
             var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
             
@@ -78,41 +77,43 @@ namespace SME.SGP.Aplicacao
             }
             string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
           $"pelo Professor {filtro.Usuario.Nome} ({filtro.Usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
-          $"<a href='{filtro.FiltroAtividadeAvaliativa.HostAplicacao}diario-classe/notas/{filtro.DisciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
+          $"<a href='{filtro.HostAplicacao}diario-classe/notas/{filtro.DisciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
 
             // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
             if (quantidadeAlunosSuficientes < (quantidadeAlunos * filtro.PercentualAlunosInsuficientes / 100))
             {
-                // Notifica todos os CPs da UE
-                foreach (var usuarioCP in filtro.FiltroAtividadeAvaliativa.UsuariosCPs)
-                {
+                var usuariosCPs = await ObterUsuariosCPs(turma);
 
-                    servicoNotificacao.Salvar(new Notificacao()
-                    {
-                        Ano = atividadeAvaliativa.CriadoEm.Year,
-                        Categoria = NotificacaoCategoria.Alerta,
-                        DreId = atividadeAvaliativa.DreId,
-                        Mensagem = mensagemNotasConceitos,
-                        UsuarioId = usuarioCP.Id,
-                        Tipo = NotificacaoTipo.Notas,
-                        Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                        TurmaId = atividadeAvaliativa.TurmaId,
-                        UeId = atividadeAvaliativa.UeId,
-                    });
-                }
+                foreach (var usuarioCP in usuariosCPs)
+                    await mediator.Send(new GerarNotificacaoCommand(DateTimeExtension.HorarioBrasilia().Year, NotificacaoCategoria.Alerta, atividadeAvaliativa.DreId, mensagemNotasConceitos, usuarioCP.Id, NotificacaoTipo.Notas, $"Alteração em Atividade Avaliativa - Turma {turma.Nome}", atividadeAvaliativa.TurmaId, atividadeAvaliativa.UeId));
             }
 
             return true;
         }
 
-        private async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
+        private async Task<IEnumerable<Usuario>> ObterUsuariosCPs(Turma turma)
         {
-            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(atividadeAvaliativa.TurmaId.ToString());
+            var usuariosCPs = await mediator.Send(new ObterFuncionariosPorUeECargoQuery(turma.Ue.CodigoUe, (int)Cargo.CP));
+
+            return await CarregaUsuariosPorRFs(usuariosCPs);
+        }
+
+        private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<FuncionarioDTO> listaCPsUe)
+        {
+            var usuarios = new List<Usuario>();
+            foreach (var cpUe in listaCPsUe)
+                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRF));
+            return usuarios;
+        }
+
+        private async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, Usuario usuario, bool consideraHistorico = false)
+        {
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolQuery(atividadeAvaliativa.TurmaId.ToString()));            
 
             if (turmaEOL.TipoTurma == Dominio.Enumerados.TipoTurma.EdFisica)
                 return repositorioNotaTipoValor.ObterPorTurmaId(Convert.ToInt64(atividadeAvaliativa.TurmaId), Dominio.Enumerados.TipoTurma.EdFisica);
 
-            var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, consideraHistorico);
+            var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, usuario, consideraHistorico);
 
             if (notaTipo == null)
                 throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
@@ -132,9 +133,9 @@ namespace SME.SGP.Aplicacao
             return periodosEscolares;
         }
 
-        public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, bool consideraHistorico = false)
+        public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, Usuario usuario, bool consideraHistorico = false)
         {
-            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaCodigo, consideraHistorico);
+            var turma = await consultasAbrangencia.ObterAbrangenciaTurmaComUsuario(turmaCodigo, usuario, consideraHistorico);
 
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");

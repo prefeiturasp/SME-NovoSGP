@@ -17,7 +17,7 @@ namespace SME.SGP.Worker.Avaliacao
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAvaliacao",
-                typeof(RotasRabbitSgpAula))
+                typeof(RotasRabbitSgpAvaliacao))
         {
         }
 
@@ -28,6 +28,7 @@ namespace SME.SGP.Worker.Avaliacao
             Comandos.Add(RotasRabbitSgpAvaliacao.RotaAtividadesNotasSync, new ComandoRabbit("Importar notas de atividades avaliativas do GSA", typeof(IImportarNotaAtividadeAvaliativaGsaUseCase)));
             Comandos.Add(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new ComandoRabbit("Validar média de alunos das atividades avaliativas", typeof(IValidarMediaAlunosUseCase)));
             Comandos.Add(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunosAtividadeAvaliativa, new ComandoRabbit("Validar média de alunos por atividade avaliativa", typeof(IValidarMediaAlunosAtividadeAvaliativaUseCase)));
+            Comandos.Add(RotasRabbitSgpAvaliacao.RotaNotificarUsuarioAlteracaoExtemporanea, new ComandoRabbit("Notificar usuário quando da ocorrência de alteração extemporânea", typeof(INotificarUsuarioAlteracaoExtemporaneaUseCase)));
         }
     }
 }
