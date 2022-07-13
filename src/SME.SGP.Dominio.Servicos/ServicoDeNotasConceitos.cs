@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
@@ -62,7 +61,6 @@ namespace SME.SGP.Dominio
         public ServicoDeNotasConceitos(
             IServicoEol servicoEOL, 
             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
-            IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, 
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao, 
@@ -74,7 +72,6 @@ namespace SME.SGP.Dominio
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
-            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -176,7 +173,7 @@ namespace SME.SGP.Dominio
                 var turmaHistorica = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(atividadeAvaliativa.TurmaId, true));
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
-                var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+                var notaParametro = await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
                 var quantidadeAlunos = notasPorAvaliacao.Count();
                 var quantidadeAlunosSuficientes = 0;
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
@@ -328,7 +325,7 @@ namespace SME.SGP.Dominio
             var nota = notasConceitos.FirstOrDefault();
             var turmaHistorica = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
-            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            var notaParametro = await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
             var dataAtual = DateTime.Now;
 
             // Verifica Bimestre Atual
