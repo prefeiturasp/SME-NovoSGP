@@ -678,5 +678,28 @@ namespace SME.SGP.Dados
 
             return await database.QueryAsync<TotalFrequenciaEAulasAlunoDto>(query.ToString(), parametros);
         }
+
+        public Task<IEnumerable<FrequenciaAluno>> ObterListaDeFrequenciaAlunoPorDisciplinaData(List<string> listaDeCodigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
+        {
+            var query = @"select *
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where codigo_aluno = any(@listaDeCodigoAluno)
+                            and disciplina_id = @disciplinaId
+	                        and tipo = 1
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                listaDeCodigoAluno,
+                disciplinaId,
+                dataAtual,
+                turmaCodigo
+            });
+        }
     }
 }
