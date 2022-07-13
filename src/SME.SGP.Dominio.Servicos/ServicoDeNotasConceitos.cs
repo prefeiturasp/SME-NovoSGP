@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEOL;
@@ -59,7 +58,6 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(
             IServicoEol servicoEOL, 
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao, 
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -69,7 +67,6 @@ namespace SME.SGP.Dominio
             IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -143,7 +140,7 @@ namespace SME.SGP.Dominio
             var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(atividadeAvaliativa.TurmaId.ToString());
 
             if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
-                return repositorioNotaTipoValor.ObterPorTurmaId(Convert.ToInt64(atividadeAvaliativa.TurmaId), Enumerados.TipoTurma.EdFisica);
+                return await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId), Enumerados.TipoTurma.EdFisica));
 
             var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, consideraHistorico);
 
@@ -258,7 +255,8 @@ namespace SME.SGP.Dominio
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
+            var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, data));
+            return retorno;
         }
 
         private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
