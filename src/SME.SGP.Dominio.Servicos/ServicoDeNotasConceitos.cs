@@ -478,7 +478,7 @@ namespace SME.SGP.Dominio
                 usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var podePersistir =
-                await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
+                await mediator.Send(new ObterPodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula));
 
             if (!usuario.EhProfessorCj() && !podePersistir)
                 throw new NegocioException(
