@@ -409,7 +409,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<ConceitoDto>> ObterConceitos(DateTime data)
-            => MapearParaDto(await repositorioConceito.ObterPorData(data));
+            => MapearParaDto(await mediator.Send(new ObterConceitoPorDataQuery(data)));
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {

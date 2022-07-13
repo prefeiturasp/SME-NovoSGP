@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IRepositorioNotaParametro repositorioNotaParametro;
         private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
@@ -23,6 +22,7 @@ namespace SME.SGP.Dominio
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly string hostAplicacao;
@@ -61,8 +61,7 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(
             IServicoEol servicoEOL, 
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, 
-            IRepositorioConceitoConsulta repositorioConceito, 
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
             IRepositorioNotaParametro repositorioNotaParametro,
             IRepositorioNotasConceitos repositorioNotasConceitos, 
             IUnitOfWork unitOfWork,
@@ -75,7 +74,6 @@ namespace SME.SGP.Dominio
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
             this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
@@ -174,7 +172,7 @@ namespace SME.SGP.Dominio
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                var valoresConceito = await  mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
                 var turmaHistorica = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(atividadeAvaliativa.TurmaId, true));
                 var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
                 var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
@@ -360,7 +358,7 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos = await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
