@@ -253,10 +253,9 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo, null, true));
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id));
 
-            DateTime dataInicioPrimeiroBimestre = new DateTime();
             if (periodosEscolares != null)
             {
-                dataInicioPrimeiroBimestre = periodosEscolares.Where(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).FirstOrDefault().PeriodoInicio;
+                var dataInicioPrimeiroBimestre = periodosEscolares.Where(pe => pe.Bimestre == PRIMEIRO_BIMESTRE).FirstOrDefault().PeriodoInicio;
                 dadosAlunos = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.SituacaoCodigo != SituacaoMatriculaAluno.VinculoIndevido && d.DataSituacao >= dataInicioPrimeiroBimestre);
             }
 
