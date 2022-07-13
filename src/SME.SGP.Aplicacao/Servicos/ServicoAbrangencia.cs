@@ -363,7 +363,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
-            IEnumerable<long> idsParaAtualizar = null;
+            IEnumerable<long> idsParaAtualizar = Enumerable.Empty<long>();
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
                 idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id);
