@@ -394,8 +394,14 @@ namespace SME.SGP.Worker.RabbitMQ
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisSupervisorPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - Supervisor por DRE", typeof(IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase)));
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - PAAI por DRE", typeof(IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase)));
             comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IRemoverAtribuicaoResponsaveisASPPPorDreUseCase)));
-            
-        }
+
+            //Tratar a carga referência Aula no registro frequencia aluno
+            comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAno, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por ano", typeof(ITratarRegistroFrequenciaAlunoUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoUe, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por ue", typeof(ITratarRegistroFrequenciaAlunoUeUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoTurma, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por turma", typeof(ITratarRegistroFrequenciaAlunoTurmaUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAula, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por aula", typeof(ITratarRegistroFrequenciaAlunoAulaUseCase)));
+            comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoProcessamento, new ComandoRabbit("Processa a carga referência de aula no registro frequência aluno", typeof(ITratarRegistroFrequenciaAlunoProcessamentoUseCase)));
+    }
 
 
         public async Task TratarMensagem(BasicDeliverEventArgs ea)

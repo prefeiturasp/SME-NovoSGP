@@ -1,11 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,13 +24,13 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.PercentualFrequencia)
                 .NotEmpty()
-                .WithMessage("O percentual de frequência deve ser informado.");
+                .WithMessage("É preciso informar o percentual de frequência para consultar a síntese.");
             RuleFor(a => a.Disciplina)
                 .NotEmpty()
-                .WithMessage("A disciplina deve ser informada.");
+                .WithMessage("É preciso informar a disciplina para consultar a síntese.");
             RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
-                .WithMessage("O ano letivo deve ser informado.");
+                .WithMessage("É preciso informar o ano letivo para consultar a síntese.");
         }
     }
 }

@@ -1327,7 +1327,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
 
-
+            //Tratar a carga referência Aula no registro frequencia aluno
+            services.TryAddScoped<ITratarRegistroFrequenciaAlunoUseCase, TratarRegistroFrequenciaAlunoUseCase>();
+            services.TryAddScoped<ITratarRegistroFrequenciaAlunoUeUseCase, TratarRegistroFrequenciaAlunoUeUseCase>();
+            services.TryAddScoped<ITratarRegistroFrequenciaAlunoTurmaUseCase, TratarRegistroFrequenciaAlunoTurmaUseCase>();
+            services.TryAddScoped<ITratarRegistroFrequenciaAlunoAulaUseCase, TratarRegistroFrequenciaAlunoAulaUseCase>();
+            services.TryAddScoped<ITratarRegistroFrequenciaAlunoProcessamentoUseCase, TratarRegistroFrequenciaAlunoProcessamentoUseCase>();
         }
     }
 }

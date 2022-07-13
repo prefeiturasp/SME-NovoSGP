@@ -28,5 +28,10 @@
 
         public const string RotaConciliacaoFrequenciaTurmaMes = "sgp.frequencia.turma.conciliacao.mes";
 
+        public const string RotaTratarCargaRegistroFrequenciaAlunoAno = "sgp.frequencia.tratar.carga.referencia.registro.aluno.ano";
+        public const string RotaTratarCargaRegistroFrequenciaAlunoUe = "sgp.frequencia.tratar.carga.referencia.registro.aluno.ue";
+        public const string RotaTratarCargaRegistroFrequenciaAlunoTurma = "sgp.frequencia.tratar.carga.referencia.registro.aluno.turma";
+        public const string RotaTratarCargaRegistroFrequenciaAlunoAula = "sgp.frequencia.tratar.carga.referencia.registro.aluno.aula";
+        public const string RotaTratarCargaRegistroFrequenciaAlunoProcessamento = "sgp.frequencia.tratar.carga.referencia.registro.aluno.processa";
     }
 }

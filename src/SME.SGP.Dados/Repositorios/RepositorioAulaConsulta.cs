@@ -1164,5 +1164,16 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { disciplinaId, codigoAluno, codigoTurma });
         }
+
+        public async Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma)
+        {
+            var sql = @"SELECT rf.id as RegistroFrequenciaId, rf.aula_id as AulaId
+                            FROM aula a
+                              INNER JOIN turma t ON a.turma_id = t.turma_id
+                              INNER JOIN registro_frequencia rf ON rf.aula_id = a.id
+                             where t.turma_id = @codigoTurma";
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAulaParcialDto>(sql, new { codigoTurma });
+        }
     }
 }

@@ -25,13 +25,13 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.TurmaId)
                 .NotEmpty()
-                .WithMessage("O id da turma deve ser informado.");
+                .WithMessage("É preciso informar o id da turma para consultar os alunos com ausência.");
             RuleFor(a => a.DisciplinaId)
                 .NotEmpty()
-                .WithMessage("O id da disciplina deve ser informado.");
+                .WithMessage("É preciso informar o id da disciplina para consultar os alunos com ausência.");
             RuleFor(a => a.Bimestre)
                 .NotEmpty()
-                .WithMessage("O bimestre deve ser informado.");
+                .WithMessage("É preciso informar o bimestre para consultar os alunos com ausência.");
         }
     }
 }

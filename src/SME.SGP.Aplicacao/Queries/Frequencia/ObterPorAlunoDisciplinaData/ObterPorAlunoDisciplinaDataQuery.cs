@@ -32,13 +32,13 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(a => a.CodigoAluno)
                 .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado.");
+                .WithMessage("É preciso informar o código do aluno para consultar a frequência.");
             RuleFor(a => a.DisciplinaId)
                 .NotEmpty()
-                .WithMessage("O id da disciplina deve ser informado.");
+                .WithMessage("É preciso informar o id da disciplina para consultar a frequência.");
             RuleFor(a => a.DataAtual)
                 .NotEmpty()
-                .WithMessage("A data atual deve ser informado.");
+                .WithMessage("É preciso informar a data atual para consultar a frequência.");
         }
     }
 }
