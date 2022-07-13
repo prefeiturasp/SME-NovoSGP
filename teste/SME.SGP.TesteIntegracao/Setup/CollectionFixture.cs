@@ -5,23 +5,30 @@ using SME.SGP.Infra;
 using System;
 using System.Data;
 using System.Text;
+using Dapper.FluentMap;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable 
+    public class CollectionFixture : IDisposable
     {
-        public IServiceCollection Services { get; }
+        public IServiceCollection Services { get; set; }
         public InMemoryDatabase Database { get; }
         public ServiceProvider ServiceProvider { get; set; }
 
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Database = new InMemoryDatabase();
 
+            IniciarServicos();
+
+        }
+
+        public void IniciarServicos()
+        {
             Services = new ServiceCollection();
 
-            Database = new InMemoryDatabase();
             Services.AddScoped<IDbConnection>(x => Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
@@ -29,7 +36,10 @@ namespace SME.SGP.TesteIntegracao.Setup
             Services.AddSingleton<IConfiguration>(config);
             Services.AddMemoryCache();
 
+            FluentMapper.EntityMaps.Clear();
+
             new RegistradorDependencias().Registrar(Services, null);
+
         }
 
         public void BuildServiceProvider()

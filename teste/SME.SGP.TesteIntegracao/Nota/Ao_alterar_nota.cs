@@ -25,12 +25,13 @@ namespace SME.SGP.TesteIntegracao.Nota
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
         public async Task Deve_permitir_alterar_nota_numerica_pelo_professor_titular()
         {
-            var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(),TipoNota.Nota, ANO_7);
+            var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(), TipoNota.Nota, ANO_7);
 
             await CriarEstruturaBaseDeNota(filtroNota);
 
@@ -275,64 +276,6 @@ namespace SME.SGP.TesteIntegracao.Nota
             await ExecutarNotasConceito(notaconceito, listaNotaConceito, false);
         }
 
-        [Fact]
-        public async Task Deve_permitir_alterar_nota_conceito_pelo_professor_titular_em_ano_anterior_sem_periodo_aberto()
-        {
-            var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(), TipoNota.Conceito, ANO_1, true);
-
-            filtroNota.CriarPeriodoAbertura = false;
-
-            await CriarEstruturaBaseDeNota(filtroNota);
-
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.P);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
-
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.S);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.P);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.S);
-
-            await CriarAtribuicaoCJ(filtroNota.Modalidade, long.Parse(filtroNota.ComponenteCurricular));
-
-            var notaconceito = ObterNotaConceitoPersistencia(filtroNota);
-
-            var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
-
-            await ExecutarNotasConceito(notaconceito, listaNotaConceito, false,true);
-        }
-
-        [Fact]
-        public async Task Deve_permitir_alterar_nota_conceito_pelo_professor_titular_em_ano_anterior_em_periodo_aberto()
-        {
-            var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(), TipoNota.Conceito, ANO_1, true);
-
-            await CriarEstruturaBaseDeNota(filtroNota);
-
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.P);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
-
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.S);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.P);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_4, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.NS);
-            await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_5, ATIVIDADE_AVALIATIVA_2, null, (int)ConceitoValores.S);
-
-            await CriarAtribuicaoCJ(filtroNota.Modalidade, long.Parse(filtroNota.ComponenteCurricular));
-
-            var notaconceito = ObterNotaConceitoPersistencia(filtroNota);
-
-            var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
-
-            await ExecutarNotasConceito(notaconceito, listaNotaConceito, false, true);
-        }
-
         private async Task CriarNotaConceitoNaBase(FiltroNotasDto filtroNota, string alunoCodigo, long atividadeAvaliativaId, double? nota = null, long? conceitoId = null)
         {
             await InserirNaBase(new NotaConceito()
@@ -362,7 +305,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Semestre = SEMESTRE_1,
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
-                PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks  : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
+                PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
                 PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_29_04_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_29_04_FIM_BIMESTRE_1.Ticks,
             };
         }
@@ -379,13 +322,13 @@ namespace SME.SGP.TesteIntegracao.Nota
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_9},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_8},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_7},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_6},                   
+                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Nota = NOTA_6},
 
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_9},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_10},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_7},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_8},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_5},                    
+                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Nota = NOTA_5},
                 }
             };
         }
@@ -402,7 +345,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_3, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.S},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_4, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.P},
-                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},                    
+                    new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_5, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_1, Conceito = (int)ConceitoValores.NS},
 
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_1, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.S},
                     new NotaConceitoDto() { AlunoId = ALUNO_CODIGO_2, AtividadeAvaliativaId = ATIVIDADE_AVALIATIVA_2, Conceito = (int)ConceitoValores.P},
@@ -433,7 +376,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
             await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_2);
 
-            await CriarAtividadeAvaliativa(dataAula, TIPO_AVALIACAO_CODIGO_2, AVALIACAO_NOME_2,false, false, filtroNota.ProfessorRf);
+            await CriarAtividadeAvaliativa(dataAula, TIPO_AVALIACAO_CODIGO_2, AVALIACAO_NOME_2, false, false, filtroNota.ProfessorRf);
 
             await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_2, filtroNota.ComponenteCurricular);
         }

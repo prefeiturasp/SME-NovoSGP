@@ -155,8 +155,6 @@ namespace SME.SGP.TesteIntegracao.Nota
             {
                 bimestre.Alunos.Any().ShouldBeTrue();
 
-                (bimestre.Alunos.Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
-
                 bimestre.Avaliacoes.Any().ShouldBeTrue();
 
                 (bimestre.Avaliacoes.Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
@@ -210,7 +208,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             await CriarParametrosNotas();
 
             await CriarAbrangencia(filtroNota.Perfil);
-
+            
             await CriarCiclo();
 
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);

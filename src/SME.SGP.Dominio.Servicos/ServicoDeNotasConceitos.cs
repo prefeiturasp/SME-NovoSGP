@@ -117,8 +117,8 @@ namespace SME.SGP.Dominio
             var atividadesAvaliativas = repositorioAtividadeAvaliativa
                 .ListarPorIds(idsAtividadesAvaliativas);
 
-            var alunos = await servicoEOL
-                .ObterAlunosPorTurma(turmaId, true);
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turmaId, true));
+
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");

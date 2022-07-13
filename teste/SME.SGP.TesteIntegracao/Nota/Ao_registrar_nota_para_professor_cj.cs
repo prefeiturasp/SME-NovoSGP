@@ -19,6 +19,12 @@ namespace SME.SGP.TesteIntegracao.Nota
         public Ao_registrar_nota_para_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Ao_lancar_nota_numerica_pelo_professor_cj_com_avaliacoes_do_professor_titular_do_cj()
