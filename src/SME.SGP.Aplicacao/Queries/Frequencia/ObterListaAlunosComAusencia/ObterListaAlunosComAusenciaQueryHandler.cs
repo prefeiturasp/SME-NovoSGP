@@ -46,9 +46,11 @@ namespace SME.SGP.Aplicacao
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
             var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida);
+            var listaDeFrequenciaAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterListaDeFrequenciaAlunoPorDisciplinaData(request.DisciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
+
             foreach (var alunoEOL in alunosAtivos)
             {
-                var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, request.DisciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
+                var frequenciaAluno = listaDeFrequenciaAluno.FirstOrDefault(frenquencia => frenquencia.CodigoAluno == alunoEOL.CodigoAluno);
                 if (frequenciaAluno == null || frequenciaAluno.NumeroFaltasNaoCompensadas <= 0 || frequenciaAluno.PercentualFrequencia == 100)
                     continue;
 
