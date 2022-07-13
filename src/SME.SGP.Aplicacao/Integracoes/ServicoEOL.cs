@@ -462,9 +462,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             }
         }
 
-        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
-            var resposta = httpClient.GetAsync($"escolas/{ueId}/funcionarios/cargos/{cargoId}").Result;
+            var resposta = await httpClient.GetAsync($"escolas/{ueId}/funcionarios/cargos/{cargoId}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;

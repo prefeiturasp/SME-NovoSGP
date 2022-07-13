@@ -99,8 +99,10 @@ namespace SME.SGP.Dominio.Servicos
             var dataAtual = DateTime.Now;
             var mensagem = $"<p>A(s) nota(s)/conceito(s) final(is) da turma {turma.Nome} da {ue.Nome} (DRE {ue.Dre.Nome}) no bimestre {bimestre} de {turma.AnoLetivo} foram alterados pelo Professor " +
                 $"{usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) em  {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para o(s) seguinte(s) aluno(s):</p><br/>{alunosComNotaAlterada} ";
-            var listaCPs = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
-            var listaDiretores = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
+            var listaCPs = await mediator.Send(
+                new ObterFuncionariosPorCargoUeQuery(turma.Ue.CodigoUe, (long)Cargo.CP));
+            var listaDiretores = await mediator.Send(
+                new ObterFuncionariosPorCargoUeQuery(turma.Ue.CodigoUe, (long)Cargo.Diretor));
 
             var filtro = new FiltroObterSupervisorEscolasDto
             {

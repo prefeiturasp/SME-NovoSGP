@@ -323,7 +323,8 @@ namespace SME.SGP.Dominio.Servicos
                 var nomeUe = $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}";
 
                 Notificacao notificacao = MontaNotificacao(nomeUe, "DRE", fechamentosBimestre, ue.CodigoUe, null);
-                var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+                var diretores = await mediator.Send(
+                    new ObterFuncionariosPorCargoUeQuery(ue.CodigoUe, (long)Cargo.Diretor));
                 if (diretores == null || !diretores.Any())
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Não foram localizados diretores para Ue {ue.CodigoUe} para Enviar notificação para a UE.", LogNivel.Negocio, LogContexto.Fechamento));
