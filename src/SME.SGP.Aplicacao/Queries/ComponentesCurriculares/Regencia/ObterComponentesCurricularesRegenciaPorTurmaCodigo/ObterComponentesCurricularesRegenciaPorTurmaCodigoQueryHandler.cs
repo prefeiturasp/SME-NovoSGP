@@ -25,7 +25,12 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
 
             if (turma == null)
-                throw new NegocioException("Turma não encontrada.");
+            {
+                if (request.SituacaoConselho)
+                    return default;
+                else
+                    throw new NegocioException("Turma não encontrada.");
+            }                
 
             var ehQtdeDuracaoAulaTurma4h = turma.QuantidadeDuracaoAula == 4;
             var turno = ehQtdeDuracaoAulaTurma4h ? turma.QuantidadeDuracaoAula : 0;
