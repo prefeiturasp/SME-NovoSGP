@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IServicoNotificacao servicoNotificacao;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly string hostAplicacao;
