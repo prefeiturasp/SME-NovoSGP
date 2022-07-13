@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
 using System;
 using System.Text;
@@ -12,12 +12,12 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaWorkerServidorRelatoriosCommandHandler : IRequestHandler<PublicaFilaWorkerServidorRelatoriosCommand, bool>
     {
-        private readonly IConfiguration configuration;
+        private readonly IConexoesRabbitFilasSGP conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
 
-        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IConfiguration configuration, IServicoTelemetria servicoTelemetria)
+        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
 
@@ -33,23 +33,17 @@ namespace SME.SGP.Aplicacao
 
         private void PublicaMensagem(PublicaFilaWorkerServidorRelatoriosCommand request, byte[] body)
         {
-            var factory = new ConnectionFactory
+            var _channel = conexaoRabbit.Get();
+            try
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
-            };
+                var props = _channel.CreateBasicProperties();
+                props.Persistent = true;
 
-            using (var conexaoRabbit = factory.CreateConnection())
+                _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, props, body);
+            }
+            finally
             {
-                using (IModel _channel = conexaoRabbit.CreateModel())
-                {
-                    var props = _channel.CreateBasicProperties();
-                    props.Persistent = true;
-
-                    _channel.BasicPublish(ExchangeSgpRabbit.ServidorRelatorios, request.Fila, props, body);
-                }
+                conexaoRabbit.Return(_channel);
             }
         }
 
