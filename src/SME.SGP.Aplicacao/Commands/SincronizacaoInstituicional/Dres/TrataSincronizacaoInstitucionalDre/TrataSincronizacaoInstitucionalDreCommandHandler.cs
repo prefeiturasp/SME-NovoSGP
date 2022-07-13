@@ -18,14 +18,17 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(TrataSincronizacaoInstitucionalDreCommand request, CancellationToken cancellationToken)
         {
+            await LogarInfo("Buscando UEs");
             var uesCodigo = await mediator.Send(new ObterUesCodigoPorDreSincronizacaoInstitucionalQuery(request.DreCodigo));
 
             if (uesCodigo == null || !uesCodigo.Any()) return true;
 
+            await LogarInfo("Iniciando Foreach");
             foreach (var ueCodigo in uesCodigo)
             {
                 try
                 {
+                    await LogarInfo($"Publicando Fila UE [{ueCodigo}]");
                     var publicarSyncUe = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalUeTratar, ueCodigo, Guid.NewGuid(), null));
                     if (!publicarSyncUe)
                     {
@@ -38,6 +41,11 @@ namespace SME.SGP.Aplicacao
                 }
             }
             return true;
+        }
+
+        private Task LogarInfo(string mensagem)
+        {
+            return mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Informacao, LogContexto.SincronizacaoInstitucional));
         }
     }
 }
