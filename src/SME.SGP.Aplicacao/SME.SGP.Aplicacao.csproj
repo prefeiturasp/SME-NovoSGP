@@ -16,6 +16,7 @@
     <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <None Remove="Interfaces\CasosDeUso\Aluno\**" />
     <None Remove="Queries\AcompanhamentoFrequencia\**" />
+    <Compile Remove="Queries\EOL\Aluno\ObterAlunosPorTurma\ObterAlunosPorTurmaQuery.cs" />
   </ItemGroup>
 
   <ItemGroup>
