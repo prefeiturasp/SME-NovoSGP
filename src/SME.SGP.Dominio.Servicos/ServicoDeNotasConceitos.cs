@@ -21,36 +21,6 @@ namespace SME.SGP.Dominio
 
         public Turma turma { get; set; }
 
-        private IEnumerable<Usuario> _usuariosCPs;
-
-        public async Task<IEnumerable<Usuario>> ObterUsuariosCPs()
-        {
-            if (_usuariosCPs == null)
-            {
-                var listaCPsUe =
-                    await mediator.Send(new ObterFuncionariosPorCargoUeQuery(turma.Ue.CodigoUe, (long) Cargo.CP));
-                var cpsUsuarios = await CarregaUsuariosPorRFs(listaCPsUe);
-                _usuariosCPs = cpsUsuarios;
-            }
-
-            return _usuariosCPs;
-        }
-
-        private Usuario _usuarioDiretor;
-
-        public async Task<Usuario> ObterUsuarioDiretor()
-        {
-            if (_usuarioDiretor == null)
-            {
-                var diretor =
-                    await mediator.Send(new ObterFuncionariosPorCargoUeQuery(turma.Ue.CodigoUe, (long) Cargo.Diretor));
-                var usrDiretor = await CarregaUsuariosPorRFs(diretor);
-                _usuarioDiretor = usrDiretor.First();
-            }
-
-            return _usuarioDiretor;
-        }
-
         public ServicoDeNotasConceitos(
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao,
@@ -116,13 +86,13 @@ namespace SME.SGP.Dominio
 
             var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            SalvarNoBanco(entidadesSalvar, criadoPor);
+            await SalvarNoBanco(entidadesSalvar, criadoPor);
 
             var alunosId = alunos
                 .Select(a => a.CodigoAluno)
                 .ToList();
 
-            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa,
@@ -142,89 +112,6 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
 
             return notaTipo;
-        }
-
-        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId,
-            Usuario usuario, string disciplinaId, string codigoTurma)
-        {
-            var dataAtual = DateTime.Now;
-            var notasConceitos =
-                await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(
-                    idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId, codigoTurma));
-
-            var atividadesAvaliativas =
-                await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
-
-            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
-            var percentualAlunosInsuficientes = double.Parse(await mediator.Send(
-                new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes,
-                    DateTime.Today.Year)));
-
-            foreach (var notasPorAvaliacao in notasPorAvaliacoes)
-            {
-                var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito =
-                    await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
-                var turmaHistorica =
-                    await mediator.Send(
-                        new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(atividadeAvaliativa.TurmaId, true));
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
-                var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
-                var notaParametro =
-                    await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
-                var quantidadeAlunos = notasPorAvaliacao.Count();
-                var quantidadeAlunosSuficientes = 0;
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atividadeAvaliativa.TurmaId));
-
-                var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
-                var periodoAtividade = periodosEscolares.FirstOrDefault(x =>
-                    x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
-                    x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-
-                foreach (var nota in notasPorAvaliacao)
-                {
-                    var valorConceito =
-                        ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId) : null;
-                    quantidadeAlunosSuficientes += ehTipoNota ? nota.Nota >= notaParametro.Media ? 1 : 0 :
-                        valorConceito != null && valorConceito.Aprovado ? 1 : 0;
-                }
-
-                string mensagemNotasConceitos =
-                    $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
-                    $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
-                    $"<a href='{hostAplicacao}diario-classe/notas/{disciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
-
-                // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
-                if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
-                {
-                    _usuariosCPs = null;
-                    // Notifica todos os CPs da UE
-                    var usuarioCPs = await ObterUsuariosCPs();
-                    foreach (var usuarioCP in usuarioCPs)
-                    {
-                        servicoNotificacao.Salvar(new Notificacao()
-                        {
-                            Ano = atividadeAvaliativa.CriadoEm.Year,
-                            Categoria = NotificacaoCategoria.Alerta,
-                            DreId = atividadeAvaliativa.DreId,
-                            Mensagem = mensagemNotasConceitos,
-                            UsuarioId = usuarioCP.Id,
-                            Tipo = NotificacaoTipo.Notas,
-                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                            TurmaId = atividadeAvaliativa.TurmaId,
-                            UeId = atividadeAvaliativa.UeId,
-                        });
-                    }
-                }
-            }
-        }
-
-        private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
-        {
-            var usuarios = new List<Usuario>();
-            foreach (var cpUe in listaCPsUe)
-                usuarios.Add(await mediator.Send(new ObterUsuarioPorCodigoRfLoginOuAdicionaQuery(cpUe.CodigoRf)));
-            return usuarios;
         }
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds,
@@ -432,41 +319,16 @@ namespace SME.SGP.Dominio
 
             if (alunosNotasExtemporaneas.ToString().Length > 0)
             {
-                string mensagem =
-                    $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
+                string mensagemNotificacao = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
                     $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
                     $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreAvaliacao}'>Clique aqui para visualizar os detalhes.</a>";
 
-                var usuariosCPs = await ObterUsuariosCPs();
-                foreach (var usuarioCP in usuariosCPs)
-                {
-                    NotificarUsuarioAlteracaoExtemporanea(atividadeAvaliativa, mensagem, usuarioCP.Id, turma.Nome);
-                }
-
-                var diretor = await ObterUsuarioDiretor();
-                NotificarUsuarioAlteracaoExtemporanea(atividadeAvaliativa, mensagem, diretor.Id, turma.Nome);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaNotificarUsuarioAlteracaoExtemporanea, new FiltroNotificarUsuarioAlteracaoExtemporaneaDto(atividadeAvaliativa, mensagemNotificacao, turma.Nome, turma.Ue.CodigoUe), Guid.NewGuid(), usuario));
             }
 
             var result = notasConceitos.ToList();
             result.AddRange(notasMultidisciplina);
             return result;
-        }
-
-        private void NotificarUsuarioAlteracaoExtemporanea(AtividadeAvaliativa atividadeAvaliativa, string mensagem,
-            long usuarioId, string turmaNome)
-        {
-            servicoNotificacao.Salvar(new Notificacao()
-            {
-                Ano = atividadeAvaliativa.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                DreId = atividadeAvaliativa.DreId,
-                Mensagem = mensagem,
-                UsuarioId = usuarioId,
-                Tipo = NotificacaoTipo.Notas,
-                Titulo = $"Alteração em Atividade Avaliativa - Turma {turmaNome}",
-                TurmaId = atividadeAvaliativa.TurmaId,
-                UeId = atividadeAvaliativa.UeId,
-            });
         }
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId,
