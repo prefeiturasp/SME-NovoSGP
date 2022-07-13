@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -155,7 +156,7 @@ namespace SME.SGP.Dominio
                 .Select(a => a.CodigoAluno)
                 .ToList();
 
-            await validarMediaAlunos(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma);
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos,new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, usuariosCPs), Guid.NewGuid(), usuario));
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
@@ -171,67 +172,6 @@ namespace SME.SGP.Dominio
                 throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
 
             return notaTipo;
-        }
-
-        public async Task validarMediaAlunos(IEnumerable<long> idsAtividadesAvaliativas, IEnumerable<string> alunosId, Usuario usuario, string disciplinaId, string codigoTurma)
-        {
-            var dataAtual = DateTime.Now;
-            var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(idsAtividadesAvaliativas.ToArray(), alunosId.ToArray(), disciplinaId, codigoTurma));
-
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(idsAtividadesAvaliativas);
-
-            var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
-            var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));
-
-            foreach (var notasPorAvaliacao in notasPorAvaliacoes)
-            {
-                var atividadeAvaliativa = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                var valoresConceito = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
-                var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(atividadeAvaliativa.TurmaId, true);
-                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
-                var ehTipoNota = tipoNota.TipoNota == TipoNota.Nota;
-                var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
-                var quantidadeAlunos = notasPorAvaliacao.Count();
-                var quantidadeAlunosSuficientes = 0;
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
-
-                var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
-                var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-
-                foreach (var nota in notasPorAvaliacao)
-                {
-                    var valorConceito = ehTipoNota ? valoresConceito.FirstOrDefault(a => a.Id == nota.ConceitoId) : null;
-                    quantidadeAlunosSuficientes += ehTipoNota ?
-                        nota.Nota >= notaParametro.Media ? 1 : 0 :
-                        valorConceito != null && valorConceito.Aprovado ? 1 : 0;
-                }
-                string mensagemNotasConceitos = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {periodoAtividade.Bimestre} de {turma.AnoLetivo} foram alterados " +
-              $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} estão abaixo da média.</p>" +
-              $"<a href='{hostAplicacao}diario-classe/notas/{disciplinaId}/{periodoAtividade.Bimestre}'>Clique aqui para visualizar os detalhes.</a>";
-
-                // Avalia se a quantidade de alunos com nota/conceito suficientes esta abaixo do percentual parametrizado para notificação
-                if (quantidadeAlunosSuficientes < (quantidadeAlunos * percentualAlunosInsuficientes / 100))
-                {
-                    _usuariosCPs = null;
-                    // Notifica todos os CPs da UE
-                    foreach (var usuarioCP in usuariosCPs)
-                    {
-
-                        servicoNotificacao.Salvar(new Notificacao()
-                        {
-                            Ano = atividadeAvaliativa.CriadoEm.Year,
-                            Categoria = NotificacaoCategoria.Alerta,
-                            DreId = atividadeAvaliativa.DreId,
-                            Mensagem = mensagemNotasConceitos,
-                            UsuarioId = usuarioCP.Id,
-                            Tipo = NotificacaoTipo.Notas,
-                            Titulo = $"Resultados de Atividade Avaliativa - Turma {turma.Nome}",
-                            TurmaId = atividadeAvaliativa.TurmaId,
-                            UeId = atividadeAvaliativa.UeId,
-                        });
-                    }
-                }
-            }
         }
 
         private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
