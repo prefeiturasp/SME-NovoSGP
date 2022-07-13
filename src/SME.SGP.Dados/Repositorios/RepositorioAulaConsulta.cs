@@ -604,6 +604,51 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
+        public async Task<IEnumerable<AulaPossuiFrequenciaAulaRegistradaDto>> ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, 
+            string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
+        {
+            var query = new StringBuilder(@"SELECT DISTINCT a.id,
+                                            a.data_aula AS DataAula,
+                                                a.aula_cj AS AulaCJ, 
+                                                a.professor_rf AS ProfessorRf,
+                                                a.criado_por AS CriadoPor, 
+                                                a.tipo_aula AS TipoAula,
+                                                CASE WHEN rf.id > 0 THEN TRUE ELSE false
+                                            END PossuiFrequenciaRegistrada ");
+            query.AppendLine("from aula a ");
+            query.AppendLine("inner join turma t on ");
+            query.AppendLine("a.turma_id = t.turma_id ");
+            query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
+            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
+            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
+            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
+            query.AppendLine("where");
+            query.AppendLine("not a.excluido");
+            query.AppendLine("and a.turma_id = @turmaCodigo ");
+            query.AppendLine("and a.disciplina_id = @disciplinaId ");
+            query.AppendLine("and t.ano_letivo = @anoLetivo ");
+
+            if (aulaInicio.HasValue && aulaFim.HasValue)
+                query.AppendLine("and a.data_aula between @aulaInicio and @aulaFim ");
+
+            if (!string.IsNullOrWhiteSpace(usuarioRF))
+                query.AppendLine("and a.professor_rf = @usuarioRF ");
+
+            if (aulaCj)
+                query.AppendLine("and a.aula_cj = true");
+
+            var parametros = new
+            {
+                periodoEscolarId = periodosEscolaresId.Select(c => c).ToArray(),
+                usuarioRF,
+                anoLetivo,
+                turmaCodigo,
+                disciplinaId,
+                aulaInicio,
+                aulaFim
+            };
+            return await database.Conexao.QueryAsync<AulaPossuiFrequenciaAulaRegistradaDto>(query.ToString(), parametros);
+        }
         public IEnumerable<Aula> ObterDatasDeAulasPorAnoTurmaEDisciplina(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
         {
             var query = new StringBuilder("select distinct a.*, t.* ");
@@ -1163,6 +1208,17 @@ namespace SME.SGP.Dados.Repositorios
                         group by disciplina_id ";
 
             return await database.Conexao.QueryAsync<TotalAulasNaoLancamNotaDto>(sql, new { disciplinaId, codigoAluno, codigoTurma });
+        }
+
+        public async Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma)
+        {
+            var sql = @"SELECT rf.id as RegistroFrequenciaId, rf.aula_id as AulaId
+                            FROM aula a
+                              INNER JOIN turma t ON a.turma_id = t.turma_id
+                              INNER JOIN registro_frequencia rf ON rf.aula_id = a.id
+                             where t.turma_id = @codigoTurma";
+
+            return await database.Conexao.QueryAsync<RegistroFrequenciaAulaParcialDto>(sql, new { codigoTurma });
         }
     }
 }

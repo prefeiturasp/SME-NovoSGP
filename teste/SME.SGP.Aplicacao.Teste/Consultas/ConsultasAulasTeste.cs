@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     {
         private readonly ConsultasAula consultas;
         private readonly Mock<IConsultasDisciplina> consultasDisciplinas;
-        private readonly Mock<IConsultasFrequencia> consultasFrequencia;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasTipoCalendario> consultasTipoCalendário;
@@ -33,7 +32,6 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             servicoUsuario = new Mock<IServicoUsuario>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             repositorioPlanoAula = new Mock<IRepositorioPlanoAula>();
-            consultasFrequencia = new Mock<IConsultasFrequencia>();
             servicoEol = new Mock<IServicoEol>();
             consultasDisciplinas = new Mock<IConsultasDisciplina>();
             repositorioTurma = new Mock<IRepositorioTurmaConsulta>();
@@ -42,7 +40,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasTipoCalendário = new Mock<IConsultasTipoCalendario>();
             mediator = new Mock<IMediator>();
 
-            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasFrequencia.Object, consultasTipoCalendário.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object, mediator.Object);
+            consultas = new ConsultasAula(repositorioAula.Object, consultasPeriodoEscolar.Object, consultasTipoCalendário.Object, repositorioPlanoAula.Object, repositorioTurma.Object, servicoUsuario.Object, servicoEol.Object, consultasDisciplinas.Object, consultasTurma.Object, consultasPeriodoFechamento.Object, mediator.Object);
 
             Setup();
         }
