@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
         private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoUsuario servicoUsuario;
+        //private readonly IServicoUsuario servicoUsuario;
 
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
@@ -56,13 +56,11 @@ namespace SME.SGP.Dominio
         public ServicoDeNotasConceitos(
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao,
-            IServicoUsuario servicoUsuario,
             IConfiguration configuration,
             IMediator mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -86,8 +84,7 @@ namespace SME.SGP.Dominio
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            var usuario = await servicoUsuario
-                .ObterUsuarioLogado();
+            var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
 
             await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,
                 usuario.EhGestorEscolar());
@@ -228,7 +225,7 @@ namespace SME.SGP.Dominio
         {
             var usuarios = new List<Usuario>();
             foreach (var cpUe in listaCPsUe)
-                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf));
+                usuarios.Add(await mediator.Send(new ObterUsuarioPorCodigoRfLoginOuAdicionaQuery(cpUe.CodigoRf)));
             return usuarios;
         }
 
@@ -478,7 +475,7 @@ namespace SME.SGP.Dominio
             string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioLogado();
+                usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var podePersistir =
                 await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
