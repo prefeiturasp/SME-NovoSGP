@@ -7,6 +7,7 @@
         public const string RotaAtividadesNotasSync = "sgp.atividade.avaliativa.notas.sync";
         public const string RotaValidarMediaAlunos = "sgp.validar.media.alunos";
         public const string RotaValidarMediaAlunosAtividadeAvaliativa = "sgp.validar.media.alunos.atividade.avaliativa";
-        
+        public const string RotaNotificarUsuarioAlteracaoExtemporanea = "sgp.notificar.usuario.alteracao.extemporanea";        
+
     }
 }

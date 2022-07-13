@@ -7,21 +7,23 @@ namespace SME.SGP.Infra
 {
     public class FiltroValidarMediaAlunosAtividadeAvaliativaDto
     {
-        public FiltroValidarMediaAlunosAtividadeAvaliativaDto(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, IGrouping<long, NotaConceito> notasPorAvaliacao, Usuario usuario, string disciplinaId, FiltroValidarMediaAlunosDto filtroAtividadeAvaliativa)
+        public FiltroValidarMediaAlunosAtividadeAvaliativaDto(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, long chaveNotasAvaliacao, IEnumerable<NotaConceito> notasPorAvaliacao, Usuario usuario, string disciplinaId, string hostAplicacao)
         {
             AtividadesAvaliativas = atividadesAvaliativas;
             PercentualAlunosInsuficientes = percentualAlunosInsuficientes;
             NotasPorAvaliacao = notasPorAvaliacao;        
             Usuario = usuario;
             DisciplinaId = disciplinaId;
-            FiltroAtividadeAvaliativa = filtroAtividadeAvaliativa;
+            HostAplicacao = hostAplicacao;
+            ChaveNotasPorAvaliacao = chaveNotasAvaliacao;
         }
 
         public Usuario Usuario { get; set; }
         public string DisciplinaId { get; set; }
         public IEnumerable<AtividadeAvaliativa> AtividadesAvaliativas { get; set; }
         public double PercentualAlunosInsuficientes { get; set; }
-        public IGrouping<long, NotaConceito> NotasPorAvaliacao { get; set; }
-        public FiltroValidarMediaAlunosDto FiltroAtividadeAvaliativa { get; set; }
+        public long ChaveNotasPorAvaliacao { get; set; }
+        public IEnumerable<NotaConceito> NotasPorAvaliacao { get; set; }
+        public string HostAplicacao { get; set; }
     }
 }

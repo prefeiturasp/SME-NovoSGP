@@ -38,36 +38,6 @@ namespace SME.SGP.Dominio
 
         public Turma turma { get; set; }
 
-        private IEnumerable<Usuario> _usuariosCPs;
-        public IEnumerable<Usuario> usuariosCPs
-        {
-            get
-            {
-                if (_usuariosCPs == null)
-                {
-                    var listaCPsUe = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.CP);
-                    _usuariosCPs = CarregaUsuariosPorRFs(listaCPsUe).Result;
-                }
-
-                return _usuariosCPs;
-            }
-        }
-
-        private Usuario _usuarioDiretor;
-        public Usuario usuarioDiretor
-        {
-            get
-            {
-                if (_usuarioDiretor == null)
-                {
-                    var diretor = servicoEOL.ObterFuncionariosPorCargoUe(turma.Ue.CodigoUe, (long)Cargo.Diretor);
-                    _usuarioDiretor = CarregaUsuariosPorRFs(diretor).Result.First();
-                }
-
-                return _usuarioDiretor;
-            }
-        }
-
         public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
             IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
@@ -156,7 +126,7 @@ namespace SME.SGP.Dominio
                 .Select(a => a.CodigoAluno)
                 .ToList();
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos,new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, usuariosCPs), Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos,new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
@@ -174,13 +144,7 @@ namespace SME.SGP.Dominio
             return notaTipo;
         }
 
-        private async Task<IEnumerable<Usuario>> CarregaUsuariosPorRFs(IEnumerable<UsuarioEolRetornoDto> listaCPsUe)
-        {
-            var usuarios = new List<Usuario>();
-            foreach (var cpUe in listaCPsUe)
-                usuarios.Add(await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(cpUe.CodigoRf));
-            return usuarios;
-        }
+        
 
         private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
         {
@@ -348,37 +312,16 @@ namespace SME.SGP.Dominio
 
             if (alunosNotasExtemporaneas.ToString().Length > 0)
             {
-                string mensagem = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
+                string mensagemNotificacao = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
                     $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
                     $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreAvaliacao}'>Clique aqui para visualizar os detalhes.</a>";
 
-                foreach (var usuarioCP in usuariosCPs)
-                {
-                    NotificarUsuarioAlteracaoExtemporanea(atividadeAvaliativa, mensagem, usuarioCP.Id, turma.Nome);
-                }
-
-                NotificarUsuarioAlteracaoExtemporanea(atividadeAvaliativa, mensagem, usuarioDiretor.Id, turma.Nome);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaNotificarUsuarioAlteracaoExtemporanea, new FiltroNotificarUsuarioAlteracaoExtemporaneaDto(atividadeAvaliativa, mensagemNotificacao, turma.Nome, turma.Ue.CodigoUe), Guid.NewGuid(), usuario));
             }
 
             var result = notasConceitos.ToList();
             result.AddRange(notasMultidisciplina);
             return result;
-        }
-
-        private void NotificarUsuarioAlteracaoExtemporanea(AtividadeAvaliativa atividadeAvaliativa, string mensagem, long usuarioId, string turmaNome)
-        {
-            servicoNotificacao.Salvar(new Notificacao()
-            {
-                Ano = atividadeAvaliativa.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Alerta,
-                DreId = atividadeAvaliativa.DreId,
-                Mensagem = mensagem,
-                UsuarioId = usuarioId,
-                Tipo = NotificacaoTipo.Notas,
-                Titulo = $"Alteração em Atividade Avaliativa - Turma {turmaNome}",
-                TurmaId = atividadeAvaliativa.TurmaId,
-                UeId = atividadeAvaliativa.UeId,
-            });
         }
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)

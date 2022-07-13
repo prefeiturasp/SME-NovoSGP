@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class FiltroValidarMediaAlunosDto
     {
-        public FiltroValidarMediaAlunosDto(IEnumerable<long> atividadesAvaliativasIds, IEnumerable<string> alunosIds, Usuario usuario, string disciplinaId, string codigoTurma, string hostAplicacao, IEnumerable<Usuario> usuariosCPs)
+        public FiltroValidarMediaAlunosDto(IEnumerable<long> atividadesAvaliativasIds, IEnumerable<string> alunosIds, Usuario usuario, string disciplinaId, string codigoTurma, string hostAplicacao)
         {
             AtividadesAvaliativasIds = atividadesAvaliativasIds;
             AlunosIds = alunosIds;
@@ -13,7 +13,6 @@ namespace SME.SGP.Infra
             DisciplinaId = disciplinaId;
             CodigoTurma = codigoTurma;
             HostAplicacao = hostAplicacao;
-            UsuariosCPs = usuariosCPs;
         }
 
         public IEnumerable<long> AtividadesAvaliativasIds { get; set; }
@@ -22,6 +21,5 @@ namespace SME.SGP.Infra
         public string DisciplinaId { get; set; }
         public string CodigoTurma { get; set; }
         public string HostAplicacao { get; set; }
-        public IEnumerable<Usuario> UsuariosCPs { get; set; }
     }
 }

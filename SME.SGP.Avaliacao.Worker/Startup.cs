@@ -26,7 +26,7 @@ namespace SME.SGP.Avaliacao.Worker
 
             var registrarDependencias = new RegistrarDependencias();
             registrarDependencias.RegistrarParaWorkers(services, Configuration);
-            registrarDependencias.RegistrarCasoDeUsoAulaRabbitSgp(services);
+            registrarDependencias.RegistrarCasoDeUsoAvaliacaoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAvaliacao>();
         }
