@@ -679,12 +679,13 @@ namespace SME.SGP.Dados
             return await database.QueryAsync<TotalFrequenciaEAulasAlunoDto>(query.ToString(), parametros);
         }
 
-        public Task<IEnumerable<FrequenciaAluno>> ObterListaDeFrequenciaAlunoPorDisciplinaData(string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
+        public Task<IEnumerable<FrequenciaAluno>> ObterListaDeFrequenciaAlunoPorDisciplinaData(List<string> listaDeCodigoAluno, string disciplinaId, DateTime dataAtual, string turmaCodigo = "")
         {
             var query = @"select *
                         from frequencia_aluno fa
                         inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
-                        where disciplina_id = @disciplinaId
+                        where codigo_aluno = any(@listaDeCodigoAluno)
+                            and disciplina_id = @disciplinaId
 	                        and tipo = 1
 	                        and pe.periodo_inicio <= @dataAtual
 	                        and pe.periodo_fim >= @dataAtual ";
@@ -694,6 +695,7 @@ namespace SME.SGP.Dados
 
             return database.QueryAsync<FrequenciaAluno>(query, new
             {
+                listaDeCodigoAluno,
                 disciplinaId,
                 dataAtual,
                 turmaCodigo
