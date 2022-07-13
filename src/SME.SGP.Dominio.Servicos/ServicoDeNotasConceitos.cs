@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -60,14 +59,12 @@ namespace SME.SGP.Dominio
             IServicoEol servicoEOL, 
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao, 
-            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
             IRepositorioTurmaConsulta repositorioTurma, 
             IServicoUsuario servicoUsuario, 
             IConfiguration configuration, 
             IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
@@ -238,7 +235,7 @@ namespace SME.SGP.Dominio
             if (aula == null)
                 throw new NegocioException($"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
-            var periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+            var periodosEscolares = await mediator.Send(new ObterPeriodoEscolarPorTipoCalendarioQuery(aula.TipoCalendarioId));
             return periodosEscolares;
         }
 
