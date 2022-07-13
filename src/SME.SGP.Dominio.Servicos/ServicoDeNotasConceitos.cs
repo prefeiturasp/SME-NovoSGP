@@ -14,7 +14,6 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
@@ -59,13 +58,11 @@ namespace SME.SGP.Dominio
             IServicoEol servicoEOL, 
             IUnitOfWork unitOfWork,
             IServicoNotificacao servicoNotificacao, 
-            IRepositorioTurmaConsulta repositorioTurma, 
             IServicoUsuario servicoUsuario, 
             IConfiguration configuration, 
             IMediator mediator)
         {
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
@@ -75,8 +72,7 @@ namespace SME.SGP.Dominio
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
         {
-            turma = await repositorioTurma
-                .ObterTurmaComUeEDrePorCodigo(turmaId);
+            turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
@@ -167,7 +163,7 @@ namespace SME.SGP.Dominio
                 var notaParametro = await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
                 var quantidadeAlunos = notasPorAvaliacao.Count();
                 var quantidadeAlunosSuficientes = 0;
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(atividadeAvaliativa.TurmaId);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(atividadeAvaliativa.TurmaId));
 
                 var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
                 var periodoAtividade = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
