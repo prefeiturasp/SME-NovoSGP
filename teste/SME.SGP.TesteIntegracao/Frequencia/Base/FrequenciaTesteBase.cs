@@ -431,7 +431,8 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = (int)TipoFrequencia.F,
-                NumeroAula = numeroAula
+                NumeroAula = numeroAula,
+                AulaId = 1
             });
         }
 

@@ -66,7 +66,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");
@@ -123,6 +124,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -134,6 +136,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");
@@ -188,6 +191,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -199,6 +203,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -210,6 +215,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");
@@ -264,6 +270,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -275,6 +282,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -286,6 +294,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -297,6 +306,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 2,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -308,6 +318,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 3,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -319,6 +330,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 3,
                 NumeroAula = 4,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1", "2"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");
@@ -372,6 +384,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 1,
                 NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -383,6 +396,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Valor = 2,
                 NumeroAula = 1,
+                AulaId = 1
             });
 
             await InserirNaBase(new CompensacaoAusencia
@@ -461,7 +475,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -472,7 +487,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 3,
-                NumeroAula = 2
+                NumeroAula = 2,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");
@@ -529,7 +545,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -540,7 +557,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 3,
-                NumeroAula = 2
+                NumeroAula = 2,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -551,7 +569,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 3
+                NumeroAula = 3,
+                AulaId = 1
             });
             
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -562,7 +581,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 4
+                NumeroAula = 4,
+                AulaId = 1
             });
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string>{"1"}, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01,15), "1", "1");

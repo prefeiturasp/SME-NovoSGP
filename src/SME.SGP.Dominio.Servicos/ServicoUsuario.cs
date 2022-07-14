@@ -233,7 +233,7 @@ namespace SME.SGP.Dominio
                 usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+                return await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, data, usuario));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 

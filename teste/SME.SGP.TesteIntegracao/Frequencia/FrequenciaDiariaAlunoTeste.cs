@@ -157,7 +157,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
         }
     }
