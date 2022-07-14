@@ -53,7 +53,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -109,7 +110,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -120,7 +122,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -217,7 +220,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -228,7 +232,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -246,7 +251,8 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
 
             useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();

@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerComponente1213Fake), ServiceLifetime.Scoped));
         }
 
         [Fact]
