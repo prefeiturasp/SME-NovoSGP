@@ -24,8 +24,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));            
         }
 
         public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
@@ -39,6 +38,13 @@ namespace SME.SGP.Aplicacao
             var avaliacoes = notasConceitosDto
                 .Select(x => x.AtividadeAvaliativaId)
                 .ToList();
+
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var disciplinasDoProfessorLogado = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(notaConceitoLista.TurmaId, usuario.Login, usuario.PerfilAtual, true));
+
+            if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
+                throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
             var notasBanco = repositorioNotasConceitos
                 .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
