@@ -14,6 +14,7 @@ namespace SME.SGP.Infra
         public long FotoId { get; set; }
         public long MiniaturaArquivoId { get; set; }
         public long ArquivoId { get; set; }
+        public string CriadoRf { get; set; }
 
     }
 }
