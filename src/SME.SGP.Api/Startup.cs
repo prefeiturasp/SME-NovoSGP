@@ -13,12 +13,14 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
+using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 
 namespace SME.SGP.Api
 {
@@ -85,6 +87,11 @@ namespace SME.SGP.Api
                 endpoints.MapControllers();
             });
 
+            var threadPoolOptions = new ThreadPoolOptions();
+            Configuration.GetSection(ThreadPoolOptions.Secao).Bind(threadPoolOptions, c => c.BindNonPublicProperties = true);
+            if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
+                ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
+
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
 
@@ -139,7 +146,6 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            services.AddMemoryCache();
             services.AddCors();
             services.AddControllers();
         }
