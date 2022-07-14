@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAlunosEolPorTurmaQueryValidator()
         {
-            RuleFor(x => x.TurmaId).NotEmpty().WithMessage("Informe a Turma");
+            RuleFor(x => x.TurmaId).NotEmpty().WithMessage("Informe a Turma para Obter Alunos Por Turma");
         }
     }
 }
