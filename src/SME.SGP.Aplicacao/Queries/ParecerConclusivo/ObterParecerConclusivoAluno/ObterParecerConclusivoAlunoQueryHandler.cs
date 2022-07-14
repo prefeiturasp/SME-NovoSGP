@@ -15,14 +15,10 @@ namespace SME.SGP.Aplicacao
     {
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
-        private readonly IRepositorioConceitoConsulta repositorioConceito;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IMediator mediator;
 
-        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceitoConsulta repositorioConceito,IConsultasFrequencia consultasFrequencia,IMediator mediator)
+        public ObterParecerConclusivoAlunoQueryHandler(IMediator mediator)
         {
-            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
-            this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
