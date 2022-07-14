@@ -13,7 +13,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/estudante")]
-    [Authorize("Bearer")]
+   // [Authorize("Bearer")]
     public class EstudanteController : ControllerBase
     {
 
