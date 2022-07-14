@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -23,6 +24,7 @@ namespace SME.SGP.TesteIntegracao
         {
             _collectionFixture = collectionFixture;
             _collectionFixture.Database.LimparBase();
+            _collectionFixture.IniciarServicos();
 
             RegistrarFakes(_collectionFixture.Services);
             _collectionFixture.BuildServiceProvider();

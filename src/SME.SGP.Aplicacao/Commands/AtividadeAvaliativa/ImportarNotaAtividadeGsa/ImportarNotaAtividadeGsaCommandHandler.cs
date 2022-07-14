@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
             if (atividadeAvaliativa is null)
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAgendamento.RotaNotaAtividadesSync,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotaAtividadesSyncAgendado,
                     new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesNotasSync,
                                                    notaAtividadeGsaDto),
                     Guid.NewGuid(),

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
                 var uesDre = await CarregarUesPorDreCodigo(filtro.DreCodigo); 
 
                 foreach (var ue in uesDre)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDreUe, ue));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDreUe, ue));
 
                 return true;
             }

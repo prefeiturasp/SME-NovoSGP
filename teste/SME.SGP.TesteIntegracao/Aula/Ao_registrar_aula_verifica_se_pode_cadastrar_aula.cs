@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
 
-            await InserirNaBase(new Aula() 
+            await InserirNaBase(new Dominio.Aula() 
             {
                 AulaCJ = false,
                 UeId = UE_CODIGO_1,
@@ -92,7 +92,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
                 UeId = UE_CODIGO_1,

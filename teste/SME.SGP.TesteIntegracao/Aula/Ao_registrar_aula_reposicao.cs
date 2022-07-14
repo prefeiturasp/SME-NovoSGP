@@ -19,6 +19,9 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
     {
         private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        private const string TITULO_NOTIFICACAO = "Notificação Teste de Integração.";
+        private const string MENSAGEM_NOTIFICACAO = "Mensagem notificação Teste de Integração.";
+        private const string SISTEMA = "Sistema";
 
         public Ao_registrar_aula_reposicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -51,6 +54,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             aula.Quantidade = 4;
 
             await CriarPeriodoEscolarEAbertura();
+            await CriarNotificacao();
 
             await ValideAulaEnviadaParaAprovacao(aula);
         }
@@ -77,6 +81,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             aula.EhRegencia = true;
 
             await CriarPeriodoEscolarEAbertura();
+            await CriarNotificacao();
 
             await ValideAulaEnviadaParaAprovacao(aula);
         }
@@ -93,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 
             retorno.Mensagens.Exists(mensagem => mensagem == "Aula cadastrada e enviada para aprovação com sucesso.").ShouldBe(true);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.ShouldNotBeEmpty();
 
@@ -111,6 +116,25 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+        }
+
+        private async Task CriarNotificacao()
+        {
+            await InserirNaBase(new Notificacao()
+            {
+                Id = 1,
+                Titulo = TITULO_NOTIFICACAO,
+                Mensagem = MENSAGEM_NOTIFICACAO,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = 1,
+                Excluida = false,
+                UsuarioId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA
+            });
         }
     }
 }

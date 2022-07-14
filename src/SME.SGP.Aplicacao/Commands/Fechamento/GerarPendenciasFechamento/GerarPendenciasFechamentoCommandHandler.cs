@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
                 var consolidacaoTurma = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
                 var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
             }
             catch (Exception)

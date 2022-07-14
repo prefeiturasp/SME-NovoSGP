@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificarPendenciasFechamentoTurmaDisciplinaUseCase : AbstractUseCase, IVerificarPendenciasFechamentoTurmaDisciplina
+    public class VerificarPendenciasFechamentoTurmaDisciplinaUseCase : AbstractUseCase, IVerificarPendenciasFechamentoTurmaDisciplinaUseCase
     {
         private readonly IServicoPendenciaFechamento servicoFechamentoTurmaDisciplina;
 

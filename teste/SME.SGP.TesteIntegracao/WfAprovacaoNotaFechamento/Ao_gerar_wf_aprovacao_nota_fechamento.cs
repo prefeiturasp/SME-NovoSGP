@@ -55,6 +55,9 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
         private const string USUARIO_CODIGO_RF = "9999999";
         private const string USUARIO_NOME = "NOME DO USUARIO LOGADO";
 
+        private const string TITULO_NOTIFICACAO = "Notificação Teste de Integração.";
+        private const string MENSAGEM_NOTIFICACAO = "Mensagem notificação Teste de Integração.";
+
         public Ao_gerar_wf_aprovacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -115,6 +118,22 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
                 CriadoPor = SISTEMA,
                 CriadoRF = SISTEMA,
 
+            });
+
+            await InserirNaBase(new Notificacao()
+            {
+                Id = 1,
+                Titulo = TITULO_NOTIFICACAO,
+                Mensagem = MENSAGEM_NOTIFICACAO,
+                Status = NotificacaoStatus.Pendente,
+                Categoria = NotificacaoCategoria.Aviso,
+                Tipo = NotificacaoTipo.Calendario,
+                Codigo = 1,
+                Excluida = false,
+                UsuarioId = 1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA,
+                CriadoRF = SISTEMA
             });
 
             var useCase = ServiceProvider.GetService<INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase>();

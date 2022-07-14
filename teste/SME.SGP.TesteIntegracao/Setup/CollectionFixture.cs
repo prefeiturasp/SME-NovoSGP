@@ -35,9 +35,9 @@ namespace SME.SGP.TesteIntegracao.Setup
 
             Services.AddSingleton<IConfiguration>(config);
             Services.AddMemoryCache();
-
+            
             FluentMapper.EntityMaps.Clear();
-
+            
             new RegistradorDependencias().Registrar(Services, null);
 
         }

@@ -130,16 +130,17 @@ namespace SME.SGP.Aplicacao
 
             plano.QuestionarioId = questionarioId;
 
+            var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+
             if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
                 plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
                 turma != null && 
                 plano.Questoes != null && 
                 plano.Questoes.Any() &&
-                turma.AnoLetivo.Equals(DateTime.Today.Year))
-            {
-                var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                if (periodoAtual != null) plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-            }
+                turma.AnoLetivo.Equals(DateTime.Today.Year) &&
+                periodoAtual != null)
+                    plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+            
 
             return plano;
         }
@@ -163,13 +164,13 @@ namespace SME.SGP.Aplicacao
         {
             var responsavel = new ResponsavelDto();
 
-            var usuario = await mediator.Send(new ObterUsuarioPorIdQuery(id));
+            var usuario = await mediator.Send(new ObterUsuarioPorIdSemPerfilQuery(id));
 
             if (usuario != null)
             {
                 responsavel.ResponsavelId = usuario.Id;
                 responsavel.ResponsavelRF = usuario.CodigoRf;
-                responsavel.ResponsavelNome = await ObtenhaNomeUsuarioCore(usuario);
+                responsavel.ResponsavelNome = usuario.Nome;
             }
 
             return responsavel;
@@ -183,18 +184,8 @@ namespace SME.SGP.Aplicacao
             {
                 ResponsavelId = usuario.Id,
                 ResponsavelRF = usuario.CodigoRf,
-                ResponsavelNome = await ObtenhaNomeUsuarioCore(usuario)
+                ResponsavelNome = usuario.Nome
             };
-        }
-
-        private async Task<string> ObtenhaNomeUsuarioCore(Usuario usuario)
-        {
-            var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(usuario.CodigoRf));
-
-            if (usuarioCoreSSO != null && !string.IsNullOrEmpty(usuarioCoreSSO.Nome))
-                return usuarioCoreSSO.Nome;
-
-            return usuario.Nome;
         }
     }
 }

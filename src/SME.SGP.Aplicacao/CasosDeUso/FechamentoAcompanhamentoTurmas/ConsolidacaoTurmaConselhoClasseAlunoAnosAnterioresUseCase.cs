@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var mensagemPorUe = new MensagemConsolidarTurmaConselhoClasseAlunoPorUeDto(ue.CodigoUe, filtro.AnoLetivo);
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, JsonConvert.SerializeObject(mensagemPorUe), mensagemRabbit.CodigoCorrelacao, null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, JsonConvert.SerializeObject(mensagemPorUe), mensagemRabbit.CodigoCorrelacao, null));
                 }
                 return true;
             }

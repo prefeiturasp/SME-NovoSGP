@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class NotificacaoFrequenciaUseCase : AbstractUseCase, INotificacaoFrequencia
+    public class NotificacaoFrequenciaUseCase : AbstractUseCase, INotificacaoFrequenciaUseCase
     {
         private readonly IServicoNotificacaoFrequencia servicoNotificacaoFrequencia;
 

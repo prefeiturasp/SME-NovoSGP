@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao.Commands
         {
             var command = new TransferirPendenciaParaNovoResponsavelCommand(plano.Id, plano.ResponsavelId);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, command, Guid.NewGuid()));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, command, Guid.NewGuid()));
         }
 
         private async Task<bool> ValidaPersistenciaResposta(string resposta, long questaoId)

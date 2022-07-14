@@ -183,7 +183,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> EncerrarPlanos()
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.EncerrarPlanoAEEEstudantesInativos, Guid.NewGuid()));
             return Ok();
         }
 
@@ -194,7 +194,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ExpirarPlanos()
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.GerarPendenciaValidadePlanoAEE, Guid.NewGuid()));
             return Ok();
         }
 
@@ -204,7 +204,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
         public async Task<IActionResult> AtribuirResponsavelGeralDoPlano([FromBody] AtribuirResponsavelPlanoAEEDto parametros, [FromServices] IAtribuirResponsavelGeralDoPlanoUseCase useCase)
         {
-            return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF, parametros.ReponsavelNome));
+            return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF, parametros.ResponsavelNome));
         }
     }
 }
