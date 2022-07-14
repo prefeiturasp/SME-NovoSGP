@@ -501,7 +501,8 @@ namespace SME.SGP.TesteIntegracao
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1
+                Nome = TURMA_NOME_1,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular
             });
         }
 

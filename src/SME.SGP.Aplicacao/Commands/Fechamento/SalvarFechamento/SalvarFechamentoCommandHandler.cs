@@ -155,10 +155,10 @@ namespace SME.SGP.Aplicacao
 
                             if (emAprovacao)
                             {
-                                var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno})
-                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno, a.ConceitoId, a.DisciplinaId})
+                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);
 
-                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
+                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.ConceitoId);
                             }
                         }
                         catch (NegocioException e)
@@ -575,7 +575,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 
-        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota)
+        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota, long? conceitoId)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
@@ -583,7 +583,7 @@ namespace SME.SGP.Aplicacao
                 NotaAnterior = fechamentoNota.Nota,
                 Nota = nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId,
-                ConceitoId = fechamentoNota.ConceitoId,
+                ConceitoId = conceitoId,
                 CodigoAluno = alunoCodigo,
                 DisciplinaId = fechamentoNota.DisciplinaId
             });

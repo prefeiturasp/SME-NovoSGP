@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAula : IConsultasAula
     {
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
@@ -27,7 +26,6 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private IRepositorioAula object1;
         private IConsultasPeriodoEscolar object2;
-        private IConsultasFrequencia object3;
         private IConsultasTipoCalendario object4;
         private IRepositorioPlanoAula object5;
         private IRepositorioTurmaConsulta object6;
@@ -39,7 +37,6 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasAula(IRepositorioAulaConsulta repositorioConsulta,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                             IConsultasFrequencia consultasFrequencia,
                              IConsultasTipoCalendario consultasTipoCalendario,
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurmaConsulta repositorioTurma,
@@ -57,7 +54,6 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));

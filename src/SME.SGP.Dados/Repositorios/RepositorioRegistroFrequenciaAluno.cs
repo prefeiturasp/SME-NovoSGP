@@ -45,6 +45,13 @@ namespace SME.SGP.Dados
             return await InserirVariosComLog(registros, true);
         }
 
+        public async Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId)
+        {
+            var query = " update registro_frequencia_aluno set aula_id = @aulaId where registro_frequencia_id = @registroFrequenciaId ";
+
+            await database.Conexao.ExecuteAsync(query, new { aulaId, registroFrequenciaId });
+        }
+
         private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
         {
             var sql = @"copy registro_frequencia_aluno (                                         
