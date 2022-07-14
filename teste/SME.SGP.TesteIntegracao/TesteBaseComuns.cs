@@ -629,7 +629,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)
         {
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 UeId = ueCodigo,
                 DisciplinaId = disciplinaCodigo,

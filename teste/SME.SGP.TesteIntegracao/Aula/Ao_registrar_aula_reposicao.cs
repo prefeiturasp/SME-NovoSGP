@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 
             retorno.Mensagens.Exists(mensagem => mensagem == "Aula cadastrada e enviada para aprovação com sucesso.").ShouldBe(true);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.ShouldNotBeEmpty();
 

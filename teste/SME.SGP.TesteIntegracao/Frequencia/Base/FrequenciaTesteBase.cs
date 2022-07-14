@@ -195,9 +195,9 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
 
-        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
-            return new Aula
+            return new Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,

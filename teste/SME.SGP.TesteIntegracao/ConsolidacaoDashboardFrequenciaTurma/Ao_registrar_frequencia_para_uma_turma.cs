@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -131,7 +131,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 Id = 1,
                 CriadoPor = "",
