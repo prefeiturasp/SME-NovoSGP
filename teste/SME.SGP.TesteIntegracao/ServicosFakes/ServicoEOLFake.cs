@@ -455,7 +455,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
             return new List<UsuarioEolRetornoDto>{
                 new UsuarioEolRetornoDto

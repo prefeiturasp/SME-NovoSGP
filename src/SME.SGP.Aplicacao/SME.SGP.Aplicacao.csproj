@@ -16,6 +16,17 @@
     <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <None Remove="Interfaces\CasosDeUso\Aluno\**" />
     <None Remove="Queries\AcompanhamentoFrequencia\**" />
+    <Compile Remove="Queries\EOL\Aluno\ObterAlunosPorTurma\ObterAlunosPorTurmaQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQueryHandler.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <EmbeddedResource Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <None Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQueryHandler.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQuery.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <EmbeddedResource Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <None Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
   </ItemGroup>
 
   <ItemGroup>

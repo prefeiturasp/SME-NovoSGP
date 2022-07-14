@@ -15,15 +15,12 @@ namespace SME.SGP.Aplicacao
     {
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
-        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IMediator mediator;
 
-        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceitoConsulta repositorioConceito,
-                                                       IConsultasFrequencia consultasFrequencia,
+        public ObterParecerConclusivoAlunoQueryHandler(IConsultasFrequencia consultasFrequencia,
                                                        IMediator mediator)
         {
-            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
@@ -171,7 +168,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarParecerPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> conceitosFechamentoAluno)
         {
-            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = await mediator.Send(new ObterConceitoPorDataQuery(DateTime.Today));
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
@@ -216,7 +213,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
         {
-            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
+            var conceitosVigentes = await mediator.Send(new ObterConceitoPorDataQuery(DateTime.Today));
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
             {
                 var conceitoId = conceitoConselhoClasseAluno.ConceitoId;

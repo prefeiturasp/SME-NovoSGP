@@ -29,7 +29,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
-        public void SalvarListaNotaConceito(List<NotaConceito> entidade, Usuario criadoPor)
+        public Task<bool> SalvarListaNotaConceito(List<NotaConceito> entidade, Usuario criadoPor)
         {
 
             var lancaNota = entidade.First().Nota.HasValue;
@@ -70,6 +70,7 @@ namespace SME.SGP.Dados.Repositorios
                 writer.Complete();
             }
 
+            return Task.FromResult(true);
         }
     }
 }

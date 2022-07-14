@@ -836,9 +836,10 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void NotificarDiretorUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
+        private async Task NotificarDiretorUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
         {
-            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
+            var diretoresDaEscola = await mediator.Send(
+                new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor));
 
             if (diretoresDaEscola == null || !diretoresDaEscola.Any())
                 throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");

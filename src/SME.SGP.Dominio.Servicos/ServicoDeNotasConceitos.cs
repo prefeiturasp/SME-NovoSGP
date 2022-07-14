@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,65 +14,26 @@ namespace SME.SGP.Dominio
 {
     public class ServicoDeNotasConceitos : IServicoDeNotasConceitos
     {
-        private readonly IConsultasAbrangencia consultasAbrangencia;
-
-        private readonly string hostAplicacao;
-        private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        private readonly IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina;
-        private readonly IRepositorioAulaConsulta repositorioAula;
-        private readonly IRepositorioCiclo repositorioCiclo;
-        private readonly IRepositorioConceitoConsulta repositorioConceito;
-        private readonly IRepositorioNotaParametro repositorioNotaParametro;
-        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
-        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
-        private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
-        private readonly IRepositorioTurmaConsulta repositorioTurma;
-        private readonly IRepositorioParametrosSistema repositorioParametrosSistema;
-        private readonly IRepositorioPeriodoFechamento repositorioPeriodoFechamento;
-        private readonly IServicoEol servicoEOL;
-        private readonly IServicoNotificacao servicoNotificacao;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly string hostAplicacao;
 
         public Turma turma { get; set; }
 
-        public ServicoDeNotasConceitos(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
-            IServicoEol servicoEOL, IConsultasAbrangencia consultasAbrangencia,
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo,
-            IRepositorioConceitoConsulta repositorioConceito, IRepositorioNotaParametro repositorioNotaParametro,
-            IRepositorioNotasConceitos repositorioNotasConceitos, IUnitOfWork unitOfWork,
-            IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
-            IRepositorioPeriodoFechamento repositorioPeriodoFechamento,
-            IServicoNotificacao servicoNotificacao, IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IRepositorioAulaConsulta repositorioAula, IRepositorioTurmaConsulta repositorioTurma, IRepositorioParametrosSistema repositorioParametrosSistema,
-            IServicoUsuario servicoUsuario, IConfiguration configuration, IMediator mediator)
+        public ServicoDeNotasConceitos(
+            IUnitOfWork unitOfWork,
+            IConfiguration configuration,
+            IMediator mediator)
         {
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
-            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
-            this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
-            this.repositorioConceito = repositorioConceito ?? throw new ArgumentNullException(nameof(repositorioConceito));
-            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
-            this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
-            this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
-            this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
-            this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
-            this.repositorioPeriodoFechamento = repositorioPeriodoFechamento ?? throw new ArgumentNullException(nameof(repositorioPeriodoFechamento));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.hostAplicacao = configuration["UrlFrontEnd"];
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId, string disciplinaId)
+        public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
+            string disciplinaId)
         {
-            turma = await repositorioTurma
-                .ObterTurmaComUeEDrePorCodigo(turmaId);
+            turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
@@ -81,62 +41,69 @@ namespace SME.SGP.Dominio
             var idsAtividadesAvaliativas = notasConceitos
                 .Select(x => x.AtividadeAvaliativaID);
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa
-                .ListarPorIds(idsAtividadesAvaliativas);
+            var atividadesAvaliativas =
+                await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
 
-            var alunos = await servicoEOL
-                .ObterAlunosPorTurma(turmaId, true);
+            var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
 
-            var usuario = await servicoUsuario
-                .ObterUsuarioLogado();
+            var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId, usuario.EhGestorEscolar());
+            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,
+                usuario.EhGestorEscolar());
 
             var entidadesSalvar = new List<NotaConceito>();
 
             var notasPorAvaliacoes = notasConceitos
                 .GroupBy(x => x.AtividadeAvaliativaID);
 
-            var dataConsiderada = atividadesAvaliativas.Any() ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date : DateTime.Today;
+            var dataConsiderada = atividadesAvaliativas.Any()
+                ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date
+                : DateTime.Today;
             alunos = (from a in alunos
-                      join nc in notasConceitos
-                      on a.CodigoAluno equals nc.AlunoId
-                      join aa in atividadesAvaliativas
-                      on nc.AtividadeAvaliativaID equals aa.Id
-                      where a.EstaAtivo(aa.DataAvaliacao)
-                      select a).Distinct();
+                join nc in notasConceitos
+                    on a.CodigoAluno equals nc.AlunoId
+                join aa in atividadesAvaliativas
+                    on nc.AtividadeAvaliativaID equals aa.Id
+                where a.EstaAtivo(aa.DataAvaliacao)
+                select a).Distinct();
 
             if (!usuario.EhGestorEscolar())
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId, dataConsiderada, usuario);
+                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId,
+                    dataConsiderada, usuario);
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
             {
                 var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf, disciplinaId, usuario, turma));
+                entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf,
+                    disciplinaId, usuario, turma));
             }
 
             var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            SalvarNoBanco(entidadesSalvar, criadoPor);
+            await SalvarNoBanco(entidadesSalvar, criadoPor);
 
             var alunosId = alunos
                 .Select(a => a.CodigoAluno)
                 .ToList();
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos,new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
         }
 
-        public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, bool consideraHistorico = false)
+        public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa,
+            bool consideraHistorico = false)
         {
-            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(atividadeAvaliativa.TurmaId.ToString());
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(atividadeAvaliativa.TurmaId));
 
             if (turmaEOL.TipoTurma == Enumerados.TipoTurma.EdFisica)
-                return repositorioNotaTipoValor.ObterPorTurmaId(Convert.ToInt64(atividadeAvaliativa.TurmaId), Enumerados.TipoTurma.EdFisica);
+                return await mediator.Send(
+                    new ObterNotaTipoValorPorTurmaIdQuery(Convert.ToInt64(atividadeAvaliativa.TurmaId),
+                        Enumerados.TipoTurma.EdFisica));
 
-            var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao, consideraHistorico);
+            var notaTipo = await ObterNotaTipo(atividadeAvaliativa.TurmaId, atividadeAvaliativa.DataAvaliacao,
+                consideraHistorico);
 
             if (notaTipo == null)
                 throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
@@ -144,48 +111,57 @@ namespace SME.SGP.Dominio
             return notaTipo;
         }
 
-        
-
-        private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> avaliacoes)
+        private static void ValidarSeAtividadesAvaliativasExistem(IEnumerable<long> avaliacoesAlteradasIds,
+            IEnumerable<AtividadeAvaliativa> avaliacoes)
         {
             avaliacoesAlteradasIds.ToList().ForEach(avalicaoAlteradaId =>
             {
                 var atividadeavaliativa = avaliacoes.FirstOrDefault(avaliacao => avaliacao.Id == avalicaoAlteradaId);
 
                 if (atividadeavaliativa == null)
-                    throw new NegocioException($"Não foi encontrada atividade avaliativa com o codigo {avalicaoAlteradaId}");
+                    throw new NegocioException(
+                        $"Não foi encontrada atividade avaliativa com o codigo {avalicaoAlteradaId}");
             });
         }
 
-        private async Task<IEnumerable<PeriodoEscolar>> BuscarPeriodosEscolaresDaAtividade(AtividadeAvaliativa atividadeAvaliativa)
+        private async Task<IEnumerable<PeriodoEscolar>> BuscarPeriodosEscolaresDaAtividade(
+            AtividadeAvaliativa atividadeAvaliativa)
         {
             var dataFinal = atividadeAvaliativa.DataAvaliacao.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
-            var aula = await repositorioAula.ObterAulaIntervaloTurmaDisciplina(atividadeAvaliativa.DataAvaliacao, dataFinal, atividadeAvaliativa.TurmaId, atividadeAvaliativa.Id);
+            var aula = await mediator.Send(new ObterAulaIntervaloTurmaDisciplinaQuery(atividadeAvaliativa.DataAvaliacao,
+                dataFinal, atividadeAvaliativa.TurmaId, atividadeAvaliativa.Id));
 
             if (aula == null)
-                throw new NegocioException($"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
+                throw new NegocioException(
+                    $"Não encontrada aula para a atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' no dia {atividadeAvaliativa.DataAvaliacao.Date.ToString("dd/MM/yyyy")}");
 
-            IEnumerable<PeriodoEscolar> periodosEscolares = await repositorioPeriodoEscolar.ObterPorTipoCalendario(aula.TipoCalendarioId);
+            var periodosEscolares =
+                await mediator.Send(new ObterPeriodoEscolarPorTipoCalendarioQuery(aula.TipoCalendarioId));
             return periodosEscolares;
         }
 
-        public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data, bool consideraHistorico = false)
+        public async Task<NotaTipoValor> ObterNotaTipo(string turmaCodigo, DateTime data,
+            bool consideraHistorico = false)
         {
-            var turma = await consultasAbrangencia.ObterAbrangenciaTurma(turmaCodigo, consideraHistorico);
+            var turma = await mediator.Send(
+                new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turmaCodigo, consideraHistorico));
 
             if (turma == null)
                 throw new NegocioException("Não foi encontrada a turma informada");
 
-            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano) ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano : string.Empty;
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, turma.Modalidade);
+            string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano)
+                ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano
+                : string.Empty;
+            var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
+            var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, data));
+            return retorno;
         }
 
-        private void SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
+        private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
         {
             unitOfWork.IniciarTransacao();
 
@@ -194,72 +170,96 @@ namespace SME.SGP.Dominio
 
             foreach (var entidade in registroSemIdZero)
             {
-                repositorioNotasConceitos.Remover(entidade);
+                await mediator.Send(new RemoverNotaConceitoCommand(entidade));
             }
+
             if (registroComIdZero.Any())
-                repositorioNotasConceitos.SalvarListaNotaConceito(registroComIdZero, criadoPor);
+                await mediator.Send(new SalvarListaNotaConceitoCommand(registroComIdZero, criadoPor));
 
             unitOfWork.PersistirTransacao();
         }
 
-        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds, IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId, bool gestorEscolar)
+        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,
+            IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,
+            bool gestorEscolar)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
                 throw new NegocioException("Não foi encontrada nenhuma da(s) avaliação(es) informada(s)");
 
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
-            var disciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
+            var disciplinasEol = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
 
-            await ValidarDataAvaliacaoECriador(atividadesAvaliativas, professorRf, disciplinaId, disciplinasEol, gestorEscolar);
+            await ValidarDataAvaliacaoECriador(atividadesAvaliativas, professorRf, disciplinaId, disciplinasEol,
+                gestorEscolar);
         }
 
 
-        private async Task ValidarDataAvaliacaoECriador(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol, bool gestorEscolar)
+        private async Task ValidarDataAvaliacaoECriador(IEnumerable<AtividadeAvaliativa> atividadesAvaliativas,
+            string professorRf, string disciplinaId, IEnumerable<ProfessorTitularDisciplinaEol> disciplinasEol,
+            bool gestorEscolar)
         {
             if (atividadesAvaliativas.Where(x => x.DataAvaliacao.Date > DateTime.Today).Any())
-                throw new NegocioException("Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
+                throw new NegocioException(
+                    "Não é possivel atribuir notas/conceitos para avaliação(es) com data(s) futura(s)");
 
             bool ehTitular = false;
 
             if (!gestorEscolar)
             {
                 if (disciplinasEol != null && disciplinasEol.Any())
-                    ehTitular = disciplinasEol.Any(d => d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
+                    ehTitular = disciplinasEol.Any(d =>
+                        d.DisciplinaId.ToString() == disciplinaId && d.ProfessorRf == professorRf);
 
                 var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(professorRf));
 
-                var atribuicaoEol = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery(Convert.ToInt64(disciplinaId), atividadesAvaliativas.Select(x => x.TurmaId), usuarioLogado));
+                var atribuicaoEol =
+                    await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaPorTurmasEDatasAvaliacaoQuery(
+                        Convert.ToInt64(disciplinaId), atividadesAvaliativas.Select(x => x.TurmaId), usuarioLogado));
 
-                var usuarioPossuiAtribuicaoNaTurmaNaData = atividadesAvaliativas.Any(a => atribuicaoEol.Any(b => b.CodigoTurma.Equals(a.TurmaId) && b.DataAtribuicaoAula <= a.DataAvaliacao && b.DataDisponibilizacaoAulas >= a.DataAvaliacao));
+                var usuarioPossuiAtribuicaoNaTurmaNaData = atividadesAvaliativas.Any(a =>
+                    atribuicaoEol.Any(b =>
+                        b.CodigoTurma.Equals(a.TurmaId) && b.DataAtribuicaoAula <= a.DataAvaliacao &&
+                        b.DataDisponibilizacaoAulas >= a.DataAvaliacao));
 
-                if ((atividadesAvaliativas.Select(s => s.EhCj).Any() && !atividadesAvaliativas.Select(p => p.ProfessorRf.Equals(professorRf)).Any()) ||
-                    (!atividadesAvaliativas.Select(s => s.EhCj).Any() && !ehTitular && !usuarioPossuiAtribuicaoNaTurmaNaData))
-                    throw new NegocioException("Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
+                if ((atividadesAvaliativas.Select(s => s.EhCj).Any() &&
+                     !atividadesAvaliativas.Select(p => p.ProfessorRf.Equals(professorRf)).Any()) ||
+                    (!atividadesAvaliativas.Select(s => s.EhCj).Any() && !ehTitular &&
+                     !usuarioPossuiAtribuicaoNaTurmaNaData))
+                    throw new NegocioException(
+                        "Somente o professor que criou a avaliação e/ou titular, pode atribuir e/ou editar notas/conceitos");
             }
         }
 
-        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos, AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf, string disciplinaId,
+        private async Task<IEnumerable<NotaConceito>> ValidarEObter(IEnumerable<NotaConceito> notasConceitos,
+            AtividadeAvaliativa atividadeAvaliativa, IEnumerable<AlunoPorTurmaResposta> alunos, string professorRf,
+            string disciplinaId,
             Usuario usuario, Turma turma)
         {
             var notasMultidisciplina = new List<NotaConceito>();
             var alunosNotasExtemporaneas = new StringBuilder();
             var nota = notasConceitos.FirstOrDefault();
-            var turmaHistorica = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma, true);
+            var turmaHistorica =
+                await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
-            var notaParametro = await repositorioNotaParametro.ObterPorDataAvaliacao(atividadeAvaliativa.DataAvaliacao);
+            var notaParametro =
+                await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
             var dataAtual = DateTime.Now;
 
             // Verifica Bimestre Atual
             var dataPesquisa = DateTime.Today;
             var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
-            var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-            var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date && x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
+            var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x =>
+                x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+            var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x =>
+                x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
+                x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
             if (periodoEscolarAvaliacao == null)
                 throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
-            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
+            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma,
+                DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
 
             foreach (var notaConceito in notasConceitos)
             {
@@ -276,7 +276,8 @@ namespace SME.SGP.Dominio
                 }
                 else
                 {
-                    var conceitos = await repositorioConceito.ObterPorData(atividadeAvaliativa.DataAvaliacao);
+                    var conceitos =
+                        await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
 
                     if (conceitos == null)
                         throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
@@ -284,9 +285,12 @@ namespace SME.SGP.Dominio
 
                 notaConceito.TipoNota = tipoNota.TipoNota;
                 notaConceito.DisciplinaId = disciplinaId;
-                if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) && notaConceito.Id.Equals(0))
+                if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) &&
+                    notaConceito.Id.Equals(0))
                 {
-                    var atividadeDisciplinas = repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(atividadeAvaliativa.Id).Result;
+                    var atividadeDisciplinas =
+                        await mediator.Send(
+                            new ObterListaDeAtividadeAvaliativaDisciplinaPorIdAtividadeQuery(atividadeAvaliativa.Id));
                     foreach (var atividade in atividadeDisciplinas)
                     {
                         if (!atividade.DisciplinaId.Equals(disciplinaId))
@@ -324,15 +328,18 @@ namespace SME.SGP.Dominio
             return result;
         }
 
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId,
+            string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioLogado();
+                usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
+            var podePersistir =
+                await mediator.Send(new ObterPodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula));
 
             if (!usuario.EhProfessorCj() && !podePersistir)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(
+                    "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }
 }
