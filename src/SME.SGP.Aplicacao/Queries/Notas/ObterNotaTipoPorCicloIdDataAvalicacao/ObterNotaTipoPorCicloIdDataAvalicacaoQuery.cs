@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
     {
         public ObterNotaTipoPorCicloIdDataAvalicacaoQueryValidator()
         {
-            RuleFor(x => x.CicloId).NotEmpty().WithMessage("Informe um Ciclo Id");
-            RuleFor(x => x.DataAvalicao).NotEmpty().WithMessage("Informe uma Data de Avaliação");
+            RuleFor(x => x.CicloId).NotEmpty().WithMessage("Informe um Ciclo Id para Obter a Nota Tipo Por Ciclo e Data Avalicação");
+            RuleFor(x => x.DataAvalicao).NotEmpty().WithMessage("Informe uma Data de Avaliação para Obter a Nota Tipo Por Ciclo e Data Avalicação");
         }
     }
 }

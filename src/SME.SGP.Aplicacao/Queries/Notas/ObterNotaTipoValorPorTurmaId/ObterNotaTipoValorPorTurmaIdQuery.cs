@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterNotaTipoValorPorTurmaIdQueryValidator()
         {
-            RuleFor(x => x.TurmaId).NotEmpty().WithMessage("Informe a Turma");
+            RuleFor(x => x.TurmaId).NotEmpty().WithMessage("Informe o Id da Turma para Obter a Nota Tipo Valor Por Turma");
         }
     }
 }

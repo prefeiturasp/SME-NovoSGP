@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
     {
         public ObterFuncionariosPorCargoUeQueryValidator()
         {
-            RuleFor(x => x.CargoId).NotEmpty().WithMessage("Informe o Cargo");
-            RuleFor(x => x.UeId).NotEmpty().WithMessage("Informe a UE");
+            RuleFor(x => x.CargoId).NotEmpty().WithMessage("Informe o Cargo para Obter os Funcionarios Por Cargo e Ue");
+            RuleFor(x => x.UeId).NotEmpty().WithMessage("Informe a UE para Obter os Funcionarios Por Cargo e Ue");
         }
     }
 }

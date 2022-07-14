@@ -26,12 +26,11 @@ namespace SME.SGP.Aplicacao
         public string CodigoRf { get; set; }
     }
 
-    public class ObterUsuarioPorCodigoRfLoginOuAdicionaQueryValidator : AbstractValidator<
-            ObterUsuarioPorCodigoRfLoginOuAdicionaQuery>
+    public class ObterUsuarioPorCodigoRfLoginOuAdicionaQueryValidator : AbstractValidator<ObterUsuarioPorCodigoRfLoginOuAdicionaQuery>
     {
         public ObterUsuarioPorCodigoRfLoginOuAdicionaQueryValidator()
         {
-            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Código RF do Usuário");
+            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Código RF do Usuário para Obter o Usuario Por Codigo RF Login Ou Adiciona");
         }
     }
 }

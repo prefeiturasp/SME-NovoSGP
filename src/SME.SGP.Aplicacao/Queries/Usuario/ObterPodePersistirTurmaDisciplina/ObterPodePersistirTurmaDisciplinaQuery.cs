@@ -30,10 +30,10 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPodePersistirTurmaDisciplinaQueryValidator()
         {
-            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Código RF");
-            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Turma ID");
-            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe a Disciplina ");
-            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe a Data ");
+            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Código RF para Obter se pode Persistir Turma e Disciplina");
+            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe o Turma ID para Obter se pode Persistir Turma e Disciplina");
+            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe a Disciplina para Obter se pode Persistir Turma e Disciplina");
+            RuleFor(x => x.CodigoRf).NotEmpty().WithMessage("Informe a Data para Obter se pode Persistir Turma e Disciplina");
         }
     }
 }

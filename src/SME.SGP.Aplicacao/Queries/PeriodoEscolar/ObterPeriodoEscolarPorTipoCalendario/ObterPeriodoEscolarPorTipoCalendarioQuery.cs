@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterPeriodoEscolarPorTipoCalendarioQueryValidator()
         {
-            RuleFor(x => x.TipoCalendarioId).NotEmpty().WithMessage("Informe o Tipo de Calendário ");
+            RuleFor(x => x.TipoCalendarioId).NotEmpty().WithMessage("Informe o Tipo de Calendário para Obter o Periodo Escolar Por Tipo Calendario");
         }
     }
 }

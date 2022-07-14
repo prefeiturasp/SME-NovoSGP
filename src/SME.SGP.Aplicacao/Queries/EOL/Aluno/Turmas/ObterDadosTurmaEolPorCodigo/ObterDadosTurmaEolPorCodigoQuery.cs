@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterDadosTurmaEolPorCodigoQueryValidator()
         {
-            RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("Informe a Turma");
+            RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("Informe o código da Turma para Obter Dados da Turma");
         }
     }
 }

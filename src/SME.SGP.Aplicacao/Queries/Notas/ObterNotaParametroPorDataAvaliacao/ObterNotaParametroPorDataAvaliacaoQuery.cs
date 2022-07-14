@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterNotaParametroPorDataAvaliacaoQueryValidator()
         {
-            RuleFor(x => x.DataAvaliacao).NotEmpty().WithMessage("Informe a Data da Avaliação");
+            RuleFor(x => x.DataAvaliacao).NotEmpty().WithMessage("Informe a Data da Avaliação para Obter a Nota Parametro Por Data Avaliacao");
         }
     }
 }

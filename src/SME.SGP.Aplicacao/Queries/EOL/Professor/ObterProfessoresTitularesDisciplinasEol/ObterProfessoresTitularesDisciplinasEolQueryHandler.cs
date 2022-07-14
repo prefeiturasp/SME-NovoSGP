@@ -23,9 +23,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDisciplinasEolQuery request, CancellationToken cancellationToken)
         {
-            // return await servicoEol.ObterProfessoresTitularesDisciplinas(request.CodigoTurma, request.DataReferencia,
-            //     request.ProfessorRf, request.RealizaAgrupamento);
-            
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             StringBuilder url = new StringBuilder();
 
