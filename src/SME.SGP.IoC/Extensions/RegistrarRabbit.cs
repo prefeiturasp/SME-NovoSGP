@@ -33,7 +33,7 @@ namespace SME.SGP.IoC
                         UserName = options.UserName,
                         Password = options.Password,
                         VirtualHost = options.VirtualHost,
-                        RequestedHeartbeat = System.TimeSpan.FromSeconds(30),
+                        RequestedHeartbeat = System.TimeSpan.FromSeconds(options.TempoHeartBeat),
                     };
 
                     return factory;

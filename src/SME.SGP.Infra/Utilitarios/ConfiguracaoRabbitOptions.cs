@@ -8,5 +8,6 @@
         public string Password { get; set; }
         public string VirtualHost { get; set; }
         public ushort LimiteDeMensagensPorExecucao { get; set; }
+        public ushort TempoHeartBeat { get; set; }
     }
 }
