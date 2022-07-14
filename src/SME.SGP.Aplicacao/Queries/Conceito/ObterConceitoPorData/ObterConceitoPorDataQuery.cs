@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public ObterConceitoPorDataQueryValidator()
         {
             RuleFor(x => x.DataAvaliacao)
-                .NotEmpty().WithMessage("Informe a Data da Avaliação");
+                .NotEmpty().WithMessage("Informe a Data da Avaliação para Obter Conceito Por Data");
         }
     }
 }
