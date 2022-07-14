@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(filtro.TurmaCodigo);
+            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(filtro.TurmaCodigo));
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -413,7 +413,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<TipoNota> ObterNotaTipo(long turmaId, int anoLetivo, bool consideraHistorico)
         {
-            var turmaEOL = await servicoEOL.ObterDadosTurmaPorCodigo(turmaId.ToString());
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turmaId.ToString()));
 
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)

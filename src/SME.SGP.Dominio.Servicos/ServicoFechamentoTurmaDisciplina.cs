@@ -243,7 +243,7 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaFechamento.CodigoTurma);
+            var alunos = await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaFechamento.CodigoTurma));
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);

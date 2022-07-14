@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var dataAtual = DateTime.Now;
             var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(filtro.AtividadesAvaliativasIds.ToArray(), filtro.AlunosIds.ToArray(), filtro.DisciplinaId, filtro.CodigoTurma));
 
-            var atividadesAvaliativas = repositorioAtividadeAvaliativa.ListarPorIds(filtro.AtividadesAvaliativasIds);
+            var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ListarPorIds(filtro.AtividadesAvaliativasIds);
 
             var notasPorAvaliacoes = notasConceitos.GroupBy(x => x.AtividadeAvaliativaID);
             var percentualAlunosInsuficientes = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualAlunosInsuficientes, DateTime.Today.Year)));

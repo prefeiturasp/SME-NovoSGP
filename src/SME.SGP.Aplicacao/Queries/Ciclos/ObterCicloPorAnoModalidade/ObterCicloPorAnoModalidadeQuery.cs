@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
         public ObterCicloPorAnoModalidadeQueryValidator()
         {
             RuleFor(a => a.Ano)
-                .NotEmpty().WithMessage("Informe o Ano");
+                .NotEmpty().WithMessage("Informe o Ano para Obter o Ciclo Por Ano Modalidade");
             RuleFor(a => a.Modalidade)
-                .NotEmpty().WithMessage("Informe a Modalidade");
+                .NotEmpty().WithMessage("Informe a Modalidade para Obter o Ciclo Por Ano Modalidade");
         }
     }
 }

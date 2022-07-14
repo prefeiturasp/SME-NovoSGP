@@ -22,12 +22,10 @@ namespace SME.SGP.Dominio
 
         public ServicoDeNotasConceitos(
             IUnitOfWork unitOfWork,
-            IServicoNotificacao servicoNotificacao,
             IConfiguration configuration,
             IMediator mediator)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-            this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.hostAplicacao = configuration["UrlFrontEnd"];
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }

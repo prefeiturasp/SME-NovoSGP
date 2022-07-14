@@ -20,9 +20,9 @@ namespace SME.SGP.Aplicacao
         public ObterAbrangenciaPorTurmaEConsideraHistoricoQueryValidator()
         {
             RuleFor(a => a.TurmaId)
-                .NotEmpty().WithMessage("É necessário informar a Turma");
+                .NotEmpty().WithMessage("É necessário informar a Turma para Obter Abrangencia Por Turma E Considera Historico");
             RuleFor(a => a.ConsideraHistorico)
-                .NotEmpty().WithMessage("É necessário informar se considera histórico ");
+                .NotEmpty().WithMessage("É necessário informar se considera histórico para Obter Abrangencia Por Turma E Considera Historico");
         }
     }
 }

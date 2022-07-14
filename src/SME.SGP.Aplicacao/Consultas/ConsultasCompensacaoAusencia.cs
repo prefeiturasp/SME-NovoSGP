@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var listaCompensacoes = await repositorioCompensacaoAusencia.Listar(Paginacao, turmaId, disciplinaId, bimestre, nomeAtividade);
 
             // Busca os nomes de alunos do EOL por turma
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId, true);
+            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
 
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {
@@ -116,7 +116,7 @@ namespace SME.SGP.Aplicacao
             var turma = await repositorioTurmaConsulta.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 

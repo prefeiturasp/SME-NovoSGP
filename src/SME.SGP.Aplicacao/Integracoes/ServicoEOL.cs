@@ -250,34 +250,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
-
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false)
-        {
-            var alunos = new List<AlunoPorTurmaResposta>();
-
-            var chaveCache = ObterChaveCacheAlunosTurma(turmaId);
-            var cacheAlunos = cache.Obter(chaveCache);
-
-            if (cacheAlunos != null)
-            {
-                alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(cacheAlunos);
-            }
-            else
-            {
-                var resposta = await httpClient.GetAsync($"turmas/{turmaId}/considera-inativos/{consideraInativos}");
-                if (resposta.IsSuccessStatusCode)
-                {
-                    var json = await resposta.Content.ReadAsStringAsync();
-                    alunos = JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-
-                    // Salva em cache por 5 min
-                    await cache.SalvarAsync(chaveCache, json, 5);
-                }
-            }
-
-            return alunos;
-        }
-
+        
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -1100,20 +1073,7 @@ namespace SME.SGP.Aplicacao.Integracoes
 
             return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
         }
-
-        public async Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma)
-        {
-            var url = $@"turmas/{codigoTurma}/dados";
-
-            var resposta = await httpClient.GetAsync(url);
-
-            if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException($"Não foram encontrados dados da turma {codigoTurma} no EOL.");
-
-            var json = await resposta.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<DadosTurmaEolDto>(json);
-        }
-
+        
         public async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> ListagemTurmasComComponente(string codigoUe, string modalidade, int bimestre, string codigoTurma, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados)
         {
             var url = $@"turmas/{codigoUe}/{modalidade}/{bimestre}/{codigoTurma}/{anoLetivo}/{qtdeRegistros}/{qtdeRegistrosIgnorados}/listagem-turmas";

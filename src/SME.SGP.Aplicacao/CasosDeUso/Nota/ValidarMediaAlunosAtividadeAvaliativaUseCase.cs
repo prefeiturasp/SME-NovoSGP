@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa, Usuario usuario, bool consideraHistorico = false)
         {
-            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolQuery(atividadeAvaliativa.TurmaId.ToString()));            
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(atividadeAvaliativa.TurmaId.ToString()));            
 
             if (turmaEOL.TipoTurma == Dominio.Enumerados.TipoTurma.EdFisica)
                 return repositorioNotaTipoValor.ObterPorTurmaId(Convert.ToInt64(atividadeAvaliativa.TurmaId), Dominio.Enumerados.TipoTurma.EdFisica);
@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
+            return await repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, data);
         }
     }
 }

@@ -28,13 +28,13 @@ namespace SME.SGP.Aplicacao
         public ObterAulaIntervaloTurmaDisciplinaQueryValidator()
         {
             RuleFor(a => a.DataInicio)
-                .NotEmpty().WithMessage("A Data de Início deve ser informada");
+                .NotEmpty().WithMessage("A Data de Início deve ser informada para Obter Aula Intervalo Turma Disciplina");
             RuleFor(a => a.DataFim)
-                .NotEmpty().WithMessage("A Data de Fim deve ser informada");
+                .NotEmpty().WithMessage("A Data de Fim deve ser informada para Obter Aula Intervalo Turma Disciplina");
             RuleFor(a => a.TurmaId)
-                .NotEmpty().WithMessage("A Turma deve ser informada");
+                .NotEmpty().WithMessage("A Turma deve ser informada para Obter Aula Intervalo Turma Disciplina");
             RuleFor(a => a.AtividadeAvaliativaId)
-                .NotEmpty().WithMessage("A Atividade Avaliativa deve ser informada");
+                .NotEmpty().WithMessage("A Atividade Avaliativa deve ser informada para Obter Aula Intervalo Turma Disciplina");
         }
     }
 }

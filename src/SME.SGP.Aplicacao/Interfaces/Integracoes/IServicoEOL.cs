@@ -41,7 +41,6 @@ namespace SME.SGP.Aplicacao.Integracoes
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula);
 
-        Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, bool consideraInativos = false);
 
         Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos);
 
@@ -131,7 +130,6 @@ namespace SME.SGP.Aplicacao.Integracoes
         Task<InformacoesEscolaresAlunoDto> ObterNecessidadesEspeciaisAluno(string codigoAluno);
 
         Task<IEnumerable<string>> DefinirTurmasRegulares(string[] codigosTurmas);
-        Task<DadosTurmaEolDto> ObterDadosTurmaPorCodigo(string codigoTurma);
         Task<AtribuicaoProfessorTurmaEOLDto> VerificaAtribuicaoProfessorTurma(string professorRf, string codigoTurma);
 
         Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUeAsync(string ueId, long cargoId);

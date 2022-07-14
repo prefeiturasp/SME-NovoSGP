@@ -14,14 +14,13 @@ namespace SME.SGP.Aplicacao
         public IEnumerable<long> AtividadesAvaliativasIds { get; set; }
     }
 
-    public class
-        ObterListaDeAtividadesAvaliativasPorIdsQueryValidator : AbstractValidator<
+    public class ObterListaDeAtividadesAvaliativasPorIdsQueryValidator : AbstractValidator<
             ObterListaDeAtividadesAvaliativasPorIdsQuery>
     {
         public ObterListaDeAtividadesAvaliativasPorIdsQueryValidator()
         {
             RuleFor(a => a.AtividadesAvaliativasIds)
-                .NotEmpty().WithMessage("É necessário informar uma Atividade Avaliativa");
+                .NotEmpty().WithMessage("É necessário informar uma Atividade Avaliativa Id para Obter Lista De Atividades Avaliativas ");
         }
     }
 }

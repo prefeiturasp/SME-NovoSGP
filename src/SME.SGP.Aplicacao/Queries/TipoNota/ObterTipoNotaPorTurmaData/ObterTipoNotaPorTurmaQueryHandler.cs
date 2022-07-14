@@ -26,8 +26,7 @@ namespace SME.SGP.Aplicacao
         public async Task<TipoNota> Handle(ObterTipoNotaPorTurmaQuery request, CancellationToken cancellationToken)
         {
             //TODO: TIPO DE TURMA NÃO EXISTE NO SGP, É NECESSÁRIO SEMPRE CONSULTAR O EOL.....
-            var turmaEOL = await servicoEol
-                .ObterDadosTurmaPorCodigo(request.Turma.CodigoTurma);
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(request.Turma.CodigoTurma));
 
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)

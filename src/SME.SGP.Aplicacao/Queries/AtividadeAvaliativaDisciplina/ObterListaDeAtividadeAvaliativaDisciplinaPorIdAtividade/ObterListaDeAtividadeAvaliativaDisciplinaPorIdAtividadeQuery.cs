@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public ObterListaDeAtividadeAvaliativaDisciplinaPorIdAtividadeQueryValidator()
         {
             RuleFor(a => a.AtividadeAvaliativaId)
-                .NotEmpty().WithMessage("É necessário informar o id da Ativididade Avaliativa");
+                .NotEmpty().WithMessage("É necessário informar o id da Ativididade Avaliativa para Obter Lista De Atividade por Id Atividade");
         }
     }
 }
