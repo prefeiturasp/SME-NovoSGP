@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");               
+                    throw new NegocioException("Aluno não localizado");
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
@@ -115,6 +115,8 @@ namespace SME.SGP.Aplicacao
                 plano.UltimaVersao = ultimaVersao;
                 plano.PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(entidadePlano.SituacaoPodeDevolverPlanoAEE());
             }
+            else
+                turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
 
             var questionarioId = await mediator
                 .Send(new ObterQuestionarioPlanoAEEIdQuery());
