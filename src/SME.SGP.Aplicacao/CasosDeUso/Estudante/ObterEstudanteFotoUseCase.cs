@@ -37,7 +37,8 @@ namespace SME.SGP.Aplicacao
             {
                 Codigo = miniatura.CodigoFotoOriginal,
                 Nome = miniatura.Nome,
-                Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
+                Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome),
+                CriadoRf = miniatura.CriadoRf
             };
 
         }

@@ -293,7 +293,9 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
             var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
                                  (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoEscolar?.PeriodoFim.Date) ||
-                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoEscolar?.PeriodoInicio.Date);            
+                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoEscolar?.PeriodoInicio.Date);
+
+            var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
@@ -310,9 +312,15 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                     {
-                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);     
-                        
-                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString());
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+
+                        var dataFim = periodoEscolar != null ? periodoEscolar.PeriodoFim : periodoFim;
+
+                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString() 
+                                                         && alunoNaTurma.DataMatricula <= dataFim);
+
+                        frequenciasAlunoParaTratar = periodoMatricula != null ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar;
+
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
@@ -343,6 +351,7 @@ namespace SME.SGP.Aplicacao
                                         .AdicionarFrequenciaBimestre(f.Bimestre, tipoCalendario.AnoLetivo.Equals(2020) && f.TotalAulas.Equals(0) ? 100 : f.PercentualFrequencia);
                                 });
                         }
+
 
                         if (disciplinaEol.Regencia)
                         {

@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public Guid Codigo { get; set; }
         public string Nome { get; set; }
         public (byte[], string, string) Download { get; set; }
+        public string CriadoRf { get; set; }
     }
 }
