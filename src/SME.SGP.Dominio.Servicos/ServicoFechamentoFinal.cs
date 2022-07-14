@@ -103,8 +103,6 @@ namespace SME.SGP.Dominio.Servicos
                                             await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
                                     }
 
-                                    fechamentoNota.Nota = notaDto.Nota;
-                                    fechamentoNota.ConceitoId = notaDto.ConceitoId;
                                     fechamentoNota.SinteseId = notaDto.SinteseId;
                                     fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
 

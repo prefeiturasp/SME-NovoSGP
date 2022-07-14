@@ -145,6 +145,20 @@ namespace SME.SGP.Aplicacao
                                         await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, fechamentoNota.ConceitoId, fechamentoNota.Id), cancellationToken);
                                 }
 
+                                if (emAprovacao && (fechamentoNota.Id == 0))
+                                {
+                                    var notaConceitoAnterior = fechamentoTurma.NotaConceitoAlunos.Select(a => new
+                                    {
+                                        a.NotaAnterior,
+                                        a.ConceitoIdAnterior,
+                                        a.CodigoAluno
+                                    })
+                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+
+                                    fechamentoNota.Nota = notaConceitoAnterior.NotaAnterior;
+                                    fechamentoNota.ConceitoId = notaConceitoAnterior.ConceitoIdAnterior;
+                                }
+
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 fechamentoNota.FechamentoAluno = fechamentoAluno;
 
@@ -155,10 +169,19 @@ namespace SME.SGP.Aplicacao
 
                             if (emAprovacao)
                             {
-                                var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno})
-                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+                                var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new 
+                                { 
+                                    a.Nota,
+                                    a.ConceitoId,
+                                    a.NotaAnterior, 
+                                    a.ConceitoIdAnterior, 
+                                    a.CodigoAluno
+                                })
+                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
 
-                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
+                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo,
+                                    notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.NotaAnterior,
+                                    notaConceitoAprovacaoAluno?.ConceitoId, notaConceitoAprovacaoAluno?.ConceitoIdAnterior);
                             }
                         }
                         catch (NegocioException e)
@@ -494,6 +517,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoAlunos = (await mediator.Send(new ObterFechamentoAlunoPorDisciplinaIdQuery(fechamentoTurmaDisciplinaId)))
                     .Where(x => fechamentoNotasDto.Any(a => a.CodigoAluno == x.AlunoCodigo)).ToList();
             }
+
             foreach (var agrupamentoNotasAluno in fechamentoNotasDto.GroupBy(g => g.CodigoAluno))
             {
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
@@ -510,22 +534,19 @@ namespace SME.SGP.Aplicacao
                         if (!notaFechamento.ConceitoId.HasValue)
                         {
                             if (fechamentoNotaDto.Nota != notaFechamento.Nota)
-                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null, fechamentoNotaDto.Nota != null ? fechamentoNotaDto.Nota.Value : (double?)null, notaFechamento.Id));
+                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota, fechamentoNotaDto.Nota, notaFechamento.Id));
                         }
                         else
                         {
                             if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
-                                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null, fechamentoNotaDto.ConceitoId != null ? fechamentoNotaDto.ConceitoId.Value : (long?)null, notaFechamento.Id));
+                                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId, fechamentoNotaDto.ConceitoId, notaFechamento.Id));
                         }
 
                         if (EnviarWfAprovacao(usuarioLogado, turmaAnoLetivo) && parametroAlteracaoNotaFechamento.Ativo)
                         {
                             fechamentoNotaDto.Id = notaFechamento.Id;
-
-                            if (!notaFechamento.ConceitoId.HasValue)
-                                fechamentoNotaDto.NotaAnterior = notaFechamento.Nota != null ? notaFechamento.Nota.Value : (double?)null;
-                            else
-                                fechamentoNotaDto.ConceitoIdAnterior = notaFechamento.ConceitoId != null ? notaFechamento.ConceitoId.Value : (long?)null;
+                            fechamentoNotaDto.NotaAnterior = notaFechamento.Nota;
+                            fechamentoNotaDto.ConceitoIdAnterior = notaFechamento.ConceitoId;
                         }
                         else
                         {
@@ -575,15 +596,16 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 
-        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota)
+        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota,
+            string alunoCodigo, double? nota,  double? notaAnterior, long? conceitoId, long? conceitoIdAnterior)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
                 Id = fechamentoNota.Id,
-                NotaAnterior = fechamentoNota.Nota,
+                NotaAnterior = notaAnterior,
                 Nota = nota,
-                ConceitoIdAnterior = fechamentoNota.ConceitoId,
-                ConceitoId = fechamentoNota.ConceitoId,
+                ConceitoIdAnterior = conceitoIdAnterior,
+                ConceitoId = conceitoId,
                 CodigoAluno = alunoCodigo,
                 DisciplinaId = fechamentoNota.DisciplinaId
             });
