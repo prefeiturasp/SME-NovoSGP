@@ -18,7 +18,6 @@ namespace SME.SGP.Dominio.Servicos
     public class ServicoFechamentoTurmaDisciplina : IServicoFechamentoTurmaDisciplina
     {
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasSupervisor consultasSupervisor;
         private readonly IRepositorioEvento repositorioEvento;
         private readonly IRepositorioEventoTipo repositorioEventoTipo;
@@ -56,7 +55,6 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                                 IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
                                                 IConsultasDisciplina consultasDisciplina,
-                                                IConsultasFrequencia consultasFrequencia,
                                                 IServicoNotificacao servicoNotificacao,
                                                 IServicoEol servicoEOL,
                                                 IServicoUsuario servicoUsuario,
@@ -78,7 +76,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -364,9 +361,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
-                    var frequencia = consultasFrequencia.ObterPorAlunoDisciplinaData(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia);
+                    var frequencia = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia));
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
-                    var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplina, anoLetivo);
+                    var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, anoLetivo));
 
                     fechamentoNota.SinteseId = (long)sinteseDto.Id;
                 }

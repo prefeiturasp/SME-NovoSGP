@@ -540,5 +540,32 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = ""
             });
         }
+
+        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, int totalAusencia = 2)
+        {
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                PeriodoInicio = DATA_02_05,
+                PeriodoFim = DATA_07_08,
+                Bimestre = 2,
+                TotalAulas = 3,
+                TotalAusencias = totalAusencia,
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
+                CriadoPor = "Sistema",
+                AlteradoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 23, 21, 52, 51),
+                AlteradoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0",
+                TotalCompensacoes = 0,
+                PeriodoEscolarId = 1,
+                TotalPresencas = 1,
+                TotalRemotos = 0,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                CodigoAluno = codigoAluno,
+                TurmaId = TURMA_CODIGO_1,
+                Tipo = TipoFrequenciaAluno.PorDisciplina
+
+            });
+        }
     }
 }
