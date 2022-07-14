@@ -272,8 +272,25 @@ namespace SME.SGP.Dominio.Servicos
 
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
-                        fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
-                        await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                        if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                        {
+                            if (emAprovacao && (fechamentoNota.Id == 0))
+                            {
+                                var notaConceitoAnterior = entidadeDto.NotaConceitoAlunos.Select(a => new
+                                {
+                                    a.NotaAnterior,
+                                    a.ConceitoIdAnterior,
+                                    a.CodigoAluno
+                                })
+                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
+
+                                fechamentoNota.Nota = notaConceitoAnterior.NotaAnterior;
+                                fechamentoNota.ConceitoId = notaConceitoAnterior.ConceitoIdAnterior;
+                            }
+
+                            fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
+                            await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                        }
 
                         if (emAprovacao)
                         {
@@ -463,6 +480,8 @@ namespace SME.SGP.Dominio.Servicos
                         if (EnviarWfAprovacao(usuarioLogado) && parametroAlteracaoNotaFechamento.Ativo)
                         {
                             fechamentoNotaDto.Id = notaFechamento.Id;
+                            fechamentoNotaDto.NotaAnterior = notaFechamento.Nota;
+                            fechamentoNotaDto.ConceitoIdAnterior = notaFechamento.ConceitoId;
                             notasEnvioWfAprovacao.Add(fechamentoNotaDto);
                         }
                         else
