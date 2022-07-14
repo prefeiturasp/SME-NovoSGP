@@ -29,7 +29,8 @@ namespace SME.SGP.Dados.Repositorios
                         af.id as FotoId,
                         af.arquivo_id as ArquivoId,
                         af2.id as MiniaturaId,
-                        af2.arquivo_id as MiniaturaArquivoId
+                        af2.arquivo_id as MiniaturaArquivoId,
+                        af.criado_rf as CriadoRf
                     from
 	                    arquivo a
                     inner join aluno_foto af on
