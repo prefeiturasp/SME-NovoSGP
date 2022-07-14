@@ -139,7 +139,6 @@ namespace SME.SGP.Api
                 options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
             });
 
-            services.AddMemoryCache();
             services.AddCors();
             services.AddControllers();
         }
