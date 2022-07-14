@@ -201,8 +201,6 @@ namespace SME.SGP.TesteIntegracao
         protected const string ANO_LETIVO_ANO_ANTERIOR_NOME = "Ano Letivo Ano Anterior";
 
         protected DateTime DATA_04_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 04);
-        protected readonly DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
-        protected readonly DateTime DATA_29_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
 
         protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
@@ -231,12 +229,6 @@ namespace SME.SGP.TesteIntegracao
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
-        protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        protected DateTime DATA_08_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
-        protected DateTime DATA_25_07_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
-        protected DateTime DATA_30_09_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
-        protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
-        protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected const string REABERTURA_GERAL = "Reabrir Geral";
         protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected DateTime DATA_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
@@ -246,7 +238,6 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
         protected DateTime DATA_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
-        protected long TIPO_CALENDARIO_1 = 1;
 
         protected const long ATESTADO_MEDICO_DO_ALUNO_1 = 1;
         protected const long ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2 = 2;
@@ -537,37 +528,48 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CrieTipoAtividade()
         {
-            await InserirNaBase(new Turma
-            {
-                UeId = 1,
-                Ano = TURMA_ANO_2,
-                CodigoTurma = turmaCodigo,
-                Historica = true,
-                ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
-                Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1
-            });
-        }
-
-        protected async Task CriaTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao)
-        {
             await InserirNaBase(new TipoAvaliacao
             {
-                Id = 1,
                 Nome = "Avaliação bimestral",
                 Descricao = "Avaliação bimestral",
                 Situacao = true,
                 AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = tipoAvalicao,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
+                Codigo = TipoAvaliacaoCodigo.AvaliacaoBimestral,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
                 CriadoEm = DateTime.Now
             });
         }
 
         protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente, string rf, bool ehCj, long idAtividade)
         {
+            await InserirNaBase(new AtividadeAvaliativa
+            {
+                DreId = "1",
+                UeId = "1",
+                ProfessorRf = rf,
+                TurmaId = TURMA_CODIGO_1,
+                Categoria = CategoriaAtividadeAvaliativa.Normal,
+                EhCj = ehCj,
+                TipoAvaliacaoId = 1,
+                NomeAvaliacao = "Avaliação 04",
+                DescricaoAvaliacao = "Avaliação 04",
+                DataAvaliacao = dataAvaliacao,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new AtividadeAvaliativaDisciplina
+            {
+                AtividadeAvaliativaId = idAtividade,
+                DisciplinaId = componente,
+                CriadoPor = "Sistema",
+                CriadoRF = "1",
+                CriadoEm = DateTime.Now
+            });
+        }
+
         protected async Task CriarAtividadeAvaliativaFundamental(
                                     DateTime dataAvaliacao,
                                     string componente,
@@ -586,7 +588,6 @@ namespace SME.SGP.TesteIntegracao
                 ProfessorRf = rf,
                 TurmaId = TURMA_CODIGO_1,
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
-                EhCj = ehCj,
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
@@ -600,10 +601,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
-                AtividadeAvaliativaId = idAtividade,
-                DisciplinaId = componente,
-                CriadoPor = "Sistema",
-                CriadoRF = "1",
                 Id = 1,
                 AtividadeAvaliativaId = 1,
                 DisciplinaId = componente,
@@ -612,6 +609,8 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = DateTime.Now
             });
         }
+
+
 
         protected async Task CriarAtividadeAvaliativaRegencia(string componente, string nomeComponente)
         {
@@ -674,7 +673,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente,TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral, bool ehRegencia = false,
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, string componente, TipoAvaliacaoCodigo tipoAvalicao = TipoAvaliacaoCodigo.AvaliacaoBimestral, bool ehRegencia = false,
                                                       bool ehCj = false, string rf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
         {
             await CriaTipoAvaliacao(tipoAvalicao);
@@ -761,7 +760,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
         protected async Task CriarComponenteCurricular()
-        { 
+        {
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
@@ -861,13 +860,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
 
-
-
-           
-
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME);
-
-            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(), COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_ID_1114.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_NOME, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_NOME, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_NOME);
             await InserirNaBase(new FechamentoReaberturaBimestre()
             {
                 FechamentoAberturaId = 1,

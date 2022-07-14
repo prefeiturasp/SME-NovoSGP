@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var filtroNota = ObterFiltroNotas(ObterPerfilProfessor(), TipoNota.Conceito, ANO_1);
 
             await CriarEstruturaBaseDeNota(filtroNota);
-
+            
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_1, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.NS);
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_2, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.S);
             await CriarNotaConceitoNaBase(filtroNota, ALUNO_CODIGO_3, ATIVIDADE_AVALIATIVA_1, null, (int)ConceitoValores.P);
@@ -102,7 +102,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             var notaconceito = ObterNotaNumericaPersistencia(filtroNota);
 
             var listaNotaConceito = ObterNotaConceitoListar(filtroNota);
-
+            
             await ExecutarNotasConceito(notaconceito, listaNotaConceito, false);
         }
 

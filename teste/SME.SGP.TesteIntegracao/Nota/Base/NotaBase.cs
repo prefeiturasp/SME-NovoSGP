@@ -712,9 +712,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, aulaCj, tipoAula));
         }
 
-        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
+        private SGP.Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
         {
-            return new Aula
+            return new SGP.Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
