@@ -57,6 +57,9 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
 
+                if (perfis == null)
+                    throw new NegocioException("Usuário sem perfis de acesso.");
+
                 return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
             }
 
