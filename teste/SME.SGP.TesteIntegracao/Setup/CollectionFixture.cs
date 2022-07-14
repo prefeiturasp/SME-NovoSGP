@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class CollectionFixture : IDisposable 
+    public class CollectionFixture : IDisposable
     {
         public IServiceCollection Services { get; set; }
         public InMemoryDatabase Database { get; }

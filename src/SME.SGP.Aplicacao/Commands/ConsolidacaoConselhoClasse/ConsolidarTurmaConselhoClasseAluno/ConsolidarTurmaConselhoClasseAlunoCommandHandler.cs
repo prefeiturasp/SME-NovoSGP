@@ -75,6 +75,9 @@ namespace SME.SGP.Aplicacao
 
                 var areasDoConhecimento = await mediator.Send(new ObterAreasConhecimentoQuery(disciplinasDaTurmaEol));
 
+                if (areasDoConhecimento == null || !areasDoConhecimento.Any())
+                    return false;
+
                 var ordenacaoGrupoArea = await mediator.Send(new ObterOrdenacaoAreasConhecimentoQuery(disciplinasDaTurma, areasDoConhecimento));
 
                 var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();

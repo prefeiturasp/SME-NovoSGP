@@ -91,8 +91,8 @@ namespace SME.SGP.Infra
         /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
         /// <returns></returns>
         public bool EstaAtivo(DateTime periodoInicio, DateTime periodoFim) => TratarExcepcionalmenteSituacaoAtivo(periodoFim) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
-                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) ||
-                                                    (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
+                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) && (DataSituacao.Date <= periodoInicio.Date || (DataSituacao.Date > periodoFim.Date && DataMatricula.Date < periodoInicio.Date)) 
+                                                    || (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
 
         /// <summary>
         /// Verifica se o aluno está inativo

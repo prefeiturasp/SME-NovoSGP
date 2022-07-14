@@ -121,104 +121,75 @@ namespace SME.SGP.Aplicacao
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;
                     var fechamentoAlunoId = await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
 
-                    if (fechamentoTurma.EhFinal)
+                    foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
-                        foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                        try
                         {
-                            try
-                            {
-                                // Regra de não reprovação em 2020
-                                if (turma.AnoLetivo == 2020)
-                                    ValidarNotasFechamento2020(fechamentoNota);
+                            // Regra de não reprovação em 2020
+                            if (turma.AnoLetivo == 2020)
+                                ValidarNotasFechamento2020(fechamentoNota);
 
-                                if (emAprovacao)
+                            //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
+                            //   deve gerar o registro do fechamento da nota inicial.
+                            if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                            {
+                                if (fechamentoNota != null)
                                 {
-                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno})
-                                        .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
-                                }
-                                else
-                                {
-                                    if (fechamentoNota != null)
+                                    if (tipoNota.TipoNota == TipoNota.Nota)
                                     {
-                                        if (tipoNota.TipoNota == TipoNota.Nota)
-                                        {
-                                            if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota != fechamentoNota.Nota)
-                                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, fechamentoNota.Nota, fechamentoNota.Id), cancellationToken);
-                                        }
-                                        else
-                                        if (fechamentoNota.ConceitoId != fechamentoNota.ConceitoId)
-                                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, fechamentoNota.ConceitoId, fechamentoNota.Id), cancellationToken);
+                                        if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota != fechamentoNota.Nota)
+                                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, fechamentoNota.Nota, fechamentoNota.Id), cancellationToken);
                                     }
-
-                                    fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
-                                    fechamentoNota.FechamentoAluno = fechamentoAluno;
-
-                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-
-                                    ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                    else
+                                    if (fechamentoNota.ConceitoId != fechamentoNota.ConceitoId)
+                                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, fechamentoNota.ConceitoId, fechamentoNota.Id), cancellationToken);
                                 }
-                            }
-                            catch (NegocioException e)
-                            {
-                                var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
-                                await LogarErro(mensagem, e, LogNivel.Negocio);
-                                mensagens.Add(e.Message);
-                            }
-                            catch (Exception e)
-                            {
-                                var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
-                                await LogarErro(mensagem, e, LogNivel.Critico);
-                                mensagens.Add(mensagem);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
-                        {
-                            try
-                            {
-                                if (emAprovacao)
-                                { 
-                                    var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota, a.CodigoAluno })
-                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                                    AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota);
-                                }
+
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
-                                var fechamentoNotaId = await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                                fechamentoNota.FechamentoAluno = fechamentoAluno;
+
+                                await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
                                 ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                             }
-                            catch (NegocioException e)
+
+                            if (emAprovacao)
                             {
-                                var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
-                                await LogarErro(mensagem, e, LogNivel.Negocio);
-                                mensagens.Add(e.Message);
-                            }
-                            catch (Exception e)
-                            {
-                                var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
-                                await LogarErro(mensagem, e, LogNivel.Critico);
-                                mensagens.Add(mensagem);
+                                var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new { a.Nota , a.CodigoAluno, a.ConceitoId, a.DisciplinaId})
+                                    .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);
+
+                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.ConceitoId);
                             }
                         }
-
-                        if (!fechamentoTurma.ComponenteSemNota)
+                        catch (NegocioException e)
                         {
-                            var notaAlunoAlterada = fechamentoTurma.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
-                            if (fechamentoTurma.Id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
-                            {
-                                var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
-                               
-                                if(aluno != null)
-                                    alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
-                            }
+                            var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
+                            await LogarErro(mensagem, e, LogNivel.Negocio);
+                            mensagens.Add(e.Message);
+                        }
+                        catch (Exception e)
+                        {
+                            var mensagem = $"Não foi possível salvar a nota do componente [{fechamentoNota.DisciplinaId}] aluno [{fechamentoAluno.AlunoCodigo}]";
+                            await LogarErro(mensagem, e, LogNivel.Critico);
+                            mensagens.Add(mensagem);
+                        }
+                    }
+
+                    if (!fechamentoTurma.EhFinal && !fechamentoTurma.ComponenteSemNota)
+                    {
+                        var notaAlunoAlterada = fechamentoTurma.NotaConceitoAlunos.FirstOrDefault(n => n.CodigoAluno.Equals(fechamentoAluno.AlunoCodigo));
+
+                        if (fechamentoTurma.Id > 0 && acimaDiasPermitidosAlteracao && notaAlunoAlterada != null && !alunosComNotaAlterada.Contains(fechamentoAluno.AlunoCodigo))
+                        {
+                            var aluno = alunos.FirstOrDefault(a => a.CodigoAluno == fechamentoAluno.AlunoCodigo);
+
+                            if (aluno != null)
+                                alunosComNotaAlterada += $"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>";
                         }
                     }
                 }
 
-                await EnviarNotasAprovacao(notasEmAprovacao, fechamentoTurma.EhFinal, usuarioLogado);
+                await EnviarNotasAprovacao(notasEmAprovacao, usuarioLogado);
                 unitOfWork.PersistirTransacao();
 
                 var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma), cancellationToken);
@@ -581,7 +552,7 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, bool ehFinal, Usuario usuarioLogado)
+        private async Task EnviarNotasAprovacao(List<FechamentoNotaDto> notasEmAprovacao, Usuario usuarioLogado)
         {
             if (notasEmAprovacao.Any())
                 await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEmAprovacao, usuarioLogado));
@@ -604,7 +575,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
         }
 
-        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota)
+        private static void AdicionaAprovacaoNota(List<FechamentoNotaDto> notasEmAprovacao, FechamentoNota fechamentoNota, string alunoCodigo, double? nota, long? conceitoId)
         {
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
@@ -612,7 +583,7 @@ namespace SME.SGP.Aplicacao
                 NotaAnterior = fechamentoNota.Nota,
                 Nota = nota,
                 ConceitoIdAnterior = fechamentoNota.ConceitoId,
-                ConceitoId = fechamentoNota.ConceitoId,
+                ConceitoId = conceitoId,
                 CodigoAluno = alunoCodigo,
                 DisciplinaId = fechamentoNota.DisciplinaId
             });

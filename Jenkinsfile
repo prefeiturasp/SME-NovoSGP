@@ -6,12 +6,12 @@ pipeline {
       deployment1 = "${env.branchname == 'release-r2' ? 'sme-api-rc2' : 'sme-api' }"
       deployment2 = "${env.branchname == 'release-r2' ? 'sme-pedagogico-worker-r2' : 'sme-pedagogico-worker' }"      
       deployment3 = "${env.branchname == 'release-r2' ? 'sme-worker-fechamento-r2' : 'sme-worker-fechamento' }"  
-      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-rabbit-r2' : 'sme-worker-rabbit' }"
-      deployment5 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-aula' : 'flag-worker-aula' }"
-      deployment6 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-fechamento' : 'flag-worker-fechamento' }"
-      deployment7 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-frequencia' : 'flag-worker-frequencia' }"
-      deployment8 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-institucional' : 'flag-worker-institucional' }"
-      deployment9 = "${env.branchname == 'release-r2' ? 'flag-worker-r2-pendencias' : 'flag-worker-pendencias' }"
+      deployment4 = "${env.branchname == 'release-r2' ? 'sme-worker-geral-r2' : 'sme-worker-geral' }"
+      deployment5 = "${env.branchname == 'release-r2' ? 'sme-worker-aee-r2' : 'sme-worker-aee' }"
+      deployment6 = "${env.branchname == 'release-r2' ? 'sme-worker-aula-r2' : 'sme-worker-aula' }"
+      deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
+      deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
+      deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
     }
   
     agent {
@@ -38,7 +38,7 @@ pipeline {
         }
       
         stage('Sonar') {
-	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch '_release'; branch 'release-r2'; branch 'infra/*'; } } 
 	steps {
              withSonarQubeEnv('sonarqube-local'){
                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados, **/*SME.SGP.Dominio, **/*SME.SGP.Dominio.Servicos, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api,**/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Worker.Rabbbit"'
@@ -54,17 +54,34 @@ pipeline {
           steps {
             script {
               imagename1 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-sgp-backend"
-              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-rabbit"
-	      imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"   
+              imagename2 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-geral"
+              imagename3 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-fechamento"
+              imagename4 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aee"
+              imagename5 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-aula"
+              imagename6 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
+              imagename7 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
+              imagename8 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
+
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
               dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
-	      dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+              dockerImage3 = docker.build(imagename3, "-f src/SME.SGP.Fechamento.Worker/Dockerfile .")
+              dockerImage4 = docker.build(imagename4, "-f src/SME.SGP.AEE.Worker/Dockerfile .")
+              dockerImage5 = docker.build(imagename5, "-f src/SME.SGP.Aula.Worker/Dockerfile .")
+              dockerImage6 = docker.build(imagename6, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
+              dockerImage7 = docker.build(imagename7, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
+              dockerImage8 = docker.build(imagename8, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
+
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
               dockerImage2.push()
-	      dockerImage3.push()
+              dockerImage3.push()
+              dockerImage4.push()
+              dockerImage5.push()
+              dockerImage6.push()
+              dockerImage7.push()
+              dockerImage8.push()
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3"
+              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8"
             }
           }
         }
@@ -82,19 +99,19 @@ pipeline {
                             }
                         }
                     }
-					withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
-						sh('cp $config '+"$home"+'/.kube/config')
-						sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-						sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"	
-						sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"	
-						sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
+                  withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
+                        sh('cp $config '+"$home"+'/.kube/config')
+                        sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
+                        sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"	
+                        sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"	
+                        sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment5} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment6} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment7} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment8} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment9} -n sme-novosgp"
-						sh('rm -f '+"$home"+'/.kube/config')
-					}
+                        sh('rm -f '+"$home"+'/.kube/config')
+                  }
                 }
             }           
         }

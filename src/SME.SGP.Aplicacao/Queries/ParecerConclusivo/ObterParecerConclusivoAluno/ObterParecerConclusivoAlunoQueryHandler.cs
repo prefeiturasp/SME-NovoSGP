@@ -15,12 +15,13 @@ namespace SME.SGP.Aplicacao
     {
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
         private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IMediator mediator;
 
-        public ObterParecerConclusivoAlunoQueryHandler(IConsultasFrequencia consultasFrequencia,
-                                                       IMediator mediator)
+        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceitoConsulta repositorioConceito,IConsultasFrequencia consultasFrequencia,IMediator mediator)
         {
+            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
             this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
@@ -133,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos);
+            var frequenciaAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos));
             double valorFrequenciaAluno = 0;
             if (frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);

@@ -138,10 +138,10 @@ namespace SME.SGP.Aplicacao
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             alunosAtivos = from a in alunos
-                            where a.EstaAtivo(periodoInicio, periodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido)
+                           where a.EstaAtivo(periodoInicio, periodoFim) || !a.EstaAtivo(periodoInicio, periodoFim) && !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && a.DataSituacao >= periodoInicio
                            orderby a.NomeValido(), a.NumeroAlunoChamada
-                            select a;
-          
+                           select a;
+
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 

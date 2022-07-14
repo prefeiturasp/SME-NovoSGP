@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -45,6 +46,7 @@ namespace SME.SGP.Dominio
                 await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
 
             var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
+
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
@@ -106,7 +108,7 @@ namespace SME.SGP.Dominio
                 consideraHistorico);
 
             if (notaTipo == null)
-                throw new NegocioException("Não foi encontrado tipo de nota para a avaliação informada");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_tipo_de_nota_para_a_avaliacao);
 
             return notaTipo;
         }
@@ -147,7 +149,7 @@ namespace SME.SGP.Dominio
                 new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turmaCodigo, consideraHistorico));
 
             if (turma == null)
-                throw new NegocioException("Não foi encontrada a turma informada");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_a_turma_informada);
 
             string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano)
                 ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano
@@ -155,7 +157,7 @@ namespace SME.SGP.Dominio
             var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, turma.Modalidade));
 
             if (ciclo == null)
-                throw new NegocioException("Não foi encontrado o ciclo da turma informada");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrado_o_ciclo_da_turma_informada);
 
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, data));
             return retorno;
@@ -184,7 +186,7 @@ namespace SME.SGP.Dominio
             bool gestorEscolar)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
-                throw new NegocioException("Não foi encontrada nenhuma da(s) avaliação(es) informada(s)");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_nenhuma_da_avaliacao_informada);
 
             ValidarSeAtividadesAvaliativasExistem(avaliacoesAlteradasIds, atividadesAvaliativas);
             var disciplinasEol = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
@@ -254,7 +256,7 @@ namespace SME.SGP.Dominio
                 x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
                 x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
             if (periodoEscolarAvaliacao == null)
-                throw new NegocioException("Período escolar da atividade avaliativa não encontrado");
+                throw new NegocioException(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado);
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
@@ -266,7 +268,7 @@ namespace SME.SGP.Dominio
                 var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
                 if (aluno == null)
-                    throw new NegocioException($"Não foi encontrado aluno com o codigo {notaConceito.AlunoId}");
+                    throw new NegocioException(String.Format(MensagensNegocioLancamentoNota.Nao_foi_encontrado_aluno_com_o_codigo, notaConceito.AlunoId));
 
                 if (tipoNota.TipoNota == TipoNota.Nota)
                 {

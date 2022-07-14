@@ -188,9 +188,9 @@ namespace SME.SGP.Dominio.Servicos
             notasEmAprovacao.Add(new FechamentoNotaDto()
             {
                 Id = fechamentoNota.Id,
-                NotaAnterior = fechamentoNota.Nota != null ? fechamentoNota.Nota.Value : null,
+                NotaAnterior = fechamentoNota.Nota,
                 Nota = notaDto.Nota,
-                ConceitoIdAnterior = fechamentoNota.ConceitoId != null ? fechamentoNota.ConceitoId.Value : null,
+                ConceitoIdAnterior = fechamentoNota.ConceitoId,
                 ConceitoId = notaDto.ConceitoId,
                 CodigoAluno = alunoCodigo
             });

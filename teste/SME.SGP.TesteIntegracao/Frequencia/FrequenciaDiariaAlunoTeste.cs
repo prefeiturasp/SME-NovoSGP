@@ -128,7 +128,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -157,7 +157,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1
+                NumeroAula = 1,
+                AulaId = 1
             });
         }
     }

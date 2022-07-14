@@ -189,7 +189,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 ComponenteCurricularId = 512,
                 TurmaId = 1
             });
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 Id = 1,
                 UeId = "1",
