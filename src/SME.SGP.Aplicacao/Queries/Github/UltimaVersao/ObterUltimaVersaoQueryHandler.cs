@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao.Queries.Github.ObterVersaoRelease
             if (string.IsNullOrWhiteSpace(versao))
             {
                 string numeroVersao = await servicoGithub.RecuperarUltimaVersao();
-                await repositorioCache.SalvarAsync("versao", "1", 1080, false);
+                await repositorioCache.SalvarAsync("versao", numeroVersao, 1080, false);
                 return numeroVersao;
             }
             return versao;
