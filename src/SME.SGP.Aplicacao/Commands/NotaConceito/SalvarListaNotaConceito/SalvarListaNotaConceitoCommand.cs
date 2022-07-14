@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao
         public SalvarListaNotaConceitoCommandValidator()
         {
             RuleFor(x => x.CriadoPor)
-                .NotEmpty().WithMessage("Informe o Usuario criador");
+                .NotEmpty().WithMessage("Informe o Usuario criador para Salvar Lista Nota Conceito");
             RuleFor(c => c.ListaNotasConceitos)
                 .Must(a => a.Any())
-                .WithMessage("Informe uma Nota Conceito para Salvar");
+                .WithMessage("Informe uma Nota Conceito para Salvar Lista Nota Conceito");
         }
     }
 }

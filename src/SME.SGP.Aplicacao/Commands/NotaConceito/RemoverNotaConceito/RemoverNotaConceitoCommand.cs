@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
     {
         public RemoverNotaConceitoCommandValidator()
         {
-            RuleFor(x => x.NotaConceito).NotEmpty().WithMessage("Informe uma Nota Conceito");
+            RuleFor(x => x.NotaConceito).NotEmpty().WithMessage("Informe uma Nota Conceito para Remover a Nota Conceito");
         }
     }
 }
