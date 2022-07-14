@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,12 +11,12 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaGoogleClassroomCommandHandler : IRequestHandler<PublicarFilaGoogleClassroomCommand, bool>
     {
-        private readonly ConfiguracaoRabbitOptions configuracaoRabbitOptions;
+        private readonly IConexoesRabbitFilasSGP conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
 
-        public PublicarFilaGoogleClassroomCommandHandler(ConfiguracaoRabbitOptions configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
+        public PublicarFilaGoogleClassroomCommandHandler(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria)
         {
-            this.configuracaoRabbitOptions = configuracaoRabbitOptions ?? throw new System.ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.conexaoRabbit = conexaoRabbit ?? throw new System.ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new System.ArgumentNullException(nameof(servicoTelemetria));
         }
 
@@ -29,27 +29,21 @@ namespace SME.SGP.Aplicacao
 
         private void PublicarMensagem(PublicarFilaGoogleClassroomCommand request)
         {
-            var factory = new ConnectionFactory
+            var _channel = conexaoRabbit.Get();
+            try
             {
-                HostName = configuracaoRabbitOptions.HostName,
-                UserName = configuracaoRabbitOptions.UserName,
-                Password = configuracaoRabbitOptions.Password,
-                VirtualHost = configuracaoRabbitOptions.VirtualHost
-            };
-
-            using (var conexaoRabbit = factory.CreateConnection())
-            {
-                using (IModel _channel = conexaoRabbit.CreateModel())
+                var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
                 {
-                    var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
-                    byte[] body = FormataBodyWorker(request);
+                byte[] body = FormataBodyWorker(request);
 
-                    _channel.BasicPublish(RotasRabbitSgpGoogleClassroomApi.ExchangeGoogleSync, request.Fila, null, body);
-                }
+                _channel.BasicPublish(RotasRabbitSgpGoogleClassroomApi.ExchangeGoogleSync, request.Fila, null, body);
+            }
+            finally
+            {
+                conexaoRabbit.Return(_channel);
             }
         }
 

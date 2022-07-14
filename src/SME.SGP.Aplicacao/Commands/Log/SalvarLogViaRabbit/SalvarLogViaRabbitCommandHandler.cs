@@ -1,9 +1,8 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Text;
 using System.Threading;
@@ -13,12 +12,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommandHandler : IRequestHandler<SalvarLogViaRabbitCommand, bool>
     {
-        private readonly ConfiguracaoRabbitLogOptions configuracaoRabbitOptions;
+        private readonly IConexoesRabbitFilasLog conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
 
-        public SalvarLogViaRabbitCommandHandler(IOptions<ConfiguracaoRabbitLogOptions> configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
+        public SalvarLogViaRabbitCommandHandler(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria)
         {
-            this.configuracaoRabbitOptions = configuracaoRabbitOptions.Value ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
         public Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
@@ -50,23 +49,17 @@ namespace SME.SGP.Aplicacao
         }
         private void PublicarMensagem(byte[] body)
         {
-            var factory = new ConnectionFactory
+            var _channel = conexaoRabbit.Get();
+            try
             {
-                HostName =    configuracaoRabbitOptions.HostName,
-                UserName =    configuracaoRabbitOptions.UserName,
-                Password =    configuracaoRabbitOptions.Password,
-                VirtualHost = configuracaoRabbitOptions.VirtualHost
-            };
+                var props = _channel.CreateBasicProperties();
 
-            using (var conexaoRabbit = factory.CreateConnection())
+                _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
+            }
+            finally
             {
-                using (IModel _channel = conexaoRabbit.CreateModel())
-                {
-                    var props = _channel.CreateBasicProperties();
-
-                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
-                }                
-            }            
+                conexaoRabbit.Return(_channel);
+            }        
         }
     }
     public class LogMensagem

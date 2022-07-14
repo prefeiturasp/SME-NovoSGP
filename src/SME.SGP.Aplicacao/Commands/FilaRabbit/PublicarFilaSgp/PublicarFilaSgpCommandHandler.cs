@@ -1,10 +1,12 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.ObjectPool;
 using Newtonsoft.Json;
 using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
 using SME.GoogleClassroom.Infra;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -17,14 +19,14 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly IConfiguration configuration;
+        private readonly IConexoesRabbitFilasSGP conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
         private readonly IMediator mediator;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
+        public PublicarFilaSgpCommandHandler(IConexoesRabbitFilasSGP conexaoRabbit, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -71,23 +73,17 @@ namespace SME.SGP.Aplicacao
 
         private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
         {
-            var factory = new ConnectionFactory
+            var _channel = conexaoRabbit.Get();
+            try
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
-            };
+                var props = _channel.CreateBasicProperties();
+                props.Persistent = true;
 
-            using (var conexaoRabbit = factory.CreateConnection())
+                _channel.BasicPublish(exchange ?? ExchangeSgpRabbit.Sgp, rota, props, body);
+            }
+            finally
             {
-                using (IModel _channel = conexaoRabbit.CreateModel())
-                {
-                    var props = _channel.CreateBasicProperties();
-                    props.Persistent = true;
-
-                    _channel.BasicPublish(exchange ?? ExchangeSgpRabbit.Sgp, rota, props, body);
-                }
+                conexaoRabbit.Return(_channel);
             }
         }
 
