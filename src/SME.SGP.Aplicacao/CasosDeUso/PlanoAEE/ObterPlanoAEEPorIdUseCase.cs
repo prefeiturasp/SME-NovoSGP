@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
                 var alunoTurma = await mediator
-                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
+                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
                 if (alunoTurma == null)
                     throw new NegocioException("Aluno não encontrado.");
