@@ -12,7 +12,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_professor_titular_todos_alunos_multiplas_avaliacoes : NotaBase
+    public class Ao_registrar_nota_professor_titular_todos_alunos_multiplas_avaliacoes : NotaTesteBase
     {
         public Ao_registrar_nota_professor_titular_todos_alunos_multiplas_avaliacoes(CollectionFixture collectionFixture) : base(collectionFixture)
         { }

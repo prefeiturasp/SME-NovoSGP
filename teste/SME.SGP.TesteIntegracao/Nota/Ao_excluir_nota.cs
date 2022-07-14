@@ -13,7 +13,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_excluir_nota : NotaBase
+    public class Ao_excluir_nota : NotaTesteBase
     {
         public Ao_excluir_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         {

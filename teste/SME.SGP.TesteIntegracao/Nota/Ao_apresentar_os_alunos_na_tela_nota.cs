@@ -13,7 +13,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_apresentar_os_alunos_na_tela_nota : NotaBase
+    public class Ao_apresentar_os_alunos_na_tela_nota : NotaTesteBase
     {
         private const string ALUNO_CODIGO_12 = "12";
 

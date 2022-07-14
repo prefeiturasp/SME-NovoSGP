@@ -16,7 +16,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_gera_excecao_para_atribuicao_encerrada : NotaBase
+    public class Ao_registrar_nota_gera_excecao_para_atribuicao_encerrada : NotaTesteBase
     {
         public Ao_registrar_nota_gera_excecao_para_atribuicao_encerrada(CollectionFixture collectionFixture) : base(collectionFixture)
         {

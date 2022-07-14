@@ -41,7 +41,9 @@ namespace SME.SGP.Aplicacao
                 .Select(x => x.AtividadeAvaliativaId)
                 .ToList();
 
-            var disciplinasDoProfessorLogado = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurma(notaConceitoLista.TurmaId, true);
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var disciplinasDoProfessorLogado = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(notaConceitoLista.TurmaId, usuario.Login, usuario.PerfilAtual, true));
 
             if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");

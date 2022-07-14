@@ -13,7 +13,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_para_cp_e_diretor : NotaBase
+    public class Ao_registrar_nota_para_cp_e_diretor : NotaTesteBase
     {
         public Ao_registrar_nota_para_cp_e_diretor(CollectionFixture collectionFixture) : base(collectionFixture)
         {

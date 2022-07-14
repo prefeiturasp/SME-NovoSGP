@@ -12,7 +12,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_alterar_nota : NotaBase
+    public class Ao_alterar_nota : NotaTesteBase
     {
         public Ao_alterar_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         { }

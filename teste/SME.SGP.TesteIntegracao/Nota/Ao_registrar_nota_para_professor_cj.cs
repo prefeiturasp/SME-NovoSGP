@@ -14,7 +14,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_para_professor_cj : NotaBase
+    public class Ao_registrar_nota_para_professor_cj : NotaTesteBase
     {
         public Ao_registrar_nota_para_professor_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {

@@ -15,7 +15,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Outras_validacoes : NotaBase
+    public class Outras_validacoes : NotaTesteBase
     {
         public Outras_validacoes(CollectionFixture collectionFixture) : base(collectionFixture)
         { }

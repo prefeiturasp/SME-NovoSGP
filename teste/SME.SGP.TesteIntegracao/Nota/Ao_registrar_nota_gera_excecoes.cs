@@ -16,7 +16,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
 {
-    public class Ao_registrar_nota_gera_excecoes : NotaBase
+    public class Ao_registrar_nota_gera_excecoes : NotaTesteBase
     {
         private DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         private const string CODIGO_ALUNO_INATIVO = "999";
