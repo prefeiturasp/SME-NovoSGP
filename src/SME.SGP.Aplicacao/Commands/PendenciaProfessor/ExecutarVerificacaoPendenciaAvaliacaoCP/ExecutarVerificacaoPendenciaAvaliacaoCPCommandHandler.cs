@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task IncluirPendenciaCP(IGrouping<(string TurmaCodigo, long TurmaId), TurmaEComponenteDto> turmaSemAvaliacao, IEnumerable<ComponenteCurricularDto> componentesCurriculares, PeriodoFechamentoBimestre periodoEncerrando)
         {
-            var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turmaSemAvaliacao.Key.TurmaCodigo);
+            var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaSemAvaliacao.Key.TurmaCodigo));
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaSemAvaliacao.Key.TurmaId));
 
             var pendenciaId = await ObterPendenciaIdDaTurma(turmaSemAvaliacao.Key.TurmaId);

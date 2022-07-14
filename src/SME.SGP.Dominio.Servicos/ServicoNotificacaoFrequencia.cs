@@ -354,7 +354,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
-                var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
+                var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
                 if (disciplinaEols != null)
                     foreach (var disciplina in disciplinaEols)
                     {

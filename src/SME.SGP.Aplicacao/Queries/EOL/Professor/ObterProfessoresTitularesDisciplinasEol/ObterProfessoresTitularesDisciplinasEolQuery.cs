@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterProfessoresTitularesDisciplinasEolQueryValidator()
         {
-            RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("Informe o Código da Turma ");
+            RuleFor(x => x.CodigoTurma).NotEmpty().WithMessage("Informe o Código da Turma para Obter Professores Titulares Disciplinas do EOL");
         } 
     }
 }
