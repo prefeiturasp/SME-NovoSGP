@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IConsultasPeriodoFechamento consultasFechamento;
         private readonly IConsultasFechamentoAluno consultasFechamentoAluno;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTurma consultasTurma;
@@ -38,7 +37,6 @@ namespace SME.SGP.Aplicacao
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioTurma repositorioTurma,
             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
-            IConsultasFrequencia consultasFrequencia,
             IConsultasAulaPrevista consultasAulaPrevista,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IServicoEol servicoEOL,
@@ -59,7 +57,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasAulaPrevista = consultasAulaPrevista ?? throw new ArgumentNullException(nameof(consultasAulaPrevista));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
@@ -235,7 +232,7 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Informacao = marcador.Descricao;
                     }
 
-                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId);
+                    var frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, disciplinaId.ToString(), periodoAtual.PeriodoFim, turmaId));
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltas = frequenciaAluno.TotalAusencias;
@@ -258,7 +255,7 @@ namespace SME.SGP.Aplicacao
                                 throw new NegocioException("Não é possivel registrar fechamento pois não há registros de frequência no bimestre.");
 
                             var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
-                            var sinteseDto = await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, disciplinaEOL, turma.AnoLetivo);
+                            var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplinaEOL, turma.AnoLetivo));
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;

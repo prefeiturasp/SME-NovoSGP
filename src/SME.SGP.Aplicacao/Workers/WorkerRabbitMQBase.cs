@@ -50,6 +50,7 @@ namespace SME.SGP.Aplicacao.Workers
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
 
+            
             var scope = serviceScopeFactory.CreateScope();
             mediator = scope.ServiceProvider.GetService<IMediator>();
 
@@ -136,36 +137,36 @@ namespace SME.SGP.Aplicacao.Workers
                 }
                 catch (NegocioException nex)
                 {
+                    transacao?.CaptureException(nex);
+
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-
-                    transacao.CaptureException(nex);
                 }
                 catch (ValidacaoException vex)
                 {
+                    transacao?.CaptureException(vex);
+
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-
-                    transacao.CaptureException(vex);
                 }
                 catch (Exception ex)
                 {
+                    transacao?.CaptureException(ex);
+
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-
-                    transacao.CaptureException(ex);
                 }
                 finally
                 {

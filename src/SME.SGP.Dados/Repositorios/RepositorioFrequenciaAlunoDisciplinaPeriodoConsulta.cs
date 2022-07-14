@@ -480,8 +480,7 @@ namespace SME.SGP.Dados
         {
             const string sql = @"select distinct(1)
                                   from registro_frequencia_aluno rfa
-                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
-                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join aula a on a.id = rfa.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = @periodoEscolarId
@@ -495,8 +494,7 @@ namespace SME.SGP.Dados
         {
             const string sql = @"select distinct(1)
                                    from registro_frequencia_aluno rfa
-                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
-                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join aula a on a.id = rfa.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = ANY(@periodosEscolaresIds)
@@ -567,8 +565,7 @@ namespace SME.SGP.Dados
                                                 a.disciplina_id CodigoComponenteCurricular, 
                                                 rfa.codigo_aluno CodigoAluno
                                   from registro_frequencia_aluno rfa
-                                  inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id 
-                                  inner join aula a on a.id = rf.aula_id 
+                                  inner join aula a on a.id = rfa.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where rfa.codigo_aluno = @codigoAluno 
@@ -642,10 +639,8 @@ namespace SME.SGP.Dados
                                                     a.disciplina_id as ComponenteCurricularId
                                                 from
                                                     registro_frequencia_aluno rfa
-                                                inner join registro_frequencia rf on
-                                                    rfa.registro_frequencia_id = rf.id
                                                 inner join aula a on
-                                                    rf.aula_id = a.id
+                                                    rfa.aula_id = a.id
                                                 inner join periodo_escolar p on
                                                     a.tipo_calendario_id = p.tipo_calendario_id
                                                 where
