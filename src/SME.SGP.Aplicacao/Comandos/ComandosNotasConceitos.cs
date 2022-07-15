@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +57,7 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
-            var atividades =  repositorioAtividadeAvaliativa
+            var atividades = repositorioAtividadeAvaliativa
                 .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
             foreach (var item in atividades)
@@ -73,8 +74,8 @@ namespace SME.SGP.Aplicacao
                 .Select(x => ObterEntidadeInclusao(x))
                 .ToList();
 
-            await servicosDeNotasConceitos
-                .Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
+            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
@@ -109,6 +110,7 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
 }

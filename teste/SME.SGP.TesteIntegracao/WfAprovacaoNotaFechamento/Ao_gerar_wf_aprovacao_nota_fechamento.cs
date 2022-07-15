@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -60,6 +61,13 @@ namespace SME.SGP.TesteIntegracao.WorkFlowAprovacaoNotaFechamento
 
         public Ao_gerar_wf_aprovacao_nota_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(WorkFlowAprovacaoNotaFechamento.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerWFFake), ServiceLifetime.Scoped));
         }
 
         [Fact]

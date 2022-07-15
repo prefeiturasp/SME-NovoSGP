@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
         }
 
-        [Fact]
+        //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
         {
             // Arrange
@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             //retorno.ShouldNotBeNull();
             //Assert.IsType<OkResult>(retorno);
         }
-        [Fact]
+        //[Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Eja()
         {
             // Arrange

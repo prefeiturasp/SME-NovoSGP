@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
             var turma = dadosMensagem.Turma;
             var datasAulas = dadosMensagem.DatasAulas;
 
-            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var listaTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+            var titulares = listaTitulares?.Select(x => x.ProfessorRf);
             if (titulares != null)
             {
                 var mensagem = new StringBuilder($"As seguintes aulas da turma {turma.ModalidadeCodigo.ShortName()} - {turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) não foram excluídas pela rotina automática pois já possuem registros de frequência.<br>");

@@ -253,6 +253,11 @@ namespace SME.SGP.TesteIntegracao
         protected const string DESCRICAO_FREQUENCIA_ALUNO_1 = "Lorem Ipsum";
         protected const string DESCRICAO_FREQUENCIA_ALUNO_2 = "é um texto bastante conhecido";
 
+        protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_NOME = "PercentualAlunosInsuficientes";
+        protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_VALOR_50 = "50";
+        protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
+
+
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)

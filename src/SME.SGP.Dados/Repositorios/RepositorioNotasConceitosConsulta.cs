@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<NotaConceito>(sql, new { atividadesAvaliativasId, alunosIds, componenteCurricularId });
         }
 
-        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno)
+        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId, string codigoAluno)
         {
             var sql = $@"select nc.id, 
                                 nc.atividade_avaliativa, 
@@ -104,5 +104,29 @@ namespace SME.SGP.Dados.Repositorios
             return database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
 
+        public async Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma)
+        {
+            var sql = @"select  
+                            nc.id, 
+                            nc.atividade_avaliativa, 
+                            nc.aluno_id, 
+                            nc.nota, 
+                            nc.conceito, 
+                            nc.tipo_nota, 
+                            nc.criado_em,
+                            nc.criado_por, 
+                            nc.criado_rf, 
+                            nc.alterado_em, 
+                            nc.alterado_por, 
+                            nc.alterado_rf,
+                            nc.status_gsa 
+                        from notas_conceito nc 
+                        join atividade_avaliativa aa on nc.atividade_avaliativa  = aa.id 
+                        join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id  = aa.id
+                        join turma t on aa.turma_id = t.turma_id::text 
+                        where aa.turma_id  = @codigoTurma";
+
+            return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
+        }
     }
 }

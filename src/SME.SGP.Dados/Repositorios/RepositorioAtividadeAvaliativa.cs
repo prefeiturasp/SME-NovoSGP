@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorIds(IEnumerable<long> ids)
         {
             var sql = new StringBuilder();
 
@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(fromCompleto);
             sql.AppendLine($"where a.id = ANY(@ids)");
 
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
         }
 
         public IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids)
