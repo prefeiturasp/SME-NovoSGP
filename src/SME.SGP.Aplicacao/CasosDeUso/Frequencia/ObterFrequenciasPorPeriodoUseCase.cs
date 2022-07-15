@@ -20,6 +20,9 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
             var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataFim);
+            
+            alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
+
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
@@ -30,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
             var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
 
-            var registraFrequencia = await OterComponenteRegistraFrequencia(param.ComponenteCurricularId);
+            var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
@@ -58,7 +61,11 @@ namespace SME.SGP.Aplicacao
                                                                           percentualCritico));
         }
 
-        private async Task<bool> OterComponenteRegistraFrequencia(string disciplinaId)
+        private IEnumerable<AlunoPorTurmaResposta> VerificaAlunosAtivosNoPeriodo(IEnumerable<AlunoPorTurmaResposta> alunosdaTurmaEol, DateTime dataInicio, DateTime dataFim) 
+            => alunosdaTurmaEol.Where(a => a.EstaAtivo(dataInicio, dataFim) || (a.EstaInativo(dataFim)
+            && a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && a.DataSituacao.Date >= dataInicio && a.DataSituacao.Date <= dataFim));
+
+        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)
             => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
 
         private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
