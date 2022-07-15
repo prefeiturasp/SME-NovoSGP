@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrada a turma informada");
 
             string anoCicloModalidade = !String.IsNullOrEmpty(turma?.Ano) ? turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : turma.Ano : string.Empty;
-            var ciclo = repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, turma.Modalidade);
+            var ciclo = await repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, turma.Modalidade);
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");

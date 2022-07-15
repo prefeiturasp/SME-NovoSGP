@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
 
             var notaConceitoFiltrada = from aac in atividadeAvaliativas.ToList()
-                                       join aai in request.AtividadesAvaliativasId on aac.AtividadeAvaliativaID equals aai
+                                       join aai in request.AtividadesAvaliativasId.Distinct() on aac.AtividadeAvaliativaID equals aai
                                        select aac;
 
             return notaConceitoFiltrada;

@@ -18,23 +18,20 @@ namespace SME.SGP.Dominio
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly string hostAplicacao;
+        private readonly IRepositorioNotasConceitos repositorioNotasConceitos;
 
-        public Turma turma { get; set; }
-
-        public ServicoDeNotasConceitos(
-            IUnitOfWork unitOfWork,
-            IConfiguration configuration,
-            IMediator mediator)
+        public ServicoDeNotasConceitos(IUnitOfWork unitOfWork,IConfiguration configuration,IMediator mediator, IRepositorioNotasConceitos repositorioNotasConceitos)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.hostAplicacao = configuration["UrlFrontEnd"];
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
             string disciplinaId)
         {
-            turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma == null)
                 throw new NegocioException($"Turma com código [{turmaId}] não localizada");
@@ -53,8 +50,7 @@ namespace SME.SGP.Dominio
 
             var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,
-                usuario.EhGestorEscolar());
+            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,usuario.EhGestorEscolar(), turma);
 
             var entidadesSalvar = new List<NotaConceito>();
 
@@ -85,7 +81,7 @@ namespace SME.SGP.Dominio
 
             var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await SalvarNoBanco(entidadesSalvar, criadoPor);
+            await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
 
             var alunosId = alunos
                 .Select(a => a.CodigoAluno)
@@ -163,27 +159,29 @@ namespace SME.SGP.Dominio
             return retorno;
         }
 
-        private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor)
+        private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
         {
             unitOfWork.IniciarTransacao();
 
-            var registroComIdZero = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
-            var registroSemIdZero = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
+            var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
+            var notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
+            var notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
 
-            foreach (var entidade in registroSemIdZero)
-            {
+            foreach (var entidade in notaConceitoParaRemover)
                 await mediator.Send(new RemoverNotaConceitoCommand(entidade));
-            }
 
-            if (registroComIdZero.Any())
-                await mediator.Send(new SalvarListaNotaConceitoCommand(registroComIdZero, criadoPor));
+            if (notaConceitoParaInserir.Any())
+                await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir, criadoPor));
+
+            foreach (var notaConceito in notaConceitoParaAtualizar)
+                repositorioNotasConceitos.Salvar(notaConceito);
 
             unitOfWork.PersistirTransacao();
+
+            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma));
         }
 
-        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,
-            IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,
-            bool gestorEscolar)
+        private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,bool gestorEscolar, Turma turma)
         {
             if (atividadesAvaliativas == null || !atividadesAvaliativas.Any())
                 throw new NegocioException(MensagensNegocioLancamentoNota.Nao_foi_encontrada_nenhuma_da_avaliacao_informada);
@@ -260,8 +258,10 @@ namespace SME.SGP.Dominio
 
             var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
-            var existePeriodoEmAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma,
-                DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.Bimestre, !turma.EhAnoAnterior()));
+            var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
+
+            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                || fechamentoReabertura == null;
 
             foreach (var notaConceito in notasConceitos)
             {

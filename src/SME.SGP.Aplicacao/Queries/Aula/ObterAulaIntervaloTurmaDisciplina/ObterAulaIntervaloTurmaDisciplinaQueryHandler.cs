@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public ObterAulaIntervaloTurmaDisciplinaQueryHandler(IRepositorioAulaConsulta repositorioAulaConsulta)
         {
-            repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
+            this.repositorioAulaConsulta = repositorioAulaConsulta ?? throw new ArgumentNullException(nameof(repositorioAulaConsulta));
         }
 
         public async Task<AulaConsultaDto> Handle(ObterAulaIntervaloTurmaDisciplinaQuery request, CancellationToken cancellationToken)
