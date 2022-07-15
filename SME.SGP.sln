@@ -53,7 +53,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Institucional.Worke
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SME.SGP.Pendencias.Worker", "src\SME.SGP.Pendencias.Worker\SME.SGP.Pendencias.Worker.csproj", "{254993A8-BBB0-4E33-9367-BA2AB692CC3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Avaliacao.Worker", "SME.SGP.Avaliacao.Worker\SME.SGP.Avaliacao.Worker.csproj", "{46AE75D4-A438-4890-8D20-F4EFF44D2908}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SME.SGP.Avaliacao.Worker", "src\SME.SGP.Avaliacao.Worker\SME.SGP.Avaliacao.Worker.csproj", "{46AE75D4-A438-4890-8D20-F4EFF44D2908}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
