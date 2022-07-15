@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
-    <ProjectReference Include="..\src\SME.SGP.Infra\SME.SGP.Infra.csproj" />
-    <ProjectReference Include="..\src\SME.SGP.IoC\SME.SGP.IoC.csproj" />
+    <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+    <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
   </ItemGroup>
 
 </Project>
