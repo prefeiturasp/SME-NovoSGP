@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if(encaminhamentoAee == null)
                 throw new NegocioException("Encaminhamento não localizado");
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo, true));
             aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
