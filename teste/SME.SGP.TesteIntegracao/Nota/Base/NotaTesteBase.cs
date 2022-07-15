@@ -144,6 +144,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                             notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Conceito.ToString()).ShouldBeTrue();
                         else
                             notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
+
+                        var notasPersistidas = ObterTodos<NotaConceito>();
                     }
                 }
             }

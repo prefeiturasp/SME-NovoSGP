@@ -13,17 +13,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterProfessoresTitularesDaTurmaQueryCompletosHandler : IRequestHandler<ObterProfessoresTitularesDaTurmaCompletosQuery, IEnumerable<ProfessorTitularDisciplinaEol>>
     {
-        private readonly IServicoEol servicoEol;
+        private readonly IMediator mediator;
 
-        public ObterProfessoresTitularesDaTurmaQueryCompletosHandler(IServicoEol servicoEol)
+        public ObterProfessoresTitularesDaTurmaQueryCompletosHandler(IMediator mediator)
         {
-            this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<ProfessorTitularDisciplinaEol>> Handle(ObterProfessoresTitularesDaTurmaCompletosQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<ProfessorTitularDisciplinaEol>();
-            var professores = await servicoEol.ObterProfessoresTitularesDisciplinas(request.CodigoTurma);
+            var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(request.CodigoTurma));
             if (!professores?.Any() ?? true) return retorno;
 
             foreach (var professor in professores)

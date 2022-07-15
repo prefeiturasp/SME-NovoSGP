@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
             var parametroAtivo = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.PermiteCompensacaoForaPeriodo, turma.AnoLetivo));
 
             // Carrega dados dos alunos não notificados
-            var alunosTurma = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma, true);
+            var alunosTurma = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma, true));
             var alunosDto = new List<CompensacaoAusenciaAlunoQtdDto>();
             foreach (var aluno in alunos)
             {

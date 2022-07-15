@@ -142,7 +142,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in comunicado.Turmas)
             {
-                var abrangenciaTurmas = await _consultasAbrangencia.ObterAbrangenciaTurma(turma);
+                var abrangenciaTurmas = await _mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma));
 
                 if (abrangenciaTurmas == null)
                     throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");

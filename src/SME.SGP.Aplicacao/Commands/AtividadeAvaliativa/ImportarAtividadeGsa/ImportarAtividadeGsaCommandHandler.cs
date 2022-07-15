@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             if (ReagendarImportacao(aula))
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtividadesSyncAgendado,
-                                                               new MensagemAgendamentoSyncDto(RotasRabbitSgp.RotaAtividadesSync, request.AtividadeGsa)));
+                                                               new MensagemAgendamentoSyncDto(RotasRabbitSgpAvaliacao.RotaAtividadesSync, request.AtividadeGsa)));
             else
             {
                 if (aula.EhModalidadeInfantil)

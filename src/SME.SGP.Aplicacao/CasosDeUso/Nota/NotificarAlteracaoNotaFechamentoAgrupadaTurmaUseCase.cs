@@ -74,7 +74,8 @@ namespace SME.SGP.Aplicacao
             mensagem.Append($"{turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) ");
             mensagem.Append($"foram alteradas");
 
-            var alunosTurma = (await servicoEol.ObterAlunosPorTurma(turma.CodigoTurma, true)).OrderBy(c => c.NomeAluno);
+            var alunosTurmas = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma, true));
+            var alunosTurma = alunosTurmas.OrderBy(c => c.NomeAluno);
 
             mensagem.AppendLine(ehRegencia ?
                 await MontarTabelaNotasRegencia(alunosTurma, notasAprovacao, lancaNota) :

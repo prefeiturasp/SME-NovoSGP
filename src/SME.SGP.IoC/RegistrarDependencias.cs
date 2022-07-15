@@ -583,6 +583,11 @@ namespace SME.SGP.IoC
             services.RegistrarUseCaseRabbitSgp();
         }
 
+        public virtual void RegistrarCasoDeUsoAvaliacaoRabbitSgp(IServiceCollection services)
+        {
+            services.RegistrarAvaliacaoUseCaseRabbitSgp();
+        }
+
         protected virtual void RegistrarCasosDeUso(IServiceCollection services)
         {
             services.TryAddScoped<IObterUltimaVersaoUseCase, ObterUltimaVersaoUseCase>();
