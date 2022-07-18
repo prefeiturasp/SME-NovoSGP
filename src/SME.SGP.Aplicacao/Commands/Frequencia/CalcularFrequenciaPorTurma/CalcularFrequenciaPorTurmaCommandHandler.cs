@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Polly;
 using Polly.Registry;
-using SME.GoogleClassroom.Infra;
+using SME.SGP.Infra;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;

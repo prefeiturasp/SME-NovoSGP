@@ -4,8 +4,9 @@ using Newtonsoft.Json;
 using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
-using SME.GoogleClassroom.Infra;
 using SME.SGP.Infra;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,21 +17,17 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaEmLoteSgpCommandHandler : IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>
     {
-        private readonly IConfiguration configuration;
-        private readonly IAsyncPolicy policy;
+        private readonly IServicoMensageria servicoMensageria;
         private readonly IMediator mediator;
 
-        public PublicarFilaEmLoteSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IMediator mediator)
+        public PublicarFilaEmLoteSgpCommandHandler(IServicoMensageria servicoMensageria, IMediator mediator)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(PublicarFilaEmLoteSgpCommand request, CancellationToken cancellationToken)
         {
-            var mensagens = new List<(string rota, byte[] body)>();
-
             foreach (var command in request.Commands)
             {
                 string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
@@ -47,50 +44,22 @@ namespace SME.SGP.Aplicacao
                     perfilUsuario = usuario.PerfilAtual;
                 }
 
-                var requisicao = new MensagemRabbit(command.Filtros,
-                                                 command.CodigoCorrelacao,
-                                                 usuarioLogadoNomeCompleto,
-                                                 usuarioLogadoRf,
-                                                 perfilUsuario,
-                                                 command.NotificarErroUsuario,
-                                                 administrador.Login);
+                var mensagem = new MensagemRabbit(command.Filtros,
+                                                  command.CodigoCorrelacao,
+                                                  usuarioLogadoNomeCompleto,
+                                                  usuarioLogadoRf,
+                                                  perfilUsuario,
+                                                  command.NotificarErroUsuario,
+                                                  administrador.Login);
 
-                var mensagem = JsonConvert.SerializeObject(requisicao, new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+                await servicoMensageria.Publicar(mensagem
+                                               , command.Rota
+                                               , ExchangeSgpRabbit.Sgp
+                                               , "PublicarFilaSgpLote");
 
-                var body = Encoding.UTF8.GetBytes(mensagem);
-
-                mensagens.Add((command.Rota, body));
             }
-
-            await policy.ExecuteAsync(() => PublicarMensagens(mensagens));
 
             return true;
-        }
-
-        private async Task PublicarMensagens(IEnumerable<(string rota, byte[] body)> mensagens)
-        {
-            var factory = new ConnectionFactory
-            {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
-            };
-
-            using (var conexaoRabbit = factory.CreateConnection())
-            {
-                using (IModel _channel = conexaoRabbit.CreateModel())
-                {
-                    var props = _channel.CreateBasicProperties();
-                    props.Persistent = true;
-
-                    foreach (var mensagem in mensagens)
-                        _channel.BasicPublish(ExchangeSgpRabbit.Sgp, mensagem.rota, props, mensagem.body);                    
-                }
-            }
         }
     }
 }

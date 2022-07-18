@@ -1,23 +1,24 @@
 ﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Dommel;
-using Npgsql;
-using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
-        protected readonly ISgpContext database;       
+        protected readonly ISgpContext database;
+        private readonly IServicoMensageria servicoMensageria;
 
-        protected RepositorioBase(ISgpContext database)
+        protected RepositorioBase(ISgpContext database, IServicoMensageria servicoMensageria)
         {
-            this.database = database;            
+            this.database = database;
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }
 
         public virtual async Task<IEnumerable<T>> ListarAsync()
@@ -44,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             var entidade = database.Conexao.Get<T>(id);
             database.Conexao.Delete(entidade);
             if (entidade != null)
-                Auditar(entidade.Id, "E");
+                AuditarAsync(entidade.Id, "E").Wait();
         }
 
         public virtual void Remover(T entidade)
@@ -67,14 +68,14 @@ namespace SME.SGP.Dados.Repositorios
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
-                Auditar(entidade.Id, "A");
+                AuditarAsync(entidade.Id, "A").Wait();
             }
             else
             {
                 entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.CriadoRF = database.UsuarioLogadoRF;
                 entidade.Id = (long)database.Conexao.Insert(entidade);
-                Auditar(entidade.Id, "I");
+                AuditarAsync(entidade.Id, "I").Wait();
             }
 
             return entidade.Id;
@@ -130,26 +131,11 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        private void Auditar(long identificador, string acao)
-        {
-            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
-            database.Conexao.Insert<Auditoria>(new Auditoria()
-            {
-                Data = DateTimeExtension.HorarioBrasilia(),
-                Entidade = typeof(T).Name.ToLower(),
-                Chave = identificador,
-                Usuario = database.UsuarioLogadoNomeCompleto,
-                RF = database.UsuarioLogadoRF,
-                Perfil = perfil,
-                Acao = acao,
-                Administrador = database.Administrador
-            });
-        }
-
         protected async Task AuditarAsync(long identificador, string acao)
         {
             var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
-            await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
+
+            var mensagem = new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
@@ -159,7 +145,9 @@ namespace SME.SGP.Dados.Repositorios
                 Perfil = perfil,
                 Acao = acao,
                 Administrador = database.Administrador
-            });
+            };
+
+            await servicoMensageria.Publicar(mensagem, RotasRabbitSgp.PersistirAuditoriaDB, ExchangeSgpRabbit.Sgp, "PublicarFilaAuditoriaDB");
         }
        // public async Task SalvarVariosAsync(IEnumerable<T> entidades)
        // {
