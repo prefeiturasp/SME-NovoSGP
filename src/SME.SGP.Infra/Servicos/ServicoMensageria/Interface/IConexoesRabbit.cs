@@ -1,6 +1,6 @@
 ﻿using RabbitMQ.Client;
 
-namespace SME.SGP.Aplicacao.Integracoes
+namespace SME.SGP.Infra.Interfaces
 {
     public interface IConexoesRabbit
     {

@@ -4,6 +4,9 @@ using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.IoC
@@ -55,6 +58,8 @@ namespace SME.SGP.IoC
                 var provider = serviceProvider.GetService<IOptions<DefaultObjectPoolProvider>>().Value;
                 return new ConexoesRabbitFilasSGP(options, provider);
             });
+
+            services.AddSingleton<IServicoMensageria, ServicoMensageria>();
         }
     }
 }

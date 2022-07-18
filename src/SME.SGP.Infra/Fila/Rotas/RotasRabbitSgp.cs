@@ -104,6 +104,8 @@
         public const string AjusteImagesAcompanhamentoAprendizagemAlunoSync = "sgp.acompanhamento.aprendizado.aluno.imagens.ajuste.sync";
         public const string AtualizaUltimoLoginUsuario = "sgp.usuario.login.atualizar";
 
+        public const string PersistirAuditoriaDB = "sgp.auditoria.incluir";
+
         #region Agendamento
 
         public const string RotaMuralAvisosSyncAgendado = "sgp.mural.avisos.sync.agendado";
