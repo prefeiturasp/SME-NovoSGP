@@ -16,20 +16,49 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_permitir_lancamento_nota_numerica_titular_fundamental()
         {
+            await ExecuteTeste(ObterPerfilProfessor());
+        }
+
+        public async Task Deve_permitir_lancamento_nota_numerica_titular_medio()
+        {
+        }
+        
+        public async Task Deve_permitir_lancamento_nota_numerica_titular_eja()
+        {
+        }
+        
+        public async Task Deve_permitir_lancamento_nota_numerica_titular_regencia_classe_fundamental()
+        {
+        }
+
+        [Fact]
+        public async Task Deve_Lancar_nota_numerica_cp()
+        {
+            await ExecuteTeste(ObterPerfilCP());
+        }
+
+        [Fact]
+        public async Task Deve_Lancar_nota_numerica_diretor()
+        {
+            await ExecuteTeste(ObterPerfilDiretor());
+        }
+
+        private async Task ExecuteTeste(string perfil)
+        {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(), 
-                TipoNota.Nota, ANO_7,
-                Modalidade.Fundamental, 
-                ModalidadeTipoCalendario.FundamentalMedio, 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-                
+                    ObterPerfilProfessor(),
+                    TipoNota.Nota, ANO_7,
+                    Modalidade.Fundamental,
+                    ModalidadeTipoCalendario.FundamentalMedio,
+                    COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
             await CriarDadosBase(filtroNotaFechamento);
 
             var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamento);
-            
-            await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
-        }
 
+            await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
+
+        }
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()
@@ -68,21 +97,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                         AlunoRf = ALUNO_CODIGO_5,
                         ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
                         Nota = NOTA_2
-                    }  
+                    }
                 }
             };
-        }
-
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_medio()
-        {
-        }
-        
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_eja()
-        {
-        }
-        
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_regencia_classe_fundamental()
-        {
         }
 
         private FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false)
