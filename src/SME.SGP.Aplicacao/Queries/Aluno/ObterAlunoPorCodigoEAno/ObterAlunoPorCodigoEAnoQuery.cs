@@ -10,7 +10,6 @@ namespace SME.SGP.Aplicacao
         {
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
-            AnoLetivo = anoLetivo;
             TurmaHistorica = turmaHistorica;
             TipoTurma = tipoTurma;
         }
