@@ -208,11 +208,6 @@ namespace SME.SGP.Aplicacao
                                         orderby a.NomeValido(), a.NumeroAlunoChamada
                                         select a;
 
-                    //var alunosId = alunosForeach.Select(x => x.CodigoAluno).Distinct().ToArray();
-                    //var fechamentosTurmaId = fechamentosTurma.Select(x => x.FechamentoTurmaId).Distinct().ToArray();
-
-                    //var notasBimestre = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(alunosId, fechamentosTurmaId));
-
                     foreach (var aluno in alunosForeach)
                     {
                         var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, filtro.AnoLetivo));
@@ -284,8 +279,6 @@ namespace SME.SGP.Aplicacao
                             bimestreParaAdicionar.Situacao = fechamentoTurma.Situacao;
 
                             var notasConceitoBimestre = await consultasFechamentoTurmaDisciplina.ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma.Id);
-
-                            //var notasConceitoBimestreTeste = notasBimestre.Where(x => x.CodigoAluno == aluno.CodigoAluno);
 
                             retorno.AuditoriaBimestreInserido = $"Nota final do bimestre inserida por {fechamentoTurma.CriadoPor}({fechamentoTurma.CriadoRF}) em {fechamentoTurma.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurma.CriadoEm.ToString("HH:mm")}.";
                             if (notasConceitoBimestre.Any())
