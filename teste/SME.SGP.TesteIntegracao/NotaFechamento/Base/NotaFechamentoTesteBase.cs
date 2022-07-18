@@ -1,6 +1,4 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -8,7 +6,6 @@ using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,6 +38,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly double NOTA_10 = 10;
 
         protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        
+        protected readonly string NOTA = "NOTA";
+        protected readonly string CONCEITO = "CONCEITO";
 
         protected NotaFechamentoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -60,38 +60,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         {
              var comandosFechamentoFinal = RetornarServicosBasicos();
 
-             var retorno = comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
+             var retorno = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
 
-             // if (gerarExcecao)
-             // {
-             //     async Task doExecutarSalvar() { await comandosNotasConceitos.Salvar(notaconceito); }
-             //
-             //     await Should.ThrowAsync<NegocioException>(() => doExecutarSalvar());
-             // }
-             // else
-             // {
-             //     await comandosNotasConceitos.Salvar(notaconceito);
-             //
-             //     var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
-             //
-             //     notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
-             //
-             //     notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
-             //
-             //     var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
-             //
-             //     if (ehInclusao)
-             //         ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-             //     else
-             //         ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-             //
-             //     var notasPersistidas = ObterTodos<NotaConceito>();
-             //
-             //     if (ehNotaConceito)
-             //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
-             //     else
-             //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
-             // }
+             retorno.ShouldNotBeNull();
+             
+             retorno.Mensagens.Any().ShouldBeFalse();
         }
 
         protected async Task CriarDadosBase(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
@@ -129,6 +102,28 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         {
             var dataBase = consideraAnoAnterior ? new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01) : new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
 
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = dataBase,
+                TipoNota = TipoNota.Nota,
+                Descricao = NOTA,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = dataBase,
+                TipoNota = TipoNota.Conceito,
+                Descricao = CONCEITO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
             await InserirNaBase(new NotaConceitoCicloParametro()
             {
                 CicloId = 1,
