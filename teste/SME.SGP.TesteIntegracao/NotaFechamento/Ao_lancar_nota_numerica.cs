@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.Base;
 using Xunit;
 
@@ -22,8 +23,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
                 
             await CriarDadosBase(filtroNotaFechamento);
-
-            await ExecutarComandosFechamentoFinal(filtroNotaFechamento);
+            
+            await ExecutarComandosFechamentoFinal(new FechamentoFinalSalvarDto());
         }
 
         public async Task Deve_permitir_lancamento_nota_numerica_titular_medio()

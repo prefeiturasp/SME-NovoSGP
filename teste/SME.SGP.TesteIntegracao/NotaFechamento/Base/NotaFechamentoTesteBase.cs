@@ -56,40 +56,42 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return ServiceProvider.GetService<IComandosFechamentoFinal>();
         }
 
-        protected async Task ExecutarComandosFechamentoFinal(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        protected async Task ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
-            // var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
-            //
-            // if (gerarExcecao)
-            // {
-            //     async Task doExecutarSalvar() { await comandosNotasConceitos.Salvar(notaconceito); }
-            //
-            //     await Should.ThrowAsync<NegocioException>(() => doExecutarSalvar());
-            // }
-            // else
-            // {
-            //     await comandosNotasConceitos.Salvar(notaconceito);
-            //
-            //     var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
-            //
-            //     notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
-            //
-            //     notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
-            //
-            //     var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
-            //
-            //     if (ehInclusao)
-            //         ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-            //     else
-            //         ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-            //
-            //     var notasPersistidas = ObterTodos<NotaConceito>();
-            //
-            //     if (ehNotaConceito)
-            //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
-            //     else
-            //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
-            // }
+             var comandosFechamentoFinal = RetornarServicosBasicos();
+
+             var retorno = comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
+
+             // if (gerarExcecao)
+             // {
+             //     async Task doExecutarSalvar() { await comandosNotasConceitos.Salvar(notaconceito); }
+             //
+             //     await Should.ThrowAsync<NegocioException>(() => doExecutarSalvar());
+             // }
+             // else
+             // {
+             //     await comandosNotasConceitos.Salvar(notaconceito);
+             //
+             //     var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
+             //
+             //     notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
+             //
+             //     notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
+             //
+             //     var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
+             //
+             //     if (ehInclusao)
+             //         ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+             //     else
+             //         ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
+             //
+             //     var notasPersistidas = ObterTodos<NotaConceito>();
+             //
+             //     if (ehNotaConceito)
+             //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
+             //     else
+             //         notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
+             // }
         }
 
         protected async Task CriarDadosBase(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
