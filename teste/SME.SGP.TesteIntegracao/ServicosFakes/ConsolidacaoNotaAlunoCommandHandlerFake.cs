@@ -1,8 +1,10 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +29,12 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                                                                                              request.ConceitoId,
                                                                                              request.ComponenteCurricularId);
 
-            var mensagemRabbit = new MensagemRabbit(mensagemConsolidacaoConselhoClasseAluno);
+
+            var mensagem = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore
+            });
+            var mensagemRabbit = new MensagemRabbit(mensagem);
 
             await this.consolidadoUseCase.Executar(mensagemRabbit);
 
