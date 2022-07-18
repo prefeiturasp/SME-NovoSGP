@@ -23,5 +23,6 @@ namespace SME.SGP.Infra
         public string AlteradoPor { get; set; }
         public double? NotaAnterior { get; set; }
         public long? ConceitoIdAnterior { get; set; }
+        public long? FechamentoId { get; set; }
     }
 }
