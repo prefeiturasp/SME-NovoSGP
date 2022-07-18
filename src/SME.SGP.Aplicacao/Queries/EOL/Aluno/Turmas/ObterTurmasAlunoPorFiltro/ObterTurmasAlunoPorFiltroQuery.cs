@@ -16,15 +16,12 @@ namespace SME.SGP.Aplicacao
             CodidoAluno = codidoAluno;
             AnoLetivo = anoLetivo;
             FiltrarSituacaoMatricula = filtrarSituacaoMatricula;
-            Historica = historica;
-            TipoTurma = tipoTurma;
         }
 
         public string CodidoAluno { get; }
         public int? AnoLetivo { get; }
         public bool? FiltrarSituacaoMatricula { get; }
-        public bool Historica { get; }
-        public bool TipoTurma { get; }
+
     }
 
     public class ObterTurmasAlunoPorFiltroQueryValidator : AbstractValidator<ObterTurmasAlunoPorFiltroQuery>
