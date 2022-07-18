@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return ServiceProvider.GetService<IComandosFechamentoFinal>();
         }
 
-        protected async Task ExecutarComandosFechamentoFinal()
+        protected async Task ExecutarComandosFechamentoFinal(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             // var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
             //
@@ -92,32 +92,32 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             // }
         }
 
-        protected async Task CriarDadosBase(FiltroNotaFinalDto filtroNota)
+        protected async Task CriarDadosBase(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             await CriarDreUePerfilComponenteCurricular();
 
-            CriarClaimUsuario(filtroNota.Perfil);
+            CriarClaimUsuario(filtroNotaFechamentoDto.Perfil);
 
             await CriarUsuarios();
 
-            await CriarTurmaTipoCalendario(filtroNota);
+            await CriarTurmaTipoCalendario(filtroNotaFechamentoDto);
 
-            if (filtroNota.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroNota.ConsiderarAnoAnterior);
+            if (filtroNotaFechamentoDto.CriarPeriodoEscolar)
+                await CriarPeriodoEscolar(filtroNotaFechamentoDto.ConsiderarAnoAnterior);
 
-            if (filtroNota.CriarPeriodoAbertura)
-                await CriarPeriodoAbertura(filtroNota);
+            if (filtroNotaFechamentoDto.CriarPeriodoAbertura)
+                await CriarPeriodoAbertura(filtroNotaFechamentoDto);
 
             await CriarParametrosNotas();
 
-            await CriarAbrangencia(filtroNota.Perfil);
+            await CriarAbrangencia(filtroNotaFechamentoDto.Perfil);
             
             await CriarCiclo();
 
-            await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
+            await CriarNotasTipoEParametros(filtroNotaFechamentoDto.ConsiderarAnoAnterior);
         }
 
-        protected async Task CriarTurmaTipoCalendario(FiltroNotaFinalDto filtroNota)
+        protected async Task CriarTurmaTipoCalendario(FiltroNotaFechamentoDto filtroNota)
         {
             await CriarTipoCalendario(filtroNota.TipoCalendario, filtroNota.ConsiderarAnoAnterior);
             await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma, filtroNota.ConsiderarAnoAnterior);
@@ -566,7 +566,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
-        protected async Task CriarPeriodoAbertura(FiltroNotaFinalDto filtroNotasDto)
+        protected async Task CriarPeriodoAbertura(FiltroNotaFechamentoDto filtroNotasDto)
         {
             await CriarPeriodoReabertura(filtroNotasDto.TipoCalendarioId, filtroNotasDto.ConsiderarAnoAnterior);
         }
@@ -664,9 +664,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             });
         }
 
-        protected class FiltroNotaFinalDto
+        protected class FiltroNotaFechamentoDto
         {
-            public FiltroNotaFinalDto()
+            public FiltroNotaFechamentoDto()
             {
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
