@@ -87,6 +87,7 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
         private const string AREA_DE_CONHECIMENTO_8 = "'Área de conhecimento 8'";
         private const string AREA_DE_CONHECIMENTO_2 = "'Área de conhecimento 2'";
+        private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
@@ -94,7 +95,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
         protected const string COMPONENTE_LINGUA_PORTUGUESA_ID_138 = "138";
         protected const string COMPONENTE_MATEMATICA_ID_2 = "2";
-
+        
+        protected const string COMPONENTE_HISTORIA_NOME = "'História'";
+        
         private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
         private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
         private const string GRUPO_MATRIZ_8 = "'Grupo matriz 8'";
@@ -102,6 +105,7 @@ namespace SME.SGP.TesteIntegracao
         private const string CODIGO_1 = "1";
         private const string CODIGO_2 = "2";
         private const string CODIGO_8 = "8";
+        private const string CODIGO_4 = "4";
         private const string NULO = "null";
 
         protected const string PROVA = "Prova";
@@ -790,9 +794,11 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_4, AREA_DE_CONHECIMENTO_4);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_8, GRUPO_MATRIZ_8);
-
+            
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_ARTES_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_ARTES_NOME, NULO);
@@ -810,6 +816,8 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_HISTORIA_ID_7.ToString(), NULO, CODIGO_1, CODIGO_4, COMPONENTE_HISTORIA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_HISTORIA_NOME, NULO);
 
         }
 

@@ -73,6 +73,96 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
              
              (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
         }
+        
+        protected async Task ExecutarComandosFechamentoFinalComValidacaoNotaParaInsercao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        {
+            var comandosFechamentoFinal = RetornarServicosBasicos();
+
+            var retorno = await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto);
+
+            retorno.ShouldNotBeNull();
+             
+            retorno.Mensagens.Any().ShouldBeFalse();
+             
+            (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
+            
+            var turmaFechamento = ObterTodos<FechamentoTurma>();
+            turmaFechamento.ShouldNotBeNull();
+            turmaFechamento.FirstOrDefault().TurmaId.ShouldBe(long.Parse(fechamentoFinalSalvarDto.TurmaCodigo));
+            
+            var turmaFechamentoDiciplina = ObterTodos<FechamentoTurmaDisciplina>();
+            turmaFechamentoDiciplina.ShouldNotBeNull();
+            turmaFechamentoDiciplina.FirstOrDefault().DisciplinaId.ShouldBe(long.Parse(fechamentoFinalSalvarDto.DisciplinaId));
+            
+            var fechamentosAlunos = ObterTodos<FechamentoAluno>();
+            fechamentosAlunos.ShouldNotBeNull();
+            (ObterFechamentoAlunosInseridos(fechamentosAlunos).Except(ObterAlunosDto(fechamentoFinalSalvarDto))).Count().ShouldBe(0);
+            (ObterAlunosDto(fechamentoFinalSalvarDto).Except(ObterFechamentoAlunosInseridos(fechamentosAlunos))).Count().ShouldBe(0);
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+            fechamentosNotas.ShouldNotBeNull();
+            (fechamentosNotas.Select(s=> s.Nota).Except(fechamentoFinalSalvarDto.Itens.Select(f=> f.Nota))).Count().ShouldBe(0);
+            (fechamentoFinalSalvarDto.Itens.Select(f=> f.Nota).Except(fechamentosNotas.Select(s=> s.Nota))).Count().ShouldBe(0);
+            
+            foreach (var fechamentoNota in fechamentosNotas)
+            {
+                var alunoRf = fechamentosAlunos.FirstOrDefault(f => f.Id == fechamentoNota.FechamentoAlunoId).AlunoCodigo;
+                var proposta = ObterFechamentoNotaDto(fechamentoFinalSalvarDto, alunoRf);
+                
+                if (fechamentoNota.Nota.HasValue)
+                {
+                    var atual = fechamentoNota.Nota;
+                    (proposta.Nota == atual).ShouldBeTrue();
+                }
+                else
+                {
+                    var conceitoId = fechamentoNota.ConceitoId;
+                    (proposta.ConceitoId == conceitoId).ShouldBeTrue();
+                }
+            }
+            
+            var listaConsolidacaoTurmaAluno = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
+            listaConsolidacaoTurmaAluno.ShouldNotBeNull();
+            listaConsolidacaoTurmaAluno.Select(s => s.AlunoCodigo).Distinct().Except(ObterAlunosDto(fechamentoFinalSalvarDto)).Count().ShouldBe(0);
+            ObterAlunosDto(fechamentoFinalSalvarDto).Except(listaConsolidacaoTurmaAluno.Select(s => s.AlunoCodigo).Distinct()).Count().ShouldBe(0);
+            
+            var listaConsolidacaoTurmaAlunoNota = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
+            listaConsolidacaoTurmaAlunoNota.ShouldNotBeNull();
+
+            foreach (var consolidacaoTurmaAlunoNota in listaConsolidacaoTurmaAlunoNota.Where(w=> w.ComponenteCurricularId == long.Parse(fechamentoFinalSalvarDto.DisciplinaId)))
+            {
+                var alunoRf = listaConsolidacaoTurmaAluno.FirstOrDefault(f =>f.Id == consolidacaoTurmaAlunoNota.ConselhoClasseConsolidadoTurmaAlunoId).AlunoCodigo;
+                var proposta = ObterFechamentoNotaDto(fechamentoFinalSalvarDto, alunoRf);
+                
+                if (consolidacaoTurmaAlunoNota.Nota.HasValue)
+                {
+                    var atual = consolidacaoTurmaAlunoNota.Nota;
+                    (proposta.Nota == atual).ShouldBeTrue();
+                }
+                else
+                {
+                    var conceitoId = consolidacaoTurmaAlunoNota.ConceitoId;
+                    (proposta.ConceitoId == conceitoId).ShouldBeTrue();
+                }
+            }
+           
+        }
+
+        private static IEnumerable<string> ObterAlunosDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        {
+            return fechamentoFinalSalvarDto.Itens.Select(d => d.AlunoRf).Distinct();
+        }
+
+        private static IEnumerable<string> ObterFechamentoAlunosInseridos(List<FechamentoAluno> fechamentosAlunos)
+        {
+            return fechamentosAlunos.Select(s => s.AlunoCodigo).Distinct();
+        }
+
+        private static FechamentoFinalSalvarItemDto ObterFechamentoNotaDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, string alunoCodigo)
+        {
+            var retorno =  fechamentoFinalSalvarDto.Itens.FirstOrDefault(f => f.AlunoRf.Equals(alunoCodigo));
+            return retorno;
+        }
 
         protected async Task CriarDadosBase(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {

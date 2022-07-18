@@ -16,49 +16,90 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_permitir_lancamento_nota_numerica_titular_fundamental()
         {
-            await ExecuteTeste(ObterPerfilProfessor());
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
 
+        [Fact]
         public async Task Deve_permitir_lancamento_nota_numerica_titular_medio()
         {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_1,
+                Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
         
+        [Fact]
         public async Task Deve_permitir_lancamento_nota_numerica_titular_eja()
         {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_3,
+                Modalidade.EJA,
+                ModalidadeTipoCalendario.EJA,
+                COMPONENTE_HISTORIA_ID_7);
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
         
+        [Fact]
         public async Task Deve_permitir_lancamento_nota_numerica_titular_regencia_classe_fundamental()
         {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Conceito, ANO_1,
+                Modalidade.EJA,
+                ModalidadeTipoCalendario.EJA,
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_numerica_cp()
         {
-            await ExecuteTeste(ObterPerfilCP());
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilCP(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_numerica_diretor()
         {
-            await ExecuteTeste(ObterPerfilDiretor());
-        }
-
-        private async Task ExecuteTeste(string perfil)
-        {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                    ObterPerfilProfessor(),
-                    TipoNota.Nota, ANO_7,
-                    Modalidade.Fundamental,
-                    ModalidadeTipoCalendario.FundamentalMedio,
-                    COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-
-            await CriarDadosBase(filtroNotaFechamento);
-
-            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamento);
-
-            await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
-
+                ObterPerfilDiretor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            
+            await ExecutarTeste(filtroNotaFechamento);
         }
+
+        private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        {
+            await CriarDadosBase(filtroNotaFechamentoDto);
+
+            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
+            
+            await ExecutarComandosFechamentoFinalComValidacaoNotaParaInsercao(fechamentoFinalSalvarDto);
+        }
+        
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()
