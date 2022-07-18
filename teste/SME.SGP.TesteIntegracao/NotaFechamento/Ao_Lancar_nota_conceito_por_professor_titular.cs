@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
+using Shouldly;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.Base;
@@ -23,8 +24,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_diferente_de_regencia()
         {
             await CriarDadosBase(ObterFiltroNotas(ANO_3));
-
-            var comando = ServiceProvider.GetService<IComandosFechamentoFinal>();
 
             var dto = new FechamentoFinalSalvarDto()
             {
@@ -53,13 +52,38 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 }
             };
 
-            await comando.SalvarAsync(dto);
+            await ExecutarComandosFechamentoFinal(dto);
+
             var turmaFechamento = ObterTodos<FechamentoTurma>();
+            turmaFechamento.ShouldNotBeNull();
+            turmaFechamento.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
             var turmaFechamentoDiciplina = ObterTodos<FechamentoTurmaDisciplina>();
+            turmaFechamentoDiciplina.ShouldNotBeNull();
+            turmaFechamentoDiciplina.FirstOrDefault().DisciplinaId.ShouldBe(COMPONENTE_CURRICULAR_ARTES_ID_139);
             var alunoFechamento = ObterTodos<FechamentoAluno>();
+            alunoFechamento.ShouldNotBeNull();
+            var aluno = alunoFechamento.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1);
+            aluno.ShouldNotBeNull();
             var notas = ObterTodos<FechamentoNota>();
-            var consolidacaoTurma = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
-            var consolidacaoNotas = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
+            notas.ShouldNotBeNull();
+            var nota = notas.FirstOrDefault(nota => nota.FechamentoAlunoId == aluno.Id);
+            nota.ShouldNotBeNull();
+            var listaConsolidacaoTurma = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
+            listaConsolidacaoTurma.ShouldNotBeNull();
+            var consolidacaoTurma = listaConsolidacaoTurma.FirstOrDefault();
+            consolidacaoTurma.ShouldNotBeNull();
+            consolidacaoTurma.TurmaId.ShouldBe(TURMA_ID_1);
+            var listaConsolidacaoNotas = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
+            listaConsolidacaoNotas.ShouldNotBeNull();
+            var consolidacaoNotas = listaConsolidacaoNotas.FirstOrDefault(nota => nota.ConselhoClasseConsolidadoTurmaAlunoId == consolidacaoTurma.Id);
+            consolidacaoNotas.ComponenteCurricularId.ShouldBe(COMPONENTE_CURRICULAR_ARTES_ID_139);
+        }
+
+        public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_de_regencia_Fundamental() {
+        }
+
+        public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_de_regencia_EJA()
+        {
         }
 
         private FiltroNotaFechamentoDto ObterFiltroNotas(string anoTurma)
@@ -74,6 +98,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 CriarPeriodoEscolar = true,
                 CriarPeriodoAbertura = true,
+                TipoNota = TipoNota.Conceito,
                 AnoTurma = anoTurma
             };
         }
