@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -46,10 +49,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         {
         }
 
-        // protected override void RegistrarFakes(IServiceCollection services)
-        // {
-        //     base.RegistrarFakes(services);
-        // }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
+            base.RegistrarFakes(services);
+        }
 
         private IComandosFechamentoFinal RetornarServicosBasicos()
         {

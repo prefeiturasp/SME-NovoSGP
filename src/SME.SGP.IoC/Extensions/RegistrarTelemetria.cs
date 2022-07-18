@@ -22,11 +22,11 @@ namespace SME.SGP.IoC
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
-            DapperExtensionMethods.Init(servicoTelemetria);
+            //var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            //var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            //DapperExtensionMethods.Init(servicoTelemetria);
 
-            services.AddSingleton(servicoTelemetria);
+            //services.AddSingleton(servicoTelemetria);
             services.AddSingleton<TelemetriaOptions>();
             services.AddSingleton<IServicoTelemetria, ServicoTelemetria>();
         }
