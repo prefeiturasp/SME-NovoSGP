@@ -69,6 +69,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
              retorno.ShouldNotBeNull();
              
              retorno.Mensagens.Any().ShouldBeFalse();
+             
+             (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
         }
 
         protected async Task CriarDadosBase(FiltroNotaFechamentoDto filtroNotaFechamentoDto)

@@ -12,7 +12,7 @@ namespace SME.SGP.IoC
     {
         internal static void ConfigurarTelemetria(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            // if (configuration == null)
                 return;
 
             services.AddApplicationInsightsTelemetry(configuration);

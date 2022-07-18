@@ -1164,7 +1164,7 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
         {
-            //services.ConfigurarTelemetria(configuration);
+            services.ConfigurarTelemetria(configuration);
         }
 
         public virtual void RegistrarPolicies(IServiceCollection services)
@@ -1174,7 +1174,7 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            // if (configuration == null)
                 return;
 
             services.ConfigurarRabbit(configuration);
