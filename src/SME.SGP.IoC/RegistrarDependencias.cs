@@ -1174,7 +1174,7 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
+            // if (configuration == null)
                 return;
 
             services.ConfigurarRabbit(configuration);
