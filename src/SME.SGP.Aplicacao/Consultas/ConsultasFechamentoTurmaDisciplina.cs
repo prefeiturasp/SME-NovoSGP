@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
-            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d=> d.Nome);
+            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
 
             return dadosAlunosFiltrados;
         }
@@ -206,6 +206,11 @@ namespace SME.SGP.Aplicacao
                                                        .ThenBy(a => a.NomeValido());
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));
+
+                var alunosValidosIds = alunosValidosComOrdenacao.Select(x => x.CodigoAluno).Distinct().ToArray();
+
+                var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosValidosIds, turma.AnoLetivo));
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma
@@ -219,7 +224,7 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
-                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
                     };
 
                     var anotacaoAluno = await consultasFechamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
