@@ -212,10 +212,7 @@ namespace SME.SGP.Aplicacao
 
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(alunosValidosId, fechamentosIds));
 
-
-                var alunosValidosIds = alunosValidosComOrdenacao.Select(x => x.CodigoAluno).Distinct().ToArray();
-
-                var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosValidosIds, turma.AnoLetivo));
+                var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosValidosId, turma.AnoLetivo));
 
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
