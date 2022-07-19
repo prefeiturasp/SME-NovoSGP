@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
              (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
         }
         
-        protected async Task ExecutarComandosFechamentoFinalComValidacaoNotaParaInsercao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             var comandosFechamentoFinal = RetornarServicosBasicos();
 
