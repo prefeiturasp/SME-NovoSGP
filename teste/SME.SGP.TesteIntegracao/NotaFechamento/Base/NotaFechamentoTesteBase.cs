@@ -10,6 +10,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -41,6 +42,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly double NOTA_9 = 9;
         protected readonly double NOTA_10 = 10;
 
+        private const string PLENAMENTE_SATISFATORIO = "P";
+        private const string SATISFATORIO = "S";
+        private const string NAO_SATISFATORIO = "NS";
+
         protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
         
         protected readonly string NOTA = "NOTA";
@@ -61,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return ServiceProvider.GetService<IComandosFechamentoFinal>();
         }
 
-        protected async Task ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        protected async Task<AuditoriaPersistenciaDto> ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
              var comandosFechamentoFinal = RetornarServicosBasicos();
 
@@ -72,6 +77,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
              retorno.Mensagens.Any().ShouldBeFalse();
              
              (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
+
+            return retorno;
         }
         
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
@@ -187,6 +194,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             await CriarCiclo();
 
             await CriarNotasTipoEParametros(filtroNotaFechamentoDto.ConsiderarAnoAnterior);
+
+            await CrieConceitoValores();
+
+            await CriarParametrosSistema();
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroNotaFechamentoDto filtroNota)
@@ -758,14 +769,82 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             });
         }
 
-        protected async Task ExecuteTesteConceito(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario)
+        protected async Task ExecuteTesteConceitoInsercao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool ehRegencia, TipoNota tipoNota)
         {
-            await CriarDadosBase(ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), modalidade, modalidadeTipoCalendario));
+            await CriarDadosBase(ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false));
+
+            await ExecutarComandosFechamentoFinalComValidacaoNota(ObtenhaFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
+        }
+
+        protected async Task ExecuteTesteConceitoAlteracao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool ehRegencia, TipoNota tipoNota)
+        {
+            await CriarDadosBase(ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false));
+
+            await ExecutarComandosFechamentoFinal(ObtenhaFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
 
             var dto = new FechamentoFinalSalvarDto()
             {
                 DisciplinaId = componenteCurricular.ToString(),
                 TurmaCodigo = TURMA_CODIGO_1,
+                EhRegencia = ehRegencia,
+                Itens = new List<FechamentoFinalSalvarItemDto>()
+                {
+                    new FechamentoFinalSalvarItemDto()
+                    {
+                        AlunoRf = ALUNO_CODIGO_1,
+                        ComponenteCurricularCodigo = componenteCurricular,
+                        ConceitoId = (int)ConceitoValores.P
+                    },
+                    new FechamentoFinalSalvarItemDto()
+                    {
+                        AlunoRf = ALUNO_CODIGO_2,
+                        ComponenteCurricularCodigo = componenteCurricular,
+                        ConceitoId = (int)ConceitoValores.NS
+                    },
+                    new FechamentoFinalSalvarItemDto()
+                    {
+                        AlunoRf = ALUNO_CODIGO_3,
+                        ComponenteCurricularCodigo = componenteCurricular,
+                        ConceitoId = (int)ConceitoValores.S
+                    },
+                }
+            };
+
+            await ExecutarComandosFechamentoFinalComValidacaoNota(dto);
+        }
+
+        protected FiltroNotaFechamentoDto ObterFiltroNotas(
+                                string perfil,
+                                string anoTurma,
+                                string componenteCurricular,
+                                TipoNota tipoNota,
+                                Modalidade modalidade,
+                                ModalidadeTipoCalendario modalidadeTipoCalendario,
+                                bool anoAnterior)
+        {
+            return new FiltroNotaFechamentoDto()
+            {
+                Perfil = perfil,
+                Modalidade = modalidade,
+                TipoCalendario = modalidadeTipoCalendario,
+                Bimestre = BIMESTRE_1,
+                ComponenteCurricular = componenteCurricular,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                CriarPeriodoEscolar = true,
+                CriarPeriodoAbertura = true,
+                TipoNota = tipoNota,
+                AnoTurma = anoTurma,
+                ConsiderarAnoAnterior = anoAnterior
+            };
+        }
+
+        protected FechamentoFinalSalvarDto ObtenhaFechamentoFinalConceitoDto(long componenteCurricular, bool ehRegencia)
+        {
+            return new FechamentoFinalSalvarDto()
+            {
+                DisciplinaId = componenteCurricular.ToString(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                EhRegencia = ehRegencia,
                 Itens = new List<FechamentoFinalSalvarItemDto>()
                 {
                     new FechamentoFinalSalvarItemDto()
@@ -788,56 +867,57 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
                     },
                 }
             };
-
-            await ExecutarComandosFechamentoFinal(dto);
-
-            var turmaFechamento = ObterTodos<FechamentoTurma>();
-            turmaFechamento.ShouldNotBeNull();
-            turmaFechamento.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            var turmaFechamentoDiciplina = ObterTodos<FechamentoTurmaDisciplina>();
-            turmaFechamentoDiciplina.ShouldNotBeNull();
-            turmaFechamentoDiciplina.FirstOrDefault().DisciplinaId.ShouldBe(componenteCurricular);
-            var alunoFechamento = ObterTodos<FechamentoAluno>();
-            alunoFechamento.ShouldNotBeNull();
-            var aluno = alunoFechamento.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1);
-            aluno.ShouldNotBeNull();
-            var notas = ObterTodos<FechamentoNota>();
-            notas.ShouldNotBeNull();
-            var nota = notas.FirstOrDefault(nota => nota.FechamentoAlunoId == aluno.Id);
-            nota.ShouldNotBeNull();
-            nota.ConceitoId.ShouldBe((int)ConceitoValores.NS);
-            var listaConsolidacaoTurma = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
-            listaConsolidacaoTurma.ShouldNotBeNull();
-            var consolidacaoTurma = listaConsolidacaoTurma.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1);
-            consolidacaoTurma.ShouldNotBeNull();
-            consolidacaoTurma.TurmaId.ShouldBe(TURMA_ID_1);
-            var listaConsolidacaoNotas = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
-            listaConsolidacaoNotas.ShouldNotBeNull();
-            var consolidacaoNotas = listaConsolidacaoNotas.FirstOrDefault(nota => nota.ConselhoClasseConsolidadoTurmaAlunoId == consolidacaoTurma.Id);
-            consolidacaoNotas.ComponenteCurricularId.ShouldBe(componenteCurricular);
-            consolidacaoNotas.ConceitoId.ShouldBe((int)ConceitoValores.NS);
         }
 
-        private FiltroNotaFechamentoDto ObterFiltroNotas(
-                                        string perfil,
-                                        string anoTurma,
-                                        string componenteCurricular,
-                                        Modalidade modalidade,
-                                        ModalidadeTipoCalendario modalidadeTipoCalendario)
+        private async Task CrieConceitoValores()
         {
-            return new FiltroNotaFechamentoDto()
+
+            await InserirNaBase(new Conceito()
             {
-                Perfil = perfil,
-                Modalidade = modalidade,
-                TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_1,
-                ComponenteCurricular = componenteCurricular,
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolar = true,
-                CriarPeriodoAbertura = true,
-                TipoNota = TipoNota.Conceito,
-                AnoTurma = anoTurma
-            };
+                Valor = PLENAMENTE_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.P.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.S.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = NAO_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.NS.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+        }
+
+        private async Task CriarParametrosSistema()
+        {
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = "AprovacaoAlteracaoNotaConselho" ,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Descricao = "Aprovação alteracao nota conselho",
+                Valor = string.Empty,
+                Ano = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
+            });
         }
 
         protected class FiltroNotaFechamentoDto

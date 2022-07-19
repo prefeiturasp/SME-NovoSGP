@@ -1,5 +1,6 @@
 ﻿using Shouldly;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
@@ -19,32 +20,90 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_diferente_de_regencia()
         {
-            await ExecuteTesteConceito(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil);
+            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_de_regencia_Fundamental() 
         {
-            await ExecuteTesteConceito(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil);
+            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, true, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_de_regencia_EJA()
         {
-            await ExecuteTesteConceito(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114, Modalidade.EJA, ModalidadeTipoCalendario.EJA);
+            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114, Modalidade.EJA, ModalidadeTipoCalendario.EJA, true, TipoNota.Conceito);
         }
-
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_cp() 
         {
-            await ExecuteTesteConceito(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil);
+            await ExecuteTesteConceitoInsercao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_diretor()
         {
-            await ExecuteTesteConceito(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil);
+            await ExecuteTesteConceitoInsercao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_conceito_lancada_professor_titular()
+        {
+            await ExecuteTesteConceitoAlteracao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_conceito_lancada_cp()
+        {
+            await ExecuteTesteConceitoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_conceito_lancada_diretor()
+        {
+            await ExecuteTesteConceitoAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_conceito_em_turma_do_ano_anterior()
+        {
+            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, true));
+
+            await ExecutarComandosFechamentoFinal(ObtenhaFechamentoFinalConceitoDto(COMPONENTE_CURRICULAR_ARTES_ID_139, false));
+
+            var dto = new FechamentoFinalSalvarDto()
+            {
+                DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                EhRegencia = false,
+                Itens = new List<FechamentoFinalSalvarItemDto>()
+                {
+                    new FechamentoFinalSalvarItemDto()
+                    {
+                        AlunoRf = ALUNO_CODIGO_1,
+                        ComponenteCurricularCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                        ConceitoId = (int)ConceitoValores.P
+                    }
+                }
+            };
+
+            var retorno = await ExecutarComandosFechamentoFinal(dto);
+
+            var alunoFechamento = ObterTodos<FechamentoAluno>();
+            alunoFechamento.ShouldNotBeNull();
+            var aluno = alunoFechamento.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1);
+            aluno.ShouldNotBeNull();
+            var notas = ObterTodos<FechamentoNota>();
+            notas.ShouldNotBeNull();
+            var nota = notas.FirstOrDefault(nota => nota.FechamentoAlunoId == aluno.Id);
+            nota.ShouldNotBeNull();
+            var listaAprovacao = ObterTodos<WfAprovacaoNotaFechamento>();
+            var aprovacao = listaAprovacao.FirstOrDefault(wf => wf.FechamentoNotaId == nota.Id);
+            aprovacao.ShouldNotBeNull();
+            aprovacao.ConceitoId.ShouldBe((int)ConceitoValores.P);
+
+            retorno.MensagemConsistencia.ShouldBe(string.Format(MensagemNegocioFechamentoNota.REGISTRADO_COM_SUCESSO_EM_24_HORAS_SERA_ENVIADO_PARA_APROVACAO, TipoNota.Conceito.Name()));
         }
     }
 }

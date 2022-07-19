@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.Base;
 using Xunit;
+using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
 {
@@ -89,6 +90,34 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
             await ExecutarTeste(filtroNotaFechamento);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_numerica_lancada_cp()
+        {
+            await ExecuteTesteNumericaAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, TipoNota.Nota);
+        }
+
+        [Fact]
+        public async Task Deve_alterar_nota_numerica_lancada_diretor()
+        {
+            await ExecuteTesteNumericaAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, TipoNota.Nota);
+        }
+
+        private async Task ExecuteTesteNumericaAlteracao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, TipoNota tipoNota)
+        {
+            var filtroDto = ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false);
+            var dtoSalvar = ObterFechamentoFinalSalvar(filtroDto);
+
+            await CriarDadosBase(filtroDto);
+            await ExecutarComandosFechamentoFinal(dtoSalvar);
+
+            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_1).Nota = NOTA_3;
+            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_2).Nota = NOTA_4;
+            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_3).Nota = NOTA_5;
+            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_4).Nota = NOTA_6;
+
+            await ExecutarComandosFechamentoFinalComValidacaoNota(dtoSalvar);
         }
 
         private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)

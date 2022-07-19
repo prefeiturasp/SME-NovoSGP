@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -155,7 +156,7 @@ namespace SME.SGP.Dominio.Servicos
                 auditoria.EmAprovacao = notasEmAprovacao.Any();
 
                 if (emAprovacao)
-                    auditoria.MensagemConsistencia = $"{ tipoNota.TipoNota.Name()} registrados com sucesso.Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
+                    auditoria.MensagemConsistencia = string.Format(MensagemNegocioFechamentoNota.REGISTRADO_COM_SUCESSO_EM_24_HORAS_SERA_ENVIADO_PARA_APROVACAO, tipoNota.TipoNota.Name());
                 else
                     auditoria.MensagemConsistencia = $"Fechamento final salvo com sucesso.";
 
