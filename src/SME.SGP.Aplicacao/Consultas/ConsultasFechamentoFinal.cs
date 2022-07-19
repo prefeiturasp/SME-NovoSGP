@@ -245,7 +245,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilDRE() && !usuarioLogado.EhPerfilSME())
             {
-                var usuarioPodeEditar = await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data);
+                var usuarioPodeEditar = await mediator.Send( new PodePersistirTurmaDisciplinaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data.Ticks));
                 if (!usuarioPodeEditar)
                     return false;
             }
