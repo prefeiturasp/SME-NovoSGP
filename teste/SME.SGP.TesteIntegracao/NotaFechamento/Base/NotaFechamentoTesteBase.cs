@@ -60,10 +60,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
 
-        protected const long FECHAMENTO_TURMA_ID_1 = 1;
-        protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
-        protected const long FECHAMENTO_ALUNO_ID_1 = 1;
-
         protected NotaFechamentoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
