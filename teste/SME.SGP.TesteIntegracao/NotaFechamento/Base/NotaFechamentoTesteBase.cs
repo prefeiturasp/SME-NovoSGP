@@ -942,6 +942,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
             public string ProfessorRf { get; set; }
+            public bool EhRegencia { get; set; }
         }
     }
 }
