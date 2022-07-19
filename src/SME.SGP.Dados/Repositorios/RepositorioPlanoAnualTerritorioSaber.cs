@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAnualTerritorioSaber : RepositorioBase<PlanoAnualTerritorioSaber>, IRepositorioPlanoAnualTerritorioSaber
     {
-        public RepositorioPlanoAnualTerritorioSaber(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioPlanoAnualTerritorioSaber(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

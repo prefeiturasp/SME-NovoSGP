@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAEEReestruturacao : RepositorioBase<PlanoAEEReestruturacao>, IRepositorioPlanoAEEReestruturacao
     {
-        public RepositorioPlanoAEEReestruturacao(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPlanoAEEReestruturacao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
 
         }

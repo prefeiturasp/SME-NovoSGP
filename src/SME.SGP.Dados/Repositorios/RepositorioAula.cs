@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IUnitOfWork unitOfWork;
 
-        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }

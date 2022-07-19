@@ -8,7 +8,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioCompensacaoAusencia : RepositorioBase<CompensacaoAusencia>, IRepositorioCompensacaoAusencia
     {
-        public RepositorioCompensacaoAusencia(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioCompensacaoAusencia(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }        
     }

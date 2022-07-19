@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRegistroPoa : RepositorioBase<RegistroPoa>, IRepositorioRegistroPoa
     {
-        public RepositorioRegistroPoa(ISgpContext sgpContext, IServicoMensageria servicoMensageria) : base(sgpContext, servicoMensageria)
+        public RepositorioRegistroPoa(ISgpContext sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {
         }
 

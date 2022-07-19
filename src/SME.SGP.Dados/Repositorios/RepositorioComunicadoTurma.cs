@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicadoTurma : RepositorioBase<ComunicadoTurma>, IRepositorioComunicadoTurma
     {
-        public RepositorioComunicadoTurma(ISgpContext sgpContext, IServicoMensageria servicoMensageria) : base(sgpContext, servicoMensageria)
+        public RepositorioComunicadoTurma(ISgpContext sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {
 
         }

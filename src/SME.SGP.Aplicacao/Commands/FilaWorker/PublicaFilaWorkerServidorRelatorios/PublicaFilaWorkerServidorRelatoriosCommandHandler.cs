@@ -1,10 +1,7 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
-using RabbitMQ.Client;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

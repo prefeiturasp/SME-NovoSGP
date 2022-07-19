@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAnotacaoFechamentoAluno : RepositorioBase<AnotacaoFechamentoAluno>, IRepositorioAnotacaoFechamentoAluno
     {
-        public RepositorioAnotacaoFechamentoAluno(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioAnotacaoFechamentoAluno(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

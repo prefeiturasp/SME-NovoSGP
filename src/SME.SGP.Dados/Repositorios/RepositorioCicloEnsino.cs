@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private const string QuerySincronizacao = @"SELECT id, cod_ciclo_ensino_eol,codigo_modalidade_ensino,codigo_etapa_ensino,descricao, data_atualizacao FROM public.ciclo_ensino where cod_ciclo_ensino_eol in (#ids);";
 
-        public RepositorioCicloEnsino(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioCicloEnsino(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

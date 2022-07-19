@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly ISgpContext contexto;
 
-        public RepositorioCorrelacaoRelatorio(ISgpContext contexto, IServicoMensageria servicoMensageria) : base(contexto, servicoMensageria)
+        public RepositorioCorrelacaoRelatorio(ISgpContext contexto, IServicoAuditoria servicoAuditoria) : base(contexto, servicoAuditoria)
         {
             this.contexto = contexto;
         }

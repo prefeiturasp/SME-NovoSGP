@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFeriadoCalendario : RepositorioBase<FeriadoCalendario>, IRepositorioFeriadoCalendario
     {
-        public RepositorioFeriadoCalendario(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioFeriadoCalendario(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

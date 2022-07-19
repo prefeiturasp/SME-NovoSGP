@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioObjetivoAprendizagemPlano : RepositorioBase<ObjetivoAprendizagemPlano>, IRepositorioObjetivoAprendizagemPlano
     {
-        public RepositorioObjetivoAprendizagemPlano(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioObjetivoAprendizagemPlano(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

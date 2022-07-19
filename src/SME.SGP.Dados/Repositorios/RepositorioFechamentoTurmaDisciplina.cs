@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioFechamentoTurmaDisciplina : RepositorioBase<FechamentoTurmaDisciplina>,IRepositorioFechamentoTurmaDisciplina
     {
 
-        public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioFechamentoTurmaDisciplina(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

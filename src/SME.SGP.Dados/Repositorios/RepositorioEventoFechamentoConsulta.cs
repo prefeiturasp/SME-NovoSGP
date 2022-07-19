@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEventoFechamentoConsulta : RepositorioBase<EventoFechamento>, IRepositorioEventoFechamentoConsulta
     {
-        public RepositorioEventoFechamentoConsulta(ISgpContextConsultas database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioEventoFechamentoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

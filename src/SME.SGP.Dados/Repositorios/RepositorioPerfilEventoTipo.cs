@@ -8,7 +8,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioPerfilEventoTipo : RepositorioBase<PerfilEventoTipo>, IRepositorioPerfilEventoTipo
     {
-        public RepositorioPerfilEventoTipo(ISgpContext context, IServicoMensageria servicoMensageria) : base(context, servicoMensageria)
+        public RepositorioPerfilEventoTipo(ISgpContext context, IServicoAuditoria servicoAuditoria) : base(context, servicoAuditoria)
         {
         }
     }

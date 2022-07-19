@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAula : RepositorioBase<PlanoAula>, IRepositorioPlanoAula
     {
-        public RepositorioPlanoAula(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria) { }
+        public RepositorioPlanoAula(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
         public async Task ExcluirPlanoDaAula(long aulaId)
         {

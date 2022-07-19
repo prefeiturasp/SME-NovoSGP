@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicadoAluno : RepositorioBase<ComunicadoAluno>, IRepositorioComunicadoAluno
     {
-        public RepositorioComunicadoAluno(ISgpContext context, IServicoMensageria servicoMensageria) : base(context, servicoMensageria)
+        public RepositorioComunicadoAluno(ISgpContext context, IServicoAuditoria servicoAuditoria) : base(context, servicoAuditoria)
         {
 
         }

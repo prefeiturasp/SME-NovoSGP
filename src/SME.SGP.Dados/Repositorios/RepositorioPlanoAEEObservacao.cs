@@ -11,7 +11,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioPlanoAEEObservacao : RepositorioBase<PlanoAEEObservacao>, IRepositorioPlanoAEEObservacao
     {
-        public RepositorioPlanoAEEObservacao(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPlanoAEEObservacao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

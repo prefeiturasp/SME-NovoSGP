@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeInfantil : RepositorioBase<AtividadeInfantil>, IRepositorioAtividadeInfantil
     {
-        public RepositorioAtividadeInfantil(ISgpContext context, IServicoMensageria servicoMensageria) : base(context, servicoMensageria)
+        public RepositorioAtividadeInfantil(ISgpContext context, IServicoAuditoria servicoAuditoria) : base(context, servicoAuditoria)
         { }
 
         public async Task<IEnumerable<AtividadeInfantilDto>> ObterPorAulaId(long aulaId)

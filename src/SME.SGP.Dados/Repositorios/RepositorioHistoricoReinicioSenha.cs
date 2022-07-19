@@ -12,7 +12,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioHistoricoReinicioSenha : RepositorioBase<HistoricoReinicioSenha>, IRepositorioHistoricoReinicioSenha
     {
-        public RepositorioHistoricoReinicioSenha(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioHistoricoReinicioSenha(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
     }

@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                public.pendencia_registro_individual_aluno pria 
 	                                on pri.id = pria.pendencia_registro_individual_id ";
 
-        public RepositorioPendenciaRegistroIndividual(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPendenciaRegistroIndividual(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
 
 		public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia, 

@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAcompanhamentoTurma : RepositorioBase<AcompanhamentoTurma>, IRepositorioAcompanhamentoTurma
     {
-        public RepositorioAcompanhamentoTurma(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAcompanhamentoTurma(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

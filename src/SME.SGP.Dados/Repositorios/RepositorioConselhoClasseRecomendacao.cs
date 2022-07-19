@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConselhoClasseRecomendacao : RepositorioBase<ConselhoClasseRecomendacao>, IRepositorioConselhoClasseRecomendacao
     {
-        public RepositorioConselhoClasseRecomendacao(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioConselhoClasseRecomendacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

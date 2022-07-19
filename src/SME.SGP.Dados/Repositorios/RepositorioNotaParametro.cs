@@ -12,7 +12,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioNotaParametro : RepositorioBase<NotaParametro>, IRepositorioNotaParametro
     {
-        public RepositorioNotaParametro(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioNotaParametro(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

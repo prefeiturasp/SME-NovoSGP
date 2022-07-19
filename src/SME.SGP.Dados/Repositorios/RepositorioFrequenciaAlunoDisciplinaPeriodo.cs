@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly string connectionString;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
             this.connectionString = database.ConnectionString; //Raphael. Troquei uma connectionstring que pegava das configurações, pela connectionstring do contexto
         }

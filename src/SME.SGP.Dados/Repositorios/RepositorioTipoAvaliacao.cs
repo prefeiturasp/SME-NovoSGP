@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTipoAvaliacao : RepositorioBase<TipoAvaliacao>, IRepositorioTipoAvaliacao
     {
-        public RepositorioTipoAvaliacao(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioTipoAvaliacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

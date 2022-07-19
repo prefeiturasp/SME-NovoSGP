@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaEncaminhamentoAEE : RepositorioBase<PendenciaEncaminhamentoAEE>, IRepositorioPendenciaEncaminhamentoAEE
     {
-        public RepositorioPendenciaEncaminhamentoAEE(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPendenciaEncaminhamentoAEE(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

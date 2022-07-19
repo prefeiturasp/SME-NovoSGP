@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRelatorioSemestralPAPAluno : RepositorioBase<RelatorioSemestralPAPAluno>, IRepositorioRelatorioSemestralPAPAluno
     {
-        public RepositorioRelatorioSemestralPAPAluno(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioRelatorioSemestralPAPAluno(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

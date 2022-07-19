@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanejamentoAnualObjetivosAprendizagem : RepositorioBase<PlanejamentoAnualObjetivoAprendizagem>, IRepositorioPlanejamentoAnualObjetivosAprendizagem
     {
-        public RepositorioPlanejamentoAnualObjetivosAprendizagem(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPlanejamentoAnualObjetivosAprendizagem(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

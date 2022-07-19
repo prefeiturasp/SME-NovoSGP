@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPrioridadePerfil : RepositorioBase<PrioridadePerfil>, IRepositorioPrioridadePerfil
     {
-        public RepositorioPrioridadePerfil(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioPrioridadePerfil(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

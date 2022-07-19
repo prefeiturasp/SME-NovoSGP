@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioParametrosSistemaConsulta : RepositorioBase<ParametrosSistema>, IRepositorioParametrosSistemaConsulta
     {
-        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

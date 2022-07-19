@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioQuestaoEncaminhamentoAEE : RepositorioBase<QuestaoEncaminhamentoAEE>, IRepositorioQuestaoEncaminhamentoAEE
     {
-        public RepositorioQuestaoEncaminhamentoAEE(ISgpContext repositorio, IServicoMensageria servicoMensageria) : base(repositorio, servicoMensageria)
+        public RepositorioQuestaoEncaminhamentoAEE(ISgpContext repositorio, IServicoAuditoria servicoAuditoria) : base(repositorio, servicoAuditoria)
         {
         }
 

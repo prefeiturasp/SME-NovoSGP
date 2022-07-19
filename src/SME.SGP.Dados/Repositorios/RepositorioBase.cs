@@ -13,12 +13,12 @@ namespace SME.SGP.Dados.Repositorios
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
         protected readonly ISgpContext database;
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoAuditoria servicoAuditoria;
 
-        protected RepositorioBase(ISgpContext database, IServicoMensageria servicoMensageria)
+        protected RepositorioBase(ISgpContext database, IServicoAuditoria servicoAuditoria)
         {
             this.database = database;
-            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
+            this.servicoAuditoria = servicoAuditoria ?? throw new ArgumentNullException(nameof(servicoAuditoria));
         }
 
         public virtual async Task<IEnumerable<T>> ListarAsync()
@@ -135,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
 
-            var mensagem = new Auditoria()
+            var auditoria = new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
@@ -147,7 +147,7 @@ namespace SME.SGP.Dados.Repositorios
                 Administrador = database.Administrador
             };
 
-            await servicoMensageria.Publicar(mensagem, RotasRabbitSgp.PersistirAuditoriaDB, ExchangeSgpRabbit.Sgp, "PublicarFilaAuditoriaDB");
+            await servicoAuditoria.Auditar(auditoria);
         }
        // public async Task SalvarVariosAsync(IEnumerable<T> entidades)
        // {

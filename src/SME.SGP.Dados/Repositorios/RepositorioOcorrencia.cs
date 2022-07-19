@@ -13,7 +13,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioOcorrencia : RepositorioBase<Ocorrencia>, IRepositorioOcorrencia
     {
-        public RepositorioOcorrencia(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria) { }
+        public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
         public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, long[] codigosAluno, Paginacao paginacao)
         {

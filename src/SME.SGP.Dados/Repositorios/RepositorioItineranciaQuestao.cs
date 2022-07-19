@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioItineranciaQuestao : RepositorioBase<ItineranciaQuestao>, IRepositorioItineranciaQuestao
     {
-        public RepositorioItineranciaQuestao(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioItineranciaQuestao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

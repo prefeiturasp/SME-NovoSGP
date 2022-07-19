@@ -10,7 +10,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioItineranciaEvento : RepositorioBase<ItineranciaEvento>, IRepositorioItineranciaEvento
     {
-        public RepositorioItineranciaEvento(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioItineranciaEvento(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanejamentoAnualComponente : RepositorioBase<PlanejamentoAnualComponente>, IRepositorioPlanejamentoAnualComponente
     {
-        public RepositorioPlanejamentoAnualComponente(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPlanejamentoAnualComponente(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

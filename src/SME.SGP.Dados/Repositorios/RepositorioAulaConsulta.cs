@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaConsulta : RepositorioBase<Aula>, IRepositorioAulaConsulta
     {
-        public RepositorioAulaConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAulaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
