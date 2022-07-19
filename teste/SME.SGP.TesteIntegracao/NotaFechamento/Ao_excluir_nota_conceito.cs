@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
@@ -15,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         { }
 
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_titular_fundamental()
+        public async Task Deve_permitir_excluir_nota_conceito_titular_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -28,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         }
 
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_titular_medio()
+        public async Task Deve_permitir_excluir_nota_conceito_titular_medio()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -41,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         }
         
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_titular_eja()
+        public async Task Deve_permitir_excluir_nota_conceito_titular_eja()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -54,20 +53,20 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         }
         
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_titular_regencia_classe_fundamental()
+        public async Task Deve_permitir_excluir_nota_conceito_titular_regencia_classe_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(),
+                ObterPerfilDiretor(),
                 TipoNota.Conceito, ANO_1,
-                Modalidade.EJA,
-                ModalidadeTipoCalendario.EJA,
-                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), false, true);
             
             await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
 
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_cp_fundamental()
+        public async Task Deve_permitir_excluir_nota_conceito_cp_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilCP(),
@@ -80,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         }
 
         [Fact]
-        public async Task Deve_permitir_excluir_nota_numerica_diretor_fundamental()
+        public async Task Deve_permitir_excluir_nota_conceito_diretor_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilDiretor(),
@@ -112,7 +111,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
             var fechamentoNotaFinalNumericaParaExcluir = new FechamentoFinalSalvarDto
             {
                 DisciplinaId = filtroNotaFechamento.ComponenteCurricular,
-                EhRegencia = false,
+                EhRegencia = filtroNotaFechamento.EhRegencia,
                 TurmaCodigo = TURMA_CODIGO_1,
                 Itens = new List<FechamentoFinalSalvarItemDto>()
             };
@@ -135,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
             return new FechamentoFinalSalvarDto()
             {
                 DisciplinaId = filtroNotaFechamento.ComponenteCurricular,
-                EhRegencia = false,
+                EhRegencia = filtroNotaFechamento.EhRegencia,
                 TurmaCodigo = TURMA_CODIGO_1,
                 Itens = new List<FechamentoFinalSalvarItemDto>()
                 {
@@ -173,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
             };
         }
 
-        private FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false)
+        private FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
         {
             return new FiltroNotaFechamentoDto()
             {
@@ -188,7 +187,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 TipoNota = tipoNota,
                 AnoTurma = anoTurma,
                 ConsiderarAnoAnterior = considerarAnoAnterior,
-                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
+                EhRegencia = ehRegencia
             };
         }
     }
