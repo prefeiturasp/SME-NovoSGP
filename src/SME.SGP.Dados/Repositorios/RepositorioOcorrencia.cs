@@ -2,6 +2,7 @@
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioOcorrencia : RepositorioBase<Ocorrencia>, IRepositorioOcorrencia
     {
-        public RepositorioOcorrencia(ISgpContext conexao) : base(conexao) { }
+        public RepositorioOcorrencia(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria) { }
 
         public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, long[] codigosAluno, Paginacao paginacao)
         {

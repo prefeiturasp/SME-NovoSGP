@@ -4,12 +4,13 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioArquivo : RepositorioBase<Arquivo>, IRepositorioArquivo
     {
-        public RepositorioArquivo(ISgpContext conexao) : base(conexao)
+        public RepositorioArquivo(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
         {
         }
 

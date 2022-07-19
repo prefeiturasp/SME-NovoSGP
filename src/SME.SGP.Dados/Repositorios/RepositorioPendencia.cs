@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.PendenciaPendente;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendencia : RepositorioBase<Pendencia>, IRepositorioPendencia
     {
-        public RepositorioPendencia(ISgpContext database) : base(database)
+        public RepositorioPendencia(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
         {
         }
 

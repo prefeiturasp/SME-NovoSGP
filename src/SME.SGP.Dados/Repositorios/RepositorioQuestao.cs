@@ -2,16 +2,14 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioQuestao : RepositorioBase<Questao>, IRepositorioQuestao
     {
-        public RepositorioQuestao(ISgpContext database) : base(database)
+        public RepositorioQuestao(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
         {
         }
 

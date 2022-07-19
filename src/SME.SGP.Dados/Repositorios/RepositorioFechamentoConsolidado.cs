@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioFechamentoConsolidado : RepositorioBase<FechamentoConsolidadoComponenteTurma>, IRepositorioFechamentoConsolidado
     {
-        public RepositorioFechamentoConsolidado(ISgpContext database) : base(database)
+        public RepositorioFechamentoConsolidado(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
         {
         }
 

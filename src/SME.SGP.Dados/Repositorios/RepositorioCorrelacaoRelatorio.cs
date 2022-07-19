@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly ISgpContext contexto;
 
-        public RepositorioCorrelacaoRelatorio(ISgpContext contexto) : base(contexto)
+        public RepositorioCorrelacaoRelatorio(ISgpContext contexto, IServicoMensageria servicoMensageria) : base(contexto, servicoMensageria)
         {
             this.contexto = contexto;
         }

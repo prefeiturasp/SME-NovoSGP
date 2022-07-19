@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioItinerancia : RepositorioBase<Itinerancia>, IRepositorioItinerancia
     {
-        public RepositorioItinerancia(ISgpContext database) : base(database)
+        public RepositorioItinerancia(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
         {
         }
 
