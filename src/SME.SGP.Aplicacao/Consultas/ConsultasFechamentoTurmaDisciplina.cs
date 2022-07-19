@@ -207,6 +207,12 @@ namespace SME.SGP.Aplicacao
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));
 
+                var alunosValidosId = alunosValidosComOrdenacao.Select(x => x.CodigoAluno).Distinct().ToArray();
+                var fechamentosIds = fechamentosTurma.Select(x => x.Id).Distinct().ToArray();
+
+                var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(alunosValidosId, fechamentosIds));
+
+
                 var alunosValidosIds = alunosValidosComOrdenacao.Select(x => x.CodigoAluno).Distinct().ToArray();
 
                 var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosValidosIds, turma.AnoLetivo));
@@ -268,7 +274,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
+                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma.Id);
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
