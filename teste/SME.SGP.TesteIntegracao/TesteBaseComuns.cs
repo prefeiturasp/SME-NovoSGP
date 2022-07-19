@@ -46,6 +46,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string FALSE = "false";
         protected const string TRUE = "true";
 
+        protected const int SEMESTRE_0 = 0;
         protected const int SEMESTRE_1 = 1;
         protected const long COMPONENTE_CURRICULAR_ARTES_ID_139 = 139;
         protected const string COMPONENTE_CURRICULAR_ARTES_NOME = "'Artes'";
@@ -231,6 +232,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_2 = "2";
         protected const string CODIGO_ALUNO_3 = "3";
         protected const string CODIGO_ALUNO_4 = "4";
+        protected const string CODIGO_ALUNO_5 = "5";
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
