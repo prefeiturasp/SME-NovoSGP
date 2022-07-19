@@ -44,6 +44,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao == null).ShouldBeTrue();
         }
 
         public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()

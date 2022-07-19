@@ -92,6 +92,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes
                   DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
               });
               
+              alunos.Add(new AlunoPorTurmaResposta
+              {
+                  Ano = 0,
+                  CodigoAluno = ALUNO_CODIGO_4,
+                  CodigoComponenteCurricular = 0,
+                  CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                  CodigoTurma=int.Parse(request.CodigoTurma),
+                  DataNascimento=new DateTime(1959,01,16,00,00,00),
+                  DataSituacao= dataRefencia.AddDays(-30),
+                  DataMatricula= dataRefencia.AddDays(-130),
+                  NomeAluno= ALUNO_CODIGO_4,
+                  NumeroAlunoChamada=0,
+                  SituacaoMatricula= ATIVO,
+                  NomeResponsavel= RESPONSAVEL,
+                  TipoResponsavel= TIPO_RESPONSAVEL_4,
+                  CelularResponsavel=CELULAR_RESPONSAVEL,
+                  DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+              });
+              
                 //     ,
                 // new AlunoPorTurmaResposta
                 // {
