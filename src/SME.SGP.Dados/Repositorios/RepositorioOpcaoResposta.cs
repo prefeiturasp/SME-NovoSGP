@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioOpcaoResposta : RepositorioBase<OpcaoResposta>, IRepositorioOpcaoResposta
     {
-        public RepositorioOpcaoResposta(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioOpcaoResposta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
     }

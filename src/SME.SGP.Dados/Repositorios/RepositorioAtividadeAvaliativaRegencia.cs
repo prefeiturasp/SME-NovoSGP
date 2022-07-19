@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeAvaliativaRegencia : RepositorioBase<AtividadeAvaliativaRegencia>, IRepositorioAtividadeAvaliativaRegencia
     {
-        public RepositorioAtividadeAvaliativaRegencia(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAtividadeAvaliativaRegencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

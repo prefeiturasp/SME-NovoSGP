@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDevolutiva : RepositorioBase<Devolutiva>, IRepositorioDevolutiva
     {
-        public RepositorioDevolutiva(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioDevolutiva(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         { }
 
         public async Task<Devolutiva> ObterPorIdRegistroExcluido(long? devolutivaId)

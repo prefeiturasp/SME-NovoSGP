@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRecuperacaoParalelaPeriodoObjetivoResposta : RepositorioBase<RecuperacaoParalelaPeriodoObjetivoResposta>, IRepositorioRecuperacaoParalelaPeriodoObjetivoResposta
     {
-        public RepositorioRecuperacaoParalelaPeriodoObjetivoResposta(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioRecuperacaoParalelaPeriodoObjetivoResposta(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

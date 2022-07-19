@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioWorkflowAprovacao : RepositorioBase<WorkflowAprovacao>, IRepositorioWorkflowAprovacao
     {
-        public RepositorioWorkflowAprovacao(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioWorkflowAprovacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

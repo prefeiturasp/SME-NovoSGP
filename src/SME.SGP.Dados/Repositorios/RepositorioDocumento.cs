@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDocumento : RepositorioBase<Documento>, IRepositorioDocumento
     {
-        public RepositorioDocumento(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioDocumento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

@@ -10,7 +10,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaUsuarioConsulta : RepositorioBase<PendenciaUsuario>, IRepositorioPendenciaUsuarioConsulta
     {
-        public RepositorioPendenciaUsuarioConsulta(ISgpContextConsultas database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPendenciaUsuarioConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTipoCalendarioConsulta : RepositorioBase<TipoCalendario>, IRepositorioTipoCalendarioConsulta
     {
-        public RepositorioTipoCalendarioConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioTipoCalendarioConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
         public async Task<PeriodoEscolar> ObterPeriodoEscolarPorCalendarioEData(long tipoCalendarioId, DateTime dataParaVerificar)

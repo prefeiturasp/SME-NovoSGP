@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequencia : RepositorioBase<RegistroFrequencia>, IRepositorioFrequencia
     {
-        public RepositorioFrequencia(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioFrequencia(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioGradeDisciplina : RepositorioBase<GradeDisciplina>, IRepositorioGradeDisciplina
     {
-        public RepositorioGradeDisciplina(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioGradeDisciplina(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
     }

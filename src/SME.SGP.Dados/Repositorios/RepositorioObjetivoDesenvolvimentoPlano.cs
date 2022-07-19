@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioObjetivoDesenvolvimentoPlano : RepositorioBase<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>, IRepositorioObjetivoDesenvolvimentoPlano
     {
-        public RepositorioObjetivoDesenvolvimentoPlano(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioObjetivoDesenvolvimentoPlano(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

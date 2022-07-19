@@ -11,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioObjetivo : RepositorioBase<RecuperacaoParalelaObjetivo>, IRepositorioObjetivo
     {
-        public RepositorioObjetivo(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioObjetivo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
 
         public async Task<IEnumerable<ObjetivoDto>> Listar(long periodoId)

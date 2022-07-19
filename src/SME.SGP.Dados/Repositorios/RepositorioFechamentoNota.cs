@@ -7,7 +7,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoNota : RepositorioBase<FechamentoNota>, IRepositorioFechamentoNota
     {
-        public RepositorioFechamentoNota(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioFechamentoNota(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
     }

@@ -1,14 +1,7 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Polly;
-using Polly.Registry;
-using RabbitMQ.Client;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

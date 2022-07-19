@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotificacaoConsulta : RepositorioBase<Notificacao>, IRepositorioNotificacaoConsulta
     {
-        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

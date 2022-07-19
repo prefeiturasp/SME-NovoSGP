@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPeriodoFechamento : RepositorioBase<PeriodoFechamento>, IRepositorioPeriodoFechamento
     {
-        public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioPeriodoFechamento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
          

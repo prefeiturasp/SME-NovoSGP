@@ -10,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoReaberturaBimestre : RepositorioBase<FechamentoReaberturaBimestre>, IRepositorioFechamentoReaberturaBimestre
     {
-        public RepositorioFechamentoReaberturaBimestre(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioFechamentoReaberturaBimestre(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

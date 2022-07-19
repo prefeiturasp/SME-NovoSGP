@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCartaIntencoesObservacao : RepositorioBase<CartaIntencoesObservacao>, IRepositorioCartaIntencoesObservacao
     {
-		public RepositorioCartaIntencoesObservacao(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+		public RepositorioCartaIntencoesObservacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
 		{ }
 
 		public async Task<IEnumerable<CartaIntencoesObservacaoDto>> ListarPorTurmaEComponenteCurricularAsync(long turmaId, long componenteCurricularId, long usuarioLogadoId)

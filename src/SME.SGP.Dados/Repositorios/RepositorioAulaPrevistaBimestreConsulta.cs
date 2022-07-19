@@ -46,7 +46,7 @@ namespace SME.SGP.Dados.Repositorios
                          	   ap.criado_em, ap.criado_por, ap.alterado_em , ap.alterado_por,
                                ap.alterado_rf, ap.criado_rf, cc.permite_registro_frequencia, ap.disciplina_id; ";
 
-        public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAulaPrevistaBimestreConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

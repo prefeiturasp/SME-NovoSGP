@@ -23,8 +23,8 @@ namespace SME.SGP.Dados.Repositorios
         private readonly IAsyncPolicy policy;
         public RepositorioFrequenciaConsulta(ISgpContextConsultas database,
                                              IReadOnlyPolicyRegistry<string> registry,
-                                             IServicoMensageria servicoMensageria)
-            : base(database, servicoMensageria)
+                                             IServicoAuditoria servicoAuditoria)
+            : base(database, servicoAuditoria)
         {
             policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }

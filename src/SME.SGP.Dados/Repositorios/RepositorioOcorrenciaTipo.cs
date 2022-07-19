@@ -8,6 +8,6 @@ namespace SME.SGP.Dados
 {
     public class RepositorioOcorrenciaTipo : RepositorioBase<OcorrenciaTipo>, IRepositorioOcorrenciaTipo
     {
-        public RepositorioOcorrenciaTipo(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria) { }
+        public RepositorioOcorrenciaTipo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
     }
 }

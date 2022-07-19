@@ -10,7 +10,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioNotificacaoPlanoAEEObservacao : RepositorioBase<NotificacaoPlanoAEEObservacao>, IRepositorioNotificacaoPlanoAEEObservacao
     {
-        public RepositorioNotificacaoPlanoAEEObservacao(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioNotificacaoPlanoAEEObservacao(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

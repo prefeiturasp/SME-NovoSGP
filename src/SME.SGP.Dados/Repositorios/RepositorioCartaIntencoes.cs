@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCartaIntencoes : RepositorioBase<CartaIntencoes>, IRepositorioCartaIntencoes
     {
-        public RepositorioCartaIntencoes(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioCartaIntencoes(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

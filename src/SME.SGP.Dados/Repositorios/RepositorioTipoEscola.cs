@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private const string QuerySincronizacao = @"SELECT id, cod_tipo_escola_eol,  descricao, data_atualizacao, criado_por, criado_rf FROM public.tipo_escola where cod_tipo_escola_eol in (#ids);";
 
-        public RepositorioTipoEscola(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioTipoEscola(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

@@ -11,7 +11,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaPerfilUsuario : RepositorioBase<PendenciaPerfilUsuario>, IRepositorioPendenciaPerfilUsuario
     {
-        public RepositorioPendenciaPerfilUsuario(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioPendenciaPerfilUsuario(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {}
 
         public async Task<bool> Excluir(long id)

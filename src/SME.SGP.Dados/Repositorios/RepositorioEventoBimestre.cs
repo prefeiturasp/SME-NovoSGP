@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioEventoBimestre : RepositorioBase<EventoBimestre>, IRepositorioEventoBimestre
 
     {
-        public RepositorioEventoBimestre(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioEventoBimestre(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
 
         }

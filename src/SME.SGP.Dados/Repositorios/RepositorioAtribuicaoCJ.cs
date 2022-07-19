@@ -12,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtribuicaoCJ : RepositorioBase<AtribuicaoCJ>, IRepositorioAtribuicaoCJ
     {
-        public RepositorioAtribuicaoCJ(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAtribuicaoCJ(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

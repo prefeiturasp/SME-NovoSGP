@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioCompensacaoAusenciaConsulta : RepositorioBase<CompensacaoAusencia>, IRepositorioCompensacaoAusenciaConsulta
     {
-        public RepositorioCompensacaoAusenciaConsulta(ISgpContextConsultas database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioCompensacaoAusenciaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

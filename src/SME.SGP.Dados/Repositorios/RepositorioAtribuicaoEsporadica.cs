@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtribuicaoEsporadica : RepositorioBase<AtribuicaoEsporadica>, IRepositorioAtribuicaoEsporadica
     {
-        public RepositorioAtribuicaoEsporadica(ISgpContext database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
+        public RepositorioAtribuicaoEsporadica(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

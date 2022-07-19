@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativaDisciplina : RepositorioBase<AtividadeAvaliativaDisciplina>, IRepositorioAtividadeAvaliativaDisciplina
     {
         private readonly string connectionString;
-        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
             this.connectionString = conexao.ConnectionString;
         }

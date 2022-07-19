@@ -13,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotasConceitos : RepositorioBase<NotaConceito>, IRepositorioNotasConceitos
     {
-        public RepositorioNotasConceitos(ISgpContext sgpContext, IServicoMensageria servicoMensageria) : base(sgpContext, servicoMensageria)
+        public RepositorioNotasConceitos(ISgpContext sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {
         }
 

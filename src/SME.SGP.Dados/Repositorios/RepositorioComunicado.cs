@@ -61,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             return query.ToString();
         }
 
-        public RepositorioComunicado(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioComunicado(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
         private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)

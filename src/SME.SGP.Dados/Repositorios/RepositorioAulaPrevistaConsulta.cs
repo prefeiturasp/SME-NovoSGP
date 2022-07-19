@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaPrevistaConsulta : RepositorioBase<AulaPrevista>, IRepositorioAulaPrevistaConsulta
     {
-        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

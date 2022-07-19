@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComponenteCurricularJurema : RepositorioBase<ComponenteCurricularJurema>, IRepositorioComponenteCurricularJurema
     {
-        public RepositorioComponenteCurricularJurema(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
+        public RepositorioComponenteCurricularJurema(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
