@@ -3,6 +3,7 @@ using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotasConceitos : RepositorioBase<NotaConceito>, IRepositorioNotasConceitos
     {
-        public RepositorioNotasConceitos(ISgpContext sgpContext) : base(sgpContext)
+        public RepositorioNotasConceitos(ISgpContext sgpContext, IServicoMensageria servicoMensageria) : base(sgpContext, servicoMensageria)
         {
         }
 

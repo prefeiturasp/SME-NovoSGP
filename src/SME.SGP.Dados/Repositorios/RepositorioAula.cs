@@ -4,6 +4,7 @@ using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IUnitOfWork unitOfWork;
 
-        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork) : base(conexao)
+        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }

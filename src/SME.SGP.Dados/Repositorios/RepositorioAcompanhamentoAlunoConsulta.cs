@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAcompanhamentoAlunoConsulta : RepositorioBase<AcompanhamentoAluno>, IRepositorioAcompanhamentoAlunoConsulta
     {
-        public RepositorioAcompanhamentoAlunoConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioAcompanhamentoAlunoConsulta(ISgpContextConsultas conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
         {
         }
 

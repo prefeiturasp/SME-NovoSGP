@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtribuicaoCJ : RepositorioBase<AtribuicaoCJ>, IRepositorioAtribuicaoCJ
     {
-        public RepositorioAtribuicaoCJ(ISgpContext conexao) : base(conexao)
+        public RepositorioAtribuicaoCJ(ISgpContext conexao, IServicoMensageria servicoMensageria) : base(conexao, servicoMensageria)
         {
         }
 

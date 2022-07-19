@@ -51,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
         public virtual void Remover(T entidade)
         {
             database.Conexao.Delete(entidade);
-            Auditar(entidade.Id, "E");
+            AuditarAsync(entidade.Id, "E").Wait();
         }
         
         public virtual async Task RemoverAsync(T entidade)

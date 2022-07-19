@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioParametrosSistemaConsulta : RepositorioBase<ParametrosSistema>, IRepositorioParametrosSistemaConsulta
     {
-        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database, IServicoMensageria servicoMensageria) : base(database, servicoMensageria)
         {
         }
 
