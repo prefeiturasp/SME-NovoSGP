@@ -14,11 +14,10 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioCompensacaoAusenciaAluno(ISgpContext database) : base(database)
         {
         }
-        public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaAluno> registros,Usuario usuarioLogado)
+
+        public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaAluno> registros, Usuario usuarioLogado)
         {
-            try
-            {
-                var sql = @"copy compensacao_ausencia_aluno (                                         
+            var sql = @"copy compensacao_ausencia_aluno (                                         
                                         compensacao_ausencia_id, 
                                         codigo_aluno,
                                         qtd_faltas_compensadas, 
@@ -29,29 +28,24 @@ namespace SME.SGP.Dados.Repositorios
                             from
                             stdin (FORMAT binary)";
 
-                using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-                {
-                    foreach (var compensacao in registros)
-                    {
-                        writer.StartRow();
-                        writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
-                        writer.Write(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
-                        writer.Write(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
-                        writer.Write(compensacao.Notificado);
-                        writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
-                        writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
-                        writer.Write(compensacao.CriadoEm);
-                    }
-                    writer.Complete();
-                }
-            
-                return await Task.FromResult(true);
-            }
-            catch (Exception e)
+            using (var writer = ((NpgsqlConnection) database.Conexao).BeginBinaryImport(sql))
             {
-                Console.WriteLine(e);
-                throw;
+                foreach (var compensacao in registros)
+                {
+                    writer.StartRow();
+                    writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
+                    writer.Write(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
+                    writer.Write(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
+                    writer.Write(compensacao.Notificado);
+                    writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
+                    writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
+                    writer.Write(compensacao.CriadoEm);
+                }
+
+                writer.Complete();
             }
+
+            return await Task.FromResult(true);
         }
     }
 }
