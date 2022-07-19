@@ -95,13 +95,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_alterar_nota_numerica_lancada_cp()
         {
-            await ExecuteTesteNumericaAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, TipoNota.Nota);
+            await ExecuteTesteNumericaAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, TipoNota.Nota);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_numerica_lancada_diretor()
         {
-            await ExecuteTesteNumericaAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, TipoNota.Nota);
+            await ExecuteTesteNumericaAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, TipoNota.Nota);
         }
 
         private async Task ExecuteTesteNumericaAlteracao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, TipoNota tipoNota)

@@ -20,13 +20,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_diferente_de_regencia()
         {
-            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_de_regencia_Fundamental() 
         {
-            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, true, TipoNota.Conceito);
+            await ExecuteTesteConceitoInsercao(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, true, TipoNota.Conceito);
         }
 
         [Fact]
@@ -38,37 +38,37 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         [Fact]
         public async Task Deve_Lancar_nota_conceito_cp() 
         {
-            await ExecuteTesteConceitoInsercao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoInsercao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_Lancar_nota_conceito_diretor()
         {
-            await ExecuteTesteConceitoInsercao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoInsercao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_conceito_lancada_professor_titular()
         {
-            await ExecuteTesteConceitoAlteracao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoAlteracao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_conceito_lancada_cp()
         {
-            await ExecuteTesteConceitoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_conceito_lancada_diretor()
         {
-            await ExecuteTesteConceitoAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, false, TipoNota.Conceito);
+            await ExecuteTesteConceitoAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false, TipoNota.Conceito);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_conceito_em_turma_do_ano_anterior()
         {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.Infantil, true));
+            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, true));
 
             await ExecutarComandosFechamentoFinal(ObtenhaFechamentoFinalConceitoDto(COMPONENTE_CURRICULAR_ARTES_ID_139, false));
 
