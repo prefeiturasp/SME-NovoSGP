@@ -11,9 +11,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
 {
-    public class Ao_Lancar_nota_conceito : NotaFechamentoTesteBase
+    public class Ao_lancar_nota_conceito : NotaFechamentoTesteBase
     {
-        public Ao_Lancar_nota_conceito(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_nota_conceito(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
