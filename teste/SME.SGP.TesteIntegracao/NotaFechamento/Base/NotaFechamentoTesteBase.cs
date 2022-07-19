@@ -47,6 +47,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         private const string NAO_SATISFATORIO = "NS";
 
         protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+
+        protected readonly long FECHAMENTO_TURMA_ID_1 = 1;
+        protected readonly long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
+        protected readonly long FECHAMENTO_ALUNO_ID_1 = 1;
+        protected readonly long FECHAMENTO_ALUNO_ID_2 = 2;
+        protected readonly long FECHAMENTO_ALUNO_ID_3 = 3;
+        protected readonly long FECHAMENTO_ALUNO_ID_4 = 4;
+        protected readonly long FECHAMENTO_ALUNO_ID_5 = 5;
+        
         
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
@@ -65,6 +74,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         {
             return ServiceProvider.GetService<IComandosFechamentoFinal>();
         }
+        
+        private IConsultasFechamentoTurmaDisciplina RetornarServicoConsultasFechamentoTurmaDisciplina()
+        {
+            return ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
+        }
 
         protected async Task<AuditoriaPersistenciaDto> ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
@@ -81,6 +95,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return retorno;
         }
         
+        protected async Task ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
+        {
+            var consultasFechamentoTurmaDisciplina = RetornarServicoConsultasFechamentoTurmaDisciplina();
+
+            var retorno = await consultasFechamentoTurmaDisciplina.ObterNotasFechamentoTurmaDisciplina(
+                fechamentoFinalSalvarAlunoDto.TurmaCodigo, fechamentoFinalSalvarAlunoDto.DisciplinaCodigo,
+                fechamentoFinalSalvarAlunoDto.Bimestre, fechamentoFinalSalvarAlunoDto.Semestre);
+
+            retorno.ShouldNotBeNull();
+        }
+
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             var comandosFechamentoFinal = RetornarServicosBasicos();
@@ -943,6 +968,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             public bool ConsiderarAnoAnterior { get; set; }
             public string ProfessorRf { get; set; }
             public bool EhRegencia { get; set; }
+        }
+        
+        protected class FiltroNotaFechamentoAlunosDto
+        {
+            public FiltroNotaFechamentoAlunosDto()
+            {}
+                
+            public string TurmaCodigo { get; set; }
+            public long DisciplinaCodigo { get; set; }
+            public int Bimestre { get; set; }
+            public int Semestre { get; set; }
         }
     }
 }
