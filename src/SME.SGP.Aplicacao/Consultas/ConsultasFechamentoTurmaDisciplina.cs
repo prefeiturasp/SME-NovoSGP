@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
-            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d=> d.Nome);
+            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
 
             return dadosAlunosFiltrados;
         }
@@ -206,6 +206,12 @@ namespace SME.SGP.Aplicacao
                                                        .ThenBy(a => a.NomeValido());
 
                 var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, disciplinaId.ToString(), bimestreDoPeriodo.Id));
+
+                var alunosValidosId = alunosValidosComOrdenacao.Select(x => x.CodigoAluno).Distinct().ToArray();
+                var fechamentosIds = fechamentosTurma.Select(x => x.Id).Distinct().ToArray();
+
+                var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(alunosValidosId, fechamentosIds));
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma
@@ -263,7 +269,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
+                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma.Id);
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
