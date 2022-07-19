@@ -126,7 +126,7 @@ namespace SME.SGP.Aplicacao
 
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
-            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d=> d.Nome);
+            var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
 
             return dadosAlunosFiltrados;
         }
@@ -212,18 +212,24 @@ namespace SME.SGP.Aplicacao
 
                 var codigosAlunos = alunosValidosComOrdenacao.Select(c => c.CodigoAluno).Distinct().ToArray();
 
-                var fechamentosTurmas = (from ft in fechamentosTurma
+                var fechamentosTurmasAlunos = (from ft in fechamentosTurma
                                          from fa in ft.FechamentoAlunos
                                          where codigosAlunos.Contains(fa.AlunoCodigo)
                                          select new { ft.Id, fa.FechamentoTurmaDisciplinaId, ft.FechamentoTurmaId, ft.DisciplinaId, fa.AlunoCodigo });
 
-                var fechamentosTurmasDisciplinasIds = fechamentosTurmas.Select(c => c.FechamentoTurmaDisciplinaId).Distinct().ToArray();
+                var fechamentosTurmasDisciplinasIds = fechamentosTurmasAlunos.Select(c => c.FechamentoTurmaDisciplinaId).Distinct().ToArray();
 
                 var anotacoesAlunos = await mediator.Send(new ObterAnotacaoFechamentoAlunoPorDisciplinasEAlunosQuery(fechamentosTurmasDisciplinasIds, codigosAlunos));
+                
+                var fechamentosIds = fechamentosTurmasAlunos.Select(x => x.Id).Distinct().ToArray();
+
+                var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(codigosAlunos, fechamentosIds));
+
+                var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(codigosAlunos, turma.AnoLetivo));
 
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
-                    var fechamentoTurma = fechamentosTurmas.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
+                    var fechamentoTurma = fechamentosTurmasAlunos.Where(c => c.AlunoCodigo == aluno.CodigoAluno).FirstOrDefault();
 
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
@@ -231,7 +237,7 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
-                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
                     };
 
                     var anotacaoAluno = anotacoesAlunos.Where(c => c.FechamentoAluno.FechamentoTurmaDisciplinaId == fechamentoTurma?.FechamentoTurmaDisciplinaId &&
@@ -277,7 +283,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = await ObterNotasBimestre(aluno.CodigoAluno, fechamentoTurma != null ? fechamentoTurma.Id : 0);
+                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma.Id);
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();
