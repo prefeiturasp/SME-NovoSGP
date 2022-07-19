@@ -136,9 +136,9 @@ namespace SME.SGP.Aplicacao
                 plano.Questoes != null && 
                 plano.Questoes.Any() &&
                 turma.AnoLetivo.Equals(DateTime.Today.Year) &&
-                periodoAtual != null)
-                    plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-            
+                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()))
+                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+
 
             return plano;
         }
