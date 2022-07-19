@@ -212,6 +212,8 @@ namespace SME.SGP.Aplicacao
 
                 var notasConceitoBimestreRetorno = await mediator.Send(new ObterNotaBimestrePorCodigosAlunosIdsFechamentoQuery(alunosValidosId, fechamentosIds));
 
+                var planosAEE = await mediator.Send(new VerificaPlanosAEEPorCodigosAlunosEAnoQuery(alunosValidosId, turma.AnoLetivo));
+
                 foreach (var aluno in alunosValidosComOrdenacao)
                 {
                     var fechamentoTurma = (from ft in fechamentosTurma
@@ -225,7 +227,7 @@ namespace SME.SGP.Aplicacao
                         NumeroChamada = aluno.NumeroAlunoChamada,
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
-                        EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
+                        EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
                     };
 
                     var anotacaoAluno = await consultasFechamentoAluno.ObterAnotacaoPorAlunoEFechamento(fechamentoTurma?.Id ?? 0, aluno.CodigoAluno);
