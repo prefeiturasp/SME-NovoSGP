@@ -10,7 +10,9 @@ using System.Linq;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
@@ -37,14 +39,18 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            await ExecutarTeste(filtroNotaFechamento);
+            var retorno = await ExecutarTeste(filtroNotaFechamento);
+
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
         }
 
         public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()
         {
         }
         
-        private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        private async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             filtroNotaFechamentoDto.CriarPeriodoEscolar = false;
             
@@ -58,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
 
             var filtroNotaFechamentoAluno = ObterFiltroNotasFechamentoAlunos(TURMA_CODIGO_1,COMPONENTE_CURRICULAR_PORTUGUES_ID_138,BIMESTRE_1, SEMESTRE_0);
             
-            await ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(filtroNotaFechamentoAluno);
+            return await ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(filtroNotaFechamentoAluno);
         }
 
         private async Task InserirPeriodoEscolarCustomizado()

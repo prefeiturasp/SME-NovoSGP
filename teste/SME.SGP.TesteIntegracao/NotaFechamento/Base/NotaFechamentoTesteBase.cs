@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return retorno;
         }
         
-        protected async Task ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
+        protected async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
         {
             var consultasFechamentoTurmaDisciplina = RetornarServicoConsultasFechamentoTurmaDisciplina();
 
@@ -104,6 +104,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
                 fechamentoFinalSalvarAlunoDto.Bimestre, fechamentoFinalSalvarAlunoDto.Semestre);
 
             retorno.ShouldNotBeNull();
+
+            return retorno;
         }
 
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
