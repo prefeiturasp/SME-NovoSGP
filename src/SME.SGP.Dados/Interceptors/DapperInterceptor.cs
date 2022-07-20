@@ -408,11 +408,8 @@ namespace SME.SGP.Dados
         }
         #endregion
 
-        public interface IProxy //must be kept public
+        public interface IProxy
         {
-            /// <summary>
-            /// Whether the object has been changed.
-            /// </summary>
             bool IsDirty { get; set; }
         }
         public delegate string TableNameMapperDelegate(Type type);
