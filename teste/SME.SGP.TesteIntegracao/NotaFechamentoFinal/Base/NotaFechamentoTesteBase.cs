@@ -13,10 +13,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 {
     public abstract class NotaFechamentoTesteBase : TesteBaseComuns
     {

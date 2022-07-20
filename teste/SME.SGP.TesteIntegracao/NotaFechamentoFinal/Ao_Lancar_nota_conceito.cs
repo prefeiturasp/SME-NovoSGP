@@ -2,7 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_conceito : NotaFechamentoTesteBase
     {

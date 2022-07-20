@@ -7,7 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
@@ -17,7 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_aluno_inativo_ano_anterior : NotaFechamentoTesteBase
     {

@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using Xunit;
 using System.Linq;
 using MediatR;
@@ -15,7 +15,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Validar_exibicao_alunos : NotaFechamentoTesteBase
     {

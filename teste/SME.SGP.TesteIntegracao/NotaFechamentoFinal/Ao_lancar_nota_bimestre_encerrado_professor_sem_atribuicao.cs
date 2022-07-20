@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using Xunit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +13,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_bimestre_encerrado_professor_sem_atribuicao : NotaFechamentoTesteBase
     {

@@ -3,7 +3,7 @@ using Shouldly;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -14,7 +14,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_realizar_grud_anotacao_nota : NotaFechamentoTesteBase
     {
