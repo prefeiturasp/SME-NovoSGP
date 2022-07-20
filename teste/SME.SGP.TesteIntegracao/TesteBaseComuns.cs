@@ -60,7 +60,6 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105 = "'Regência de Classe Fund I - 5H'";
         protected const string COMPONENTE_REG_CLASSE_CICLO_ALFAB_INTERD_5HRS_EOL_1105 = "'REG CLASSE CICLO ALFAB / INTERD 5HRS'";
 
-
         protected const long COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114 = 1114;
         protected const string COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_NOME_1114 = "'Regência de Classe EJA - Básica'";
         protected const string COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_EOL_1114 = "'REG CLASSE EJA ETAPA BASICA'";
@@ -121,6 +120,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
+        protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
+        private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
+
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
         private const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
@@ -134,6 +137,9 @@ namespace SME.SGP.TesteIntegracao
 
         private const string PROFESSOR_CJ = "Professor CJ";
         private const int ORDEM_320 = 320;
+
+        private const string CP = "CP";
+        private const int ORDEM_240 = 240;
 
         protected const int BIMESTRE_1 = 1;
         protected const int BIMESTRE_2 = 2;
@@ -320,6 +326,7 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
         }
+
         protected async Task CriarPeriodoEscolarEncerrado()
         {
             await InserirNaBase(new PeriodoEscolar
@@ -492,8 +499,18 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        }
 
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_CP_LOGIN_3333333,
+                Login = USUARIO_CP_LOGIN_3333333,
+                Nome = USUARIO_CP_NOME_3333333,
+                PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+        }
 
         protected async Task CriarTurma(Modalidade modalidade)
         {
@@ -737,6 +754,7 @@ namespace SME.SGP.TesteIntegracao
                 Abreviacao = DRE_NOME_1,
                 Nome = DRE_NOME_1
             });
+
             await InserirNaBase(new Ue
             {
                 CodigoUe = UE_CODIGO_1,
@@ -760,6 +778,17 @@ namespace SME.SGP.TesteIntegracao
                 NomePerfil = PROFESSOR_CJ,
                 Ordem = ORDEM_320,
                 Tipo = TipoPerfil.UE,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = ORDEM_240,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = CP,
+                CodigoPerfil = Perfis.PERFIL_CP,
+                CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
