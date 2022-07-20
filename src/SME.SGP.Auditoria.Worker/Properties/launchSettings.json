@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "SME.SGP.Pendencias.Worker": {
+    "SME.SGP.Auditoria.Worker": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
