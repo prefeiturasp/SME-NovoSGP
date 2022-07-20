@@ -3,7 +3,7 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class MensagemRabbit
+    public class MensagemRabbit 
     {
         public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null, string administrador = null)
         {

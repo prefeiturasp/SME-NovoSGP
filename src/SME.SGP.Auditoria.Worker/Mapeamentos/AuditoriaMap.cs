@@ -1,9 +1,8 @@
 ﻿using Dapper.FluentMap.Dommel.Mapping;
-using SME.SGP.Dominio;
 
-namespace SME.SGP.Dados
+namespace SME.SGP.Auditoria.Worker
 {
-    public class AuditoriaMap : DommelEntityMap<Auditoria>
+    public class AuditoriaMap : DommelEntityMap<Entidade.Auditoria>
     {
         public AuditoriaMap()
         {

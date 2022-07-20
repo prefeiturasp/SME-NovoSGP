@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using Polly;
 using Polly.Registry;
-using SME.GoogleClassroom.Infra;
+using SME.SGP.Infra;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -21,8 +22,9 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IAsyncPolicy policy;
         public RepositorioFrequenciaConsulta(ISgpContextConsultas database,
-                                             IReadOnlyPolicyRegistry<string> registry)
-            : base(database)
+                                             IReadOnlyPolicyRegistry<string> registry,
+                                             IServicoAuditoria servicoAuditoria)
+            : base(database, servicoAuditoria)
         {
             policy = registry.Get<IAsyncPolicy>(PoliticaPolly.SGP);
         }
