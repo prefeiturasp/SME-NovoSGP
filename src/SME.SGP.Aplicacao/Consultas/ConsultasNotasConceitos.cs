@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario, IServicoAluno servicoAluno, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioNotaParametro repositorioNotaParametro, IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
             IRepositorioConceitoConsulta repositorioConceito,
-            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,        
+            IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioParametrosSistema repositorioParametrosSistema,
             IRepositorioTipoAvaliacao repositorioTipoAvaliacao, IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina, IRepositorioTurma repositorioTurma, IRepositorioUe repositorioUe,
             IRepositorioDre repositorioDre, IRepositorioEvento repositorioEvento, IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            
+
         }
 
         public async Task<NotasConceitosRetornoDto> ListarNotasConceitos(ListaNotasConceitosConsultaDto filtro)
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                 // Disciplina não tem disciplinas filhas então carrega avaliações da propria
                 atividadesAvaliativaEBimestres.AddRange(await consultasAtividadeAvaliativa.ObterAvaliacoesNoBimestre(filtro.TurmaCodigo, filtro.DisciplinaCodigo, periodoAtual.PeriodoInicio, periodoAtual.PeriodoFim));
 
-            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(filtro.TurmaCodigo));
+            var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(filtro.TurmaCodigo));
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
@@ -350,7 +350,7 @@ namespace SME.SGP.Aplicacao
                         var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodoConsulta.ObterPorAlunoData(aluno.CodigoAluno, periodoAtual.PeriodoFim, TipoFrequenciaAluno.PorDisciplina, filtro.DisciplinaCodigo);
                         notaConceitoAluno.PercentualFrequencia = frequenciaAluno == null ? null :
                                         ((int)Math.Round(frequenciaAluno.PercentualFrequencia, 0)).ToString();
-                                        
+
 
                         listaAlunosDoBimestre.Add(notaConceitoAluno);
                     }

@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendarioConsulta;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
-
+        string CHAVE_CRIAR_CHACHE_AULAS_PREVISTAS = "Aulas-Previstas-";
         public ComandosAulaPrevista(IRepositorioAulaPrevista repositorio,
                                     IRepositorioAulaPrevistaBimestre repositorioAulaPrevistaBimestre,
                                     IRepositorioAulaPrevistaBimestreConsulta repositorioAulaPrevistaBimestreConsulta,
@@ -68,6 +68,8 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
 
             id = await Inserir(dto, aulaPrevista);
+            var nomeChave = CHAVE_CRIAR_CHACHE_AULAS_PREVISTAS + turma.UeId;
+            await mediator.Send(new CriarCacheAulaPrevistaCommand(nomeChave,turma.UeId));
 
             unitOfWork.PersistirTransacao();
 

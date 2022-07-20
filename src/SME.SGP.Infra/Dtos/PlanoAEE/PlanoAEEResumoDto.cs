@@ -18,5 +18,6 @@ namespace SME.SGP.Infra
         public string Situacao { get; set; }
         public DateTime CriadoEm { get; set; }
         public string Versao { get; set; }
+        public string CodigoAluno { get; set; }
     }
 }
