@@ -35,10 +35,32 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
+            await ExecutarTesteComExcecao(filtroNotaFechamento);
+        }
+        
+        [Fact]
+        public async Task Deve_permitir_lancamento_nota_para_gestor()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilAD(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            
             await ExecutarTeste(filtroNotaFechamento);
         }
         
         private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        {
+            await CriarDadosBase(filtroNotaFechamentoDto);
+
+            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
+            
+            await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
+        }
+        
+        private async Task ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             await CriarDadosBase(filtroNotaFechamentoDto);
 
