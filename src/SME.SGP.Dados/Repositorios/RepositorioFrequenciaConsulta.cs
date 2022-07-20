@@ -377,7 +377,7 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<RegistroFrequenciaAlunoPorAulaDto>> ObterFrequenciasDetalhadasPorData(string turmaCodigo, string componenteCurricularId, string[] codigosAlunos, DateTime dataInicio, DateTime dataFim)
         {
             var query = @"select a.id as AulaId
-                                , rf.registro_frequencia_id as RegistroFrequenciaId
+                                , rfa.registro_frequencia_id as RegistroFrequenciaId
                                 , rfa.codigo_aluno as AlunoCodigo
                                 , rfa.numero_aula as NumeroAula
                                 , rfa.valor as TipoFrequencia
