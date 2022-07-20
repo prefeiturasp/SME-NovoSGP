@@ -20,6 +20,6 @@ namespace SME.SGP.Infra
         }
 
         public Task<bool> Auditar(Auditoria auditoria)
-            => servicoMensageria.Publicar(new MensagemRabbit(auditoria), RotasRabbitSgp.PersistirAuditoriaDB, ExchangeSgpRabbit.Sgp, "PublicarFilaAuditoriaDB");
+            => servicoMensageria.Publicar(new MensagemRabbit(auditoria), RotasRabbitAuditoria.PersistirAuditoriaDB, ExchangeSgpRabbit.Sgp, "PublicarFilaAuditoriaDB");
     }
 }
