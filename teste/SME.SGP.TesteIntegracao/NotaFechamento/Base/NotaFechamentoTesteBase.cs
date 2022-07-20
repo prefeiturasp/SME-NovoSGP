@@ -30,6 +30,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly string ALUNO_CODIGO_8 = "8";
         protected readonly string ALUNO_CODIGO_9 = "9";
         protected readonly string ALUNO_CODIGO_10 = "10";
+        protected readonly string ALUNO_CODIGO_11 = "11";
+        protected readonly string ALUNO_CODIGO_12 = "12";
+        protected readonly string ALUNO_CODIGO_13 = "13";
 
         protected readonly double NOTA_1 = 1;
         protected readonly double NOTA_2 = 2;
