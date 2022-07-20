@@ -14,9 +14,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
 {
     public class Ao_realizar_grud_anotacao_nota : NotaFechamentoTesteBase
     {
-        private const long FECHAMENTO_TURMA_ID_1 = 1;
-        private const long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
-        private const long FECHAMENTO_ALUNO_ID_1 = 1;
         private const string ANOTACAO = "Aluno em recuperação";
         private const string ANOTACAO_ALTERACAO = "Alteração da anotação";
         public Ao_realizar_grud_anotacao_nota(CollectionFixture collectionFixture) : base(collectionFixture)
