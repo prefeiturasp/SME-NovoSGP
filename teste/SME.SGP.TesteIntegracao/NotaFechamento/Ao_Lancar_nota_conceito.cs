@@ -7,6 +7,11 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
@@ -17,6 +22,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         {
         }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
+        
         [Fact]
         public async Task Deve_Lancar_nota_conceito_por_professor_titular_para_componente_diferente_de_regencia()
         {

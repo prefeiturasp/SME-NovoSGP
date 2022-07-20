@@ -3,8 +3,13 @@ using System.Linq;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
@@ -14,6 +19,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         public Ao_excluir_nota_numerica(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
+        
         [Fact]
         public async Task Deve_permitir_excluir_nota_numerica_titular_fundamental()
         {

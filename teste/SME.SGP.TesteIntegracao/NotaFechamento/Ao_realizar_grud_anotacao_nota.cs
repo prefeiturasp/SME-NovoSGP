@@ -8,6 +8,10 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
@@ -18,6 +22,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
         private const string ANOTACAO_ALTERACAO = "Alteração da anotação";
         public Ao_realizar_grud_anotacao_nota(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+        
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]

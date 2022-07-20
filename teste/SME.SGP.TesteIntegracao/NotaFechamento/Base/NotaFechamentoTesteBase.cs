@@ -52,6 +52,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         private const string NAO_SATISFATORIO = "NS";
 
         protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected readonly long PERIODO_ESCOLAR_CODIGO_2 = 2;
+        protected readonly long PERIODO_ESCOLAR_CODIGO_3 = 3;
+        protected readonly long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
         protected readonly long FECHAMENTO_TURMA_ID_1 = 1;
         protected readonly long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
@@ -113,13 +116,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             return retorno;
         }
 
-        protected async Task ExecutarComandosFechamentoFinalComExcecao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        protected async Task<NegocioException> ExecutarComandosFechamentoFinalComExcecao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             var comandosFechamentoFinal = RetornarServicosBasicos();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
-
-            excecao.Message.ShouldBe(MensagemNegocioFechamentoNota.VOCE_NAO_PODE_FAZER_ALTERACOES_OU_INCLUSOES_NESTA_TURMA_COMPONENTE_E_DATA);
+            return await Assert.ThrowsAsync<NegocioException>(async () => await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
         }
 
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
@@ -765,8 +766,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             await InserirNaBase(new FechamentoReabertura()
             {
                 Descricao = REABERTURA_GERAL,
-                Inicio = considerarAnoAnterior ? DATA_01_01.AddYears(-1) : DATA_01_01,
-                Fim = DATA_31_12,
+                Inicio = considerarAnoAnterior ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Date : DateTimeExtension.HorarioBrasilia().Date,
+                Fim = DateTimeExtension.HorarioBrasilia().AddYears(1).Date,
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,

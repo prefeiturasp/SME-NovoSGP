@@ -8,7 +8,9 @@ using Xunit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento
@@ -35,7 +37,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            await ExecutarTesteComExcecao(filtroNotaFechamento);
+            var excecao = await ExecutarTesteComExcecao(filtroNotaFechamento);
+            
+            excecao.Message.ShouldBe(MensagemNegocioFechamentoNota.VOCE_NAO_PODE_FAZER_ALTERACOES_OU_INCLUSOES_NESTA_TURMA_COMPONENTE_E_DATA);
         }
         
         [Fact]
@@ -60,13 +64,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
             await ExecutarComandosFechamentoFinal(fechamentoFinalSalvarDto);
         }
         
-        private async Task ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        private async Task<NegocioException> ExecutarTesteComExcecao(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             await CriarDadosBase(filtroNotaFechamentoDto);
 
             var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
             
-            await ExecutarComandosFechamentoFinalComExcecao(fechamentoFinalSalvarDto);
+            return await ExecutarComandosFechamentoFinalComExcecao(fechamentoFinalSalvarDto);
         }
         
         private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
