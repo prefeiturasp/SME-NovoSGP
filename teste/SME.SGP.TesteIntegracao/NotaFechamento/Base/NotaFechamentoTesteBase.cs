@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
 {
@@ -109,6 +111,15 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             retorno.ShouldNotBeNull();
 
             return retorno;
+        }
+
+        protected async Task ExecutarComandosFechamentoFinalComExcecao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        {
+            var comandosFechamentoFinal = RetornarServicosBasicos();
+
+            var excecao = await Assert.ThrowsAsync<NegocioException>(async () => await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
+
+            excecao.Message.ShouldBe(MensagemNegocioFechamentoNota.VOCE_NAO_PODE_FAZER_ALTERACOES_OU_INCLUSOES_NESTA_TURMA_COMPONENTE_E_DATA);
         }
 
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
