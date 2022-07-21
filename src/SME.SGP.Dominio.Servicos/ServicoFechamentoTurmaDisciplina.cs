@@ -391,11 +391,17 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamentoAlunos = await repositorioFechamentoAlunoConsulta.ObterPorFechamentoTurmaDisciplina(fechamentoTurmaDisciplinaId);
 
+            var alunosCodigos = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
+            var disciplinasIds = fechamentoAlunos.Select(c => c.FechamentoNotas.Select(a => a.DisciplinaId.ToString()).Distinct().ToArray()).FirstOrDefault();
+            var frequencias = await mediator.Send(new ObterPorAlunosDisciplinasDataQuery(alunosCodigos, disciplinasIds, dataReferencia));
+
             foreach (var fechamentoAluno in fechamentoAlunos)
             {
                 foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                 {
-                    var frequencia = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(fechamentoAluno.AlunoCodigo, fechamentoNota.DisciplinaId.ToString(), dataReferencia));
+                    var frequencia = frequencias.Where(c => c.CodigoAluno == fechamentoAluno.AlunoCodigo &&
+                        c.DisciplinaId == fechamentoNota.DisciplinaId.ToString()).FirstOrDefault();
+
                     var percentualFrequencia = frequencia == null ? 100 : frequencia.PercentualFrequencia;
                     var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, anoLetivo));
 
@@ -405,6 +411,7 @@ namespace SME.SGP.Dominio.Servicos
 
             return fechamentoAlunos;
         }
+
         private async Task<bool> ExigeAprovacao(Turma turma, Usuario usuarioLogado)
         {
             return turma.AnoLetivo < DateTime.Today.Year

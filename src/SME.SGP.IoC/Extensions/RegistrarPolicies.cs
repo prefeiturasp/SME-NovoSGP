@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using Polly.Registry;
-using SME.GoogleClassroom.Infra;
+using SME.SGP.Infra;
 using System;
 
 namespace SME.SGP.IoC

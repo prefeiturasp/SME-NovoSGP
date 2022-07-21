@@ -18,7 +18,7 @@ namespace SME.SGP.Dados
 
         public RepositorioFrequenciaAlunoDisciplinaPeriodoConsulta(ISgpContextConsultas database)
         {
-            this.database = database ?? throw new System.ArgumentNullException(nameof(database));
+            this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
 
         public FrequenciaAluno Obter(string codigoAluno, string disciplinaId, long periodoEscolarId, TipoFrequenciaAluno tipoFrequencia, string turmaId)
@@ -47,7 +47,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        private string BuildQueryObter()
+        private static string BuildQueryObter()
         {
             var query = @"select
 	                        *
@@ -195,7 +195,7 @@ namespace SME.SGP.Dados
             });
         }
 
-        private String BuildQueryObterPorAlunoData(string disciplinaId = "", string codigoTurma = "")
+        private static string BuildQueryObterPorAlunoData(string disciplinaId = "", string codigoTurma = "")
         {
             var query = new StringBuilder(@"select fa.*
                         from frequencia_aluno fa
@@ -232,8 +232,7 @@ namespace SME.SGP.Dados
 
         public async Task<FrequenciaAluno> ObterPorAlunoDataAsync(string codigoAluno, DateTime dataAtual, TipoFrequenciaAluno tipoFrequencia, string disciplinaId = "", string codigoTurma = "")
         {
-            String query =
-                BuildQueryObterPorAlunoData(disciplinaId, codigoTurma);
+            string query = BuildQueryObterPorAlunoData(disciplinaId, codigoTurma);
 
             return await database.QueryFirstOrDefaultAsync<FrequenciaAluno>(query.ToString(), new
             {
@@ -262,6 +261,28 @@ namespace SME.SGP.Dados
             return database.QueryFirstOrDefault<FrequenciaAluno>(query, new
             {
                 codigoAluno,
+                disciplinaId,
+                dataAtual,
+                turmaCodigo
+            });
+        }        
+        public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaPorListaDeAlunosDisciplinaData(string[] codigosAlunos, string disciplinaId, DateTime dataAtual, string turmaCodigo)
+        {
+            var query = @"select *
+                        from frequencia_aluno fa
+                        inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                        where codigo_aluno = any(@codigosAlunos)
+                            and disciplina_id = @disciplinaId
+	                        and tipo = 1
+	                        and pe.periodo_inicio <= @dataAtual
+	                        and pe.periodo_fim >= @dataAtual ";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return await database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                codigosAlunos,
                 disciplinaId,
                 dataAtual,
                 turmaCodigo
@@ -677,6 +698,29 @@ namespace SME.SGP.Dados
             };
 
             return await database.QueryAsync<TotalFrequenciaEAulasAlunoDto>(query.ToString(), parametros);
+        }
+
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunosDisciplinasDataAsync(string[] codigosAlunos, string[] disciplinasIds, DateTime dataAtual, string turmaCodigo = "")
+        {
+            var query = @"select *
+                from frequencia_aluno fa
+                inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id
+                where codigo_aluno = any(@codigosAlunos)
+                and disciplina_id = any(@disciplinasIds)
+	            and tipo = 1
+	            and pe.periodo_inicio <= @dataAtual
+	            and pe.periodo_fim >= @dataAtual";
+
+            if (!string.IsNullOrEmpty(turmaCodigo))
+                query += "and fa.turma_id = @turmaCodigo";
+
+            return await database.QueryAsync<FrequenciaAluno>(query, new
+            {
+                codigosAlunos,
+                disciplinasIds,
+                dataAtual,
+                turmaCodigo
+            });
         }
     }
 }

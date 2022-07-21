@@ -3,7 +3,7 @@ using RabbitMQ.Client;
 using SME.SGP.Infra.Utilitarios;
 using System;
 
-namespace SME.SGP.Aplicacao.Integracoes
+namespace SME.SGP.Infra
 {
     public class RabbitModelPooledObjectPolicy : IPooledObjectPolicy<IModel>
     {

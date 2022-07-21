@@ -13,6 +13,7 @@ pipeline {
       deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
       deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
       deployment10 = "${env.branchname == 'release-r2' ? 'sme-worker-avaliacao-r2' : 'sme-worker-avaliacao' }"
+      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
     }
   
     agent {
@@ -63,6 +64,7 @@ pipeline {
               imagename7 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
               imagename8 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
               imagename9 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-avaliacao"
+              imagename10 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-auditoria"
 
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
               dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
@@ -73,6 +75,7 @@ pipeline {
               dockerImage7 = docker.build(imagename7, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
               dockerImage8 = docker.build(imagename8, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
               dockerImage9 = docker.build(imagename9, "-f src/SME.SGP.Avaliacao.Worker/Dockerfile .")
+              dockerImage10 = docker.build(imagename10, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
 
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
@@ -83,7 +86,8 @@ pipeline {
               dockerImage6.push()
               dockerImage7.push()
               dockerImage8.push()
-	      dockerImage9.push()
+			  dockerImage9.push()
+			  dockerImage10.push()
               }
               sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8 $imagename9"
             }
@@ -115,6 +119,7 @@ pipeline {
                         sh "kubectl rollout restart deployment/${deployment8} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment9} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment10} -n sme-novosgp"
+                        sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
                         sh('rm -f '+"$home"+'/.kube/config')
                   }
                 }

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAEEConsulta : RepositorioBase<PlanoAEE>, IRepositorioPlanoAEEConsulta
     {
-        public RepositorioPlanoAEEConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioPlanoAEEConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -168,6 +169,23 @@ namespace SME.SGP.Dados.Repositorios
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });
+        }
+        public async Task<IEnumerable<PlanoAEEResumoDto>> ObterPlanosPorAlunosEAno(string[] codigoEstudante, int ano)
+        {
+            var query = @"select distinct   pa.Id,
+	                                        pa.aluno_numero as numero,
+	                                        pa.aluno_nome as nome,
+	                                        tu.nome as turma,
+	                                        pa.situacao,
+	                                        pa.aluno_codigo as CodigoAluno 
+                                        from plano_aee pa
+                                        inner join turma tu on tu.id = pa.turma_id 
+                                        where pa.aluno_codigo = any(@codigoEstudante) 
+                                        and pa.situacao not in (3,7)
+                                        and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
+                                        limit 1";
+
+            return await database.Conexao.QueryAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });
         }
 
         public async Task<PlanoAEE> ObterPlanoComTurmaPorId(long planoId)

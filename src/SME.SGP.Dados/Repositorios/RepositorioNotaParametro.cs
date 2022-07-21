@@ -6,12 +6,13 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados
 {
     public class RepositorioNotaParametro : RepositorioBase<NotaParametro>, IRepositorioNotaParametro
     {
-        public RepositorioNotaParametro(ISgpContext database) : base(database)
+        public RepositorioNotaParametro(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
