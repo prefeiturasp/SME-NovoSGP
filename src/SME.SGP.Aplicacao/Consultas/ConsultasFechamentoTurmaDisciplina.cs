@@ -307,10 +307,9 @@ namespace SME.SGP.Aplicacao
                                 {
                                     string nomeDisciplina;
 
-                                    if (disciplinaEOL.Regencia)
-                                        nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
-                                    else 
-                                        nomeDisciplina = disciplinaEOL.Nome;
+                                    if (disciplina.Regencia)
+                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                    else nomeDisciplina = disciplina.Nome;
 
                                     var nota = new FechamentoNotaRetornoDto()
                                     {
