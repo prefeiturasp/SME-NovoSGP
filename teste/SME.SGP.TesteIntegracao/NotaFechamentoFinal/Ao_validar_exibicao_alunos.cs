@@ -4,7 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
 using Xunit;
 using System.Linq;
 using MediatR;
@@ -15,11 +15,11 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Validar_exibicao_alunos : NotaFechamentoTesteBase
+    public class Ao_validar_exibicao_alunos : NotaFechamentoTesteBase
     {
-        public Validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -43,12 +43,45 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
 
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
             retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao == null).ShouldBeTrue();
             (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao == null).ShouldBeTrue();
         }
 
+        [Fact]
         public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()
         {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            var retorno = await ExecutarTeste(filtroNotaFechamento);
+
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_7)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_10)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+        }
+        
+        [Fact]
+        public async Task Nao_deve_exibir_alunos_inativos_antes_do_comeco_do_ano_ou_bimestre()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            var retorno = await ExecutarTeste(filtroNotaFechamento);
+
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)) == null).ShouldBeTrue();
+            (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
         }
         
         private async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)

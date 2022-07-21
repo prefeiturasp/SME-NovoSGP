@@ -168,6 +168,7 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected const long TIPO_CALENDARIO_1 = 1;
+        protected const long NUMERO_1 = 1;
 
         protected string DATA_INICIO_SGP = "DataInicioSGP";
         protected string NUMERO_50 = "50";

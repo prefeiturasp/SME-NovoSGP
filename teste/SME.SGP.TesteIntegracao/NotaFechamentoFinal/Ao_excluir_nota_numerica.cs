@@ -1,21 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.NotaFechamento.Base;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
-using System.Linq;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Ao_lancar_nota_numerica : NotaFechamentoTesteBase
+    public class Ao_excluir_nota_numerica : NotaFechamentoTesteBase
     {
-        public Ao_lancar_nota_numerica(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_excluir_nota_numerica(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
+        
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_fundamental()
+        public async Task Deve_permitir_excluir_nota_numerica_titular_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -24,11 +36,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            await ExecutarTeste(filtroNotaFechamento);
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
 
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_medio()
+        public async Task Deve_permitir_excluir_nota_numerica_titular_medio()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -37,11 +49,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            await ExecutarTeste(filtroNotaFechamento);
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
         
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_eja()
+        public async Task Deve_permitir_excluir_nota_numerica_titular_eja()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -50,24 +62,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.EJA,
                 COMPONENTE_HISTORIA_ID_7);
             
-            await ExecutarTeste(filtroNotaFechamento);
-        }
-        
-        [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_titular_regencia_classe_fundamental()
-        {
-            var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(),
-                TipoNota.Nota, ANO_1,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(),false, true);
-            
-            await ExecutarTeste(filtroNotaFechamento);
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
 
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_cp()
+        public async Task Deve_permitir_excluir_nota_numerica_cp()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilCP(),
@@ -76,11 +75,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            await ExecutarTeste(filtroNotaFechamento);
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
 
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_numerica_diretor()
+        public async Task Deve_permitir_excluir_nota_numerica_diretor()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilDiretor(),
@@ -89,47 +88,61 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            await ExecutarTeste(filtroNotaFechamento);
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
-
+        
         [Fact]
-        public async Task Deve_permitir_alterar_nota_numerica_lancada_cp()
+        public async Task Deve_permitir_excluir_nota_numerica_titular_regencia_classe_fundamental()
         {
-            await ExecuteTesteNumericaAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, TipoNota.Nota);
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilDiretor(),
+                TipoNota.Nota, ANO_1,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), false, true);
+            
+            await ExecutarTesteInsercaoELimpeza(filtroNotaFechamento);
         }
 
-        [Fact]
-        public async Task Deve_permitir_alterar_nota_numerica_lancada_diretor()
-        {
-            await ExecuteTesteNumericaAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, TipoNota.Nota);
-        }
-
-        private async Task ExecuteTesteNumericaAlteracao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, TipoNota tipoNota)
-        {
-            var filtroDto = ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false);
-            var dtoSalvar = ObterFechamentoFinalSalvar(filtroDto);
-
-            await CriarDadosBase(filtroDto);
-            await ExecutarComandosFechamentoFinal(dtoSalvar);
-
-            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_1).Nota = NOTA_3;
-            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_2).Nota = NOTA_4;
-            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_3).Nota = NOTA_5;
-            dtoSalvar.Itens.FirstOrDefault(item => item.AlunoRf == ALUNO_CODIGO_4).Nota = NOTA_6;
-
-            await ExecutarComandosFechamentoFinalComValidacaoNota(dtoSalvar);
-        }
-
-        private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        private async Task ExecutarTesteInsercaoELimpeza(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
         {
             await CriarDadosBase(filtroNotaFechamentoDto);
 
-            var fechamentoFinalSalvarDto = ObterFechamentoFinalSalvar(filtroNotaFechamentoDto);
+            var fechamentoFinalSalvarParaInserir = ObterFechamentoNotaFinalNumericaParaSalvar(filtroNotaFechamentoDto);
             
-            await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarDto);
+            await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaInserir);
+            
+            var fechamentoFinalSalvarParaExcluir = ObterFechamentoNotaFinalNumericaParaExcluir(filtroNotaFechamentoDto);
+            
+            await ExecutarComandosFechamentoFinalComValidacaoNota(fechamentoFinalSalvarParaExcluir);
         }
         
-        private FechamentoFinalSalvarDto ObterFechamentoFinalSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
+        private FechamentoFinalSalvarDto ObterFechamentoNotaFinalNumericaParaExcluir(FiltroNotaFechamentoDto filtroNotaFechamento)
+        {
+            var fechamentoAlunoInserido = ObterTodos<FechamentoAluno>();
+
+            var fechamentoNotaFinalNumericaParaExcluir = new FechamentoFinalSalvarDto
+            {
+                DisciplinaId = filtroNotaFechamento.ComponenteCurricular,
+                EhRegencia = filtroNotaFechamento.EhRegencia,
+                TurmaCodigo = TURMA_CODIGO_1,
+                Itens = new List<FechamentoFinalSalvarItemDto>()
+            };
+
+            foreach (var fechamentoAluno in fechamentoAlunoInserido)
+            {
+                fechamentoNotaFinalNumericaParaExcluir.Itens.Add(new FechamentoFinalSalvarItemDto
+                {
+                    AlunoRf = fechamentoAluno.AlunoCodigo,
+                    ComponenteCurricularCodigo = long.Parse(filtroNotaFechamento.ComponenteCurricular),
+                    Nota = null
+                });
+            }
+
+            return fechamentoNotaFinalNumericaParaExcluir;
+        }
+        
+        private FechamentoFinalSalvarDto ObterFechamentoNotaFinalNumericaParaSalvar(FiltroNotaFechamentoDto filtroNotaFechamento)
         {
             return new FechamentoFinalSalvarDto()
             {

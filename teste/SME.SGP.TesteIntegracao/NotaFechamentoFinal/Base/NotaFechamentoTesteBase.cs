@@ -13,8 +13,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 {
     public abstract class NotaFechamentoTesteBase : TesteBaseComuns
     {
@@ -30,6 +31,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly string ALUNO_CODIGO_8 = "8";
         protected readonly string ALUNO_CODIGO_9 = "9";
         protected readonly string ALUNO_CODIGO_10 = "10";
+        protected readonly string ALUNO_CODIGO_11 = "11";
+        protected readonly string ALUNO_CODIGO_12 = "12";
+        protected readonly string ALUNO_CODIGO_13 = "13";
 
         protected readonly double NOTA_1 = 1;
         protected readonly double NOTA_2 = 2;
@@ -119,6 +123,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             retorno.ShouldNotBeNull();
 
             return retorno;
+        }
+
+        protected async Task<NegocioException> ExecutarComandosFechamentoFinalComExcecao(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        {
+            var comandosFechamentoFinal = RetornarServicosBasicos();
+
+            return await Assert.ThrowsAsync<NegocioException>(async () => await comandosFechamentoFinal.SalvarAsync(fechamentoFinalSalvarDto));
         }
 
         protected async Task ExecutarComandosFechamentoFinalComValidacaoNota(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
@@ -764,8 +775,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
             await InserirNaBase(new FechamentoReabertura()
             {
                 Descricao = REABERTURA_GERAL,
-                Inicio = considerarAnoAnterior ? DATA_01_01.AddYears(-1) : DATA_01_01,
-                Fim = DATA_31_12,
+                Inicio = considerarAnoAnterior ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Date : DateTimeExtension.HorarioBrasilia().Date,
+                Fim = DateTimeExtension.HorarioBrasilia().AddYears(1).Date,
                 TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
