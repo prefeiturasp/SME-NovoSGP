@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ProfessoresTurmaDisciplinaQuery : IRequest<List<ProfessorAtribuidoTurmaDisciplinaDTO>>
+    public class ProfessoresTurmaDisciplinaQuery : IRequest<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>
     {
         public ProfessoresTurmaDisciplinaQuery(string codigoTurma, string disciplinaId, DateTime data)
         {

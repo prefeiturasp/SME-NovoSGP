@@ -21,7 +21,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_lancar_nota_aluno_inativo_ano_anterior : NotaFechamentoTesteBase
     {
-        private const long PERIODO_ESCOLAR_CODIGO_4 = 4;
         private const string ALUNO_INATIVO_11 = "11"; 
         public Ao_lancar_nota_aluno_inativo_ano_anterior(CollectionFixture collectionFixture) : base(collectionFixture)
         {

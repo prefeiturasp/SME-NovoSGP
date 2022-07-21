@@ -86,6 +86,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         {
             return ServiceProvider.GetService<IConsultasFechamentoTurmaDisciplina>();
         }
+        
+        private IComandosFechamentoTurmaDisciplina RetornarServicoComandosFechamentoTurmaDisciplina()
+        {
+            return ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+        }
+        
 
         protected async Task<AuditoriaPersistenciaDto> ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
@@ -100,6 +106,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
              (retorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
 
             return retorno;
+        }
+        
+        protected async Task ExecutarComandosFechamentoTurmaDisciplina(long fechamentoId)
+        {
+            var comandosFechamentoTurmaDisciplina = RetornarServicoComandosFechamentoTurmaDisciplina();
+
+            await comandosFechamentoTurmaDisciplina.Reprocessar(fechamentoId);
         }
         
         protected async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarConsultasFechamentoTurmaDisciplinaComValidacaoAluno(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
@@ -196,17 +209,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
            
         }
 
-        private static IEnumerable<string> ObterAlunosDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
+        private IEnumerable<string> ObterAlunosDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
             return fechamentoFinalSalvarDto.Itens.Select(d => d.AlunoRf).Distinct();
         }
 
-        private static IEnumerable<string> ObterFechamentoAlunosInseridos(List<FechamentoAluno> fechamentosAlunos)
+        private IEnumerable<string> ObterFechamentoAlunosInseridos(List<FechamentoAluno> fechamentosAlunos)
         {
             return fechamentosAlunos.Select(s => s.AlunoCodigo).Distinct();
         }
 
-        private static FechamentoFinalSalvarItemDto ObterFechamentoNotaDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, string alunoCodigo)
+        private FechamentoFinalSalvarItemDto ObterFechamentoNotaDto(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, string alunoCodigo)
         {
             var retorno =  fechamentoFinalSalvarDto.Itens.FirstOrDefault(f => f.AlunoRf.Equals(alunoCodigo));
             return retorno;
@@ -995,6 +1008,199 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             public long DisciplinaCodigo { get; set; }
             public int Bimestre { get; set; }
             public int Semestre { get; set; }
+        }
+        
+        protected async Task ExecutarTesteComandosFechamentoTurmaDisciplina(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        {
+            await CriarDadosBase(filtroNotaFechamentoDto);
+            
+            await CriarAula(DATA_29_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, filtroNotaFechamentoDto.ComponenteCurricular, TIPO_CALENDARIO_1);
+            
+            await InserirFechamentoAluno(filtroNotaFechamentoDto);
+            
+            await ExecutarComandosFechamentoTurmaDisciplina(NUMERO_1);
+            
+            await ValidarResultadosTeste();
+        }
+        
+         private async Task ValidarResultadosTeste()
+        {
+            var fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == SituacaoFechamento.ProcessadoComPendencias).ShouldBeTrue();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != SituacaoFechamento.ProcessadoComPendencias).ShouldBeFalse();
+
+            var pendencias = ObterTodos<Pendencia>();
+            pendencias.Any(a =>
+                    a.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && a.Situacao == SituacaoPendencia.Pendente)
+                .ShouldBeTrue();
+            pendencias.Any(a =>
+                    a.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && a.Situacao != SituacaoPendencia.Pendente)
+                .ShouldBeFalse();
+
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = 1, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new RegistroFrequenciaAluno
+            {
+                CodigoAluno = CODIGO_ALUNO_1,
+                RegistroFrequenciaId = 1,
+                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now,
+                Valor = 1,
+                NumeroAula = 1,
+                AulaId = 1
+            });
+
+            await ExecutarComandosFechamentoTurmaDisciplina(NUMERO_1);
+
+            fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == SituacaoFechamento.ProcessadoComSucesso).ShouldBeTrue();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != SituacaoFechamento.ProcessadoComSucesso).ShouldBeFalse();
+
+            pendencias = ObterTodos<Pendencia>();
+            pendencias.Any(a =>
+                    a.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && a.Situacao == SituacaoPendencia.Resolvida)
+                .ShouldBeTrue();
+            pendencias.Any(a =>
+                    a.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento && a.Situacao != SituacaoPendencia.Resolvida)
+                .ShouldBeFalse();
+        }
+
+        private async Task InserirFechamentoAluno(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        {
+            await InserirNaBase(new FechamentoTurma()
+            {
+                TurmaId = TURMA_ID_1,
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoTurmaDisciplina()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_1,
+                Nota = NOTA_8,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_2,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_2,
+                Nota = NOTA_7,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_3,
+                Nota = NOTA_6,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_4,
+                Nota = NOTA_5,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                AlunoCodigo = CODIGO_ALUNO_5,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_5,
+                Nota = NOTA_7,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+        
+        protected FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
+        {
+            return new FiltroNotaFechamentoDto()
+            {
+                Perfil = perfil,
+                Modalidade = modalidade,
+                TipoCalendario = modalidadeTipoCalendario,
+                Bimestre = BIMESTRE_1,
+                ComponenteCurricular = componenteCurricular,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                CriarPeriodoEscolar = true,
+                CriarPeriodoAbertura = true,
+                TipoNota = tipoNota,
+                AnoTurma = anoTurma,
+                ConsiderarAnoAnterior = considerarAnoAnterior,
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
+                EhRegencia = ehRegencia
+            };
         }
     }
 }

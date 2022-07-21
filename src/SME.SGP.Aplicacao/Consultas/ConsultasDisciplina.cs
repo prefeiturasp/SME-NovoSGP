@@ -225,11 +225,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
-            var disciplinaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
-            if (disciplinaEOL == null || !disciplinaEOL.Any())
+            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
+            if (disciplinas == null || !disciplinas.Any())
                 throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
-            return disciplinaEOL.FirstOrDefault();
+            return disciplinas.FirstOrDefault();
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma)

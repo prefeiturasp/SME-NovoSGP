@@ -304,13 +304,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return alunos;
         }
 
-        [Obsolete("Utilizar: ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento")]
-        public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasParaPlanejamento(long codigoTurma, string login, Guid perfil)
-        {
-            var url = $"funcionarios/{login}/perfis/{perfil}/turmas/{codigoTurma}/disciplinas/planejamento";
-            return await ObterDisciplinas(url, "ObterDisciplinasParaPlanejamento");
-        }
-
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPorCodigoTurma(string codigoTurma)
         {
             var url = $"funcionarios/turmas/{codigoTurma}/disciplinas";

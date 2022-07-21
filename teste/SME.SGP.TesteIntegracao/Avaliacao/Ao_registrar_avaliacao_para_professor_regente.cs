@@ -17,14 +17,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_regente : TesteAvaliacao
     {
-        private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
-
-        private const int NUMERO_0 = 0;
-        private const int NUMERO_1 = 1;
-        private const int NUMERO_2 = 2;
-        private const int NUMERO_3 = 3;
-        private const int RETORNAR_4 = 4;
-
+        
         public Ao_registrar_avaliacao_para_professor_regente(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
