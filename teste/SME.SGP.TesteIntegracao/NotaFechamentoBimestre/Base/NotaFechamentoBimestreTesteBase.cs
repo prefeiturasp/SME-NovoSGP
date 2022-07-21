@@ -89,7 +89,20 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             notasFechamento.Count().ShouldBeGreaterThanOrEqualTo(1);
         }
 
-        protected async Task ExecutarTesteComValidacaoNota(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        protected FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
+        {
+            return new FiltroFechamentoNotaDto()
+            {
+                Perfil = perfil,
+                AnoTurma = anoTurma,
+                ConsiderarAnoAnterior = consideraAnorAnterior,
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TipoFrequenciaAluno = TipoFrequenciaAluno.PorDisciplina
+            };
+        }
+
+        protected async Task<IEnumerable<AuditoriaPersistenciaDto>> ExecutarTesteComValidacaoNota(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, TipoNota tipoNota)
         {
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
             var retorno = await comando.Salvar(fechamentoTurma);
@@ -101,10 +114,41 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             (valorRetorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
 
             ValidaFechamentoTurma(fechamentoDto, valorRetorno.Id);
-            ValidaFechamentoAluno(fechamentoDto, valorRetorno.Id);
+            ValidaFechamentoAluno(fechamentoDto, valorRetorno.Id, tipoNota);
+
+            return retorno;
         }
 
-        private void ValidaFechamentoTurma(FechamentoTurmaDisciplinaDto fechamentoDto, long id)
+        protected FechamentoNotaDto ObterFechamentoNotaDto(string codigoAluno, long disciplina)
+        {
+            return new FechamentoNotaDto()
+            {
+                Anotacao = "",
+                CodigoAluno = codigoAluno,
+                DisciplinaId = disciplina,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRf = SISTEMA_CODIGO_RF
+            };
+        }
+
+        protected FechamentoNotaDto ObterNotaConceito(string codigoAluno, long disciplina, long conceitoId)
+        {
+            var dto = ObterFechamentoNotaDto(codigoAluno, disciplina);
+            dto.ConceitoId = conceitoId;
+
+            return dto;
+        }
+
+        protected FechamentoNotaDto ObterNotaNumerica(string codigoAluno, long disciplina, long nota)
+        {
+            var dto = ObterFechamentoNotaDto(codigoAluno, disciplina);
+            dto.Nota = nota;
+
+            return dto;
+        }
+
+        protected void ValidaFechamentoTurma(FechamentoTurmaDisciplinaDto fechamentoDto, long id)
         {
             var listaTurmaFechamento = ObterTodos<FechamentoTurmaDisciplina>();
             listaTurmaFechamento.ShouldNotBeNull();
@@ -112,7 +156,22 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             turmaFechamento.DisciplinaId.ShouldBe(fechamentoDto.DisciplinaId);
         }
 
-        private void ValidaFechamentoAluno(FechamentoTurmaDisciplinaDto fechamentoDto, long id)
+        protected List<FechamentoTurmaDisciplinaDto> ObterListaFechamentoTurma(List<FechamentoNotaDto> listaDeNota, long disciplina)
+        {
+            return new List<FechamentoTurmaDisciplinaDto>()
+            {
+                new FechamentoTurmaDisciplinaDto()
+                {
+                    Bimestre = BIMESTRE_1,
+                    DisciplinaId = disciplina,
+                    Justificativa = "" ,
+                    TurmaId = TURMA_CODIGO_1 ,
+                    NotaConceitoAlunos = listaDeNota
+                }
+            };
+        }
+
+        private void ValidaFechamentoAluno(FechamentoTurmaDisciplinaDto fechamentoDto, long id, TipoNota tipoNota)
         {
             var fechamentosAlunos = ObterTodos<FechamentoAluno>().FindAll(alunos => alunos.FechamentoTurmaDisciplinaId == id);
             fechamentosAlunos.ShouldNotBeNull();
@@ -122,11 +181,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             listaCodigoAlunoObjeto.Except(listaCodigoAlunoDto).Count().ShouldBe(0);
             listaCodigoAlunoDto.Except(listaCodigoAlunoObjeto).Count().ShouldBe(0);
 
-            ValidaNota(fechamentoDto, fechamentosAlunos);
+            ValidaNota(fechamentoDto, fechamentosAlunos, tipoNota);
             ValidaConsolidado(fechamentoDto, listaCodigoAlunoDto.ToList());
         }
 
-        private void ValidaNota(FechamentoTurmaDisciplinaDto fechamentoDto, List<FechamentoAluno> fechamentosAlunos)
+        private void ValidaNota(FechamentoTurmaDisciplinaDto fechamentoDto, List<FechamentoAluno> fechamentosAlunos, TipoNota tipoNota)
         {
             var listaFechamentosNotas = ObterTodos<FechamentoNota>();
             listaFechamentosNotas.ShouldNotBeNull();
@@ -136,7 +195,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 var alunoCodigo = fechamentosAlunos.FirstOrDefault(f => f.Id == fechamentoNota.FechamentoAlunoId).AlunoCodigo;
                 var proposta = ObterFechamentoNotaDto(fechamentoDto, alunoCodigo);
 
-                if (fechamentoNota.Nota.HasValue)
+                if (TipoNota.Nota == tipoNota)
                 {
                     var atual = fechamentoNota.Nota;
                     (proposta.Nota == atual).ShouldBeTrue();

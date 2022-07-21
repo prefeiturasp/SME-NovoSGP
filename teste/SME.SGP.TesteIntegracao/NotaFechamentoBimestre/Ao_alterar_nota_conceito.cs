@@ -16,9 +16,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
-    public class Ao_alterar_nota : NotaFechamentoBimestreTesteBase
+    public class Ao_alterar_nota_conceito : NotaFechamentoBimestreTesteBase
     {
-        public Ao_alterar_nota(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_alterar_nota_conceito(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -38,32 +38,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact]
         public async Task Deve_alterar_nota_conceito_lancada_cp()
         {
-            await ExecuteTesteConceitoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139,  false);
+            await ExecuteTesteConceitoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_ARTES_ID_139, false);
         }
 
         [Fact]
         public async Task Deve_alterar_nota_conceito_lancada_diretor()
         {
             await ExecuteTesteConceitoAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_ARTES_ID_139, false);
-        }
-
-
-        [Fact]
-        public async Task Deve_alterar_nota_numerico_lancada_professor_titular()
-        {
-            await ExecuteTesteNumericoAlteracao(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        }
-
-        [Fact]
-        public async Task Deve_alterar_nota_numerico_lancada_cp()
-        {
-            await ExecuteTesteNumericoAlteracao(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        }
-
-        [Fact]
-        public async Task Deve_alterar_nota_numerico_lancada_diretor()
-        {
-            await ExecuteTesteNumericoAlteracao(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
         }
 
         [Fact]
@@ -108,8 +89,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(perfil, ANO_3, consideraAnorAnterior));
 
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(disciplina), disciplina);
-            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
-            var retorno = await comando.Salvar(dto);
+            var retorno = await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
             var fechamento = dto.FirstOrDefault();
 
             retorno.ShouldNotBeNull();
@@ -119,68 +99,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_3).ConceitoId = (long)ConceitoValores.S;
             fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).ConceitoId = (long)ConceitoValores.P;
 
-            await ExecutarTesteComValidacaoNota(dto);
-        }
-
-        protected async Task ExecuteTesteNumericoAlteracao(string perfil, long disciplina)
-        {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(perfil, ANO_7));
-
-            var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(disciplina), disciplina);
-            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
-            var retorno = await comando.Salvar(dto);
-            var fechamento = dto.FirstOrDefault();
-
-            retorno.ShouldNotBeNull();
-            fechamento.Id = retorno.FirstOrDefault().Id;
-            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_1).Nota = NOTA_9;
-            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_2).Nota = NOTA_8;
-            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_3).Nota = NOTA_7;
-            fechamento.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno == CODIGO_ALUNO_4).Nota = NOTA_6;
-
-            await ExecutarTesteComValidacaoNota(dto);
-        }
-
-        private FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
-        {
-            return new FiltroFechamentoNotaDto()
-            {
-                Perfil = perfil,
-                AnoTurma = anoTurma,
-                ConsiderarAnoAnterior = consideraAnorAnterior,
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                TipoFrequenciaAluno = TipoFrequenciaAluno.PorDisciplina
-            };
-        }
-
-        private FechamentoNotaDto ObterFechamentoNotaDto(string codigoAluno, long disciplina)
-        {
-            return new FechamentoNotaDto()
-            {
-                Anotacao = "",
-                CodigoAluno = codigoAluno,
-                DisciplinaId = disciplina,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRf = SISTEMA_CODIGO_RF
-            };
-        }
-
-        private FechamentoNotaDto ObterNotaConceito(string codigoAluno, long disciplina, long conceitoId)
-        {
-            var dto = ObterFechamentoNotaDto(codigoAluno, disciplina);
-            dto.ConceitoId = conceitoId;
-
-            return dto;
-        }
-
-        private FechamentoNotaDto ObterNotaNumerica(string codigoAluno, long disciplina, long nota)
-        {
-            var dto = ObterFechamentoNotaDto(codigoAluno, disciplina);
-            dto.Nota = nota;
-
-            return dto;
+            await ExecutarTesteComValidacaoNota(dto, TipoNota.Conceito);
         }
 
         private List<FechamentoNotaDto> ObterListaDeFechamentoConceito(long disciplina)
@@ -191,32 +110,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ObterNotaConceito(CODIGO_ALUNO_2, disciplina, (long)ConceitoValores.NS),
                 ObterNotaConceito(CODIGO_ALUNO_3, disciplina, (long)ConceitoValores.NS),
                 ObterNotaConceito(CODIGO_ALUNO_4, disciplina, (long)ConceitoValores.S),
-            };
-        }
-
-        private List<FechamentoNotaDto> ObterListaDeFechamentoNumerica(long disciplina)
-        {
-            return new List<FechamentoNotaDto>()
-            {
-                ObterNotaNumerica(CODIGO_ALUNO_1, disciplina, (long)NOTA_6),
-                ObterNotaNumerica(CODIGO_ALUNO_2, disciplina, (long)NOTA_7),
-                ObterNotaNumerica(CODIGO_ALUNO_3, disciplina, (long)NOTA_8),
-                ObterNotaNumerica(CODIGO_ALUNO_4, disciplina, (long)NOTA_9),
-            };
-        }
-
-        private List<FechamentoTurmaDisciplinaDto> ObterListaFechamentoTurma(List<FechamentoNotaDto> listaDeNota, long disciplina)
-        {
-            return new List<FechamentoTurmaDisciplinaDto>()
-            {
-                new FechamentoTurmaDisciplinaDto()
-                {
-                    Bimestre = BIMESTRE_1,
-                    DisciplinaId = disciplina,
-                    Justificativa = "" ,
-                    TurmaId = TURMA_CODIGO_1 ,
-                    NotaConceitoAlunos = listaDeNota
-                }
             };
         }
     }
