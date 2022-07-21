@@ -1,14 +1,17 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
@@ -39,6 +42,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected class FiltroFechamentoNotaDto
@@ -73,6 +77,124 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
             await CriarSintese();
+            await CrieConceitoValores();
+            await CriarParametrosSistema();
+        }
+
+        protected async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        {
+            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+
+            await comando.Salvar(fechamentoTurma);
+            var notasFechamento = ObterTodos<FechamentoTurmaDisciplina>();
+
+            notasFechamento.ShouldNotBeNull();
+            notasFechamento.ShouldNotBeEmpty();
+            notasFechamento.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+        protected async Task ExecutarTesteComValidacaoNota(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        {
+            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+            var retorno = await comando.Salvar(fechamentoTurma);
+            var fechamentoDto = fechamentoTurma.FirstOrDefault();
+            var valorRetorno = retorno.FirstOrDefault();
+
+            retorno.ShouldNotBeNull();
+            valorRetorno.Mensagens.Any().ShouldBeFalse();
+            (valorRetorno.MensagemConsistencia.Length > 0).ShouldBeTrue();
+
+            ValidaFechamentoTurma(fechamentoDto, valorRetorno.Id);
+            ValidaFechamentoAluno(fechamentoDto, valorRetorno.Id);
+        }
+
+        private void ValidaFechamentoTurma(FechamentoTurmaDisciplinaDto fechamentoDto, long id)
+        {
+            var listaTurmaFechamento = ObterTodos<FechamentoTurmaDisciplina>();
+            listaTurmaFechamento.ShouldNotBeNull();
+            var turmaFechamento = listaTurmaFechamento.FirstOrDefault(fechamento => fechamento.Id == id); 
+            turmaFechamento.DisciplinaId.ShouldBe(fechamentoDto.DisciplinaId);
+        }
+
+        private void ValidaFechamentoAluno(FechamentoTurmaDisciplinaDto fechamentoDto, long id)
+        {
+            var fechamentosAlunos = ObterTodos<FechamentoAluno>().FindAll(alunos => alunos.FechamentoTurmaDisciplinaId == id);
+            fechamentosAlunos.ShouldNotBeNull();
+            var listaCodigoAlunoObjeto = ObterCodigosAlunosObjeto(fechamentosAlunos);
+            var listaCodigoAlunoDto = ObterCodigosAlunosDto(fechamentoDto);
+
+            listaCodigoAlunoObjeto.Except(listaCodigoAlunoDto).Count().ShouldBe(0);
+            listaCodigoAlunoDto.Except(listaCodigoAlunoObjeto).Count().ShouldBe(0);
+
+            ValidaNota(fechamentoDto, fechamentosAlunos);
+            ValidaConsolidado(fechamentoDto, listaCodigoAlunoDto.ToList());
+        }
+
+        private void ValidaNota(FechamentoTurmaDisciplinaDto fechamentoDto, List<FechamentoAluno> fechamentosAlunos)
+        {
+            var listaFechamentosNotas = ObterTodos<FechamentoNota>();
+            listaFechamentosNotas.ShouldNotBeNull();
+
+            foreach (var fechamentoNota in listaFechamentosNotas)
+            {
+                var alunoCodigo = fechamentosAlunos.FirstOrDefault(f => f.Id == fechamentoNota.FechamentoAlunoId).AlunoCodigo;
+                var proposta = ObterFechamentoNotaDto(fechamentoDto, alunoCodigo);
+
+                if (fechamentoNota.Nota.HasValue)
+                {
+                    var atual = fechamentoNota.Nota;
+                    (proposta.Nota == atual).ShouldBeTrue();
+                }
+                else
+                {
+                    var conceitoId = fechamentoNota.ConceitoId;
+                    (proposta.ConceitoId == conceitoId).ShouldBeTrue();
+                }
+            }
+        }
+
+        private void ValidaConsolidado(FechamentoTurmaDisciplinaDto fechamentoDto, List<string> listaCodigoAlunoDto)
+        {
+            var listaConsolidacaoTurmaAluno = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
+            listaConsolidacaoTurmaAluno.ShouldNotBeNull();
+            var listaConsolidadoCodigoAluno = listaConsolidacaoTurmaAluno.Select(s => s.AlunoCodigo).Distinct();
+            listaConsolidadoCodigoAluno.Except(listaCodigoAlunoDto).Count().ShouldBe(0);
+            listaCodigoAlunoDto.Except(listaConsolidadoCodigoAluno).Count().ShouldBe(0);
+
+            var listaConsolidacaoTurmaAlunoNota = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
+            listaConsolidacaoTurmaAlunoNota.ShouldNotBeNull();
+
+            foreach (var consolidacaoTurmaAlunoNota in listaConsolidacaoTurmaAlunoNota.Where(w => w.ComponenteCurricularId == fechamentoDto.DisciplinaId))
+            {
+                var alunoRf = listaConsolidacaoTurmaAluno.FirstOrDefault(f => f.Id == consolidacaoTurmaAlunoNota.ConselhoClasseConsolidadoTurmaAlunoId).AlunoCodigo;
+                var proposta = ObterFechamentoNotaDto(fechamentoDto, alunoRf);
+
+                if (consolidacaoTurmaAlunoNota.Nota.HasValue)
+                {
+                    var atual = consolidacaoTurmaAlunoNota.Nota;
+                    (proposta.Nota == atual).ShouldBeTrue();
+                }
+                else
+                {
+                    var conceitoId = consolidacaoTurmaAlunoNota.ConceitoId;
+                    (proposta.ConceitoId == conceitoId).ShouldBeTrue();
+                }
+            }
+        }
+
+        private IEnumerable<string> ObterCodigosAlunosDto(FechamentoTurmaDisciplinaDto fechamentoTurma)
+        {
+            return fechamentoTurma.NotaConceitoAlunos.Select(aluno => aluno.CodigoAluno).Distinct();
+        }
+
+        private IEnumerable<string> ObterCodigosAlunosObjeto(List<FechamentoAluno> fechamentosAlunos)
+        {
+            return fechamentosAlunos.Select(s => s.AlunoCodigo).Distinct();
+        }
+
+        private FechamentoNotaDto ObterFechamentoNotaDto(FechamentoTurmaDisciplinaDto fechamentoTurma, string alunoCodigo)
+        {
+            return fechamentoTurma.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno.Equals(alunoCodigo));
         }
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
@@ -92,6 +214,19 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_DESCRICAO,
                 Valor = "",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
+            });
+
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_NOME,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaFechamento,
+                Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_DESCRICAO,
+                Valor = "",
+                Ano = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -158,7 +293,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Id = 1,
                 CodigoAluno = CODIGO_ALUNO_1,
                 Tipo = tipoFrequenciaAluno,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
@@ -178,7 +313,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Id = 2,
                 CodigoAluno = CODIGO_ALUNO_2,
                 Tipo = tipoFrequenciaAluno,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
@@ -198,7 +333,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Id = 3,
                 CodigoAluno = CODIGO_ALUNO_3,
                 Tipo = tipoFrequenciaAluno,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
@@ -218,7 +353,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Id = 4,
                 CodigoAluno = CODIGO_ALUNO_4,
                 Tipo = tipoFrequenciaAluno,
-                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
@@ -279,7 +414,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 await InserirNaBase(new FechamentoTurmaDisciplina
                 {
                     FechamentoTurmaId = fechamentoTurma.Id,
-                    DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
+                    DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                     CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -346,6 +481,22 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Id = 1,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia(),
                 Valor = SinteseEnum.Frequente.Name()
+            });
+        }
+
+        private async Task CriarParametrosSistema()
+        {
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = "AprovacaoAlteracaoNotaConselho",
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Descricao = "Aprovação alteracao nota conselho",
+                Valor = string.Empty,
+                Ano = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
             });
         }
     }

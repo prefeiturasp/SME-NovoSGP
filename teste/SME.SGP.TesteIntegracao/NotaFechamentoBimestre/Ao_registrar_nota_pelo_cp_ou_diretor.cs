@@ -46,18 +46,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await ExecutarComandoConceito();
         }
 
-        private async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
-        {
-            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
-
-            await comando.Salvar(fechamentoTurma);
-            var notasFechamento = ObterTodos<FechamentoTurmaDisciplina>();
-                
-            notasFechamento.ShouldNotBeNull();
-            notasFechamento.ShouldNotBeEmpty();
-            notasFechamento.Count().ShouldBeGreaterThanOrEqualTo(1);
-        }
-
         private async Task ExecutarComandoNota()
         {
             var fechamentoNotaDto = new List<FechamentoNotaDto>()

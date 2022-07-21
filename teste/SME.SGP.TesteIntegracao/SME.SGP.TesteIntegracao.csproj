@@ -7,6 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="NotaFechamentoBimestre\ServicosFake\**" />
+      <EmbeddedResource Remove="NotaFechamentoBimestre\ServicosFake\**" />
+      <None Remove="NotaFechamentoBimestre\ServicosFake\**" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="MediatR" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="5.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.1" />
@@ -40,10 +46,6 @@
       <None Update="appsettings.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="NotaFechamentoBimestre\ServicosFake\" />
     </ItemGroup>
 
 </Project>
