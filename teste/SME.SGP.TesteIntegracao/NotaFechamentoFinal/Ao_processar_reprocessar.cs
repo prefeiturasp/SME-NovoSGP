@@ -17,9 +17,9 @@ using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class AoProcessar_reprocessar : NotaFechamentoTesteBase
+    public class Ao_Processar_reprocessar : NotaFechamentoTesteBase
     {
-        public AoProcessar_reprocessar(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_Processar_reprocessar(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
