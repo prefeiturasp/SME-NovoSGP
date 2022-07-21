@@ -42,21 +42,34 @@ namespace SME.SGP.TesteIntegracao.NotaFechamento.Base
         protected readonly double NOTA_9 = 9;
         protected readonly double NOTA_10 = 10;
 
-        private const string PLENAMENTE_SATISFATORIO = "P";
-        private const string SATISFATORIO = "S";
-        private const string NAO_SATISFATORIO = "NS";
+        protected const string PLENAMENTE_SATISFATORIO = "P";
+        protected const string SATISFATORIO = "S";
+        protected const string NAO_SATISFATORIO = "NS";
 
-        protected readonly long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected const long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected const long PERIODO_ESCOLAR_CODIGO_2 = 2;
+        protected const long PERIODO_ESCOLAR_CODIGO_3 = 3;
+        protected const long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
         protected readonly long FECHAMENTO_TURMA_ID_1 = 1;
+        protected const long FECHAMENTO_TURMA_ID_2 = 2;
+        protected const long FECHAMENTO_TURMA_ID_3 = 3;
+        protected const long FECHAMENTO_TURMA_ID_4 = 4;
         protected readonly long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
+        protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_2 = 2;
+        protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_3 = 3;
+        protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_4 = 4;
+        protected const long FECHAMENTO_TURMA_DISCIPLINA_ID_5 = 5;
         protected readonly long FECHAMENTO_ALUNO_ID_1 = 1;
         protected readonly long FECHAMENTO_ALUNO_ID_2 = 2;
         protected readonly long FECHAMENTO_ALUNO_ID_3 = 3;
         protected readonly long FECHAMENTO_ALUNO_ID_4 = 4;
         protected readonly long FECHAMENTO_ALUNO_ID_5 = 5;
-        
-        
+        protected const long FECHAMENTO_ALUNO_ID_6 = 6;
+        protected const long FECHAMENTO_ALUNO_ID_7 = 7;
+        protected const long FECHAMENTO_ALUNO_ID_8 = 8;
+        protected const long FECHAMENTO_ALUNO_ID_9 = 9;
+        protected const long FECHAMENTO_ALUNO_ID_10 = 10;
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
 
