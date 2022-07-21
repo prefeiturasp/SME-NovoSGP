@@ -33,6 +33,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         private const string PARAMETRO_MEDIA_BIMESTRE_DESCRICAO = "Média final para aprovação no bimestre";
         private const string PARAMETRO_MEDIA_BIMESTRE_VALOR_5 = "5";
 
+        protected readonly long TIPO_AVALIACAO_CODIGO_1 = 1;
+
+        protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
+
         public NotaFechamentoBimestreTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -53,6 +57,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             public Modalidade Modalidade { get; set; }
             public string AnoTurma { get; set; }
             public TipoFrequenciaAluno TipoFrequenciaAluno { get; set; }
+            public string ProfessorRf { get; set; }
+            public string ComponenteCurricular { get; set;  }
         }
 
         protected async Task CriarDadosBase(FiltroFechamentoNotaDto filtroFechamentoNota)
@@ -82,11 +88,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
 
             await comando.Salvar(fechamentoTurma);
+
             var notasFechamento = ObterTodos<FechamentoTurmaDisciplina>();
 
             notasFechamento.ShouldNotBeNull();
             notasFechamento.ShouldNotBeEmpty();
-            notasFechamento.Count().ShouldBeGreaterThanOrEqualTo(1);
+            notasFechamento.Count.ShouldBeGreaterThanOrEqualTo(1);
         }
 
         protected FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
@@ -250,6 +257,56 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         private FechamentoNotaDto ObterFechamentoNotaDto(FechamentoTurmaDisciplinaDto fechamentoTurma, string alunoCodigo)
         {
             return fechamentoTurma.NotaConceitoAlunos.FirstOrDefault(aluno => aluno.CodigoAluno.Equals(alunoCodigo));
+        }
+
+        protected async Task CriarTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao, string descricaoAvaliacao)
+        {
+            await InserirNaBase(new TipoAvaliacao
+            {
+                Nome = descricaoAvaliacao,
+                Descricao = descricaoAvaliacao,
+                Situacao = true,
+                AvaliacoesNecessariasPorBimestre = 1,
+                Codigo = tipoAvalicao,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativaDisciplina(long atividadeAvaliativaId, string componenteCurricular)
+        {
+            await InserirNaBase(new AtividadeAvaliativaDisciplina
+            {
+                AtividadeAvaliativaId = atividadeAvaliativaId,
+                DisciplinaId = componenteCurricular,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+        }
+
+        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao,
+            long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false,
+            bool ehCj = false, string professorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
+        {
+            await InserirNaBase(new AtividadeAvaliativa
+            {
+                DreId = DRE_CODIGO_1,
+                UeId = UE_CODIGO_1,
+                ProfessorRf = professorRf,
+                TurmaId = TURMA_CODIGO_1,
+                Categoria = CategoriaAtividadeAvaliativa.Normal,
+                TipoAvaliacaoId = TipoAvaliacaoId,
+                NomeAvaliacao = nomeAvaliacao,
+                DescricaoAvaliacao = nomeAvaliacao,
+                DataAvaliacao = dataAvaliacao,
+                EhRegencia = ehRegencia,
+                EhCj = ehCj,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
         }
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)

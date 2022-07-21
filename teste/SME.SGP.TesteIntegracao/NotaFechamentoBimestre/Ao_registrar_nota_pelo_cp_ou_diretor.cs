@@ -1,9 +1,13 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,10 +22,16 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         public Ao_registrar_nota_pelo_cp_ou_diretor(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Deve_registrar_nota_numerica_como_cp()
         {
+
             await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_5));
             await ExecutarComandoNota();
         }
@@ -46,6 +56,18 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await ExecutarComandoConceito();
         }
 
+        private async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        {
+            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+
+            await comando.Salvar(fechamentoTurma);
+            var notasFechamento = ObterTodos<FechamentoNota>();
+
+            notasFechamento.ShouldNotBeNull();
+            notasFechamento.ShouldNotBeEmpty();
+            notasFechamento.Count().ShouldBeGreaterThanOrEqualTo(1);
+        }
+
         private async Task ExecutarComandoNota()
         {
             var fechamentoNotaDto = new List<FechamentoNotaDto>()
@@ -63,7 +85,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                     ConceitoId= null,
                     CriadoPor= "",
                     CriadoRf= "",
-                    Id= 1,
                     Nota= 7,
                     NotaAnterior= 6,
                     SinteseId= (int)SinteseEnum.Frequente
@@ -76,7 +97,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = 1 ,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                    Id = 1,
                     Justificativa = "" ,
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentoNotaDto
@@ -103,7 +123,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                     ConceitoId= (long) ConceitoValores.P,
                     CriadoPor= "",
                     CriadoRf= "",
-                    Id= 1,
                     Nota= null,
                     NotaAnterior= null,
                     SinteseId= (int)SinteseEnum.Frequente
@@ -116,7 +135,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 {
                     Bimestre = 1 ,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                    Id = 1,
                     Justificativa = "" ,
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentoNotaDto
