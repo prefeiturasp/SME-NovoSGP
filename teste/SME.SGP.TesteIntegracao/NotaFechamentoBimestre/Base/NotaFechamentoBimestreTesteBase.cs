@@ -67,10 +67,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarPeriodoFechamento();
 
-            await CriarFechamentoTurma();
-            await CriarFechamentoTurmaDisciplina();
-            await CriarFechamentoAluno();
-
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
             await CriarSintese();
         }
@@ -251,85 +247,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 periodoFechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(1, periodoEscolar, periodoEscolar.PeriodoFim, periodoEscolar.PeriodoFim.AddDays(10)));
 
             await InserirNaBase(periodoFechamento);
-        }
-
-        private async Task CriarFechamentoTurma()
-        {
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-
-            foreach (var periodoEscolar in periodosEscolares)
-            {
-                await InserirNaBase(new FechamentoTurma
-                {
-                    PeriodoEscolarId = periodoEscolar.Id,
-                    TurmaId = 1,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
-        }
-
-        private async Task CriarFechamentoTurmaDisciplina()
-        {
-            var fechamentosTurmas = ObterTodos<FechamentoTurma>();
-
-            foreach (var fechamentoTurma in fechamentosTurmas)
-            {
-                await InserirNaBase(new FechamentoTurmaDisciplina
-                {
-                    FechamentoTurmaId = fechamentoTurma.Id,
-                    DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
-        }
-
-        private async Task CriarFechamentoAluno()
-        {
-            var fechamentosTurmasDisciplinas = ObterTodos<FechamentoTurmaDisciplina>();
-
-            foreach (var fechamentoTurmaDisciplina in fechamentosTurmasDisciplinas)
-            {
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_1,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_2,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_3,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_4,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
-        }       
+        }    
 
         private async Task CriarSintese()
         {
