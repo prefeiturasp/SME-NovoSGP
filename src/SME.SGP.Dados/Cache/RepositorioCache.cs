@@ -13,14 +13,14 @@ namespace SME.SGP.Dados.Repositorios
 
         protected string NomeServicoCache { get; set; }
 
-        protected virtual string ObterValor(string nomeChave) 
-            => throw new NotImplementedException($"Método ObterValor do serviço {NomeServicoCache} não implementado");
+        protected virtual string ObterValor(string nomeChave) => "";
+        //=> throw new NotImplementedException($"Método ObterValor do serviço {NomeServicoCache} não implementado");
 
-        protected virtual Task RemoverValor(string nomeChave) 
-            => throw new NotImplementedException($"Método RemoverValor do serviço {NomeServicoCache} não implementado");
+        protected virtual Task RemoverValor(string nomeChave) => Task.CompletedTask;
+        //=> throw new NotImplementedException($"Método RemoverValor do serviço {NomeServicoCache} não implementado");
 
-        protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar) 
-            => throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
+        protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar) => Task.CompletedTask;
+        //=> throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
 
         public RepositorioCache(IServicoTelemetria servicoTelemetria)
         {
@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception)
             {
-            }            
+            }
         }
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)

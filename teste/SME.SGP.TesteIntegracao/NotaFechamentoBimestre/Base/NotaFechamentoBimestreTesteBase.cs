@@ -74,6 +74,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarFechamentoNota();
 
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
+            await CriarSintese();
         }
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
@@ -150,6 +151,19 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_NOME,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaFechamento,
+                Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_DESCRICAO,
+                Valor = "",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
+            });
+
         }
 
         private async Task CriarFrequenciaAluno(TipoFrequenciaAluno tipoFrequenciaAluno)
@@ -303,6 +317,24 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                     FechamentoAlunoId = fechamentoAluno.Id
                 });
             }
+        }
+
+        private async Task CriarSintese()
+        {
+            await InserirNaBase(new Sintese()
+            {
+                AlteradoEm = DateTimeExtension.HorarioBrasilia(),
+                Aprovado = true,
+                Ativo = true,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Descricao = "",
+                FimVigencia = DateTimeExtension.HorarioBrasilia().AddDays(1),
+                Id = 1,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia(),
+                Valor = SinteseEnum.Frequente.Name()
+            });
         }
     }
 }
