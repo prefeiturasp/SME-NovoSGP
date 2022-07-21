@@ -9,7 +9,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
@@ -71,7 +70,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarFechamentoTurma();
             await CriarFechamentoTurmaDisciplina();
             await CriarFechamentoAluno();
-            await CriarFechamentoNota();
 
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
             await CriarSintese();
@@ -90,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await InserirNaBase(new ParametrosSistema
             {
                 Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_NOME,
-                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaFechamento,
                 Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_DESCRICAO,
                 Valor = "",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
@@ -151,19 +149,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
-            await InserirNaBase(new ParametrosSistema
-            {
-                Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_NOME,
-                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaFechamento,
-                Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_FECHAMENTO_DESCRICAO,
-                Valor = "",
-                Ano = DateTimeExtension.HorarioBrasilia().Year,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                Ativo = true
-            });
-
         }
 
         private async Task CriarFrequenciaAluno(TipoFrequenciaAluno tipoFrequenciaAluno)
@@ -205,6 +190,46 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 TurmaId = TURMA_CODIGO_1,
                 PeriodoEscolarId = 1,
                 TotalPresencas = 19,
+                TotalRemotos = 0
+            });
+
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                Id = 3,
+                CodigoAluno = CODIGO_ALUNO_3,
+                Tipo = tipoFrequenciaAluno,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
+                Bimestre = BIMESTRE_1,
+                TotalAulas = 20,
+                TotalCompensacoes = 5,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TurmaId = TURMA_CODIGO_1,
+                PeriodoEscolarId = 1,
+                TotalPresencas = 15,
+                TotalRemotos = 0
+            });
+
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                Id = 4,
+                CodigoAluno = CODIGO_ALUNO_4,
+                Tipo = tipoFrequenciaAluno,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
+                Bimestre = BIMESTRE_1,
+                TotalAulas = 20,
+                TotalCompensacoes = 0,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                TurmaId = TURMA_CODIGO_1,
+                PeriodoEscolarId = 1,
+                TotalPresencas = 20,
                 TotalRemotos = 0
             });
         }
@@ -285,39 +310,26 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
                 });
-            }
-        }
 
-        private async Task CriarFechamentoNota()
-        {
-            var fechamentosAlunos = ObterTodos<FechamentoAluno>();
-            var parametros = ObterTodos<ParametrosSistema>();
-
-            var mediaBimestre = short.Parse(parametros.FirstOrDefault(c => c.Tipo == TipoParametroSistema.MediaBimestre && c.Ano == DateTimeExtension.HorarioBrasilia().Year).Valor);
-
-            foreach (var fechamentoAluno in fechamentosAlunos)
-            {
-                Random randomNota = new();
-
-                var notaAbaixoDaMedia = randomNota.Next(0, mediaBimestre - 1);
-                var notaIgualOuAcimaDaMedia = randomNota.Next(mediaBimestre, 10);
-
-                var nota = notaIgualOuAcimaDaMedia;
-
-                if (fechamentoAluno.AlunoCodigo == CODIGO_ALUNO_1)
-                    nota = notaAbaixoDaMedia;
-
-                await InserirNaBase(new FechamentoNota()
+                await InserirNaBase(new FechamentoAluno()
                 {
-                    DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
-                    Nota = nota,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
+                    AlunoCodigo = CODIGO_ALUNO_3,
+                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                     CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF,
-                    FechamentoAlunoId = fechamentoAluno.Id
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                await InserirNaBase(new FechamentoAluno()
+                {
+                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
+                    AlunoCodigo = CODIGO_ALUNO_4,
+                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
                 });
             }
-        }
+        }       
 
         private async Task CriarSintese()
         {
