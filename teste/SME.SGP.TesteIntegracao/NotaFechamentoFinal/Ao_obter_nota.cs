@@ -18,7 +18,7 @@ using Xunit;
 using System.Linq;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
-namespace SME.SGP.TesteIntegracao.NotaFechamento
+namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
     public class Ao_obter_nota : NotaFechamentoTesteBase
     {
