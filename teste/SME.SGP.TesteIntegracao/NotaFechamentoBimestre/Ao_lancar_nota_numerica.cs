@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,6 +17,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_lancar_nota_numerica : NotaFechamentoBimestreTesteBase
     {
+        private const decimal CINQUENTA_PORCENTO = 50;
+
+        private readonly DateTime DATA_18_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 18);
+
         public Ao_lancar_nota_numerica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -34,11 +39,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 false,
                 Modalidade.Fundamental,
                 ANO_7,
-                TipoFrequenciaAluno.PorDisciplina);
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarDadosBase(filtroFechamentoNota);
 
-            var fechamentoNota = await LancarNotasAlunos();
+            var fechamentoNota = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarTeste(fechamentoNota);
 
@@ -48,18 +54,75 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         }
 
         [Fact]
-        public async Task Deve_lancar_nota_para_medio()
+        public async Task Deve_lancar_nota_para_fundamental_com_avaliacao()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            await CriarDadosBase(filtroFechamentoNota);
+
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarAtividadeAvaliativa(DATA_18_04, TIPO_AVALIACAO_CODIGO_1, AVALIACAO_NOME_1, false, false, filtroFechamentoNota.ProfessorRf);
+            await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_1, filtroFechamentoNota.ComponenteCurricular);
+
+            var fechamentoNota = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            await ExecutarTeste(fechamentoNota);
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+            fechamentosNotas.ShouldNotBeNull();
+            fechamentosNotas.Count.ShouldBe(4);
+        }
+
+        [Fact]
+        public async Task Deve_lancar_nota_para_fundamental_regencia_com_avaliacao()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                Modalidade.Fundamental,
+                ANO_1,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+
+            await CriarDadosBase(filtroFechamentoNota);
+
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarAtividadeAvaliativa(DATA_18_04, TIPO_AVALIACAO_CODIGO_1, AVALIACAO_NOME_1, true, false, filtroFechamentoNota.ProfessorRf);
+            await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_1, filtroFechamentoNota.ComponenteCurricular);
+
+            var fechamentoNota = await LancarNotasAlunos(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
+
+            await ExecutarTeste(fechamentoNota);
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+            fechamentosNotas.ShouldNotBeNull();
+            fechamentosNotas.Count.ShouldBe(4);
+        }
+
+        [Fact]
+        public async Task Deve_lancar_nota_para_medio_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false,
                 Modalidade.Medio,
                 ANO_8,
-                TipoFrequenciaAluno.PorDisciplina);
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarDadosBase(filtroFechamentoNota);
 
-            var fechamentoNota = await LancarNotasAlunos();
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarAtividadeAvaliativa(DATA_18_04, TIPO_AVALIACAO_CODIGO_1, AVALIACAO_NOME_1, false, false, filtroFechamentoNota.ProfessorRf);
+            await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_1, filtroFechamentoNota.ComponenteCurricular);
+
+            var fechamentoNota = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarTeste(fechamentoNota);
 
@@ -69,18 +132,23 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         }
 
         [Fact]
-        public async Task Deve_lancar_nota_para_eja()
+        public async Task Deve_lancar_nota_para_eja_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
                 ModalidadeTipoCalendario.EJA,
                 false,
                 Modalidade.EJA,
                 ANO_9,
-                TipoFrequenciaAluno.PorDisciplina);
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
             await CriarDadosBase(filtroFechamentoNota);
 
-            var fechamentoNota = await LancarNotasAlunos();
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarAtividadeAvaliativa(DATA_18_04, TIPO_AVALIACAO_CODIGO_1, AVALIACAO_NOME_1, false, false, filtroFechamentoNota.ProfessorRf);
+            await CriarAtividadeAvaliativaDisciplina(ATIVIDADE_AVALIATIVA_1, filtroFechamentoNota.ComponenteCurricular);
+
+            var fechamentoNota = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarTeste(fechamentoNota);
 
@@ -89,7 +157,131 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamentosNotas.Count.ShouldBe(4);
         }
 
-        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos()
+        [Fact]
+        public async Task Deve_lancar_notas_com_mais_de_50_porcento_dos_alunos_abaixo_da_media()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            await CriarDadosBase(filtroFechamentoNota);
+
+            var fechamentoNota = await LancarNotasAlunos50PorcentoAbaixoDaMedia(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            await ExecutarTeste(fechamentoNota);
+
+            var mediaBimestre = ObterMediaBimestre();
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+
+            var qtdeLancamentos = fechamentosNotas.Count;
+            var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
+            var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+
+            var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
+
+            percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
+        }
+
+        [Fact]
+        public async Task Deve_lancar_notas_com_mais_de_50_porcento_dos_alunos_abaixo_da_media_regencia()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+
+            await CriarDadosBase(filtroFechamentoNota);
+
+            var fechamentoNota = await LancarNotasAlunos50PorcentoAbaixoDaMedia(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
+
+            await ExecutarTeste(fechamentoNota);
+
+            var mediaBimestre = ObterMediaBimestre();
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+
+            var qtdeLancamentos = fechamentosNotas.Count;
+            var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
+            var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+
+            var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
+
+            percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
+        }
+
+        private async Task<IList<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos50PorcentoAbaixoDaMedia(long disciplinaId)
+        {
+            string[] alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+            var fechamentosNotas = new List<FechamentoNotaDto>();
+
+            var mediaBimestre = ObterMediaBimestre();
+
+            foreach (var alunoCodigo in alunosCodigos)
+            {
+                Random randomNota = new();
+
+                int nota = 0;
+
+                var notaAbaixoMedia = randomNota.Next(0, mediaBimestre - 1);
+                var notaIgualOuAcimaMedia = randomNota.Next(mediaBimestre, 10);
+
+                var qtdeAlunos = alunosCodigos.Length;
+                var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
+                var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+
+                var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeAlunos);
+
+                if (percentualAlunosAbaixoMedia < CINQUENTA_PORCENTO)
+                    nota = notaAbaixoMedia;
+                else
+                    nota = notaIgualOuAcimaMedia;
+
+                var fechamentoNota = new FechamentoNotaDto()
+                {
+                    CodigoAluno = alunoCodigo,
+                    DisciplinaId = disciplinaId,
+                    Nota = nota,
+                    ConceitoId = null,
+                    SinteseId = null,
+                    Anotacao = $"Anotação fechamento teste de integração do aluno {alunoCodigo}.",
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoRf = SISTEMA_CODIGO_RF,
+                    CriadoPor = SISTEMA_NOME
+                };
+
+                fechamentosNotas.Add(fechamentoNota);
+            }
+
+            var fechamentoTurma = new List<FechamentoTurmaDisciplinaDto>()
+            {
+                new FechamentoTurmaDisciplinaDto()
+                {
+                    Bimestre = BIMESTRE_1,
+                    DisciplinaId = disciplinaId,
+                    Justificativa = "",
+                    TurmaId = TURMA_CODIGO_1 ,
+                    NotaConceitoAlunos = fechamentosNotas
+                }
+            };
+
+            return await Task.FromResult(fechamentoTurma);
+        }
+
+        private int ObterMediaBimestre()
+        {
+            var parametros = ObterTodos<ParametrosSistema>();
+            return short.Parse(parametros.FirstOrDefault(c => c.Tipo == TipoParametroSistema.MediaBimestre && c.Ano == DateTimeExtension.HorarioBrasilia().Year).Valor);
+        }
+
+        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos(long disciplinaId)
         {
             string[] alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
             var fechamentosNotas = new List<FechamentoNotaDto>();
@@ -103,7 +295,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 var fechamentoNota = new FechamentoNotaDto()
                 {
                     CodigoAluno = alunoCodigo,
-                    DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                    DisciplinaId = disciplinaId,
                     Nota = nota,
                     ConceitoId = null,
                     SinteseId = null,
@@ -121,7 +313,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 new FechamentoTurmaDisciplinaDto()
                 {
                     Bimestre = BIMESTRE_1,
-                    DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                    DisciplinaId = disciplinaId,
                     Justificativa = "",
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentosNotas
@@ -131,14 +323,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             return await Task.FromResult(fechamentoTurma);
         }
 
-        private async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
-        {
-            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();            
-            await comando.Salvar(fechamentoTurma);
-        }
-
         private static async Task<FiltroFechamentoNotaDto> ObterFiltroFechamentoNota(string perfil, ModalidadeTipoCalendario tipoCalendario,
-            bool considerarAnoAnterior, Modalidade modalidade, string anoTurma, TipoFrequenciaAluno tipoFrequenciaAluno)
+            bool considerarAnoAnterior, Modalidade modalidade, string anoTurma, TipoFrequenciaAluno tipoFrequenciaAluno,
+            string componenteCurricular)
         {
             return await Task.FromResult(new FiltroFechamentoNotaDto
             {
@@ -147,7 +334,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ConsiderarAnoAnterior = considerarAnoAnterior,
                 Modalidade = modalidade,
                 AnoTurma = anoTurma,
-                TipoFrequenciaAluno = tipoFrequenciaAluno
+                TipoFrequenciaAluno = tipoFrequenciaAluno,
+                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
+                ComponenteCurricular = componenteCurricular
             });
         }
     }

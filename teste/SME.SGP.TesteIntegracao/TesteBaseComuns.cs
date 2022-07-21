@@ -7,6 +7,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
@@ -47,7 +48,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string TRUE = "true";
 
         protected const int SEMESTRE_1 = 1;
-        protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_139 = 139;
+        protected const long COMPONENTE_CURRICULAR_ARTES_ID_139 = 139;
+        protected const string COMPONENTE_CURRICULAR_ARTES_NOME = "'Artes'";
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         protected const string COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME = "'Língua Portuguesa'";
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
@@ -263,6 +265,20 @@ namespace SME.SGP.TesteIntegracao
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_VALOR_50 = "50";
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
 
+        protected const double NOTA_1 = 1;
+        protected const double NOTA_2 = 2;
+        protected const double NOTA_3 = 3;
+        protected const double NOTA_4 = 4;
+        protected const double NOTA_5 = 5;
+        protected const double NOTA_6 = 6;
+        protected const double NOTA_7 = 7;
+        protected const double NOTA_8 = 8;
+        protected const double NOTA_9 = 9;
+        protected const double NOTA_10 = 10;
+
+        protected const string PLENAMENTE_SATISFATORIO = "P";
+        protected const string SATISFATORIO = "S";
+        protected const string NAO_SATISFATORIO = "NS";
 
         protected readonly CollectionFixture collectionFixture;
 
@@ -823,6 +839,8 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
 
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_ARTES_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_ARTES_NOME, NULO);
+
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_MATEMATICA_ID_2.ToString(), NULO, CODIGO_1, CODIGO_2, COMPONENTE_CURRICULAR_MATEMATICA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_MATEMATICA_NOME, NULO);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_GEOGRAFIA_ID_8.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_GEOGRAFIA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_GEOGRAFIA_NOME, NULO);
@@ -914,6 +932,40 @@ namespace SME.SGP.TesteIntegracao
             {
                 FechamentoAberturaId = 1,
                 Bimestre = BIMESTRE_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+        }
+
+        protected async Task CrieConceitoValores()
+        {
+            await InserirNaBase(new Conceito()
+            {
+                Valor = PLENAMENTE_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.P.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.S.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = NAO_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.NS.GetAttribute<DisplayAttribute>().Name,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
