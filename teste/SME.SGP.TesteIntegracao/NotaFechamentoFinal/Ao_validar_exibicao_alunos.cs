@@ -17,9 +17,9 @@ using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Validar_exibicao_alunos : NotaFechamentoTesteBase
+    public class Ao_validar_exibicao_alunos : NotaFechamentoTesteBase
     {
-        public Validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
