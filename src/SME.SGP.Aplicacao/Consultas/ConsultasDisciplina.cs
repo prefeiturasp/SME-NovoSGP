@@ -217,8 +217,8 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var componentesCurriculares = await servicoEOL
-                    .ObterComponentesRegenciaPorAno(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0);
+            var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
+                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
             return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));            
         }
