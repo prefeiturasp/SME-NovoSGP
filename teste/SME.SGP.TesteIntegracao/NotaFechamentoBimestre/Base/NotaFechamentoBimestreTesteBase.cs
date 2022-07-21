@@ -71,10 +71,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarPeriodoFechamento();
 
-            await CriarFechamentoTurma();
-            await CriarFechamentoTurmaDisciplina();
-            await CriarFechamentoAluno();
-
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
             await CriarSintese();
             await CrieConceitoValores();
@@ -386,7 +382,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 periodoFechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(1, periodoEscolar, periodoEscolar.PeriodoFim, periodoEscolar.PeriodoFim.AddDays(10)));
 
             await InserirNaBase(periodoFechamento);
-        }
+        }    
 
         private async Task CriarFechamentoTurma()
         {
