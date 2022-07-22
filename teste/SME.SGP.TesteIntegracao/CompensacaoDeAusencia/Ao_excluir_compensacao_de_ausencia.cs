@@ -1,34 +1,63 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
-    public class Ao_lancar_compensacao_de_ausencia_cp_e_cj : CompensacaoDeAusenciaTesteBase
+    public class Ao_excluir_compensacao_de_ausencia : CompensacaoDeAusenciaTesteBase
     {
-        
-        public Ao_lancar_compensacao_de_ausencia_cp_e_cj(CollectionFixture collectionFixture) : base(collectionFixture)
+        private const int COMPENSACAO_AUSENCIA_ID_1 = 1;
+        public Ao_excluir_compensacao_de_ausencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
-        //bulk insert
-        //[Fact]
-        public async Task Deve_lancar_ausencia_para_cp()
+        public async Task Deve_excluir_compensacao_pelo_professor_titular()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
+            await CriaCompensacaoAusencia(dtoDadoBase);
+            await CriaCompensacaoAusenciaAluno();
 
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObtenhaListaDeAlunos());
+            var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
 
-            await comando.Inserir(dto); 
+            await comando.Excluir(listaIds);
+        }
+
+        private async Task CriaCompensacaoAusenciaAluno()
+        {
+            await CriaCompensacaoAusenciaAluno(
+                    CODIGO_ALUNO_1,
+                    QUANTIDADE_AULA);
+
+            await CriaCompensacaoAusenciaAluno(
+                    CODIGO_ALUNO_2,
+                    QUANTIDADE_AULA_3);
+
+            await CriaCompensacaoAusenciaAluno(
+                    CODIGO_ALUNO_3,
+                    QUANTIDADE_AULA_2);
+
+            await CriaCompensacaoAusenciaAluno(
+                    CODIGO_ALUNO_4,
+                    QUANTIDADE_AULA);
+        }
+
+        private async Task CriaCompensacaoAusenciaAluno(string codigoAluno, int quantidadeCompensada)
+        {
+            await InserirNaBase(new CompensacaoAusenciaAluno
+            {
+                CodigoAluno = codigoAluno,
+                CompensacaoAusenciaId = COMPENSACAO_AUSENCIA_ID_1,
+                QuantidadeFaltasCompensadas = quantidadeCompensada,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriaFrequenciaAlunos(CompensacaoDeAusenciaDBDto dtoDadoBase)
@@ -59,10 +88,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         }
 
         private async Task CriaFrequenciaAlunos(
-                        CompensacaoDeAusenciaDBDto dtoDadoBase, 
-                        string codigoAluno,
-                        int totalPresenca,
-                        int totalAusencia)
+                CompensacaoDeAusenciaDBDto dtoDadoBase,
+                string codigoAluno,
+                int totalPresenca,
+                int totalAusencia)
         {
             await CriaFrequenciaAluno(
                 dtoDadoBase,
@@ -87,33 +116,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 AnoTurma = ANO_5,
                 DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
                 QuantidadeAula = QUANTIDADE_AULA_4
-            };
-        }
-
-        private List<CompensacaoAusenciaAlunoDto> ObtenhaListaDeAlunos()
-        {
-            return new List<CompensacaoAusenciaAlunoDto>()
-            {
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_1,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_2,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA_2
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_3,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_4,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                }
             };
         }
     }

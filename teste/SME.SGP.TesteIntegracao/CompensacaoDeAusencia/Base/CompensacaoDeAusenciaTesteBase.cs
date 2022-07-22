@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -13,8 +15,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
     public abstract class CompensacaoDeAusenciaTesteBase : TesteBaseComuns
     {
+        protected const int PERIODO_ESCOLAR_ID_1 = 1;
         private const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
         private const string ATIVIDADE_COMPENSACAO = "Atividade teste";
+        
         protected CompensacaoDeAusenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
             
@@ -25,6 +29,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
@@ -40,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             await CriarAula(dtoDB);
 
             if (dtoDB.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar();
+                await CriarPeriodoEscolar(dtoDB.ConsiderarAnoAnterior);
 
             if (dtoDB.CriarPeriodoAbertura)
                 await CriarPeriodoReabertura(dtoDB.TipoCalendarioId);
@@ -88,6 +94,22 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             };
         }
 
+        protected async Task CriaCompensacaoAusencia(CompensacaoDeAusenciaDBDto dtoDadoBase)
+        {
+            await InserirNaBase(new CompensacaoAusencia
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DisciplinaId = dtoDadoBase.ComponenteCurricular,
+                Bimestre = dtoDadoBase.Bimestre,
+                TurmaId = TURMA_ID_1,
+                Nome = ATIVIDADE_COMPENSACAO,
+                Descricao = DESCRICAO_COMPENSACAO,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
         protected async Task CriaFrequenciaAluno(
                                 CompensacaoDeAusenciaDBDto dbDto,
                                 DateTime periodoInicio,
@@ -95,7 +117,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                                 string codigoAluno,
                                 int totalPresenca,
                                 int totalAusencia,
-                                long PeriodoEscolarId)
+                                long PeriodoEscolarId,
+                                int totalCompensacoes = 0)
         {
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
@@ -104,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 Bimestre = dbDto.Bimestre,
                 TotalAulas = dbDto.QuantidadeAula,
                 TotalAusencias = totalAusencia,
-                TotalCompensacoes = 0,
+                TotalCompensacoes = totalCompensacoes,
                 PeriodoEscolarId = PeriodoEscolarId,
                 TotalPresencas = totalPresenca,
                 TotalRemotos = 0,
@@ -118,6 +141,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             });
         }
+
         protected class CompensacaoDeAusenciaDBDto
         {
             public CompensacaoDeAusenciaDBDto()
@@ -138,22 +162,23 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             public string AnoTurma { get; set; }
             public int QuantidadeAula { get; set; }
             public bool AulaCj { get; set; }
+            public bool ConsiderarAnoAnterior { get; set; }
         }
 
         private async Task CriarTurmaTipoCalendario(CompensacaoDeAusenciaDBDto dtoDB)
         {
-            await CriarTipoCalendario(dtoDB.TipoCalendario);
+            await CriarTipoCalendario(dtoDB.TipoCalendario, dtoDB.ConsiderarAnoAnterior);
             await CriarTurma(dtoDB.Modalidade, dtoDB.AnoTurma);
         }
-        private async Task CriarPeriodoEscolar()
+        private async Task CriarPeriodoEscolar(bool considerarAnoAnterior)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
         private async Task CriarAbrangencia(string perfil)
