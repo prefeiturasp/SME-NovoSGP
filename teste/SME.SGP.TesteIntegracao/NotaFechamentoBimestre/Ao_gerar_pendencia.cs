@@ -17,7 +17,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_gerar_pendencia : NotaFechamentoBimestreTesteBase
     {
-        private const string ALUNO_CODIGO_1 = "1";
 
         public Ao_gerar_pendencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -34,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact]
         public async Task deve_haver_pendencia_com_situacao_valida()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1,true));
             await ExecutarComandoConceito();
         }
 
