@@ -103,6 +103,34 @@ namespace SME.SGP.TesteIntegracao
         private const string CODIGO_2 = "2";
         private const string CODIGO_8 = "8";
         private const string NULO = "null";
+        
+        protected const  bool ehPorcentagem = true;
+        
+        protected const string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_CODIGO_2 = "2";
+        protected const string ALUNO_CODIGO_3 = "3";
+        
+        protected const long NUMERO_LONGO_1 = 1;
+        protected const long NUMERO_LONGO_2 = 2;
+        protected const long NUMERO_LONGO_3 = 3;
+        protected const long NUMERO_LONGO_4 = 4;
+        protected const long NUMERO_LONGO_5 = 5;
+        
+        protected const int NUMERO_INTEIRO_0 = 0;
+        protected const int NUMERO_INTEIRO_1 = 1;
+        protected const int NUMERO_INTEIRO_2 = 2;
+        protected const int NUMERO_INTEIRO_3 = 3;
+        protected const int NUMERO_INTEIRO_4 = 4;
+        protected const int NUMERO_INTEIRO_5 = 5;
+        protected const int NUMERO_INTEIRO_15 = 15;
+        protected const int NUMERO_INTEIRO_16 = 16;
+        protected const int NUMERO_INTEIRO_19 = 19;
+        protected const int NUMERO_INTEIRO_20 = 20;
+        
+        protected const long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected const long PERIODO_ESCOLAR_CODIGO_2 = 2;
+        protected const long PERIODO_ESCOLAR_CODIGO_3 = 3;
+        protected const long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
         protected const string PROVA = "Prova";
         protected const string TESTE = "Teste";
@@ -220,8 +248,10 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_22_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
 
         protected readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+        protected readonly DateTime DATA_01_01_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01);
 
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
+        protected readonly DateTime DATA_31_12_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 12, 31);
 
         protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);
 
