@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
@@ -33,9 +32,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         private const string PARAMETRO_MEDIA_BIMESTRE_NOME = "MediaBimestre";
         private const string PARAMETRO_MEDIA_BIMESTRE_DESCRICAO = "Média final para aprovação no bimestre";
         private const string PARAMETRO_MEDIA_BIMESTRE_VALOR_5 = "5";
+        private const string PARAMETRO_APROVACAO_ALTERACAO_NOTA_CONSELHO_NOME = "AprovacaoAlteracaoNotaConselho";
+        private const string PARAMETRO_APROVACAO_ALTERACAO_NOTA_CONSELHO_DESCRICAO = "Solicita aprovação nas alterações de notas do conselho";
 
         protected readonly long TIPO_AVALIACAO_CODIGO_1 = 1;
-
         protected readonly string AVALIACAO_NOME_1 = "Avaliação 1";
 
         public NotaFechamentoBimestreTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -85,11 +85,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 await InserirPeriodoEscolarCustomizado(filtroFechamentoNota.PeriodoEscolarValido); 
 
             await CriarPeriodoFechamento();
+            await CriarPeriodoReaberturaAnoAnterior(TIPO_CALENDARIO_1);
 
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
             await CriarSintese();
             await CrieConceitoValores();
-            await CriarParametrosSistema();
         }
         
         protected async Task<NegocioException> ExecutarComandosFechamentoTurmaDisciplinaComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
@@ -478,6 +478,19 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
+            
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_CONSELHO_NOME,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Descricao = PARAMETRO_APROVACAO_ALTERACAO_NOTA_CONSELHO_DESCRICAO,
+                Valor = string.Empty,
+                Ano = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
+            });            
         }
 
         private async Task CriarFrequenciaAluno(TipoFrequenciaAluno tipoFrequenciaAluno)
@@ -576,85 +589,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 periodoFechamento.AdicionarFechamentoBimestre(new PeriodoFechamentoBimestre(1, periodoEscolar, periodoEscolar.PeriodoFim, periodoEscolar.PeriodoFim.AddDays(10)));
 
             await InserirNaBase(periodoFechamento);
-        }    
-
-        private async Task CriarFechamentoTurma()
-        {
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-
-            foreach (var periodoEscolar in periodosEscolares)
-            {
-                await InserirNaBase(new FechamentoTurma
-                {
-                    PeriodoEscolarId = periodoEscolar.Id,
-                    TurmaId = 1,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
         }
-
-        private async Task CriarFechamentoTurmaDisciplina()
-        {
-            var fechamentosTurmas = ObterTodos<FechamentoTurma>();
-
-            foreach (var fechamentoTurma in fechamentosTurmas)
-            {
-                await InserirNaBase(new FechamentoTurmaDisciplina
-                {
-                    FechamentoTurmaId = fechamentoTurma.Id,
-                    DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
-        }
-
-        private async Task CriarFechamentoAluno()
-        {
-            var fechamentosTurmasDisciplinas = ObterTodos<FechamentoTurmaDisciplina>();
-
-            foreach (var fechamentoTurmaDisciplina in fechamentosTurmasDisciplinas)
-            {
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_1,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_2,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_3,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-
-                await InserirNaBase(new FechamentoAluno()
-                {
-                    FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplina.Id,
-                    AlunoCodigo = CODIGO_ALUNO_4,
-                    CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    CriadoPor = SISTEMA_NOME,
-                    CriadoRF = SISTEMA_CODIGO_RF
-                });
-            }
-        }       
 
         private async Task CriarSintese()
         {
@@ -674,19 +609,53 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             });
         }
 
-        private async Task CriarParametrosSistema()
+        protected async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
         {
-            await InserirNaBase(new ParametrosSistema
+            await InserirNaBase(new FechamentoReabertura()
             {
-                Nome = "AprovacaoAlteracaoNotaConselho",
-                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
-                Descricao = "Aprovação alteracao nota conselho",
-                Valor = string.Empty,
-                Ano = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year,
+                Descricao = REABERTURA_GERAL,
+                Inicio = DATA_01_01_ANO_ANTERIOR,
+                Fim = DATA_31_12_ANO_ANTERIOR,
+                TipoCalendarioId = tipoCalendarioId,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                Ativo = true
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
         
