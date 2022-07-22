@@ -233,10 +233,28 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorIdRegistro(long registroFrequenciaId)
         {
-            var query = @"select * 
-                        from registro_frequencia_aluno 
-                        where not excluido 
-                            and registro_frequencia_id = @registroFrequenciaId";
+            var query = @"SELECT 
+							rfa.id,
+							rfa.valor,
+							rfa.codigo_aluno,
+							rfa.numero_aula,
+							rfa.registro_frequencia_id,
+							rfa.criado_em,
+							rfa.criado_por,
+							rfa.criado_rf,
+							rfa.alterado_em,
+							rfa.alterado_por,
+							rfa.alterado_rf,
+							rfa.excluido,
+							rfa.migrado,
+							a.id aula_id
+						FROM
+							registro_frequencia_aluno rfa
+							INNER JOIN registro_frequencia rf ON rfa.registro_frequencia_id = rf.id 
+							INNER JOIN aula a ON rf.aula_id = a.id 
+						WHERE
+							NOT rfa.excluido
+							and rfa.registro_frequencia_id =  @registroFrequenciaId;";
 
             return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { registroFrequenciaId });
         }
