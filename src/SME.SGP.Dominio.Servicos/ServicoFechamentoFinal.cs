@@ -184,9 +184,12 @@ namespace SME.SGP.Dominio.Servicos
         
         private async Task VerificaSeProfessorPodePersistirTurma(string turmaCodigo, long disciplinaId, Usuario usuario)
         {
-            var podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turmaCodigo, DateTimeExtension.HorarioBrasilia(), usuario));
+            var podePersistir = true;
+            
+            if (!usuario.EhProfessorCj())
+                podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turmaCodigo, DateTimeExtension.HorarioBrasilia(), usuario));
 
-            if (!usuario.EhProfessorCj() && !podePersistir)
+            if (!podePersistir)
                 throw new NegocioException(MensagemNegocioFechamentoNota.VOCE_NAO_PODE_FAZER_ALTERACOES_OU_INCLUSOES_NESTA_TURMA_COMPONENTE_E_DATA);
         }
 

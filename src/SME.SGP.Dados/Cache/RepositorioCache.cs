@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public class RepositorioCache : IRepositorioCache
+    public abstract class RepositorioCache : IRepositorioCache
     {
         private readonly IServicoTelemetria servicoTelemetria;
 
         protected string NomeServicoCache { get; set; }
 
-        protected virtual string ObterValor(string nomeChave)
-            => string.Empty;
+        protected virtual string ObterValor(string nomeChave) 
+            => throw new NotImplementedException($"Método ObterValor do serviço {NomeServicoCache} não implementado");
 
         protected virtual Task RemoverValor(string nomeChave) 
             => throw new NotImplementedException($"Método RemoverValor do serviço {NomeServicoCache} não implementado");

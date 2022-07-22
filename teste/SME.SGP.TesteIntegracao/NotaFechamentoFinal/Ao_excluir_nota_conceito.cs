@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         public async Task Deve_permitir_excluir_nota_conceito_titular_regencia_classe_fundamental()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilDiretor(),
+                ObterPerfilProfessor(),
                 TipoNota.Conceito, ANO_1,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,

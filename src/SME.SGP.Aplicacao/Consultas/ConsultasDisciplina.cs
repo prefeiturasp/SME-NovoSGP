@@ -213,10 +213,8 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
             => componentesCurriculares.Where(c => c.Codigo != 6);
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
             var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
                                                                     turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 

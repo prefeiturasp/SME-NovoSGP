@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtros.EhRegencia)
             {
-                var disciplinasRegencia = await consultasDisciplina.ObterComponentesRegencia(turma, filtros.DisciplinaCodigo);
+                var disciplinasRegencia = await consultasDisciplina.ObterComponentesRegencia(turma);
 
                 if (disciplinasRegencia == null || !disciplinasRegencia.Any())
                     throw new NegocioException("Não foram encontrados componentes curriculares para a regência informada.");

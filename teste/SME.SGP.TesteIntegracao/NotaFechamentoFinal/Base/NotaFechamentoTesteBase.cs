@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio.Interfaces;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
@@ -84,6 +86,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         protected override void RegistrarFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
+            
             base.RegistrarFakes(services);
         }
 
