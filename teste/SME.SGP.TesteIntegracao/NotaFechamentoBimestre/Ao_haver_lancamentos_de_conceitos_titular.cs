@@ -16,10 +16,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_haver_lancamentos_de_conceitos_titular : NotaFechamentoBimestreTesteBase
     {
-        private const string ALUNO_CODIGO_1 = "1";
-        private const string ALUNO_CODIGO_2 = "2";
-        private const string ALUNO_CODIGO_3 = "3";
-        bool ehPorcentagem = true;
         public Ao_haver_lancamentos_de_conceitos_titular(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

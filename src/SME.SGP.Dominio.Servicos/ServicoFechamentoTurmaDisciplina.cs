@@ -233,6 +233,13 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento,
                     entidadeDto.DisciplinaId.ToString(), usuarioLogado);
             }
+            
+            var mesmoAnoLetivo = turmaFechamento.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
+
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turmaFechamento, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre, mesmoAnoLetivo)); 
+
+            if(!temPeriodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
             var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
 

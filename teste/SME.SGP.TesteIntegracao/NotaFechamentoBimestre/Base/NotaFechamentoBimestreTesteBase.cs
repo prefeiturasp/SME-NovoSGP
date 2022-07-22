@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
@@ -59,6 +60,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             public TipoFrequenciaAluno TipoFrequenciaAluno { get; set; }
             public string ProfessorRf { get; set; }
             public string ComponenteCurricular { get; set;  }
+            public bool CriarPeriodoEscolar { get; set; } = true;
+            public bool CriarPeriodoEscolarCustomizado { get; set; }
+            public bool CriarPeriodoAbertura { get; set; } = true;
+            public bool PeriodoEscolarValido { get; set; }
         }
 
         protected async Task CriarDadosBase(FiltroFechamentoNotaDto filtroFechamentoNota)
@@ -73,7 +78,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarParametrosNotaFechamento();
 
-            await CriarPeriodoEscolar(filtroFechamentoNota.ConsiderarAnoAnterior);
+            if (filtroFechamentoNota.CriarPeriodoEscolar)
+                await CriarPeriodoEscolar(filtroFechamentoNota.ConsiderarAnoAnterior);
+            
+            if (filtroFechamentoNota.CriarPeriodoEscolarCustomizado)
+                await InserirPeriodoEscolarCustomizado(filtroFechamentoNota.PeriodoEscolarValido); 
 
             await CriarPeriodoFechamento();
 
@@ -81,6 +90,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarSintese();
             await CrieConceitoValores();
             await CriarParametrosSistema();
+        }
+        
+        protected async Task<NegocioException> ExecutarComandosFechamentoTurmaDisciplinaComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        {
+            var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
+
+            return await Assert.ThrowsAsync<NegocioException>(async () => await comando.Salvar(fechamentoTurma));
         }
 
         protected async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
@@ -94,6 +110,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             notasFechamento.ShouldNotBeNull();
             notasFechamento.ShouldNotBeEmpty();
             notasFechamento.Count.ShouldBeGreaterThanOrEqualTo(1);
+        }
+
+        protected async Task<NegocioException> ExecutarTesteComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        {
+            return await ExecutarComandosFechamentoTurmaDisciplinaComExcecao(fechamentoTurma);
         }
 
         protected FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma, bool consideraAnorAnterior = false)
@@ -316,6 +337,67 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
+        
+        protected async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-80), periodoEscolarValido ? dataReferencia.Date : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
+        }
+        
+        protected async Task InserirPeriodoAberturaCustomizado()
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+
+            await InserirNaBase(new PeriodoFechamento()
+                { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
+                PeriodoFechamentoId = 1, 
+                InicioDoFechamento = dataReferencia.AddDays(-209),
+                FinalDoFechamento =  dataReferencia.AddDays(-205)
+            });
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
+                PeriodoFechamentoId = 1, 
+                InicioDoFechamento = dataReferencia.AddDays(-120),
+                FinalDoFechamento =  dataReferencia.AddDays(-116)
+            });
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
+                PeriodoFechamentoId = 1, 
+                InicioDoFechamento = dataReferencia.AddDays(-120),
+                FinalDoFechamento =  dataReferencia.AddDays(-116)
+            });
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_3,
+                PeriodoFechamentoId = 1, 
+                InicioDoFechamento = dataReferencia.AddDays(-38),
+                FinalDoFechamento =  dataReferencia.AddDays(-34)
+            });  
+
+            await InserirNaBase(new PeriodoFechamentoBimestre()
+            {
+                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
+                PeriodoFechamentoId = 1, 
+                InicioDoFechamento = dataReferencia,
+                FinalDoFechamento =  dataReferencia.AddDays(4)
+            });  
+        }
 
         private async Task CriarParametrosNotaFechamento()
         {
@@ -402,82 +484,78 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         {
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
-                Id = 1,
                 CodigoAluno = CODIGO_ALUNO_1,
                 Tipo = tipoFrequenciaAluno,
                 DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
-                TotalAulas = 20,
-                TotalCompensacoes = 4,
+                TotalAulas = NUMERO_INTEIRO_20,
+                TotalCompensacoes = NUMERO_INTEIRO_4,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TurmaId = TURMA_CODIGO_1,
-                PeriodoEscolarId = 1,
-                TotalPresencas = 16,
-                TotalRemotos = 0
+                PeriodoEscolarId = NUMERO_LONGO_1,
+                TotalPresencas = NUMERO_INTEIRO_16,
+                TotalRemotos = NUMERO_INTEIRO_0
             });
 
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
-                Id = 2,
                 CodigoAluno = CODIGO_ALUNO_2,
                 Tipo = tipoFrequenciaAluno,
                 DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
-                TotalAulas = 20,
-                TotalCompensacoes = 1,
+                TotalAulas = NUMERO_INTEIRO_20,
+                TotalCompensacoes = NUMERO_INTEIRO_1,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TurmaId = TURMA_CODIGO_1,
-                PeriodoEscolarId = 1,
-                TotalPresencas = 19,
-                TotalRemotos = 0
+                PeriodoEscolarId = NUMERO_LONGO_1,
+                TotalPresencas = NUMERO_INTEIRO_19,
+                TotalRemotos = NUMERO_INTEIRO_0
             });
 
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
-                Id = 3,
                 CodigoAluno = CODIGO_ALUNO_3,
                 Tipo = tipoFrequenciaAluno,
                 DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
-                TotalAulas = 20,
-                TotalCompensacoes = 5,
+                TotalAulas = NUMERO_INTEIRO_20,
+                TotalCompensacoes = NUMERO_INTEIRO_5,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TurmaId = TURMA_CODIGO_1,
-                PeriodoEscolarId = 1,
-                TotalPresencas = 15,
-                TotalRemotos = 0
+                PeriodoEscolarId = NUMERO_LONGO_1,
+                TotalPresencas = NUMERO_INTEIRO_15,
+                TotalRemotos = NUMERO_INTEIRO_0
             });
 
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
-                Id = 4,
                 CodigoAluno = CODIGO_ALUNO_4,
                 Tipo = tipoFrequenciaAluno,
                 DisciplinaId = COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05),
                 PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 30),
                 Bimestre = BIMESTRE_1,
-                TotalAulas = 20,
-                TotalCompensacoes = 0,
+                TotalAulas = NUMERO_INTEIRO_20,
+                TotalCompensacoes = NUMERO_INTEIRO_0,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 TurmaId = TURMA_CODIGO_1,
-                PeriodoEscolarId = 1,
-                TotalPresencas = 20,
-                TotalRemotos = 0
+                PeriodoEscolarId = NUMERO_LONGO_1,
+                TotalPresencas = NUMERO_INTEIRO_20,
+                TotalRemotos = NUMERO_INTEIRO_0
             });
         }
 
@@ -611,5 +689,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 Ativo = true
             });
         }
+        
     }
 }
