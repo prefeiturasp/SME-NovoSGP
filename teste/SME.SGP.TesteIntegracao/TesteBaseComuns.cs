@@ -251,7 +251,6 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_01_01_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01);
 
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
-        protected readonly DateTime DATA_31_12_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 12, 31);
 
         protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);
 

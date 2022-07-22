@@ -6,7 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
-using SME.SGP.TesteIntegracao.Setup;
+using SME.SGP.TesteIntegracao.Setup; 
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -179,8 +179,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
 
             var qtdeLancamentos = fechamentosNotas.Count;
-            var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
-            var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+            var qtdeAlunosAbaixoMedia = fechamentosNotas.Count(c => c.Nota < double.Parse(mediaBimestre.ToString()));
 
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
@@ -209,8 +208,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
 
             var qtdeLancamentos = fechamentosNotas.Count;
-            var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
-            var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+            var qtdeAlunosAbaixoMedia = fechamentosNotas.Count(c => c.Nota < double.Parse(mediaBimestre.ToString()));
 
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
@@ -219,7 +217,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
         private async Task<IList<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos50PorcentoAbaixoDaMedia(long disciplinaId)
         {
-            string[] alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+            var alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
             var fechamentosNotas = new List<FechamentoNotaDto>();
 
             var mediaBimestre = ObterMediaBimestre();
@@ -228,21 +226,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 Random randomNota = new();
 
-                int nota = 0;
+                var nota = 0;
 
                 var notaAbaixoMedia = randomNota.Next(0, mediaBimestre - 1);
                 var notaIgualOuAcimaMedia = randomNota.Next(mediaBimestre, 10);
 
                 var qtdeAlunos = alunosCodigos.Length;
-                var qtdeAlunosAcimaDaMedia = fechamentosNotas.Where(c => c.Nota >= double.Parse(mediaBimestre.ToString())).Count();
-                var qtdeAlunosAbaixoMedia = fechamentosNotas.Where(c => c.Nota < double.Parse(mediaBimestre.ToString())).Count();
+                var qtdeAlunosAbaixoMedia = fechamentosNotas.Count(c => c.Nota < double.Parse(mediaBimestre.ToString()));
 
                 var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeAlunos);
 
-                if (percentualAlunosAbaixoMedia < CINQUENTA_PORCENTO)
-                    nota = notaAbaixoMedia;
-                else
-                    nota = notaIgualOuAcimaMedia;
+                nota = percentualAlunosAbaixoMedia < CINQUENTA_PORCENTO ? notaAbaixoMedia : notaIgualOuAcimaMedia;
 
                 var fechamentoNota = new FechamentoNotaDto()
                 {
@@ -283,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos(long disciplinaId)
         {
-            string[] alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+            var alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
             var fechamentosNotas = new List<FechamentoNotaDto>();
 
             foreach (var alunoCodigo in alunosCodigos)
