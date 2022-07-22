@@ -3,8 +3,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
@@ -25,6 +23,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             await CriarTurmaTipoCalendario(dtoDB);
 
+            await CriarAula(dtoDB);
+
             if (dtoDB.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar();
 
@@ -32,6 +32,27 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 await CriarPeriodoReabertura(dtoDB.TipoCalendarioId);
 
             await CriarAbrangencia(dtoDB.Perfil);
+        }
+
+        protected async Task CriarAula(CompensacaoDeAusenciaDBDto dtoDB)
+        {
+            await InserirNaBase(
+                            new Dominio.Aula
+                            {
+                                UeId = UE_CODIGO_1,
+                                DisciplinaId = dtoDB.ComponenteCurricular,
+                                TurmaId = TURMA_CODIGO_1,
+                                TipoCalendarioId = dtoDB.TipoCalendarioId,
+                                ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
+                                Quantidade = dtoDB.QuantidadeAula,
+                                DataAula = dtoDB.DataReferencia.GetValueOrDefault(),
+                                RecorrenciaAula = RecorrenciaAula.AulaUnica,
+                                TipoAula = TipoAula.Normal,
+                                CriadoEm = DateTime.Now,
+                                CriadoPor = SISTEMA_NOME,
+                                CriadoRF = SISTEMA_CODIGO_RF,
+                                AulaCJ = dtoDB.AulaCj
+                            });
         }
 
         protected CompensacaoAusenciaDto ObtenhaCompensacaoAusenciaDto(
@@ -70,6 +91,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             public bool CriarPeriodoEscolar { get; set; }
             public bool CriarPeriodoAbertura { get; set; }
             public string AnoTurma { get; set; }
+            public int QuantidadeAula { get; set; }
+            public bool AulaCj { get; set; }
         }
 
         private async Task CriarTurmaTipoCalendario(CompensacaoDeAusenciaDBDto dtoDB)
