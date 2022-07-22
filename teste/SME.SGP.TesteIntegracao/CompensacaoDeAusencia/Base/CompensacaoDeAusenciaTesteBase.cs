@@ -1,5 +1,9 @@
-﻿using SME.SGP.Dominio;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -9,8 +13,18 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
     public abstract class CompensacaoDeAusenciaTesteBase : TesteBaseComuns
     {
+        private const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
+        private const string ATIVIDADE_COMPENSACAO = "Atividade teste";
         protected CompensacaoDeAusenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+            
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
@@ -32,6 +46,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 await CriarPeriodoReabertura(dtoDB.TipoCalendarioId);
 
             await CriarAbrangencia(dtoDB.Perfil);
+
+            await CriarParametrosSistema();
         }
 
         protected async Task CriarAula(CompensacaoDeAusenciaDBDto dtoDB)
@@ -56,8 +72,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         }
 
         protected CompensacaoAusenciaDto ObtenhaCompensacaoAusenciaDto(
-                                    string disciplinaId,
-                                    int bimestre,
+                                    CompensacaoDeAusenciaDBDto dtoDadoBase,
                                     List<CompensacaoAusenciaAlunoDto> listaAlunos,
                                     List<string> listaDisciplinaRegente = null)
         {
@@ -65,14 +80,44 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             {
                 TurmaId = TURMA_CODIGO_1,
                 Alunos = listaAlunos,
-                Bimestre = bimestre,
-                Atividade = "Atividade teste",
-                Descricao = "Compensação de ausência teste",
-                DisciplinaId = disciplinaId,
+                Bimestre = dtoDadoBase.Bimestre,
+                Atividade = ATIVIDADE_COMPENSACAO,
+                Descricao = DESCRICAO_COMPENSACAO,
+                DisciplinaId = dtoDadoBase.ComponenteCurricular,
                 DisciplinasRegenciaIds = listaDisciplinaRegente
             };
         }
 
+        protected async Task CriaFrequenciaAluno(
+                                CompensacaoDeAusenciaDBDto dbDto,
+                                DateTime periodoInicio,
+                                DateTime periodoFim,
+                                string codigoAluno,
+                                int totalPresenca,
+                                int totalAusencia,
+                                long PeriodoEscolarId)
+        {
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                PeriodoInicio = periodoInicio,
+                PeriodoFim = periodoFim,
+                Bimestre = dbDto.Bimestre,
+                TotalAulas = dbDto.QuantidadeAula,
+                TotalAusencias = totalAusencia,
+                TotalCompensacoes = 0,
+                PeriodoEscolarId = PeriodoEscolarId,
+                TotalPresencas = totalPresenca,
+                TotalRemotos = 0,
+                DisciplinaId = dbDto.ComponenteCurricular,
+                CodigoAluno = codigoAluno,
+                TurmaId = TURMA_CODIGO_1,
+                Tipo = TipoFrequenciaAluno.PorDisciplina,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+
+            });
+        }
         protected class CompensacaoDeAusenciaDBDto
         {
             public CompensacaoDeAusenciaDBDto()
@@ -121,6 +166,22 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 TurmaId = TURMA_ID_1,
                 UeId = UE_ID_1,
                 UsuarioId = USUARIO_ID_1
+            });
+        }
+
+        private async Task CriarParametrosSistema()
+        {
+            await InserirNaBase(new ParametrosSistema
+            {
+                Nome = "PermiteCompensacaoForaPeriodo",
+                Tipo = TipoParametroSistema.PermiteCompensacaoForaPeriodo,
+                Descricao = "Permite compensação fora do periodo",
+                Valor = string.Empty,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                Ativo = true
             });
         }
     }

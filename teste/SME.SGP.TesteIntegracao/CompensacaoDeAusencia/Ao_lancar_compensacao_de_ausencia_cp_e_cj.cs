@@ -12,24 +12,66 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
     public class Ao_lancar_compensacao_de_ausencia_cp_e_cj : CompensacaoDeAusenciaTesteBase
     {
+        private const int PERIODO_ESCOLAR_ID_1 = 1;
         public Ao_lancar_compensacao_de_ausencia_cp_e_cj(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
-        [Fact]
+        //bulk insert
+        //[Fact]
         public async Task Deve_lancar_ausencia_para_cp()
         {
             var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
+            await CriaFrequenciaAlunos(dtoDadoBase);
 
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            var dto = ObtenhaCompensacaoAusenciaDto(
-                            COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                            BIMESTRE_1,
-                            ObtenhaListaDeAlunos());
+            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObtenhaListaDeAlunos());
+
             await comando.Inserir(dto); 
+        }
 
+        private async Task CriaFrequenciaAlunos(CompensacaoDeAusenciaDBDto dtoDadoBase)
+        {
+            await CriaFrequenciaAlunos(
+            dtoDadoBase,
+            CODIGO_ALUNO_1,
+            QUANTIDADE_AULA_3,
+            QUANTIDADE_AULA);
 
+            await CriaFrequenciaAlunos(
+            dtoDadoBase,
+            CODIGO_ALUNO_2,
+            QUANTIDADE_AULA,
+            QUANTIDADE_AULA_3);
+
+            await CriaFrequenciaAlunos(
+            dtoDadoBase,
+            CODIGO_ALUNO_3,
+            QUANTIDADE_AULA_2,
+            QUANTIDADE_AULA_2);
+
+            await CriaFrequenciaAlunos(
+            dtoDadoBase,
+            CODIGO_ALUNO_4,
+            QUANTIDADE_AULA_3,
+            QUANTIDADE_AULA);
+        }
+
+        private async Task CriaFrequenciaAlunos(
+                        CompensacaoDeAusenciaDBDto dtoDadoBase, 
+                        string codigoAluno,
+                        int totalPresenca,
+                        int totalAusencia)
+        {
+            await CriaFrequenciaAluno(
+                dtoDadoBase,
+                DATA_03_01_INICIO_BIMESTRE_1,
+                DATA_29_04_FIM_BIMESTRE_1,
+                codigoAluno,
+                totalPresenca,
+                totalAusencia,
+                PERIODO_ESCOLAR_ID_1);
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)

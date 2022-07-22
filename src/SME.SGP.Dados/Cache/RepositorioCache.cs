@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         protected string NomeServicoCache { get; set; }
 
         protected virtual string ObterValor(string nomeChave) 
-            => throw new NotImplementedException($"Método ObterValor do serviço {NomeServicoCache} não implementado");
+            => string.Empty;
 
         protected virtual Task RemoverValor(string nomeChave) 
             => throw new NotImplementedException($"Método RemoverValor do serviço {NomeServicoCache} não implementado");
