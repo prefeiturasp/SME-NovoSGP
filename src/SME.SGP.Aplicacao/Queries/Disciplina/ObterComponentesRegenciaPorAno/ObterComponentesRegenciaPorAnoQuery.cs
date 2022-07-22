@@ -13,4 +13,15 @@ namespace SME.SGP.Aplicacao
         }
         public int AnoTurma { get; set; }
     }
+    
+    public class ObterComponentesRegenciaPorAnoQueryValidator : AbstractValidator<ObterComponentesRegenciaPorAnoQuery>
+    {
+        public ObterComponentesRegenciaPorAnoQueryValidator()
+        {
+
+            RuleFor(c => c.AnoTurma)
+                .IsInEnum()
+                .WithMessage("O ano da turma deve ser informado para obter componentes curriculares por turma, login e perfil.");
+        }
+    }
 }
