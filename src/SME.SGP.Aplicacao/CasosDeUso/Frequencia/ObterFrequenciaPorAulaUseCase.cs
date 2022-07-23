@@ -32,9 +32,7 @@ namespace SME.SGP.Aplicacao
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
-            var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));
-
-            var teste = alunosDaTurmaFiltrados.Where(y => y.CodigoAluno == "685830");
+            var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));            
                         
             FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
 
