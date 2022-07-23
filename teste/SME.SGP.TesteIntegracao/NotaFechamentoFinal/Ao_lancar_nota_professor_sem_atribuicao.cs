@@ -15,9 +15,9 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Ao_lancar_nota_bimestre_encerrado_professor_sem_atribuicao : NotaFechamentoTesteBase
+    public class Ao_lancar_nota_professor_sem_atribuicao : NotaFechamentoTesteBase
     {
-        public Ao_lancar_nota_bimestre_encerrado_professor_sem_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_nota_professor_sem_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -40,19 +40,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             var excecao = await ExecutarTesteComExcecao(filtroNotaFechamento);
             
             excecao.Message.ShouldBe(MensagemNegocioFechamentoNota.VOCE_NAO_PODE_FAZER_ALTERACOES_OU_INCLUSOES_NESTA_TURMA_COMPONENTE_E_DATA);
-        }
-        
-        [Fact]
-        public async Task Deve_permitir_lancamento_nota_para_gestor()
-        {
-            var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilAD(),
-                TipoNota.Nota, ANO_7,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
-            await ExecutarTeste(filtroNotaFechamento);
         }
         
         private async Task ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)

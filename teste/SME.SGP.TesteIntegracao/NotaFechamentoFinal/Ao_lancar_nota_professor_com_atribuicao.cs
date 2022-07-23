@@ -14,9 +14,9 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Ao_lancar_nota_bimestre_encerrado : NotaFechamentoTesteBase
+    public class Ao_lancar_nota_professor_com_atribuicao : NotaFechamentoTesteBase
     {
-        public Ao_lancar_nota_bimestre_encerrado(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_nota_professor_com_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -25,66 +25,39 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
-        
-        [Fact]
-        public async Task Nao_deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_sem_periodo_reabertura()
-        {
-            var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(),
-                TipoNota.Nota, ANO_7,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
-            filtroNotaFechamento.CriarPeriodoEscolar = false;
-            
-            filtroNotaFechamento.CriarPeriodoAbertura = false;
-            
-            await InserirPeriodoEscolarCustomizado();
-            
-            await ExecutarTesteComExcecao(filtroNotaFechamento);
-        }
-        
-        [Fact]
-        public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_abertura()
-        {
-            var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(),
-                TipoNota.Nota, ANO_7,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            
-            filtroNotaFechamento.CriarPeriodoEscolar = false;
-            
-            filtroNotaFechamento.CriarPeriodoAbertura = false;
-            
-            await InserirPeriodoEscolarCustomizado();
 
-            await InserirPeriodoAberturaCustomizado();
+        [Fact]
+        public async Task Deve_permitir_lancamento_nota_para_professor_com_atribuicao()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
+            filtroNotaFechamento.CriarPeriodoEscolar = false;
+            
+            filtroNotaFechamento.CriarPeriodoAbertura = false;
+            
+            await InserirPeriodoEscolarCustomizado(true);
+
             await ExecutarTeste(filtroNotaFechamento);
         }
         
         [Fact]
-        public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_reabertura()
+        public async Task Deve_permitir_lancamento_nota_para_gestor()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
-                ObterPerfilProfessor(),
+                ObterPerfilAD(),
                 TipoNota.Nota, ANO_7,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             
-            filtroNotaFechamento.CriarPeriodoEscolar = false;
-            
-            filtroNotaFechamento.CriarPeriodoAbertura = false;
-            
-            await InserirPeriodoEscolarCustomizado();
-            
-            await ExecutarTeste(filtroNotaFechamento, true);
+            await ExecutarTeste(filtroNotaFechamento);
         }
-        
+
         private async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
