@@ -3,11 +3,10 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class InserirDevolutivaCommand: IRequest<AuditoriaDto>
+    public class InserirDevolutivaCommand : IRequest<AuditoriaDto>
     {
         public long CodigoComponenteCurricular { get; set; }
         public long TurmaId { get; set; }
@@ -27,7 +26,7 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class InserirDevolutivaCommandValidator: AbstractValidator<InserirDevolutivaCommand>
+    public class InserirDevolutivaCommandValidator : AbstractValidator<InserirDevolutivaCommand>
     {
         public InserirDevolutivaCommandValidator()
         {
