@@ -37,7 +37,7 @@ namespace SME.SGP.Infra.Dtos
 
             RuleFor(c => c.DevolutivaId)
                 .NotEmpty()
-                .WithMessage("O id da devolutiva deve ser informada.");
+                .WithMessage("O id da devolutiva deve ser informado.");
         }
     }
 }
