@@ -104,7 +104,7 @@ namespace SME.SGP.Aplicacao
         private string MontarBotaoDownload(Guid codigoRelatorio)
         {
             var urlRedirecionamentoBase = configuration.GetSection("UrlServidorRelatorios").Value;
-            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdf/Devolutivas.pdf/{codigoRelatorio}";
+            var urlNotificacao = $"{urlRedirecionamentoBase}api/v1/downloads/sgp/pdfsincrono/Devolutivas.pdf/{codigoRelatorio}";
             return $"<br/><br/><a href='{urlNotificacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>";
         }        
     }
