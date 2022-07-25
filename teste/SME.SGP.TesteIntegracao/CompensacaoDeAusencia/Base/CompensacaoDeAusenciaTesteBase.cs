@@ -20,10 +20,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         private const int REGISTRO_FREQUENCIA_ID_1 = 1;
         private const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
         private const string ATIVIDADE_COMPENSACAO = "Atividade teste";
-        
+
         protected CompensacaoDeAusenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -79,10 +78,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                             });
         }
 
-        protected CompensacaoAusenciaDto ObtenhaCompensacaoAusenciaDto(
-                                    CompensacaoDeAusenciaDBDto dtoDadoBase,
-                                    List<CompensacaoAusenciaAlunoDto> listaAlunos,
-                                    List<string> listaDisciplinaRegente = null)
+        protected CompensacaoAusenciaDto ObtenhaCompensacaoAusenciaDto(CompensacaoDeAusenciaDBDto dtoDadoBase, List<CompensacaoAusenciaAlunoDto> listaAlunos, List<string> listaDisciplinaRegente = null)
         {
             return new CompensacaoAusenciaDto()
             {
@@ -140,7 +136,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-
             });
         }
 
@@ -191,6 +186,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
             }
+
             public DateTime? DataReferencia { get; set; }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
@@ -211,6 +207,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             await CriarTipoCalendario(dtoDB.TipoCalendario, dtoDB.ConsiderarAnoAnterior);
             await CriarTurma(dtoDB.Modalidade, dtoDB.AnoTurma);
         }
+
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior)
         {
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
