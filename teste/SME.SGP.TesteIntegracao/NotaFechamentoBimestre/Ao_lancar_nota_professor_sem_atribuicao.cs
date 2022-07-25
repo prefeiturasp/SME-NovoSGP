@@ -14,9 +14,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
-    public class Ao_lancar_nota_bimestre_encerrado_professor_sem_atribuicao: NotaFechamentoBimestreTesteBase
+    public class Ao_lancar_nota_professor_sem_atribuicao: NotaFechamentoBimestreTesteBase
     {
-        public Ao_lancar_nota_bimestre_encerrado_professor_sem_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_nota_professor_sem_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
         protected override void RegistrarFakes(IServiceCollection services)
