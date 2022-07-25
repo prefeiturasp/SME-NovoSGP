@@ -881,5 +881,18 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
+        
+        protected async Task<NotasConceitosRetornoDto> ExecutarObterNotasParaAvaliacoesUseCase(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
+        {
+            var obterNotasParaAvaliacoesUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
+
+            var retorno = await obterNotasParaAvaliacoesUseCase.Executar(
+                fechamentoFinalSalvarAlunoDto.TurmaCodigo, fechamentoFinalSalvarAlunoDto.DisciplinaCodigo,
+                fechamentoFinalSalvarAlunoDto.Bimestre, fechamentoFinalSalvarAlunoDto.Semestre);
+
+            retorno.ShouldNotBeNull();
+
+            return retorno;
+        } 
     }
 }
