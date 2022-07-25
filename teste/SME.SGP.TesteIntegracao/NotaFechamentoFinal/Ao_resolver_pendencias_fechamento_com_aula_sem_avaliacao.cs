@@ -13,9 +13,9 @@ using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Ao_reprocessar_componentes_nao_lancam_nota_pendencias_fechamento : NotaFechamentoTesteBase
+    public class Ao_resolver_pendencias_fechamento_com_aula_sem_avaliacao : NotaFechamentoTesteBase
     {
-        public Ao_reprocessar_componentes_nao_lancam_nota_pendencias_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_resolver_pendencias_fechamento_com_aula_sem_avaliacao(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -23,11 +23,24 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             base.RegistrarFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>), typeof(IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>), typeof(ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorLeituraOSL), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>), typeof(ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorPortugues), ServiceLifetime.Scoped));
         }
 
         [Fact]
-        public async Task Deve_processar_para_resolver_pendencias_com_aula_sem_avaliacao()
+        public async Task Deve_resolver_pendencias_componentes_lancam_nota()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            await ExecutarTesteGerarPendenciasFechamentoCommand(filtroNotaFechamento);
+        }
+        
+        [Fact]
+        public async Task Deve_resolver_pendencias_componentes_nao_lancam_nota()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -36,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061.ToString());
         
-            await ExecutarTesteComandosFechamentoTurmaDisciplina(filtroNotaFechamento);
+            await ExecutarTesteGerarPendenciasFechamentoCommand(filtroNotaFechamento);
         }
     }
 }

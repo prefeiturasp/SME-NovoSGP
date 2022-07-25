@@ -13,21 +13,21 @@ using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
-    public class Ao_reprocessar_componentes_lancam_nota_pendencias_fechamento : NotaFechamentoTesteBase
+    public class Ao_processar_fechamento : NotaFechamentoTesteBase
     {
-        public Ao_reprocessar_componentes_lancam_nota_pendencias_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_processar_fechamento(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
             
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>), typeof(IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>), typeof(IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFakeRetornarTrue), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>), typeof(ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorPortugues), ServiceLifetime.Scoped));
         }
 
         [Fact]
-        public async Task Deve_reprocessar_para_resolver_pendencias_com_aula_sem_avaliacao()
+        public async Task Deve_alterar_situacao_fechamento_para_em_processamento_componentes_lancam_nota()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
                 ObterPerfilProfessor(),
@@ -36,6 +36,19 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
+            await ExecutarTesteComandosFechamentoTurmaDisciplina(filtroNotaFechamento);
+        }
+        
+        [Fact]
+        public async Task Deve_alterar_situacao_fechamento_para_em_processamento_componentes_nao_lancam_nota()
+        {
+            var filtroNotaFechamento = ObterFiltroNotasFechamento(
+                ObterPerfilProfessor(),
+                TipoNota.Nota, ANO_7,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061.ToString());
+        
             await ExecutarTesteComandosFechamentoTurmaDisciplina(filtroNotaFechamento);
         }
     }

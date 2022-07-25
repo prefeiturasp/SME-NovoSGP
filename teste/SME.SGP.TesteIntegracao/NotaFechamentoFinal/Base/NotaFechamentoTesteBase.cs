@@ -106,7 +106,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             return ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
         }
         
-
+        private IMediator RetornarServicoMediator()
+        {
+            return ServiceProvider.GetService<IMediator>();
+        }
+        
         protected async Task<AuditoriaPersistenciaDto> ExecutarComandosFechamentoFinal(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
         {
              var comandosFechamentoFinal = RetornarServicosBasicos();
@@ -1034,10 +1038,38 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             
             await ExecutarComandosFechamentoTurmaDisciplina(NUMERO_1);
             
-            await ValidarResultadosTeste();
+            await ValidarSituacaoFechamentoPorTipo(SituacaoFechamento.EmProcessamento);
         }
-        
-         private async Task ValidarResultadosTeste()
+
+        protected async Task ValidarSituacaoFechamentoPorTipo(SituacaoFechamento situacaoTipo)
+        {
+            var fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == situacaoTipo).ShouldBeTrue();
+            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != situacaoTipo).ShouldBeFalse();
+        }
+
+        protected async Task ExecutarTesteGerarPendenciasFechamentoCommand(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
+        {
+            await CriarDadosBase(filtroNotaFechamentoDto);
+            
+            await CriarAula(DATA_29_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, filtroNotaFechamentoDto.ComponenteCurricular, TIPO_CALENDARIO_1);
+            
+            await InserirFechamentoAluno(filtroNotaFechamentoDto);
+
+            var servicoMediator = RetornarServicoMediator();
+
+            var usuarioLogado = ObterTodos<Usuario>().FirstOrDefault();
+            
+            var commando = new IncluirFilaGeracaoPendenciasFechamentoCommand(
+                long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                TURMA_CODIGO_1, TURMA_NOME_1, DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1,
+                usuarioLogado, NUMERO_1, string.Empty, SISTEMA_CODIGO_RF, long.Parse(TURMA_CODIGO_1), true);
+
+            await servicoMediator.Send(commando);
+            
+            await ValidarResultadosTesteComPendencias();
+        }
+        private async Task ValidarResultadosTesteComPendencias()
         {
             var fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
             (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == SituacaoFechamento.ProcessadoComPendencias).ShouldBeTrue();
