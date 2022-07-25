@@ -4,16 +4,18 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
     public class Ao_excluir_compensacao_de_ausencia : CompensacaoDeAusenciaTesteBase
     {
-        private const int COMPENSACAO_AUSENCIA_ID_1 = 1;
+       
         public Ao_excluir_compensacao_de_ausencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
+        [Fact]
         public async Task Deve_excluir_compensacao_pelo_professor_titular()
         {
             var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
@@ -21,6 +23,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriaFrequenciaAlunos(dtoDadoBase);
             await CriaCompensacaoAusencia(dtoDadoBase);
             await CriaCompensacaoAusenciaAluno();
+            await CriaRegistroDeFrequencia();
 
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
             var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
@@ -47,17 +50,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                     QUANTIDADE_AULA);
         }
 
-        private async Task CriaCompensacaoAusenciaAluno(string codigoAluno, int quantidadeCompensada)
+        private async Task CriaRegistroDeFrequencia()
         {
-            await InserirNaBase(new CompensacaoAusenciaAluno
-            {
-                CodigoAluno = codigoAluno,
-                CompensacaoAusenciaId = COMPENSACAO_AUSENCIA_ID_1,
-                QuantidadeFaltasCompensadas = quantidadeCompensada,
-                CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await CrieRegistroDeFrenquencia();
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_3, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_4, QUANTIDADE_AULA);
         }
 
         private async Task CriaFrequenciaAlunos(CompensacaoDeAusenciaDBDto dtoDadoBase)

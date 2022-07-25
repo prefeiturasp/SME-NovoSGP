@@ -15,7 +15,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
     public abstract class CompensacaoDeAusenciaTesteBase : TesteBaseComuns
     {
+        protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
         protected const int PERIODO_ESCOLAR_ID_1 = 1;
+        private const int REGISTRO_FREQUENCIA_ID_1 = 1;
         private const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
         private const string ATIVIDADE_COMPENSACAO = "Atividade teste";
         
@@ -139,6 +141,45 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
 
+            });
+        }
+
+        protected async Task CrieRegistroDeFrenquencia()
+        {
+            await InserirNaBase(new RegistroFrequencia
+            {
+                AulaId = AULA_ID,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        protected async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula)
+        {
+            await InserirNaBase(new RegistroFrequenciaAluno
+            {
+                CodigoAluno = codigoAluno,
+                RegistroFrequenciaId = REGISTRO_FREQUENCIA_ID_1,
+                Valor = (int)TipoFrequencia.F,
+                NumeroAula = numeroAula,
+                AulaId = AULA_ID,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        protected async Task CriaCompensacaoAusenciaAluno(string codigoAluno, int quantidadeCompensada)
+        {
+            await InserirNaBase(new CompensacaoAusenciaAluno
+            {
+                CodigoAluno = codigoAluno,
+                CompensacaoAusenciaId = COMPENSACAO_AUSENCIA_ID_1,
+                QuantidadeFaltasCompensadas = quantidadeCompensada,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
