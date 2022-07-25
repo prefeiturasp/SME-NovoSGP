@@ -10,7 +10,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
     public class ObterValorParametroSistemaTipoEAnoQueryHandlerFake : IRequestHandler<ObterValorParametroSistemaTipoEAnoQuery, string>
     {
         private const String VALOR_COMPENSACAO_AUSENCIA = "23";
-        private const String VALOR_COMPENSACAO_AUSENCIA_FUND2 = "50";
+        private const String VALOR_COMPENSACAO_AUSENCIA_FUND2 = "75";
         private const String VALOR_COMPENSACAO_AUSENCIA_REGENCIA = "75";
         
         public async Task<string> Handle(ObterValorParametroSistemaTipoEAnoQuery request, CancellationToken cancellationToken)
