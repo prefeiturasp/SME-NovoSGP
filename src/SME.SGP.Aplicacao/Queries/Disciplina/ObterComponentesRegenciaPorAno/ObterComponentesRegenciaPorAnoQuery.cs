@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
 
             RuleFor(c => c.AnoTurma)
-                .NotEmpty()
+                .GreaterThanOrEqualTo(0)
                 .WithMessage("O ano da turma deve ser informado para obter componentes curriculares por turma, login e perfil.");
         }
     }
