@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -12,29 +13,30 @@ namespace SME.SGP.Aplicacao
     public class InserirDevolutivaCommandHandler : IRequestHandler<InserirDevolutivaCommand, AuditoriaDto>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioDevolutiva repositorioDevolutiva;
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        private readonly IRepositorioDevolutiva repositorioDevolutiva;        
 
-        public InserirDevolutivaCommandHandler(IMediator mediator,
-                                                IRepositorioDevolutiva repositorioDevolutiva, IRepositorioTurmaConsulta repositorioTurmaConsulta)
+        public InserirDevolutivaCommandHandler(IMediator mediator, IRepositorioDevolutiva repositorioDevolutiva)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));
-            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.repositorioDevolutiva = repositorioDevolutiva ?? throw new ArgumentNullException(nameof(repositorioDevolutiva));            
         }
 
         public async Task<AuditoriaDto> Handle(InserirDevolutivaCommand request, CancellationToken cancellationToken)
         {
-            Devolutiva devolutiva = MapearParaEntidade(request);
+            var devolutiva = MapearParaEntidade(request);
 
-            await repositorioDevolutiva.SalvarAsync(devolutiva);
-
-            var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId);
+            await repositorioDevolutiva.SalvarAsync(devolutiva);            
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNovaNotificacaoDevolutiva,
-                       new SalvarNotificacaoDevolutivaDto(turma, usuarioLogado, devolutiva.Id), Guid.NewGuid(), null));
+            if (usuarioLogado == null)
+                throw new NegocioException("Não foi possível obter o usuário logado");
+
+            var filtro = new SalvarNotificacaoDevolutivaDto(request.TurmaId, usuarioLogado.Nome, usuarioLogado.CodigoRf, devolutiva.Id);           
+
+            var codigoCorrelacao = Guid.NewGuid();
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNovaNotificacaoDevolutiva, JsonConvert.SerializeObject(filtro), codigoCorrelacao, null));
 
             return (AuditoriaDto)devolutiva;
         }

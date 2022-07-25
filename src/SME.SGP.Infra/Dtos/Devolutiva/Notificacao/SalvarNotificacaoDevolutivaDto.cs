@@ -1,47 +1,43 @@
 ﻿using FluentValidation;
-using SME.SGP.Dominio;
 
 
 namespace SME.SGP.Infra.Dtos
 {
     public class SalvarNotificacaoDevolutivaDto
     {
-        public SalvarNotificacaoDevolutivaDto(Turma turma, Usuario usuario, long devolutivaId)
+        public SalvarNotificacaoDevolutivaDto(long turmaId, string usuarioNome, string usuarioRF, long devolutivaId)
         {
-            Turma = turma;
-            Usuario = usuario;
+            TurmaId = turmaId;
+            UsuarioNome = usuarioNome;
+            UsuarioRF = usuarioRF;
             DevolutivaId = devolutivaId;
         }
 
-        public Turma Turma { get; set; }
-        public Usuario Usuario { get; set; }
-
-        public long DevolutivaId;
+        public long TurmaId { get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioRF { get; set; }
+        public long DevolutivaId { get; set; }
     }
 
     public class SalvarNotificacaoDevolutivaDtoValidator : AbstractValidator<SalvarNotificacaoDevolutivaDto>
     {
         public SalvarNotificacaoDevolutivaDtoValidator()
         {
-            RuleFor(c => c.Turma)
+            RuleFor(c => c.TurmaId)
                 .NotEmpty()
-                .WithMessage("A turma deve ser informada.");
+                .WithMessage("O id da turma deve ser informado.");
 
-            RuleFor(c => c.Usuario)
+            RuleFor(c => c.UsuarioNome)
                 .NotEmpty()
-                .WithMessage("O usuário deve ser informado.");
+                .WithMessage("O nome do usuário deve ser informado.");
+
+            RuleFor(c => c.UsuarioRF)
+                .NotEmpty()
+                .WithMessage("O Rf do usuario deve ser informado.");
 
             RuleFor(c => c.DevolutivaId)
                 .NotEmpty()
-                .WithMessage("A Devolutiva deve ser informada.");
-
-            RuleFor(c => c.Turma.Ue)
-                .NotEmpty()
-                .WithMessage("A UE deve ser informada.");
-
-            RuleFor(c => c.Turma.Ue.Dre)
-                .NotEmpty()
-                .WithMessage("A Dre deve ser informada.");
+                .WithMessage("O id da devolutiva deve ser informado.");
         }
     }
 }
