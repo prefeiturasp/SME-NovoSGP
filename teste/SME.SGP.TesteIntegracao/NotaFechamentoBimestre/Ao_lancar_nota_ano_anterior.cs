@@ -11,6 +11,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -35,14 +36,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>),
                 typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
-
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>),
                 typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>),
                 typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -59,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
             await CriarCiclo();
             
-            var notasLancadas = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
             
             var fechamentosNotas = ObterTodos<FechamentoNota>();
@@ -70,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNotaBimestre.ShouldNotBeNull();
 
-            fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)
+            fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => b.EmAprovacao)).ShouldBeTrue();
         }
 
@@ -88,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
             await CriarCiclo();
 
-            var notasLancadas = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
 
             var fechamentosNotas = ObterTodos<FechamentoNota>();
@@ -99,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.ShouldNotBeNull();
 
-            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
         }
 
@@ -117,7 +118,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
             await CriarCiclo();
 
-            var notasLancadas = await LancarNotasAlunos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
 
             var fechamentosNotas = ObterTodos<FechamentoNota>();
@@ -128,8 +129,59 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.ShouldNotBeNull();
 
-            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Deve_lancar_nota_se_estudante_ficou_inativo_durante_periodo_fechamento()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilDiretor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                false,
+                true);
+
+            await CriarDadosBase(filtroFechamentoNota);
+            await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
+            await CriarCiclo();
+
+            var notasLancadas = await LancarNotasAlunosInativosDurantePeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await ExecutarTeste(notasLancadas);
+
+            var fechamentosNotas = ObterTodos<FechamentoNota>();
+            fechamentosNotas.ShouldNotBeNull();
+            fechamentosNotas.Count.ShouldBe(7);
+
+            var fechamentoNota = await ObterFechamentoNotaBimestre(filtroFechamentoNota);
+
+            fechamentoNota.ShouldNotBeNull();
+
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
+                .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();            
+        }
+
+        [Fact]
+        public async Task Deve_retornar_aviso_aluno_inativo()
+        {
+            var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilDiretor(),
+                ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                false,
+                true);
+
+            await CriarDadosBase(filtroFechamentoNota);
+            await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
+            await CriarCiclo();
+
+            var notasLancadas = await LancarNotasAlunosInativosForaPeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await ExecutarTeste(notasLancadas, true);
         }
 
         private async Task CriarAvaliacaoBimestral(string professorRf, string componenteCurricular)
@@ -166,9 +218,27 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             return await Task.FromResult(resultado);
         }
 
-        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos(long disciplinaId)
+        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosAtivos(long disciplinaId)
         {
-            var alunosCodigos = new string[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+            var alunosCodigos = new[] { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+            return await LancarNotasAlunos(alunosCodigos, disciplinaId);
+        }
+
+        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosDurantePeriodoFechamento(long disciplinaId)
+        {
+            var alunosCodigos = new[] { CODIGO_ALUNO_5, CODIGO_ALUNO_6, CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11 };
+            return await LancarNotasAlunos(alunosCodigos, disciplinaId);            
+        }
+        
+        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosForaPeriodoFechamento(long disciplinaId)
+        {
+            var alunosCodigos = new[] { CODIGO_ALUNO_12, CODIGO_ALUNO_13 };
+            return await LancarNotasAlunos(alunosCodigos, disciplinaId);            
+        }        
+
+        private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos(string[] alunosCodigos,
+            long disciplinaId)
+        {
             var fechamentosNotas = new List<FechamentoNotaDto>();
 
             foreach (var alunoCodigo in alunosCodigos)
@@ -195,7 +265,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             var fechamentoTurma = new List<FechamentoTurmaDisciplinaDto>()
             {
-                new FechamentoTurmaDisciplinaDto()
+                new()
                 {
                     Bimestre = BIMESTRE_1,
                     DisciplinaId = disciplinaId,
@@ -205,7 +275,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 }
             };
 
-            return await Task.FromResult(fechamentoTurma);
+            return await Task.FromResult(fechamentoTurma);            
         }
 
         private static async Task<ListaNotasConceitosDto> ObterListaNotasConceitos(int bimestre, long disciplinaCodigo,
@@ -227,10 +297,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 PeriodoEscolarId = periodoEscolarId
             });
         }
-        
+
         private static async Task<FiltroFechamentoNotaDto> ObterFiltroFechamentoNota(string perfil,
             ModalidadeTipoCalendario tipoCalendario, Modalidade modalidade, string anoTurma,
-            TipoFrequenciaAluno tipoFrequenciaAluno, string componenteCurricular)
+            TipoFrequenciaAluno tipoFrequenciaAluno, string componenteCurricular,
+            bool criarPeriodoEscolar = true,
+            bool criarPeriodoEscolarCustomizado = false)
         {
             return await Task.FromResult(new FiltroFechamentoNotaDto
             {
@@ -241,7 +313,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 AnoTurma = anoTurma,
                 TipoFrequenciaAluno = tipoFrequenciaAluno,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                ComponenteCurricular = componenteCurricular
+                ComponenteCurricular = componenteCurricular,
+                CriarPeriodoEscolar = criarPeriodoEscolar,
+                CriarPeriodoEscolarCustomizado = criarPeriodoEscolarCustomizado
             });
         }        
     }

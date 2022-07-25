@@ -241,9 +241,9 @@ namespace SME.SGP.Dominio.Servicos
             if(!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
+            IEnumerable<FechamentoAluno> fechamentoAlunos;
 
-            DisciplinaDto disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
+            var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
 
             if (disciplinaEOL == null)
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
@@ -254,7 +254,21 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaFechamento.CodigoTurma));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaFechamento.CodigoTurma));
+
+            var alunosAtivos = from a in alunos
+                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) || !a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) && 
+                    !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && 
+                    a.DataSituacao >= periodoEscolar.PeriodoInicio
+                orderby a.NomeValido(), a.NumeroAlunoChamada
+                select a;
+
+            var codigosAlunosAtivos = alunosAtivos.Select(c => c.CodigoAluno).Distinct().ToArray();
+            var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
+
+            if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
+                throw new NegocioException("Existem alunos inativos no fechamento das notas do bimestre.");
+
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
