@@ -155,13 +155,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             });
         }
 
-        protected async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula)
+        protected async Task RegistroFrequenciaAluno(string codigoAluno, int numeroAula, TipoFrequencia valorFrequencia)
         {
             await InserirNaBase(new RegistroFrequenciaAluno
             {
                 CodigoAluno = codigoAluno,
                 RegistroFrequenciaId = REGISTRO_FREQUENCIA_ID_1,
-                Valor = (int)TipoFrequencia.F,
+                Valor = (int)valorFrequencia,
                 NumeroAula = numeroAula,
                 AulaId = AULA_ID,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),

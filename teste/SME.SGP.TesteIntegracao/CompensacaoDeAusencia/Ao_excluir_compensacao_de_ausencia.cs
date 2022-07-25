@@ -5,12 +5,13 @@ using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
+using System.Linq;
+using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
     public class Ao_excluir_compensacao_de_ausencia : CompensacaoDeAusenciaTesteBase
     {
-       
         public Ao_excluir_compensacao_de_ausencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -18,7 +19,30 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         [Fact]
         public async Task Deve_excluir_compensacao_pelo_professor_titular()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+            await ExecuteTesteDeExclusao(ObterPerfilProfessor());
+        }
+
+        [Fact]
+        public async Task Deve_excluir_compensacao_pelo_cj()
+        {
+            await ExecuteTesteDeExclusao(ObterPerfilCJ());
+        }
+
+        [Fact]
+        public async Task Deve_excluir_compensacao_pelo_cp()
+        {
+            await ExecuteTesteDeExclusao(ObterPerfilCP());
+        }
+
+        [Fact]
+        public async Task Deve_excluir_compensacao_pelo_diretor()
+        {
+            await ExecuteTesteDeExclusao(ObterPerfilDiretor());
+        }
+
+        private async Task ExecuteTesteDeExclusao(string perfil)
+        {
+            var dtoDadoBase = ObtenhaDtoDadoBase(perfil, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
             await CriaCompensacaoAusencia(dtoDadoBase);
@@ -29,6 +53,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
 
             await comando.Excluir(listaIds);
+
+            var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
+            listaDeCompensacaoAusencia.FirstOrDefault().Excluido.ShouldBeTrue();
+            var listaDeCompensacaoAusenciaAluno = ObterTodos<CompensacaoAusenciaAluno>();
+            listaDeCompensacaoAusenciaAluno.ForEach(ausencia => ausencia.Excluido.ShouldBeTrue());
+            var listaDeFrequenciaAluno = ObterTodos<Dominio.FrequenciaAluno>();
+            listaDeFrequenciaAluno.ForEach(frequencia => frequencia.TotalCompensacoes.ShouldBe(0));
         }
 
         private async Task CriaCompensacaoAusenciaAluno()
@@ -53,10 +84,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         private async Task CriaRegistroDeFrequencia()
         {
             await CrieRegistroDeFrenquencia();
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA);
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA);
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_3, QUANTIDADE_AULA);
-            await RegistroFrequenciaAluno(CODIGO_ALUNO_4, QUANTIDADE_AULA);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_1, QUANTIDADE_AULA, TipoFrequencia.F);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_2, QUANTIDADE_AULA, TipoFrequencia.F);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_3, QUANTIDADE_AULA, TipoFrequencia.F);
+            await RegistroFrequenciaAluno(CODIGO_ALUNO_4, QUANTIDADE_AULA, TipoFrequencia.F);
         }
 
         private async Task CriaFrequenciaAlunos(CompensacaoDeAusenciaDBDto dtoDadoBase)
@@ -65,24 +96,28 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             dtoDadoBase,
             CODIGO_ALUNO_1,
             QUANTIDADE_AULA_3,
+            QUANTIDADE_AULA,
             QUANTIDADE_AULA);
 
             await CriaFrequenciaAlunos(
             dtoDadoBase,
             CODIGO_ALUNO_2,
             QUANTIDADE_AULA,
-            QUANTIDADE_AULA_3);
+            QUANTIDADE_AULA_3,
+            QUANTIDADE_AULA_2);
 
             await CriaFrequenciaAlunos(
             dtoDadoBase,
             CODIGO_ALUNO_3,
             QUANTIDADE_AULA_2,
-            QUANTIDADE_AULA_2);
+            QUANTIDADE_AULA_2,
+            QUANTIDADE_AULA);
 
             await CriaFrequenciaAlunos(
             dtoDadoBase,
             CODIGO_ALUNO_4,
             QUANTIDADE_AULA_3,
+            QUANTIDADE_AULA,
             QUANTIDADE_AULA);
         }
 
@@ -90,7 +125,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 CompensacaoDeAusenciaDBDto dtoDadoBase,
                 string codigoAluno,
                 int totalPresenca,
-                int totalAusencia)
+                int totalAusencia,
+                int totalCompensacao)
         {
             await CriaFrequenciaAluno(
                 dtoDadoBase,
@@ -99,7 +135,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 codigoAluno,
                 totalPresenca,
                 totalAusencia,
-                PERIODO_ESCOLAR_ID_1);
+                PERIODO_ESCOLAR_ID_1,
+                totalCompensacao);
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
