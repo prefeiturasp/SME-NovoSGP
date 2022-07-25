@@ -1071,9 +1071,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         }
         private async Task ValidarResultadosTesteComPendencias()
         {
-            var fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
-            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == SituacaoFechamento.ProcessadoComPendencias).ShouldBeTrue();
-            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != SituacaoFechamento.ProcessadoComPendencias).ShouldBeFalse();
+            await ValidarSituacaoFechamentoPorTipo(SituacaoFechamento.ProcessadoComPendencias);
 
             var pendencias = ObterTodos<Pendencia>();
             pendencias.Any(a =>
@@ -1100,9 +1098,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
 
             await ExecutarComandosFechamentoTurmaDisciplina(NUMERO_1);
 
-            fechamentoTurmaDisciplina = ObterTodos<FechamentoTurmaDisciplina>();
-            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao == SituacaoFechamento.ProcessadoComSucesso).ShouldBeTrue();
-            (fechamentoTurmaDisciplina.FirstOrDefault().Situacao != SituacaoFechamento.ProcessadoComSucesso).ShouldBeFalse();
+            await ValidarSituacaoFechamentoPorTipo(SituacaoFechamento.ProcessadoComSucesso);
 
             pendencias = ObterTodos<Pendencia>();
             pendencias.Any(a =>
