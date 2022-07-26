@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -146,6 +147,9 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             };
 
             await comando.Alterar(dtoAlterado.Id, dtoAlterado);
+            var listaAlterada = ObterTodos<CompensacaoAusencia>();
+
+            listaAlterada.ToList().Exists(x => x.Descricao == DESCRICAO_ALTERADA).ShouldBeTrue();
         }
     }
 }
