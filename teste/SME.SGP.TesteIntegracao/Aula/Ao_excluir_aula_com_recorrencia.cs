@@ -16,8 +16,6 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 {
     public class Ao_excluir_aula_com_recorrencia : AulaTeste
     {
-        private DateTime DATA_02_05 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-
         public Ao_excluir_aula_com_recorrencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

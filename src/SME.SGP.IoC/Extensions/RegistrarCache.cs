@@ -15,7 +15,8 @@ namespace SME.SGP.IoC
     {
         internal static void ConfigurarCache(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null) return;
+            if (configuration == null)
+                return;
 
             services.AddOptions<ConfiguracaoCacheOptions>()
                 .Bind(configuration.GetSection(ConfiguracaoCacheOptions.Secao), c => c.BindNonPublicProperties = true);

@@ -169,8 +169,8 @@ namespace SME.SGP.Dominio.Servicos
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
-            var disciplinaEOL = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
-            if (disciplinaEOL == null)
+            var disciplina = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
+            if (disciplina == null)
                 throw new NegocioException("Componente Curricular não localizado.");
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId.Value);
@@ -193,8 +193,8 @@ namespace SME.SGP.Dominio.Servicos
                                             fechamentoTurmaDisciplina.Justificativa,
                                             fechamentoTurmaDisciplina.CriadoRF,
                                             turma.Id,
-                                            !disciplinaEOL.LancaNota,
-                                            disciplinaEOL.RegistraFrequencia);
+                                            !disciplina.LancaNota,
+                                            disciplina.RegistraFrequencia);
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)

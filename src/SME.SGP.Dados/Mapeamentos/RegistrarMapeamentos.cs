@@ -15,7 +15,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap());
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
-               config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
                config.AddMap(new CicloAnoMap());
                config.AddMap(new PlanoAnualMap());

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ProfessoresTurmaDisciplinaQueryHandler : IRequestHandler<ProfessoresTurmaDisciplinaQuery, List<ProfessorAtribuidoTurmaDisciplinaDTO>>
+    public class ProfessoresTurmaDisciplinaQueryHandler : IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public async Task<List<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var datasParaEnvio = string.Join("&dataTicks=", request.Data.Ticks);

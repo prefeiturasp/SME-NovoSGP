@@ -216,6 +216,7 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)

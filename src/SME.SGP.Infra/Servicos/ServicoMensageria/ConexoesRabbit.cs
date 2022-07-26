@@ -1,8 +1,9 @@
 ﻿using Microsoft.Extensions.ObjectPool;
 using RabbitMQ.Client;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 
-namespace SME.SGP.Aplicacao.Integracoes
+namespace SME.SGP.Infra
 {
     public abstract class ConexoesRabbit : IConexoesRabbit
     {

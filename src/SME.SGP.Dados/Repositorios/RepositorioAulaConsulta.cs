@@ -1,23 +1,22 @@
 ﻿using Dapper;
 using Dommel;
-using Npgsql;
-using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaConsulta : RepositorioBase<Aula>, IRepositorioAulaConsulta
     {
-        public RepositorioAulaConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioAulaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

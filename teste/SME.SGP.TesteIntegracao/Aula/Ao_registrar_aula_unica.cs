@@ -15,9 +15,6 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 {
     public class Ao_registrar_aula_unica : AulaTeste
     {
-        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
-
         public Ao_registrar_aula_unica(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

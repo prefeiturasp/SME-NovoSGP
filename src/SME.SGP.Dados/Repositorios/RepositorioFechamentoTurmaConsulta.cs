@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoTurmaConsulta : RepositorioBase<FechamentoTurma>, IRepositorioFechamentoTurmaConsulta
     {
-        public RepositorioFechamentoTurmaConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioFechamentoTurmaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -107,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                         and f.disciplina_id = @componenteCurricularId
                         and ft.periodo_escolar_id = @periodoEscolarId
                         and fn.excluido = false
-                        order by fn.id desc";
+                        ORDER BY fn.alterado_em ,fn.criado_em  ";
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 

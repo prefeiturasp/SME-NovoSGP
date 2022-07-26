@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 {
-    public class ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorPortugues : IRequestHandler<ProfessoresTurmaDisciplinaQuery, List<ProfessorAtribuidoTurmaDisciplinaDTO>>
+    public class ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorPortugues : IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>
     {
         private const string TURMA_CODIGO_1 = "1";
         private const string TURMA_NOME_1 = "TURMA 1";
         private const string CODIGO_RF_11 = "11";
         private const string DISCIPLINA_PORTUGUES_139 = "139";
         private const string NOME_PROFESSOR_1 = "NOME_PROFESSOR_1";
-        public async Task<List<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>> Handle(ProfessoresTurmaDisciplinaQuery request, CancellationToken cancellationToken)
         {
             return new List<ProfessorAtribuidoTurmaDisciplinaDTO>()
             {

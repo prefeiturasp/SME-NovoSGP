@@ -8,6 +8,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
@@ -16,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IRepositorioTurmaConsulta repositorioTurma;
 
-        public RepositorioFechamentoTurmaDisciplinaConsulta(ISgpContextConsultas database, IRepositorioTurmaConsulta repositorioTurma) : base(database)
+        public RepositorioFechamentoTurmaDisciplinaConsulta(ISgpContextConsultas database, IRepositorioTurmaConsulta repositorioTurma, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
         }

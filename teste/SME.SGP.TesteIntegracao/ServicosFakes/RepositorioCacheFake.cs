@@ -13,32 +13,30 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(string.Empty);
         }
 
         public Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            throw new NotImplementedException();
+            return buscarDados();
         }
 
         public Task RemoverAsync(string nomeChave)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(string.Empty);
         }
 
         public void Salvar(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
-        {
-            throw new NotImplementedException();
-        }
+        {}
 
         public Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(string.Empty);
         }
 
         public Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(string.Empty);
         }
     }
 }

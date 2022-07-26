@@ -13,8 +13,6 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
     public class Ao_excluir_avaliacao_pela_gestao_e_professor : TesteAvaliacao
     {
 
-        protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);
-
         public Ao_excluir_avaliacao_pela_gestao_e_professor(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

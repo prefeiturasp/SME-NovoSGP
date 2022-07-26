@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                                                         inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id
                                                         inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
-        public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
+        public RepositorioAtividadeAvaliativa(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

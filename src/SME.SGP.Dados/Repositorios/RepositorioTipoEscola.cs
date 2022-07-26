@@ -1,7 +1,7 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private const string QuerySincronizacao = @"SELECT id, cod_tipo_escola_eol,  descricao, data_atualizacao, criado_por, criado_rf FROM public.tipo_escola where cod_tipo_escola_eol in (#ids);";
 
-        public RepositorioTipoEscola(ISgpContext database) : base(database)
+        public RepositorioTipoEscola(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

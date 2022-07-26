@@ -16,11 +16,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
     public class Ao_registrar_aula_verifica_se_pode_cadastrar_aula : AulaTeste
     {
         private const long TIPO_CALENDARIO_999999 = 999999;
-        private const long TIPO_CALENDARIO_1 = 1;
 
-        private readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
-        private readonly DateTime DATA_03_10 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);        
 
         public Ao_registrar_aula_verifica_se_pode_cadastrar_aula(CollectionFixture collectionFixture) : base(collectionFixture)
