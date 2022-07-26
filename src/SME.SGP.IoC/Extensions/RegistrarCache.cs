@@ -26,7 +26,7 @@ namespace SME.SGP.IoC
                 .Bind(configuration.GetSection(RedisOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<RedisOptions>();
 
-            services.AddSingleton<IRepositorioCache>(serviceProvider => 
+            services.AddSingleton<IRepositorioCache>(serviceProvider =>
             {
                 var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>().Value;
                 var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();
