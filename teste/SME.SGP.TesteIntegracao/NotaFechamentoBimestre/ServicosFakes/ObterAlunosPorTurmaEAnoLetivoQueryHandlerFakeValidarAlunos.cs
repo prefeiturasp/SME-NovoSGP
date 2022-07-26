@@ -40,27 +40,27 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-              var dataRefencia = DateTimeExtension.HorarioBrasilia();
+            var dataRefencia = DateTimeExtension.HorarioBrasilia();
 
-              var alunos = new List<AlunoPorTurmaResposta>();
+            var alunos = new List<AlunoPorTurmaResposta>();
               
-              alunos.Add(new AlunoPorTurmaResposta
+            alunos.Add(new AlunoPorTurmaResposta
                 {
-                      Ano = 0,
-                      CodigoAluno = ALUNO_CODIGO_1,
-                      CodigoComponenteCurricular = 0,
-                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                      CodigoTurma=int.Parse(request.CodigoTurma),
-                      DataNascimento=new DateTime(1959,01,16,00,00,00),
-                      DataSituacao= dataRefencia.AddDays(-5),
-                      DataMatricula= dataRefencia.AddDays(-120),
-                      NomeAluno= ALUNO_CODIGO_1,
-                      NumeroAlunoChamada=0,
-                      SituacaoMatricula= ATIVO,
-                      NomeResponsavel= RESPONSAVEL,
-                      TipoResponsavel= TIPO_RESPONSAVEL_4,
-                      CelularResponsavel=CELULAR_RESPONSAVEL,
-                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                    Ano = 0,
+                    CodigoAluno = ALUNO_CODIGO_1,
+                    CodigoComponenteCurricular = 0,
+                    CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                    CodigoTurma=int.Parse(request.CodigoTurma),
+                    DataNascimento=new DateTime(1959,01,16,00,00,00),
+                    DataSituacao= dataRefencia.AddDays(-5),
+                    DataMatricula= dataRefencia.AddDays(-120),
+                    NomeAluno= ALUNO_CODIGO_1,
+                    NumeroAlunoChamada=0,
+                    SituacaoMatricula= ATIVO,
+                    NomeResponsavel= RESPONSAVEL,
+                    TipoResponsavel= TIPO_RESPONSAVEL_4,
+                    CelularResponsavel=CELULAR_RESPONSAVEL,
+                    DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                 });
               
               alunos.Add(new AlunoPorTurmaResposta

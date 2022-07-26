@@ -89,8 +89,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarPeriodoFechamento();
             await CriarPeriodoReaberturaAnoAnterior(TIPO_CALENDARIO_1);
-
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
+            
             await CriarSintese();
             await CrieConceitoValores();
         }
@@ -101,8 +101,23 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             return await Assert.ThrowsAsync<NegocioException>(async () => await comando.Salvar(fechamentoTurma));
         }
+        
+        protected async Task<NotasConceitosRetornoDto> ExecutarTeste(ListaNotasConceitosDto filtroListaNotasConceitos)
+        {
+            NotasConceitosRetornoDto retorno = null;
+            
+            var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
+            
+            if (useCase != null) 
+                retorno = await useCase.Executar(filtroListaNotasConceitos);
 
-        protected async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> notasLancadas, bool gerarExcecao = false)
+            retorno.ShouldNotBeNull();
+
+            return retorno;
+        }        
+
+        protected async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> notasLancadas,
+            bool gerarExcecao = false)
         {
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
 
@@ -123,9 +138,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             notasFechamento.Count.ShouldBeGreaterThanOrEqualTo(1);
         }
 
-        protected async Task<NegocioException> ExecutarTesteComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
+        protected async Task ExecutarTesteComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
         {
-            return await ExecutarComandosFechamentoTurmaDisciplinaComExcecao(fechamentoTurma);
+            await ExecutarComandosFechamentoTurmaDisciplinaComExcecao(fechamentoTurma);
         }
 
         protected static FiltroFechamentoNotaDto ObterFiltroFechamentoNotaDto(string perfil, string anoTurma,
@@ -141,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 TipoFrequenciaAluno = TipoFrequenciaAluno.PorDisciplina
             };
         }
-
+        
         protected async Task<IEnumerable<AuditoriaPersistenciaDto>> ExecutarTesteComValidacaoNota(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, TipoNota tipoNota)
         {
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
@@ -354,10 +369,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-80), periodoEscolarValido ? dataReferencia.Date : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-80), periodoEscolarValido ? dataReferencia.Date : dataReferencia.AddDays(-5), BIMESTRE_4);
         }
         
         protected async Task InserirPeriodoAberturaCustomizado()
@@ -832,7 +847,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             });
         }
 
-        protected async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
+        private async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
         {
             await InserirNaBase(new FechamentoReabertura()
             {
@@ -881,18 +896,5 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
             });
         }
-        
-        protected async Task<NotasConceitosRetornoDto> ExecutarObterNotasParaAvaliacoesUseCase(FiltroNotaFechamentoAlunosDto fechamentoFinalSalvarAlunoDto)
-        {
-            var obterNotasParaAvaliacoesUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
-
-            var retorno = await obterNotasParaAvaliacoesUseCase.Executar(
-                fechamentoFinalSalvarAlunoDto.TurmaCodigo, fechamentoFinalSalvarAlunoDto.DisciplinaCodigo,
-                fechamentoFinalSalvarAlunoDto.Bimestre, fechamentoFinalSalvarAlunoDto.Semestre);
-
-            retorno.ShouldNotBeNull();
-
-            return retorno;
-        } 
     }
 }

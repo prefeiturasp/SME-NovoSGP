@@ -9,6 +9,8 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -16,104 +18,157 @@ using Xunit;
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
     public class Ao_validar_exibicao_alunos : NotaFechamentoBimestreTesteBase
-     {
+    {
+        private const long FECHAMENTO_TURMA_ID_1 = 1;
+
+        private const long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
+
+        private const long FECHAMENTO_ALUNO_ID_1 = 1;
+        private const long FECHAMENTO_ALUNO_ID_2 = 2;
+        private const long FECHAMENTO_ALUNO_ID_3 = 3;
+        private const long FECHAMENTO_ALUNO_ID_4 = 4;
+        private const long FECHAMENTO_ALUNO_ID_5 = 5;
+
         public Ao_validar_exibicao_alunos(CollectionFixture collectionFixture) : base(collectionFixture)
-        { }
+        {
+        }
         
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
             
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>),
+                typeof(ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>),
+                typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>),
+                typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));            
         }
 
         [Fact]
         public async Task Deve_exibir_tooltip_alunos_novos_durante_15_dias()
         {
-            // var filtroNotaFechamento = ObterFiltroNotasFechamento(
-            //     ObterPerfilProfessor(),
-            //     TipoNota.Nota, ANO_7,
-            //     Modalidade.Fundamental,
-            //     ModalidadeTipoCalendario.FundamentalMedio,
-            //     COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            //
-            var retorno = await ExecutarTeste(filtroNotaFechamento);
+            var filtroNotaFechamento = await ObterFiltroFechamentoNota(ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
-            // (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Informacao == null).ShouldBeTrue();
-            // (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Informacao == null).ShouldBeTrue();
+            await InserirPeriodoEscolarCustomizado();
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarCiclo();
+
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
+            var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoInicio.Ticks;
+            var dataFimTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoFim.Ticks;            
+            
+            var filtroListaNotasConceitos = await ObterFiltroListaNotasConceitos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                filtroNotaFechamento.Modalidade, dataInicioTicks, dataFimTicks, periodoEscolarId);
+
+            var retorno = await ExecutarTeste(filtroListaNotasConceitos);
+
+            retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
+                .Alunos.Where(c => c.Marcador != null)
+                .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Novo).ShouldBe(2);
         }
 
         [Fact]
         public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()
         {
-            // var filtroNotaFechamento = ObterFiltroNotasFechamento(
-            //     ObterPerfilProfessor(),
-            //     TipoNota.Nota, ANO_7,
-            //     Modalidade.Fundamental,
-            //     ModalidadeTipoCalendario.FundamentalMedio,
-            //     COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            //
-            // var retorno = await ExecutarTeste(filtroNotaFechamento);
+            var filtroNotaFechamento = await ObterFiltroFechamentoNota(ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_7)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_10)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
-            // retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Informacao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();
+            await InserirPeriodoEscolarCustomizado();
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarCiclo();
+
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
+            var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoInicio.Ticks;
+            var dataFimTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoFim.Ticks;            
+            
+            var filtroListaNotasConceitos = await ObterFiltroListaNotasConceitos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                filtroNotaFechamento.Modalidade, dataInicioTicks, dataFimTicks, periodoEscolarId);
+
+            var retorno = await ExecutarTeste(filtroListaNotasConceitos);
+
+            retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
+                .Alunos.Where(c => c.Marcador != null)
+                .Count(c => c.Marcador.Tipo == TipoMarcadorFrequencia.Inativo).ShouldBe(7);
         }
         
         [Fact]
         public async Task Nao_deve_exibir_alunos_inativos_antes_do_comeco_do_ano_ou_bimestre()
         {
-            // var filtroNotaFechamento = ObterFiltroNotasFechamento(
-            //     ObterPerfilProfessor(),
-            //     TipoNota.Nota, ANO_7,
-            //     Modalidade.Fundamental,
-            //     ModalidadeTipoCalendario.FundamentalMedio,
-            //     COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            //
-            // var retorno = await ExecutarTeste(filtroNotaFechamento);
-
-            // (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)) == null).ShouldBeTrue();
-            // (retorno.Alunos.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
-        }
-        
-        private async Task<FechamentoTurmaDisciplinaBimestreDto> ExecutarTeste(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
-        {
-            filtroNotaFechamentoDto.CriarPeriodoEscolar = false;
-            
-            filtroNotaFechamentoDto.CriarPeriodoAbertura = false;
-            
-            await CriarDadosBase(filtroNotaFechamentoDto);
+            var filtroNotaFechamento = await ObterFiltroFechamentoNota(ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade.Fundamental,
+                ANO_7,
+                TipoFrequenciaAluno.PorDisciplina,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());  
             
             await InserirPeriodoEscolarCustomizado();
-        
-            await InserirFechamentoAluno(filtroNotaFechamentoDto);
-        
-            var filtroNotaFechamentoAluno = ObterFiltroNotasFechamentoAlunos(TURMA_CODIGO_1,COMPONENTE_CURRICULAR_PORTUGUES_ID_138,BIMESTRE_1, SEMESTRE_0);
+            await CriarDadosBase(filtroNotaFechamento);
+            await CriarTipoAvaliacao(TipoAvaliacaoCodigo.AvaliacaoBimestral, AVALIACAO_NOME_1);
+            await CriarCiclo();
 
-            return await ExecutarObterNotasParaAvaliacoesUseCase();
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
+            var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoInicio.Ticks;
+            var dataFimTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoFim.Ticks;            
+            
+            var filtroListaNotasConceitos = await ObterFiltroListaNotasConceitos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                filtroNotaFechamento.Modalidade, dataInicioTicks, dataFimTicks, periodoEscolarId);
+
+            var retorno = await ExecutarTeste(filtroListaNotasConceitos);
+
+            var alunosNaoExibir = new[] { CODIGO_ALUNO_12, CODIGO_ALUNO_13 };
+
+            retorno.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)?
+                .Alunos.Any(c => !alunosNaoExibir.Contains(c.Id)).ShouldBeTrue();
+        }
+        
+        private async Task<NotasConceitosRetornoDto> ExecutarTeste(ListaNotasConceitosDto filtroListaNotasConceitos)
+        {
+            NotasConceitosRetornoDto retorno = new();
+            var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
+            
+            if (useCase != null) 
+                retorno = await useCase.Executar(filtroListaNotasConceitos);
+            
+            await InserirFechamentoAluno(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);            
+
+            var notasFechamento = ObterTodos<FechamentoTurmaDisciplina>();
+
+            notasFechamento.ShouldNotBeNull();
+            notasFechamento.ShouldNotBeEmpty();
+            notasFechamento.Count.ShouldBeGreaterThanOrEqualTo(1);
+
+            return await Task.FromResult(retorno);
         }
 
         private async Task InserirPeriodoEscolarCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
             
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-45), dataReferencia.AddDays(+30), BIMESTRE_1, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(40), dataReferencia.AddDays(115), BIMESTRE_2, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(125), dataReferencia.AddDays(200), BIMESTRE_3, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(210), dataReferencia.AddDays(285), BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-45), dataReferencia.AddDays(+30), BIMESTRE_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(40), dataReferencia.AddDays(115), BIMESTRE_2);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(125), dataReferencia.AddDays(200), BIMESTRE_3);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(210), dataReferencia.AddDays(285), BIMESTRE_4);
         }
 
-        private async Task InserirFechamentoAluno(FiltroNotaFechamentoDto filtroNotaFechamentoDto)
-        {
+        private async Task InserirFechamentoAluno(long disciplinaId)
+        {   
             await InserirNaBase(new FechamentoTurma()
             {
                 TurmaId = TURMA_ID_1,
@@ -125,138 +180,84 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         
             await InserirNaBase(new FechamentoTurmaDisciplina()
             {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
+                DisciplinaId = disciplinaId,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        
-            await InserirNaBase(new FechamentoAluno()
-            {
-                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                AlunoCodigo = CODIGO_ALUNO_1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoNota()
-            {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_1,
-                Nota = NOTA_8,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoAluno()
-            {
-                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                AlunoCodigo = CODIGO_ALUNO_2,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoNota()
-            {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_2,
-                Nota = NOTA_7,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoAluno()
-            {
-                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                AlunoCodigo = CODIGO_ALUNO_3,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoNota()
-            {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_3,
-                Nota = NOTA_6,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoAluno()
-            {
-                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                AlunoCodigo = CODIGO_ALUNO_4,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoNota()
-            {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_4,
-                Nota = NOTA_5,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoAluno()
-            {
-                FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
-                AlunoCodigo = CODIGO_ALUNO_5,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        
-            await InserirNaBase(new FechamentoNota()
-            {
-                DisciplinaId = long.Parse(filtroNotaFechamentoDto.ComponenteCurricular),
-                FechamentoAlunoId = FECHAMENTO_ALUNO_ID_5,
-                Nota = NOTA_7,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-        }
 
-        private FiltroNotaFechamentoAlunosDto ObterFiltroNotasFechamentoAlunos(string turmaCodigo,long disciplinaCodigo, int bimestre, int semestre)
-        {
-            return new FiltroNotaFechamentoAlunosDto()
+            var fechamentosAlunosNotas = new List<Tuple<string, long>>
             {
-                TurmaCodigo = turmaCodigo,
-                DisciplinaCodigo = disciplinaCodigo,
-                Bimestre = bimestre,
-                Semestre = semestre
+                new(CODIGO_ALUNO_1, FECHAMENTO_ALUNO_ID_1),
+                new(CODIGO_ALUNO_2, FECHAMENTO_ALUNO_ID_2),
+                new(CODIGO_ALUNO_3, FECHAMENTO_ALUNO_ID_3),
+                new(CODIGO_ALUNO_4, FECHAMENTO_ALUNO_ID_4),
+                new(CODIGO_ALUNO_5, FECHAMENTO_ALUNO_ID_5)
             };
+
+            foreach (var fechamentoAlunoNota in fechamentosAlunosNotas)
+            {
+                await InserirNaBase(new FechamentoAluno()
+                {
+                    FechamentoTurmaDisciplinaId = FECHAMENTO_TURMA_DISCIPLINA_ID_1,
+                    AlunoCodigo = fechamentoAlunoNota.Item1,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+                
+                Random randomNota = new();
+                var nota = randomNota.Next(0, 10);
+                
+                await InserirNaBase(new FechamentoNota()
+                {
+                    DisciplinaId = disciplinaId,
+                    FechamentoAlunoId = fechamentoAlunoNota.Item2,
+                    Nota = nota,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });                
+            }
         }
         
-        private FiltroNotaFechamentoDto ObterFiltroNotasFechamento(string perfil, TipoNota tipoNota, string anoTurma,Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular , bool considerarAnoAnterior = false, bool ehRegencia = false)
+        private async Task<FiltroFechamentoNotaDto> ObterFiltroFechamentoNota(ModalidadeTipoCalendario tipoCalendario, 
+            Modalidade modalidade, string anoTurma, TipoFrequenciaAluno tipoFrequenciaAluno,
+            string componenteCurricular)
         {
-            return new FiltroNotaFechamentoDto()
+            return await Task.FromResult(new FiltroFechamentoNotaDto
             {
-                Perfil = perfil,
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = tipoCalendario,
+                ConsiderarAnoAnterior = false,
                 Modalidade = modalidade,
-                TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_1,
-                ComponenteCurricular = componenteCurricular,
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolar = true,
-                CriarPeriodoAbertura = true,
-                TipoNota = tipoNota,
                 AnoTurma = anoTurma,
-                ConsiderarAnoAnterior = considerarAnoAnterior,
+                TipoFrequenciaAluno = tipoFrequenciaAluno,
                 ProfessorRf = USUARIO_PROFESSOR_LOGIN_2222222,
-                EhRegencia = ehRegencia
-            };
+                ComponenteCurricular = componenteCurricular,
+                CriarPeriodoEscolar = false,
+                CriarPeriodoEscolarCustomizado = false
+            });
+        }        
+
+        private static async Task<ListaNotasConceitosDto> ObterFiltroListaNotasConceitos(long disciplinaCodigo,
+            Modalidade modalidade, long periodoInicioTicks, long periodoFimTicks, long periodoEscolarId)
+        {
+            return await Task.FromResult(new ListaNotasConceitosDto
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Bimestre = BIMESTRE_1,
+                DisciplinaCodigo = disciplinaCodigo,
+                Modalidade = modalidade,
+                Semestre = 0,
+                TurmaCodigo = TURMA_CODIGO_1,
+                TurmaHistorico = false, 
+                TurmaId = TURMA_ID_1,
+                PeriodoInicioTicks = periodoInicioTicks,
+                PeriodoFimTicks = periodoFimTicks,
+                PeriodoEscolarId = periodoEscolarId
+            });
         }
     }
 }

@@ -41,7 +41,6 @@ namespace SME.SGP.Aplicacao
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-
             var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));
             return retorno?.TipoNota ?? TipoNota.Nota;            
         }
