@@ -8,6 +8,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interface;
 using Xunit;
 
@@ -35,6 +36,9 @@ namespace SME.SGP.TesteIntegracao
         {
             RegistrarCommandFakes(services);
             RegistrarQueryFakes(services);
+            
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache),
+                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));            
         }
 
         protected virtual void RegistrarCommandFakes(IServiceCollection services)
