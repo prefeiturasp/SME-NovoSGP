@@ -252,7 +252,6 @@ namespace SME.SGP.Dados.Repositorios
 							registro_frequencia_aluno
                         where not excluido 
                             and registro_frequencia_id = @registroFrequenciaId";
-
             return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { registroFrequenciaId });
         }
     }
