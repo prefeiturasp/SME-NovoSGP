@@ -74,7 +74,6 @@ namespace SME.SGP.Aplicacao
         {
             var dicionario = new Dictionary<int, List<RegistroFrequenciaAluno>>();
             var listaDeFrequenciaAlunoCadastrada = await mediator.Send(new ObterRegistroDeFrequenciaAlunoPorIdRegistroQuery(request.RegistroFrequenciaId));
-
             dicionario.Add(INSERIR, new List<RegistroFrequenciaAluno>());
             dicionario.Add(ALTERAR, new List<RegistroFrequenciaAluno>());
 
@@ -100,6 +99,7 @@ namespace SME.SGP.Aplicacao
                             CodigoAluno = frequencia.CodigoAluno,
                             NumeroAula = aulaRegistrada.NumeroAula,
                             Valor = (int)presenca,
+                            AulaId = request.AulaId,
                             RegistroFrequenciaId = request.RegistroFrequenciaId
                         };
 
