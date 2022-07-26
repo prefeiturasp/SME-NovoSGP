@@ -215,6 +215,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
