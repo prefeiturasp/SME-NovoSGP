@@ -1,13 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Linq;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
@@ -63,14 +57,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             TesteDisciplinasRegentes();
         }
 
-        private void TesteDisciplinasRegentes()
-        {
-            var listaCompencaoRegencia = ObterTodos<CompensacaoAusenciaDisciplinaRegencia>();
-            listaCompencaoRegencia.ShouldNotBeNull();
-            var listaIdDisciplinas = listaCompencaoRegencia.Select(regencia => regencia.DisciplinaId).ToList();
-            listaIdDisciplinas.Except(ObtenhaListaDeRegencia()).Count().ShouldBe(0);
-        }
-
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
         {
             return new CompensacaoDeAusenciaDBDto()
@@ -84,17 +70,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 AnoTurma = ANO_5,
                 DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
                 QuantidadeAula = QUANTIDADE_AULA_4
-            };
-        }
-
-        private List<string> ObtenhaListaDeRegencia()
-        {
-            return new List<string>
-            {
-                COMPONENTE_CIENCIAS_ID_89,
-                COMPONENTE_GEOGRAFIA_ID_8,
-                COMPONENTE_HISTORIA_ID_7,
-                COMPONENTE_MATEMATICA_ID_2
             };
         }
     }

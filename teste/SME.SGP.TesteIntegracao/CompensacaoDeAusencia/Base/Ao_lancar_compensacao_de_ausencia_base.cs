@@ -1,14 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Shouldly;
-using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 {
@@ -16,6 +17,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
     {
         protected Ao_lancar_compensacao_de_ausencia_base(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task ExecuteTeste(CompensacaoDeAusenciaDBDto dtoDadoBase, List<string> listaDisciplinaRegente = null)
@@ -41,6 +49,45 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             TesteCompensacaoAluno(listaDaCompensacaoAluno, CODIGO_ALUNO_2, QUANTIDADE_AULA_2);
             TesteCompensacaoAluno(listaDaCompensacaoAluno, CODIGO_ALUNO_3, QUANTIDADE_AULA);
             TesteCompensacaoAluno(listaDaCompensacaoAluno, CODIGO_ALUNO_4, QUANTIDADE_AULA);
+        }
+
+        protected void TesteDisciplinasRegentes()
+        {
+            var listaCompencaoRegencia = ObterTodos<CompensacaoAusenciaDisciplinaRegencia>();
+            listaCompencaoRegencia.ShouldNotBeNull();
+            var listaIdDisciplinas = listaCompencaoRegencia.Select(regencia => regencia.DisciplinaId).ToList();
+            listaIdDisciplinas.Except(ObtenhaListaDeRegencia()).Count().ShouldBe(0);
+        }
+
+        protected List<string> ObtenhaListaDeRegencia()
+        {
+            return new List<string>
+            {
+                COMPONENTE_CIENCIAS_ID_89,
+                COMPONENTE_GEOGRAFIA_ID_8,
+                COMPONENTE_HISTORIA_ID_7,
+                COMPONENTE_MATEMATICA_ID_2
+            };
+        }
+
+        protected CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(
+                        string componente,
+                        Modalidade modalidade,
+                        ModalidadeTipoCalendario modalidadeTipo,
+                        string ano)
+        {
+            return new CompensacaoDeAusenciaDBDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = modalidade,
+                TipoCalendario = modalidadeTipo,
+                Bimestre = BIMESTRE_1,
+                ComponenteCurricular = componente,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                AnoTurma = ano,
+                DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
+                QuantidadeAula = QUANTIDADE_AULA_4
+            };
         }
 
         private void TesteCompensacaoAluno(List<CompensacaoAusenciaAluno> listaDaCompensacaoAluno, string codigoAluno, int quantidade)

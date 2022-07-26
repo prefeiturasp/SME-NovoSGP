@@ -1,10 +1,5 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
-using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,14 +10,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
     {
         public Ao_lancar_compensacao_de_ausencia_titular(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-        }
-
-
-        protected override void RegistrarFakes(IServiceCollection services)
-        {
-            base.RegistrarFakes(services);
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
         }
 
         //[Fact]
@@ -59,26 +46,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         ANO_3);
 
             await ExecuteTeste(dto);
-        }
-
-        private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(
-                                        string componente,
-                                        Modalidade modalidade,
-                                        ModalidadeTipoCalendario modalidadeTipo,
-                                        string ano)
-        {
-            return new CompensacaoDeAusenciaDBDto()
-            {
-                Perfil = ObterPerfilProfessor(),
-                Modalidade = modalidade,
-                TipoCalendario = modalidadeTipo,
-                Bimestre = BIMESTRE_1,
-                ComponenteCurricular = componente,
-                TipoCalendarioId = TIPO_CALENDARIO_1,
-                AnoTurma = ano,
-                DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
-                QuantidadeAula = QUANTIDADE_AULA_4
-            };
         }
     }
 }
