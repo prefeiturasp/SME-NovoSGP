@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        //[Fact]
         public async Task Deve_lancamento_compensacao_ausencia_titular_fundamental()
         {
             var dto = ObtenhaDtoDadoBase(
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await ExecuteTeste(dto);
         }
 
-        [Fact]
+        //[Fact]
         public async Task Deve_lancamento_compensacao_ausencia_titular_medio()
         {
             var dto = ObtenhaDtoDadoBase(
@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await ExecuteTeste(dto);
         }
 
-        [Fact]
+        //[Fact]
         public async Task Deve_lancamento_compensacao_ausencia_titular_eja()
         {
             var dto = ObtenhaDtoDadoBase(
