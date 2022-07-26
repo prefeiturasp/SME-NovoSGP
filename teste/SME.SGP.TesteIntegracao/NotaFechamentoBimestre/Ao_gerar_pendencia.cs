@@ -72,9 +72,9 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new FechamentoTurmaDisciplinaDto()
                 {
-                    Bimestre = 1 ,
+                    Bimestre = 1,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                    Justificativa = "" ,
+                    Justificativa = "Justificativa do teste de integração.",
                     TurmaId = TURMA_CODIGO_1 ,
                     NotaConceitoAlunos = fechamentoNotaDto
                 }
