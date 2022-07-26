@@ -46,14 +46,18 @@ namespace SME.SGP.TesteIntegracao
         protected const string FALSE = "false";
         protected const string TRUE = "true";
 
+        protected const int SEMESTRE_0 = 0;
         protected const int SEMESTRE_1 = 1;
-        protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_139 = 139;
+        protected const long COMPONENTE_CURRICULAR_ARTES_ID_139 = 139;
+        protected const string COMPONENTE_CURRICULAR_ARTES_NOME = "'Artes'";
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         protected const string COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME = "'Língua Portuguesa'";
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
+        protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
+        
         protected const string COMPONENTE_CURRICULAR_MATEMATICA_NOME = "'MATEMATICA'";
 
         protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105 = 1105;
@@ -86,6 +90,7 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
         private const string AREA_DE_CONHECIMENTO_8 = "'Área de conhecimento 8'";
         private const string AREA_DE_CONHECIMENTO_2 = "'Área de conhecimento 2'";
+        private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
@@ -93,15 +98,27 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
         protected const string COMPONENTE_LINGUA_PORTUGUESA_ID_138 = "138";
         protected const string COMPONENTE_MATEMATICA_ID_2 = "2";
-
+        
+        protected const string COMPONENTE_HISTORIA_NOME = "'História'";
+        protected const string COMPONENTE_LEITURA_OSL_NOME = "'Leitura OSL'";
+        
         private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
         private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
+        private const string GRUPO_MATRIZ_3 = "'Grupo matriz 3'";
         private const string GRUPO_MATRIZ_8 = "'Grupo matriz 8'";
 
-        private const string CODIGO_1 = "1";
-        private const string CODIGO_2 = "2";
-        private const string CODIGO_8 = "8";
-        private const string NULO = "null";
+        protected const string CODIGO_1 = "1";
+        protected const string CODIGO_2 = "2";
+        protected const string CODIGO_3 = "3";
+        protected const string CODIGO_8 = "8";
+        protected const string CODIGO_4 = "4";
+        protected const string NULO = "null";
+        
+        protected const int NUMERO_0 = 0;
+        protected const int NUMERO_1 = 1;
+        protected const int NUMERO_2 = 2;
+        protected const int NUMERO_3 = 3;
+        protected const int RETORNAR_4 = 4;
 
         protected const string PROVA = "Prova";
         protected const string TESTE = "Teste";
@@ -204,6 +221,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
+        protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
 
         protected readonly DateTime DATA_25_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
         protected readonly DateTime DATA_30_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
@@ -216,6 +234,8 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
         protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);
+        
+        protected readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
 
         protected const int AULA_ID = 1;
         protected const int QUANTIDADE_AULA = 1;
@@ -226,6 +246,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_2 = "2";
         protected const string CODIGO_ALUNO_3 = "3";
         protected const string CODIGO_ALUNO_4 = "4";
+        protected const string CODIGO_ALUNO_5 = "5";
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
@@ -785,14 +806,20 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_3, GRUPO_MATRIZ_3);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_4, AREA_DE_CONHECIMENTO_4);
 
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_8, GRUPO_MATRIZ_8);
-
+            
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
+
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_ARTES_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_ARTES_NOME, NULO);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_MATEMATICA_ID_2.ToString(), NULO, CODIGO_1, CODIGO_2, COMPONENTE_CURRICULAR_MATEMATICA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_MATEMATICA_NOME, NULO);
 
@@ -807,6 +834,10 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_HISTORIA_ID_7.ToString(), NULO, CODIGO_1, CODIGO_4, COMPONENTE_HISTORIA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_HISTORIA_NOME, NULO);
+            
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061.ToString(), NULO, CODIGO_3, CODIGO_8, COMPONENTE_LEITURA_OSL_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_LEITURA_OSL_NOME, NULO);
 
         }
 

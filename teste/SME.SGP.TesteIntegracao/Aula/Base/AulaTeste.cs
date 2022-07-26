@@ -22,12 +22,6 @@ namespace SME.SGP.TesteIntegracao
     {
         private const int QUANTIDADE_3 = 3;
 
-        private const string REABERTURA_GERAL = "Reabrir Geral";
-
-        private readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
-
-        private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
-
         protected AulaTeste(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

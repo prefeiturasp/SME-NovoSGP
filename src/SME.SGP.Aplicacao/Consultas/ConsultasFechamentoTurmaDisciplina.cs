@@ -177,13 +177,13 @@ namespace SME.SGP.Aplicacao
                 Alunos = new List<NotaConceitoAlunoBimestreDto>()
             };
 
-            var disciplinaEOL = await consultasDisciplina.ObterDisciplina(disciplinaId);
-            IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
-
-            if (disciplinaEOL.Regencia)
-                disciplinasRegencia = await servicoEOL.ObterDisciplinasParaPlanejamento(long.Parse(turmaId), servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual());
-
-            fechamentoBimestre.EhSintese = !disciplinaEOL.LancaNota;
+            var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
+            IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
+            
+            if (disciplina.Regencia)
+                disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
+            
+            fechamentoBimestre.EhSintese = !disciplina.LancaNota;
 
             // Carrega fechamento da Turma x Disciplina x Bimestre  
             var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaId, disciplinaId.ToString(), bimestreAtual.Value);
@@ -275,7 +275,7 @@ namespace SME.SGP.Aplicacao
                                 throw new NegocioException("Não é possivel registrar fechamento pois não há registros de frequência no bimestre.");
 
                             var percentualFrequencia = frequenciaAluno == null ? 100 : frequenciaAluno.PercentualFrequencia;
-                            var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplinaEOL, turma.AnoLetivo));
+                            var sinteseDto = await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, disciplina, turma.AnoLetivo));
 
                             alunoDto.SinteseId = sinteseDto.Id;
                             alunoDto.Sintese = sinteseDto.Valor;
@@ -307,10 +307,9 @@ namespace SME.SGP.Aplicacao
                                 {
                                     string nomeDisciplina;
 
-                                    if (disciplinaEOL.Regencia)
-                                        nomeDisciplina = disciplinasRegencia.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
-                                    else 
-                                        nomeDisciplina = disciplinaEOL.Nome;
+                                    if (disciplina.Regencia)
+                                        nomeDisciplina = disciplinasRegenciaEOL.FirstOrDefault(a => a.CodigoComponenteCurricular == notaConceitoBimestre.DisciplinaId)?.Nome;
+                                    else nomeDisciplina = disciplina.Nome;
 
                                     var nota = new FechamentoNotaRetornoDto()
                                     {
