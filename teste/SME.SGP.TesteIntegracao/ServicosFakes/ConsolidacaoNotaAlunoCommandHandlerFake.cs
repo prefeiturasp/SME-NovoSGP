@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -36,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             });
             var mensagemRabbit = new MensagemRabbit(mensagem);
 
-            await this.consolidadoUseCase.Executar(mensagemRabbit);
+            await consolidadoUseCase.Executar(mensagemRabbit);
 
             return true;
         }

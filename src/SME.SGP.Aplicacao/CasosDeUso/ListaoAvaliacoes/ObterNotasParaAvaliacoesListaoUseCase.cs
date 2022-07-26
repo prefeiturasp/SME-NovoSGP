@@ -202,7 +202,7 @@ namespace SME.SGP.Aplicacao
                         (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
 
                 notaConceitoAluno.Marcador = await mediator
-                                .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                                .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 notaConceitoAluno.EhAtendidoAEE = await mediator
