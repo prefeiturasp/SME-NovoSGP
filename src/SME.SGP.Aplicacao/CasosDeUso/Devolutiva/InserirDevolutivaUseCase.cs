@@ -37,8 +37,6 @@ namespace SME.SGP.Aplicacao
 
             bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
-
-
             return auditoria;
         }
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
