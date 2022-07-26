@@ -10,8 +10,6 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 {
     public class Ao_registrar_aula_normal_repetir_bimestre_atual_excecoes_basicas : AulaTeste
     {
-        private readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         private readonly DateTime DATA_15_02 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 15);
 
         public Ao_registrar_aula_normal_repetir_bimestre_atual_excecoes_basicas(CollectionFixture collectionFixture) : base(collectionFixture)
