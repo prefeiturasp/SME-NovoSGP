@@ -267,7 +267,7 @@ namespace SME.SGP.Dominio.Servicos
             var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
 
             if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
-                throw new NegocioException("Existem alunos inativos no fechamento das notas do bimestre.");
+                throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);
 
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
