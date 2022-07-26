@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public abstract class RepositorioCache : IRepositorioCache
+    public class RepositorioCache : IRepositorioCache
     {
         private readonly IServicoTelemetria servicoTelemetria;
 
