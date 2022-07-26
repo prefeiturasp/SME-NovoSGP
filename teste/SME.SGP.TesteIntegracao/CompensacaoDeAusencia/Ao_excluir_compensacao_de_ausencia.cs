@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using System.Linq;
-using Shouldly;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
@@ -55,10 +55,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await comando.Excluir(listaIds);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
+            listaDeCompensacaoAusencia.ShouldNotBeNull();
             listaDeCompensacaoAusencia.FirstOrDefault().Excluido.ShouldBeTrue();
             var listaDeCompensacaoAusenciaAluno = ObterTodos<CompensacaoAusenciaAluno>();
+            listaDeCompensacaoAusenciaAluno.ShouldNotBeNull();
             listaDeCompensacaoAusenciaAluno.ForEach(ausencia => ausencia.Excluido.ShouldBeTrue());
             var listaDeFrequenciaAluno = ObterTodos<Dominio.FrequenciaAluno>();
+            listaDeFrequenciaAluno.ShouldNotBeNull();
             listaDeFrequenciaAluno.ForEach(frequencia => frequencia.TotalCompensacoes.ShouldBe(0));
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -6,11 +7,12 @@ using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
-    public class Ao_lancar_compensacao_de_ausencia_cp_e_cj : CompensacaoDeAusenciaTesteBase
+    public class Ao_lancar_compensacao_de_ausencia_cp_e_cj : Ao_lancar_compensacao_de_ausencia_base
     {
         
         public Ao_lancar_compensacao_de_ausencia_cp_e_cj(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -21,57 +23,52 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         //[Fact]
         public async Task Deve_lancar_ausencia_para_cp()
         {
-            var dtoDadoBase = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
-            await CriarDadosBase(dtoDadoBase);
-            await CriaFrequenciaAlunos(dtoDadoBase);
+            var dto = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
-            var dto = ObtenhaCompensacaoAusenciaDto(dtoDadoBase, ObtenhaListaDeAlunos());
-
-            await comando.Inserir(dto); 
+            await ExecuteTeste(dto);
         }
 
-        private async Task CriaFrequenciaAlunos(CompensacaoDeAusenciaDBDto dtoDadoBase)
+        //[Fact]
+        public async Task Deve_lancar_ausencia_para_diretor()
         {
-            await CriaFrequenciaAlunos(
-            dtoDadoBase,
-            CODIGO_ALUNO_1,
-            QUANTIDADE_AULA_3,
-            QUANTIDADE_AULA);
+            var dto = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
-            await CriaFrequenciaAlunos(
-            dtoDadoBase,
-            CODIGO_ALUNO_2,
-            QUANTIDADE_AULA,
-            QUANTIDADE_AULA_3);
-
-            await CriaFrequenciaAlunos(
-            dtoDadoBase,
-            CODIGO_ALUNO_3,
-            QUANTIDADE_AULA_2,
-            QUANTIDADE_AULA_2);
-
-            await CriaFrequenciaAlunos(
-            dtoDadoBase,
-            CODIGO_ALUNO_4,
-            QUANTIDADE_AULA_3,
-            QUANTIDADE_AULA);
+            await ExecuteTeste(dto);
         }
 
-        private async Task CriaFrequenciaAlunos(
-                        CompensacaoDeAusenciaDBDto dtoDadoBase, 
-                        string codigoAluno,
-                        int totalPresenca,
-                        int totalAusencia)
+        //[Fact]
+        public async Task Deve_lancar_ausencia_para_cj()
         {
-            await CriaFrequenciaAluno(
-                dtoDadoBase,
-                DATA_03_01_INICIO_BIMESTRE_1,
-                DATA_29_04_FIM_BIMESTRE_1,
-                codigoAluno,
-                totalPresenca,
-                totalAusencia,
-                PERIODO_ESCOLAR_ID_1);
+            var dto = ObtenhaDtoDadoBase(ObterPerfilCJ(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
+
+            await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            await ExecuteTeste(dto);
+        }
+
+        //[Fact]
+        public async Task Deve_lancar_ausencia_para_diretor_regencia_de_classe()
+        {
+            var dto = ObtenhaDtoDadoBase(ObterPerfilDiretor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+
+            await ExecuteTeste(dto, ObtenhaListaDeRegencia());
+            TesteDisciplinasRegentes();
+        }
+
+        //[Fact]
+        public async Task Deve_lancar_ausencia_para_cp_regencia_de_classe()
+        {
+            var dto = ObtenhaDtoDadoBase(ObterPerfilCP(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
+
+            await ExecuteTeste(dto, ObtenhaListaDeRegencia());
+            TesteDisciplinasRegentes();
+        }
+
+        private void TesteDisciplinasRegentes()
+        {
+            var listaCompencaoRegencia = ObterTodos<CompensacaoAusenciaDisciplinaRegencia>();
+            listaCompencaoRegencia.ShouldNotBeNull();
+            var listaIdDisciplinas = listaCompencaoRegencia.Select(regencia => regencia.DisciplinaId).ToList();
+            listaIdDisciplinas.Except(ObtenhaListaDeRegencia()).Count().ShouldBe(0);
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
@@ -90,30 +87,14 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             };
         }
 
-        private List<CompensacaoAusenciaAlunoDto> ObtenhaListaDeAlunos()
+        private List<string> ObtenhaListaDeRegencia()
         {
-            return new List<CompensacaoAusenciaAlunoDto>()
+            return new List<string>
             {
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_1,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_2,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA_2
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_3,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                },
-                new CompensacaoAusenciaAlunoDto()
-                {
-                    Id = CODIGO_ALUNO_4,
-                    QtdFaltasCompensadas = QUANTIDADE_AULA
-                }
+                COMPONENTE_CIENCIAS_ID_89,
+                COMPONENTE_GEOGRAFIA_ID_8,
+                COMPONENTE_HISTORIA_ID_7,
+                COMPONENTE_MATEMATICA_ID_2
             };
         }
     }
