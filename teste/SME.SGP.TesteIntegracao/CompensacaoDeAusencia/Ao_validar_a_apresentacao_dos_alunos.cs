@@ -65,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             await CriaFrequenciaAlunos(
                         dtoDadoBase,
-                        CODIGO_ALUNO_1,
+                        CODIGO_ALUNO_1, 
                         QUANTIDADE_AULA_3,
                         QUANTIDADE_AULA);
 

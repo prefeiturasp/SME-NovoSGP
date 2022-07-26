@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
@@ -16,6 +17,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         public async Task Deve_bloquear_lancar_compensacao_ausencia_componente_que_nao_lanca_frequencia()
         {
             await CriarPeriodoEscolar();
+            await CriarFrequenciasAlunos(BIMESTRE_1, COMPONENTE_LINGUA_PORTUGUESA_ID_138);
 
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
 
@@ -41,11 +43,49 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);            
         }
 
-        private async Task CriarFrequenciaAluno(int bimestre)
+        private async Task CriarFrequenciasAlunos(int bimestre, string disciplinaId)
         {
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodoEscolar = periodosEscolares.FirstOrDefault(c => c.Bimestre == bimestre);
+            
+            if (periodoEscolar == null)
+                return;
+            ;
+            const int totalAulas = 22;
+
+            var frequenciasAlunos = new List<Tuple<string, int, int, int, int>>
+            {
+                new(CODIGO_ALUNO_1, TOTAL_AUSENCIAS_1, TOTAL_COMPENSACOES_1, totalAulas - TOTAL_AUSENCIAS_1, TOTAL_REMOTOS_0),
+                new(CODIGO_ALUNO_2, TOTAL_AUSENCIAS_3, TOTAL_COMPENSACOES_4, totalAulas - TOTAL_AUSENCIAS_3, TOTAL_REMOTOS_0),
+                new(CODIGO_ALUNO_3, TOTAL_AUSENCIAS_7, TOTAL_COMPENSACOES_6, totalAulas - TOTAL_AUSENCIAS_7, TOTAL_REMOTOS_0),
+                new(CODIGO_ALUNO_4, TOTAL_AUSENCIAS_8, TOTAL_COMPENSACOES_1, totalAulas - TOTAL_AUSENCIAS_8, TOTAL_REMOTOS_0)
+            };
+
+            foreach (var frequenciaAluno in frequenciasAlunos)
+            {
+                await InserirNaBase(new Dominio.FrequenciaAluno
+                {
+                    PeriodoInicio = periodoEscolar.PeriodoInicio,
+                    PeriodoFim = periodoEscolar.PeriodoFim,
+                    Bimestre = bimestre,
+                    TotalAulas = totalAulas,
+                    TotalAusencias = frequenciaAluno.Item2,
+                    TotalCompensacoes = frequenciaAluno.Item3,
+                    PeriodoEscolarId = periodoEscolar.Id,
+                    TotalPresencas = frequenciaAluno.Item4,
+                    TotalRemotos = frequenciaAluno.Item5,
+                    DisciplinaId = disciplinaId,
+                    CodigoAluno = frequenciaAluno.Item1,
+                    TurmaId = TURMA_CODIGO_1,
+                    Tipo = TipoFrequenciaAluno.PorDisciplina,
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+            }
         }
         
-        private async Task<CompensacaoDeAusenciaDBDto> ObterCompensacaoDeAusencia(string perfil, Modalidade modalidade, 
+        private static async Task<CompensacaoDeAusenciaDBDto> ObterCompensacaoDeAusencia(string perfil, Modalidade modalidade, 
             ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, string anoTurma, 
             DateTime dataReferencia, int quantidadeAulas)
         {
