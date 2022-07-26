@@ -27,6 +27,11 @@
     <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
     <EmbeddedResource Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
     <None Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQuery.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQueryHandler.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <EmbeddedResource Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <None Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
   </ItemGroup>
 
   <ItemGroup>
