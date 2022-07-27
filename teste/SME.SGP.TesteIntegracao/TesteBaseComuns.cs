@@ -7,6 +7,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao
@@ -64,7 +65,6 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105 = "'Regência de Classe Fund I - 5H'";
         protected const string COMPONENTE_REG_CLASSE_CICLO_ALFAB_INTERD_5HRS_EOL_1105 = "'REG CLASSE CICLO ALFAB / INTERD 5HRS'";
 
-
         protected const long COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114 = 1114;
         protected const string COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_NOME_1114 = "'Regência de Classe EJA - Básica'";
         protected const string COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_EOL_1114 = "'REG CLASSE EJA ETAPA BASICA'";
@@ -119,6 +119,34 @@ namespace SME.SGP.TesteIntegracao
         protected const int NUMERO_2 = 2;
         protected const int NUMERO_3 = 3;
         protected const int RETORNAR_4 = 4;
+        
+        protected const  bool ehPorcentagem = true;
+        
+        protected const string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_CODIGO_2 = "2";
+        protected const string ALUNO_CODIGO_3 = "3";
+        
+        protected const long NUMERO_LONGO_1 = 1;
+        protected const long NUMERO_LONGO_2 = 2;
+        protected const long NUMERO_LONGO_3 = 3;
+        protected const long NUMERO_LONGO_4 = 4;
+        protected const long NUMERO_LONGO_5 = 5;
+        
+        protected const int NUMERO_INTEIRO_0 = 0;
+        protected const int NUMERO_INTEIRO_1 = 1;
+        protected const int NUMERO_INTEIRO_2 = 2;
+        protected const int NUMERO_INTEIRO_3 = 3;
+        protected const int NUMERO_INTEIRO_4 = 4;
+        protected const int NUMERO_INTEIRO_5 = 5;
+        protected const int NUMERO_INTEIRO_15 = 15;
+        protected const int NUMERO_INTEIRO_16 = 16;
+        protected const int NUMERO_INTEIRO_19 = 19;
+        protected const int NUMERO_INTEIRO_20 = 20;
+        
+        protected const long PERIODO_ESCOLAR_CODIGO_1 = 1;
+        protected const long PERIODO_ESCOLAR_CODIGO_2 = 2;
+        protected const long PERIODO_ESCOLAR_CODIGO_3 = 3;
+        protected const long PERIODO_ESCOLAR_CODIGO_4 = 4;
 
         protected const string PROVA = "Prova";
         protected const string TESTE = "Teste";
@@ -138,6 +166,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
+        protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
+        private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
+
         protected const string USUARIO_PROFESSOR_LOGIN_2222222 = "2222222";
         protected const string USUARIO_PROFESSOR_CODIGO_RF_2222222 = "2222222";
         private const string USUARIO_PROFESSOR_NOME_2222222 = "Nome do usuario 2222222";
@@ -151,6 +183,9 @@ namespace SME.SGP.TesteIntegracao
 
         private const string PROFESSOR_CJ = "Professor CJ";
         private const int ORDEM_320 = 320;
+
+        private const string CP = "CP";
+        private const int ORDEM_240 = 240;
 
         protected const int BIMESTRE_1 = 1;
         protected const int BIMESTRE_2 = 2;
@@ -230,6 +265,7 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_22_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
 
         protected readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+        protected readonly DateTime DATA_01_01_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01);
 
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
 
@@ -247,6 +283,14 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_3 = "3";
         protected const string CODIGO_ALUNO_4 = "4";
         protected const string CODIGO_ALUNO_5 = "5";
+        protected const string CODIGO_ALUNO_6 = "6";
+        protected const string CODIGO_ALUNO_7 = "7";
+        protected const string CODIGO_ALUNO_8 = "8";
+        protected const string CODIGO_ALUNO_9 = "9";
+        protected const string CODIGO_ALUNO_10 = "10";
+        protected const string CODIGO_ALUNO_11 = "11";
+        protected const string CODIGO_ALUNO_12 = "12";
+        protected const string CODIGO_ALUNO_13 = "13";
 
         protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
@@ -278,6 +322,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_VALOR_50 = "50";
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
 
+
         protected readonly string ALUNO_CODIGO_1 = "1";
         protected readonly string ALUNO_CODIGO_2 = "2";
         protected readonly string ALUNO_CODIGO_3 = "3";
@@ -292,6 +337,23 @@ namespace SME.SGP.TesteIntegracao
         protected readonly string ALUNO_CODIGO_12 = "12";
         protected readonly string ALUNO_CODIGO_13 = "13";
         
+
+        protected const double NOTA_1 = 1;
+        protected const double NOTA_2 = 2;
+        protected const double NOTA_3 = 3;
+        protected const double NOTA_4 = 4;
+        protected const double NOTA_5 = 5;
+        protected const double NOTA_6 = 6;
+        protected const double NOTA_7 = 7;
+        protected const double NOTA_8 = 8;
+        protected const double NOTA_9 = 9;
+        protected const double NOTA_10 = 10;
+
+        protected const string PLENAMENTE_SATISFATORIO = "P";
+        protected const string SATISFATORIO = "S";
+        protected const string NAO_SATISFATORIO = "NS";
+
+
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -354,6 +416,7 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.DIRETOR.Name()).ToString();
         }
+
         protected async Task CriarPeriodoEscolarEncerrado()
         {
             await InserirNaBase(new PeriodoEscolar
@@ -526,8 +589,18 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-        }
 
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_CP_LOGIN_3333333,
+                Login = USUARIO_CP_LOGIN_3333333,
+                Nome = USUARIO_CP_NOME_3333333,
+                PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+        }
 
         protected async Task CriarTurma(Modalidade modalidade)
         {
@@ -771,6 +844,7 @@ namespace SME.SGP.TesteIntegracao
                 Abreviacao = DRE_NOME_1,
                 Nome = DRE_NOME_1
             });
+
             await InserirNaBase(new Ue
             {
                 CodigoUe = UE_CODIGO_1,
@@ -794,6 +868,17 @@ namespace SME.SGP.TesteIntegracao
                 NomePerfil = PROFESSOR_CJ,
                 Ordem = ORDEM_320,
                 Tipo = TipoPerfil.UE,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = ORDEM_240,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = CP,
+                CodigoPerfil = Perfis.PERFIL_CP,
+                CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
@@ -929,6 +1014,40 @@ namespace SME.SGP.TesteIntegracao
             {
                 FechamentoAberturaId = 1,
                 Bimestre = BIMESTRE_4,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+        }
+
+        protected async Task CrieConceitoValores()
+        {
+            await InserirNaBase(new Conceito()
+            {
+                Valor = PLENAMENTE_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.P.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.S.GetAttribute<DisplayAttribute>().Name,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+            await InserirNaBase(new Conceito()
+            {
+                Valor = NAO_SATISFATORIO,
+                InicioVigencia = DATA_01_01,
+                Ativo = true,
+                Descricao = ConceitoValores.NS.GetAttribute<DisplayAttribute>().Name,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,

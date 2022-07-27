@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
-    public abstract class RepositorioCache : IRepositorioCache
+    public class RepositorioCache : IRepositorioCache
     {
         private readonly IServicoTelemetria servicoTelemetria;
 
         protected string NomeServicoCache { get; set; }
 
-        protected virtual string ObterValor(string nomeChave) 
+        protected virtual string ObterValor(string nomeChave)
             => throw new NotImplementedException($"Método ObterValor do serviço {NomeServicoCache} não implementado");
 
-        protected virtual Task RemoverValor(string nomeChave) 
+        protected virtual Task RemoverValor(string nomeChave)
             => throw new NotImplementedException($"Método RemoverValor do serviço {NomeServicoCache} não implementado");
 
-        protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar) 
+        protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
             => throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
 
         public RepositorioCache(IServicoTelemetria servicoTelemetria)
@@ -49,6 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                 {
                     stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
                 }
+
                 return JsonConvert.DeserializeObject<T>(stringCache);
             }
 
@@ -57,7 +58,6 @@ namespace SME.SGP.Dados.Repositorios
             await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
 
             return dados;
-
         }
 
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception)
             {
-            }            
+            }
         }
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)

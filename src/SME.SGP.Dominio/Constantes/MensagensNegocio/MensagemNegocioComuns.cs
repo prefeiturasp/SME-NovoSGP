@@ -1,4 +1,4 @@
-﻿namespace SME.SGP.Dominio.Constantes.MensagensNegocio
+namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public class MensagemNegocioComuns
     {

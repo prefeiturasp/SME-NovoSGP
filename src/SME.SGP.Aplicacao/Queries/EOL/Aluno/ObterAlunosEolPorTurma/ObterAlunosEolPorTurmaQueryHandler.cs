@@ -11,7 +11,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAlunosEolPorTurmaQueryHandler :IRequestHandler<ObterAlunosEolPorTurmaQuery,IEnumerable<AlunoPorTurmaResposta>>
+    public class ObterAlunosEolPorTurmaQueryHandler : IRequestHandler<ObterAlunosEolPorTurmaQuery,IEnumerable<AlunoPorTurmaResposta>>
     {
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IRepositorioCache cache;
