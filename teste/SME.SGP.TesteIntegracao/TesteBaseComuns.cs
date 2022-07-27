@@ -122,10 +122,6 @@ namespace SME.SGP.TesteIntegracao
         
         protected const  bool ehPorcentagem = true;
         
-        protected const string ALUNO_CODIGO_1 = "1";
-        protected const string ALUNO_CODIGO_2 = "2";
-        protected const string ALUNO_CODIGO_3 = "3";
-        
         protected const long NUMERO_LONGO_1 = 1;
         protected const long NUMERO_LONGO_2 = 2;
         protected const long NUMERO_LONGO_3 = 3;
@@ -335,6 +331,22 @@ namespace SME.SGP.TesteIntegracao
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_VALOR_50 = "50";
         protected const string PARAMETRO_PERCENTUAL_ALUNOS_INSUFICIENTES_TIPO_15_DESCRICAO = "Percentual de alunos com nota/conceito insuficientes para exigência de justificativ";
 
+
+        protected readonly string ALUNO_CODIGO_1 = "1";
+        protected readonly string ALUNO_CODIGO_2 = "2";
+        protected readonly string ALUNO_CODIGO_3 = "3";
+        protected readonly string ALUNO_CODIGO_4 = "4";
+        protected readonly string ALUNO_CODIGO_5 = "5";
+        protected readonly string ALUNO_CODIGO_6 = "6";
+        protected readonly string ALUNO_CODIGO_7 = "7";
+        protected readonly string ALUNO_CODIGO_8 = "8";
+        protected readonly string ALUNO_CODIGO_9 = "9";
+        protected readonly string ALUNO_CODIGO_10 = "10";
+        protected readonly string ALUNO_CODIGO_11 = "11";
+        protected readonly string ALUNO_CODIGO_12 = "12";
+        protected readonly string ALUNO_CODIGO_13 = "13";
+        
+
         protected const double NOTA_1 = 1;
         protected const double NOTA_2 = 2;
         protected const double NOTA_3 = 3;
@@ -349,6 +361,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string PLENAMENTE_SATISFATORIO = "P";
         protected const string SATISFATORIO = "S";
         protected const string NAO_SATISFATORIO = "NS";
+
 
         protected readonly CollectionFixture collectionFixture;
 

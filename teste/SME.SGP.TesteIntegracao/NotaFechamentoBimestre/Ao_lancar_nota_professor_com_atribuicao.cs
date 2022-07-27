@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await ExecutarTesteComExcecao(fechamentoTurmaDisciplinaDto);
         }
 
-        private static List<FechamentoTurmaDisciplinaDto> ObterFechamentoTurmaDisciplinaDto()
+        private List<FechamentoTurmaDisciplinaDto> ObterFechamentoTurmaDisciplinaDto()
         {
             var fechamentoNotaDto = new List<FechamentoNotaDto>()
             {

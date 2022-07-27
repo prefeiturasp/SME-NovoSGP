@@ -10,6 +10,8 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaRecorrencia
@@ -23,6 +25,8 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
+            
         }
 
         [Fact]
