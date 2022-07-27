@@ -10,6 +10,8 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
+using SME.SGP.TesteIntegracao.Aula.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
@@ -27,6 +29,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFakeAdministrador), ServiceLifetime.Scoped));
+            
         }
 
         [Fact]
@@ -53,11 +57,6 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             var retorno = await useCase.Executar(dto);
 
             Assert.IsType<RetornoBaseDto>(retorno);
-
-            var listaDeAuditoria = ObterTodos<Auditoria>();
-
-            listaDeAuditoria.ShouldNotBeEmpty();
-            listaDeAuditoria.Exists(auditorio => auditorio.Administrador == "7924488").ShouldBeTrue();
         }
     }
 }

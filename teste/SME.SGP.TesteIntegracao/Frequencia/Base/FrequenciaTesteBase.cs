@@ -546,7 +546,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, int totalAusencia = 2)
+        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)
         {
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
@@ -568,7 +568,7 @@ namespace SME.SGP.TesteIntegracao
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 CodigoAluno = codigoAluno,
                 TurmaId = TURMA_CODIGO_1,
-                Tipo = TipoFrequenciaAluno.PorDisciplina
+                Tipo = tipoFrequenciaAluno
 
             });
         }
