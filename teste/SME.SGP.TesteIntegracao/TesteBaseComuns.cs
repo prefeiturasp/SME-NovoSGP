@@ -122,10 +122,6 @@ namespace SME.SGP.TesteIntegracao
         
         protected const  bool ehPorcentagem = true;
         
-        protected const string ALUNO_CODIGO_1 = "1";
-        protected const string ALUNO_CODIGO_2 = "2";
-        protected const string ALUNO_CODIGO_3 = "3";
-        
         protected const long NUMERO_LONGO_1 = 1;
         protected const long NUMERO_LONGO_2 = 2;
         protected const long NUMERO_LONGO_3 = 3;
