@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-80), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
         
         private async Task InserirPeriodoAberturaCustomizado()
