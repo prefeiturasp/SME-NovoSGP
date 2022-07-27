@@ -20,7 +20,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia;
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
@@ -35,7 +34,6 @@ namespace SME.SGP.Dominio.Servicos
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
             IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
             IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
-            IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequencia,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IServicoEol servicoEOL,
@@ -43,14 +41,15 @@ namespace SME.SGP.Dominio.Servicos
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
             IConsultasDisciplina consultasDisciplina,
+            IConsultasTurma consultasTurma,
             IUnitOfWork unitOfWork,
             IMediator mediator)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusenciaDisciplinaRegencia = repositorioCompensacaoAusenciaDisciplinaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaDisciplinaRegencia));
-            this.repositorioFrequencia = repositorioFrequencia ?? throw new System.ArgumentNullException(nameof(repositorioFrequencia));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
+            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
@@ -167,9 +166,12 @@ namespace SME.SGP.Dominio.Servicos
             else
                 periodo = (await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id)).Periodos.FirstOrDefault(p => p.Bimestre == bimestre);
 
-            if (parametroSistema == null || !parametroSistema.Ativo)
+            if (parametroSistema is not { Ativo: true })
             {
-                if (!await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, tipoCalendario: tipoCalendario))
+                var turmaEmPeriodoAberto =
+                    await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, false, tipoCalendario);
+                    
+                if (!turmaEmPeriodoAberto)
                     throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
             }
 
@@ -260,8 +262,7 @@ namespace SME.SGP.Dominio.Servicos
                         mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
                         continue;
                     }
-
-
+                    
                     var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0
                         ? frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas
                         : aluno.QuantidadeFaltasCompensadas;
@@ -294,10 +295,11 @@ namespace SME.SGP.Dominio.Servicos
                         continue;
                     }
 
-                    if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas)
+                    if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
                     {
                         mensagensExcessao.Append(
                             $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+
                         continue;
                     }
 

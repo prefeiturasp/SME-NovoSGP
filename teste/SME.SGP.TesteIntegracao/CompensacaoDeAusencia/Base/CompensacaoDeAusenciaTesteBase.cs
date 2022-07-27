@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             await CriarAbrangencia(dtoDB.Perfil);
 
-            await CriarParametrosSistema();
+            await CriarParametrosSistema(dtoDB.ConsiderarAnoAnterior, dtoDB.PermiteCompensacaoForaPeriodoAtivo);
         }
 
         protected async Task CriarAula(CompensacaoDeAusenciaDBDto dtoDB)
@@ -186,6 +186,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 CriarPeriodoAbertura = true;
+                PermiteCompensacaoForaPeriodoAtivo = true;
             }
 
             public DateTime? DataReferencia { get; set; }
@@ -201,22 +202,21 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             public int QuantidadeAula { get; set; }
             public bool AulaCj { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
+            
+            public bool PermiteCompensacaoForaPeriodoAtivo { get; set; }
         }
 
         private async Task CriarTurmaTipoCalendario(CompensacaoDeAusenciaDBDto dtoDB)
         {
             await CriarTipoCalendario(dtoDB.TipoCalendario, dtoDB.ConsiderarAnoAnterior);
-            await CriarTurma(dtoDB.Modalidade, dtoDB.AnoTurma);
+            await CriarTurma(dtoDB.Modalidade, dtoDB.AnoTurma, dtoDB.ConsiderarAnoAnterior);
         }
 
         private async Task CriarPeriodoEscolar(bool considerarAnoAnterior)
         {
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
@@ -233,7 +233,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             });
         }
 
-        private async Task CriarParametrosSistema()
+        private async Task CriarParametrosSistema(bool considerarAnoAnterior, bool ativo)
         {
             await InserirNaBase(new ParametrosSistema
             {
@@ -241,12 +241,62 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
                 Tipo = TipoParametroSistema.PermiteCompensacaoForaPeriodo,
                 Descricao = "Permite compensação fora do periodo",
                 Valor = string.Empty,
-                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ano = considerarAnoAnterior ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Year : DateTimeExtension.HorarioBrasilia().Year,
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                Ativo = true
+                Ativo = ativo
             });
         }
+        
+        protected async Task CriarPeriodoReaberturaAnoAnterior(long tipoCalendarioId)
+        {
+            await InserirNaBase(new FechamentoReabertura()
+            {
+                Descricao = REABERTURA_GERAL,
+                Inicio = DATA_01_01_ANO_ANTERIOR,
+                Fim = DATA_31_12,
+                TipoCalendarioId = tipoCalendarioId,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre()
+            {
+                FechamentoAberturaId = 1,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+        }        
     }
 }

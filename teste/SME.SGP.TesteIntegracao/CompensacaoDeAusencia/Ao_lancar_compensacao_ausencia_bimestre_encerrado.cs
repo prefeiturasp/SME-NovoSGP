@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -15,87 +18,179 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
     public class Ao_lancar_compensacao_ausencia_bimestre_encerrado : CompensacaoDeAusenciaTesteBase
     {
+        private const int QUANTIDADE_AULAS_22 = 22;
         public Ao_lancar_compensacao_ausencia_bimestre_encerrado(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        // TODO: Comentado devido ao problema de inclusão (Bulk Insert)
+        //[Fact]
+        public async Task Deve_lancar_compensacao_ausencia_bimestre_encerrado_sem_reabertura()
+        {
+            var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
+                BIMESTRE_1,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                ANO_7,
+                QUANTIDADE_AULAS_22,
+                true,
+                false,
+                true,
+                true);
+            
+            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            comando.ShouldNotBeNull();            
+            
+            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
+
+            await comando.Inserir(compensacaoAusenciaDosAlunos);
+            
+            var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
+            listaDeCompensacaoAusencia.ShouldNotBeNull();
+
+            var listaDeCompensacaoAusenciaAluno = ObterTodos<CompensacaoAusenciaAluno>();
+            listaDeCompensacaoAusenciaAluno.ShouldNotBeNull();
+            
+            var compensacao = listaDeCompensacaoAusencia.FirstOrDefault();
+            compensacao.ShouldNotBeNull();
+            
+            var listaDaCompensacaoAluno = listaDeCompensacaoAusenciaAluno.FindAll(aluno => aluno.CompensacaoAusenciaId == compensacao.Id);
+            listaDaCompensacaoAluno.ShouldNotBeNull(); 
+            
+            var compensacaoAusenciasAlunos = await ObterCompensacaoAusenciasAlunos();
+
+            foreach (var compensacaoAusenciaAluno in compensacaoAusenciasAlunos)
+            {
+                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.Item1);
+                compensacaoAluno.ShouldNotBeNull();
+
+                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.Item2);                
+            }            
         }
 
         [Fact]
         public async Task Deve_bloquear_lancar_compensacao_ausencia_ano_anterior_sem_reabertura_periodo()
         {
-            await CriarPeriodoEscolar();
-            
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-
-            var dataInicioPrimeiroBimestre =
-                periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.PeriodoInicio;
-
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
+                BIMESTRE_1,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 ANO_7,
-                dataInicioPrimeiroBimestre,
-                22,
-                false);
-            
-            await CriarDadosBase(compensacaoDeAusencia);
-            await CriarFrequenciasAlunos(BIMESTRE_1, compensacaoDeAusencia.ComponenteCurricular);
-            await CriarRegistroFrequencia();            
-
-            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(BIMESTRE_1, compensacaoDeAusencia.ComponenteCurricular);
+                QUANTIDADE_AULAS_22,
+                true,
+                false,
+                false,
+                true);
             
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            comando.ShouldNotBeNull();            
             
-            comando.ShouldNotBeNull();
+            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
-            async Task doExecutarInserir() { await comando.Inserir(compensacaoAusenciaDosAlunos); }
-            await Should.ThrowAsync<NegocioException>(() => doExecutarInserir());    
+            async Task DoExecutarInserir()
+            {
+                await comando.Inserir(compensacaoAusenciaDosAlunos);
+            }
+
+            await Should.ThrowAsync<NegocioException>(DoExecutarInserir);
+        }
+        
+        // TODO: Comentado devido ao problema de inclusão (Bulk Insert)
+        //[Fact]
+        public async Task Deve_lancar_compensacao_ausencia_ano_anterior_com_reabertura_periodo()
+        {
+            var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
+                BIMESTRE_1,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                ANO_7,
+                QUANTIDADE_AULAS_22,
+                true,
+                true,
+                true,
+                true);
+            
+            var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            comando.ShouldNotBeNull();            
+            
+            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
+
+            await comando.Inserir(compensacaoAusenciaDosAlunos);
+            
+            var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
+            listaDeCompensacaoAusencia.ShouldNotBeNull();
+
+            var listaDeCompensacaoAusenciaAluno = ObterTodos<CompensacaoAusenciaAluno>();
+            listaDeCompensacaoAusenciaAluno.ShouldNotBeNull();
+            
+            var compensacao = listaDeCompensacaoAusencia.FirstOrDefault();
+            compensacao.ShouldNotBeNull();
+            
+            var listaDaCompensacaoAluno = listaDeCompensacaoAusenciaAluno.FindAll(aluno => aluno.CompensacaoAusenciaId == compensacao.Id);
+            listaDaCompensacaoAluno.ShouldNotBeNull(); 
+            
+            var compensacaoAusenciasAlunos = await ObterCompensacaoAusenciasAlunos();
+
+            foreach (var compensacaoAusenciaAluno in compensacaoAusenciasAlunos)
+            {
+                var compensacaoAluno = listaDaCompensacaoAluno.Find(aluno => aluno.CodigoAluno == compensacaoAusenciaAluno.Item1);
+                compensacaoAluno.ShouldNotBeNull();
+
+                compensacaoAluno.QuantidadeFaltasCompensadas.ShouldBe(compensacaoAusenciaAluno.Item2);                
+            }
         }
         
         [Fact]
         public async Task Deve_bloquear_lancar_compensacao_ausencia_componente_que_nao_lanca_frequencia()
         {
-            await CriarPeriodoEscolar();
-            
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-
-            var dataInicioPrimeiroBimestre =
-                periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.PeriodoInicio;
-
             var compensacaoDeAusencia = await ObterCompensacaoDeAusencia(ObterPerfilProfessor(),
+                BIMESTRE_1,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(),
                 ANO_7,
-                dataInicioPrimeiroBimestre,
-                22,
+                QUANTIDADE_AULAS_22,
+                true,
+                false,
+                true,
                 false);
             
-            await CriarDadosBase(compensacaoDeAusencia);
-            await CriarFrequenciasAlunos(BIMESTRE_1, compensacaoDeAusencia.ComponenteCurricular);
-            await CriarRegistroFrequencia();            
-
-            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(BIMESTRE_1, compensacaoDeAusencia.ComponenteCurricular);
-            
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
+            comando.ShouldNotBeNull();            
             
-            comando.ShouldNotBeNull();
+            var compensacaoAusenciaDosAlunos = await LancarCompensacaoAusenciasAlunos(compensacaoDeAusencia);
 
-            async Task doExecutarInserir() { await comando.Inserir(compensacaoAusenciaDosAlunos); }
-            await Should.ThrowAsync<NegocioException>(() => doExecutarInserir());
+            async Task DoExecutarInserir()
+            {
+                await comando.Inserir(compensacaoAusenciaDosAlunos);
+            }
+
+            await Should.ThrowAsync<NegocioException>(DoExecutarInserir);
         }
-        
-        private static async Task<CompensacaoAusenciaDto> LancarCompensacaoAusenciasAlunos(int bimestre, string disciplinaId)
+
+        private static async Task<List<Tuple<string, int>>> ObterCompensacaoAusenciasAlunos()
         {
             //-> Item1 = Código do aluno
             //   Item2 = Quantidade de aulas
-            var compensacaoAusenciasAlunos = new List<Tuple<string, int>>
+            return await Task.FromResult(new List<Tuple<string, int>>
             {
                 new(CODIGO_ALUNO_1, QUANTIDADE_AULA),
                 new(CODIGO_ALUNO_2, QUANTIDADE_AULA_2),
                 new(CODIGO_ALUNO_3, QUANTIDADE_AULA_3),
                 new(CODIGO_ALUNO_4, QUANTIDADE_AULA_4)
-            };
+            });
+        }
+
+        private async Task<CompensacaoAusenciaDto> LancarCompensacaoAusenciasAlunos(CompensacaoDeAusenciaDBDto compensacaoDeAusencia)
+        {
+            await CriarDadosBase(compensacaoDeAusencia);
+            await CriarFrequenciasAlunos(compensacaoDeAusencia.Bimestre, compensacaoDeAusencia.ComponenteCurricular);
+            await CriarRegistroFrequencia();
+
+            var compensacaoAusenciasAlunos = await ObterCompensacaoAusenciasAlunos();
 
             List<CompensacaoAusenciaAlunoDto> alunos = new();
 
@@ -112,29 +207,13 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             {
                 TurmaId = TURMA_CODIGO_1,
                 Alunos = alunos,
-                Bimestre = bimestre,
+                Bimestre = compensacaoDeAusencia.Bimestre,
                 Atividade = ATIVIDADE_COMPENSACAO,
                 Descricao = DESCRICAO_COMPENSACAO,
-                DisciplinaId = disciplinaId,
+                DisciplinaId = compensacaoDeAusencia.ComponenteCurricular,
                 DisciplinasRegenciaIds = null
             });
-        }        
-
-        private async Task CriarPeriodoEscolar()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);            
         }
-        
-        private async Task CriarPeriodoEscolarAnoAnterior()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);            
-        }        
 
         private async Task CriarRegistroFrequencia()
         {
@@ -227,23 +306,25 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             }
         }
         
-        private static async Task<CompensacaoDeAusenciaDBDto> ObterCompensacaoDeAusencia(string perfil, Modalidade modalidade, 
-            ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular, string anoTurma, 
-            DateTime dataReferencia, int quantidadeAulas, bool criarPeriodoAbertura)
+        private static async Task<CompensacaoDeAusenciaDBDto> ObterCompensacaoDeAusencia(string perfil, int bimestre,
+            Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, string componenteCurricular,
+            string anoTurma, int quantidadeAulas, bool criarPeriodoEscolar, bool criarPeriodoAbertura, 
+            bool permiteCompensacaoForaPeriodoAtivo, bool considerarAnoAnterior)
         {
             return await Task.FromResult(new CompensacaoDeAusenciaDBDto
             {
                 Perfil = perfil,
+                Bimestre = bimestre,
                 Modalidade = modalidade,
                 TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_1,
                 ComponenteCurricular = componenteCurricular,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 AnoTurma = anoTurma,
-                DataReferencia = dataReferencia,
                 QuantidadeAula = quantidadeAulas,
-                CriarPeriodoEscolar = false,
-                CriarPeriodoAbertura = criarPeriodoAbertura
+                CriarPeriodoEscolar = criarPeriodoEscolar,
+                CriarPeriodoAbertura = criarPeriodoAbertura,
+                PermiteCompensacaoForaPeriodoAtivo = permiteCompensacaoForaPeriodoAtivo,
+                ConsiderarAnoAnterior = considerarAnoAnterior
             });
         }        
     }
