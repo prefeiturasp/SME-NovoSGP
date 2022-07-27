@@ -106,12 +106,12 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(), DateTime.Now.AddDays(-10), RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
+            await CriarAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), DateTime.Now.AddDays(-10), RecorrenciaAula.AulaUnica, NUMERO_AULAS_1);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
                 AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 CodigoAluno = CODIGO_ALUNO_99999,
                 EhInfantil = false
             };

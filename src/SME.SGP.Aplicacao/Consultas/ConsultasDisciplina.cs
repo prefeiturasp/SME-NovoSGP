@@ -213,23 +213,21 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<ComponenteCurricularEol> RemoverEdFisicaEJA(IEnumerable<ComponenteCurricularEol> componentesCurriculares)
             => componentesCurriculares.Where(c => c.Codigo != 6);
 
-        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo)
+        public async Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma)
         {
-            var usuario = await servicoUsuario.ObterUsuarioLogado();
-
-            var componentesCurriculares = await servicoEOL
-                    .ObterComponentesRegenciaPorAno(turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0);
+            var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
+                                                                    turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
             return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));            
         }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
         {
-            var disciplinaEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
-            if (disciplinaEOL == null || !disciplinaEOL.Any())
+            var disciplinas = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
+            if (disciplinas == null || !disciplinas.Any())
                 throw new NegocioException($"Componente curricular não localizado no SGP [{disciplinaId}]");
 
-            return disciplinaEOL.FirstOrDefault();
+            return disciplinas.FirstOrDefault();
         }
 
         public async Task<List<DisciplinaDto>> ObterDisciplinasAgrupadasPorProfessorETurma(string codigoTurma, bool turmaPrograma)

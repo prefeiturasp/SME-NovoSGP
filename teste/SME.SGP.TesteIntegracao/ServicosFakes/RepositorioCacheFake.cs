@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         }
 
         public void Salvar(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
-        { }
+        {}
 
         public Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {

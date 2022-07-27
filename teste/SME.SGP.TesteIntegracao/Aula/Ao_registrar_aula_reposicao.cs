@@ -18,8 +18,6 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {
-        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         private const string TITULO_NOTIFICACAO = "Notificação Teste de Integração.";
         private const string MENSAGEM_NOTIFICACAO = "Mensagem notificação Teste de Integração.";
         private const string SISTEMA = "Sistema";

@@ -15,8 +15,6 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_alterar_avaliacao_pela_gestao : TesteAvaliacao
     {
-        private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
-
         private const string DESCRICAO = "OUTRA DESCRICAO";
 
         public Ao_alterar_avaliacao_pela_gestao(CollectionFixture collectionFixture) : base(collectionFixture)

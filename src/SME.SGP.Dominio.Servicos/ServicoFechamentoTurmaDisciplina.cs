@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
@@ -168,8 +169,8 @@ namespace SME.SGP.Dominio.Servicos
             if (turma == null)
                 throw new NegocioException("Turma não encontrada.");
 
-            var disciplinaEOL = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
-            if (disciplinaEOL == null)
+            var disciplina = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { fechamentoTurmaDisciplina.DisciplinaId })).ToList().FirstOrDefault();
+            if (disciplina == null)
                 throw new NegocioException("Componente Curricular não localizado.");
 
             var periodoEscolar = repositorioPeriodoEscolar.ObterPorId(fechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId.Value);
@@ -192,8 +193,8 @@ namespace SME.SGP.Dominio.Servicos
                                             fechamentoTurmaDisciplina.Justificativa,
                                             fechamentoTurmaDisciplina.CriadoRF,
                                             turma.Id,
-                                            !disciplinaEOL.LancaNota,
-                                            disciplinaEOL.RegistraFrequencia);
+                                            !disciplina.LancaNota,
+                                            disciplina.RegistraFrequencia);
         }
 
         public async Task<AuditoriaPersistenciaDto> Salvar(long id, FechamentoTurmaDisciplinaDto entidadeDto, bool componenteSemNota = false)
@@ -232,10 +233,17 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(usuarioLogado.CodigoRf, entidadeDto.TurmaId, periodoEscolar.PeriodoFim, periodos.periodoFechamento,
                     entidadeDto.DisciplinaId.ToString(), usuarioLogado);
             }
+            
+            var mesmoAnoLetivo = turmaFechamento.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
 
-            var fechamentoAlunos = Enumerable.Empty<FechamentoAluno>();
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turmaFechamento, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre, mesmoAnoLetivo)); 
 
-            DisciplinaDto disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
+            if(!temPeriodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+
+            IEnumerable<FechamentoAluno> fechamentoAlunos;
+
+            var disciplinaEOL = await consultasDisciplina.ObterDisciplina(fechamentoTurmaDisciplina.DisciplinaId);
 
             if (disciplinaEOL == null)
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
@@ -246,7 +254,21 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaFechamento.CodigoTurma));
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaFechamento.CodigoTurma));
+
+            var alunosAtivos = from a in alunos
+                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) || !a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) && 
+                    !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && 
+                    a.DataSituacao >= periodoEscolar.PeriodoInicio
+                orderby a.NomeValido(), a.NumeroAlunoChamada
+                select a;
+
+            var codigosAlunosAtivos = alunosAtivos.Select(c => c.CodigoAluno).Distinct().ToArray();
+            var codigosAlunosFechamento = fechamentoAlunos.Select(c => c.AlunoCodigo).Distinct().ToArray();
+
+            if (codigosAlunosFechamento.Any(c => !codigosAlunosAtivos.Contains(c)))
+                throw new NegocioException(MensagemNegocioFechamentoNota.EXISTEM_ALUNOS_INATIVOS_FECHAMENTO_NOTA_BIMESTRE);
+
             var parametroDiasAlteracao = await repositorioParametrosSistema.ObterValorPorTipoEAno(TipoParametroSistema.QuantidadeDiasAlteracaoNotaFinal, turmaFechamento.AnoLetivo);
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
@@ -360,7 +382,7 @@ namespace SME.SGP.Dominio.Servicos
                 auditoria.EmAprovacao = notasEnvioWfAprovacao.Any();
 
                 if (parametroAlteracaoNotaFechamento.Ativo && turmaFechamento.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && !usuarioLogado.EhGestorEscolar())
-                    auditoria.MensagemConsistencia = "Registro alterado com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";
+                    auditoria.MensagemConsistencia = MensagensNegocioLancamentoNota.REGISTRADO_COM_SUCESSO_EM_24_HORAS_SERA_ENVIADO_PARA_APROVACAO; 
                 else
                     auditoria.MensagemConsistencia = "Suas informações foram salvas com sucesso.";
 

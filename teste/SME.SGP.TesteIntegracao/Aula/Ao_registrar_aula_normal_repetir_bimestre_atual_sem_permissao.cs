@@ -15,9 +15,6 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 {
     public class Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao : AulaTeste
     {
-        private DateTime DATA_02_05 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime DATA_08_07 = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
-
         public Ao_registrar_aula_normal_repetir_bimestre_atual_sem_permissao(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
