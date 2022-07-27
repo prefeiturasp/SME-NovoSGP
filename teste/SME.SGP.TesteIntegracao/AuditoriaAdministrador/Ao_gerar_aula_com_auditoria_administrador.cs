@@ -1,17 +1,14 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
-using SME.SGP.TesteIntegracao.Aula.ServicosFakes;
+using Shouldly;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
@@ -19,6 +16,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
     public class Ao_gerar_aula_com_auditoria_administrador : TesteBase
     {
         private ItensBasicosBuilder _buider;
+        private const string USUARIO_ADMINISTRADOR_AUDITORIA = "7924488";
+        
         public Ao_gerar_aula_com_auditoria_administrador(CollectionFixture testFixture) : base(testFixture)
         {
             _buider = new ItensBasicosBuilder(this);
@@ -29,14 +28,11 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFakeAdministrador), ServiceLifetime.Scoped));
-            
         }
 
         [Fact]
         public async Task Deve_gravar_aula_com_auditoria_para_administrador()
         {
-
             await _buider.CriaItensComunsEja(true);
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
@@ -56,7 +52,12 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var retorno = await useCase.Executar(dto);
 
-            Assert.IsType<RetornoBaseDto>(retorno);
+            retorno.ShouldNotBeNull();
+            retorno.ShouldBeOfType<RetornoBaseDto>();
+
+            var auditoria = ServicoAuditoriaFake.Auditoria;
+            auditoria.ShouldNotBeNull();
+            (auditoria.Administrador == USUARIO_ADMINISTRADOR_AUDITORIA).ShouldBeTrue();
         }
     }
 }
