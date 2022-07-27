@@ -212,9 +212,11 @@ namespace SME.SGP.Aplicacao
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
-                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
+
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
