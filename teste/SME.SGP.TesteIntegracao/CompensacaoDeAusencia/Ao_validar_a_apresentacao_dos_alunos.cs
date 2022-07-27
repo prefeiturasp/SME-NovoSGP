@@ -21,7 +21,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
         }
 
-
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);

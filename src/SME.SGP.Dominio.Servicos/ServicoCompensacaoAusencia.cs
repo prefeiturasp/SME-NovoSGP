@@ -26,7 +26,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IServicoEol servicoEOL;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
@@ -36,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
             IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
-            IServicoEol servicoEOL,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
@@ -54,7 +52,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
-            this.servicoEOL = servicoEOL ?? throw new System.ArgumentNullException(nameof(servicoEOL));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
@@ -443,7 +440,8 @@ namespace SME.SGP.Dominio.Servicos
             if (usuario.EhProfessorCj())
                 return await PossuiAtribuicaoCJ(turmaId, usuario.CodigoRf);
 
-            return await servicoEOL.ProfessorPodePersistirTurma(usuario.CodigoRf, turmaId, dataAula.Local());
+            return await mediator.Send(
+                new ProfessorPodePersistirTurmaQuery(usuario.CodigoRf, turmaId, dataAula.Local()));
         }
 
         private async Task<bool> PossuiAtribuicaoCJ(string turmaId, string codigoRf)
