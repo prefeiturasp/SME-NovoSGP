@@ -948,9 +948,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
+        public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(true);
         }
 
         public Task ReiniciarSenha(string login)

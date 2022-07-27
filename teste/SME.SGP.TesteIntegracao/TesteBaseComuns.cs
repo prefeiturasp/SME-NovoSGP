@@ -231,8 +231,9 @@ namespace SME.SGP.TesteIntegracao
         protected const int TOTAL_AUSENCIAS_7 = 7;
         protected const int TOTAL_AUSENCIAS_8 = 8;
         protected const int TOTAL_COMPENSACOES_1 = 1;
-        protected const int TOTAL_COMPENSACOES_4 = 4;
-        protected const int TOTAL_COMPENSACOES_6 = 6;
+        protected const int TOTAL_COMPENSACOES_3 = 3;
+        protected const int TOTAL_COMPENSACOES_7 = 7;
+        protected const int TOTAL_COMPENSACOES_8 = 8;        
         protected const int TOTAL_PRESENCAS_1 = 1;
         protected const int TOTAL_PRESENCAS_2 = 2;
         protected const int TOTAL_PRESENCAS_3 = 3;

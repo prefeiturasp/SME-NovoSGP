@@ -17,9 +17,10 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
     {
         protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
         protected const int PERIODO_ESCOLAR_ID_1 = 1;
-        private const int REGISTRO_FREQUENCIA_ID_1 = 1;
-        private const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
-        private const string ATIVIDADE_COMPENSACAO = "Atividade teste";
+        protected const int REGISTRO_FREQUENCIA_ID_1 = 1;
+
+        protected const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
+        protected const string ATIVIDADE_COMPENSACAO = "Atividade teste";
 
         protected CompensacaoDeAusenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {

@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio.Servicos
@@ -81,29 +82,37 @@ namespace SME.SGP.Dominio.Servicos
                 if (compensacaoExistente != null)
                     throw new NegocioException($"Já existe essa compensação cadastrada para turma no ano letivo.");
 
-                CompensacaoAusencia compensacaoBanco = new CompensacaoAusencia();
+                var compensacaoBanco = new CompensacaoAusencia();
 
                 if (id > 0)
-                    compensacaoBanco = repositorioCompensacaoAusencia.ObterPorId(id);
+                    compensacaoBanco = await repositorioCompensacaoAusencia.ObterPorIdAsync(id);
+                
+                var permiteRegistroFrequencia = await mediator.Send(
+                    new ObterComponenteRegistraFrequenciaQuery(long.Parse(compensacaoDto.DisciplinaId)));
+
+                if (!permiteRegistroFrequencia)
+                    throw new NegocioException(MensagemNegocioCompensacaoAusencia.COMPONENTE_CURRICULAR_NAO_PERMITE_REGISTRAR_FREQUENCIA);
 
                 // Carrega dasdos da disciplina no EOL
                 await ConsisteDisciplina(long.Parse(compensacaoDto.DisciplinaId), compensacaoDto.DisciplinasRegenciaIds, compensacaoBanco.Migrado);
 
-                var descricaoAtual = compensacaoBanco != null ? compensacaoBanco.Descricao : string.Empty;
+                var descricaoAtual = compensacaoBanco.Descricao;
 
                 // Persiste os dados
                 var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;
-
-                List<string> codigosAlunosCompensacao = new List<string>();
+                
                 unitOfWork.IniciarTransacao();
+                
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
-                codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                
+                var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
+                
                 unitOfWork.PersistirTransacao();
+                
                 await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
-
 
                 if (codigosAlunosCompensacao.Any())
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
