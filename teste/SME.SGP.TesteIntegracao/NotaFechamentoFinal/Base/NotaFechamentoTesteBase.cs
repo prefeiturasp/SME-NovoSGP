@@ -23,20 +23,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
     {
         protected const string CODIGO_ALUNO_99999 = "99999";
 
-        protected readonly string ALUNO_CODIGO_1 = "1";
-        protected readonly string ALUNO_CODIGO_2 = "2";
-        protected readonly string ALUNO_CODIGO_3 = "3";
-        protected readonly string ALUNO_CODIGO_4 = "4";
-        protected readonly string ALUNO_CODIGO_5 = "5";
-        protected readonly string ALUNO_CODIGO_6 = "6";
-        protected readonly string ALUNO_CODIGO_7 = "7";
-        protected readonly string ALUNO_CODIGO_8 = "8";
-        protected readonly string ALUNO_CODIGO_9 = "9";
-        protected readonly string ALUNO_CODIGO_10 = "10";
-        protected readonly string ALUNO_CODIGO_11 = "11";
-        protected readonly string ALUNO_CODIGO_12 = "12";
-        protected readonly string ALUNO_CODIGO_13 = "13";
-
         protected readonly double NOTA_1 = 1;
         protected readonly double NOTA_2 = 2;
         protected readonly double NOTA_3 = 3;
@@ -86,8 +72,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         protected override void RegistrarFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
-            
             base.RegistrarFakes(services);
         }
 

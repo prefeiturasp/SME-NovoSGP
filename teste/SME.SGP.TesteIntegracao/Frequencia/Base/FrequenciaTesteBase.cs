@@ -128,6 +128,22 @@ namespace SME.SGP.TesteIntegracao
                 await CriarPeriodoEscolarEAbertura();
 
         }
+        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            
+            await CriarPadrao();
+            
+            await CriarComponenteCurricular();
+            
+            CriarClaimUsuario(perfil);
+            
+            await CriarUsuarios();
+            
+            await CriarTurma(modalidade);
+            
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+        }
 
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
@@ -505,7 +521,6 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new ParametrosSistema()
             {
-                Id = 403,
                 Nome = "PercentualFrequenciaCritico",
                 Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
                 Descricao = "",
@@ -519,7 +534,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new ParametrosSistema()
             {
-                Id = 402,
                 Nome = "PercentualFrequenciaAlerta",
                 Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
                 Descricao = "",
@@ -532,7 +546,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, int totalAusencia = 2)
+        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)
         {
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
@@ -554,7 +568,7 @@ namespace SME.SGP.TesteIntegracao
                 DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 CodigoAluno = codigoAluno,
                 TurmaId = TURMA_CODIGO_1,
-                Tipo = TipoFrequenciaAluno.PorDisciplina
+                Tipo = tipoFrequenciaAluno
 
             });
         }
