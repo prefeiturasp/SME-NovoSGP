@@ -309,7 +309,8 @@ namespace SME.SGP.Dominio.Servicos
         {
             //Inserir Lista de novos registros quando alteração é false
             if (!alteracao && listaPersistencia.Any())
-                await repositorioCompensacaoAusenciaAluno.InserirVarios(listaPersistencia, usuarioLogado);
+                 await repositorioCompensacaoAusenciaAluno.BulkInsert(listaPersistencia);
+                //await repositorioCompensacaoAusenciaAluno.InserirVarios(listaPersistencia, usuarioLogado);
             //Atualizar individualmente quando alteração é true
             else if (alteracao && listaPersistencia.Any())
                 listaPersistencia.ForEach(aluno => repositorioCompensacaoAusenciaAluno.Salvar(aluno));

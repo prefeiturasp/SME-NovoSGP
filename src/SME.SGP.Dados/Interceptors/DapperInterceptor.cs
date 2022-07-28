@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using Microsoft.ApplicationInsights;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -57,7 +56,6 @@ namespace SME.SGP.Dados
 
             return result;
         }
-
         public static async Task<IEnumerable<T>> QueryAsync<T>(this IDbConnection cnn, string sql, object param = null, IDbTransaction transaction = null, int? commandTimeout = null, CommandType? commandType = null, string queryName = "")
         {
             var result = await servicoTelemetria.RegistrarComRetornoAsync<T>(async () => await SqlMapper.QueryAsync<T>(cnn, sql, param, transaction, commandTimeout, commandType), "Postgres", $"Query {queryName}", sql, param?.ToString());
@@ -179,6 +177,20 @@ namespace SME.SGP.Dados
             return result;
         }
 
+        public static async Task<object> InsertBulkAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
+        {
+            var entidade = entity?.GetType()?.Name;
+            
+            var result = await servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction),"Postgres",$"Insert Entidade {entidade}","Insert");
+            return result;
+        }
+        public static object InsertBulk<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
+        {
+            var entidade = entity?.GetType()?.Name;
+            
+            var result =  servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction),"Postgres",$"Insert Entidade {entidade}","Insert");
+            return result;
+        }
         public static bool Update<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
             var entidade = entity?.GetType()?.Name;
