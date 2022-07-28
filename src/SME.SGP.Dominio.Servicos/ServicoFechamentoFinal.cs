@@ -271,7 +271,10 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não foi possível localizar um fechamento de período ou reabertura para esta turma.");
 
             var professorRf = servicoUsuario.ObterRf();
-            var professorPodePersistirTurma = await servicoEOL.ProfessorPodePersistirTurma(professorRf, turma.CodigoTurma, diaAtual);
+            
+            var professorPodePersistirTurma =
+                await mediator.Send(new ProfessorPodePersistirTurmaQuery(professorRf, turma.CodigoTurma, diaAtual));
+
             if (!professorPodePersistirTurma)
                 throw new NegocioException("Você não pode executar alterações nesta turma.");
         }
