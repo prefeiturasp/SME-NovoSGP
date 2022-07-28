@@ -948,11 +948,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
-        {
-            return await Task.FromResult(true);
-        }
-
         public Task ReiniciarSenha(string login)
         {
             throw new NotImplementedException();

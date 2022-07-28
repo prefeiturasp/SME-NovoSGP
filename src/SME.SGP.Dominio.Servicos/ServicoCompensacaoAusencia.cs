@@ -21,7 +21,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno;
         private readonly IRepositorioCompensacaoAusenciaDisciplinaRegencia repositorioCompensacaoAusenciaDisciplinaRegencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-        private readonly IConsultasTurma consultasTurma;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
@@ -39,7 +38,6 @@ namespace SME.SGP.Dominio.Servicos
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
             IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
             IConsultasDisciplina consultasDisciplina,
-            IConsultasTurma consultasTurma,
             IUnitOfWork unitOfWork,
             IMediator mediator)
         {
@@ -47,7 +45,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
             this.repositorioCompensacaoAusenciaDisciplinaRegencia = repositorioCompensacaoAusenciaDisciplinaRegencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaDisciplinaRegencia));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
@@ -166,7 +163,8 @@ namespace SME.SGP.Dominio.Servicos
             if (parametroSistema is not { Ativo: true })
             {
                 var turmaEmPeriodoAberto =
-                    await consultasTurma.TurmaEmPeriodoAberto(turma, DateTime.Today, bimestre, false, tipoCalendario);
+                    await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false,
+                        tipoCalendario.Id));
                     
                 if (!turmaEmPeriodoAberto)
                     throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
