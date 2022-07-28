@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using Polly;
 using Polly.Registry;
 using RabbitMQ.Client;
-using SME.GoogleClassroom.Infra;
+using SME.SGP.Infra;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;

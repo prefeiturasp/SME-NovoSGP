@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,7 +9,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAtividadeInfantil : RepositorioBase<AtividadeInfantil>, IRepositorioAtividadeInfantil
     {
-        public RepositorioAtividadeInfantil(ISgpContext context) : base(context) {}
+        public RepositorioAtividadeInfantil(ISgpContext context, IServicoAuditoria servicoAuditoria) : base(context, servicoAuditoria)
+        { }
+
         public async Task<IEnumerable<AtividadeInfantilDto>> ObterPorAulaId(long aulaId)
         {
             var query = @"select id
