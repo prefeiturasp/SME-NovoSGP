@@ -116,16 +116,16 @@ namespace SME.SGP.Aplicacao
                         Bimestre = filtro.Bimestre,
                         ComponenteCurricularId = filtro.ComponenteCurricularId
                     };
-
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 if (filtro.ComponenteCurricularId.HasValue)
                 {
                     consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
                     consolidadoNota.Nota = filtro.Nota;
                     consolidadoNota.ConceitoId = filtro.ConceitoId;
+
+                    await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
                 }
 
-                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
 
                 return true;
             }
