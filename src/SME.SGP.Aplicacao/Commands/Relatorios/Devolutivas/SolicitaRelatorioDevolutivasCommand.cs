@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
 
                 RuleFor(c => c.DevolutivaId)
                   .NotEmpty()
-                  .WithMessage("O id da TurmaId deve ser informado para solicitação do relatório.");
+                  .WithMessage("O id da devolutiva deve ser informado para solicitação do relatório.");
 
 
             }
