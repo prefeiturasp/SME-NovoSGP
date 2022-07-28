@@ -7,6 +7,7 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
@@ -53,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
                                                        where cc.permite_lancamento_nota 
                                                          ";
 
-        public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

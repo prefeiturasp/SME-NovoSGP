@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +14,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDevolutiva : RepositorioBase<Devolutiva>, IRepositorioDevolutiva
     {
-        public RepositorioDevolutiva(ISgpContext conexao) : base(conexao) { }
+        public RepositorioDevolutiva(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        { }
 
         public async Task<Devolutiva> ObterPorIdRegistroExcluido(long? devolutivaId)
         {

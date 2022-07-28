@@ -3,15 +3,17 @@ using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanejamentoAnualObjetivosAprendizagem : RepositorioBase<PlanejamentoAnualObjetivoAprendizagem>, IRepositorioPlanejamentoAnualObjetivosAprendizagem
     {
-        public RepositorioPlanejamentoAnualObjetivosAprendizagem(ISgpContext database) : base(database)
+        public RepositorioPlanejamentoAnualObjetivosAprendizagem(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

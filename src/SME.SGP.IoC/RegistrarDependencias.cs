@@ -33,6 +33,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using System;
 
 namespace SME.SGP.IoC
 {
@@ -51,8 +52,20 @@ namespace SME.SGP.IoC
             RegistrarCasosDeUso(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
+            RegistrarCache(services, configuration);
+            RegistrarAuditoria(services);
 
             RegistrarMapeamentos.Registrar();
+        }
+
+        private void RegistrarAuditoria(IServiceCollection services)
+        {
+            services.ConfigurarAuditoria();
+        }
+
+        private void RegistrarCache(IServiceCollection services, IConfiguration configuration)
+        {
+            services.ConfigurarCache(configuration);
         }
 
         public virtual void RegistrarParaWorkers(IServiceCollection services, IConfiguration configuration)
@@ -74,6 +87,8 @@ namespace SME.SGP.IoC
             RegistrarServicos(services);
             RegistrarRabbit(services, configuration);
             RegistrarTelemetria(services, configuration);
+            RegistrarCache(services, configuration);
+            RegistrarAuditoria(services);
 
             RegistrarMapeamentos.Registrar();
         }

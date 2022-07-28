@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConceitoConsulta : RepositorioBase<Conceito>, IRepositorioConceitoConsulta
     {
-        public RepositorioConceitoConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioConceitoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

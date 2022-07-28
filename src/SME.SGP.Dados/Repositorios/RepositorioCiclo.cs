@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCiclo : RepositorioBase<Ciclo>, IRepositorioCiclo
     {
-        public RepositorioCiclo(ISgpContext conexao) : base(conexao)
+        public RepositorioCiclo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
