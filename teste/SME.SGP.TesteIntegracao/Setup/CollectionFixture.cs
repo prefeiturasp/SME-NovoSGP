@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
@@ -34,8 +35,14 @@ namespace SME.SGP.TesteIntegracao.Setup
 
             new RegistradorDependencias().Registrar(_services, null);
 
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
-            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
+            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),
+                typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            
+            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), 
+                typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
+            
+            _services.Replace(new ServiceDescriptor(typeof(IServicoMensageria),
+                typeof(ServicoMensageriaFake), ServiceLifetime.Scoped));            
 
             ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
