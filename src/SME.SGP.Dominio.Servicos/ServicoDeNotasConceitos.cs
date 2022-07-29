@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio
 {
@@ -31,63 +32,72 @@ namespace SME.SGP.Dominio
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
             string disciplinaId)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
-
-            if (turma == null)
-                throw new NegocioException($"Turma com código [{turmaId}] não localizada");
-
-            var idsAtividadesAvaliativas = notasConceitos
-                .Select(x => x.AtividadeAvaliativaID);
-
-            var atividadesAvaliativas =
-                await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
-
-            var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
-
-
-            if (alunos == null || !alunos.Any())
-                throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
-
-            var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
-
-            await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,usuario.EhGestorEscolar(), turma);
-
-            var entidadesSalvar = new List<NotaConceito>();
-
-            var notasPorAvaliacoes = notasConceitos
-                .GroupBy(x => x.AtividadeAvaliativaID);
-
-            var dataConsiderada = atividadesAvaliativas.Any()
-                ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date
-                : DateTime.Today;
-            alunos = (from a in alunos
-                join nc in notasConceitos
-                    on a.CodigoAluno equals nc.AlunoId
-                join aa in atividadesAvaliativas
-                    on nc.AtividadeAvaliativaID equals aa.Id
-                where a.EstaAtivo(aa.DataAvaliacao)
-                select a).Distinct();
-
-            if (!usuario.EhGestorEscolar())
-                await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId,
-                    dataConsiderada, usuario);
-
-            foreach (var notasPorAvaliacao in notasPorAvaliacoes)
+            try
             {
-                var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
-                entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf,
-                    disciplinaId, usuario, turma));
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
+
+                if (turma == null)
+                    throw new NegocioException($"Turma com código [{turmaId}] não localizada");
+
+                var idsAtividadesAvaliativas = notasConceitos
+                    .Select(x => x.AtividadeAvaliativaID);
+
+                var atividadesAvaliativas =
+                    await mediator.Send(new ObterListaDeAtividadesAvaliativasPorIdsQuery(idsAtividadesAvaliativas));
+
+                var alunos = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
+
+
+                if (alunos == null || !alunos.Any())
+                    throw new NegocioException("Não foi encontrado nenhum aluno para a turma informada");
+
+                var usuario = await  mediator.Send(new ObterUsuarioLogadoQuery());
+
+                await ValidarAvaliacoes(idsAtividadesAvaliativas, atividadesAvaliativas, professorRf, disciplinaId,usuario.EhGestorEscolar(), turma);
+
+                var entidadesSalvar = new List<NotaConceito>();
+
+                var notasPorAvaliacoes = notasConceitos
+                    .GroupBy(x => x.AtividadeAvaliativaID);
+
+                var dataConsiderada = atividadesAvaliativas.Any()
+                    ? atividadesAvaliativas.OrderBy(aa => aa.DataAvaliacao).Last().DataAvaliacao.Date
+                    : DateTime.Today;
+                alunos = (from a in alunos
+                    join nc in notasConceitos
+                        on a.CodigoAluno equals nc.AlunoId
+                    join aa in atividadesAvaliativas
+                        on nc.AtividadeAvaliativaID equals aa.Id
+                    where a.EstaAtivo(aa.DataAvaliacao)
+                    select a).Distinct();
+
+                if (!usuario.EhGestorEscolar())
+                    await VerificaSeProfessorPodePersistirTurmaDisciplina(professorRf, turmaId, disciplinaId,
+                        dataConsiderada, usuario);
+
+                foreach (var notasPorAvaliacao in notasPorAvaliacoes)
+                {
+                    var avaliacao = atividadesAvaliativas.FirstOrDefault(x => x.Id == notasPorAvaliacao.Key);
+                    entidadesSalvar.AddRange(await ValidarEObter(notasPorAvaliacao.ToList(), avaliacao, alunos, professorRf,
+                        disciplinaId, usuario, turma));
+                }
+
+                var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
+
+                var alunosId = alunos
+                    .Select(a => a.CodigoAluno)
+                    .ToList();
+
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
+
             }
-
-            var criadoPor = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            await SalvarNoBanco(entidadesSalvar, criadoPor, turma.CodigoTurma);
-
-            var alunosId = alunos
-                .Select(a => a.CodigoAluno)
-                .ToList();
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar as Notas de Conceito", LogNivel.Critico, LogContexto.Geral, ex.Message,excecaoInterna:ex.StackTrace));
+                throw;
+            }
         }
 
         public async Task<NotaTipoValor> TipoNotaPorAvaliacao(AtividadeAvaliativa atividadeAvaliativa,
@@ -235,99 +245,100 @@ namespace SME.SGP.Dominio
             string disciplinaId,
             Usuario usuario, Turma turma)
         {
-            var notasMultidisciplina = new List<NotaConceito>();
-            var alunosNotasExtemporaneas = new StringBuilder();
-            var nota = notasConceitos.FirstOrDefault();
-            var turmaHistorica =
-                await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
-            var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
-            var notaParametro =
-                await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
-            var dataAtual = DateTime.Now;
+                var notasMultidisciplina = new List<NotaConceito>();
+                var alunosNotasExtemporaneas = new StringBuilder();
+                var nota = notasConceitos.FirstOrDefault();
+                var turmaHistorica =
+                    await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma, true));
+                var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, turmaHistorica != null);
+                var notaParametro =
+                    await mediator.Send(new ObterNotaParametroPorDataAvaliacaoQuery(atividadeAvaliativa.DataAvaliacao));
+                var dataAtual = DateTime.Now;
 
-            // Verifica Bimestre Atual
-            var dataPesquisa = DateTime.Today;
-            var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
-            var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x =>
-                x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
-            var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x =>
-                x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
-                x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
-            if (periodoEscolarAvaliacao == null)
-                throw new NegocioException(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado);
+                // Verifica Bimestre Atual
+                var dataPesquisa = DateTime.Today;
+                var periodosEscolares = await BuscarPeriodosEscolaresDaAtividade(atividadeAvaliativa);
+                var periodoEscolarAtual = periodosEscolares.FirstOrDefault(x =>
+                    x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
+                var periodoEscolarAvaliacao = periodosEscolares.FirstOrDefault(x =>
+                    x.PeriodoInicio.Date <= atividadeAvaliativa.DataAvaliacao.Date &&
+                    x.PeriodoFim.Date >= atividadeAvaliativa.DataAvaliacao.Date);
+                if (periodoEscolarAvaliacao == null)
+                    throw new NegocioException(MensagensNegocioLancamentoNota.Periodo_escolar_da_atividade_avaliativa_nao_encontrado);
 
-            var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
+                var bimestreAvaliacao = periodoEscolarAvaliacao.Bimestre;
 
-            var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
+                var fechamentoReabertura = await mediator.Send(new ObterTurmaEmPeriodoFechamentoQuery(bimestreAvaliacao, DateTimeExtension.HorarioBrasilia().Date, periodoEscolarAvaliacao.TipoCalendarioId, atividadeAvaliativa.DreId, atividadeAvaliativa.UeId));
 
-            var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
-                || fechamentoReabertura == null;
+                var existePeriodoEmAberto = periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == periodoEscolarAvaliacao.Bimestre
+                                            || fechamentoReabertura == null;
 
-            foreach (var notaConceito in notasConceitos)
-            {
-                var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
-
-                if (aluno == null)
-                    throw new NegocioException(String.Format(MensagensNegocioLancamentoNota.Nao_foi_encontrado_aluno_com_o_codigo, notaConceito.AlunoId));
-
-                if (tipoNota.TipoNota == TipoNota.Nota)
+                foreach (var notaConceito in notasConceitos)
                 {
-                    notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
-                    if (notaParametro == null)
-                        throw new NegocioException("Não foi possível localizar o parâmetro de nota.");
-                }
-                else
-                {
-                    var conceitos =
-                        await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
+                    var aluno = alunos.FirstOrDefault(a => a.CodigoAluno.Equals(notaConceito.AlunoId));
 
-                    if (conceitos == null)
-                        throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
-                }
+                    if (aluno == null)
+                        throw new NegocioException(String.Format(MensagensNegocioLancamentoNota.Nao_foi_encontrado_aluno_com_o_codigo, notaConceito.AlunoId));
 
-                notaConceito.TipoNota = tipoNota.TipoNota;
-                notaConceito.DisciplinaId = disciplinaId;
-                if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) &&
-                    notaConceito.Id.Equals(0))
-                {
-                    var atividadeDisciplinas =
-                        await mediator.Send(
-                            new ObterListaDeAtividadeAvaliativaDisciplinaPorIdAtividadeQuery(atividadeAvaliativa.Id));
-                    foreach (var atividade in atividadeDisciplinas)
+                    if (tipoNota.TipoNota == TipoNota.Nota)
                     {
-                        if (!atividade.DisciplinaId.Equals(disciplinaId))
+                        notaConceito.ValidarNota(notaParametro, aluno.NomeAluno);
+                        if (notaParametro == null)
+                            throw new NegocioException("Não foi possível localizar o parâmetro de nota.");
+                    }
+                    else
+                    {
+                        var conceitos =
+                            await mediator.Send(new ObterConceitoPorDataQuery(atividadeAvaliativa.DataAvaliacao));
+
+                        if (conceitos == null)
+                            throw new NegocioException("Não foi possível localizar o parâmetro de conceito.");
+                    }
+
+                    notaConceito.TipoNota = tipoNota.TipoNota;
+                    notaConceito.DisciplinaId = disciplinaId;
+                    if (atividadeAvaliativa.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar) &&
+                        notaConceito.Id.Equals(0))
+                    {
+                        var atividadeDisciplinas =
+                            await mediator.Send(
+                                new ObterListaDeAtividadeAvaliativaDisciplinaPorIdAtividadeQuery(atividadeAvaliativa.Id));
+                        foreach (var atividade in atividadeDisciplinas)
                         {
-                            notasMultidisciplina.Add(new NotaConceito
+                            if (!atividade.DisciplinaId.Equals(disciplinaId))
                             {
-                                AlunoId = notaConceito.AlunoId,
-                                AtividadeAvaliativaID = notaConceito.AtividadeAvaliativaID,
-                                DisciplinaId = atividade.DisciplinaId,
-                                Nota = notaConceito.Nota,
-                                ConceitoId = notaConceito.ConceitoId,
-                                TipoNota = notaConceito.TipoNota
-                            });
+                                notasMultidisciplina.Add(new NotaConceito
+                                {
+                                    AlunoId = notaConceito.AlunoId,
+                                    AtividadeAvaliativaID = notaConceito.AtividadeAvaliativaID,
+                                    DisciplinaId = atividade.DisciplinaId,
+                                    Nota = notaConceito.Nota,
+                                    ConceitoId = notaConceito.ConceitoId,
+                                    TipoNota = notaConceito.TipoNota
+                                });
+                            }
                         }
+                    }
+
+                    if ((notaConceito.Id > 0) && (!existePeriodoEmAberto))
+                    {
+                        alunosNotasExtemporaneas.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
                     }
                 }
 
-                if ((notaConceito.Id > 0) && (!existePeriodoEmAberto))
+                if (alunosNotasExtemporaneas.ToString().Length > 0)
                 {
-                    alunosNotasExtemporaneas.AppendLine($"<li>{aluno.CodigoAluno} - {aluno.NomeAluno}</li>");
+                    string mensagemNotificacao = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
+                                                 $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
+                                                 $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreAvaliacao}'>Clique aqui para visualizar os detalhes.</a>";
+
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaNotificarUsuarioAlteracaoExtemporanea, new FiltroNotificarUsuarioAlteracaoExtemporaneaDto(atividadeAvaliativa, mensagemNotificacao, turma.Nome, turma.Ue.CodigoUe), Guid.NewGuid(), usuario));
                 }
-            }
 
-            if (alunosNotasExtemporaneas.ToString().Length > 0)
-            {
-                string mensagemNotificacao = $"<p>Os resultados da atividade avaliativa '{atividadeAvaliativa.NomeAvaliacao}' da turma {turma.Nome} da {turma.Ue.Nome} (DRE {turma.Ue.Dre.Nome}) no bimestre {bimestreAvaliacao} de {turma.AnoLetivo} foram alterados " +
-                    $"pelo Professor {usuario.Nome} ({usuario.CodigoRf}) em {dataAtual.ToString("dd/MM/yyyy")} às {dataAtual.ToString("HH:mm")} para os seguintes alunos:</p><br/>{alunosNotasExtemporaneas.ToString()}" +
-                    $"<a href='{hostAplicacao}diario-classe/notas/{nota.DisciplinaId}/{bimestreAvaliacao}'>Clique aqui para visualizar os detalhes.</a>";
-
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaNotificarUsuarioAlteracaoExtemporanea, new FiltroNotificarUsuarioAlteracaoExtemporaneaDto(atividadeAvaliativa, mensagemNotificacao, turma.Nome, turma.Ue.CodigoUe), Guid.NewGuid(), usuario));
-            }
-
-            var result = notasConceitos.ToList();
-            result.AddRange(notasMultidisciplina);
-            return result;
+                var result = notasConceitos.ToList();
+                result.AddRange(notasMultidisciplina);
+                return result;
+                
         }
 
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId,
