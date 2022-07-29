@@ -101,7 +101,8 @@ namespace SME.SGP.Dominio.Servicos
         private async Task RemoverNotificacaoExistente(long fechamentoReaberturaId)
         {
             var notificacaoId = await mediator.Send(new ObterNotificacaoParaExcluirPorFechamentoReaberturaIdQuery(fechamentoReaberturaId));
-            await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoId));
+            if(notificacaoId>0)
+               await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoId));
         }
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
         {
