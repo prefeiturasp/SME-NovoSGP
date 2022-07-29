@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterConselhoClasseNotasAlunoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseNota.ObterNotasAlunoAsync(request.ConselhoClasseId, request.AlunoCodigo);
+            return await repositorioConselhoClasseNota.ObterNotasAlunoAsync(request.ConselhoClasseId, request.AlunoCodigo, request?.ComponenteCurricularId);
         }
     }
 }

@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var turma = await mediator
-                .Send(new ObterTurmaPorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
+                .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
@@ -55,8 +55,14 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null)
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
+
+            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
+
+ 
+
             foreach (var aluno in alunos)
             {
+
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
 
@@ -80,17 +86,33 @@ namespace SME.SGP.Aplicacao
 
                 try
                 {
-                    var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno, consolidacaoTurmaConselhoClasse.TurmaId, consolidacaoTurmaConselhoClasse.Bimestre, aluno.Inativo);
-
-                    var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
-
-                    var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
-                    if (!publicarFilaConsolidacaoConselhoClasseAluno)
+                    if(componentes != null && componentes.Any())
                     {
-                        var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
-                        await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));                        
-                        return false;
+                        foreach (var componenteCurricular in componentes)
+                        {
+
+                            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno,
+                                                                                                                          consolidacaoTurmaConselhoClasse.TurmaId,
+                                                                                                                          consolidacaoTurmaConselhoClasse.Bimestre,
+                                                                                                                          aluno.Inativo,
+                                                                                                                          null,
+                                                                                                                          null,
+                                                                                                                          long.Parse(componenteCurricular.Codigo));
+
+                            var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
+
+                            var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
+                            if (!publicarFilaConsolidacaoConselhoClasseAluno)
+                            {
+                                var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
+                                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));                        
+                                return false;
+                            }
+
+                        }
                     }
+
+
                 }
                 catch (Exception ex)
                 {
