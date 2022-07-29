@@ -8,9 +8,12 @@ namespace SME.SGP.Infra.Contexto
     public class ConnectionMultiplexerSME : IConnectionMultiplexerSME
     {
         private readonly IConnectionMultiplexer connectionMultiplexer;
+        private readonly RedisOptions redisOptions;
 
         public ConnectionMultiplexerSME(RedisOptions redisOptions)
         {
+            this.redisOptions = redisOptions;
+            
             try
             {
                 var redisConfigurationOptions = new ConfigurationOptions()
@@ -38,7 +41,7 @@ namespace SME.SGP.Infra.Contexto
             if (connectionMultiplexer == null || !connectionMultiplexer.IsConnected || connectionMultiplexer.IsConnecting)
                 return null;
 
-            return connectionMultiplexer.GetDatabase();
+            return connectionMultiplexer.GetDatabase(redisOptions.Db);
         }
     }
 }
