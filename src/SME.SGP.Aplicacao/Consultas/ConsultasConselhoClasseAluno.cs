@@ -65,7 +65,9 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseUltimoBimestre == null)
                 return false;
 
-            return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id);
+            // return await mediator.Send(new VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id));
+            // return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id);
+            return true;
         }
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
