@@ -10,17 +10,17 @@ namespace SME.SGP.Aplicacao
     public class ObterUeComDrePorCodigoQueryHandler : IRequestHandler<ObterUeComDrePorCodigoQuery, Ue>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IRepositorioCache repositorioCache;
+        private readonly IMediator mediator;
 
-        public ObterUeComDrePorCodigoQueryHandler(IRepositorioUeConsulta repositorioUe,IRepositorioCache repositorioCache)
+        public ObterUeComDrePorCodigoQueryHandler(IRepositorioUeConsulta repositorioUe,IMediator mediator)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<Ue> Handle(ObterUeComDrePorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCache.ObterAsync($"codigo-ue-${request.UeCodigo}", async () => await repositorioUe.ObterUeComDrePorCodigo(request.UeCodigo));
+            return await mediator.Send(new ObterCacheObjetoQuery<Ue>($"codigo-ue-${request.UeCodigo}", async () => await repositorioUe.ObterUeComDrePorCodigo(request.UeCodigo)), cancellationToken);
         }
     }
 }
