@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ProfessorPodePersistirTurmaQueryHandler : IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClient;
 
-        public ProfessorPodePersistirTurmaQueryHandler(HttpClient httpClient)
+        public ProfessorPodePersistirTurmaQueryHandler(IHttpClientFactory httpClient)
         {
             this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ProfessorPodePersistirTurmaQuery request, CancellationToken cancellationToken)
         {
             var dataString = request.DataAula.ToString("s");
-
-            var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
+            var http = httpClient.CreateClient("servicoEOL");
+            var resposta = await http.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
             if (resposta.IsSuccessStatusCode)
             {
                 var json = resposta.Content.ReadAsStringAsync().Result;

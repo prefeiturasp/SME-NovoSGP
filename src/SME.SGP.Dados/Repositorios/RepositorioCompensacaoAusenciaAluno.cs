@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
+using Dommel.Bulk;
 using Npgsql;
 using NpgsqlTypes;
 using SME.SGP.Dominio;
@@ -18,35 +21,54 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaAluno> registros, Usuario usuarioLogado)
         {
-            var sql = @"copy compensacao_ausencia_aluno (                                         
-                                        compensacao_ausencia_id, 
-                                        codigo_aluno,
-                                        qtd_faltas_compensadas, 
-                                        notificado,
-                                        criado_por,                                        
-                                        criado_rf,
-                                        criado_em)
-                            from
-                            stdin (FORMAT binary)";
+            //var sql = @"copy compensacao_ausencia_aluno (                                         
+            //                            compensacao_ausencia_id, 
+            //                            codigo_aluno,
+            //                            qtd_faltas_compensadas, 
+            //                            notificado,
+            //                            criado_por,                                        
+            //                            criado_rf,
+            //                            criado_em)
+            //                from
+            //                stdin (FORMAT binary)";
 
-            using (var writer = ((NpgsqlConnection) database.Conexao).BeginBinaryImport(sql))
+            //using (var writer = ((NpgsqlConnection) database.Conexao).BeginBinaryImport(sql))
+            //{
+            //    foreach (var compensacao in registros)
+            //    {
+            //        writer.StartRow();
+            //        writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
+            //        writer.Write(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
+            //        writer.Write(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
+            //        writer.Write(compensacao.Notificado);
+            //        writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
+            //        writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
+            //        writer.Write(compensacao.CriadoEm);
+            //    }
+
+            //    writer.Complete();
+            //}
+
+            try
             {
-                foreach (var compensacao in registros)
+                //var blk = await database.Conexao.BulkInsertAsync<CompensacaoAusenciaAluno>(registros);
+                //using (IDbConnection connection = new NpgsqlConnection(database.Conexao.ConnectionString))
+                //{
+                for (int i = 0; i < 5000; i++)
                 {
-                    writer.StartRow();
-                    writer.Write(compensacao.CompensacaoAusenciaId, NpgsqlDbType.Bigint);
-                    writer.Write(compensacao.CodigoAluno, NpgsqlDbType.Varchar);
-                    writer.Write(compensacao.QuantidadeFaltasCompensadas, NpgsqlDbType.Integer);
-                    writer.Write(compensacao.Notificado);
-                    writer.Write(compensacao.CriadoPor ?? usuarioLogado.Nome);
-                    writer.Write(compensacao.CriadoRF ?? usuarioLogado.Login);
-                    writer.Write(compensacao.CriadoEm);
+                    registros.ToList().Add(registros.ToList().FirstOrDefault());
                 }
-
-                writer.Complete();
+                var dataInicio = DateTime.Now;
+                var blk = await database.Conexao.InsertVariosComDommel(registros);
+                var dataFim = DateTime.Now;
+                // }
+                return await Task.FromResult(true);
             }
+            catch (Exception ex)
+            {
 
-            return await Task.FromResult(true);
+                throw;
+            }
         }
     }
 }

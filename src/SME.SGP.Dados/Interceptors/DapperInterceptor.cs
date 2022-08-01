@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dommel.Bulk;
 using Microsoft.ApplicationInsights;
 using SME.SGP.Infra;
 using System;
@@ -175,6 +176,15 @@ namespace SME.SGP.Dados
             var entidade = entity?.GetType()?.Name;
 
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Insert<TEntity>(connection, entity, transaction), "Postgres", $"Insert Entidade {entidade}", "Insert");
+
+            return result;
+        }
+
+        public static async Task<int> InsertVariosComDommel<TEntity>(this IDbConnection connection, IEnumerable<TEntity> entity, IDbTransaction transaction = null) where TEntity : class
+        {
+            
+            var result = await servicoTelemetria.RegistrarComRetorno<TEntity>(async () => await DommelBulkMapper.BulkInsertAsync<TEntity>(connection, entities: entity, transaction), "Postgres", $"Insert Entidade ", "Insert");
+            //await DommelBulkMapper.BulkInsertAsync<TEntity>(connection,entities: entity, transaction);
 
             return result;
         }

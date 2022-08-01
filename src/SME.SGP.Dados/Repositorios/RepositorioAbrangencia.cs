@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
 
-        public void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
+        public async void InserirAbrangencias(IEnumerable<Abrangencia> abrangencias, string login)
         {
             foreach (var item in abrangencias)
             {
