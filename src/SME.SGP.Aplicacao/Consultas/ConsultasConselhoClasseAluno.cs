@@ -379,7 +379,7 @@ namespace SME.SGP.Aplicacao
                                                                                                              disciplina.LancaNota,
                                                                                                              visualizaNotas);
                         }
-                        else
+                        else if(!turma.EhEJA())
                         {
                             var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplinaEol.TurmaCodigo, disciplina.CodigoComponenteCurricular,
                                                                                                     periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
