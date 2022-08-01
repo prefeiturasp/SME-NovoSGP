@@ -361,7 +361,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string PLENAMENTE_SATISFATORIO = "P";
         protected const string SATISFATORIO = "S";
         protected const string NAO_SATISFATORIO = "NS";
-
+        
+        protected readonly string NOTA = "NOTA";
+        protected readonly string CONCEITO = "CONCEITO";
 
         protected readonly CollectionFixture collectionFixture;
 
