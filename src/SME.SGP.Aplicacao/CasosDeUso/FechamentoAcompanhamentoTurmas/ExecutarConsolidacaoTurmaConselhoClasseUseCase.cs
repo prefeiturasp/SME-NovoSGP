@@ -84,13 +84,12 @@ namespace SME.SGP.Aplicacao
                 if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                     continue;
 
-                try
+                if(componentes != null && componentes.Any())
                 {
-                    if(componentes != null && componentes.Any())
+                    foreach (var componenteCurricular in componentes)
                     {
-                        foreach (var componenteCurricular in componentes)
+                        try
                         {
-
                             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno,
                                                                                                                           consolidacaoTurmaConselhoClasse.TurmaId,
                                                                                                                           consolidacaoTurmaConselhoClasse.Bimestre,
@@ -108,16 +107,13 @@ namespace SME.SGP.Aplicacao
                                 await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));                        
                                 return false;
                             }
-
+                        }
+                        catch (Exception ex)
+                        {
+                            await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                            return false;
                         }
                     }
-
-
-                }
-                catch (Exception ex)
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                    return false;
                 }
             }
             return true;
