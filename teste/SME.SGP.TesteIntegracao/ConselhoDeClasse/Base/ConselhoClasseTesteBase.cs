@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dominio;
@@ -44,6 +45,179 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             await CriarCiclo();
 
             await CriarNotasTipoEParametros(filtroConselhoClasseDto.ConsiderarAnoAnterior);
+
+            if (filtroConselhoClasseDto.InserirConselhoClassePadrao)
+                await InserirConselhoClassePadrao(filtroConselhoClasseDto);
+        }
+
+        private async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        {
+            await InserirNaBase(new ConselhoClasse()
+            {
+                FechamentoTurmaId = 1,
+                Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            foreach (var alunoCodigo in ObterAlunos())
+            {
+                await InserirNaBase(new ConselhoClasseAluno()
+                {
+                    ConselhoClasseId = 1,
+                    AlunoCodigo = alunoCodigo,
+                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                foreach (var componenteCurricular in ObterComponentesCurriculares())
+                {
+                    await InserirNaBase(new ConselhoClasseNota()
+                    {
+                        ComponenteCurricularCodigo = componenteCurricular,
+                        ConselhoClasseAlunoId = long.Parse(alunoCodigo),
+                        Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
+                        ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                        CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                    });    
+                }
+            }
+        }
+        
+        private IEnumerable<long> ObterComponentesCurriculares()
+        {
+            return new List<long>()
+            {
+                long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                long.Parse(COMPONENTE_HISTORIA_ID_7),
+                long.Parse(COMPONENTE_GEOGRAFIA_ID_8),
+                long.Parse(COMPONENTE_CIENCIAS_ID_89),
+                long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6),
+                COMPONENTE_CURRICULAR_ARTES_ID_139,
+            };
+        }
+
+        private IEnumerable<string> ObterAlunos()
+        {
+            return new List<string>()
+            {
+                ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5
+            };
+        }
+
+
+        private async Task InserirFechamentoAluno(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        {
+            // await InserirNaBase(new FechamentoTurma()
+            // {
+            //     TurmaId = TURMA_ID_1,
+            //     PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoTurmaDisciplina()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoTurmaId = 1,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoAluno()
+            // {
+            //     FechamentoTurmaDisciplinaId = 1,
+            //     AlunoCodigo = CODIGO_ALUNO_1,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoNota()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoAlunoId = 1,
+            //     Nota = NOTA_8,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoAluno()
+            // {
+            //     FechamentoTurmaDisciplinaId = 1,
+            //     AlunoCodigo = CODIGO_ALUNO_2,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoNota()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoAlunoId = 2,
+            //     Nota = NOTA_7,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoAluno()
+            // {
+            //     FechamentoTurmaDisciplinaId = 1,
+            //     AlunoCodigo = CODIGO_ALUNO_3,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoNota()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoAlunoId = 3,
+            //     Nota = NOTA_6,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoAluno()
+            // {
+            //     FechamentoTurmaDisciplinaId = 1,
+            //     AlunoCodigo = CODIGO_ALUNO_4,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoNota()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoAlunoId = 4,
+            //     Nota = NOTA_5,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoAluno()
+            // {
+            //     FechamentoTurmaDisciplinaId = 1,
+            //     AlunoCodigo = CODIGO_ALUNO_5,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
+            //
+            // await InserirNaBase(new FechamentoNota()
+            // {
+            //     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+            //     FechamentoAlunoId = 5,
+            //     Nota = NOTA_7,
+            //     CriadoEm = DateTime.Now,
+            //     CriadoPor = SISTEMA_NOME,
+            //     CriadoRF = SISTEMA_CODIGO_RF
+            // });
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -590,14 +764,40 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             public Modalidade Modalidade { get; set; }
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
             public int Bimestre { get; set; }
-            public string ComponenteCurricular { get; set; }
             public long TipoCalendarioId { get; set; }
             public bool CriarPeriodoEscolar { get; set; }
             public bool CriarPeriodoAbertura { get; set; }
-            public TipoNota TipoNota { get; set; }
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
-            public string ProfessorRf { get; set; }
+            public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
+            public TipoNota TipoNota { get; set; }
+            public bool InserirConselhoClassePadrao { get; set; }
         }
+
+        protected class ConselhoClasseFakeDto
+        {
+            public long FechamentoTurmaId { get; set; }
+            public long Situacao { get; set; }
+            public IEnumerable<ConselhoClasseAlunoFakeDto> ConselhosClasseAlunos { get; set; }
+        }
+        
+        protected class ConselhoClasseAlunoFakeDto
+        {
+            public long ConselhoClasseId { get; set; }
+            public string AlunoCodigo { get; set; }
+            public string RecomendacoesAluno { get; set; } = string.Empty;
+            public string RecomendacoesFamilia { get; set; } = string.Empty;
+            public string AnotacoesPedagogicas { get; set; } = string.Empty;
+            public long? ConselhoClasseParecerId { get; set; } 
+            public IEnumerable<ConselhoClasseNotaFakeDto> ConselhosClasseNotas { get; set; }
+        }
+        
+        protected class ConselhoClasseNotaFakeDto
+        {
+            public long ComponenteCurricularCodigo { get; set; }
+            public long? Nota { get; set; }
+            public long? ConceitoId { get; set; }
+            public string Justificativa { get; set; } = string.Empty;
+        }        
     }
 }

@@ -93,6 +93,7 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
+        protected const string COMPONENTE_EDUCACAO_FISICA_ID_6 = "6";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
         protected const string COMPONENTE_GEOGRAFIA_NOME = "'Geografia'";
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";

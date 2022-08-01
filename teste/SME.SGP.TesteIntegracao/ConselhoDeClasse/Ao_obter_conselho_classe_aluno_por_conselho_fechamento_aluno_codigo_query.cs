@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -24,6 +28,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Ao_obter_conselho_classe_aluno_por_conselho_fechamento_aluno_codigo_query()
         {
+            var filtroConselhoClasse = new FiltroConselhoClasseDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_1,
+                SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
+                InserirConselhoClassePadrao = true,
+            };
+
+            await CriarDadosBase(filtroConselhoClasse);
+            
+            // await ExecutarObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery
         }
     }
 }
