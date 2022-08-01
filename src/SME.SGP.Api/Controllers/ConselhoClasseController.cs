@@ -45,8 +45,19 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> PersistirNotas(SalvarConselhoClasseAlunoNotaDto dto, [FromServices] ISalvarConselhoClasseAlunoNotaUseCase useCase)
+        public async Task<IActionResult> PersistirNotas([FromServices] ISalvarConselhoClasseAlunoNotaUseCase useCase,
+           [FromBody] ConselhoClasseNotaDto conselhoClasseNotaDto, string codigoAluno, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
+            var dto = new SalvarConselhoClasseAlunoNotaDto()
+            {
+                ConselhoClasseNotaDto = conselhoClasseNotaDto,
+                CodigoAluno = codigoAluno,
+                ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurmaId,
+                CodigoTurma = codigoTurma,
+                Bimestre = bimestre
+            };
+
             return Ok(await useCase.Executar(dto));
         }
 
