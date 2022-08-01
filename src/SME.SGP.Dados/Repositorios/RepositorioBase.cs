@@ -81,10 +81,15 @@ namespace SME.SGP.Dados.Repositorios
             return entidade.Id;
         }
 
-        public async Task<object> BulkInsert(IEnumerable<T> entidade)
+        public async Task<int> BulkInsertAsync(IEnumerable<T> entidades,int? commandTimeout = null)
         {
-           var insert = await database.Conexao.InsertAsync(entidade);
+           var insert = await database.Conexao.InsertBulkAsync(entidades,commandTimeout:commandTimeout);
            return insert;
+        }
+        public long BulkInsert(IEnumerable<T> entidades,int? commandTimeout = null)
+        {
+            var insert = database.Conexao.InsertBulk(entidades,commandTimeout:commandTimeout);
+            return insert;
         }
         public virtual async Task<long> SalvarAsync(T entidade)
         {

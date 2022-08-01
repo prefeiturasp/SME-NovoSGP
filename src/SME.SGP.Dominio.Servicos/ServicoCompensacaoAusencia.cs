@@ -309,8 +309,18 @@ namespace SME.SGP.Dominio.Servicos
         {
             //Inserir Lista de novos registros quando alteração é false
             if (!alteracao && listaPersistencia.Any())
-                 await repositorioCompensacaoAusenciaAluno.BulkInsert(listaPersistencia);
-                //await repositorioCompensacaoAusenciaAluno.InserirVarios(listaPersistencia, usuarioLogado);
+            {
+                for (int i = 0; i < listaPersistencia.Count; i++)
+                {
+                    listaPersistencia[i].CriadoPor = usuarioLogado.Nome;
+                    listaPersistencia[i].CriadoRF = usuarioLogado.CodigoRf;
+                }
+                int retorno;
+                var dataInicio = new DateTime();
+                retorno = await repositorioCompensacaoAusenciaAluno.BulkInsertAsync(listaPersistencia);
+                var dataFim = new DateTime();
+            }
+            //await repositorioCompensacaoAusenciaAluno.InserirVarios(listaPersistencia, usuarioLogado);
             //Atualizar individualmente quando alteração é true
             else if (alteracao && listaPersistencia.Any())
                 listaPersistencia.ForEach(aluno => repositorioCompensacaoAusenciaAluno.Salvar(aluno));

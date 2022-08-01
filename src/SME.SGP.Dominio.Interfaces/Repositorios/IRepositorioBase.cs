@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> Exists(long id, string coluna = null);
 
         Task<long> RemoverLogico(long id, string coluna = null);
-        Task<object> BulkInsert(IEnumerable<T> entidade);
+        Task<int> BulkInsertAsync(IEnumerable<T> entidades,int? commandTimeout = null);
+        long BulkInsert(IEnumerable<T> entidades,int? commandTimeout = null);
     }
 }

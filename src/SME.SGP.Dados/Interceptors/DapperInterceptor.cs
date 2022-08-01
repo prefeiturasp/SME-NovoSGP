@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using Npgsql;
 
 namespace SME.SGP.Dados
 {
@@ -176,20 +177,24 @@ namespace SME.SGP.Dados
 
             return result;
         }
-
-        public static async Task<object> InsertBulkAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
+        public  static long InsertBulk<T>(this IDbConnection connection, T entity, IDbTransaction transaction = null,int? commandTimeout = null) where T : class
         {
-            var entidade = entity?.GetType()?.Name;
+            var entidade = entity.GetType().GetGenericArguments()[0].Name;
             
-            var result = await servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction),"Postgres",$"Insert Entidade {entidade}","Insert");
+            var result =  servicoTelemetria.RegistrarComRetorno<T>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction,commandTimeout:commandTimeout),"Postgres",$"Insert Entidade {entidade}","Insert");
             return result;
         }
-        public static object InsertBulk<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null) where TEntity : class
+        public static async Task<int> InsertBulkAsync<T>(this IDbConnection connection, T entity, IDbTransaction transaction = null,int? commandTimeout = null) where T : class
         {
-            var entidade = entity?.GetType()?.Name;
+            //var entidade = entity.GetType().GetGenericArguments()[0].Name;
             
-            var result =  servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction),"Postgres",$"Insert Entidade {entidade}","Insert");
-            return result;
+            //var result = await servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(connection,entity,transaction,commandTimeout:commandTimeout),"Postgres",$"Insert Entidade {entidade}","Insert");
+            //var result = await Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync<T>(connection, entity, transaction, commandTimeout: commandTimeout);
+            using (IDbConnection conec = new NpgsqlConnection(connection.ConnectionString))
+            {
+                var result = await Dapper.Contrib.Extensions.SqlMapperExtensions.InsertAsync(conec,entity);
+                return result;
+            }
         }
         public static bool Update<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null)
         {
@@ -197,6 +202,20 @@ namespace SME.SGP.Dados
 
             var result = servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dommel.DommelMapper.Update<TEntity>(connection, entity, transaction), "Postgres", $"Update Entidade {entidade}", "Insert");
 
+            return result;
+        }
+        public static bool UpdateBulk<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null,int? commandTimeout = null) where TEntity : class
+        {
+            var entidade = entity.GetType().GetGenericArguments()[0].Name;
+            
+            var result =  servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.Update(connection,entity,transaction,commandTimeout:commandTimeout),"Postgres",$"Update Entidade {entidade}","Insert");
+            return result;
+        }
+        public static async Task<bool> UpdateBulkAsync<TEntity>(this IDbConnection connection, TEntity entity, IDbTransaction transaction = null,int? commandTimeout = null) where TEntity : class
+        {
+            var entidade = entity.GetType().GetGenericArguments()[0].Name;
+            
+            var result = await servicoTelemetria.RegistrarComRetorno<TEntity>(() => Dapper.Contrib.Extensions.SqlMapperExtensions.Update(connection,entity,transaction,commandTimeout:commandTimeout),"Postgres",$"Update Entidade {entidade}","Insert");
             return result;
         }
         public static TEntity Get<TEntity>(this IDbConnection connection, object id) where TEntity : class
