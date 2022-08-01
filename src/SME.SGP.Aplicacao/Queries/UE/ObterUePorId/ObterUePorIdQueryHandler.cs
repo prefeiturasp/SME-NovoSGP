@@ -10,17 +10,18 @@ namespace SME.SGP.Aplicacao
     public class ObterUePorIdQueryHandler : IRequestHandler<ObterUePorIdQuery, Ue>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IRepositorioCache repositorioCache;
+        private readonly IMediator mediator;
 
 
-        public ObterUePorIdQueryHandler(IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache)
+        public ObterUePorIdQueryHandler(IRepositorioUeConsulta repositorioUe, IMediator mediator)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<Ue> Handle(ObterUePorIdQuery request, CancellationToken cancellationToken)
-            => await repositorioCache.ObterAsync($"ObterUePorId-{request.Id}",
-                async () => await repositorioUe.ObterUePorId(request.Id));
+        {
+            return await mediator.Send(new ObterCacheObjetoQuery<Ue>($"ObterUePorId-{request.Id}", async () => await repositorioUe.ObterUePorId(request.Id)), cancellationToken);
+        }
     }
 }
