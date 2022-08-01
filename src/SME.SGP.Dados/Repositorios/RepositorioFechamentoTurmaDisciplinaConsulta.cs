@@ -128,6 +128,23 @@ namespace SME.SGP.Dados.Repositorios
                 new { turmaCodigo, disciplinaId, bimestre });
         }
 
+        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId)
+        {
+            var query = new StringBuilder(@"select f.*
+                         from fechamento_turma_disciplina f
+                        inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                         left join periodo_escolar p on p.id = ft.periodo_escolar_id
+                        inner join turma t on t.id = ft.turma_id
+                        where not f.excluido
+                          and t.turma_id = @turmaCodigo
+                          and f.disciplina_id = @disciplinaId ");
+
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(),
+                new { turmaCodigo, disciplinaId });
+        }
+
+
         public async Task<IEnumerable<FechamentoNotaDto>> ObterNotasBimestre(string codigoAluno,
             long fechamentoTurmaDisciplinaId)
         {
