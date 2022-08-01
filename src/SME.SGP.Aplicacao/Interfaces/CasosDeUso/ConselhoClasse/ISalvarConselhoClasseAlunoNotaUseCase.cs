@@ -1,7 +1,10 @@
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao;
-
-public interface ISalvarConselhoClasseAlunoNotaUseCase : IUseCase<SalvarConselhoClasseAlunoNotaDto, ConselhoClasseNotaRetornoDto>
+namespace SME.SGP.Aplicacao
 {
+
+    public interface
+        ISalvarConselhoClasseAlunoNotaUseCase : IUseCase<SalvarConselhoClasseAlunoNotaDto, ConselhoClasseNotaRetornoDto>
+    {
+    }
 }

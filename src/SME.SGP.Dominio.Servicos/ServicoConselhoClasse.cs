@@ -469,30 +469,6 @@ namespace SME.SGP.Dominio.Servicos
             return (AuditoriaDto)conselhoClasse;
         }
 
-        public async Task<ConselhoClasseAluno> SalvarConselhoClasseAluno(ConselhoClasseAluno conselhoClasseAluno)
-        {
-            var fechamentoTurma = await mediator
-                .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, conselhoClasseAluno.AlunoCodigo));
-
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
-                throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
-
-            // Se não existir conselho de classe para o fechamento gera
-            if (conselhoClasseAluno.ConselhoClasse.Id == 0)
-            {
-                await GerarConselhoClasse(conselhoClasseAluno.ConselhoClasse, fechamentoTurma);
-                conselhoClasseAluno.ConselhoClasseId = conselhoClasseAluno.ConselhoClasse.Id;
-            }
-            else
-                await repositorioConselhoClasse.SalvarAsync(conselhoClasseAluno.ConselhoClasse);
-
-            var conselhoClasseAlunoId = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
-            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, conselhoClasseAluno.AlunoCodigo));
-
-            return conselhoClasseAluno;
-        }
-
         public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
         {
             int bimestre;
@@ -583,73 +559,12 @@ namespace SME.SGP.Dominio.Servicos
             return componentesTurma;
         }
 
-        public async Task<ParecerConclusivoDto> GerarParecerConclusivoAlunoAsync(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
-        {
-            var solicitanteId = await mediator.Send(new ObterUsuarioLogadoIdQuery());
-            var conselhoClasseAluno = await ObterConselhoClasseAluno(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
-
-            return await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, solicitanteId));
-        }
-
-        private async Task<ConselhoClasseAluno> ObterConselhoClasseAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo)
-        {
-            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
-            if (conselhoClasseAluno == null)
-            {
-                ConselhoClasse conselhoClasse = null;
-                if (conselhoClasseId == 0)
-                {
-                    conselhoClasse = new ConselhoClasse() { FechamentoTurmaId = fechamentoTurmaId };
-                    await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
-                }
-                else
-                    conselhoClasse = repositorioConselhoClasseConsulta.ObterPorId(conselhoClasseId);
-
-                conselhoClasseAluno = new ConselhoClasseAluno() { AlunoCodigo = alunoCodigo, ConselhoClasse = conselhoClasse, ConselhoClasseId = conselhoClasse.Id };
-                await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-            }
-            conselhoClasseAluno.ConselhoClasse.FechamentoTurma = await ObterFechamentoTurma(fechamentoTurmaId, alunoCodigo);
-
-            return conselhoClasseAluno;
-        }
-
-        private async Task<FechamentoTurma> ObterFechamentoTurma(long fechamentoTurmaId, string alunoCodigo)
-        {
-            return await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo));
-        }
-
         private void ValidarNotasFechamentoConselhoClasse2020(ConselhoClasseNota conselhoClasseNota)
         {
             if (conselhoClasseNota.ConceitoId.HasValue && conselhoClasseNota.ConceitoId.Value == 3)
                 throw new NegocioException("Não é possível atribuir conceito NS (Não Satisfatório) pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
             else if (conselhoClasseNota.Nota < 5)
                 throw new NegocioException("Não é possível atribuir uma nota menor que 5 pois em 2020 não há retenção dos estudantes conforme o Art 5º da LEI Nº 17.437 DE 12 DE AGOSTO DE 2020.");
-        }
-
-        public async Task ConsolidaConselhoClasse(int dreId)
-        {
-            var listaConselhoAlunoReprocessar = await mediator.Send(new ObterAlunosReprocessamentoConsolidacaoConselhoQuery(dreId));
-
-            var listaAgrupada = listaConselhoAlunoReprocessar
-                .GroupBy(l => new { l.turmaId, l.bimestre })
-                .Select(l => l.Key)
-                .Distinct();
-
-            foreach (var conselhoAluno in listaAgrupada)
-                await PublicarMensagem(conselhoAluno.turmaId, conselhoAluno.bimestre);
-        }
-
-        private async Task PublicarMensagem(long turmaId, int bimestre)
-        {
-            var consolidacaoTurma =
-                new ConsolidacaoTurmaDto(turmaId, bimestre);
-
-            var mensagemParaPublicar = JsonConvert
-                .SerializeObject(consolidacaoTurma);
-
-            await mediator
-                .Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
-
         }
     }
 }

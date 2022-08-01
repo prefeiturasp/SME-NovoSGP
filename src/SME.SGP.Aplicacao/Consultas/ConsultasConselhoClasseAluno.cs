@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Commands;
 
 namespace SME.SGP.Aplicacao
 {
@@ -470,7 +471,7 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId == null)
-                return await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo);
+                return await mediator.Send(new GerarParecerConclusivoPorConselhoFechamentoAlunoCommand(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
 
             var parecerConclusivoDto = new ParecerConclusivoDto()
             {
@@ -853,7 +854,10 @@ namespace SME.SGP.Aplicacao
                 return new ParecerConclusivoDto();
 
             if (!turma.EhAnoAnterior() && !conselhoClasseAluno.ConselhoClasseParecerId.HasValue)
-                parecerConclusivoDto = await servicoConselhoClasse.GerarParecerConclusivoAlunoAsync(conselhoClasseAluno.ConselhoClasseId, conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, alunoCodigo);
+                parecerConclusivoDto = await mediator.Send(new GerarParecerConclusivoPorConselhoFechamentoAlunoCommand(
+                                        conselhoClasseAluno.ConselhoClasseId, 
+                                        conselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, 
+                                        alunoCodigo));
             else
                 parecerConclusivoDto = new ParecerConclusivoDto()
                 {

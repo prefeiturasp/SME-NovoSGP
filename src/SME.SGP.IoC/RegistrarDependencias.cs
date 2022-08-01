@@ -739,6 +739,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotalCompensacoesComponenteNaoLancaNotaUseCase, ObterTotalCompensacoesComponenteNaoLancaNotaUseCase>();
             services.TryAddScoped<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase, ObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
             services.TryAddScoped<IObterRecomendacoesAlunoFamiliaUseCase, ObterRecomendacoesAlunoFamiliaUseCase>();
+            services.TryAddScoped<IConsolidarConselhoClasseUseCase, ConsolidarConselhoClasseUseCase>();
+            services.TryAddScoped<IGerarParecerConclusivoUseCase, GerarParecerConclusivoUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
