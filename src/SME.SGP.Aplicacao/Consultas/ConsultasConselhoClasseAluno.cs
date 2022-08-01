@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoConselhoClasse servicoConselhoClasse;
         private readonly IMediator mediator;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
@@ -40,7 +39,6 @@ namespace SME.SGP.Aplicacao
                                             IServicoEol servicoEOL,
                                             IServicoUsuario servicoUsuario,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
-                                            IServicoConselhoClasse servicoConselhoClasse,
                                             IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                             IMediator mediator)
         {
@@ -52,7 +50,6 @@ namespace SME.SGP.Aplicacao
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
-            this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
