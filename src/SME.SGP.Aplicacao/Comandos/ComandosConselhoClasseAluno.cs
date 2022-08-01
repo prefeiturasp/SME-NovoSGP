@@ -13,16 +13,14 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
-        private readonly IServicoConselhoClasse servicoConselhoClasse;
         private readonly IMediator mediator;
 
         public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                            IConsultasConselhoClasse consultasConselhoClasse,
-                                           IServicoConselhoClasse servicoConselhoClasse, IMediator mediator)
+                                           IMediator mediator)
         {
             this.consultasConselhoClasseAluno = consultasConselhoClasseAluno ?? throw new ArgumentNullException(nameof(consultasConselhoClasseAluno));
             this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
-            this.servicoConselhoClasse = servicoConselhoClasse ?? throw new ArgumentNullException(nameof(servicoConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
