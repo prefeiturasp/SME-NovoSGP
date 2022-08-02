@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -24,6 +25,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorTurmasCodigoQuery, IEnumerable<DisciplinaDto>>), typeof(ObterComponentesCurricularesPorTurmasCodigoQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBase(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -747,6 +749,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
         protected IMediator RetornarServicoMediator()
         {
             return ServiceProvider.GetService<IMediator>();
+        }
+        
+        protected IGerarParecerConclusivoUseCase RetornarGerarParecerConclusivoUseCase()
+        {
+            return ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();
         }
     }
 }
