@@ -1,6 +1,8 @@
 ﻿using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Infra;
 using System.Linq;
+using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Cache
 {
@@ -8,7 +10,7 @@ namespace SME.SGP.Aplicacao.Cache
     {
         private GravarConselhoClasseCommad request;
 
-        public ConselhoDeClasseNotaPosConselhoBimestresCache(GravarConselhoClasseCommad request)
+        public ConselhoDeClasseNotaPosConselhoBimestresCache(GravarConselhoClasseCommad request,IMediator mediator):base(mediator)
         {
             this.request = request;
         }
@@ -18,16 +20,16 @@ namespace SME.SGP.Aplicacao.Cache
             return $"NotaConceitoBimestre-{request.ConselhoClasseId}-${request.CodigoAluno}-{request.Bimestre}";
         }
 
-        protected override ConselhoClasseAlunoNotasConceitosRetornoDto ObtenhaObjetoAtualizado()
+        protected override async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObtenhaObjetoAtualizado()
         {
-            var retorno = ObtenhaObjeto();
+            var retorno = await ObtenhaObjeto();
 
             if (retorno != null)
             {
                 var conselhoClasseComponenteFrequenciaDtos = retorno!.NotasConceitos.FirstOrDefault()!.ComponentesCurriculares.FirstOrDefault(x => x.CodigoComponenteCurricular == request.ConselhoClasseNotaDto.CodigoComponenteCurricular);
                 conselhoClasseComponenteFrequenciaDtos!.NotaPosConselho.Nota = request.ConselhoClasseNotaDto.Conceito ?? request.ConselhoClasseNotaDto.Nota;
 
-                return conselhoClasseComponenteFrequenciaDtos;
+                return retorno;
             }
 
             return null;

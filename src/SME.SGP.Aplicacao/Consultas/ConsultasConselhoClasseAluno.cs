@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico = false)
         {
-            var cache = await mediator.Send(new ObterCacheQuery($"NotaConceitoBimestre-{conselhoClasseId}-${alunoCodigo}-{bimestre}"));
+            var cache = await mediator.Send(new ObterCacheQuery($"NotaConceitoBimestre-{conselhoClasseId}-{alunoCodigo}-{bimestre}"));
             if (!string.IsNullOrEmpty(cache))
                 return JsonConvert.DeserializeObject<ConselhoClasseAlunoNotasConceitosRetornoDto>(cache);
             

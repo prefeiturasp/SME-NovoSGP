@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao.Servicos
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected abstract T ObtenhaObjetoAtualizado();
+        protected abstract Task<T> ObtenhaObjetoAtualizado();
 
         protected abstract string ObtenhaChave();
 
