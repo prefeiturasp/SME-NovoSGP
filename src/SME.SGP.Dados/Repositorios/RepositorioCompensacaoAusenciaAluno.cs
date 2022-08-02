@@ -49,26 +49,16 @@ namespace SME.SGP.Dados.Repositorios
             //    writer.Complete();
             //}
 
-            try
-            {
-                //var blk = await database.Conexao.BulkInsertAsync<CompensacaoAusenciaAluno>(registros);
-                //using (IDbConnection connection = new NpgsqlConnection(database.Conexao.ConnectionString))
-                //{
-                for (int i = 0; i < 5000; i++)
-                {
-                    registros.ToList().Add(registros.ToList().FirstOrDefault());
-                }
-                var dataInicio = DateTime.Now;
-                var blk = await database.Conexao.InsertVariosComDommel(registros);
-                var dataFim = DateTime.Now;
-                // }
-                return await Task.FromResult(true);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
+            //var add = registros.ToList().FirstOrDefault();
+            //var registroInserir = registros.ToList();
+            //for (int i = 0; i < 5000; i++)
+            //{
+            //    registroInserir.Add(add);
+            //}
+            //var dataInicio = DateTime.Now;
+            await database.Conexao.InserirVariosRegistrosAsync(registros);
+            //var dataFim = DateTime.Now;
+            return await Task.FromResult(true);
         }
     }
 }

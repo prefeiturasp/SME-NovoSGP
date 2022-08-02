@@ -7,8 +7,6 @@ namespace SME.SGP.Dominio
         protected EntidadeBase()
         {
             CriadoEm = DateTimeExtension.HorarioBrasilia();
-            CriadoPor = "Sistema";
-            CriadoRF = "1";
         }
 
         public DateTime? AlteradoEm { get; set; }
