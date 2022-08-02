@@ -13,15 +13,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDisciplinasPorCodigoTurmaQueryHandler : IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>
     {
-        private readonly HttpClient httpClient;
-        public ObterDisciplinasPorCodigoTurmaQueryHandler(HttpClient httpClient)
+        private readonly IHttpClientFactory httpClientFactory;
+        public ObterDisciplinasPorCodigoTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<IEnumerable<DisciplinaResposta>> Handle(ObterDisciplinasPorCodigoTurmaQuery request, CancellationToken cancellationToken)
         {
             var url = $"funcionarios/turmas/{request.CodigoTurma}/disciplinas";
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync(url);
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
