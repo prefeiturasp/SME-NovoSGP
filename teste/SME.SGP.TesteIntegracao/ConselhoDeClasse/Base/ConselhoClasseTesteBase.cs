@@ -914,7 +914,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
         {
             return ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();
         }
-
-
+        
+        protected IConsolidarConselhoClasseUseCase RetornarConsolidarConselhoClasseUseCase()
+        {
+            return ServiceProvider.GetService<IConsolidarConselhoClasseUseCase>();
+        }
     }
 }
