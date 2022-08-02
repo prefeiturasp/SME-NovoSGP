@@ -29,7 +29,6 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseNotaRetorno = request.ConselhoClasseId == 0 ?
                 await mediator.Send(new InserirConselhoClasseNotaCommad(
                                             request.FechamentoTurma,
-                                            request.ConselhoClasseId,
                                             request.CodigoAluno,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,

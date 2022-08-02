@@ -36,10 +36,6 @@ namespace SME.SGP.Aplicacao
                .NotNull()
                .WithMessage("O fechamento de turma deve ser informado para efetuar a gravação.");
 
-            RuleFor(c => c.ConselhoClasseId)
-               .NotEmpty()
-               .WithMessage("O id do conselho classe deve ser informado para efetuar a gravação.");
-
             RuleFor(c => c.CodigoAluno)
                .NotEmpty()
                .WithMessage("O código do aluno deve ser informado para efetuar a gravação.");
