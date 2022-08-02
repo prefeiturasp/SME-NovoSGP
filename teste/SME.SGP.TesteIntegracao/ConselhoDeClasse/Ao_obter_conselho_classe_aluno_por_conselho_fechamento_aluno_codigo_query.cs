@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.Base;
@@ -40,7 +41,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarDadosBase(filtroConselhoClasse);
             
-            // await ExecutarObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery
+            var servicoMediator = RetornarServicoMediator();
+
+            var query = new ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery(1,1,CODIGO_ALUNO_1);
+
+            var retornoQuery = await servicoMediator.Send(query);
         }
     }
 }
