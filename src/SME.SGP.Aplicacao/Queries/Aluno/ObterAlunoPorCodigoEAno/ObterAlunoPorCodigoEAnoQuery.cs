@@ -6,14 +6,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunoPorCodigoEAnoQuery : IRequest<AlunoReduzidoDto>
     {
-        public ObterAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo)
+        public ObterAlunoPorCodigoEAnoQuery(string codigoAluno, int anoLetivo, bool tipoTurma = false)
         {
             CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
+            TipoTurma = tipoTurma;
         }
 
         public string CodigoAluno { get; set; }
         public int AnoLetivo { get; set; }
+        public bool TipoTurma { get; set; }
     }
 
     public class ObterAlunoPorCodigoEAnoQueryValidator : AbstractValidator<ObterAlunoPorCodigoEAnoQuery>
