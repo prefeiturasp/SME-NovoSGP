@@ -1,16 +1,16 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
+
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAEEResposta : RepositorioBase<PlanoAEEResposta>, IRepositorioPlanoAEEResposta
     {
-        public RepositorioPlanoAEEResposta(ISgpContext database) : base(database)
+        public RepositorioPlanoAEEResposta(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

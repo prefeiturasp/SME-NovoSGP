@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotaTipoValorConsulta : RepositorioBase<NotaTipoValor>, IRepositorioNotaTipoValorConsulta
     {
-        public RepositorioNotaTipoValorConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioNotaTipoValorConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
         public NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
