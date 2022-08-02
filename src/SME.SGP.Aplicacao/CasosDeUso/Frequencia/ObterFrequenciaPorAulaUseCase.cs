@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
-            var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));
+            var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));            
                         
             FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
 
@@ -82,8 +82,18 @@ namespace SME.SGP.Aplicacao
 
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
 
-            var alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-            (a.Inativo && a.DataSituacao >= aula.DataAula)).OrderBy(c => c.NomeAluno);
+            var alunosCondicaoFrequencia = Enumerable.Empty<AlunoPorTurmaResposta>();
+            if (turma.ModalidadeCodigo == Modalidade.EJA)
+            {
+                alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => !a.Inativo || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
+                (a.Inativo && a.DataSituacao >= aula.DataAula)).OrderBy(c => c.NomeAluno);
+            }
+            else
+            {
+                alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
+                (a.Inativo && a.DataSituacao >= aula.DataAula)).OrderBy(c => c.NomeAluno);
+            }
+             
 
             foreach (var aluno in alunosCondicaoFrequencia)
             {
