@@ -31,7 +31,7 @@ namespace SME.SGP.Infra
 
     public class ConexoesRabbitFilasLog : ConexoesRabbit, IConexoesRabbitFilasLog
     {
-        public ConexoesRabbitFilasLog(ConfiguracaoRabbit configuracaoRabbit, ObjectPoolProvider poolProvider) : base(configuracaoRabbit, poolProvider)
+        public ConexoesRabbitFilasLog(ConfiguracaoRabbitLogOptions configuracaoRabbit, ObjectPoolProvider poolProvider) : base(configuracaoRabbit, poolProvider)
         { }
     }
 
