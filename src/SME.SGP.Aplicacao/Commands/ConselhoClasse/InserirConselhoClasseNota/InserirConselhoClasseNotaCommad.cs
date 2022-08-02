@@ -8,7 +8,6 @@ namespace SME.SGP.Aplicacao
     public class InserirConselhoClasseNotaCommad : IRequest<ConselhoClasseNotaRetornoDto>
     {
         public FechamentoTurma FechamentoTurma { get; set; }
-        public long ConselhoClasseId { get; set; }
         public string CodigoAluno { get; set; }
         public ConselhoClasseNotaDto ConselhoClasseNotaDto { get; set; }
         public int? Bimestre { get; set; }
@@ -16,14 +15,12 @@ namespace SME.SGP.Aplicacao
 
         public InserirConselhoClasseNotaCommad(
                     FechamentoTurma fechamentoTurma, 
-                    long conselhoClasseId, 
                     string codigoAluno, 
                     ConselhoClasseNotaDto conselhoClasseNotaDto, 
                     int? bimestre,
                     Usuario usuarioLogado)
         {
             FechamentoTurma = fechamentoTurma;
-            ConselhoClasseId = conselhoClasseId;
             CodigoAluno = codigoAluno;
             ConselhoClasseNotaDto = conselhoClasseNotaDto;
             Bimestre = bimestre;
@@ -38,10 +35,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.FechamentoTurma)
                .NotNull()
                .WithMessage("O fechamento de turma deve ser informado para efetuar a inserção.");
-
-            RuleFor(c => c.ConselhoClasseId)
-               .NotEmpty()
-               .WithMessage("O id do conselho classe deve ser informado para efetuar a inserção.");
 
             RuleFor(c => c.CodigoAluno)
                .NotEmpty()

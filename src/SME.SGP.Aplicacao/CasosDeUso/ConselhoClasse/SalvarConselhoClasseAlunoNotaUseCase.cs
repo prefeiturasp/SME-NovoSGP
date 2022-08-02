@@ -70,12 +70,7 @@ namespace SME.SGP.Aplicacao
                                             fechamentoTurmaDisciplina, 
                                             periodoEscolar?.Bimestre));
 
-            return await mediator.Send(new GravarConselhoClasseCommad(
-                                                fechamentoTurma, 
-                                                dto.ConselhoClasseId,
-                                                dto.CodigoAluno,
-                                                dto.ConselhoClasseNotaDto, 
-                                                periodoEscolar?.Bimestre));
+            return await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno, dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
         }
 
     }

@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCachePorValorObjetQuery : IRequest
+    public class SalvarCachePorValorObjetQuery : IRequest<string>
     {
         public SalvarCachePorValorObjetQuery(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
