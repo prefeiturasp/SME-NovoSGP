@@ -39,15 +39,12 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                //await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
-                
-                await mediator.Send(new ObterCacheObjetoQuery<long>($"ConselhoClasse-${request.FechamentoTurma.Id}",
-                    async ()=>  await repositorioConselhoClasse.SalvarAsync(conselhoClasse)));
+                await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
 
                 conselhoClasseAluno.ConselhoClasseId = conselhoClasse.Id;
 
                 conselhoClasseAluno.Id = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
+                
                 await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno));
 
                 conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAluno.Id);
@@ -95,8 +92,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseAlunoId = conselhoClasseAluno.Id,
                 EmAprovacao = enviarAprovacao
             };
-
             return conselhoClasseNotaRetorno;
         }
+        
     }
 }

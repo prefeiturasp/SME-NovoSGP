@@ -70,24 +70,7 @@ namespace SME.SGP.Aplicacao
                                             fechamentoTurmaDisciplina, 
                                             periodoEscolar?.Bimestre));
 
-            //obter cache
-            try
-            {
-                var retorno = await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno, dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
-                
-                
-                 // var retornoCache = await mediator.Send(new ObterCacheObjetoQuery<ConselhoClasseNotaRetornoDto>($"ConselhoClasseAlunoNota-${dto.ConselhoClasseId}-${dto.FechamentoTurmaId}",
-                 //                       async ()=>  await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno, dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre))));
-                
-                
-                //var nomeChaveCahce = await mediator.Send(new SalvarCachePorValorObjetQuery($"ConselhoClasseAlunoNota-${dto.ConselhoClasseId}-${dto.FechamentoTurmaId}",retorno));
-                return retorno;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            return await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno, dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
         }
 
     }
