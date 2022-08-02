@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 conselhoClasseAluno.ConselhoClasseId = conselhoClasse.Id;
 
                 conselhoClasseAluno.Id = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
-
+                
                 await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno));
 
                 conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAluno.Id);
@@ -92,8 +92,8 @@ namespace SME.SGP.Aplicacao
                 ConselhoClasseAlunoId = conselhoClasseAluno.Id,
                 EmAprovacao = enviarAprovacao
             };
-
             return conselhoClasseNotaRetorno;
         }
+        
     }
 }

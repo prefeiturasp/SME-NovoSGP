@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao
     public class ObterConselhoClasseNotasAlunoQueryHandler : IRequestHandler<ObterConselhoClasseNotasAlunoQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
         private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
+        private readonly IRepositorioCache repositorioCache;
 
         public ObterConselhoClasseNotasAlunoQueryHandler(IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota)
         {
