@@ -1,12 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.Base;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -18,15 +20,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        // protected override void RegistrarFakes(IServiceCollection services)
-        // {
-        //     base.RegistrarFakes(services);
-        //
-        //     services.Replace(new ServiceDescriptor(
-        //         typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
-        //         typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake),
-        //         ServiceLifetime.Scoped));
-        // }
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+        
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake),ServiceLifetime.Scoped));
+        }
 
         [Fact]
         public async Task Ao_gerar_parecer_conclusivo_aluno()
@@ -40,6 +39,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
                 InserirConselhoClassePadrao = true,
                 InserirFechamentoAlunoPadrao = true,
+                CriarPeriodoEscolar = true,
+                TipoNota = TipoNota.Nota,
+                AnoTurma = "6"
             };
 
             await CriarDadosBase(filtroConselhoClasse);
@@ -56,6 +58,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var retorno = await gerarParecerConclusivoUseCase.Executar(conselhoClasseFechamentoAluno);
 
             retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBeGreaterThan(0);
+            retorno.Nome.ShouldNotBeEmpty();
         }
     }
 }

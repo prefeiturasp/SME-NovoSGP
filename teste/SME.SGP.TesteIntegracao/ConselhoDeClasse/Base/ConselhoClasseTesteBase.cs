@@ -57,42 +57,124 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             
             if (filtroConselhoClasseDto.InserirConselhoClassePadrao)
                 await InserirConselhoClassePadrao(filtroConselhoClasseDto);
+
+            await CriarConselhoClasseParecerAno();
+        }
+
+        private async Task CriarConselhoClasseParecerAno()
+        {
+            var camposConselhoClasseParecer = "nome,aprovado,frequencia,conselho,inicio_vigencia,fim_vigencia,criado_por,criado_rf,criado_em,alterado_por,alterado_rf,alterado_em,nota";
+            
+            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Promovido'","true","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","true");
+            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Promovido pelo conselho'","true","false","true","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
+            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Continuidade dos estudos'","true","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
+            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido'","false","false","true","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","true");
+            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido por frequência'","false","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
+
+            var camposConselhoClasseParecerAno = "parecer_id,ano_turma,modalidade,inicio_vigencia,fim_vigencia,criado_por,criado_rf,criado_em,alterado_por,alterado_rf,alterado_em";
+            
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"3","1","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"3","1","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"3","2","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"3","4","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"3","5","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","1","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","1","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","2","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","4","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","5","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","2","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","3","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","4","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","3","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","6","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","7","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","8","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","9","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","1","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","2","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","2","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","3","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","4","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","3","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","6","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","7","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","8","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","9","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","1","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","2","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","3","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","2","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","3","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","4","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","3","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","6","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","7","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","8","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","9","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","1","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","2","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","3","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","2","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","3","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","4","3","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","3","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","6","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","7","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","8","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","9","5","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","1","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","2","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","3","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","3","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"2","4","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"4","4","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"5","4","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
+            await InserirNaBaseComCampos("conselho_classe_parecer_ano",camposConselhoClasseParecerAno,"1","4","6","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null");
         }
 
         private async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
-            await InserirNaBase(new ConselhoClasse()
-            {
-                FechamentoTurmaId = 1,
-                Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-            });
+            var fechamentoTurmas = ObterTodos<FechamentoTurma>();
 
-            long conselhoClasseAlunoId = 1;
+            long conselhoClasseId = 1;
             
-            foreach (var alunoCodigo in ObterAlunos())
+            long conselhoClasseAlunoId = 1;
+
+            foreach (var fechamentoTurma in fechamentoTurmas)
             {
-                await InserirNaBase(new ConselhoClasseAluno()
+                await InserirNaBase(new ConselhoClasse()
                 {
-                    ConselhoClasseId = 1,
-                    AlunoCodigo = alunoCodigo,
+                    FechamentoTurmaId = fechamentoTurma.Id,
+                    Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
                     CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
                 });
-
-                foreach (var componenteCurricular in ObterComponentesCurriculares())
+                
+                foreach (var alunoCodigo in ObterAlunos())
                 {
-                    await InserirNaBase(new ConselhoClasseNota()
+                    await InserirNaBase(new ConselhoClasseAluno()
                     {
-                        ComponenteCurricularCodigo = componenteCurricular,
-                        ConselhoClasseAlunoId = conselhoClasseAlunoId,
-                        Justificativa = string.Empty,
-                        Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
-                        ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                        ConselhoClasseId = conselhoClasseId,
+                        AlunoCodigo = alunoCodigo,
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                    });    
+                    });
+
+                    foreach (var componenteCurricular in ObterComponentesCurriculares())
+                    {
+                        await InserirNaBase(new ConselhoClasseNota()
+                        {
+                            ComponenteCurricularCodigo = componenteCurricular,
+                            ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                            Justificativa = string.Empty,
+                            Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
+                            ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                            CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+                        });    
+                    }
+                    conselhoClasseAlunoId++;
                 }
 
-                conselhoClasseAlunoId++;
+                conselhoClasseId++;
             }
         }
         
@@ -106,6 +188,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
                 long.Parse(COMPONENTE_CIENCIAS_ID_89),
                 long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6),
                 COMPONENTE_CURRICULAR_ARTES_ID_139,
+                long.Parse(COMPONENTE_MATEMATICA_ID_2)
             };
         }
 
@@ -120,49 +203,61 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
 
         private async Task InserirFechamentoAluno(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
-            await InserirNaBase(new FechamentoTurma()
-            {
-                TurmaId = TURMA_ID_1,
-                PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+            var bimestres = ObterBimestresComBimestreFinal();
 
             long fechamentoTurmaDisciplinaId = 1;
             
-            foreach (var componenteCurricular in ObterComponentesCurriculares())
+            long fechamentoAlunoId = 1;
+
+            foreach (var bimestre in bimestres)
             {
-                await InserirNaBase(new FechamentoTurmaDisciplina()
+                await InserirNaBase(new FechamentoTurma()
                 {
-                    DisciplinaId = componenteCurricular,
-                    FechamentoTurmaId = 1,
+                    TurmaId = TURMA_ID_1,
+                    PeriodoEscolarId = bimestre,
                     CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
-                long fechamentoAlunoId = 1;
-                
-                foreach (var alunoCodigo in ObterAlunos())
+                foreach (var componenteCurricular in ObterComponentesCurriculares())
                 {
-                    await InserirNaBase(new FechamentoAluno()
-                    {
-                        FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId,
-                        AlunoCodigo = alunoCodigo,
-                        CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-                    }); 
-                    
-                    await InserirNaBase(new FechamentoNota()
+                    await InserirNaBase(new FechamentoTurmaDisciplina()
                     {
                         DisciplinaId = componenteCurricular,
-                        FechamentoAlunoId = fechamentoAlunoId,
-                        Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
-                        ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                        FechamentoTurmaId = 1,
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                     });
 
-                    fechamentoAlunoId++;
-                }
+                    foreach (var alunoCodigo in ObterAlunos())
+                    {
+                        await InserirNaBase(new FechamentoAluno()
+                        {
+                            FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId,
+                            AlunoCodigo = alunoCodigo,
+                            CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                        });
 
-                fechamentoTurmaDisciplinaId++;
+                        await InserirNaBase(new FechamentoNota()
+                        {
+                            DisciplinaId = componenteCurricular,
+                            FechamentoAlunoId = fechamentoAlunoId,
+                            Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
+                            ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito
+                                ? new Random().Next(1, 3)
+                                : null,
+                            CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                        });
+
+                        fechamentoAlunoId++;
+                    }
+
+                    fechamentoTurmaDisciplinaId++;
+                }
             }
+        }
+
+        private static List<int?> ObterBimestresComBimestreFinal()
+        {
+            return new List<int?>() { BIMESTRE_1,BIMESTRE_2,BIMESTRE_3,BIMESTRE_4, null };
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -312,6 +407,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = PERCENTUAL_FREQUENCIA_CRITICO_NOME,
+                Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ativo = true,
+                Descricao = PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO,
+                Valor = "75",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
