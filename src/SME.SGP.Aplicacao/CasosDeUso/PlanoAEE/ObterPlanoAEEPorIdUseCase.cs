@@ -116,10 +116,6 @@ namespace SME.SGP.Aplicacao
                 plano.PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(entidadePlano.SituacaoPodeDevolverPlanoAEE());
                 plano.Responsavel = await ObtenhaResponsavel(entidadePlano.ResponsavelId);
             } else
-            {
-                plano.Responsavel = await ObtenhaResponsavel();
-            }
-            else
                 turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
 
             var questionarioId = await mediator
