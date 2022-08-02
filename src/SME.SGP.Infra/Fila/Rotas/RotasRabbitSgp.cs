@@ -41,6 +41,8 @@
         public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync";
         public const string RotaAtividadesNotasSync = "sgp.atividade.avaliativa.notas.sync";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
+        public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
+        public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
 
         #region Relatórios
 

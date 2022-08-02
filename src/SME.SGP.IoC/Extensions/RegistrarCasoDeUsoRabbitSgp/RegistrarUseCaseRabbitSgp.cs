@@ -66,6 +66,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ICarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, CarregarAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<ISyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase, SyncAjusteImagensAcompanhamentoAprendizagemAlunoUseCase>();
             services.TryAddScoped<IAtualizarUltimoLoginUsuarioUseCase, AtualizarUltimoLoginUsuarioUseCase>();
+            services.TryAddScoped<IObterCodigoTurmaInfantilPorAnoUseCase, ObterCodigoTurmaInfantilPorAnoUseCase>();
+            services.TryAddScoped<IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase, ObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase>();
         }
     }
 }
