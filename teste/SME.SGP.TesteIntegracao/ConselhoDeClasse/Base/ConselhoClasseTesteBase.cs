@@ -69,13 +69,35 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
 
         private async Task CriarConselhoClasseParecerAno()
         {
-            var camposConselhoClasseParecer = "nome,aprovado,frequencia,conselho,inicio_vigencia,fim_vigencia,criado_por,criado_rf,criado_em,alterado_por,alterado_rf,alterado_em,nota";
+            await InserirNaBase(new ConselhoClasseParecer()
+            {
+                Nome = "Promovido", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
+                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
             
-            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Promovido'","true","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","true");
-            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Promovido pelo conselho'","true","false","true","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
-            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Continuidade dos estudos'","true","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
-            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido'","false","false","true","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","true");
-            await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido por frequência'","false","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
+            await InserirNaBase(new ConselhoClasseParecer()
+            {
+                Nome = "Promovido pelo conselho", Aprovado = true, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            
+            await InserirNaBase(new ConselhoClasseParecer()
+            {
+                Nome = "Continuidade dos estudos", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            
+            await InserirNaBase(new ConselhoClasseParecer()
+            {
+                Nome = "Retido", Aprovado = false, Frequencia = false, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
+                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+            
+            await InserirNaBase(new ConselhoClasseParecer()
+            {
+                Nome = "Retido por frequência", Aprovado = false, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
 
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
