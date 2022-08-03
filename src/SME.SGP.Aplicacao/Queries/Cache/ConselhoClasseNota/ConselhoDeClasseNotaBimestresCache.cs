@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Cache
+namespace SME.SGP.Aplicacao
 {
     public class ConselhoDeClasseNotaBimestresCache
     {

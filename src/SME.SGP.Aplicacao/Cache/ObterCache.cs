@@ -3,7 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Cache
+namespace SME.SGP.Aplicacao
 {
     public abstract class ObterCache<T> where T : class
     {

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Cache
+namespace SME.SGP.Aplicacao
 {
     public class ConselhoDeClasseNotaBimestresCacheCommad : ConselhoDeClasseNotaBimestresCache, IRequest<bool>
     {
