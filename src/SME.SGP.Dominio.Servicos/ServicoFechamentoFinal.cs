@@ -291,7 +291,10 @@ namespace SME.SGP.Dominio.Servicos
             foreach (var notaFinal in notasFinais)
             {
                 if (notaFinal.AlunoCodigo == codigoAluno)
+                {
                     notaFinal.Nota = fechamentoNota.Nota;
+                    notaFinal.ConceitoId = fechamentoNota.ConceitoId;
+                }
             }
             await mediator.Send(new SalvarCachePorValorObjetQuery($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
         }
