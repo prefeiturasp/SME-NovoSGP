@@ -12,9 +12,9 @@ namespace SME.SGP.Infra
 {
     public class ServicoAuditoria : IServicoAuditoria
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public ServicoAuditoria(IServicoMensageria servicoMensageria)
+        public ServicoAuditoria(IServicoMensageriaSGP servicoMensageria)
         {
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }
