@@ -131,10 +131,15 @@ namespace SME.SGP.Aplicacao
 
                 double? nota = null;
                 double? conceito = null;
-                if (conselhoClasseNotasAluno != null && fechamentoNotasAluno != null)
+                if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any())
                 {
-                    nota = conselhoClasseNotasAluno.First().Nota != null ? conselhoClasseNotasAluno.First().Nota : fechamentoNotasAluno.First().Nota;
-                    conceito = conselhoClasseNotasAluno.First().ConceitoId != null ? conselhoClasseNotasAluno.First().ConceitoId : fechamentoNotasAluno.First().ConceitoId;
+                    nota = conselhoClasseNotasAluno.First().Nota;
+                    conceito = conselhoClasseNotasAluno.First().ConceitoId;
+                }
+                else if (fechamentoNotasAluno != null && fechamentoNotasAluno.Any())
+                {
+                    nota = fechamentoNotasAluno.First().Nota;
+                    conceito = fechamentoNotasAluno.First().ConceitoId;
                 }
 
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
