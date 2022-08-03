@@ -1,10 +1,9 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Aplicacao.Cache;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Servicos
+namespace SME.SGP.Aplicacao
 {
     public abstract class AtualizadorDeCache<T> where T : class
     {

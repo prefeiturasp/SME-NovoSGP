@@ -1,11 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Infra;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Cache
+namespace SME.SGP.Aplicacao
 {
     public class ConselhoDeClasseNotaBimestresCacheCommadHandler : AtualizadorDeCache<ConselhoClasseAlunoNotasConceitosRetornoDto>, IRequestHandler<ConselhoDeClasseNotaBimestresCacheCommad, bool>
     {

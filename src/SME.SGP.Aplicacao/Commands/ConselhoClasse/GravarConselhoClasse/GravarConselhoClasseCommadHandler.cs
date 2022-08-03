@@ -4,10 +4,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
@@ -63,16 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task CriarCache(GravarConselhoClasseCommad request)
         {
-            var cache = await mediator.Send(new ObterCacheQuery($"NotaConceitoBimestre-{request.ConselhoClasseId}-${request.CodigoAluno}-{request.Bimestre}"));
-            if (!string.IsNullOrEmpty(cache))
-            {
-                var retorno = JsonConvert.DeserializeObject<ConselhoClasseAlunoNotasConceitosRetornoDto>(cache);
-                var conselhoClasseComponenteFrequenciaDtos = retorno!.NotasConceitos.FirstOrDefault()!.ComponentesCurriculares.FirstOrDefault(x => x.CodigoComponenteCurricular == request.ConselhoClasseNotaDto.CodigoComponenteCurricular);
-                conselhoClasseComponenteFrequenciaDtos!.NotaPosConselho.Nota = request.ConselhoClasseNotaDto.Conceito ?? request.ConselhoClasseNotaDto.Nota;
-
-                var cacheRetorno = JsonConvert.SerializeObject(retorno);
-                await mediator.Send(new SalvarCachePorValorStringQuery($"NotaConceitoBimestre-{request.ConselhoClasseId}-${request.CodigoAluno}-{request.Bimestre}",cacheRetorno));
-            }
+            await mediator.Send(new ConselhoDeClasseNotaBimestresCacheCommad(request.ConselhoClasseId,request.CodigoAluno,request.Bimestre,request.ConselhoClasseNotaDto));
         }
         private async Task<ConselhoClasseAluno> VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
         {

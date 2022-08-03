@@ -83,19 +83,6 @@ namespace SME.SGP.TesteIntegracao.Setup
                 cmd.ExecuteNonQuery();
             }
         }
-        
-        public void Inserir(string tabela, string camposDaTabela,params string[] valoresDosCampos)
-        {
-            var builder = new StringBuilder();
-            builder.Append($"Insert into {tabela} ({camposDaTabela}) Values (");
-            builder.Append(string.Join(", ", valoresDosCampos));
-            builder.Append(")");
-
-            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
-            {
-                cmd.ExecuteNonQuery();
-            }
-        }
 
         public void Dispose()
         {
