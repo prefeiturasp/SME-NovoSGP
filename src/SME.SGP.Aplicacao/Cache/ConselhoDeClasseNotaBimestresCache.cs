@@ -12,9 +12,9 @@ namespace SME.SGP.Aplicacao.Cache
 
         public string CodigoAluno { get; set; }
 
-        public int Bimestre { get; set; }
+        public int? Bimestre { get; set; }
 
-        public ConselhoDeClasseNotaBimestresCache(long conselhoClasseId, string codigoAluno, int bimestre)
+        public ConselhoDeClasseNotaBimestresCache(long conselhoClasseId, string codigoAluno, int? bimestre)
         {
             ConselhoClasseId = conselhoClasseId;
             CodigoAluno = codigoAluno;

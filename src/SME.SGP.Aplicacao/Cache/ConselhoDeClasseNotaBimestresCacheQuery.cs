@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao.Cache
 {
     public class ConselhoDeClasseNotaBimestresCacheQuery : ConselhoDeClasseNotaBimestresCache, IRequest<ValorCache<ConselhoClasseAlunoNotasConceitosRetornoDto>>
     {
-        public ConselhoDeClasseNotaBimestresCacheQuery(long conselhoClasseId, string codigoAluno, int bimestre)
+        public ConselhoDeClasseNotaBimestresCacheQuery(long conselhoClasseId, string codigoAluno, int? bimestre)
                 : base(conselhoClasseId, codigoAluno, bimestre)
         {
         }

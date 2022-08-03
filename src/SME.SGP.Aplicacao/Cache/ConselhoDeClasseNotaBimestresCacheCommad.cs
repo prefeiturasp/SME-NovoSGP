@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao.Cache
     {
         public ConselhoClasseNotaDto ConselhoClasseNotaDto { get; set; }
 
-        public ConselhoDeClasseNotaBimestresCacheCommad(long conselhoClasseId, string codigoAluno, int bimestre, ConselhoClasseNotaDto dto) 
+        public ConselhoDeClasseNotaBimestresCacheCommad(long conselhoClasseId, string codigoAluno, int? bimestre, ConselhoClasseNotaDto dto) 
             : base(conselhoClasseId, codigoAluno, bimestre)
         {
             ConselhoClasseNotaDto = dto;

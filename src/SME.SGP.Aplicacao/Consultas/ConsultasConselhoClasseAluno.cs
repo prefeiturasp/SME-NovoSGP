@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using SME.SGP.Aplicacao.Cache;
 using SME.SGP.Aplicacao.Commands;
 
 namespace SME.SGP.Aplicacao
@@ -158,9 +159,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico = false)
         {
-            var cache = await mediator.Send(new ObterCacheQuery($"NotaConceitoBimestre-{conselhoClasseId}-{alunoCodigo}-{bimestre}"));
-            if (!string.IsNullOrEmpty(cache))
-                return JsonConvert.DeserializeObject<ConselhoClasseAlunoNotasConceitosRetornoDto>(cache);
+            
+            var cache = await mediator.Send(new ConselhoDeClasseNotaBimestresCacheQuery(conselhoClasseId,alunoCodigo,bimestre));
+            if (cache.Valor != null)
+                return cache.Valor;
             
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
             if (turma == null) throw new NegocioException("Turma não encontrada");
@@ -397,7 +399,7 @@ namespace SME.SGP.Aplicacao
             retorno.PodeEditarNota = visualizaNotas && await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
             retorno.NotasConceitos = gruposMatrizesNotas;
             
-            await mediator.Send(new SalvarCachePorValorObjetQuery($"NotaConceitoBimestre-{conselhoClasseId}-${alunoCodigo}-{bimestre}",retorno));
+            await mediator.Send(new SalvarCachePorValorObjetQuery(cache.Chave,retorno));
             
             return retorno;
         }
