@@ -366,6 +366,9 @@ namespace SME.SGP.TesteIntegracao
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
 
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
+
         protected readonly CollectionFixture collectionFixture;
 
         protected TesteBaseComuns(CollectionFixture collectionFixture) : base(collectionFixture)

@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -38,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return cacheParaRetorno;
         }
-
+        
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
             var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter async<T>", "");

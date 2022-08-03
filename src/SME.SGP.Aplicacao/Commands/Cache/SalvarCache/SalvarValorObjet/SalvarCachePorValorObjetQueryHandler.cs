@@ -6,7 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCachePorValorObjetQueryHandler : IRequestHandler<SalvarCachePorValorObjetQuery>
+    public class SalvarCachePorValorObjetQueryHandler : IRequestHandler<SalvarCachePorValorObjetQuery,string>
     {
         private readonly IRepositorioCache repositorioCache;
 
@@ -15,10 +15,10 @@ namespace SME.SGP.Aplicacao
             repositorioCache = cache ?? throw new ArgumentNullException(nameof(cache));
         }
 
-        public async Task<Unit> Handle(SalvarCachePorValorObjetQuery request, CancellationToken cancellationToken)
+        public async Task<string> Handle(SalvarCachePorValorObjetQuery request, CancellationToken cancellationToken)
         {
             await repositorioCache.SalvarAsync(request.NomeChave,request.Valor,request.MinutosParaExpirar,request.UtilizarGZip);
-            return Unit.Value;
+            return request.NomeChave;
         }
     }
 }
