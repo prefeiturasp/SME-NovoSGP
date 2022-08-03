@@ -308,7 +308,8 @@ namespace SME.SGP.Aplicacao
 
             var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
                                  (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
-                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoInicio);
+                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoInicio) ||
+                                 (!dadosAluno.EstaInativo() && await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar));
 
             var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
 
