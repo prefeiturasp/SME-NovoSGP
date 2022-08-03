@@ -77,8 +77,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido'","false","false","true","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","true");
             await InserirNaBaseComCampos("conselho_classe_parecer",camposConselhoClasseParecer,"'Retido por frequência'","false","true","false","'2014-01-01'","null","'SISTEMA'","0","'2014-01-01'","null","null","null","false");
 
-            var camposConselhoClasseParecerAno = "parecer_id,ano_turma,modalidade,inicio_vigencia,fim_vigencia,criado_por,criado_rf,criado_em,alterado_por,alterado_rf,alterado_em";
-
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
                 ParecerId = 3, AnoTurma = 1, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
