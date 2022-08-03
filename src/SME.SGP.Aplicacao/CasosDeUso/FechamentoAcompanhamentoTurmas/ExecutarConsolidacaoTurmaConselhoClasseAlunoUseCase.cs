@@ -131,12 +131,12 @@ namespace SME.SGP.Aplicacao
 
                 double? nota = null;
                 double? conceito = null;
-                if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Count() > 0)
+                if (conselhoClasseNotasAluno.Any())
                 {
                     nota = conselhoClasseNotasAluno.First().Nota;
                     conceito = conselhoClasseNotasAluno.First().ConceitoId;
                 }
-                else if (fechamentoNotasAluno != null && fechamentoNotasAluno.Count() > 0)
+                else if (fechamentoNotasAluno.Any())
                 {
                     nota = fechamentoNotasAluno.First().Nota;
                     conceito = fechamentoNotasAluno.First().ConceitoId;
