@@ -73,7 +73,7 @@ namespace SME.SGP.Infra
 
         public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
         {
-            return EstaAtivo(dataAula, periodoInicio) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
+            return EstaAtivo(dataAula) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
         }
 
         /// <summary>
@@ -112,6 +112,10 @@ namespace SME.SGP.Infra
         public string NomeValido()
         {
             return string.IsNullOrEmpty(NomeSocialAluno) ? NomeAluno : NomeSocialAluno;
+        }
+        public bool MostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
+        {
+            return EstaAtivo(dataAula, periodoInicio) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
         }
 
         public bool PodeEditarNotaConceito()
