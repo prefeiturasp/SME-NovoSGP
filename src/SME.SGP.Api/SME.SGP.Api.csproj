@@ -26,7 +26,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
-    <PackageReference Include="Minio" Version="4.0.5" />
     <PackageReference Include="Polly" Version="7.2.2" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="5.0.1" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.2" />
