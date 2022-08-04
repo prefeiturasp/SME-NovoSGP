@@ -116,20 +116,9 @@ namespace SME.SGP.Aplicacao
 
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
-            var notasFechamentoFinaisNoCache = await mediator.Send(new ObterCacheQuery($"fechamentoNotaFinais-{filtros.DisciplinaCodigo}-{filtros.TurmaCodigo}"));
 
             if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
-            {
-                if (notasFechamentoFinaisNoCache == null)
-                {
-                    notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
-                    await mediator.Send(new SalvarCachePorValorObjectCommand($"fechamentoNotaFinais-{filtros.DisciplinaCodigo}-{turma.CodigoTurma}", notasFechamentosFinais));
-                }
-                else
-                {
-                    notasFechamentosFinais = JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(notasFechamentoFinaisNoCache);
-                }
-            }
+                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
 
@@ -170,7 +159,6 @@ namespace SME.SGP.Aplicacao
                                                                                 && a.AlunoCodigo == aluno.CodigoAluno);
                             var notaParaAdicionar = nota?.NotaConceito ?? "";
 
-
                             fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                             {
                                 Bimestre = periodo.Bimestre,
@@ -179,7 +167,6 @@ namespace SME.SGP.Aplicacao
                                 NotaConceito = notaParaAdicionar,
 
                             });
-
                         }
                     }
 
@@ -200,7 +187,6 @@ namespace SME.SGP.Aplicacao
                             NotaConceito = notaParaAdicionar,
                             EmAprovacao = nota?.EmAprovacao ?? false
                         });
-
                     }
                 }
 

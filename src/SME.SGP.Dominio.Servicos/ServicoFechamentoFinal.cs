@@ -126,7 +126,9 @@ namespace SME.SGP.Dominio.Servicos
                                     fechamentoNota.SinteseId = notaDto.SinteseId;
                                     fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
 
-                                    var notasFechamentoFinaisNoCache = JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(await mediator.Send(new ObterCacheQuery($"fechamentoNotaFinais-{fechamentoFinal.DisciplinaId}-{turma.CodigoTurma}")));
+                                    var retornoNotasFechamentoFinaisNoCache = await mediator.Send(new ObterCacheQuery($"fechamentoNotaFinais-{fechamentoFinal.DisciplinaId}-{turma.CodigoTurma}"));
+
+                                    var notasFechamentoFinaisNoCache = await MapearRetornoParaDto(retornoNotasFechamentoFinaisNoCache);
 
                                     if (notasFechamentoFinaisNoCache != null)
                                         await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota, fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma);
@@ -297,6 +299,11 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             await mediator.Send(new SalvarCachePorValorObjectCommand($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
+        }
+
+        private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearRetornoParaDto(string dadosCache)
+        {
+            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(dadosCache));
         }
     }
 }
