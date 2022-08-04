@@ -41,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.Setup
             _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), 
                 typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
             
-            _services.Replace(new ServiceDescriptor(typeof(IServicoMensageria),
-                typeof(ServicoMensageriaFake), ServiceLifetime.Scoped));            
+            _services.Replace(new ServiceDescriptor(typeof(IServicoMensageriaSGP),
+                typeof(ServicoMensageriaFake), ServiceLifetime.Scoped));
 
             ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
