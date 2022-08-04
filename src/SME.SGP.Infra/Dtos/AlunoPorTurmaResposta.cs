@@ -73,7 +73,7 @@ namespace SME.SGP.Infra
 
         public bool DeveMostrarNaChamada(DateTime dataAula, DateTime periodoInicio)
         {
-            return EstaAtivo(dataAula) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
+            return EstaAtivo(dataAula, periodoInicio) || (!PossuiSituacaoAtiva() && DataSituacao.Date > periodoInicio.Date);
         }
 
         /// <summary>
