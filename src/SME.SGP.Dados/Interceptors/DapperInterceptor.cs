@@ -180,7 +180,7 @@ namespace SME.SGP.Dados
             return result;
         }
 
-        public static async Task<int> InserirVariosRegistrosAsync<TEntity>(this IDbConnection connection, IEnumerable<TEntity> entity, IDbTransaction transaction = null) where TEntity : class
+        public static async Task<int> InsercaoEmMassaAsync<TEntity>(this IDbConnection connection, IEnumerable<TEntity> entity, IDbTransaction transaction = null) where TEntity : class
         {
             var entidade = entity.GetType().GetGenericArguments()[0].Name;
             var result =  await servicoTelemetria.RegistrarComRetornoAsync<TEntity>(async () => await DommelBulkMapper.BulkInsertAsync(connection, entities: entity, transaction), "Postgres", $"InsertBulk Entidade ${entidade}", "InsertBulk");

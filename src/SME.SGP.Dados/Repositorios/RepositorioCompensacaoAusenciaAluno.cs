@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             //    registroInserir.Add(add);
             //}
             //var dataInicio = DateTime.Now;
-            await database.Conexao.InserirVariosRegistrosAsync(registros);
+            await database.Conexao.InsercaoEmMassaAsync(registros);
             //var dataFim = DateTime.Now;
             return await Task.FromResult(true);
         }
