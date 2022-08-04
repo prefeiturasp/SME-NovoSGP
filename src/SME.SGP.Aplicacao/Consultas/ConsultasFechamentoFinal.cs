@@ -123,7 +123,7 @@ namespace SME.SGP.Aplicacao
                 if (notasFechamentoFinaisNoCache == null)
                 {
                     notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
-                    await mediator.Send(new SalvarCachePorValorObjetQuery($"fechamentoNotaFinais-{filtros.DisciplinaCodigo}-{turma.CodigoTurma}", notasFechamentosFinais));
+                    await mediator.Send(new SalvarCachePorValorObjectCommand($"fechamentoNotaFinais-{filtros.DisciplinaCodigo}-{turma.CodigoTurma}", notasFechamentosFinais));
                 }
                 else
                 {

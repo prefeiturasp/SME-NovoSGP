@@ -296,7 +296,7 @@ namespace SME.SGP.Dominio.Servicos
                     notaFinal.ConceitoId = fechamentoNota.ConceitoId;
                 }
             }
-            await mediator.Send(new SalvarCachePorValorObjetQuery($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
+            await mediator.Send(new SalvarCachePorValorObjectCommand($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
         }
     }
 }
