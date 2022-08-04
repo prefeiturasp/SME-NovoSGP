@@ -9,17 +9,17 @@ namespace SME.SGP.Aplicacao
 {
     public class ProfessorPodePersistirTurmaQueryHandler : IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public ProfessorPodePersistirTurmaQueryHandler(HttpClient httpClient)
+        public ProfessorPodePersistirTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<bool> Handle(ProfessorPodePersistirTurmaQuery request, CancellationToken cancellationToken)
         {
             var dataString = request.DataAula.ToString("s");
-
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
             if (resposta.IsSuccessStatusCode)
             {

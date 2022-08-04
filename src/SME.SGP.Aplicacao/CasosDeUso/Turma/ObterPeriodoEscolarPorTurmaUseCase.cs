@@ -16,20 +16,40 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<PeriodoEscolarPorTurmaDto>> Executar(long turmaId)
         {
-
+            var periodosEscolares = new List<PeriodoEscolar>();
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
+
             if (turma == null)
                 throw new NegocioException($"Turma [{turmaId}] não localizada!");
 
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            
-            return periodos?.Select(c => new PeriodoEscolarPorTurmaDto
+
+            if (periodos.Any())
+                periodosEscolares = FiltrarPeriodosCorretos(periodos.ToList());
+           
+            return periodosEscolares?.Select(c => new PeriodoEscolarPorTurmaDto
             {
                 Bimestre = c.Bimestre,
                 Id = c.Id,
                 Migrado = c.Migrado,
-                PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, c.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result,
+                PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, c.Bimestre, turma.AnoLetivo == DateTime.Today.Year, periodosEscolares.FirstOrDefault().TipoCalendarioId)).Result,
         });
+        }
+
+        public List<PeriodoEscolar> FiltrarPeriodosCorretos(List<PeriodoEscolar> periodos)
+        {
+            var periodosAgrupados = periodos.GroupBy(p => p.TipoCalendarioId).Select(p=> new
+            {
+                TipoCalendarioId = p.Key,
+                QuantidadePeriodos = p.Count()
+            });
+
+            if (periodosAgrupados.Count() > 1)
+            {
+                var tipoCalendarioId = periodosAgrupados.Where(p => p.QuantidadePeriodos > 1).Select(p => p.TipoCalendarioId).FirstOrDefault();
+                return periodos.Where(p => p.TipoCalendarioId == tipoCalendarioId).ToList();
+            }
+            return periodos.ToList();
         }
     }
 }

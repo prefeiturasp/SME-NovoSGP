@@ -44,7 +44,7 @@ namespace SME.SGP.IoC
         {
             var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>().Value;
             var connection = new ConnectionMultiplexerSME(redisOptions);
-            return new RepositorioCacheRedis(connection, servicoTelemetria);
+            return new RepositorioCacheRedis(connection, servicoTelemetria, redisOptions);
         }
 
         private static IRepositorioCache ObterRepositorioMemory(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria, IServiceCollection services)

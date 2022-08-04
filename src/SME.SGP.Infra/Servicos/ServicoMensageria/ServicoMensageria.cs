@@ -30,8 +30,8 @@ namespace SME.SGP.Infra
             });
             var body = Encoding.UTF8.GetBytes(mensagem);
 
-            await servicoTelemetria.RegistrarAsync(() =>
-                    policy.ExecuteAsync(() => PublicarMensagem(rota, body, exchange)),
+            await servicoTelemetria.RegistrarAsync(async () =>
+                    await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange)),
                             "RabbitMQ", nomeAcao, rota);
 
             return true;
@@ -40,7 +40,7 @@ namespace SME.SGP.Infra
         public Task<bool> Publicar<T>(T mensagem, string rota, string exchange, string nomeAcao)
             => Publicar(new MensagemRabbit(mensagem), rota, exchange, nomeAcao);
 
-        private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
+        private Task PublicarMensagem(string rota, byte[] body, string exchange = null)
         {
             var _channel = conexaoRabbit.Get();
             try
@@ -54,6 +54,8 @@ namespace SME.SGP.Infra
             {
                 conexaoRabbit.Return(_channel);
             }
+
+            return Task.CompletedTask;
         }
     }
 }
