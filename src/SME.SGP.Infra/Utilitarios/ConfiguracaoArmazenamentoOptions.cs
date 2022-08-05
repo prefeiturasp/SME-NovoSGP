@@ -6,7 +6,9 @@ namespace SME.SGP.Infra.Utilitarios
         public string BucketTempSGPName { get; set; }
         public string BucketSGP { get; set; }
         public string EndPoint { get; set; }
+        public int Port { get; set; }
         public string AccessKey { get; set; }
         public string SecretKey { get; set; }
+        public string TipoRequisicao { get; set; }
     }
 }

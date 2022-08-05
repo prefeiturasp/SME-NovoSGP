@@ -1,11 +1,6 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
@@ -30,32 +25,11 @@ namespace SME.SGP.Aplicacao
             }
 
             var nomeArquivo = request.Arquivo.FileName;
-            var caminhoArquivo = ObterCaminhoArquivo(request.Tipo);
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
-            await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), caminhoArquivo));
+            await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), request.Tipo));
 
             return arquivo;
-        }
-
-        private string ObterCaminhoArquivo(TipoArquivo tipo)
-        {
-            var caminho = Path.Combine(ObterCaminhoArquivos(), tipo.Name());
-            return VerificaCaminhoExiste(caminho);
-        }
-
-        private string ObterCaminhoArquivos()
-        {
-            var caminho = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos");
-            return VerificaCaminhoExiste(caminho);
-        }
-
-        private string VerificaCaminhoExiste(string caminho)
-        {
-            if (!Directory.Exists(caminho))
-                Directory.CreateDirectory(caminho);
-
-            return caminho;
         }
     }
 }

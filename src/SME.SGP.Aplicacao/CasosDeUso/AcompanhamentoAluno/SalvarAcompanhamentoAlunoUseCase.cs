@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
-                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.temp, TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                     if (!string.IsNullOrEmpty(novoCaminho))
                     {
                         var caminhoBase = UtilArquivo.ObterDiretorioBase();

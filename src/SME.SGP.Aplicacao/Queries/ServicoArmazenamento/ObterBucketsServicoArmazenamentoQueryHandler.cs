@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -6,7 +7,7 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterBucketsServicoArmazenamentoQueryHandler: IRequestHandler<ObterBucketsServicoArmazenamentoQuery, bool>
+    public class ObterBucketsServicoArmazenamentoQueryHandler: IRequestHandler<ObterBucketsServicoArmazenamentoQuery, IEnumerable<string>>
     {
         private readonly IServicoArmazenamento servicoArmazenamento;
         
@@ -15,10 +16,9 @@ namespace SME.SGP.Aplicacao
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         }
 
-        public async Task<bool> Handle(ObterBucketsServicoArmazenamentoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> Handle(ObterBucketsServicoArmazenamentoQuery request, CancellationToken cancellationToken)
         {
-            await servicoArmazenamento.Obter();
-            return true;
+            return await servicoArmazenamento.ObterBuckets();
         }
     }
 }
