@@ -8,7 +8,7 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ArmazenarArquivoFisicoCommandHandler : IRequestHandler<ArmazenarArquivoFisicoCommand, bool>
+    public class ArmazenarArquivoFisicoCommandHandler : IRequestHandler<ArmazenarArquivoFisicoCommand, string>
     {
         private readonly IServicoArmazenamento servicoArmazenamento;
         
@@ -16,16 +16,18 @@ namespace SME.SGP.Aplicacao
         {
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         }  
-        public Task<bool> Handle(ArmazenarArquivoFisicoCommand request, CancellationToken cancellationToken)
+        public async Task<string> Handle(ArmazenarArquivoFisicoCommand request, CancellationToken cancellationToken)
         {
             var stream = request.Arquivo.OpenReadStream();
             
-            if (request.TipoArquivo == TipoArquivo.temp)
-               servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,stream,request.Arquivo.ContentType);
-            else
-               servicoArmazenamento.Armazenar(request.NomeFisico,stream, request.Arquivo.ContentType);
+            var extensao = Path.GetExtension(request.Arquivo.FileName);
             
-            return Task.FromResult(true);
+            var nomeArquivo = $"{request.NomeFisico}{extensao}";
+                
+            if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
+               return await servicoArmazenamento.ArmazenarTemporaria(nomeArquivo,stream,request.Arquivo.ContentType);
+            else
+               return await servicoArmazenamento.Armazenar(nomeArquivo,stream, request.Arquivo.ContentType);
         }
     }
 }

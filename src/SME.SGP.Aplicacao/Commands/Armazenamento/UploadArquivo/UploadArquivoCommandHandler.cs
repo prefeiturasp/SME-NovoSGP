@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var nomeArquivo = request.Arquivo.FileName;
 
             var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
-            await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), request.Tipo));
+            arquivo.Path = await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), request.Tipo));
 
             return arquivo;
         }

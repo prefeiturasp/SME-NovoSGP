@@ -5,7 +5,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ArmazenarArquivoFisicoCommand : IRequest<bool>
+    public class ArmazenarArquivoFisicoCommand : IRequest<string>
     {
         public ArmazenarArquivoFisicoCommand(IFormFile arquivo, string nomeFisico, TipoArquivo tipoArquivo)
         {

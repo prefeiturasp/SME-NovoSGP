@@ -18,9 +18,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RetornoArquivoEditorDto> Executar(IFormFile file,string caminho, TipoArquivo tipoArquivo = TipoArquivo.Geral)
         {
-            Guid resposta = await mediator.Send(new UploadArquivoCommand(file, tipoArquivo));
+            var resposta = await mediator.Send(new UploadArquivoCommand(file, tipoArquivo));
             
-            var fileName = $"{resposta}{Path.GetExtension(file.FileName)}";
+            var fileName = $"{resposta.Codigo}{Path.GetExtension(file.FileName)}";
 
             return new RetornoArquivoEditorDto()
             {
@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                     BaseUrl = $"{caminho}",
                     Message = "",
                     Error = "",
-                    Path = $"{caminho}{fileName}",
+                    Path = $"{resposta.Path}",
                     ContentType = file.ContentType
                 }
             };

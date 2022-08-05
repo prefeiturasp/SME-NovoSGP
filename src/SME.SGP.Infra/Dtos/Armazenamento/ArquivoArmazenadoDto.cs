@@ -16,6 +16,7 @@ namespace SME.SGP.Infra
 
         public long Id { get; set; }
         public Guid Codigo { get; set; }
+        public string Path { get; set; }
 
         public static implicit operator Guid(ArquivoArmazenadoDto dto)
             => dto.Codigo;

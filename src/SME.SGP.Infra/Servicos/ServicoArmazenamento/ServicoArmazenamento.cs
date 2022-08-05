@@ -42,21 +42,23 @@ namespace SME.SGP.Infra
                 .Build();
         }
         
-        public async Task<bool> ArmazenarTemporaria(string nomeArquivo, Stream stream, string contentType)
+        public async Task<string> ArmazenarTemporaria(string nomeArquivo, Stream stream, string contentType)
         {
-            return await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            
+            return ObterUrl(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
         }
 
-        public async Task<bool> Armazenar(string nomeArquivo, Stream stream, string contentType)
+        
+
+        public async Task<string> Armazenar(string nomeArquivo, Stream stream, string contentType)
         {
             return await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketSGP);
         }
 
-        private async Task<bool> ArmazenarArquivo(string nomeArquivo, Stream stream, string contentType, string bucket)
+        private async Task<string> ArmazenarArquivo(string nomeArquivo, Stream stream, string contentType, string bucket)
         {
-            try
-            {
-                var args = new PutObjectArgs()
+            var args = new PutObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(nomeArquivo)
                     .WithStreamData(stream)
@@ -66,49 +68,32 @@ namespace SME.SGP.Infra
                 
                 await minioClient.PutObjectAsync(args);
 
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+             return ObterUrl(nomeArquivo,bucket);
         }
         
-        public async Task<bool> Copiar(string nomeArquivo)
+        public async Task<string> Copiar(string nomeArquivo)
         {
-            try
-            {
-                var cpSrcArgs = new CopySourceObjectArgs()
-                    .WithBucket(configuracaoArmazenamentoOptions.BucketTempSGPName)
-                    .WithObject(nomeArquivo);
-                    
-                var args = new CopyObjectArgs()
-                    .WithBucket(configuracaoArmazenamentoOptions.BucketSGP)
-                    .WithObject(nomeArquivo)
-                    .WithCopyObjectSource(cpSrcArgs);
-                    
-                await minioClient.CopyObjectAsync(args);
+            var cpSrcArgs = new CopySourceObjectArgs()
+                .WithBucket(configuracaoArmazenamentoOptions.BucketTempSGPName)
+                .WithObject(nomeArquivo);
+                
+            var args = new CopyObjectArgs()
+                .WithBucket(configuracaoArmazenamentoOptions.BucketSGP)
+                .WithObject(nomeArquivo)
+                .WithCopyObjectSource(cpSrcArgs);
+                
+            await minioClient.CopyObjectAsync(args);
 
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            return ObterUrl(nomeArquivo, configuracaoArmazenamentoOptions.BucketSGP);
         }
 
-        public async Task<bool> Mover(string nomeArquivo)
+        public async Task<string> Mover(string nomeArquivo)
         {
-            try
-            {
-                await Copiar(nomeArquivo);
-                await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
+            await Copiar(nomeArquivo);
+            
+            await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            
+            return ObterUrl(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
         }
 
         public async Task<bool> Excluir(string nomeArquivo, string nomeBucket)
@@ -155,7 +140,12 @@ namespace SME.SGP.Infra
             
             var arquivo = await minioClient.StatObjectAsync(statObjectArgs);
             
-            return $"{configuracaoArmazenamentoOptions.TipoRequisicao}://{configuracaoArmazenamentoOptions.EndPoint}:{configuracaoArmazenamentoOptions.Port}/{bucketNome}/{nomeArquivo}";
+            return ObterUrl(nomeArquivo,bucketNome);
+        }
+        
+        private string ObterUrl(string nomeArquivo, string bucketName)
+        {
+            return $"{configuracaoArmazenamentoOptions.TipoRequisicao}://{configuracaoArmazenamentoOptions.EndPoint}:{configuracaoArmazenamentoOptions.Port}/{bucketName}/{nomeArquivo}";
         }
     }
 }

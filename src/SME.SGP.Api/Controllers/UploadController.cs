@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -64,7 +65,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ArmazenarTemporarioServicoArmazenamento(IFormFile iFromFile)
         {
             if (iFromFile != null) 
-                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,iFromFile.FileName,TipoArquivo.temp)));
+                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,new Guid().ToString(),TipoArquivo.temp)));
                 
             return BadRequest();
         }
