@@ -25,11 +25,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Handle(CopiarArquivoCommand request, CancellationToken cancellationToken)
         {
-            await servicoArmazenamento.Copiar(request.Nome);
+            var retorno = await servicoArmazenamento.Copiar(request.Nome);
                 
             await SalvarCopiaArquivo(request.TipoArquivoDestino, request.Nome);
             
-            return $@"/{request.TipoArquivoDestino.Name()}/{DateTime.Now.Year}/{DateTime.Now.Month:00}/";
+            return retorno;
         }
         private async Task SalvarCopiaArquivo(TipoArquivo tipo, string nomeArquivo)
         {
