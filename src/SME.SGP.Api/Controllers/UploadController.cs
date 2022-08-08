@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
@@ -23,8 +24,8 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IMediator mediator;
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
-        public UploadController(IMediator mediator, IServicoArmazenamento servicoArmazenamento,ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        public UploadController(IMediator mediator, IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator;
             this.servicoArmazenamento = servicoArmazenamento;
@@ -45,7 +46,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}{configuracaoArmazenamentoOptions.BucketTempSGPName}", 
+                        $"https://{Request.Host}{Request.PathBase}{configuracaoArmazenamentoOptions.Value.BucketTempSGPName}", 
                         Dominio.TipoArquivo.Editor));
             }
                 

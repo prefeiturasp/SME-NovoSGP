@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
@@ -17,9 +18,9 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
     {
         private readonly IMediator mediator;
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
-        public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator,IServicoArmazenamento servicoArmazenamento,ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
+        public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator,IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
@@ -47,7 +48,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
             {
                 try
                 {
-                    await servicoArmazenamento.Excluir(item.ToString(),configuracaoArmazenamentoOptions.BucketSGP);
+                    await servicoArmazenamento.Excluir(item.ToString(),configuracaoArmazenamentoOptions.Value.BucketSGP);
                 }
                 catch (Exception ex)
                 {
