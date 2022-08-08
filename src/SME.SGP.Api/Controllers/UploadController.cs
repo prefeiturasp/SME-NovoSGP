@@ -88,9 +88,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> CopiarServicoArmazenamento(string nomeArquivo)
         {
-            await servicoArmazenamento.Copiar(nomeArquivo);
-            
-            return Ok();
+            return Ok(await servicoArmazenamento.Copiar(nomeArquivo));
         }
         
         [HttpPost("/servico-armazenamento/excluir")]
@@ -99,9 +97,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo)
         {
-            await servicoArmazenamento.Excluir(nomeArquivo,string.Empty);
-            
-            return Ok();
+            return Ok(await servicoArmazenamento.Excluir(nomeArquivo,string.Empty));
         }
         
         [HttpPost("/servico-armazenamento/mover")]
@@ -110,9 +106,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> MoverServicoArmazenamento(string nomeArquivo)
         {
-            await servicoArmazenamento.Mover(nomeArquivo);
-            
-            return Ok();
+            return Ok(await servicoArmazenamento.Mover(nomeArquivo));
         }
         
         [HttpPost("/servico-armazenamento/obter-url")]
