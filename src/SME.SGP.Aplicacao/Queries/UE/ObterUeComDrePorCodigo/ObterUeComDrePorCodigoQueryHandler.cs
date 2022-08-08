@@ -22,14 +22,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Ue> Handle(ObterUeComDrePorCodigoQuery request, CancellationToken cancellationToken)
         {
-            var ue = await repositorioUe.ObterUeComDrePorCodigo(request.UeCodigo);
-            var nomeChave = string.Format(NomeChaveCache.CHAVE_DRE_ID, ue.Id);
-            var dados = JsonConvert.DeserializeObject<Ue>(await mediator.Send(new ObterCacheAsyncQuery(nomeChave)));
-
-            if (dados != null)
-                return dados;
-
-            return await mediator.Send(new ObterUeComDrePorIdQuery(ue.Id), cancellationToken);
+            var ueId = await repositorioUe.ObterIdPorCodigoUe(request.UeCodigo);
+            return await mediator.Send(new ObterUeComDrePorIdQuery(ueId));
         }
     }
 }
