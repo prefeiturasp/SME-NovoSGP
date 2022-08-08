@@ -23,6 +23,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+        
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
             this.id = await repositorioTurmaConsulta.ObterTurmaIdPorCodigo(request.TurmaCodigo);

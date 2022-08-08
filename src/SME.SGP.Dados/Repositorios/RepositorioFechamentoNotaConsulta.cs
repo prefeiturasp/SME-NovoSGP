@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -31,7 +29,8 @@ namespace SME.SGP.Dados.Repositorios
                                           and not n.excluido 
                                           and fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
 
-        const string queryNotasFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre 
+        const string queryNotasFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, 
+                                    fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, t.turma_id as TurmaCodigo 
                           from fechamento_turma ft
                          inner join turma t on t.id = ft.turma_id 
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
@@ -74,7 +73,8 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos,
+            string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
             var query = $@"{queryNotasFechamento}
                            and t.turma_id = ANY(@turmasCodigos)
@@ -93,10 +93,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
 
-
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {
-            var query = @"select w.*
+            const string query = @"select w.*
                             from wf_aprovacao_nota_fechamento w
                           inner join fechamento_nota n on n.id = w.fechamento_nota_id 
                           inner join fechamento_aluno a on a.id = n.fechamento_aluno_id
@@ -107,7 +106,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacaoWf(long wfAprovacaoId)
         {
-            var query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
+            const string query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId,
                                 fn.conceito_id as ConceitoAnteriorId, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
                                 cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
@@ -135,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoTurmaDisciplinaId, string alunoCodigo)
         {
-            var query = queryPorFechamento + " and aluno_codigo = @alunoCodigo";
+            const string query = queryPorFechamento + " and aluno_codigo = @alunoCodigo";
 
             var consultaFechamento = await database.Conexao.QueryAsync<FechamentoNota, FechamentoAluno, FechamentoNota>(query
                 , (fechamentoNota, fechamentoAluno) =>
@@ -160,7 +159,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
         {
-            var query = @"select distinct 
+            const string query = @"select distinct 
 	                            ftd.disciplina_id as ComponenteCurricularId,
 	                            cc.descricao as ComponenteCurricularDescricao,
 	                            nota as Nota,
@@ -193,7 +192,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaAprovacaoDto>> ObterNotasEmAprovacaoPorIdsFechamento(IEnumerable<long> Ids)
         {
-            var query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
+            const string query = @" select coalesce(coalesce(w.nota,w.conceito_id),-1) as NotaEmAprovacao, w.fechamento_nota_id as Id 
                            from wf_aprovacao_nota_fechamento w where w.fechamento_nota_id = ANY(@Ids)";
 
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
@@ -201,7 +200,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)
         {
-            var query = $@"select distinct fn.disciplina_Id DisciplinaId,fn.nota, fn.conceito_id ConceitoId, fa.aluno_codigo as AlunoCodigo, ft.turma_id TurmaId, pe.bimestre
+            const string query = @"select distinct fn.disciplina_Id DisciplinaId,fn.nota, fn.conceito_id ConceitoId, 
+                            fa.aluno_codigo as AlunoCodigo, ft.turma_id TurmaId, pe.bimestre
                             from fechamento_nota fn
                             join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id
                             join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id

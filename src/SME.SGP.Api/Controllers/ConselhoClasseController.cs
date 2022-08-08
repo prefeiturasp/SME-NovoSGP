@@ -11,7 +11,6 @@ using SME.SGP.Infra.Dtos.ConselhoClasse;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 namespace SME.SGP.Api.Controllers
 {
     [ApiController]
@@ -46,10 +45,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [ProducesResponseType(200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> PersistirNotas([FromServices] IComandosConselhoClasseNota comandosConselhoClasseNota,
+        public async Task<IActionResult> PersistirNotas([FromServices] ISalvarConselhoClasseAlunoNotaUseCase useCase,
            [FromBody] ConselhoClasseNotaDto conselhoClasseNotaDto, string codigoAluno, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
-            return Ok(await comandosConselhoClasseNota.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId, codigoTurma, bimestre));
+            var dto = new SalvarConselhoClasseAlunoNotaDto()
+            {
+                ConselhoClasseNotaDto = conselhoClasseNotaDto,
+                CodigoAluno = codigoAluno,
+                ConselhoClasseId = conselhoClasseId,
+                FechamentoTurmaId = fechamentoTurmaId,
+                CodigoTurma = codigoTurma,
+                Bimestre = bimestre
+            };
+
+            return Ok(await useCase.Executar(dto));
         }
 
         [HttpGet("detalhamento/{id}")]
@@ -106,8 +115,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(ParecerConclusivoDto), 200)]
         [Permissao(Permissao.CC_I, Policy = "Bearer")]
-        public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IComandosConselhoClasseAluno comandosConselhoClasseAluno)
-            => Ok(await comandosConselhoClasseAluno.GerarParecerConclusivoAsync(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
+        public async Task<IActionResult> GerarParecerConclusivoAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, [FromServices] IGerarParecerConclusivoUseCase gerarParecerConclusivoUseCase)
+            => Ok(await gerarParecerConclusivoUseCase.Executar(new ConselhoClasseFechamentoAlunoDto() { ConselhoClasseId = conselhoClasseId, FechamentoTurmaId = fechamentoTurmaId, AlunoCodigo = alunoCodigo}));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/alunos/{alunoCodigo}/turmas/{codigoTurma}/bimestres/{bimestre}/sintese")]
         [ProducesResponseType(typeof(IEnumerable<ConselhoDeClasseGrupoMatrizDto>), 200)]
@@ -166,9 +175,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<BimestreComConselhoClasseTurmaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IServicoConselhoClasse servicoConselhoClasse)
+        public async Task<IActionResult> ReprocessarSituacaoConselhoClasseAluno(int dreId, [FromServices] IConsolidarConselhoClasseUseCase consolidarConselhoCasseUseCase)
         {
-            await servicoConselhoClasse.ConsolidaConselhoClasse(dreId);
+            await consolidarConselhoCasseUseCase.Executar(dreId);
             return Ok();
         }
 

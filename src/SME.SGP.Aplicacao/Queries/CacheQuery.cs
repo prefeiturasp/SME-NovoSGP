@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao.Queries
     {
         private readonly IRepositorioCache repositorioCache;
 
-        public CacheQuery(IRepositorioCache repositorioCache)
+        protected CacheQuery(IRepositorioCache repositorioCache)
         {
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }

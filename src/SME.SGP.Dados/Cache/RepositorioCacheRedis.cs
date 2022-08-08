@@ -11,10 +11,11 @@ namespace SME.SGP.Dados.Repositorios
         private readonly IConnectionMultiplexerSME connectionMultiplexerSME;
         private readonly IDatabase redis;
 
-        public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSME, IServicoTelemetria servicoTelemetria) : base(servicoTelemetria)
+        public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSME,
+            IServicoTelemetria servicoTelemetria) : base(servicoTelemetria)
         {
             this.connectionMultiplexerSME = connectionMultiplexerSME ?? throw new ArgumentNullException(nameof(connectionMultiplexerSME));
-            this.redis = connectionMultiplexerSME.GetDatabase() ?? throw new ArgumentNullException("RedisDatabase");
+            redis = connectionMultiplexerSME.GetDatabase() ?? throw new ArgumentNullException("RedisDatabase");
             NomeServicoCache = "Cache Redis";
         }
 

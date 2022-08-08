@@ -297,7 +297,7 @@ namespace SME.SGP.Aplicacao
 
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
             if (fechamentosTurma != null && fechamentosTurma.Any())
-                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurma.Select(ftd => ftd.Id).ToArray()));
+                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurma.Select(ftd => ftd.Id).ToArray(), turma.CodigoTurma, componenteCurricularCodigo.ToString()));
 
             foreach (var aluno in alunos)
             {
@@ -431,7 +431,7 @@ namespace SME.SGP.Aplicacao
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
 
             if (fechamentosIds.Length > 0)
-                notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds));
+                notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds, turma.CodigoTurma, disciplinaCodigo.ToString()));
 
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
