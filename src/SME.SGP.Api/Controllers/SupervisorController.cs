@@ -62,11 +62,8 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("tipo-responsavel")]
         public IActionResult ObterListTipoReponsavel()
         {
-            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
-                            .Cast<TipoResponsavelAtribuicao>()
-                            .Select(d => new { codigo = (int)d, descricao = d.Name() }).OrderBy(x => x.descricao).ToList();
-
-            return Ok(tipos);
+            return Ok(consultasSupervisor
+                .ObterTiposResponsaveis());
         }
 
         [HttpGet("dre/{dreId}")]

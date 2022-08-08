@@ -15,5 +15,7 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<ResponsavelEscolasDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro);
         Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo);
+
+        IEnumerable<TipoReponsavelRetornoDto> ObterTiposResponsaveis();
     }
 }
