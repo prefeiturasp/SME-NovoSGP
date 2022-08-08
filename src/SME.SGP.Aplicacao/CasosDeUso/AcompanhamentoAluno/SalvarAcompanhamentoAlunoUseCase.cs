@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -30,18 +31,27 @@ namespace SME.SGP.Aplicacao
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
         {
-            var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
-            if (imagens != null)
-                foreach (var imagem in imagens)
-                {
-                    var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
-                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
-                    if (!string.IsNullOrEmpty(novoCaminho))
+            try
+            {
+                var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
+                if (imagens != null)
+                    foreach (var imagem in imagens)
                     {
-                        var str = acompanhamentoAluno.PercursoIndividual.Replace(_configuracaoArmazenamentoOptions.BucketTempSGPName, _configuracaoArmazenamentoOptions.BucketSGP);
-                        acompanhamentoAluno.PercursoIndividual = str;
+                        var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
+                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                        if (!string.IsNullOrEmpty(novoCaminho))
+                        {
+                            var str = acompanhamentoAluno.PercursoIndividual.Replace(_configuracaoArmazenamentoOptions.BucketTempSGPName, _configuracaoArmazenamentoOptions.BucketSGP);
+                            acompanhamentoAluno.PercursoIndividual = str;
+                        }
                     }
-                }
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao copiar arquivo {ex.Message}",
+                    LogNivel.Critico,
+                    LogContexto.Arquivos));
+            }
         }
 
         private async Task MoverRemoverExcluidosAlterar(string observacoes, string percursoIndividual, AcompanhamentoAlunoSemestre entidade)
