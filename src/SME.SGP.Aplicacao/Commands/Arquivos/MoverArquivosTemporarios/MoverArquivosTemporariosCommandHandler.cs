@@ -28,13 +28,11 @@ namespace SME.SGP.Aplicacao
             
             foreach (var item in diferenca)
             {
-                //Está retornando o endereço completo e aqui ele altera somente de temp para a segregação de pastas - rever como será feito isso
                 enderecoFuncionalidade = await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
+                request.TextoEditorNovo.Replace($"/{ArquivoConstants.PastaTemporaria}/{item}", enderecoFuncionalidade);
             }
 
-            string textoNovo = request.TextoEditorNovo.Replace(ArquivoConstants.PastaTemporaria, enderecoFuncionalidade);
-            return textoNovo.ToString();
-
+            return request.TextoEditorNovo;
         }
     }
 }

@@ -84,7 +84,7 @@ namespace SME.SGP.Infra
                 
             await minioClient.CopyObjectAsync(args);
 
-            return nomeArquivo;
+            return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
         }
 
         public async Task<string> Mover(string nomeArquivo)
@@ -93,7 +93,7 @@ namespace SME.SGP.Infra
             
             await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
             
-            return nomeArquivo;
+            return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
         }
 
         public async Task<bool> Excluir(string nomeArquivo, string nomeBucket)
