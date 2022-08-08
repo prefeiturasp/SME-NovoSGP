@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -11,27 +12,32 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmaPorCodigoQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterTurmaPorCodigoQuery, Turma>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private ObterTurmaPorCodigoQuery request;
+        private readonly IMediator mediator;
+        private long id;
 
-        public ObterTurmaPorCodigoQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioCache repositorioCache) : base(repositorioCache)
+        public ObterTurmaPorCodigoQueryHandler(
+                        IRepositorioTurmaConsulta repositorioTurmaConsulta, 
+                        IRepositorioCache repositorioCache,
+                        IMediator mediator) : base(repositorioCache)
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            this.request = request;
+            this.id = await repositorioTurmaConsulta.ObterTurmaIdPorCodigo(request.TurmaCodigo);
 
             return await Obter();
         }
 
         protected override string ObterChave()
         {
-            return $"turma-codigo:{request.TurmaCodigo}";
+            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id);
         }
 
         protected override async Task<Turma> ObterObjetoRepositorio()
         {
-            return await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
+            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id));
         }
     }
 }

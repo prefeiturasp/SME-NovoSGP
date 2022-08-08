@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -8,27 +9,35 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUEPorTurmaIdQueryHandler : CacheQuery<Ue>, IRequestHandler<ObterUEPorTurmaIdQuery, Ue>
+    public class ObterUEPorTurmaIdQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterUEPorTurmaIdQuery, Ue>
     {
-        private readonly IRepositorioUeConsulta repositorioUe;
-        private ObterUEPorTurmaIdQuery request;
+        private readonly IMediator mediator;
+        private long id;
 
-        public ObterUEPorTurmaIdQueryHandler(IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache) : base(repositorioCache)
+        public ObterUEPorTurmaIdQueryHandler(
+                    IRepositorioCache repositorioCache,
+                    IMediator mediator) : base(repositorioCache)
         {
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<Ue> Handle(ObterUEPorTurmaIdQuery request, CancellationToken cancellationToken)
-            => await repositorioUe.ObterUEPorTurmaId(request.TurmaId);
+        {
+            this.id = request.TurmaId;
+
+            var turma = await Obter();
+
+            return turma?.Ue;
+        }
 
         protected override string ObterChave()
         {
-            return $"ue-turma-id:{request.TurmaId}";
+            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id);
         }
 
-        protected override async Task<Ue> ObterObjetoRepositorio()
+        protected override async Task<Turma> ObterObjetoRepositorio()
         {
-            return await repositorioUe.ObterUEPorTurmaId(request.TurmaId);
+            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id));
         }
     }
 }

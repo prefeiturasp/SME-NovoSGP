@@ -19,27 +19,7 @@ namespace SME.SGP.Aplicacao.Queries
 
         protected async Task<T> Obter()
         {
-            var chave = ObterChave();
-            var objeto = ObterDoCache(chave);
-
-            if (objeto != null)
-                return objeto;
-
-            var objetoRepositorio = await ObterObjetoRepositorio();
-
-            await repositorioCache.SalvarAsync(chave, JsonConvert.SerializeObject(objetoRepositorio));
-
-            return objetoRepositorio;
-        }
-
-        private T ObterDoCache(string chave)
-        {
-            var cacheTurma = repositorioCache.Obter(chave);
-
-            if (cacheTurma != null)
-                return JsonConvert.DeserializeObject<T>(cacheTurma);
-
-            return null;
+            return await repositorioCache.ObterAsync(ObterChave(), ObterObjetoRepositorio);
         }
     }
 }
