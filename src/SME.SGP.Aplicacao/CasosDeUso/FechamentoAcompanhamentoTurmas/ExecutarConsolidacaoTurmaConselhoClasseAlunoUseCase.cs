@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao
                         };
                     
                     consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
-                    consolidadoNota.Nota = (long?)(filtro.Nota != null ? filtro.Nota: nota);
+                    consolidadoNota.Nota = (double?)(filtro.Nota != null ? filtro.Nota: nota);
                     consolidadoNota.ConceitoId = (long?)(filtro.ConceitoId != null ? filtro.ConceitoId : conceito);
 
                     await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
