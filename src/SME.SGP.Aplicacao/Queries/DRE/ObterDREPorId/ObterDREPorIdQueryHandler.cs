@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace SME.SGP.Aplicacao
     public class ObterDREPorIdQueryHandler : CacheQuery<Dre>, IRequestHandler<ObterDREPorIdQuery, Dre>
     {
         private readonly IRepositorioDreConsulta repositorioDre;
-        private ObterDREPorIdQuery request;
+        private long id;
 
         public ObterDREPorIdQueryHandler(IRepositorioDreConsulta repositorioDre, IRepositorioCache repositorioCache) : base(repositorioCache)
         {
@@ -20,19 +21,19 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Dre> Handle(ObterDREPorIdQuery request, CancellationToken cancellationToken)
         {
-            this.request = request;
+            this.id = request.DreId;
 
             return await Obter();
         }
 
         protected override string ObterChave()
         {
-            return $"Dre-Id:{request.DreId}";
+            return string.Format(NomeChaveCache.CHAVE_DRE_ID, this.id);
         }
 
         protected override async Task<Dre> ObterObjetoRepositorio()
         {
-            return await repositorioDre.ObterPorIdAsync(request.DreId);
+            return await repositorioDre.ObterPorIdAsync(this.id);
         }
     }
 }
