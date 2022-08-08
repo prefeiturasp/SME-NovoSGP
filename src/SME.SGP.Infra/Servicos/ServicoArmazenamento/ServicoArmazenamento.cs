@@ -15,17 +15,8 @@ namespace SME.SGP.Infra
 
         public ServicoArmazenamento(ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
         {
-            // this.configuracaoArmazenamentoOptions = GetConfiguration(configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions)));
-            this.configuracaoArmazenamentoOptions = new ConfiguracaoArmazenamentoOptions()
-            {
-                EndPoint = "localhost",
-                Port = 9000,
-                AccessKey = "minio",
-                SecretKey = "miniosecret",
-                BucketTempSGPName = "bucket-temp-sgp",
-                BucketSGP = "bucket-sgp",
-                TipoRequisicao = "http"
-            };
+            this.configuracaoArmazenamentoOptions = GetConfiguration(configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions)));
+
             Inicializar();
         }
 

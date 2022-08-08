@@ -16,9 +16,14 @@ namespace SME.SGP.IoC
 
             services.AddSingleton<ConfiguracaoArmazenamentoOptions>();
             
-            var options = services.BuildServiceProvider().GetService<IOptions<ConfiguracaoArmazenamentoOptions>>().Value;
-            
             services.AddSingleton<IServicoArmazenamento, ServicoArmazenamento>();
+            
+            services.AddSingleton<IServicoArmazenamento>(serviceProvider =>
+            {
+                var options = services.BuildServiceProvider().GetService<IOptions<ConfiguracaoArmazenamentoOptions>>().Value;
+                return new ServicoArmazenamento(options);
+            });
+            
         }
     }
 }
