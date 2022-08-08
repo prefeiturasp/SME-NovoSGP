@@ -98,6 +98,7 @@ namespace SME.SGP.IoC
             RegistrarTelemetria(services, configuration);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services,configuration);
 
             RegistrarMapeamentos.Registrar();
         }

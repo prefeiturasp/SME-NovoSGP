@@ -8,20 +8,31 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
     public class ArmazenarImagemFisicaCommandHandler : IRequestHandler<ArmazenarImagemFisicaCommand, bool>
     {
-        public Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        
+        public ArmazenarImagemFisicaCommandHandler(IServicoArmazenamento servicoArmazenamento)
         {
-            var nomeArquivo = request.NomeFisico + Path.GetExtension(request.NomeArquivo);
-            var caminho = Path.Combine(request.Caminho, nomeArquivo);
-
-            var bitmap = new Bitmap(request.Imagem);
-            bitmap.Save(caminho, ObterFormato(request.Formato));
-      
-            return Task.FromResult(true);
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
+        }
+        public async Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
+        {
+            using (var msImagem = new MemoryStream())
+            {
+                request.Imagem.Save(msImagem,request.Imagem.RawFormat);
+                
+                if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
+                    await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
+                else
+                    await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
+            }
+            return true;
         }
 
         private ImageFormat ObterFormato(string formato)

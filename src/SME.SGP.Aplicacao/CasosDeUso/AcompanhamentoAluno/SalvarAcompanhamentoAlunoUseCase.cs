@@ -1,17 +1,21 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
-        public SalvarAcompanhamentoAlunoUseCase(IMediator mediator) : base(mediator)
+        private readonly ConfiguracaoArmazenamentoOptions _configuracaoArmazenamentoOptions;
+        public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions) : base(mediator)
         {
+            this._configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto dto)
@@ -34,9 +38,7 @@ namespace SME.SGP.Aplicacao
                     var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                     if (!string.IsNullOrEmpty(novoCaminho))
                     {
-                        var caminhoBase = UtilArquivo.ObterDiretorioBase();
-                        var caminhoArquivoDestino = Path.Combine(caminhoBase, novoCaminho, nomeArquivo.ToString());
-                        var str = acompanhamentoAluno.PercursoIndividual.Replace($"/{TipoArquivo.temp}/{nomeArquivo}", caminhoArquivoDestino);
+                        var str = acompanhamentoAluno.PercursoIndividual.Replace(_configuracaoArmazenamentoOptions.BucketTempSGPName, _configuracaoArmazenamentoOptions.BucketSGP);
                         acompanhamentoAluno.PercursoIndividual = str;
                     }
                 }

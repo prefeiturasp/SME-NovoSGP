@@ -64,26 +64,31 @@ namespace SME.SGP.Infra
         
         public async Task<string> Copiar(string nomeArquivo)
         {
-            var cpSrcArgs = new CopySourceObjectArgs()
-                .WithBucket(configuracaoArmazenamentoOptions.BucketTempSGPName)
-                .WithObject(nomeArquivo);
+            if (!configuracaoArmazenamentoOptions.BucketTempSGPName.Equals(configuracaoArmazenamentoOptions.BucketSGP))
+            {
+                var cpSrcArgs = new CopySourceObjectArgs()
+                    .WithBucket(configuracaoArmazenamentoOptions.BucketTempSGPName)
+                    .WithObject(nomeArquivo);
                 
-            var args = new CopyObjectArgs()
-                .WithBucket(configuracaoArmazenamentoOptions.BucketSGP)
-                .WithObject(nomeArquivo)
-                .WithCopyObjectSource(cpSrcArgs);
+                var args = new CopyObjectArgs()
+                    .WithBucket(configuracaoArmazenamentoOptions.BucketSGP)
+                    .WithObject(nomeArquivo)
+                    .WithCopyObjectSource(cpSrcArgs);
                 
-            await minioClient.CopyObjectAsync(args);
+                await minioClient.CopyObjectAsync(args);
+            }
 
             return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
         }
 
         public async Task<string> Mover(string nomeArquivo)
         {
-            await Copiar(nomeArquivo);
+            if (!configuracaoArmazenamentoOptions.BucketTempSGPName.Equals(configuracaoArmazenamentoOptions.BucketSGP))
+            {
+                await Copiar(nomeArquivo);
             
-            await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
-            
+                await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            }
             return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
         }
 

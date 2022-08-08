@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
             IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork)
@@ -25,6 +27,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AuditoriaDto> Handle(InserirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -44,7 +47,7 @@ namespace SME.SGP.Aplicacao
                     var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
                                                     request.HoraOcorrencia,
                                                     request.Titulo, 
-                                                    request.Descricao.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.Ocorrencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"),
+                                                    request.Descricao.Replace(configuracaoArmazenamentoOptions.BucketTempSGPName, configuracaoArmazenamentoOptions.BucketSGP),
                                                     ocorrenciaTipo,
                                                     turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,15 +17,18 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public ComandosPlanoAnualTerritorioSaber(IRepositorioPlanoAnualTerritorioSaber repositorioPlanoAnualTerritorioSaber,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario, IMediator mediator)
+                                  IServicoUsuario servicoUsuario, IMediator mediator,
+                                  ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoAnualTerritorioSaber = repositorioPlanoAnualTerritorioSaber ?? throw new ArgumentNullException(nameof(repositorioPlanoAnualTerritorioSaber));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<IEnumerable<EntidadeBase>> Salvar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
@@ -104,8 +108,8 @@ namespace SME.SGP.Aplicacao
             }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
-            planoAnualTerritorioSaber.Reflexao = reflexao.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
-            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.TerritorioSaber.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/") ?? string.Empty;
+            planoAnualTerritorioSaber.Reflexao = reflexao.Replace(configuracaoArmazenamentoOptions.BucketTempSGPName, configuracaoArmazenamentoOptions.BucketSGP) ?? string.Empty;
+            planoAnualTerritorioSaber.Desenvolvimento = desenvolvimento.Replace(configuracaoArmazenamentoOptions.BucketTempSGPName, configuracaoArmazenamentoOptions.BucketSGP) ?? string.Empty;
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;
