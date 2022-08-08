@@ -3,9 +3,9 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarCachePorValorObjectCommand : IRequest<string>
+    public class SalvarCachePorValorObjetoCommand : IRequest<string>
     {
-        public SalvarCachePorValorObjectCommand(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        public SalvarCachePorValorObjetoCommand(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
             NomeChave = nomeChave;
             Valor = valor;
@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
         public string NomeChave { get; set; }
     }
 
-    public class SalvarCachePorValorObjectCommandValidator : AbstractValidator<SalvarCachePorValorObjectCommand>
+    public class SalvarCachePorValorObjetoCommandValidator : AbstractValidator<SalvarCachePorValorObjetoCommand>
     {
-        public SalvarCachePorValorObjectCommandValidator()
+        public SalvarCachePorValorObjetoCommandValidator()
         {
             RuleFor(x => x.NomeChave).NotEmpty().WithMessage("Informa o nome da chave para salvar o cache");
             RuleFor(x => x.Valor).NotNull().WithMessage("Informa o valor para salvar o cache");

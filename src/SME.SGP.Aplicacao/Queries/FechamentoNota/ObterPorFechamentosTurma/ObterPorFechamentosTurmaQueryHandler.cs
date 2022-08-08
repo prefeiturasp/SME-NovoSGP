@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 return retornoCache;
 
             var retornoDb = await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids);
-            await mediator.Send(new SalvarCachePorValorObjectCommand(nomeChaveCache, retornoDb));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChaveCache, retornoDb));
 
             return retornoDb;
         }

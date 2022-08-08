@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao.Queries
     {
         private readonly IRepositorioCache repositorioCache;
 
-        public CacheQuery(IRepositorioCache repositorioCache)
+        protected CacheQuery(IRepositorioCache repositorioCache)
         {
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
@@ -35,11 +35,7 @@ namespace SME.SGP.Aplicacao.Queries
         private T ObterDoCache(string chave)
         {
             var cacheTurma = repositorioCache.Obter(chave);
-
-            if (cacheTurma != null)
-                return JsonConvert.DeserializeObject<T>(cacheTurma);
-
-            return null;
+            return cacheTurma != null ? JsonConvert.DeserializeObject<T>(cacheTurma) : null;
         }
     }
 }

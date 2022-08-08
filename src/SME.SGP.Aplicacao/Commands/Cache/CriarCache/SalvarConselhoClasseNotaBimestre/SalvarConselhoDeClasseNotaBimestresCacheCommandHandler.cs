@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ConselhoDeClasseNotaBimestresCacheCommadHandler : AtualizadorDeCache<ConselhoClasseAlunoNotasConceitosRetornoDto>, IRequestHandler<ConselhoDeClasseNotaBimestresCacheCommad, bool>
+    public class SalvarConselhoDeClasseNotaBimestresCacheCommandHandler : AtualizadorDeCache<ConselhoClasseAlunoNotasConceitosRetornoDto>, IRequestHandler<SalvarConselhoDeClasseNotaBimestresCacheCommand, bool>
     {
-        private ConselhoDeClasseNotaBimestresCacheCommad request;
+        private SalvarConselhoDeClasseNotaBimestresCacheCommand request;
 
-        public ConselhoDeClasseNotaBimestresCacheCommadHandler(IMediator mediator) : base(mediator)
+        public SalvarConselhoDeClasseNotaBimestresCacheCommandHandler(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<bool> Handle(ConselhoDeClasseNotaBimestresCacheCommad request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(SalvarConselhoDeClasseNotaBimestresCacheCommand request, CancellationToken cancellationToken)
         {
             this.request = request;
 
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task<ValorCache<ConselhoClasseAlunoNotasConceitosRetornoDto>> ObtenhaValorCache()
         {
-            return await mediator.Send(new ConselhoDeClasseNotaBimestresCacheQuery(request.ConselhoClasseId, request.CodigoAluno, request.Bimestre));
+            return await mediator.Send(new ObterConselhoDeClasseNotaBimestresCacheQuery(request.ConselhoClasseId, request.CodigoAluno, request.Bimestre));
         }
     }
 }

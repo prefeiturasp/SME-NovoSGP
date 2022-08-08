@@ -17,12 +17,10 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
     public class ConsultasConselhoClasseAlunoTeste
     {
         private readonly ConsultasConselhoClasseAluno consultasConselhoClasseAluno;
-        private readonly Mock<IConsultasConselhoClasseNota> consultasConselhoClasseNota;
         private readonly Mock<IConsultasDisciplina> consultasDisciplina;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
-        private readonly Mock<IRepositorioTurma> repositorioTurma;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
         private readonly Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta> repositorioFrequenciaAlunoDisciplinaPeriodo;
         private readonly Mock<IServicoEol> servicoEOL;
@@ -37,20 +35,16 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasDisciplina = new Mock<IConsultasDisciplina>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
-            consultasConselhoClasseNota = new Mock<IConsultasConselhoClasseNota>();
             servicoEOL = new Mock<IServicoEol>();
             servicoUsuario = new Mock<IServicoUsuario>();
             repositorioFrequenciaAlunoDisciplinaPeriodo = new Mock<IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta>();
             mediator = new Mock<IMediator>();
-            repositorioTurma = new Mock<IRepositorioTurma>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
 
             consultasConselhoClasseAluno = new ConsultasConselhoClasseAluno(repositorioConselhoClasseAluno.Object,
-                                             repositorioTurma.Object,
                                              consultasDisciplina.Object,
                                              repositorioTipoCalendario.Object,
                                              consultasPeriodoEscolar.Object,
-                                             consultasConselhoClasseNota.Object,
                                              servicoEOL.Object,
                                              servicoUsuario.Object,
                                              repositorioFrequenciaAlunoDisciplinaPeriodo.Object,

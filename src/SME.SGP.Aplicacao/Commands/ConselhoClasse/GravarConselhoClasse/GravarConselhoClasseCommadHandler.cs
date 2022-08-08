@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task CriarCache(GravarConselhoClasseCommad request)
         {
-            await mediator.Send(new ConselhoDeClasseNotaBimestresCacheCommad(request.ConselhoClasseId,request.CodigoAluno,request.Bimestre,request.ConselhoClasseNotaDto));
+            await mediator.Send(new SalvarConselhoDeClasseNotaBimestresCacheCommand(request.ConselhoClasseId,request.CodigoAluno,request.Bimestre,request.ConselhoClasseNotaDto));
         }
         private async Task<ConselhoClasseAluno> VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
         {

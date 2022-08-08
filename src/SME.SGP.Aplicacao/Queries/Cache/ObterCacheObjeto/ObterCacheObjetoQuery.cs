@@ -7,7 +7,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCacheObjetoQuery<T>: IRequest<T>
     {
-        public ObterCacheObjetoQuery(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        public ObterCacheObjetoQuery(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, 
+            bool utilizarGZip = false)
         {
             NomeCache = nomeChave;
             BuscarDados = buscarDados;

@@ -33,9 +33,7 @@ namespace SME.SGP.Dados.Repositorios
             var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter", "");
 
             if (utilizarGZip)
-            {
                 cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
-            }
 
             return cacheParaRetorno;
         }
@@ -47,9 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrWhiteSpace(stringCache))
             {
                 if (utilizarGZip)
-                {
                     stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-                }
 
                 return JsonConvert.DeserializeObject<T>(stringCache);
             }
@@ -65,16 +61,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter async<T>", "");
 
-            if (!string.IsNullOrWhiteSpace(stringCache))
-            {
-                if (utilizarGZip)
-                {
-                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-                }
-                return stringCache;
-            }
-
-            return await Task.FromResult(string.Empty);
+            if (string.IsNullOrWhiteSpace(stringCache)) 
+                return await Task.FromResult(string.Empty);
+            
+            if (utilizarGZip)
+                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+            
+            return stringCache;
         }
 
         public async Task RemoverAsync(string nomeChave)

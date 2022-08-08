@@ -159,6 +159,7 @@ namespace SME.SGP.Aplicacao
                                                                                 && a.AlunoCodigo == aluno.CodigoAluno);
                             var notaParaAdicionar = nota?.NotaConceito ?? "";
 
+
                             fechamentoFinalAluno.NotasConceitoBimestre.Add(new FechamentoFinalConsultaRetornoAlunoNotaConceitoDto()
                             {
                                 Bimestre = periodo.Bimestre,
@@ -167,6 +168,7 @@ namespace SME.SGP.Aplicacao
                                 NotaConceito = notaParaAdicionar,
 
                             });
+
                         }
                     }
 
@@ -187,6 +189,7 @@ namespace SME.SGP.Aplicacao
                             NotaConceito = notaParaAdicionar,
                             EmAprovacao = nota?.EmAprovacao ?? false
                         });
+
                     }
                 }
 

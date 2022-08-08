@@ -298,7 +298,7 @@ namespace SME.SGP.Dominio.Servicos
                     notaFinal.ConceitoId = fechamentoNota.ConceitoId;
                 }
             }
-            await mediator.Send(new SalvarCachePorValorObjectCommand($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
         }
 
         private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearRetornoParaDto(string dadosCache)

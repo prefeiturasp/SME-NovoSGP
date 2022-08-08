@@ -26,9 +26,9 @@ namespace SME.SGP.IoC
                 .Bind(configuration.GetSection(RedisOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<RedisOptions>();
 
-            services.AddSingleton<IRepositorioCache>(serviceProvider =>
+            services.AddSingleton(serviceProvider =>
             {
-                var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>().Value;
+                var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>()?.Value;
                 var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();
 
                 return ObterRepositorio(serviceProvider, options, servicoTelemetria, services);
@@ -42,7 +42,7 @@ namespace SME.SGP.IoC
 
         private static IRepositorioCache ObterRepositorioRedis(IServiceProvider serviceProvider, IServicoTelemetria servicoTelemetria)
         {
-            var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>().Value;
+            var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value;
             var connection = new ConnectionMultiplexerSME(redisOptions);
             return new RepositorioCacheRedis(connection, servicoTelemetria);
         }

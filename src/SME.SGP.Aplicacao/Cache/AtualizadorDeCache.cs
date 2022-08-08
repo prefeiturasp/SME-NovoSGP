@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 var objetoCache = ObtenhaObjetoAtualizado(this.ValorCache.Valor);
                 var cacheRetorno = JsonConvert.SerializeObject(objetoCache);
 
-                await mediator.Send(new SalvarCachePorValorStringQuery(this.ValorCache.Chave, cacheRetorno));
+                await mediator.Send(new SalvarCachePorValorStringCommand(this.ValorCache.Chave, cacheRetorno));
             }
 
             return true;

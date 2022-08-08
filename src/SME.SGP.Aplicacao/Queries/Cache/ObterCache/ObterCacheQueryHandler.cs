@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> Handle(ObterCacheQuery request, CancellationToken cancellationToken)
         {
-            return repositorioCache.Obter(request.NomeChave);
+            return await repositorioCache.ObterAsync(request.NomeChave);
         }
     }
 }

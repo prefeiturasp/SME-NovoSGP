@@ -6,7 +6,6 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-
     public class ObterCacheObjetoQueryHandler<T> : IRequestHandler<ObterCacheObjetoQuery<T>, T>
     {
         private readonly IRepositorioCache repositorioCache;

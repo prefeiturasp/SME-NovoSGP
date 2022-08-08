@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -47,9 +48,7 @@ namespace SME.SGP.Aplicacao
                         AlunoCodigo = fechamentoAluno.AlunoCodigo
                     };
                     
-                    foreach (var fechamentoAlunoFechamentoNota in fechamentoAluno.FechamentoNotas)
-                    {
-                        var cacheFechamentoNota = new CacheFechamentoNotaDto
+                    foreach (var cacheFechamentoNota in fechamentoAluno.FechamentoNotas.Select(fechamentoAlunoFechamentoNota => new CacheFechamentoNotaDto
                         {
                             Id = fechamentoAlunoFechamentoNota.Id,
                             Nota = fechamentoAlunoFechamentoNota.Nota,
@@ -61,8 +60,8 @@ namespace SME.SGP.Aplicacao
                             DisciplinaId = fechamentoAlunoFechamentoNota.DisciplinaId,
                             AlteradoRF = fechamentoAlunoFechamentoNota.AlteradoRF,
                             CriadoRF = fechamentoAlunoFechamentoNota.CriadoRF
-                        };
-                        
+                        }))
+                    {
                         cacheFechamentoAluno.FechamentoNotas.Add(cacheFechamentoNota);
                     }
                     
@@ -98,7 +97,7 @@ namespace SME.SGP.Aplicacao
                 request.PeriodoEscolarId, request.ComponenteCurricularId);
 
             var retornoDb = await MapearDadosDbParaCache(dadosBd);
-            await mediator.Send(new SalvarCachePorValorObjectCommand(nomeChave, retornoDb), cancellationToken);
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChave, retornoDb), cancellationToken);
 
             return retornoDb;
         }
