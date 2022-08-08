@@ -1,9 +1,12 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,7 +24,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Ue> Handle(ObterUePorIdQuery request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new ObterCacheObjetoQuery<Ue>($"ObterUePorId-{request.Id}", async () => await repositorioUe.ObterUePorId(request.Id)), cancellationToken);
+            var nomeChave = string.Format(NomeChaveCache.CHAVE_UE_COM_DRE_ID, request.Id);
+            var dados = JsonConvert.DeserializeObject<Ue>(await mediator.Send(new ObterCacheAsyncQuery(nomeChave)));
+
+            if (dados != null)
+                return dados;
+
+            return await mediator.Send(new ObterUeComDrePorIdQuery(request.Id), cancellationToken);
         }
     }
 }
