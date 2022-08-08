@@ -18,15 +18,16 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.CodigoTurma));
             var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, turma?.Ue.Dre.CodigoDre, turma?.Ue.CodigoUe, usuario: usuario));
+            var funcionariosFiltrados = funcionarios.GroupBy(x => x.UsuarioId).SelectMany(y => y.OrderBy(a => a.UsuarioId).Take(1));
             var limite = request.Limite > 0 ? request.Limite : 10;
 
             return new PaginacaoResultadoDto<UsuarioEolRetornoDto>()
             {
-                Items = funcionarios
+                Items = funcionariosFiltrados
                     .OrderBy(a => a.NomeServidor)
                     .Take(limite),
                 TotalPaginas = 1,
-                TotalRegistros = Math.Min(funcionarios.Count(), limite)
+                TotalRegistros = Math.Min(funcionariosFiltrados.Count(), limite)
             };
         }
     }
