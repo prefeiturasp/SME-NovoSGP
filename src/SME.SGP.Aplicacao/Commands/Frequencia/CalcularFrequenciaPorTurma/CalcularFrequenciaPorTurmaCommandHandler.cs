@@ -65,9 +65,6 @@ namespace SME.SGP.Aplicacao
 
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
             
-            if(registroFreqAlunos == null || !registroFreqAlunos.Any())
-                throw new NegocioException($"Não foi encontrado registros de frequencia para os alunos da turma [{request.TurmaId}]");
-
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
             List<FrequenciaAluno> frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
