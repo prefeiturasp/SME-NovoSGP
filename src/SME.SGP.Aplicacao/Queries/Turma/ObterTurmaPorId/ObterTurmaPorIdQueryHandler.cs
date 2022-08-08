@@ -9,32 +9,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaPorIdQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterTurmaPorIdQuery, Turma>
+    public class ObterTurmaPorIdQueryHandler : IRequestHandler<ObterTurmaPorIdQuery, Turma>
     {
         private readonly IMediator mediator;
-        private long id;
 
-        public ObterTurmaPorIdQueryHandler(
-                    IRepositorioCache repositorioCache,
-                    IMediator mediator) : base(repositorioCache)
+        public ObterTurmaPorIdQueryHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<Turma> Handle(ObterTurmaPorIdQuery request, CancellationToken cancellationToken)
         {
-            this.id = request.TurmaId;
-
-            return await Obter();
-        }
-
-        protected override string ObterChave()
-        {
-            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id);
-        }
-
-        protected override async Task<Turma> ObterObjetoRepositorio()
-        {
-            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id));
+            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(request.TurmaId));
         }
     }
 }
