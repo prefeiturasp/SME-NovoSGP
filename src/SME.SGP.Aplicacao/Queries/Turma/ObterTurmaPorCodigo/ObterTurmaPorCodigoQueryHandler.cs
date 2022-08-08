@@ -9,16 +9,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaPorCodigoQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterTurmaPorCodigoQuery, Turma>
+    public class ObterTurmaPorCodigoQueryHandler : IRequestHandler<ObterTurmaPorCodigoQuery, Turma>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IMediator mediator;
-        private long id;
 
         public ObterTurmaPorCodigoQueryHandler(
                         IRepositorioTurmaConsulta repositorioTurmaConsulta, 
-                        IRepositorioCache repositorioCache,
-                        IMediator mediator) : base(repositorioCache)
+                        IMediator mediator) 
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -26,18 +24,8 @@ namespace SME.SGP.Aplicacao
         
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            this.id = await repositorioTurmaConsulta.ObterTurmaIdPorCodigo(request.TurmaCodigo);
+            var id = await repositorioTurmaConsulta.ObterTurmaIdPorCodigo(request.TurmaCodigo);
 
-            return await Obter();
-        }
-
-        protected override string ObterChave()
-        {
-            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id);
-        }
-
-        protected override async Task<Turma> ObterObjetoRepositorio()
-        {
             return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id));
         }
     }
