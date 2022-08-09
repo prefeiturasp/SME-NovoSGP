@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
     public class ObterUeComDrePorIdQueryHandler : IRequestHandler<ObterUeComDrePorIdQuery, Ue>
     {
         private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
 
         public ObterUeComDrePorIdQueryHandler(IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache)
