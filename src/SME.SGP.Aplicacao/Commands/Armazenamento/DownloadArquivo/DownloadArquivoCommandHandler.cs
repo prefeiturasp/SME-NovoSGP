@@ -19,7 +19,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<byte[]> Handle(DownloadArquivoCommand request, CancellationToken cancellationToken)
         {
-            var enderecoArquivo = await servicoArmazenamento.Obter(request.Nome,request.Tipo == TipoArquivo.temp);
+            var extensao = Path.GetExtension(request.Nome); 
+                
+            var nomeArquivoComExtensao = $"{request.Codigo}{extensao}";
+            
+            var enderecoArquivo = await servicoArmazenamento.Obter(nomeArquivoComExtensao,request.Tipo == TipoArquivo.temp);
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
                 return await new HttpClient().GetByteArrayAsync(enderecoArquivo);
