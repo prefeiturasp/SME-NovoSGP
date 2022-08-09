@@ -1,11 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Shouldly;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
-            await ExecuteTeste(ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota);
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
         }
 
         [Theory]
@@ -47,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
-            await ExecuteTeste(ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota);
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
         }
 
         [Theory]
@@ -63,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
                 ModalidadeTipoCalendario.EJA,
                 anoAnterior);
 
-            await ExecuteTeste(ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota);
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
         }
 
         [Theory]
@@ -79,16 +75,25 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
-            await ExecuteTeste(ObtenhaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota);
+            await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, anoAnterior);
         }
 
+        private async Task ExecuteTeste(long componente, bool anoAnterior)
+        {
+            await ExecuteTeste(
+                        ObtenhaDto(componente),
+                        anoAnterior,
+                        ALUNO_CODIGO_1,
+                        TipoNota.Nota,
+                        BIMESTRE_2);
+        }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)
         {
             return new ConselhoClasseNotaDto()
             {
                 CodigoComponenteCurricular = componente,
-                Nota = 7,
+                Nota = NOTA_7,
                 Justificativa = JUSTIFICATIVA
             };
         }

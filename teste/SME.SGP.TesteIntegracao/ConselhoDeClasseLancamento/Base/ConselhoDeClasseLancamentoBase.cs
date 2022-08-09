@@ -19,7 +19,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 {
     public abstract class ConselhoDeClasseLancamentoBase : TesteBaseComuns
     {
-
         protected const long AULA_ID_1 = 1;
 
         protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
@@ -32,12 +31,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const string ALUNO_CODIGO_2 = "2";
         protected const string ALUNO_CODIGO_3 = "3";
         protected const string ALUNO_CODIGO_4 = "4";
-        protected const string ALUNO_CODIGO_5 = "5";
-        protected const string ALUNO_CODIGO_6 = "6";
-        protected const string ALUNO_CODIGO_7 = "7";
-        protected const string ALUNO_CODIGO_8 = "8";
-        protected const string ALUNO_CODIGO_9 = "9";
-        protected const string ALUNO_CODIGO_10 = "10";
 
         protected const double NOTA_1 = 1;
         protected const double NOTA_2 = 2;
@@ -49,14 +42,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const double NOTA_8 = 8;
         protected const double NOTA_9 = 9;
         protected const double NOTA_10 = 10;
-
-        protected const string AVALIACAO_NOME_1 = "Avaliação 1";
-        protected const string AVALIACAO_NOME_2 = "Avaliação 2";
-
-        protected const long TIPO_AVALIACAO_CODIGO_1 = 1;
-        protected const long TIPO_AVALIACAO_CODIGO_2 = 2;
-
-        protected const long PERIODO_ESCOLAR_CODIGO_1 = 1;
 
         protected const string NOTA = "NOTA";
         protected const string CONCEITO = "CONCEITO";
@@ -83,11 +68,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ExecuteTeste(ConselhoClasseNotaDto dto, bool anoAnterior, string codigoAluno, TipoNota tipoNota)
+        protected async Task ExecuteTeste(
+                    ConselhoClasseNotaDto dto, 
+                    bool anoAnterior, 
+                    string codigoAluno, 
+                    TipoNota tipoNota,
+                    int bimestre)
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, BIMESTRE_2);
+            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, bimestre);
 
             dtoRetorno.ShouldNotBeNull();
             var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
@@ -104,7 +94,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 listaAprovacaoNotaConselho.ShouldNotBeNull();
                 var aprovacaoNotaConselho = listaAprovacaoNotaConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
                 aprovacaoNotaConselho.ShouldNotBeNull();
-                aprovacaoNotaConselho.Nota.ShouldBe(7);
+                if (tipoNota == TipoNota.Nota)
+                    aprovacaoNotaConselho.Nota.ShouldBe(dto.Nota);
+                else
+                    aprovacaoNotaConselho.ConceitoId.ShouldBe(dto.Conceito);
             }
             else
             {
