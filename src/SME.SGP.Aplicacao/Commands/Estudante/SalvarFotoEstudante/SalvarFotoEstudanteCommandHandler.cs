@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao
         {
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
+            
+            
 
             using (var transacao = unitOfWork.IniciarTransacao())
             {
@@ -82,12 +84,16 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Image> ObterImagem(IFormFile file)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                var img = Image.FromStream(memoryStream);
-                return img;
-            }
+            // using (var memoryStream = new MemoryStream())
+            // {
+            //     await file.CopyToAsync(memoryStream);
+            //     var img = Image.FromStream(memoryStream);
+            //     return img;
+            // }
+            
+            var stream = file.OpenReadStream();
+            var image = Image.FromStream(stream);
+            return image;
         }
     }
 }
