@@ -40,8 +40,6 @@ namespace SME.SGP.Infra
             return ObterUrl(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
         }
 
-        
-
         public async Task<string> Armazenar(string nomeArquivo, Stream stream, string contentType)
         {
             return await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketSGP);
