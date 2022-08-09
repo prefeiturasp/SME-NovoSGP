@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                     }
                     
                     listaAuditoria.Add(await servicoFechamentoTurmaDisciplina.Salvar(fechamentoTurma.Id, fechamentoTurma, componenteSemNota));
-                    await RemoverCacheFechamentoTurmaDisciplina(fechamentoTurma);
+                    await RemoverCacheFechamento(fechamentoTurma);
                 }
                 catch (Exception e)
                 {
@@ -75,26 +75,34 @@ namespace SME.SGP.Aplicacao
             {
                 var fechamentoTurma = await repositorioFechamentoTurma.ObterPorIdAsync(fechamento.FechamentoTurmaId);
 
-                if (fechamentoTurma.PeriodoEscolarId.HasValue)
-                {
-                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(fechamentoTurma.TurmaId));                    
-                    var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
-                    var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(fechamento.AlteradoEm.HasValue ? fechamento.AlteradoRF : fechamento.CriadoRF));
-                    // TODO trocara para a rotina no rabbit
-                    //await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
-                }                
+                if (!fechamentoTurma.PeriodoEscolarId.HasValue) 
+                    continue;
+                
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(fechamentoTurma.TurmaId));                    
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+                var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(fechamento.AlteradoEm.HasValue ? fechamento.AlteradoRF : fechamento.CriadoRF));
+                // TODO trocara para a rotina no rabbit
+                //await servicoFechamentoTurmaDisciplina.GerarPendenciasFechamento(fechamento.DisciplinaId, turma, periodoEscolar, fechamento, usuario);
             }
         }
+        
+        private async Task RemoverCache(string nomeChave)
+        {
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave));
+        }        
 
-        private async Task RemoverCacheFechamentoTurmaDisciplina(FechamentoTurmaDisciplinaDto fechamentoTurma)
+        private async Task RemoverCacheFechamento(FechamentoTurmaDisciplinaDto fechamentoTurma)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(fechamentoTurma.TurmaId));
-            var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery(fechamentoTurma.TurmaId, fechamentoTurma.Bimestre, turma.AnoLetivo));
             
-            var nomeChave =
-                $"FechamentoNotas-{turma.Id.ToString()}-{periodoEscolarId.ToString()}-{fechamentoTurma.DisciplinaId.ToString()}";
-
-            await mediator.Send(new RemoverChaveCacheCommand(nomeChave));
+            var periodoEscolarId = await mediator.Send(new ObterPeriodoEscolarIdPorTurmaBimestreAnoLetivoQuery(fechamentoTurma.TurmaId,
+                fechamentoTurma.Bimestre, turma.AnoLetivo));
+            
+            var nomeChave = $"FechamentoNotas-{turma.Id}-{periodoEscolarId}-{fechamentoTurma.DisciplinaId}";
+            await RemoverCache(nomeChave);
+            
+            nomeChave = $"NotaFechamento-{turma.Id}";
+            await RemoverCache(nomeChave);
         }
     }
 }

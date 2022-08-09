@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.ConselhoClasse;
@@ -58,7 +57,7 @@ namespace SME.SGP.Api.Controllers
                 Bimestre = bimestre
             };
 
-            return Ok(await useCase.Executar(dto));
+           return Ok(await useCase.Executar(dto));
         }
 
         [HttpGet("detalhamento/{id}")]

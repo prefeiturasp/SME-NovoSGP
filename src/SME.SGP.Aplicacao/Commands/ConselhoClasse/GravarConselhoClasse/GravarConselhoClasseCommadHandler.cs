@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseNotaRetornoDto> Handle(GravarConselhoClasseCommad request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
 
             var conselhoClasseNotaRetorno = request.ConselhoClasseId == 0 ?
                 await mediator.Send(new InserirConselhoClasseNotaCommad(
@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                             request.CodigoAluno,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            usuarioLogado)) :
+                                            usuarioLogado), cancellationToken) :
                 await mediator.Send(new AlterarConselhoClasseCommad(
                                             request.ConselhoClasseId,
                                             request.FechamentoTurma.Id,
@@ -40,41 +40,44 @@ namespace SME.SGP.Aplicacao
                                             request.FechamentoTurma.Turma,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            usuarioLogado));
+                                            usuarioLogado), cancellationToken);
 
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(
                                                         request.CodigoAluno, 
                                                         request.FechamentoTurma.Turma, 
-                                                        request.FechamentoTurma.PeriodoEscolarId)))
+                                                        request.FechamentoTurma.PeriodoEscolarId), cancellationToken))
             {
                 var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorIdAsync(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
                 await VerificaRecomendacoesAluno(conselhoClasseAluno);
             }
 
-            if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId)))
+            if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken))
                 throw new NegocioException("Erro ao atualizar situação do conselho de classe");
 
-            await  CriarCache(request);
-            return conselhoClasseNotaRetorno;
+            await RemoverCache($"NotaConceitoFechamento-{request.FechamentoTurma.TurmaId}-{request.Bimestre}", cancellationToken);
+            await RemoverCache($"NotaConceitoConselhoClasse-{request.FechamentoTurma.TurmaId}-{request.Bimestre}", cancellationToken);
+
+            return await Task.FromResult(conselhoClasseNotaRetorno);
         }
 
-        private async Task CriarCache(GravarConselhoClasseCommad request)
+        private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
         {
-            await mediator.Send(new SalvarConselhoDeClasseNotaBimestresCacheCommand(request.ConselhoClasseId,request.CodigoAluno,request.Bimestre,request.ConselhoClasseNotaDto));
+            await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
-        private async Task<ConselhoClasseAluno> VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
+
+        private async Task VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
         {
-            if (string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) || string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
+            if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) &&
+                !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
             {
-                var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-                conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
-                conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
-
+                return;
             }
 
-            return conselhoClasseAluno;
+            var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
+
+            conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
+            conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
         }
     }
 }

@@ -30,7 +30,11 @@ namespace SME.SGP.Dados.Repositorios
                                           and fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
 
         const string queryNotasFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, 
-                                    fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, t.turma_id as TurmaCodigo 
+                                    fn.conceito_id as ConceitoId, 
+                                    fn.nota, 
+                                    pe.bimestre, 
+                                    t.turma_id as TurmaCodigo,
+                                    fa.aluno_codigo as AlunoCodigo
                           from fechamento_turma ft
                          inner join turma t on t.id = ft.turma_id 
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
@@ -73,26 +77,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos,
-            string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
-        {
-            var query = $@"{queryNotasFechamento}
-                           and t.turma_id = ANY(@turmasCodigos)
-                           and fa.aluno_codigo = @alunoCodigo 
-                           and pe.bimestre = @bimestre";
-
-            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
-                query += " and @dataMatricula <= pe.periodo_fim";
-
-            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
-                query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
-                             or @dataSituacao > pe.periodo_fim)";
-
-            query += " and ftd.excluido != true";
-
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
-        }
-
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {
             const string query = @"select w.*
@@ -131,27 +115,7 @@ namespace SME.SGP.Dados.Repositorios
                     return wfAprovacaoDto;
             }, new { wfAprovacaoId });
         }
-
-        public async Task<FechamentoNota> ObterPorAlunoEFechamento(long fechamentoTurmaDisciplinaId, string alunoCodigo)
-        {
-            const string query = queryPorFechamento + " and aluno_codigo = @alunoCodigo";
-
-            var consultaFechamento = await database.Conexao.QueryAsync<FechamentoNota, FechamentoAluno, FechamentoNota>(query
-                , (fechamentoNota, fechamentoAluno) =>
-                {
-                    fechamentoNota.FechamentoAluno = fechamentoAluno;
-                    return fechamentoNota;
-                }
-                , new { fechamentoTurmaDisciplinaId, alunoCodigo });
-
-            return consultaFechamento.FirstOrDefault();
-        }
-
-        public async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentoTurma(long fechamentoTurmaDisciplinaId)
-        {
-            return await database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(queryPorFechamento, new { fechamentosTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplinaId } });
-        }
-
+        
         public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId)
         {
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(queryPorFechamento, new { fechamentosTurmaDisciplinaId });
@@ -198,19 +162,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
         }
 
-        public async Task<IEnumerable<FechamentoNotaMigracaoDto>> ObterFechamentoNotaAlunoAsync(long turmaId)
+        public async Task<IEnumerable<NotaConceitoComponenteBimestreAlunoDto>> ObterNotasPorTurmaIdAsync(long turmaId,
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
-            const string query = @"select distinct fn.disciplina_Id DisciplinaId,fn.nota, fn.conceito_id ConceitoId, 
-                            fa.aluno_codigo as AlunoCodigo, ft.turma_id TurmaId, pe.bimestre
-                            from fechamento_nota fn
-                            join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id
-                            join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id
-                            join fechamento_turma ft on ft.id = ftd.fechamento_turma_id
-                            join periodo_escolar pe on pe.id = ft.periodo_escolar_id
-                            join turma t on t.id = ft.turma_id
-                            where t.id = @turmaId";
+            var query = $@"{queryNotasFechamento} and t.id = @turmaId";
 
-            return await database.Conexao.QueryAsync<FechamentoNotaMigracaoDto>(query, new { turmaId });
+            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+                query += " and @dataMatricula <= pe.periodo_fim";
+
+            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+            {
+                query += @" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
+                             or @dataSituacao > pe.periodo_fim)";
+            }
+
+            query += " and ftd.excluido != true";
+
+            return await database.Conexao.QueryAsync<NotaConceitoComponenteBimestreAlunoDto>(query, new { turmaId, dataMatricula, dataSituacao });
         }
     }
 }
