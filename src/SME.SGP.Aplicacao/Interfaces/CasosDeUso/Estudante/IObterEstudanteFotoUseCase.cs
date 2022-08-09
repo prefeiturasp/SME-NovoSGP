@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IObterEstudanteFotoUseCase : IUseCase<string, ArquivoDto>
+    public interface IObterEstudanteFotoUseCase : IUseCase<string, string>
     {
     }
 }

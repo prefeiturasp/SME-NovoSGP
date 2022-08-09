@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class DownloadArquivoCommand : IRequest<byte[]>
+    public class DownloadArquivoCommand : IRequest<string>
     {
         public DownloadArquivoCommand(Guid codigoArquivo, string nome, TipoArquivo tipo)
         {
