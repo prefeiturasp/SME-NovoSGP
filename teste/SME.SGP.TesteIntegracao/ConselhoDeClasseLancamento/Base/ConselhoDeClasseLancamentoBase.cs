@@ -80,125 +80,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasTurmasEolQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasTurmasEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
-
-        //private (IComandosNotasConceitos, IObterNotasParaAvaliacoesUseCase) RetornarServicosBasicos()
-        //{
-        //    var comandosNotasConceitos = ServiceProvider.GetService<IComandosNotasConceitos>();
-
-        //    var obterNotasParaAvaliacoesUseCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
-
-        //    return (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase);
-        //}
-
-        //protected async Task ExecutarNotasConceito(NotaConceitoListaDto notaconceito, ListaNotasConceitosDto listaNotaConceito, bool ehInclusao = true, bool gerarExcecao = false)
-        //{
-        //    var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
-
-        //    if (gerarExcecao)
-        //    {
-        //        async Task doExecutarSalvar() { await comandosNotasConceitos.Salvar(notaconceito); }
-
-        //        await Should.ThrowAsync<NegocioException>(() => doExecutarSalvar());
-        //    }
-        //    else
-        //    {
-        //        await comandosNotasConceitos.Salvar(notaconceito);
-
-        //        var notasConceitoRetorno = await obterNotasParaAvaliacoesUseCase.Executar(listaNotaConceito);
-
-        //        notasConceitoRetorno.AuditoriaInserido.ShouldNotBeEmpty();
-
-        //        notasConceitoRetorno.Bimestres.Any().ShouldBeTrue();
-
-        //        var ehNotaConceito = notaconceito.NotasConceitos.Any(f => f.Conceito.HasValue);
-
-        //        if (ehInclusao)
-        //            ValidarInclusaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-        //        else
-        //            ValidarAlteracaoNotas(notaconceito, notasConceitoRetorno, ehNotaConceito);
-
-        //        var notasPersistidas = ObterTodos<NotaConceito>();
-
-        //        if (ehNotaConceito)
-        //            notasPersistidas.Any(a => a.TipoNota == TipoNota.Nota).ShouldBeFalse();
-        //        else
-        //            notasPersistidas.Any(a => a.TipoNota == TipoNota.Conceito).ShouldBeFalse();
-        //    }
-        //}
-
-        //private void ValidarAlteracaoNotas(NotaConceitoListaDto notaconceito, NotasConceitosRetornoDto notasConceitoRetorno, bool ehNotaConceito)
-        //{
-        //    var alunosAlterados = notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct();
-
-        //    foreach (var bimestre in notasConceitoRetorno.Bimestres)
-        //    {
-        //        bimestre.Alunos.Any().ShouldBeTrue();
-
-        //        var notaConceitoAlteracao = bimestre.Alunos.Where(w => alunosAlterados.Contains(w.Id));
-
-        //        (notaConceitoAlteracao.Select(s => s.Id).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AlunoId).Distinct().Count()).ShouldBeTrue();
-
-        //        foreach (var aluno in notaConceitoAlteracao)
-        //        {
-        //            aluno.NotasAvaliacoes.Any().ShouldBeTrue();
-
-        //            (aluno.NotasAvaliacoes.Select(s => s.AtividadeAvaliativaId).Distinct().Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
-
-        //            foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
-        //            {
-        //                var notaAvaliacaoPrevista = notaconceito.NotasConceitos.FirstOrDefault(w => w.AlunoId.Equals(aluno.Id) && w.AtividadeAvaliativaId == notaAvaliacao.AtividadeAvaliativaId);
-
-        //                if (ehNotaConceito)
-        //                    notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Conceito.ToString()).ShouldBeTrue();
-        //                else
-        //                    notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
-
-        //                var notasPersistidas = ObterTodos<NotaConceito>();
-        //            }
-        //        }
-        //    }
-        //}
-
-        //private void ValidarInclusaoNotas(NotaConceitoListaDto notaconceito, NotasConceitosRetornoDto notasConceitoRetorno, bool ehNotaConceito)
-        //{
-        //    foreach (var bimestre in notasConceitoRetorno.Bimestres)
-        //    {
-        //        bimestre.Alunos.Any().ShouldBeTrue();
-
-        //        bimestre.Avaliacoes.Any().ShouldBeTrue();
-
-        //        (bimestre.Avaliacoes.Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
-
-        //        foreach (var aluno in bimestre.Alunos)
-        //        {
-        //            aluno.NotasAvaliacoes.Any().ShouldBeTrue();
-
-        //            (aluno.NotasAvaliacoes.Count() == notaconceito.NotasConceitos.Select(s => s.AtividadeAvaliativaId).Distinct().Count()).ShouldBeTrue();
-
-        //            aluno.NotasAvaliacoes.Any().ShouldBeTrue();
-
-        //            foreach (var notaAvaliacao in aluno.NotasAvaliacoes)
-        //            {
-        //                var notaAvaliacaoPrevista = notaconceito.NotasConceitos.FirstOrDefault(w => w.AlunoId.Equals(aluno.Id) && w.AtividadeAvaliativaId == notaAvaliacao.AtividadeAvaliativaId);
-
-        //                if (ehNotaConceito)
-        //                    notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Conceito.ToString()).ShouldBeTrue();
-        //                else
-        //                    notaAvaliacao.NotaConceito.Equals(notaAvaliacaoPrevista.Nota.ToString()).ShouldBeTrue();
-        //            }
-        //        }
-        //    }
-        //}
-
-        //protected async Task<NotasConceitosRetornoDto> ExecutarNotasConceito(ListaNotasConceitosDto consultaListaNotasConceitosDto, NotaConceitoListaDto notaConceitoLista)
-        //{
-        //    var (comandosNotasConceitos, obterNotasParaAvaliacoesUseCase) = RetornarServicosBasicos();
-
-        //    await comandosNotasConceitos.Salvar(notaConceitoLista);
-
-        //    return await obterNotasParaAvaliacoesUseCase.Executar(consultaListaNotasConceitosDto);
-        //}
 
         protected async Task CriarDadosBase(FiltroNotasDto filtroNota)
         {
@@ -229,6 +112,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             await CriarComponenteGrupoAreaOrdenacao();
 
             await CriarConselhoClasseRecomendacao();
+
+            await CriaConceito();
         }
 
         private async Task CriarComponenteGrupoAreaOrdenacao() 
@@ -725,6 +610,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 Ano = dataAtualAnoAtual.Year,
                 Ativo = true,
                 CriadoEm = dataAtualAnoAtual,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
+
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = MEDIA_BIMESTRAL,
+                Descricao = MEDIA_BIMESTRAL,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Valor = NUMERO_5,
+                Ano = dataAtualAnoAnterior.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAnterior,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
