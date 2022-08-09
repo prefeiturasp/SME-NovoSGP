@@ -83,6 +83,42 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
+        protected async Task ExecuteTeste(ConselhoClasseNotaDto dto, bool anoAnterior, string codigoAluno, TipoNota tipoNota)
+        {
+            var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
+
+            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, BIMESTRE_2);
+
+            dtoRetorno.ShouldNotBeNull();
+            var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
+            listaConselhoClasseNota.ShouldNotBeNull();
+            var classeNota = listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == CONSELHO_CLASSE_ALUNO_ID);
+            classeNota.ShouldNotBeNull();
+            classeNota.Justificativa.ShouldBe(dto.Justificativa);
+
+            if (anoAnterior)
+            {
+                classeNota.Nota.ShouldBeNull();
+                classeNota.ConceitoId.ShouldBeNull();
+                var listaAprovacaoNotaConselho = ObterTodos<WFAprovacaoNotaConselho>();
+                listaAprovacaoNotaConselho.ShouldNotBeNull();
+                var aprovacaoNotaConselho = listaAprovacaoNotaConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
+                aprovacaoNotaConselho.ShouldNotBeNull();
+                aprovacaoNotaConselho.Nota.ShouldBe(7);
+            }
+            else
+            {
+                if (tipoNota == TipoNota.Nota)
+                    classeNota.Nota.ShouldBe(dto.Nota);
+                else
+                    classeNota.ConceitoId.ShouldBe(dto.Conceito);
+            }
+
+            var listaConsolidado = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
+            listaConsolidado.ShouldNotBeNull();
+            var consolidado = listaConsolidado.FirstOrDefault(consolidadoAluno => consolidadoAluno.AlunoCodigo == codigoAluno);
+        }
+
         protected async Task CriarDadosBase(FiltroNotasDto filtroNota)
         {
             await CriarDreUePerfilComponenteCurricular();
@@ -98,6 +134,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
             if (filtroNota.CriarPeriodoAbertura)
                 await CriarPeriodoAbertura(filtroNota);
+
+            await CriarAula(filtroNota.ComponenteCurricular, filtroNota.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 
             await CriarParametrosNotas();
 
@@ -892,6 +930,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
             public string ProfessorRf { get; set; }
+            public DateTime DataAula { get; set; }
         }
     }
 }
