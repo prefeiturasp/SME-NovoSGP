@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
@@ -18,8 +19,12 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(codigoArquivo));
+                
+                var extensao = Path.GetExtension(entidadeArquivo.Nome);
 
-                var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(codigoArquivo, entidadeArquivo.Nome, entidadeArquivo.Tipo));
+                var nomeArquivoComExtensao = $"{codigoArquivo}{extensao}";
+
+                var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(codigoArquivo, nomeArquivoComExtensao, entidadeArquivo.Tipo));
 
                 return (arquivoFisico, entidadeArquivo.TipoConteudo, entidadeArquivo.Nome);
             }

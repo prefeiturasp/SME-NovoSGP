@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
@@ -20,20 +21,10 @@ namespace SME.SGP.Aplicacao
         {
             var enderecoArquivo = await servicoArmazenamento.Obter(request.Nome,request.Tipo == TipoArquivo.temp);
 
-            if (string.IsNullOrEmpty(enderecoArquivo))
-            {
-                var arquivo = File.ReadAllBytes(enderecoArquivo);
+            if (!string.IsNullOrEmpty(enderecoArquivo))
+                return await new HttpClient().GetByteArrayAsync(enderecoArquivo);
             
-                if (arquivo == null)
-                    arquivo = Array.Empty<byte>();
-
-                return await Task.FromResult(new byte[5]);
-            }
-            else
-            {
-                throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
-            }
-
+            throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
         }
     }
 }
