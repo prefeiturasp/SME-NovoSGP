@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.ServicosFakes
                     CelularResponsavel = "11961861993",
                     DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 }
-            }
+            };
         }
     }
 }
