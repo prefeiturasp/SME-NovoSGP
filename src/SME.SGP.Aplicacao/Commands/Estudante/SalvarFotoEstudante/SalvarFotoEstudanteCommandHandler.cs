@@ -80,15 +80,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Image> ObterImagem(IFormFile file)
         {
-            // using (var memoryStream = new MemoryStream())
-            // {
-            //     await file.CopyToAsync(memoryStream);
-            //     var img = Image.FromStream(memoryStream);
-            //     return img;
-            // }
-            
             var stream = file.OpenReadStream();
+            
             var image = Image.FromStream(stream);
+            
             return image;
         }
     }

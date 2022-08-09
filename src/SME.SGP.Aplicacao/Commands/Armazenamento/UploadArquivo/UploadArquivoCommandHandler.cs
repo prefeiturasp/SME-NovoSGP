@@ -19,29 +19,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ArquivoArmazenadoDto> Handle(UploadArquivoCommand request, CancellationToken cancellationToken)
         {
-            try
+            if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
             {
-                if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
-                {
-                    if (request.Arquivo.ContentType != request.TipoConteudo.Name())
-                        throw new NegocioException("O formato de arquivo enviado não é aceito");
-                }
-
-                var nomeArquivo = request.Arquivo.FileName;
-
-                var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
-                arquivo.Path = await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), request.Tipo));
-
-                return arquivo;
-            }
-            catch (Exception ex)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao realizar o upload do arquivo {ex.Message}",
-                    LogNivel.Critico,
-                    LogContexto.Arquivos));
+                if (request.Arquivo.ContentType != request.TipoConteudo.Name())
+                    throw new NegocioException("O formato de arquivo enviado não é aceito");
             }
 
-            return null;
+            var nomeArquivo = request.Arquivo.FileName;
+
+            var arquivo = await mediator.Send(new SalvarArquivoRepositorioCommand(nomeArquivo, request.Tipo, request.Arquivo.ContentType));
+            arquivo.Path = await mediator.Send(new ArmazenarArquivoFisicoCommand(request.Arquivo, arquivo.Codigo.ToString(), request.Tipo));
+
+            return arquivo;
         }
     }
 }

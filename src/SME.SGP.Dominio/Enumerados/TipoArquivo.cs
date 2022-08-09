@@ -74,7 +74,7 @@ namespace SME.SGP.Dominio
         [Display(Name ="registro/poa")]
         RegistroPOA = 23,
 
-        [Display(Name = "bucket-temp-sgp")]
+        [Display(Name = "temp")]
         temp = 99
     }
 }

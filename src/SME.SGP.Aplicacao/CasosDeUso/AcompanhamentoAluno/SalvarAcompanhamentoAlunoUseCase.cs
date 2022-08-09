@@ -32,27 +32,18 @@ namespace SME.SGP.Aplicacao
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
         {
-            try
-            {
-                var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
-                if (imagens != null)
-                    foreach (var imagem in imagens)
+            var imagens = Regex.Matches(acompanhamentoAluno.PercursoIndividual, "<img[^>]*>");
+            if (imagens != null)
+                foreach (var imagem in imagens)
+                {
+                    var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
+                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                    if (!string.IsNullOrEmpty(novoCaminho))
                     {
-                        var nomeArquivo = Regex.Match(imagem.ToString(), @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+");
-                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
-                        if (!string.IsNullOrEmpty(novoCaminho))
-                        {
-                            var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
-                            acompanhamentoAluno.PercursoIndividual = str;
-                        }
+                        var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+                        acompanhamentoAluno.PercursoIndividual = str;
                     }
-            }
-            catch (Exception ex)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao copiar arquivo {ex.Message}",
-                    LogNivel.Critico,
-                    LogContexto.Arquivos));
-            }
+                }
         }
 
         private async Task MoverRemoverExcluidosAlterar(string observacoes, string percursoIndividual, AcompanhamentoAlunoSemestre entidade)

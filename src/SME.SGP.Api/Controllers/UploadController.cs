@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/v1/arquivos/upload")]
-    //[Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class UploadController : ControllerBase
     {
         private readonly IMediator mediator;

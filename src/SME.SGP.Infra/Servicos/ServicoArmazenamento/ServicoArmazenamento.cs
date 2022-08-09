@@ -47,25 +47,7 @@ namespace SME.SGP.Infra
 
         private async Task<string> ArmazenarArquivo(string nomeArquivo, Stream stream, string contentType, string bucket)
         {
-            try
-            {
-                // int length = int.Parse(stream.Length.ToString());
-                //
-                // var result = new byte[length];
-                // var totalRead = 0;
-                //
-                // stream.Seek(0, SeekOrigin.Begin);
-                //
-                // while (totalRead < length)
-                // {
-                //     var curData = new byte[length - totalRead];
-                //     var curRead = await stream.ReadAsync(curData, 0, length - totalRead).ConfigureAwait(false);
-                //     if (curRead == 0) break;
-                //     for (var i = 0; i < curRead; i++) result[totalRead + i] = curData[i];
-                //     totalRead += curRead;
-                // }
-                
-                var args = new PutObjectArgs()
+            var args = new PutObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(nomeArquivo)
                     .WithStreamData(stream)
@@ -73,14 +55,8 @@ namespace SME.SGP.Infra
                     .WithVersionId("1.0")
                     .WithContentType(contentType);
                 
-                await minioClient.PutObjectAsync(args);
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+             await minioClient.PutObjectAsync(args);
+                
              return ObterUrl(nomeArquivo,bucket);
         }
         

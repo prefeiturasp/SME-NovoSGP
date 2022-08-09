@@ -31,29 +31,18 @@ namespace SME.SGP.Aplicacao
 
         private async Task<ArquivoDto> DownloadMiniatura(MiniaturaFotoDto miniatura)
         {
-            try
+            var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
+
+            if(arquivoFisico.Length <= 0)
+                return null;          
+
+            return new ArquivoDto()
             {
-                var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
-
-                if(arquivoFisico.Length <= 0)
-                    return null;          
-
-                return new ArquivoDto()
-                {
-                    Codigo = miniatura.CodigoFotoOriginal,
-                    Nome = miniatura.Nome,
-                    Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome),
-                    CriadoRf = miniatura.CriadoRf
-                };
-            }
-            catch (Exception ex)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao realizar o download do arquivo {ex.Message}",
-                    LogNivel.Critico,
-                    LogContexto.Arquivos));
-            }
-
-            return null;
+                Codigo = miniatura.CodigoFotoOriginal,
+                Nome = miniatura.Nome,
+                Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome),
+                CriadoRf = miniatura.CriadoRf
+            };
         }
 
     }
