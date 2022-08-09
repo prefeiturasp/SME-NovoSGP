@@ -1,16 +1,12 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,6 +22,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
         {
+<<<<<<< HEAD
             try
             {
                 var msImagem = new MemoryStream();
@@ -48,8 +45,20 @@ namespace SME.SGP.Aplicacao
                     LogContexto.Arquivos));
             }
             return false;
-        }
+=======
+            var msImagem = new MemoryStream();
+            request.Imagem.Save(msImagem, ObterFormato(request.Formato));
 
+            
+            if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
+                await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
+            else
+                await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
+            
+            return true;
+>>>>>>> c177711494a59aeadeb1b6f267266f9ec1a4c207
+        }
+        
         private ImageFormat ObterFormato(string formato)
         {
             switch (formato)

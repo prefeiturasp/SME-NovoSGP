@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Drawing;
 using System.IO;
@@ -42,8 +40,11 @@ namespace SME.SGP.Aplicacao
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
             
+<<<<<<< HEAD
             
 
+=======
+>>>>>>> c177711494a59aeadeb1b6f267266f9ec1a4c207
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
