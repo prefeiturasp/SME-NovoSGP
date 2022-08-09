@@ -189,12 +189,17 @@ namespace SME.SGP.Aplicacao
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                var claims = new List<Claim>();
-                claims.Add(new Claim("login_adm_suporte", login));
-                claims.Add(new Claim("nome_adm_suporte", nome));
+                List<Claim> claims = null;
+                var tokenStr = "";
 
-                //await servicoTokenJwt.RevogarToken(loginAtual);
-                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes, claims);  
+                if (login != null && nome != null)
+                {
+                    claims = new List<Claim>();
+                    claims.Add(new Claim("login_adm_suporte", login));
+                    claims.Add(new Claim("nome_adm_suporte", nome));
+                }   
+                    tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes, claims);
+                
 
                 return new TrocaPerfilDto
                 {
