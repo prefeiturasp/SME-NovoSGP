@@ -37,6 +37,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
 
             var dtoRetorno = await comando.SalvarAsync(dto, ALUNO_CODIGO_1, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, BIMESTRE_2);
             dtoRetorno.ShouldBeNull();
+            var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
+            listaConselhoClasseNota.ShouldBeNull();
+           // var lista listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId = 1);
+
         }
 
         private async Task CrieDados(

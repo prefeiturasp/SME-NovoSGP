@@ -65,6 +65,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const int FECHAMENTO_TURMA_ID = 1;
         protected const int CONSELHO_CLASSE_ALUNO_ID = 1;
 
+        private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
+
         protected ConselhoDeClasseLancamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -73,10 +75,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         {
             base.RegistrarFakes(services);
 
-            //services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasTurmasEolQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasTurmasEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
@@ -223,6 +225,35 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
             await CriarConselhoDeClasse();
+
+            await CriarComponenteGrupoAreaOrdenacao();
+
+            await CriarConselhoClasseRecomendacao();
+        }
+
+        private async Task CriarComponenteGrupoAreaOrdenacao() 
+        {
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_1, CODIGO_1, CODIGO_1);
+        }
+
+        private async Task CriarConselhoClasseRecomendacao()
+        {
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
+            {
+                Recomendacao = "Recomendação aluno",
+                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
+            {
+                Recomendacao = "Recomendação familia",
+                Tipo = ConselhoClasseRecomendacaoTipo.Familia,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarConselhoDeClasse()
