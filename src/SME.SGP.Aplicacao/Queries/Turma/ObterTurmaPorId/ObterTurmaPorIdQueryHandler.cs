@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -8,30 +9,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaPorIdQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterTurmaPorIdQuery, Turma>
+    public class ObterTurmaPorIdQueryHandler : IRequestHandler<ObterTurmaPorIdQuery, Turma>
     {
-        private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private ObterTurmaPorIdQuery request;
+        private readonly IMediator mediator;
 
-        public ObterTurmaPorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioCache repositorioCache) : base(repositorioCache)
+        public ObterTurmaPorIdQueryHandler(IMediator mediator)
         {
-            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         public async Task<Turma> Handle(ObterTurmaPorIdQuery request, CancellationToken cancellationToken)
         {
-            this.request = request;
-
-            return await Obter();
-        }
-
-        protected override string ObterChave()
-        {
-            return $"turma-id:{request.TurmaId}";
-        }
-
-        protected override async Task<Turma> ObterObjetoRepositorio()
-        {
-            return await repositorioTurmaConsulta.ObterPorId(request.TurmaId);
+            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(request.TurmaId));
         }
     }
 }

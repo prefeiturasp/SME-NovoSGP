@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -11,17 +12,18 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioUeConsulta repositorioUe;
         private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
-
-        public ObterUeComDrePorIdQueryHandler(IRepositorioUeConsulta repositorioUe,IMediator mediator)
+        public ObterUeComDrePorIdQueryHandler(IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache)
         {
             this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<Ue> Handle(ObterUeComDrePorIdQuery request, CancellationToken cancellationToken)
         {
-            return await mediator.Send(new ObterCacheObjetoQuery<Ue>($"UeComDre-PorId-{request.UeId}", async () => await repositorioUe.ObterUeComDrePorId(request.UeId)), cancellationToken);
+            var nomeChave = string.Format(NomeChaveCache.CHAVE_UE_COM_DRE_ID, request.UeId);
+            return await repositorioCache.ObterAsync(nomeChave, async () => await repositorioUe.ObterUeComDrePorId(request.UeId));
         }
     }
 }

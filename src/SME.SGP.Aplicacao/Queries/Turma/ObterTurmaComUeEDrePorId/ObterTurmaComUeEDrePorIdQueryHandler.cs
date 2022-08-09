@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -8,31 +9,27 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmaComUeEDrePorIdQueryHandler : CacheQuery<Turma>, IRequestHandler<ObterTurmaComUeEDrePorIdQuery, Turma>
+    public class ObterTurmaComUeEDrePorIdQueryHandler : IRequestHandler<ObterTurmaComUeEDrePorIdQuery, Turma>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
-        private ObterTurmaComUeEDrePorIdQuery request;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterTurmaComUeEDrePorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta, IRepositorioCache repositorioCache) : base(repositorioCache)
+        public ObterTurmaComUeEDrePorIdQueryHandler(
+                    IRepositorioTurmaConsulta repositorioTurmaConsulta, 
+                    IRepositorioCache repositorioCache) 
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<Turma> Handle(ObterTurmaComUeEDrePorIdQuery request, CancellationToken cancellationToken)
         {
-            this.request = request;
-
-            return await Obter();
+            return await repositorioCache.ObterAsync(ObterChave(request.TurmaId), async () => await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId));
         }
 
-        protected override string ObterChave()
+        private string ObterChave(long id)
         {
-            return $"turma-ue-dre-id:{request.TurmaId}";
-        }
-
-        protected override async Task<Turma> ObterObjetoRepositorio()
-        {
-            return await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId);
+            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id); 
         }
     }
 }
