@@ -40,11 +40,6 @@ namespace SME.SGP.Aplicacao
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
             
-<<<<<<< HEAD
-            
-
-=======
->>>>>>> c177711494a59aeadeb1b6f267266f9ec1a4c207
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try

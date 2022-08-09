@@ -5,7 +5,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
@@ -22,33 +21,11 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
         {
-<<<<<<< HEAD
-            try
-            {
-                var msImagem = new MemoryStream();
-                 
-                request.Imagem.Save(msImagem,ObterFormato(request.Formato));
-                
-                msImagem.Seek(0, SeekOrigin.Begin);
-                
-                if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
-                    await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
-                else
-                    await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
-                    
-                return true;
-            }
-            catch (Exception ex)
-            {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao armazenar imagem física do arquivo {ex.Message}",
-                    LogNivel.Critico,
-                    LogContexto.Arquivos));
-            }
-            return false;
-=======
             var msImagem = new MemoryStream();
+            
             request.Imagem.Save(msImagem, ObterFormato(request.Formato));
 
+            msImagem.Seek(0, SeekOrigin.Begin);
             
             if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
                 await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
@@ -56,7 +33,6 @@ namespace SME.SGP.Aplicacao
                 await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
             
             return true;
->>>>>>> c177711494a59aeadeb1b6f267266f9ec1a4c207
         }
         
         private ImageFormat ObterFormato(string formato)
