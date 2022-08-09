@@ -182,12 +182,19 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
-                var usuario = await servicoUsuario.ObterUsuarioLogado();
+                var usuario = await servicoUsuario.ObterUsuarioLogado();                
+
+                var login = servicoUsuario.ObterClaim("login_adm_suporte");
+                var nome = servicoUsuario.ObterClaim("nome_adm_suporte");
 
                 usuario.DefinirPerfilAtual(perfil);
 
+                var claims = new List<Claim>();
+                claims.Add(new Claim("login_adm_suporte", login));
+                claims.Add(new Claim("nome_adm_suporte", nome));
+
                 //await servicoTokenJwt.RevogarToken(loginAtual);
-                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
+                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes, claims);  
 
                 return new TrocaPerfilDto
                 {
