@@ -1,9 +1,11 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<string>> Executar(long acompanhamentoSemestreId)
+        public async Task<IEnumerable<ArquivoDto>> Executar(long acompanhamentoSemestreId)
         {
             var quantidade = await ObterQuantidadeFotos(acompanhamentoSemestreId);
             var miniaturas = await mediator.Send(new ObterMiniaturasFotosSemestreAlunoQuery(acompanhamentoSemestreId, quantidade));
@@ -34,14 +36,31 @@ namespace SME.SGP.Aplicacao
             return int.Parse(parametroQuantidade.Valor);
         }
 
-        private async Task<IEnumerable<string>> DownloadMiniaturas(IEnumerable<MiniaturaFotoDto> miniaturas)
+        private async Task<IEnumerable<ArquivoDto>> DownloadMiniaturas(IEnumerable<MiniaturaFotoDto> miniaturas)
         {
-            var arquivos = new List<string>();
+            var arquivos = new List<ArquivoDto>();
 
-            foreach (var miniatura in miniaturas)
-                arquivos.Add(
-                    await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo)));
-        
+            try
+            {
+                foreach(var miniatura in miniaturas)
+                {
+                    var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
+
+                    arquivos.Add(new ArquivoDto()
+                    {
+                        Codigo = miniatura.CodigoFotoOriginal,
+                        Nome = miniatura.Nome,
+                        Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao fazer download do arquivo {ex.Message}",
+                    LogNivel.Critico,
+                    LogContexto.Arquivos));
+            }
+
             return arquivos;
         }
     }
