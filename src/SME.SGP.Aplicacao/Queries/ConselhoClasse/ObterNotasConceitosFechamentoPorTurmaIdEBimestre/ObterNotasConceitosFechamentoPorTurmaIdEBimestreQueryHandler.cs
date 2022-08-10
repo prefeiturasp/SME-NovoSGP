@@ -30,10 +30,8 @@ public class ObterNotasConceitosFechamentoPorTurmaIdEBimestreQueryHandler : IReq
             var notasConceitosFechamento = (await repositorioCache.ObterAsync($"NotaConceitoFechamento-{turmaId}-{request.Bimestre}",
                 async () => await repositorioConselhoClasseNota.ObterNotasConceitosFechamentoPorTurmaIdEBimestreAsync(turmaId, request.Bimestre))).ToList();
         
-            if (!notasConceitosFechamento.Any())
-                throw new NegocioException("Não foi possível recuperar a lista das notas/conceitos do fechamento da turma.");
-
-            retorno.AddRange(notasConceitosFechamento);            
+            if (notasConceitosFechamento.Any())
+                retorno.AddRange(notasConceitosFechamento);
         }
 
         return await Task.FromResult(retorno);

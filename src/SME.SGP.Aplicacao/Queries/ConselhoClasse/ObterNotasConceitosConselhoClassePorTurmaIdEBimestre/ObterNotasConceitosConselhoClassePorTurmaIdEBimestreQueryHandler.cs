@@ -30,10 +30,8 @@ public class ObterNotasConceitosConselhoClassePorTurmaIdEBimestreQueryHandler : 
             var notasConceitosConselhoClasse = (await repositorioCache.ObterAsync($"NotaConceitoConselhoClasse-{turmaId}-{request.Bimestre}",
                 async () => await repositorioConselhoClasseNota.ObterNotasConceitosConselhoClassePorTurmaIdEBimestreAsync(turmaId, request.Bimestre))).ToList();
         
-            if (!notasConceitosConselhoClasse.Any())
-                throw new NegocioException("Não foi possível recuperar a lista das notas/conceitos do conselho de classe da turma.");
-
-            retorno.AddRange(notasConceitosConselhoClasse);            
+            if (notasConceitosConselhoClasse.Any())
+                retorno.AddRange(notasConceitosConselhoClasse);
         }
 
         return await Task.FromResult(retorno);
