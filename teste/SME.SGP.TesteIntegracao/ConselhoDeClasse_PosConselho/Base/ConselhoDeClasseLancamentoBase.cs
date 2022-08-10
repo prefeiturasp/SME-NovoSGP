@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
@@ -12,7 +11,6 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
@@ -757,6 +755,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
+
         protected async Task CriarMotivosAusencias(string descricao)
         {
             await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
@@ -859,6 +858,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 CriadoEm = DateTime.Now
             });
         }
+
         protected async Task CriaConceito()
         {
             await InserirNaBase(new Conceito()
@@ -901,6 +901,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             });
         }
 
+        protected static ConselhoClasseNotaDto ObterFiltroConselhoClasseNotaDto(double? nota, long? conceito, string justificavtiva, long codigoComponenteCurricular)
+        {
+            return new ConselhoClasseNotaDto()
+            {
+                CodigoComponenteCurricular = codigoComponenteCurricular,
+                Conceito = conceito,
+                Nota = nota,
+                Justificativa = justificavtiva
+            };
+        }
+
         protected class FiltroNotasDto
         {
             public FiltroNotasDto()
@@ -910,6 +921,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 CriarPeriodoAbertura = true;
                 ConsiderarAnoAnterior = false;
             }
+
             public DateTime? DataReferencia { get; set; }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
