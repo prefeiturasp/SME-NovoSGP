@@ -46,9 +46,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const string NOTA = "NOTA";
         protected const string CONCEITO = "CONCEITO";
 
-        protected const int CONSELHO_CLASSE_ID = 1;
-        protected const int FECHAMENTO_TURMA_ID = 1;
-        protected const int CONSELHO_CLASSE_ALUNO_ID = 1;
+        protected const int CONSELHO_CLASSE_ID_1 = 1;
+        protected const int FECHAMENTO_TURMA_ID_1 = 1;
+        protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
@@ -78,12 +78,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_1, TURMA_CODIGO_1, bimestre);
 
             dtoRetorno.ShouldNotBeNull();
             var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
             listaConselhoClasseNota.ShouldNotBeNull();
-            var classeNota = listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == CONSELHO_CLASSE_ALUNO_ID);
+            var classeNota = listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == CONSELHO_CLASSE_ALUNO_ID_1);
             classeNota.ShouldNotBeNull();
             classeNota.Justificativa.ShouldBe(dto.Justificativa);
 
@@ -139,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
-            await CriarConselhoDeClasse();
+            await CriarFechamentoTurma();
 
             await CriarComponenteGrupoAreaOrdenacao();
 
@@ -173,39 +173,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             });
         }
 
-        private async Task CriarConselhoDeClasse()
+        private async Task CriarFechamentoTurma()
         {
             await InserirNaBase(new FechamentoTurma()
             {
                 Id = 1,
                 PeriodoEscolarId = 1,
                 TurmaId = 1,
-                Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
-            });
-
-            await InserirNaBase(new ConselhoClasse()
-            {
-                Id = 1,
-                FechamentoTurmaId = 1,
-                Situacao = SituacaoConselhoClasse.EmAndamento,
-                Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
-            });
-
-            await InserirNaBase(new ConselhoClasseAluno()
-            {
-                Id = 1,
-                ConselhoClasseId = 1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                RecomendacoesAluno = "",
-                RecomendacoesFamilia = "",
-                AnotacoesPedagogicas = "",
-                Migrado = false,
                 Excluido = false,
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",

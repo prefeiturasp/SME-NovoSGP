@@ -113,7 +113,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
         {
             await ExecuteTeste(
                         ObtenhaDto(componente),
-                        CONSELHO_CLASSE_ID,
+                        0,
                         anoAnterior,
                         ALUNO_CODIGO_1,
                         TipoNota.Nota,
