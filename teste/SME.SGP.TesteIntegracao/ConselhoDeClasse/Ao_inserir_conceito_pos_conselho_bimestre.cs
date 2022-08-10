@@ -12,12 +12,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        //protected override void RegistrarFakes(IServiceCollection services)
-        //{
-        //    base.RegistrarFakes(services);
-
-        //}
-
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
