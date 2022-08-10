@@ -187,6 +187,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_2 = 2;
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
+        protected const int BIMESTRE_FINAL = 0;
 
         protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
         protected const long TIPO_EVENTO_21 = 21;

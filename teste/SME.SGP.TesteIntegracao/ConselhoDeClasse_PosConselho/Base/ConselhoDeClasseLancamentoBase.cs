@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const int CONSELHO_CLASSE_ID = 1;
         protected const int FECHAMENTO_TURMA_ID = 1;
         protected const int CONSELHO_CLASSE_ALUNO_ID = 1;
-
+        protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
         protected ConselhoDeClasseLancamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)

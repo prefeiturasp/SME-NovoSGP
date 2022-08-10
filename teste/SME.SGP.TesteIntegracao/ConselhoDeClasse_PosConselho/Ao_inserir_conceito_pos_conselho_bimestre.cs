@@ -9,8 +9,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
 {
     public class Ao_inserir_conceito_pos_conselho_bimestre : ConselhoDeClasseLancamentoBase
     {
-        private const string JUSTIFICATIVA = "Nota pós conselho";
-
         public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
