@@ -203,7 +203,7 @@ namespace SME.SGP.Dominio.Servicos
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 
-                auditoria = (AuditoriaDto)conselhoClasseAluno;
+                auditoria = (AuditoriaDto)conselhoClasseNota;
 
                 unitOfWork.PersistirTransacao();
             }
