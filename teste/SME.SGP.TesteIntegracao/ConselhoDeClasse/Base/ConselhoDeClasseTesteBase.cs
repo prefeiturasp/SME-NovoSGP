@@ -692,14 +692,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             return null;
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
-            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, aulaCj, tipoAula));
+            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, tipoAula));
         }
 
-        private SGP.Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
+        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
-            return new SGP.Dominio.Aula
+            return new Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
@@ -714,8 +714,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
-                Migrado = false,
-                AulaCJ = aulaCj
+                Migrado = false
             };
         }
 
@@ -796,39 +795,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Situacao = true,
                 AvaliacoesNecessariasPorBimestre = 1,
                 Codigo = tipoAvalicao,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-        }
-
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string professorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
-        {
-            await InserirNaBase(new AtividadeAvaliativa
-            {
-                DreId = DRE_CODIGO_1,
-                UeId = UE_CODIGO_1,
-                ProfessorRf = professorRf,
-                TurmaId = TURMA_CODIGO_1,
-                Categoria = CategoriaAtividadeAvaliativa.Normal,
-                TipoAvaliacaoId = TipoAvaliacaoId,
-                NomeAvaliacao = nomeAvaliacao,
-                DescricaoAvaliacao = nomeAvaliacao,
-                DataAvaliacao = dataAvaliacao,
-                EhRegencia = ehRegencia,
-                EhCj = ehCj,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-        }
-
-        protected async Task CriarAtividadeAvaliativaDisciplina(long atividadeAvaliativaId, string componenteCurricular)
-        {
-            await InserirNaBase(new AtividadeAvaliativaDisciplina
-            {
-                AtividadeAvaliativaId = atividadeAvaliativaId,
-                DisciplinaId = componenteCurricular,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
