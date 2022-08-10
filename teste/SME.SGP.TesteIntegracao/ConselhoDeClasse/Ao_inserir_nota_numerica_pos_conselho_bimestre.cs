@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_fundamental(bool anoAnterior) 
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_fundamental(bool anoAnterior) 
         {
             await CrieDados(
                 ObterPerfilProfessor(), 
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_fundamental_cp(bool anoAnterior)
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_fundamental_cp(bool anoAnterior)
         {
             await CrieDados(
                 ObterPerfilCP(),
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_medio(bool anoAnterior)
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio(bool anoAnterior)
         {
             await CrieDados(
                 ObterPerfilProfessor(), 
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_medio_diretor(bool anoAnterior)
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio_diretor(bool anoAnterior)
         {
             await CrieDados(
                 ObterPerfilDiretor(),
@@ -79,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_eja(bool anoAnterior)
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja(bool anoAnterior)
         {
             await CrieDados(
                 ObterPerfilProfessor(), 
@@ -95,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_regencia_classe(bool anoAnterior)
+        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_regencia_classe(bool anoAnterior)
         {
             await CrieDados(
                 ObterPerfilProfessor(), 
