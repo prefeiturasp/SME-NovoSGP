@@ -188,14 +188,6 @@ namespace SME.SGP.Dominio.Servicos
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null));
                     }
 
-                        conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
-                    }
-                    else
-                    {
-                        if (conselhoClasseNota.ConceitoId != null)
-                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null));
-                    }
-
                     conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.HasValue ? conselhoClasseNotaDto.Conceito.Value : null;
                 }
 
