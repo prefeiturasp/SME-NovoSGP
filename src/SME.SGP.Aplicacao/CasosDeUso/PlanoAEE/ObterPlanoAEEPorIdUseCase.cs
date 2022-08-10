@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
                 var alunoTurma = await mediator
-                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo));
+                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
                 if (alunoTurma == null)
                     throw new NegocioException("Aluno não encontrado.");
@@ -118,6 +118,7 @@ namespace SME.SGP.Aplicacao
             } else
             {
                 plano.Responsavel = await ObtenhaResponsavel();
+                turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
             }
 
             var questionarioId = await mediator
@@ -138,9 +139,9 @@ namespace SME.SGP.Aplicacao
                 plano.Questoes != null && 
                 plano.Questoes.Any() &&
                 turma.AnoLetivo.Equals(DateTime.Today.Year) &&
-                periodoAtual != null)
-                    plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-            
+                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()))
+                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+
 
             return plano;
         }

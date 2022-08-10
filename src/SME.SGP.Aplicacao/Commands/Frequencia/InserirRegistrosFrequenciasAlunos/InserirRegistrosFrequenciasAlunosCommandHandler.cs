@@ -89,6 +89,7 @@ namespace SME.SGP.Aplicacao
                         if (frequenciaAluno.Valor != (int)presenca)
                         {
                             frequenciaAluno.Valor = (int)presenca;
+                            frequenciaAluno.AulaId = request.AulaId;
                             dicionario[ALTERAR].Add(frequenciaAluno);
                         }
                     }
@@ -121,7 +122,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var frequencia in request.Frequencias)
             {
-                var frequenciaDefinida = listaDeFrequenciaDefinidaCadastrada.FirstOrDefault(fr => fr.CodigoAluno == frequencia.CodigoAluno);
+                var frequenciaDefinida = listaDeFrequenciaDefinidaCadastrada.OrderByDescending(y => y.Id).FirstOrDefault(fr => fr.CodigoAluno == frequencia.CodigoAluno);
                 var tipoFrequencia = ObtenhaValorPreDefinido(frequencia.TipoFrequenciaPreDefinido);
 
                 if (frequenciaDefinida != null)

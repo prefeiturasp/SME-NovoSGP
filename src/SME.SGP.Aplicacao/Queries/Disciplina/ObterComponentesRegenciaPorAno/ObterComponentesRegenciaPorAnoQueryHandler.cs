@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -11,16 +12,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesRegenciaPorAnoQueryHandler : IRequestHandler<ObterComponentesRegenciaPorAnoQuery, IEnumerable<ComponenteCurricularEol>>
     {
-        private readonly HttpClient httpClient;
-        public ObterComponentesRegenciaPorAnoQueryHandler(HttpClient httpClient)
+        private readonly IHttpClientFactory httpClientFactory;
+        public ObterComponentesRegenciaPorAnoQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient;
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesRegenciaPorAnoQuery request, CancellationToken cancellationToken)
         {
             var url = $"v1/componentes-curriculares/anos/{request.AnoTurma}/regencia";
-
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)

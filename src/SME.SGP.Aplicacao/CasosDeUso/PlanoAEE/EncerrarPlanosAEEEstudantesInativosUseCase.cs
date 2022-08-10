@@ -33,6 +33,10 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
                     var turma = await ObterTurma(planoAEE.TurmaId);
+
+                    if (turma == null)
+                        throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
+
                     var etapaConcluida = false;
                     var transferenciaUe = false;
                     AlunoPorTurmaResposta ultimaMatricula = null;

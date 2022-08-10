@@ -16,21 +16,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
-        private readonly IRepositorioUeConsulta repositorioUe;
-        private readonly IRepositorioCache repositorioCache;
 
         public ConsultasSupervisor(IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre,
-            IServicoEol servicoEOL,
-            IRepositorioAbrangencia repositorioAbrangencia,
-            IServicoUsuario servicoUsuario,
-            IRepositorioUeConsulta repositorioUe, IRepositorioCache repositorioCache)
+                                   IServicoEol servicoEOL,
+                                   IRepositorioAbrangencia repositorioAbrangencia,
+                                   IServicoUsuario servicoUsuario,
+                                   IRepositorioUeConsulta repositorioUe,
+                                   IRepositorioCache repositorioCache)
         {
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioAbrangencia = repositorioAbrangencia ?? throw new ArgumentNullException(nameof(repositorioAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<ResponsavelEscolasDto>> ObterPorDre(string dreId)
@@ -67,7 +64,8 @@ namespace SME.SGP.Aplicacao
             if (string.IsNullOrEmpty(supervisoresId) || string.IsNullOrEmpty(dreId) || tipoResponsavel == 0)
                 throw new NegocioException("Necessário informar o Código da DRE o Código do Responsável e o Tipo de responsável");
 
-            var responsaveisEscolasDres = await repositorioSupervisorEscolaDre.ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId, tipoResponsavel);
+            var responsaveisEscolasDres = await repositorioSupervisorEscolaDre
+                .ObterUesAtribuidasAoResponsavelPorSupervisorIdeDre(dreId, supervisoresId, tipoResponsavel);
 
             if (responsaveisEscolasDres == null || !responsaveisEscolasDres.Any())
                 return Enumerable.Empty<UnidadeEscolarResponsavelDto>();
@@ -77,7 +75,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ResponsavelEscolasDto>> ObterAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
-
             if (string.IsNullOrEmpty(filtro.DreCodigo))
                 throw new NegocioException("Necessário informar o Codigo da DRE");
 
@@ -86,11 +83,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<ResponsavelEscolasDto>> ListaDeAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
-            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre.ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo); ;
+            var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre
+                .ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo); ;
 
             if (responsavelEscolaDreDto == null)
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
-
 
             var escolaDreDto = AdicionarTiposNaoExistente(responsavelEscolaDreDto, filtro);
             return await MapearResponsavelEscolaDre(escolaDreDto);
@@ -98,8 +95,14 @@ namespace SME.SGP.Aplicacao
 
         private List<SupervisorEscolasDreDto> AdicionarTiposNaoExistente(List<SupervisorEscolasDreDto> responsavelEscolaDreDto, FiltroObterSupervisorEscolasDto filtro)
         {
-            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>().Select(d => new { codigo = (int)d }).Select(x => x.codigo);
-            string[] listaCodigoSupervisor = filtro.SupervisorId !=null ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
+                            .Cast<TipoResponsavelAtribuicao>()
+                            .Select(d => new { codigo = (int)d })
+                            .Select(x => x.codigo);
+
+            var perfilAtual = servicoUsuario.ObterPerfilAtual();
+            var listaCodigoSupervisor = filtro.SupervisorId != null ? filtro.SupervisorId.Split(",").ToArray() : new string[] { };
+
             if (responsavelEscolaDreDto.Count() > 0)
             {
                 for (int i = 0; i < responsavelEscolaDreDto.Count; i++)
@@ -133,17 +136,26 @@ namespace SME.SGP.Aplicacao
 
                 if (!string.IsNullOrEmpty(filtro.UeCodigo) && !filtro.UESemResponsavel)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.UeId == filtro.UeCodigo).ToList();
-                
+
                 if (filtro.TipoCodigo > 0)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.TipoAtribuicao == filtro.TipoCodigo).ToList();
+                else
+                {
+                    if (perfilAtual == Perfis.PERFIL_CEFAI)
+                        responsavelEscolaDreDto = responsavelEscolaDreDto.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.PAAI)).ToList();
+                    else if (perfilAtual == Perfis.PERFIL_COORDENADOR_NAAPA)
+                        responsavelEscolaDreDto = responsavelEscolaDreDto.Where(f => f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.AssistenteSocial) ||
+                                                                                     f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.PsicologoEscolar) ||
+                                                                                     f.TipoAtribuicao.Equals((int)TipoResponsavelAtribuicao.Psicopedagogo)).ToList();
+                }
 
                 if (listaCodigoSupervisor.Any())
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => listaCodigoSupervisor.Contains(x.SupervisorId) && !x.AtribuicaoExcluida).ToList();
-                
+
                 if (filtro.SupervisorId?.Length == 0 || filtro.SupervisorId == null && filtro.UESemResponsavel || filtro.UESemResponsavel)
                     responsavelEscolaDreDto = responsavelEscolaDreDto.Where(x => x.AtribuicaoExcluida).ToList();
             }
-            
+
             return responsavelEscolaDreDto.OrderBy(x => x.Nome).ToList();
         }
 
@@ -320,6 +332,36 @@ namespace SME.SGP.Aplicacao
             var consulta = await repositorioSupervisorEscolaDre.ObterListaDeUesFiltroPrincipal(dreCodigo);
 
             return consulta.OrderBy(x => x.Nome);
+        }
+
+        public IEnumerable<TipoReponsavelRetornoDto> ObterTiposResponsaveis()
+        {
+            var perfilAtual = servicoUsuario
+                .ObterPerfilAtual();
+
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao))
+                            .Cast<TipoResponsavelAtribuicao>()
+                            .Select(d => new TipoReponsavelRetornoDto
+                            {
+                                Codigo = (int)d,
+                                Descricao = d.Name()
+                            })
+                            .OrderBy(x => x.Descricao)
+                            .AsEnumerable();
+
+            if (perfilAtual == Perfis.PERFIL_CEFAI)
+                return tipos.Where(t => (TipoResponsavelAtribuicao)t.Codigo == TipoResponsavelAtribuicao.PAAI);
+            else if (perfilAtual == Perfis.PERFIL_COORDENADOR_NAAPA)
+            {
+                var permitidos = new int[] { (int)TipoResponsavelAtribuicao.AssistenteSocial,
+                                             (int)TipoResponsavelAtribuicao.PsicologoEscolar,
+                                             (int)TipoResponsavelAtribuicao.Psicopedagogo };
+
+                return tipos
+                    .Where(t => permitidos.Contains(t.Codigo));
+            }
+
+            return tipos;
         }
     }
 }
