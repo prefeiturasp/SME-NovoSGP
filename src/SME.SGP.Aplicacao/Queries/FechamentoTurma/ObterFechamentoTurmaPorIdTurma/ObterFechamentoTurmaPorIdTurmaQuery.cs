@@ -6,12 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaPorIdTurmaQuery : IRequest<FechamentoTurma>
     {
-        public ObterFechamentoTurmaPorIdTurmaQuery(long turmaId)
+        public ObterFechamentoTurmaPorIdTurmaQuery(long turmaId,int? bimestre = 0)
         {
             TurmaId = turmaId;
+            Bimestre = bimestre;
         }
 
         public long TurmaId { get; set; }
+        public int? Bimestre { get; set; }
     }
 
     public class ObterFechamentoTurmaPorIdTurmaQueryValidator : AbstractValidator<ObterFechamentoTurmaPorIdTurmaQuery>

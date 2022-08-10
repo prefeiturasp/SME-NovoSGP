@@ -46,13 +46,13 @@ namespace SME.SGP.Aplicacao
             }
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId,filtro.Bimestre));
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasAluno = null;
             IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
             if (fechamentoTurma != null)
             {
                 var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId));
+                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId,filtro.Bimestre));
                 
                 if (fechamentoTurmaDisciplina != null)
                 { 

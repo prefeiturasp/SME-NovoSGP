@@ -83,14 +83,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
 
-        public async Task<FechamentoTurma> ObterPorTurma(long turmaId)
+        public async Task<FechamentoTurma> ObterPorTurma(long turmaId, int? bimestre = 0)
         {
-            var query = new StringBuilder(@"select * 
-                            from fechamento_turma 
-                           where not excluido 
-                            and turma_id = @turmaId ");
-          
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId});
+            var query = new StringBuilder(@"select ft.*  
+                            from fechamento_turma ft
+                            left join periodo_escolar p
+                            on p.id = ft.periodo_escolar_id
+                           where not ft.excluido 
+                            and ft.turma_id = @turmaId");
+            if (bimestre > 0)
+                query.AppendLine(@" and p.bimestre = @bimestre");
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, bimestre });
         }
 
 
