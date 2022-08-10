@@ -6,22 +6,22 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_nota_pos_conselho_bimestre : ConselhoDeClasseTesteBase
+    public class Ao_inserir_nota_numerica_pos_conselho_final : ConselhoDeClasseTesteBase
     {
-        public Ao_inserir_nota_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_inserir_nota_numerica_pos_conselho_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_fundamental(bool anoAnterior) 
+        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_fundamental(bool anoAnterior)
         {
             await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_7, 
-                Modalidade.Fundamental, 
+                ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ANO_7,
+                Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
@@ -50,10 +50,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_medio(bool anoAnterior)
         {
             await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_7, 
-                Modalidade.Medio, 
+                ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ANO_7,
+                Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
@@ -82,10 +82,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_eja(bool anoAnterior)
         {
             await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_9, 
-                Modalidade.EJA, 
+                ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ANO_9,
+                Modalidade.EJA,
                 ModalidadeTipoCalendario.EJA,
                 anoAnterior);
 
@@ -98,10 +98,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_regencia_classe(bool anoAnterior)
         {
             await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, 
-                ANO_1, 
-                Modalidade.Fundamental, 
+                ObterPerfilProfessor(),
+                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,
+                ANO_1,
+                Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 anoAnterior);
 
@@ -116,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                         anoAnterior,
                         ALUNO_CODIGO_1,
                         TipoNota.Nota,
-                        BIMESTRE_2);
+                        BIMESTRE_FINAL);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)
@@ -130,27 +130,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         private async Task CrieDados(
-                        string perfil, 
+                        string perfil,
                         long componente,
-                        string anoTurma, 
+                        string anoTurma,
                         Modalidade modalidade,
                         ModalidadeTipoCalendario modalidadeTipoCalendario,
                         bool anoAnterior)
         {
-            var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
+            var dataAula = anoAnterior ? DATA_03_10_INICIO_BIMESTRE_4.AddYears(-1) : DATA_03_10_INICIO_BIMESTRE_4;
 
             var filtroNota = new FiltroNotasDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,
                 TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_2,
+                Bimestre = BIMESTRE_FINAL,
                 ComponenteCurricular = componente.ToString(),
                 AnoTurma = anoTurma,
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula
             };
-            
+
             await CriarDadosBase(filtroNota);
         }
     }

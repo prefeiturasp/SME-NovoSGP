@@ -786,21 +786,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarTipoAvaliacao(TipoAvaliacaoCodigo tipoAvalicao, string descricaoAvaliacao)
-        {
-            await InserirNaBase(new TipoAvaliacao
-            {
-                Nome = descricaoAvaliacao,
-                Descricao = descricaoAvaliacao,
-                Situacao = true,
-                AvaliacoesNecessariasPorBimestre = 1,
-                Codigo = tipoAvalicao,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-        }
-
         protected async Task CriaConceito()
         {
             await InserirNaBase(new Conceito()
