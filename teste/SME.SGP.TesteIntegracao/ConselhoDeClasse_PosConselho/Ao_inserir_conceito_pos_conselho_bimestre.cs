@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
 
         private async Task ExecuteTeste(long componente, bool anoAnterior)
         {
-            await ExecuteTeste(ObtenhaDto(componente), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2);
+            await ExecuteTeste(ObtenhaDto(componente), anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)
@@ -81,8 +81,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
             return new ConselhoClasseNotaDto()
             {
                 CodigoComponenteCurricular = componente,
-                Nota = NOTA_7,
-                Justificativa = JUSTIFICATIVA
+                Justificativa = JUSTIFICATIVA,
+                Conceito = 1
             };
         }
     }
