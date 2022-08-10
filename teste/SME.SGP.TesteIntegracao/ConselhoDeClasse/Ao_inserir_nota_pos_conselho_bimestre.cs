@@ -1,13 +1,12 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_nota_pos_conselho_bimestre : ConselhoDeClasseLancamentoBase
+    public class Ao_inserir_nota_pos_conselho_bimestre : ConselhoDeClasseTesteBase
     {
         public Ao_inserir_nota_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {

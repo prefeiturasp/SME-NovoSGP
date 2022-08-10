@@ -15,9 +15,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public abstract class ConselhoDeClasseLancamentoBase : TesteBaseComuns
+    public abstract class ConselhoDeClasseTesteBase : TesteBaseComuns
     {
         protected const long AULA_ID_1 = 1;
 
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
-        protected ConselhoDeClasseLancamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
+        protected ConselhoDeClasseTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
