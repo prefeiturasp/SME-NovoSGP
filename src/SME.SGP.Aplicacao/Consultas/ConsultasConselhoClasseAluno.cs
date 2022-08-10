@@ -219,12 +219,20 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = turma.Ue.Id});
-
-            if(periodoReaberturaCorrespondente != null)
+            if (periodoEscolar != null)
             {
-                periodoInicio = periodoReaberturaCorrespondente.Inicio.Date;
-                periodoFim = periodoReaberturaCorrespondente.Fim.Date;
+                var periodoReaberturaCorrespondente = await mediator.Send(
+                    new ObterFechamentoReaberturaPorDataTurmaQuery()
+                    {
+                        DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId,
+                        UeId = turma.Ue.Id
+                    });
+
+                if (periodoReaberturaCorrespondente != null)
+                {
+                    periodoInicio = periodoReaberturaCorrespondente.Inicio.Date;
+                    periodoFim = periodoReaberturaCorrespondente.Fim.Date;
+                }
             }
 
             var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
