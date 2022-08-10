@@ -6,16 +6,16 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_conceito_pos_conselho_bimestre : ConselhoDeClasseTesteBase
+    public class Ao_inserir_conceito_pos_conselho_final : ConselhoDeClasseTesteBase
     {
-        public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_inserir_conceito_pos_conselho_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Deve_lancar_conceito_pos_conselho_bimestre(bool anoAnterior)
+        public async Task Deve_lancar_conceito_pos_conselho_final(bool anoAnterior)
         {
             await CrieDados(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior);
             await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
+        public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_fundamental_final(bool anoAnterior)
         {
             await CrieDados(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior);
             await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, anoAnterior);
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
+        public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_EJA_final(bool anoAnterior)
         {
             await CrieDados(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, ANO_4, Modalidade.EJA, ModalidadeTipoCalendario.EJA, anoAnterior);
             await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
@@ -41,14 +41,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior)
         {
-            var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
+            var dataAula = anoAnterior ? DATA_03_10_INICIO_BIMESTRE_4.AddYears(-1) : DATA_03_10_INICIO_BIMESTRE_4;
 
             var filtroNota = new FiltroNotasDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,
                 TipoCalendario = modalidadeTipoCalendario,
-                Bimestre = BIMESTRE_2,
+                Bimestre = BIMESTRE_FINAL,
                 ComponenteCurricular = componente.ToString(),
                 TipoNota = tipo,
                 AnoTurma = anoTurma,
@@ -57,14 +57,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             };
 
             await CriarDadosBase(filtroNota);
-            await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
-            await CrieTipoAtividade();
-            await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
         }
 
         private async Task ExecuteTeste(long componente, bool anoAnterior)
         {
-            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2);
+            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_FINAL);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)
