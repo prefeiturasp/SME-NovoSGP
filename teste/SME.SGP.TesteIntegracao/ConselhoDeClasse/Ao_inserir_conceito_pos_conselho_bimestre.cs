@@ -1,16 +1,13 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_conceito_pos_conselho_bimestre : ConselhoDeClasseLancamentoBase
+    public class Ao_inserir_conceito_pos_conselho_bimestre : ConselhoDeClasseTesteBase
     {
-        private const string JUSTIFICATIVA = "Nota pós conselho";
-
         public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -73,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
 
         private async Task ExecuteTeste(long componente, bool anoAnterior)
         {
-            await ExecuteTeste(ObtenhaDto(componente), anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2);
+            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)

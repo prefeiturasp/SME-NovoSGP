@@ -1,15 +1,13 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_nota_pos_conselho_bimestre : ConselhoDeClasseLancamentoBase
+    public class Ao_inserir_nota_pos_conselho_bimestre : ConselhoDeClasseTesteBase
     {
-        private const string JUSTIFICATIVA = "Nota pós conselho";
         public Ao_inserir_nota_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -33,6 +31,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
+        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_fundamental_cp(bool anoAnterior)
+        {
+            await CrieDados(
+                ObterPerfilCP(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ANO_5,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                anoAnterior);
+
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, false);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_medio(bool anoAnterior)
         {
             await CrieDados(
@@ -44,6 +58,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
                 anoAnterior);
 
             await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task Ao_lancar_nota_pos_conselhor_bimestre_numerica_medio_diretor(bool anoAnterior)
+        {
+            await CrieDados(
+                ObterPerfilDiretor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ANO_5,
+                Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                anoAnterior);
+
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, false);
         }
 
         [Theory]
@@ -82,6 +112,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento
         {
             await ExecuteTeste(
                         ObtenhaDto(componente),
+                        0,
                         anoAnterior,
                         ALUNO_CODIGO_1,
                         TipoNota.Nota,

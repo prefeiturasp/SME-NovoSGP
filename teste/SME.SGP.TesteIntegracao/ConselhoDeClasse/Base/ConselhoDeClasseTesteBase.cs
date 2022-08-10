@@ -7,7 +7,7 @@ using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -15,9 +15,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public abstract class ConselhoDeClasseLancamentoBase : TesteBaseComuns
+    public abstract class ConselhoDeClasseTesteBase : TesteBaseComuns
     {
         protected const long AULA_ID_1 = 1;
 
@@ -46,13 +46,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         protected const string NOTA = "NOTA";
         protected const string CONCEITO = "CONCEITO";
 
-        protected const int CONSELHO_CLASSE_ID = 1;
-        protected const int FECHAMENTO_TURMA_ID = 1;
-        protected const int CONSELHO_CLASSE_ALUNO_ID = 1;
-
+        protected const int CONSELHO_CLASSE_ID_1 = 1;
+        protected const int FECHAMENTO_TURMA_ID_1 = 1;
+        protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
+        protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
-        protected ConselhoDeClasseLancamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
+        protected ConselhoDeClasseTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -70,6 +70,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
         protected async Task ExecuteTeste(
                     ConselhoClasseNotaDto dto, 
+                    int conselhoClasseId,
                     bool anoAnterior, 
                     string codigoAluno, 
                     TipoNota tipoNota,
@@ -77,12 +78,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_1, TURMA_CODIGO_1, bimestre);
 
             dtoRetorno.ShouldNotBeNull();
             var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
             listaConselhoClasseNota.ShouldNotBeNull();
-            var classeNota = listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == CONSELHO_CLASSE_ALUNO_ID);
+            var classeNota = listaConselhoClasseNota.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == CONSELHO_CLASSE_ALUNO_ID_1);
             classeNota.ShouldNotBeNull();
             classeNota.Justificativa.ShouldBe(dto.Justificativa);
 
@@ -138,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
-            await CriarConselhoDeClasse();
+            await CriarFechamentoTurma();
 
             await CriarComponenteGrupoAreaOrdenacao();
 
@@ -172,43 +173,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             });
         }
 
-        private async Task CriarConselhoDeClasse()
+        private async Task CriarFechamentoTurma()
         {
             await InserirNaBase(new FechamentoTurma()
             {
-                Id = 1,
                 PeriodoEscolarId = 1,
-                TurmaId = 1,
+                TurmaId = TURMA_ID_1,
                 Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
-            });
-
-            await InserirNaBase(new ConselhoClasse()
-            {
-                Id = 1,
-                FechamentoTurmaId = 1,
-                Situacao = SituacaoConselhoClasse.EmAndamento,
-                Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
-            });
-
-            await InserirNaBase(new ConselhoClasseAluno()
-            {
-                Id = 1,
-                ConselhoClasseId = 1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                RecomendacoesAluno = "",
-                RecomendacoesFamilia = "",
-                AnotacoesPedagogicas = "",
-                Migrado = false,
-                Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -718,14 +692,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
             return null;
         }
 
-        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
+        protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
-            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, aulaCj, tipoAula));
+            await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, tipoAula));
         }
 
-        private SGP.Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, bool aulaCj = false, TipoAula tipoAula = TipoAula.Normal)
+        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
-            return new SGP.Dominio.Aula
+            return new Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
@@ -740,8 +714,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,
-                Migrado = false,
-                AulaCJ = aulaCj
+                Migrado = false
             };
         }
 
@@ -822,39 +795,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
                 Situacao = true,
                 AvaliacoesNecessariasPorBimestre = 1,
                 Codigo = tipoAvalicao,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-        }
-
-        protected async Task CriarAtividadeAvaliativa(DateTime dataAvaliacao, long TipoAvaliacaoId, string nomeAvaliacao, bool ehRegencia = false, bool ehCj = false, string professorRf = USUARIO_PROFESSOR_CODIGO_RF_2222222)
-        {
-            await InserirNaBase(new AtividadeAvaliativa
-            {
-                DreId = DRE_CODIGO_1,
-                UeId = UE_CODIGO_1,
-                ProfessorRf = professorRf,
-                TurmaId = TURMA_CODIGO_1,
-                Categoria = CategoriaAtividadeAvaliativa.Normal,
-                TipoAvaliacaoId = TipoAvaliacaoId,
-                NomeAvaliacao = nomeAvaliacao,
-                DescricaoAvaliacao = nomeAvaliacao,
-                DataAvaliacao = dataAvaliacao,
-                EhRegencia = ehRegencia,
-                EhCj = ehCj,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-        }
-
-        protected async Task CriarAtividadeAvaliativaDisciplina(long atividadeAvaliativaId, string componenteCurricular)
-        {
-            await InserirNaBase(new AtividadeAvaliativaDisciplina
-            {
-                AtividadeAvaliativaId = atividadeAvaliativaId,
-                DisciplinaId = componenteCurricular,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
