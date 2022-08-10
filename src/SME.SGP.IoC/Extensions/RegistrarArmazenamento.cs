@@ -15,15 +15,7 @@ namespace SME.SGP.IoC
                 .Bind(configuration.GetSection(ConfiguracaoArmazenamentoOptions.Secao), c => c.BindNonPublicProperties = true);
 
             services.AddSingleton<ConfiguracaoArmazenamentoOptions>();
-            
             services.AddSingleton<IServicoArmazenamento, ServicoArmazenamento>();
-            
-            services.AddSingleton<IServicoArmazenamento>(serviceProvider =>
-            {
-                var options = services.BuildServiceProvider().GetService<IOptions<ConfiguracaoArmazenamentoOptions>>().Value;
-                return new ServicoArmazenamento(options);
-            });
-            
         }
     }
 }

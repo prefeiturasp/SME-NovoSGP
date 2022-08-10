@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Minio;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
@@ -13,16 +14,11 @@ namespace SME.SGP.Infra
         private MinioClient minioClient;
         private ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
-        public ServicoArmazenamento(ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
+        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
-            this.configuracaoArmazenamentoOptions = GetConfiguration(configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions)));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
 
             Inicializar();
-        }
-
-        private ConfiguracaoArmazenamentoOptions GetConfiguration(ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
-        {
-            return configuracaoArmazenamentoOptions;
         }
 
         private void Inicializar()
@@ -35,14 +31,14 @@ namespace SME.SGP.Infra
         
         public async Task<string> ArmazenarTemporaria(string nomeArquivo, Stream stream, string contentType)
         {
-            await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketTemp);
             
-            return ObterUrl(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
+            return ObterUrl(nomeArquivo,configuracaoArmazenamentoOptions.BucketTemp);
         }
 
         public async Task<string> Armazenar(string nomeArquivo, Stream stream, string contentType)
         {
-            return await ArmazenarArquivo(nomeArquivo, stream, contentType,configuracaoArmazenamentoOptions.BucketSGP);
+            return await ArmazenarArquivo(nomeArquivo, stream, contentType, configuracaoArmazenamentoOptions.BucketArquivos);
         }
 
         private async Task<string> ArmazenarArquivo(string nomeArquivo, Stream stream, string contentType, string bucket)
@@ -62,38 +58,38 @@ namespace SME.SGP.Infra
         
         public async Task<string> Copiar(string nomeArquivo)
         {
-            if (!configuracaoArmazenamentoOptions.BucketTempSGPName.Equals(configuracaoArmazenamentoOptions.BucketSGP))
+            if (!configuracaoArmazenamentoOptions.BucketTemp.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
             {
                 var cpSrcArgs = new CopySourceObjectArgs()
-                    .WithBucket(configuracaoArmazenamentoOptions.BucketTempSGPName)
+                    .WithBucket(configuracaoArmazenamentoOptions.BucketTemp)
                     .WithObject(nomeArquivo);
                 
                 var args = new CopyObjectArgs()
-                    .WithBucket(configuracaoArmazenamentoOptions.BucketSGP)
+                    .WithBucket(configuracaoArmazenamentoOptions.BucketArquivos)
                     .WithObject(nomeArquivo)
                     .WithCopyObjectSource(cpSrcArgs);
                 
                 await minioClient.CopyObjectAsync(args);
             }
 
-            return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
+            return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
         }
 
         public async Task<string> Mover(string nomeArquivo)
         {
-            if (!configuracaoArmazenamentoOptions.BucketTempSGPName.Equals(configuracaoArmazenamentoOptions.BucketSGP))
+            if (!configuracaoArmazenamentoOptions.BucketTemp.Equals(configuracaoArmazenamentoOptions.BucketArquivos))
             {
                 await Copiar(nomeArquivo);
             
-                await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTempSGPName);
+                await Excluir(nomeArquivo,configuracaoArmazenamentoOptions.BucketTemp);
             }
-            return $"{configuracaoArmazenamentoOptions.BucketSGP}/{nomeArquivo}";
+            return $"{configuracaoArmazenamentoOptions.BucketArquivos}/{nomeArquivo}";
         }
 
-        public async Task<bool> Excluir(string nomeArquivo, string nomeBucket)
+        public async Task<bool> Excluir(string nomeArquivo, string nomeBucket = "")
         {
             nomeBucket = nomeBucket == string.Empty 
-                                    ? configuracaoArmazenamentoOptions.BucketTempSGPName 
+                                    ? configuracaoArmazenamentoOptions.BucketArquivos
                                     : nomeBucket;
             try
             {
@@ -125,8 +121,8 @@ namespace SME.SGP.Infra
         public async Task<string> Obter(string nomeArquivo, bool ehPastaTemp)
         {
             var bucketNome = ehPastaTemp
-                ? configuracaoArmazenamentoOptions.BucketTempSGPName
-                : configuracaoArmazenamentoOptions.BucketSGP;
+                ? configuracaoArmazenamentoOptions.BucketTemp
+                : configuracaoArmazenamentoOptions.BucketArquivos;
             
             var statObjectArgs = new StatObjectArgs()
                 .WithBucket(bucketNome)

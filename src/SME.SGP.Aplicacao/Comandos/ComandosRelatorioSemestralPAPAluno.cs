@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
-                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTempSGPName, configuracaoArmazenamentoOptions.BucketSGP);
+                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos);
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
                             if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
                                 // Relatorio Semestral Aluno x Secao
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
                                 SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
-                                Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTempSGPName, configuracaoArmazenamentoOptions.BucketSGP)
+                                Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos)
                         };
 
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);

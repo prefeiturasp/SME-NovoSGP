@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                     var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
                                                     request.HoraOcorrencia,
                                                     request.Titulo, 
-                                                    request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP),
+                                                    request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos),
                                                     ocorrenciaTipo,
                                                     turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);

@@ -167,7 +167,7 @@ namespace SME.SGP.Aplicacao
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = bimestre;
-            planoAnual.Descricao = descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+            planoAnual.Descricao = descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;

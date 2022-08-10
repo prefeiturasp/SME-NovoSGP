@@ -24,12 +24,12 @@ namespace SME.SGP.Api.Controllers
     {
         private readonly IMediator mediator;
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
         public UploadController(IMediator mediator, IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator;
             this.servicoArmazenamento = servicoArmazenamento;
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
         
         [HttpPost]
@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}{configuracaoArmazenamentoOptions.Value.BucketTempSGPName}", 
+                        $"https://{Request.Host}{Request.PathBase}{configuracaoArmazenamentoOptions.BucketTemp}", 
                         Dominio.TipoArquivo.Editor));
             }
                 
@@ -101,7 +101,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> ExcluirServicoArmazenamento(string nomeArquivo)
         {
-            return Ok(await servicoArmazenamento.Excluir(nomeArquivo,string.Empty));
+            return Ok(await servicoArmazenamento.Excluir(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp));
         }
         
         [HttpPost("/servico-armazenamento/mover")]

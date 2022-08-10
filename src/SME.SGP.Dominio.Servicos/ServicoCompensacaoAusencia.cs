@@ -341,7 +341,7 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+            compensacao.Descricao = compensacaoDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
 
             return compensacao;
         }

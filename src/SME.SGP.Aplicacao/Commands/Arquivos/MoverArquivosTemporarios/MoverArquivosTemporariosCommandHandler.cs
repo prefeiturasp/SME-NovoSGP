@@ -16,12 +16,12 @@ namespace SME.SGP.Aplicacao
     public class MoverArquivosTemporariosCommandHandler : IRequestHandler<MoverArquivosTemporariosCommand, string>
     {
         private readonly IMediator mediator;
-        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public MoverArquivosTemporariosCommandHandler(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             foreach (var item in diferenca)
             {
                 await mediator.Send(new MoverArquivoCommand(item, request.TipoArquivo));
-                request.TextoEditorNovo = request.TextoEditorNovo.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+                request.TextoEditorNovo = request.TextoEditorNovo.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos);
             }
             
             return request.TextoEditorNovo;

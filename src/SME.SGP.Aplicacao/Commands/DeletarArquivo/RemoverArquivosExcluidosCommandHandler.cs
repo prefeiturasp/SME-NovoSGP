@@ -34,8 +34,9 @@ namespace SME.SGP.Aplicacao
             var novo = regex.Matches(arquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
             var diferente = atual.Except(novo);
             
+            // TODO enviar a exclusão para processamento assincrono
             foreach (var item in diferente)
-                await servicoArmazenamento.Excluir(item,configuracaoArmazenamentoOptions.BucketSGP);
+                await servicoArmazenamento.Excluir(item);
             
             return true;
         }

@@ -11,7 +11,7 @@ namespace SME.SGP.Infra.Interface
         Task<string> Armazenar(string nomeArquivo, Stream stream, string contentType);
         Task<string> Copiar(string nomeArquivo);
         Task<string> Mover(string nomeArquivo);
-        Task<bool> Excluir(string nomeArquivo, string nomeBucket);
+        Task<bool> Excluir(string nomeArquivo, string nomeBucket = "");
         Task<IEnumerable<string>> ObterBuckets();
         Task<string> Obter(string nomeArquivo, bool ehPastaTemp);
     }

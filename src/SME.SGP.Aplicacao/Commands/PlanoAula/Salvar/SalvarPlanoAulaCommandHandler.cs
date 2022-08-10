@@ -157,9 +157,9 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
-            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+            planoAula.Descricao = planoDto.Descricao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
 
             return planoAula;
         }

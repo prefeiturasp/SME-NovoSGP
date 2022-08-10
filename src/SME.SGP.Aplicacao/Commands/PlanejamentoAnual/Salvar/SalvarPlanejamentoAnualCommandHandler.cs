@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
                                     };
                                 }
                                 listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao,DescricaoAtual = planejamentoAnualComponente.Descricao });
-                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
                                 await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
                                 {

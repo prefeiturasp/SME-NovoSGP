@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+            entidade.Descricao = request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }

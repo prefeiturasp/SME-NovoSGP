@@ -18,13 +18,13 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
     {
         private readonly IMediator mediator;
         private readonly IServicoArmazenamento servicoArmazenamento;
-        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator,IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)
@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
             {
                 try
                 {
-                    await servicoArmazenamento.Excluir(item.ToString(),configuracaoArmazenamentoOptions.Value.BucketSGP);
+                    await servicoArmazenamento.Excluir(item.ToString());
                 }
                 catch (Exception ex)
                 {

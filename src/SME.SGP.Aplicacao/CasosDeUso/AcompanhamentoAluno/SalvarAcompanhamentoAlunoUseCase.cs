@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                     if (!string.IsNullOrEmpty(novoCaminho))
                     {
-                        var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTempSGPName, configuracaoArmazenamentoOptions.Value.BucketSGP);
+                        var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
                         acompanhamentoAluno.PercursoIndividual = str;
                     }
                 }
