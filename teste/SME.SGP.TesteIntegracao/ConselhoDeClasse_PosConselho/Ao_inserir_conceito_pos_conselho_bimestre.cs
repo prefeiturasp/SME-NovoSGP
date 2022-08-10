@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse_PosConselho
 
         private async Task ExecuteTeste(long componente, bool anoAnterior)
         {
-            await ExecuteTeste(ObtenhaDto(componente), anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2);
+            await ExecuteTeste(ObtenhaDto(componente), CONSELHO_CLASSE_ID, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)

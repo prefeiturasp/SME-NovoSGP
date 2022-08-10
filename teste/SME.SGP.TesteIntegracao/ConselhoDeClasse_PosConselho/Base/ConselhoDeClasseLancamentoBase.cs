@@ -70,6 +70,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
 
         protected async Task ExecuteTeste(
                     ConselhoClasseNotaDto dto, 
+                    int conselhoClasseId,
                     bool anoAnterior, 
                     string codigoAluno, 
                     TipoNota tipoNota,
@@ -77,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, CONSELHO_CLASSE_ID, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(dto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID, TURMA_CODIGO_1, bimestre);
 
             dtoRetorno.ShouldNotBeNull();
             var listaConselhoClasseNota = ObterTodos<ConselhoClasseNota>();
