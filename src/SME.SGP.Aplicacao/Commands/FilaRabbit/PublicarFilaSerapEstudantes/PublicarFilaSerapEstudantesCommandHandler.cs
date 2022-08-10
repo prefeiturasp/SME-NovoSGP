@@ -8,9 +8,9 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSerapEstudantesCommandHandler : IRequestHandler<PublicarFilaSerapEstudantesCommand, bool>
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public PublicarFilaSerapEstudantesCommandHandler(IServicoMensageria servicoMensageria)
+        public PublicarFilaSerapEstudantesCommandHandler(IServicoMensageriaSGP servicoMensageria)
         {
             this.servicoMensageria = servicoMensageria ?? throw new System.ArgumentNullException(nameof(servicoMensageria));
         }

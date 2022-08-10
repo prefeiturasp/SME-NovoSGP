@@ -9,10 +9,10 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaEmLoteSgpCommandHandler : IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
         private readonly IMediator mediator;
 
-        public PublicarFilaEmLoteSgpCommandHandler(IServicoMensageria servicoMensageria, IMediator mediator)
+        public PublicarFilaEmLoteSgpCommandHandler(IServicoMensageriaSGP servicoMensageria, IMediator mediator)
         {
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));

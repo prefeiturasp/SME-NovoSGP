@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = turma.Ue.Id});
+            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = tipoCalendario.Id, UeId = turma.Ue.Id});
 
             if(periodoReaberturaCorrespondente != null)
             {
@@ -302,7 +302,8 @@ namespace SME.SGP.Aplicacao
 
             var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
                                  (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
-                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoInicio);
+                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoInicio) ||
+                                 (!dadosAluno.EstaInativo() && await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar));
 
             var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
 
