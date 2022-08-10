@@ -64,20 +64,20 @@ namespace SME.SGP.Dominio.Servicos
         public async Task<ConselhoClasseNotaRetornoDto> SalvarConselhoClasseAlunoNotaAsync(ConselhoClasseNotaDto conselhoClasseNotaDto, string alunoCodigo, long conselhoClasseId, long fechamentoTurmaId, string codigoTurma, int bimestre)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            
             if (turma == null) throw new NegocioException("Turma não encontrada");
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
+            
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(fechamentoTurmaId, alunoCodigo, ehAnoAnterior));
+            
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
+            
             var periodoEscolar = new PeriodoEscolar();
 
             if (fechamentoTurma == null)
             {
                 if (!ehAnoAnterior) throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
-
-                var ue = repositorioUe.ObterPorId(turma.UeId);
-                ue.AdicionarDre(repositorioDre.ObterPorId(ue.DreId));
-                turma.AdicionarUe(ue);
 
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
                 if (periodoEscolar == null && bimestre > 0) throw new NegocioException("Período escolar não encontrado");
@@ -103,18 +103,18 @@ namespace SME.SGP.Dominio.Servicos
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
             }
 
-            await GravarFechamentoTurma(fechamentoTurma, fechamentoTurmaDisciplina, turma, periodoEscolar);
+            await GravarFechamentoTurma(fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar.Bimestre);
 
-            return await GravarConselhoClasse(fechamentoTurma, conselhoClasseId, alunoCodigo, turma, conselhoClasseNotaDto, periodoEscolar?.Bimestre);
+            return await GravarConselhoClasse(fechamentoTurma, conselhoClasseId, alunoCodigo, conselhoClasseNotaDto, periodoEscolar?.Bimestre);
         }
 
-        private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, Turma turma, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
+        private async Task<ConselhoClasseNotaRetornoDto> GravarConselhoClasse(FechamentoTurma fechamentoTurma, long conselhoClasseId, string alunoCodigo, ConselhoClasseNotaDto conselhoClasseNotaDto, int? bimestre)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var conselhoClasseNotaRetorno = conselhoClasseId == 0 ?
-                await InserirConselhoClasseNota(fechamentoTurma, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado) :
-                await AlterarConselhoClasse(conselhoClasseId, fechamentoTurma.Id, alunoCodigo, turma, conselhoClasseNotaDto, bimestre, usuarioLogado);
+                await InserirConselhoClasseNota(fechamentoTurma, alunoCodigo, fechamentoTurma.Turma, conselhoClasseNotaDto, bimestre, usuarioLogado) :
+                await AlterarConselhoClasse(conselhoClasseId, fechamentoTurma.Id, alunoCodigo, fechamentoTurma.Turma, conselhoClasseNotaDto, bimestre, usuarioLogado);
 
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await VerificaNotasTodosComponentesCurriculares(alunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
@@ -357,7 +357,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                               conceitoIdAnterior));
         }
 
-        private async Task GravarFechamentoTurma(FechamentoTurma fechamentoTurma, FechamentoTurmaDisciplina fechamentoTurmaDisciplina, Turma turma, PeriodoEscolar periodoEscolar)
+        private async Task GravarFechamentoTurma(FechamentoTurma fechamentoTurma, FechamentoTurmaDisciplina fechamentoTurmaDisciplina, int bimestre)
         {
             if (fechamentoTurma.PeriodoEscolarId.HasValue)
             {
@@ -375,7 +375,7 @@ namespace SME.SGP.Dominio.Servicos
                         throw new NegocioException($"Para salvar a nota final você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
                 }
             }
-            var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, fechamentoTurma.PeriodoEscolarId != null ? periodoEscolar.Bimestre : 0);
+            var consolidacaoTurma = new ConsolidacaoTurmaDto(fechamentoTurma.Turma.Id, fechamentoTurma.PeriodoEscolarId != null ? bimestre : 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
 
             try
