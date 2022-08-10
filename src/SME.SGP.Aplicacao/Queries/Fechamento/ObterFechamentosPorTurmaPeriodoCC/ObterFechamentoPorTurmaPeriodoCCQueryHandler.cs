@@ -7,11 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentoPorTurmaPeriodoCCQueryHandler : IRequestHandler<ObterFechamentosPorTurmaPeriodoCCQuery, IEnumerable<CacheFechamentoTurmaDisciplinaDto>>
+    public class ObterFechamentoPorTurmaPeriodoCCQueryHandler : IRequestHandler<ObterFechamentosPorTurmaPeriodoCCQuery, IEnumerable<FechamentoPorTurmaPeriodoCCDto>>
     {
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
         private readonly IMediator mediator;
@@ -23,16 +24,16 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        private static async Task<List<CacheFechamentoTurmaDisciplinaDto>> MapearDadosDbParaCache(IEnumerable<FechamentoTurmaDisciplina> dadosBd)
+        private static async Task<List<FechamentoPorTurmaPeriodoCCDto>> MapearDadosDbParaCache(IEnumerable<FechamentoTurmaDisciplina> dadosBd)
         {
             if (dadosBd == null)
                 return null;
 
-            var dadosCache = new List<CacheFechamentoTurmaDisciplinaDto>();
+            var dadosCache = new List<FechamentoPorTurmaPeriodoCCDto>();
             
             foreach (var fechamentoTurmaDisciplina in dadosBd)
             {
-                var cacheFechamentoTurmaDisciplina = new CacheFechamentoTurmaDisciplinaDto
+                var cacheFechamentoTurmaDisciplina = new FechamentoPorTurmaPeriodoCCDto
                 {
                     Id = fechamentoTurmaDisciplina.Id,
                     Situacao = fechamentoTurmaDisciplina.Situacao,
@@ -43,12 +44,12 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var fechamentoAluno in fechamentoTurmaDisciplina.FechamentoAlunos)
                 {
-                    var cacheFechamentoAluno = new CacheFechamentoAlunoDto
+                    var cacheFechamentoAluno = new FechamentoAlunoPorTurmaPeriodoCCDto
                     {
                         AlunoCodigo = fechamentoAluno.AlunoCodigo
                     };
                     
-                    foreach (var cacheFechamentoNota in fechamentoAluno.FechamentoNotas.Select(fechamentoAlunoFechamentoNota => new CacheFechamentoNotaDto
+                    foreach (var cacheFechamentoNota in fechamentoAluno.FechamentoNotas.Select(fechamentoAlunoFechamentoNota => new FechamentoNotaPorTurmaPeriodoCCDto
                         {
                             Id = fechamentoAlunoFechamentoNota.Id,
                             Nota = fechamentoAlunoFechamentoNota.Nota,
@@ -74,18 +75,18 @@ namespace SME.SGP.Aplicacao
             return await Task.FromResult(dadosCache);
         }
         
-        private static async Task<List<CacheFechamentoTurmaDisciplinaDto>> MapearDadosCacheParaRetorno(string dadosCache)
+        private static async Task<List<FechamentoPorTurmaPeriodoCCDto>> MapearDadosCacheParaRetorno(string dadosCache)
         {
             if (string.IsNullOrEmpty(dadosCache))
                 return null;
 
-            return await Task.FromResult(JsonConvert.DeserializeObject<List<CacheFechamentoTurmaDisciplinaDto>>(dadosCache));
+            return await Task.FromResult(JsonConvert.DeserializeObject<List<FechamentoPorTurmaPeriodoCCDto>>(dadosCache));
         }        
 
-        public async Task<IEnumerable<CacheFechamentoTurmaDisciplinaDto>> Handle(ObterFechamentosPorTurmaPeriodoCCQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FechamentoPorTurmaPeriodoCCDto>> Handle(ObterFechamentosPorTurmaPeriodoCCQuery request, CancellationToken cancellationToken)
         {
-            var nomeChave =
-                $"FechamentoNotas-{request.TurmaId.ToString()}-{request.PeriodoEscolarId.ToString()}-{request.ComponenteCurricularId.ToString()}";
+            var nomeChave = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+                request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularId);
 
             var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChave), cancellationToken);
             var retornoCache = await MapearDadosCacheParaRetorno(dadosCache);

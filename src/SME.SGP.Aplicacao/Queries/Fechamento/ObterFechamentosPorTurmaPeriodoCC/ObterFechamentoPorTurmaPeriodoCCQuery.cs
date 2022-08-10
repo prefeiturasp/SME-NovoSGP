@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentosPorTurmaPeriodoCCQuery : IRequest<IEnumerable<CacheFechamentoTurmaDisciplinaDto>>
+    public class ObterFechamentosPorTurmaPeriodoCCQuery : IRequest<IEnumerable<FechamentoPorTurmaPeriodoCCDto>>
     {
         public ObterFechamentosPorTurmaPeriodoCCQuery(long periodoEscolarId, long turmaId, long componenteCurricularId)
         {

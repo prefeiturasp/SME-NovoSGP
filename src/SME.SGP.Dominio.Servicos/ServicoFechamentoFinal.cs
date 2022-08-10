@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -292,13 +293,14 @@ namespace SME.SGP.Dominio.Servicos
         {
             foreach (var notaFinal in notasFinais)
             {
-                if (notaFinal.AlunoCodigo == codigoAluno)
-                {
-                    notaFinal.Nota = fechamentoNota.Nota;
-                    notaFinal.ConceitoId = fechamentoNota.ConceitoId;
-                }
+                if (notaFinal.AlunoCodigo != codigoAluno) 
+                    continue;
+                
+                notaFinal.Nota = fechamentoNota.Nota;
+                notaFinal.ConceitoId = fechamentoNota.ConceitoId;
             }
-            await mediator.Send(new SalvarCachePorValorObjetoCommand($"fechamentoNotaFinais-{codigoDisciplina}-{codigoTurma}", notasFinais));
+            
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma), notasFinais));
         }
 
         private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearRetornoParaDto(string dadosCache)

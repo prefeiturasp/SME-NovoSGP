@@ -24,10 +24,8 @@ namespace SME.SGP.Aplicacao
 
             var ehAnoAnterior = turma.AnoLetivo != DateTime.Now.Year;
 
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(
-                                                                dto.FechamentoTurmaId,
-                                                                dto.CodigoAluno,
-                                                                ehAnoAnterior));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId,
+                dto.CodigoAluno, ehAnoAnterior));
 
             var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
             var periodoEscolar = new PeriodoEscolar();
@@ -66,12 +64,10 @@ namespace SME.SGP.Aplicacao
             }
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
-                                            fechamentoTurma, 
-                                            fechamentoTurmaDisciplina, 
-                                            periodoEscolar?.Bimestre));
+                fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
 
-            return await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno, dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
+            return await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno,
+                dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
         }
-
     }
 }

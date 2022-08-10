@@ -4,16 +4,16 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
-    public class CacheFechamentoTurmaDisciplinaDto
+    public class FechamentoPorTurmaPeriodoCCDto
     {
-        public CacheFechamentoTurmaDisciplinaDto()
+        public FechamentoPorTurmaPeriodoCCDto()
         {
-            FechamentoAlunos = new List<CacheFechamentoAlunoDto>();
+            FechamentoAlunos = new List<FechamentoAlunoPorTurmaPeriodoCCDto>();
         }
 
         public long Id { get; set; }
         public SituacaoFechamento Situacao { get; set; }
-        public List<CacheFechamentoAlunoDto> FechamentoAlunos { get; }
+        public List<FechamentoAlunoPorTurmaPeriodoCCDto> FechamentoAlunos { get; }
         public DateTime CriadoEm { get; set; }
         public string CriadoRF { get; set; }
         public string CriadoPor { get; set; }

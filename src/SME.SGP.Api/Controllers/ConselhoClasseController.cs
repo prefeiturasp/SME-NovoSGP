@@ -4,7 +4,6 @@ using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.ConselhoClasse;
@@ -58,7 +57,7 @@ namespace SME.SGP.Api.Controllers
                 Bimestre = bimestre
             };
 
-            return Ok(await useCase.Executar(dto));
+           return Ok(await useCase.Executar(dto));
         }
 
         [HttpGet("detalhamento/{id}")]
@@ -134,7 +133,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<ConselhoClasseAlunoNotasConceitosDto>), 200)]
         [Permissao(Permissao.CC_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno, [FromQuery] bool consideraHistorico = false)
+        public async Task<IActionResult> ObterNotasAluno(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, 
+            [FromServices] IConsultasConselhoClasseAluno consultasConselhoClasseAluno, 
+            [FromQuery] bool consideraHistorico = false)
             => Ok(await consultasConselhoClasseAluno.ObterNotasFrequencia(conselhoClasseId, fechamentoTurmaId, alunoCodigo, codigoTurma, bimestre, consideraHistorico));
 
         [HttpGet("{conselhoClasseId}/fechamentos/{fechamentoTurmaId}/imprimir")]

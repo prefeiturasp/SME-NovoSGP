@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao.Queries
 			{
 				foreach (var conselhosClassesId in conselhosClassesIds)
 				{
-					var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, request.AlunoCodigo));
+					var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, request.AlunoCodigo, bimestre));
 
 					notasParaVerificar.AddRange(notasParaAdicionar);
 				}

@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> Handle(ObterRecomendacoesAlunoFamiliaQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCache.ObterAsync(NomeChaveCache.CHAVE_LISTA_DE_RECOMENDACOES, async () => await repositorioConselhoClasseRecomendacao.ObterIdRecomendacoesETipoAsync());
+            return await repositorioCache.ObterAsync(NomeChaveCache.CHAVE_LISTA_DE_RECOMENDACOES_ALUNO_FAMILIA, async () => await repositorioConselhoClasseRecomendacao.ObterIdRecomendacoesETipoAsync());
         }
     }
 }

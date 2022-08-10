@@ -2,7 +2,7 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class CacheFechamentoNotaDto
+    public class FechamentoNotaPorTurmaPeriodoCCDto
     {
         public long Id { get; set; }
         public long DisciplinaId { get; set; }

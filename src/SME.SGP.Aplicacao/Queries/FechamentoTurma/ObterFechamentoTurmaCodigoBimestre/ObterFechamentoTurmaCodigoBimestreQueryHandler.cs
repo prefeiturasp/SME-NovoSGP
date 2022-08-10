@@ -20,6 +20,5 @@ namespace SME.SGP.Aplicacao
         {
             return await repositorioFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(request.TurmaCodigo, request.Bimestre);
         }
-
     }
 }
