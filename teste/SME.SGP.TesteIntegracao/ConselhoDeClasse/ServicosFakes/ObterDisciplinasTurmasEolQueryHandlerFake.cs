@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.ServicosFakes
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 {
     public class ObterDisciplinasTurmasEolQueryHandlerFake : IRequestHandler<ObterDisciplinasTurmasEolQuery, IEnumerable<DisciplinaResposta>>
     {
