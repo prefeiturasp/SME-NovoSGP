@@ -56,9 +56,10 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao fazer download do arquivo {ex.Message}",
-                    LogNivel.Critico,
-                    LogContexto.Arquivos));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao fazer download do arquivo",
+                    LogNivel.Critico, LogContexto.Geral, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
+                
+                return arquivos;
             }
 
             return arquivos;

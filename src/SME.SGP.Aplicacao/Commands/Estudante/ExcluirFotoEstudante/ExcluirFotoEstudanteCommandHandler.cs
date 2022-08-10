@@ -40,6 +40,8 @@ namespace SME.SGP.Aplicacao
 
                     unitOfWork.PersistirTransacao();
 
+                    await ExcluirFotoMinio((fotoAluno.CodigoFotoOriginal.ToString() + Path.GetExtension(fotoAluno.Nome)));
+                    await ExcluirFotoMinio((fotoAluno.Codigo.ToString() + Path.GetExtension(fotoAluno.Nome)));
                     return true;
                 }
                 catch (Exception e)
@@ -54,6 +56,13 @@ namespace SME.SGP.Aplicacao
         {
             repositorio.Remover(id);
             await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId));
+        }
+
+        private async Task ExcluirFotoMinio(string nomeArquivo)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoMinio,
+                new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = nomeArquivo},
+                Guid.NewGuid(), null));
         }
     }
 }

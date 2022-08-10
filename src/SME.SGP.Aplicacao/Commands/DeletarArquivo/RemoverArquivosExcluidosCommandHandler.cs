@@ -17,13 +17,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoArmazenamento servicoArmazenamento;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
+        private readonly IMediator mediator;
 
-        public RemoverArquivosExcluidosCommandHandler(IMediator mediator,IServicoArmazenamento servicoArmazenamento, ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)  
+        public RemoverArquivosExcluidosCommandHandler(IMediator mediator, IServicoArmazenamento servicoArmazenamento, ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
         {
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
+
         public async Task<bool> Handle(RemoverArquivosExcluidosCommand request, CancellationToken cancellationToken)
         {
             var arquivoAtual = request.ArquivoAtual.Replace(@"\", @"/");
@@ -33,11 +35,13 @@ namespace SME.SGP.Aplicacao
             var atual = regex.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
             var novo = regex.Matches(arquivoNovo).Cast<Match>().Select(c => c.Value).ToList();
             var diferente = atual.Except(novo);
-            
-            // TODO enviar a exclusão para processamento assincrono
+
             foreach (var item in diferente)
-                await servicoArmazenamento.Excluir(item);
-            
+            {
+                var filtro = new FiltroExcluirArquivoArmazenamentoDto{ArquivoNome = item};
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoMinio, filtro, Guid.NewGuid(), null), cancellationToken);
+            }
+
             return true;
         }
     }

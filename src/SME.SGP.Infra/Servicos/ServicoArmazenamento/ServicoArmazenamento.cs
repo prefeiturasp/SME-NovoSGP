@@ -88,7 +88,7 @@ namespace SME.SGP.Infra
 
         public async Task<bool> Excluir(string nomeArquivo, string nomeBucket = "")
         {
-            nomeBucket = nomeBucket == string.Empty 
+            nomeBucket = string.IsNullOrEmpty(nomeBucket)
                                     ? configuracaoArmazenamentoOptions.BucketArquivos
                                     : nomeBucket;
             try
