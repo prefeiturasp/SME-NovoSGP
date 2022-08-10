@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
                 }
-
+                    
                 fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
                 {
                     DisciplinaId = conselhoClasseNotaDto.CodigoComponenteCurricular
@@ -175,12 +175,18 @@ namespace SME.SGP.Dominio.Servicos
                         conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;                        
                     }
                     else conselhoClasseNota.Nota = null;
-
+                    
+                    // Gera histórico de alteração
                     if (conselhoClasseNotaDto.Conceito.HasValue)
                     {
-                        // Gera histórico de alteração
                         if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, conselhoClasseNotaDto.Conceito.Value));
+                    }
+                    else
+                    {
+                        if (conselhoClasseNota.ConceitoId != null)
+                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null));
+                    }
 
                         conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
                     }
