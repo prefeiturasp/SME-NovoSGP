@@ -177,13 +177,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasseLancamento.Base
         {
             await InserirNaBase(new FechamentoTurma()
             {
-                Id = 1,
                 PeriodoEscolarId = 1,
-                TurmaId = 1,
+                TurmaId = TURMA_ID_1,
                 Excluido = false,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                CriadoPor = "",
-                CriadoRF = ""
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
