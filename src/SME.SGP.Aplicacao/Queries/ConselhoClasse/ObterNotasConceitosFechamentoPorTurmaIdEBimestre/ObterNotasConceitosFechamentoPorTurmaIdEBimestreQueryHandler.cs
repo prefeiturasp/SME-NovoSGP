@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
@@ -27,7 +28,7 @@ public class ObterNotasConceitosFechamentoPorTurmaIdEBimestreQueryHandler : IReq
 
         foreach (var turmaId in request.TurmasIds)
         {
-            var notasConceitosFechamento = (await repositorioCache.ObterAsync($"NotaConceitoFechamento-{turmaId}-{request.Bimestre}",
+            var notasConceitosFechamento = (await repositorioCache.ObterAsync(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, turmaId, request.Bimestre),
                 async () => await repositorioConselhoClasseNota.ObterNotasConceitosFechamentoPorTurmaIdEBimestreAsync(turmaId, request.Bimestre))).ToList();
         
             if (notasConceitosFechamento.Any())

@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -55,8 +56,8 @@ namespace SME.SGP.Aplicacao
             if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken))
                 throw new NegocioException("Erro ao atualizar situação do conselho de classe");
 
-            await RemoverCache($"NotaConceitoFechamento-{request.FechamentoTurma.TurmaId}-{request.Bimestre}", cancellationToken);
-            await RemoverCache($"NotaConceitoConselhoClasse-{request.FechamentoTurma.TurmaId}-{request.Bimestre}", cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.FechamentoTurma.TurmaId, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.TurmaId, request.Bimestre), cancellationToken);
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
         }

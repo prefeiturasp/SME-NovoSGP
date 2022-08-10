@@ -8,6 +8,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -105,8 +106,8 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
             }
             
-            await RemoverCache($"NotaConceitoFechamento-{request.Turma.Id}-{request.Bimestre}", cancellationToken);
-            await RemoverCache($"NotaConceitoConselhoClasse-{request.Turma.Id}-{request.Bimestre}", cancellationToken);            
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.Turma.Id, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.Id, request.Bimestre), cancellationToken);            
 
             var alunos = await mediator
                 .Send(new ObterAlunosPorTurmaQuery(request.Turma.CodigoTurma, consideraInativos: true), cancellationToken);

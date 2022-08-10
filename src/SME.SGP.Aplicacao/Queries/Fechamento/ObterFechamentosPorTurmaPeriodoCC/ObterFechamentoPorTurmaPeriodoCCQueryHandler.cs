@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -84,8 +85,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FechamentoPorTurmaPeriodoCCDto>> Handle(ObterFechamentosPorTurmaPeriodoCCQuery request, CancellationToken cancellationToken)
         {
-            var nomeChave =
-                $"FechamentoNotas-{request.TurmaId}-{request.PeriodoEscolarId}-{request.ComponenteCurricularId}";
+            var nomeChave = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+                request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularId);
 
             var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChave), cancellationToken);
             var retornoCache = await MapearDadosCacheParaRetorno(dadosCache);

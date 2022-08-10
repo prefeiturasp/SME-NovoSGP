@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -64,8 +65,10 @@ namespace SME.SGP.Aplicacao
                 
                 unitOfWork.PersistirTransacao();
                 
-                await RemoverCache($"NotaFechamento-{request.FechamentoDeTurma.TurmaId}", cancellationToken);
-                await RemoverCache($"FechamentoNotas-{request.FechamentoDeTurma.TurmaId}-{request.FechamentoDeTurma.PeriodoEscolarId}-{request.FechamentoDeTurmaDisciplina.DisciplinaId}", cancellationToken);                
+                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA, request.FechamentoDeTurma.TurmaId), cancellationToken);
+                
+                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+                    request.FechamentoDeTurma.TurmaId, request.FechamentoDeTurma.PeriodoEscolarId, request.FechamentoDeTurmaDisciplina.DisciplinaId), cancellationToken);
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid()), cancellationToken);
             }

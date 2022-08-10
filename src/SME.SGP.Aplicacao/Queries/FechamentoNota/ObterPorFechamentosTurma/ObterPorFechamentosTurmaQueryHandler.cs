@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> Handle(ObterPorFechamentosTurmaQuery request, CancellationToken cancellationToken)
         {
-            var nomeChaveCache = $"fechamentoNotaFinais-{request.CodigoDisciplina}-{request.CodigoTurma}";
+            var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, request.CodigoDisciplina, request.CodigoTurma);
 
             var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChaveCache), cancellationToken);
             var retornoCache = await MapearRetornoParaDto(dadosCache);
@@ -31,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 return retornoCache;
 
             var retornoDb = await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids);
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChaveCache, retornoDb));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChaveCache, retornoDb), cancellationToken);
 
             return retornoDb;
         }
