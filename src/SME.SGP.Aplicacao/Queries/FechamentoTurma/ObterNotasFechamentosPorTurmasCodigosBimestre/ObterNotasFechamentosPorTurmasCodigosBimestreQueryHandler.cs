@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,34 +14,30 @@ namespace SME.SGP.Aplicacao
         IRequestHandler<ObterNotasFechamentosPorTurmasCodigosBimestreQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
         private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
-        private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
         public ObterNotasFechamentosPorTurmasCodigosBimestreQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
-            IMediator mediator)
+            IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterNotasFechamentosPorTurmasCodigosBimestreQuery request,
             CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(request.TurmasCodigos), cancellationToken);
-            var turmasIds = turmas.Select(c => c.Id).ToArray();
-
-            var notasFechamentos = (await mediator.Send(new ObterNotasFechamentosPorTurmasIdsQuery(turmasIds), cancellationToken))
-                .Where(c => c.AlunoCodigo == request.AlunoCodigo);
-
-            return notasFechamentos.Select(notaFechamento => new NotaConceitoBimestreComponenteDto
+            var retorno = new List<NotaConceitoBimestreComponenteDto>();
+        
+            foreach (var turmaCodigo in request.TurmasCodigos)
             {
-                Id = 0,
-                ConselhoClasseNotaId = 0,
-                Bimestre = notaFechamento.Bimestre,
-                Nota = notaFechamento.Nota,
-                ConceitoId = notaFechamento.ConceitoId,
-                TurmaCodigo = notaFechamento.TurmaCodigo,
-                ComponenteCurricularCodigo = notaFechamento.ComponenteCurricularCodigo
-            }).ToList();
+                var notasConceitos = (await repositorioCache.ObterAsync(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turmaCodigo, request.Bimestre),
+                    async () => await repositorioFechamentoNota.ObterNotasPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre))).ToList();
+            
+                if (notasConceitos.Any())
+                    retorno.AddRange(notasConceitos);
+            }
+            
+            return retorno.Where(c => c.AlunoCodigo == request.AlunoCodigo);
         }
     }
 }

@@ -23,29 +23,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterNotasFinaisBimestresAlunoQuery request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(request.TurmasCodigos), cancellationToken);
-            var turmasIds = turmas.Select(c => c.Id).ToArray();
-
-            var notasConceitosFechamento = (await mediator.Send(new ObterNotasConceitosFechamentoPorTurmaIdEBimestreQuery(turmasIds, request.Bimestre), cancellationToken))
+            var notasConceitosFechamento = (await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
                 .Where(c => c.AlunoCodigo == request.AlunoCodigo);
             
-            var notasConceitosConselhoClasse = (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmaIdEBimestreQuery(turmasIds, request.Bimestre), cancellationToken))
+            var notasConceitosConselhoClasse = (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
                 .Where(c => c.AlunoCodigo == request.AlunoCodigo);
 
-            var notasFinais = new List<NotaConceitoComponenteBimestreAlunoDto>();
+            var notasFinais = new List<NotaConceitoBimestreComponenteDto>();
             notasFinais.AddRange(notasConceitosFechamento);
             notasFinais.AddRange(notasConceitosConselhoClasse);
-            
-            return notasFinais.Select(notaFinal => new NotaConceitoBimestreComponenteDto
-            {
-                Id = notaFinal.ConselhoClasseId,
-                ConselhoClasseNotaId = notaFinal.ConselhoClasseNotaId,
-                Bimestre = notaFinal.Bimestre,
-                Nota = notaFinal.Nota,
-                ConceitoId = notaFinal.ConceitoId,
-                TurmaCodigo = notaFinal.TurmaCodigo,
-                ComponenteCurricularCodigo = notaFinal.ComponenteCurricularCodigo
-            }).ToList();
+
+            return notasFinais;
         }
     }
 }

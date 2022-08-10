@@ -299,7 +299,7 @@ namespace SME.SGP.Aplicacao
 
             return new NotaPosConselhoDto()
             {
-                Id = notaComponente?.Id,
+                Id = notaComponente?.ConselhoClasseId,
                 Nota = notaComponente?.NotaConceito
             };
         }

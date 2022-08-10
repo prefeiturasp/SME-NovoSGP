@@ -9,8 +9,8 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<ConselhoClasseNota> ObterPorConselhoClasseAlunoComponenteCurricularAsync(long conselhoClasseAlunoId, long componenteCurricularCodigo);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(string alunoCodigo, string turmaCodigo, long? periodoEscolarId = null);
-        Task<IEnumerable<NotaConceitoComponenteBimestreAlunoDto>> ObterNotasConceitosFechamentoPorTurmaIdEBimestreAsync(long turmaId, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null);
-        Task<IEnumerable<NotaConceitoComponenteBimestreAlunoDto>> ObterNotasConceitosConselhoClassePorTurmaIdEBimestreAsync(long turmaId, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasBimestresAluno(string alunoCodigo, string ueCodigo, string turmaCodigo, int[] bimestres);
         Task<double> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId);
         Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId);

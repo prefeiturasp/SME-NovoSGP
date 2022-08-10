@@ -100,7 +100,7 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurma.Bimestre, turma.AnoLetivo));
             
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE, turma.Id, periodoEscolarId, fechamentoTurma.DisciplinaId));
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA, turma.Id));
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turma.CodigoTurma, fechamentoTurma.Bimestre));
         }
     }
 }

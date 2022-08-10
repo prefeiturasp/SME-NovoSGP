@@ -162,10 +162,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<FechamentoNotaAprovacaoDto>(query, new { Ids = Ids.Select(i => i).ToArray() });
         }
 
-        public async Task<IEnumerable<NotaConceitoComponenteBimestreAlunoDto>> ObterNotasPorTurmaIdAsync(long turmaId,
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre,
             DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
-            var query = $@"{queryNotasFechamento} and t.id = @turmaId";
+            var query = $@"{queryNotasFechamento} 
+                            and t.turma_id = @turmaCodigo
+                            and pe.bimestre = @bimestre";
 
             if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
@@ -178,7 +180,8 @@ namespace SME.SGP.Dados.Repositorios
 
             query += " and ftd.excluido != true";
 
-            return await database.Conexao.QueryAsync<NotaConceitoComponenteBimestreAlunoDto>(query, new { turmaId, dataMatricula, dataSituacao });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre,
+                dataMatricula, dataSituacao });
         }
     }
 }

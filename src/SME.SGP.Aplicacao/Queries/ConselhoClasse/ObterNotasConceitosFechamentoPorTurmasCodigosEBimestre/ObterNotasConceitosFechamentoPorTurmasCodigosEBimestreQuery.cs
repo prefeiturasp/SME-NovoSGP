@@ -5,18 +5,18 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao;
 
-public class ObterNotasConceitosFechamentoPorTurmaIdEBimestreQuery : IRequest<IEnumerable<NotaConceitoComponenteBimestreAlunoDto>>
+public class ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
 {
-    public ObterNotasConceitosFechamentoPorTurmaIdEBimestreQuery(long[] turmasIds, int bimestre,
+    public ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery(string[] turmasCodigo, int bimestre,
         DateTime? dataMatricula = null, DateTime? dataSituacao = null)
     {
-        TurmasIds = turmasIds;
+        TurmasCodigos = turmasCodigo;
         Bimestre = bimestre;
         DataMatricula = dataMatricula;
         DataSituacao = dataSituacao;
     }
 
-    public long[] TurmasIds { get; }
+    public string[] TurmasCodigos { get; }
     public int Bimestre { get; }
     public DateTime? DataMatricula { get; }
     public DateTime? DataSituacao { get; }    

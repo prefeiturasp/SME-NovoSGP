@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                 
                 unitOfWork.PersistirTransacao();
                 
-                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA, request.FechamentoDeTurma.TurmaId), cancellationToken);
+                await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, request.FechamentoDeTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
                 
                 await RemoverCache(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                     request.FechamentoDeTurma.TurmaId, request.FechamentoDeTurma.PeriodoEscolarId, request.FechamentoDeTurmaDisciplina.DisciplinaId), cancellationToken);

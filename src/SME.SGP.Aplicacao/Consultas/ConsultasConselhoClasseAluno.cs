@@ -656,7 +656,7 @@ namespace SME.SGP.Aplicacao
         {
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
-            var notaComponenteId = notaComponente?.Id;
+            var notaComponenteId = notaComponente?.ConselhoClasseId;
             if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
             {
                 var notaComponenteFechamento =

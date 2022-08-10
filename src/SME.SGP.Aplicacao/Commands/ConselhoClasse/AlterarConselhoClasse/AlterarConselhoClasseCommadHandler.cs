@@ -106,8 +106,8 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
             }
             
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.Turma.Id, request.Bimestre), cancellationToken);
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.Id, request.Bimestre), cancellationToken);            
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);            
 
             var alunos = await mediator
                 .Send(new ObterAlunosPorTurmaQuery(request.Turma.CodigoTurma, consideraInativos: true), cancellationToken);
