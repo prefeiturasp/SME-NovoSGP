@@ -101,7 +101,7 @@ namespace SME.SGP.Api.Controllers
             if (listaretorno == null)
                 return new StatusCodeResult(204);
             else
-                return Ok(listaretorno);
+                return Ok(listaretorno.OrderByDescending(c => c.CriadoEm));
         }
     }
 }

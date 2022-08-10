@@ -91,16 +91,10 @@ namespace SME.SGP.Aplicacao
         {
             if (atribuicaoSupervisorEscolaDto.UesIds != null)
             {
-                var atribuicoes = await VerificarSeJaExisteAtribuicaoExcluida(atribuicaoSupervisorEscolaDto);
-
                 foreach (var codigoEscolaDto in atribuicaoSupervisorEscolaDto.UesIds)
-                {
-                    var atribuicao = atribuicoes?.Where(x => x.UeCodigo == codigoEscolaDto)?.FirstOrDefault();
+                {                   
                     repositorioSupervisorEscolaDre.Salvar(new SupervisorEscolaDre()
-                    {
-                        Id = atribuicao?.Id ?? 0,
-                        CriadoPor = atribuicao?.CriadoPor ?? null,
-                        CriadoRF = atribuicao?.CriadoRF ?? null,
+                    {                        
                         DreId = atribuicaoSupervisorEscolaDto.DreId,
                         SupervisorId = atribuicaoSupervisorEscolaDto.ResponsavelId,
                         EscolaId = codigoEscolaDto,
@@ -116,15 +110,14 @@ namespace SME.SGP.Aplicacao
                                 atribuicaoSupervisorEscolaDto.UesIds.ToArray(), (int)atribuicaoSupervisorEscolaDto.TipoResponsavelAtribuicao);
         }
 
-        private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto,
-            IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
+        private async Task AjustarRegistrosExistentes(AtribuicaoResponsavelUEDto atribuicaoSupervisorEscolaDto, IEnumerable<SupervisorEscolasDreDto> escolasAtribuidas)
         {
             if (escolasAtribuidas != null)
             {
                 foreach (var atribuicao in escolasAtribuidas)
                 {
                     if (atribuicaoSupervisorEscolaDto.UesIds == null || (!atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && !atribuicao.AtribuicaoExcluida))
-                        await repositorioSupervisorEscolaDre.RemoverLogico(atribuicao.AtribuicaoSupervisorId);
+                        repositorioSupervisorEscolaDre.Remover(atribuicao.AtribuicaoSupervisorId);
 
                     else if (atribuicaoSupervisorEscolaDto.UesIds.Contains(atribuicao.EscolaId) && atribuicao.AtribuicaoExcluida)
                     {
