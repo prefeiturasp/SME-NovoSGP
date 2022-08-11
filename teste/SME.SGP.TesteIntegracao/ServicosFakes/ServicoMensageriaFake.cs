@@ -4,7 +4,7 @@ using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
-    public class ServicoMensageriaFake : IServicoMensageria
+    public class ServicoMensageriaFake : IServicoMensageriaSGP
     {
         public async Task<bool> Publicar(MensagemRabbit mensagem, string rota, string exchange, string nomeAcao)
         {

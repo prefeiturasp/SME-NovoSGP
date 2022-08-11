@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommandHandler : IRequestHandler<SalvarLogViaRabbitCommand, bool>
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaLogs servicoMensageria;
 
-        public SalvarLogViaRabbitCommandHandler(IServicoMensageria servicoMensageria)
+        public SalvarLogViaRabbitCommandHandler(IServicoMensageriaLogs servicoMensageria)
         {
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }
