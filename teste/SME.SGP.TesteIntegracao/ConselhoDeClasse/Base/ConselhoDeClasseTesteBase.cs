@@ -112,19 +112,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
 
-            var conselhoClasseAlunoIdInserido = conselhosDeClasseAlunos.LastOrDefault(s => s.AlunoCodigo.Equals(codigoAluno)).Id;
-
-            if (ehBimestreFinal)
-                conselhosDeClasseAlunos.Count(s => s.AlunoCodigo.Equals(codigoAluno)).ShouldBe(5);//Já tem nos 4 bimestres + bimestre final
-            else
-                conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse(); //Inserção em um único bimestre
+            var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
+            conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
 
             var conselhosClasseNotas = ObterTodos<ConselhoClasseNota>();
             conselhosClasseNotas.ShouldNotBeNull();
 
             var classeNota = ehBimestreFinal 
-                ? conselhosClasseNotas.LastOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoIdInserido)
-                : conselhosClasseNotas.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoIdInserido);
+                ? conselhosClasseNotas.LastOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoInserido.FirstOrDefault().Id)
+                : conselhosClasseNotas.FirstOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoInserido.FirstOrDefault().Id);
             
             classeNota.ShouldNotBeNull();
             classeNota.Justificativa.ShouldBe(conselhoClasseNotaDto.Justificativa);                
@@ -154,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(codigoAluno, 
                 TURMA_ID_1, 
-                bimestre, 
+                bimestre == 0 ? null : bimestre, 
                 false,
                 conselhoClasseNotaDto.Nota, 
                 conselhoClasseNotaDto.Conceito,
@@ -177,7 +173,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 .FirstOrDefault(w =>
                 w.ConselhoClasseConsolidadoTurmaAlunoId == conselhoClasseConsolidadoTurmaAlunoId
                 && w.ComponenteCurricularId == conselhoClasseNotaDto.CodigoComponenteCurricular
-                && w.Bimestre == bimestre);
+                && w.Bimestre == (bimestre == 0 ? null : bimestre));
             
             if (notaConsolidacao.Nota.HasValue)
             {
