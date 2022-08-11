@@ -30,14 +30,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
             turma.ShouldNotBeNull();
             
-            var retorno = (await useCase.Executar(turma.Id)).GroupBy(c => c.Bimestre);
+            var retorno = (await useCase.Executar(turma.Id))
+                .Where(c => c.Bimestre != 0)
+                .GroupBy(c => c.Bimestre);
+            
             retorno.Count().ShouldBe(4);
         }
         
         [Fact]
         public async Task Deve_listar_2_bimestres_para_eja()
         {
-            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.EJA,
+            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_4, Modalidade.EJA,
                 ModalidadeTipoCalendario.EJA);
             
             var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
@@ -49,8 +52,30 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
             turma.ShouldNotBeNull();
             
-            var retorno = (await useCase.Executar(turma.Id)).GroupBy(c => c.Bimestre);
+            var retorno = (await useCase.Executar(turma.Id))
+                .Where(c => c.Bimestre != 0)
+                .GroupBy(c => c.Bimestre);
+            
             retorno.Count().ShouldBe(2);
+        }
+
+        [Fact]
+        public async Task Deve_exibir_opcao_final_apos_inicio_ultimo_bimestre()
+        {
+            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio);
+            
+            var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
+            useCase.ShouldNotBeNull();
+
+            var turmas = ObterTodos<Turma>();
+            turmas.ShouldNotBeNull();
+
+            var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
+            turma.ShouldNotBeNull();
+            
+            var retorno = (await useCase.Executar(turma.Id)).Where(c => c.Bimestre == 0);
+            retorno.Any().ShouldBeTrue();
         }
         
         private async Task CriarDados(
