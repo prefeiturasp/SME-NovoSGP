@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicaFilaWorkerServidorRelatoriosCommandHandler : IRequestHandler<PublicaFilaWorkerServidorRelatoriosCommand, bool>
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IServicoMensageria servicoMensageria)
+        public PublicaFilaWorkerServidorRelatoriosCommandHandler(IServicoMensageriaSGP servicoMensageria)
         {
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }

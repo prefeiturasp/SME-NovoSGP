@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
-    public class ServicoMensageria : IServicoMensageria
+    public abstract class ServicoMensageria : IServicoMensageria
     {
-        private readonly IConexoesRabbitFilasSGP conexaoRabbit;
+        private readonly IConexoesRabbit conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly IAsyncPolicy policy;
 
-        public ServicoMensageria(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
+        public ServicoMensageria(IConexoesRabbit conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry)
         {
             this.conexaoRabbit = conexaoRabbit ?? throw new ArgumentNullException(nameof(conexaoRabbit));
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
@@ -58,4 +58,17 @@ namespace SME.SGP.Infra
             return Task.CompletedTask;
         }
     }
+
+    public class ServicoMensageriaSGP : ServicoMensageria, IServicoMensageriaSGP
+    {
+        public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+            : base(conexaoRabbit, servicoTelemetria, registry) { }
+    }
+
+    public class ServicoMensageriaLogs : ServicoMensageria, IServicoMensageriaLogs
+    {
+        public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
+            : base(conexaoRabbit, servicoTelemetria, registry) { }
+    }
+
 }
