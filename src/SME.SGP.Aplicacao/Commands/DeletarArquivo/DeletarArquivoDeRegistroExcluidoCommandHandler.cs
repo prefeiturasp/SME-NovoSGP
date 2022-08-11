@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
         private readonly IServicoArmazenamento servicoArmazenamento;
         private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
-        public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator,IServicoArmazenamento servicoArmazenamento,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+        public DeletarArquivoDeRegistroExcluidoCommandHandler(IMediator mediator, IServicoArmazenamento servicoArmazenamento, IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
@@ -30,34 +31,26 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
         public async Task<bool> Handle(DeletarArquivoDeRegistroExcluidoCommand request, CancellationToken cancellationToken)
         {
             var arquivoAtual = request.ArquivoAtual.Replace(@"\", @"/");
-            
+
             var expressao = @"\/[0-9]{4}\/[0-9]{2}\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
-            
+
             var regex = new Regex(expressao);
-            
+
             var atual = regex.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
-            
-            await DeletarArquivo(atual);
-            
-            return true;
+
+            return await DeletarArquivo(atual);
+
         }
 
-        private async Task DeletarArquivo(IEnumerable arquivos)
+        private async Task<bool> DeletarArquivo(IEnumerable arquivos)
         {
+            var retornosExclusao = new List<bool>();
             foreach (var item in arquivos)
             {
-                try
-                {
-                    await servicoArmazenamento.Excluir(item.ToString());
-                }
-                catch (Exception ex)
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Falha ao deletar o arquivo {ex.Message}",
-                                                                      LogNivel.Critico,
-                                                                      LogContexto.Arquivos));
-                }
+                retornosExclusao.Add(await servicoArmazenamento.Excluir(item.ToString()));;
             }
 
+            return retornosExclusao.All(a => a != false);
         }
     }
 }

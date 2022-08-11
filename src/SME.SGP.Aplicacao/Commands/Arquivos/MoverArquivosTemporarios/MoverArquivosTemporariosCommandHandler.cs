@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,8 +6,6 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao

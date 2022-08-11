@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,6 +38,8 @@ namespace SME.SGP.Aplicacao
 
                     unitOfWork.PersistirTransacao();
 
+                    await ExcluirFotoMinio((fotoAluno.CodigoFotoOriginal.ToString() + Path.GetExtension(fotoAluno.Nome)));
+                    await ExcluirFotoMinio((fotoAluno.Codigo.ToString() + Path.GetExtension(fotoAluno.Nome)));
                     return true;
                 }
                 catch (Exception e)
@@ -54,6 +54,13 @@ namespace SME.SGP.Aplicacao
         {
             repositorio.Remover(id);
             await mediator.Send(new ExcluirArquivoPorIdCommand(arquivoId));
+        }
+
+        private async Task ExcluirFotoMinio(string nomeArquivo)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento,
+                new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = nomeArquivo},
+                Guid.NewGuid(), null));
         }
     }
 }
