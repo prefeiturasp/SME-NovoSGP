@@ -39,12 +39,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             Modalidade.Fundamental, 
                             ModalidadeTipoCalendario.FundamentalMedio, 
                             anoAnterior,
+                            SituacaoConselhoClasse.EmAndamento,
                             true);
             
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior,SituacaoConselhoClasse.EmAndamento);
         }
 
-        private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, bool criarFechamentoDisciplinaAlunoNota = false)
+        private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -60,6 +61,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
+                SituacaoConselhoClasse = situacaoConselhoClasse
             };
 
             await CriarDadosBase(filtroNota);
@@ -68,9 +70,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
         }
 
-        private async Task ExecuteTeste(long componente, bool anoAnterior)
+        private async Task ExecuteTeste(long componente, bool anoAnterior,SituacaoConselhoClasse situacaoConselhoClasse)
         {
-            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2);
+            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2,situacaoConselhoClasse);
         }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente)

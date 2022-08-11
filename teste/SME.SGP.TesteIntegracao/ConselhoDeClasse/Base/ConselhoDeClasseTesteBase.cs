@@ -77,7 +77,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                     bool anoAnterior, 
                     string codigoAluno, 
                     TipoNota tipoNota,
-                    int bimestre)
+                    int bimestre,
+                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado)
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
@@ -86,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
-            (conselhosClasse.FirstOrDefault().Situacao == SituacaoConselhoClasse.EmAndamento).ShouldBeTrue();
+            (conselhosClasse.FirstOrDefault().Situacao == situacaoConselhoClasse).ShouldBeTrue();
             
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
@@ -136,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             alunosConsolidacao.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
             var conselhoClasseConsolidadoTurmaAlunoId = alunosConsolidacao.FirstOrDefault().Id;
             
-            (alunosConsolidacao.FirstOrDefault().Status == SituacaoConselhoClasse.EmAndamento).ShouldBeTrue();
+            (alunosConsolidacao.FirstOrDefault().Status == situacaoConselhoClasse).ShouldBeTrue();
 
             var notasConslidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
             notasConslidacao.ShouldNotBeNull();
@@ -187,8 +188,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
-                await CriarFechamentoDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
-
+                await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
+            else
+                await CriarFechamentoTurma(PERIODO_ESCOLAR_CODIGO_2);
+            
             await CriarComponenteGrupoAreaOrdenacao();
 
             await CriarConselhoClasseRecomendacao();
@@ -196,7 +199,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaConceito();
         }
 
-        private async Task CriarFechamentoDisciplinaAlunoNota(long componenteCurricular)
+        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(long componenteCurricular)
         {
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
 
@@ -205,13 +208,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             foreach (var periodoEscolar in periodosEscolares)
             {
-                await InserirNaBase(new FechamentoTurma()
-                {
-                    PeriodoEscolarId = periodoEscolar.Id,
-                    TurmaId = TURMA_ID_1,
-                    Excluido = false,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-                });
+                await CriarFechamentoTurma(periodoEscolar.Id);
                 
                 await InserirNaBase(new FechamentoTurmaDisciplina()
                 {
@@ -227,6 +224,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 fechamentoTurmaDisciplinaId++;
                 fechamentoTurmaId++;
             }
+        }
+
+        private async Task CriarFechamentoTurma(long periodoEscolarId)
+        {
+            await InserirNaBase(new FechamentoTurma()
+            {
+                PeriodoEscolarId = periodoEscolarId,
+                TurmaId = TURMA_ID_1,
+                Excluido = false,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarComponenteGrupoAreaOrdenacao() 
@@ -967,6 +975,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public string ProfessorRf { get; set; }
             public DateTime DataAula { get; set; }
             public bool CriarFechamentoDisciplinaAlunoNota { get; set; }
+            public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
         }
     }
 }
