@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
 
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
 
-            foreach (var aluno in alunos.Where(x => x.CodigoAluno.Equals("7444314")))
+            foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
