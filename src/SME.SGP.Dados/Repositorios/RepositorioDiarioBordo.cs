@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDiarioBordo : RepositorioBase<DiarioBordo>, IRepositorioDiarioBordo
     {
-        public RepositorioDiarioBordo(ISgpContext conexao) : base(conexao) { }
+        public RepositorioDiarioBordo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        { }
 
         public async Task<DiarioBordo> ObterPorAulaId(long aulaId, long componenteCurricularId)
         {

@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
 using System;
 
@@ -8,20 +9,27 @@ namespace SME.SGP.Infra.Contexto
     {
         private readonly IConnectionMultiplexer connectionMultiplexer;
 
-        public ConnectionMultiplexerSME(string host, IServicoLog servicoLog)
+        public ConnectionMultiplexerSME(RedisOptions redisOptions)
         {
             try
             {
+                var redisConfigurationOptions = new ConfigurationOptions()
+                {
+                    Proxy = redisOptions.Proxy,
+                    SyncTimeout = redisOptions.SyncTimeout,
+                    EndPoints = { redisOptions.Endpoint }
+                };
+
                 this.connectionMultiplexer = ConnectionMultiplexer
-                    .Connect(string.Concat(host, $",ConnectTimeout={TimeSpan.FromSeconds(1).TotalMilliseconds}"));
+                    .Connect(redisConfigurationOptions);
             }
             catch (RedisConnectionException rcex)
             {
-                servicoLog.Registrar($"Erro de conexão com o servidor Redis. {rcex}");
+                //servicoLog.Registrar($"Erro de conexão com o servidor Redis. {rcex}");
             }
             catch (Exception ex)
             {
-                servicoLog.Registrar(ex);
+                //servicoLog.Registrar(ex);
             }
         }
 

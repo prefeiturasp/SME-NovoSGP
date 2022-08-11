@@ -12,6 +12,7 @@ pipeline {
       deployment7 = "${env.branchname == 'release-r2' ? 'sme-worker-frequencia-r2' : 'sme-worker-frequencia' }"
       deployment8 = "${env.branchname == 'release-r2' ? 'sme-worker-institucional-r2' : 'sme-worker-institucional' }"
       deployment9 = "${env.branchname == 'release-r2' ? 'sme-worker-pendencias-r2' : 'sme-worker-pendencias' }"
+      deployment11 = "${env.branchname == 'release-r2' ? 'sme-worker-auditoria-r2' : 'sme-worker-auditoria' }"
     }
   
     agent {
@@ -38,7 +39,7 @@ pipeline {
         }
       
         stage('Sonar') {
-	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
+	       when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch '_release'; branch 'release-r2'; branch 'infra/*'; } } 
 	steps {
              withSonarQubeEnv('sonarqube-local'){
                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.Aplicacao.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Servicos.Teste/coverage.opencover.xml,teste/SME.SGP.Dominio.Teste/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados, **/*SME.SGP.Dominio, **/*SME.SGP.Dominio.Servicos, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api,**/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Worker.Rabbbit"'
@@ -61,6 +62,7 @@ pipeline {
               imagename6 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-frequencia"
               imagename7 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-institucional"
               imagename8 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-pendencias"
+              imagename10 = "registry.sme.prefeitura.sp.gov.br/${env.branchname}/sme-worker-auditoria"
 
               dockerImage1 = docker.build(imagename1, "-f src/SME.SGP.Api/Dockerfile .")
               dockerImage2 = docker.build(imagename2, "-f src/SME.SGP.Worker.Rabbbit/Dockerfile .")
@@ -70,6 +72,7 @@ pipeline {
               dockerImage6 = docker.build(imagename6, "-f src/SME.SGP.Frequencia.Worker/Dockerfile .")
               dockerImage7 = docker.build(imagename7, "-f src/SME.SGP.Institucional.Worker/Dockerfile .")
               dockerImage8 = docker.build(imagename8, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
+              dockerImage10 = docker.build(imagename10, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
 
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
@@ -80,8 +83,9 @@ pipeline {
               dockerImage6.push()
               dockerImage7.push()
               dockerImage8.push()
+              dockerImage10.push()
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8"
+              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8 $imagename10"
             }
           }
         }
@@ -110,6 +114,7 @@ pipeline {
                         sh "kubectl rollout restart deployment/${deployment7} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment8} -n sme-novosgp"
                         sh "kubectl rollout restart deployment/${deployment9} -n sme-novosgp"
+                        sh "kubectl rollout restart deployment/${deployment11} -n sme-novosgp"
                         sh('rm -f '+"$home"+'/.kube/config')
                   }
                 }
