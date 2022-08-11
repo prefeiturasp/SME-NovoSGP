@@ -12,5 +12,6 @@ namespace SME.SGP.Auditoria.Worker.Entidade
         public string RF { get; set; }
         public string Usuario { get; set; }
         public Guid? Perfil { get; set; }
+        public string Administrador { get; set; }
     }
 }

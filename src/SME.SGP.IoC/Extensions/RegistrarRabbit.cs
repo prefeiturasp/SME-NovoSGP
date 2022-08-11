@@ -46,7 +46,8 @@ namespace SME.SGP.IoC
                         HostName = options.HostName,                        
                         UserName = options.UserName,
                         Password = options.Password,
-                        VirtualHost = options.VirtualHost
+                        VirtualHost = options.VirtualHost,
+                        RequestedHeartbeat = System.TimeSpan.FromSeconds(options.TempoHeartBeat),
                     };
 
                     return factory;

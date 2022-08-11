@@ -15,6 +15,7 @@ namespace SME.SGP.Auditoria.Worker
             Map(c => c.RF).ToColumn("rf");
             Map(c => c.Usuario).ToColumn("usuario");
             Map(c => c.Perfil).ToColumn("perfil");
+            Map(c => c.Administrador).ToColumn("administrador");
         }
     }
 }

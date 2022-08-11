@@ -17,7 +17,7 @@ namespace SME.SGP.IoC
         {
             if (configuration == null)
                 return;
-            
+
             services.AddOptions<ConfiguracaoCacheOptions>()
                 .Bind(configuration.GetSection(ConfiguracaoCacheOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<ConfiguracaoCacheOptions>();
@@ -26,7 +26,7 @@ namespace SME.SGP.IoC
                 .Bind(configuration.GetSection(RedisOptions.Secao), c => c.BindNonPublicProperties = true);
             services.AddSingleton<RedisOptions>();
 
-            services.AddSingleton<IRepositorioCache>(serviceProvider => 
+            services.AddSingleton<IRepositorioCache>(serviceProvider =>
             {
                 var options = serviceProvider.GetService<IOptions<ConfiguracaoCacheOptions>>().Value;
                 var servicoTelemetria = serviceProvider.GetService<IServicoTelemetria>();

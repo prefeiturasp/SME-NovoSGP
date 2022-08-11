@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,6 +31,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar;
         private readonly IServicoEol servicoEOL;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IMediator mediator;
         private readonly IServicoUsuario servicoUsuario;
 
         public ConsultasEventosAulasCalendario(
@@ -47,6 +49,7 @@ namespace SME.SGP.Aplicacao
             IConsultasDisciplina consultasDisciplina,
             IConsultasAula consultasAula,
             IRepositorioEventoTipo repositorioEventoTipo,
+            IMediator mediator,
             IRepositorioFechamentoReabertura repositorioFechamentoReabertura)
         {
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
@@ -64,6 +67,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioEventoTipo = repositorioEventoTipo ?? throw new ArgumentNullException(nameof(repositorioEventoTipo));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<DiaEventoAula> ObterEventoAulasDia(FiltroEventosAulasCalendarioDiaDto filtro)
@@ -420,7 +424,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var turma in turmasAulas)
             {
-                var turmaAbrangencia = await consultasAbrangencia.ObterAbrangenciaTurma(turma, ehTurmaHistorico);
+                var turmaAbrangencia = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma, ehTurmaHistorico));
 
                 if (turmaAbrangencia != null)
                     turmasRetorno.Add(turmaAbrangencia);

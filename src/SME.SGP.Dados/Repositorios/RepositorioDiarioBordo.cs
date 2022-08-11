@@ -531,5 +531,36 @@ namespace SME.SGP.Dados.Repositorios
                 }, splitOn: "id");
         }
 
+        public async Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(long turmaId, string componenteCodigo)
+        {
+            var sql = $@"WITH DiarioBordo AS(
+                            SELECT 
+	                            min(a.data_aula) AS DataAula,
+	                            a.tipo_calendario_id AS TipoCalendarioId
+                            FROM
+	                            diario_bordo db
+                            INNER JOIN aula a ON
+	                            db.aula_id = a.id
+                            WHERE
+	                            db.devolutiva_id ISNULL
+	                            AND db.turma_id = @turmaId
+	                            AND a.disciplina_id = @componenteCodigo
+                                AND NOT db.excluido
+                            GROUP BY
+	                            a.tipo_calendario_id
+                            )
+                            SELECT 
+	                            pe.bimestre,
+	                            pe.periodo_inicio AS PeriodoInicio,
+	                            pe.periodo_fim  AS PeriodoFim,
+	                            db.DataAula
+                            FROM
+	                            periodo_escolar pe
+                            inner JOIN DiarioBordo db ON
+	                            pe.tipo_calendario_id = db.TipoCalendarioId
+                                WHERE pe.periodo_inicio <= now() ";
+
+            return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaId, componenteCodigo });
+        }
     }
 }

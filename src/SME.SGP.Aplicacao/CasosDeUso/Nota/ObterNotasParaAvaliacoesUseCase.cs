@@ -91,7 +91,8 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
             long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
+            
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(),turmaCompleta.CodigoTurma));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
             
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
@@ -211,9 +212,11 @@ namespace SME.SGP.Aplicacao
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
-                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
+
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
@@ -267,10 +270,11 @@ namespace SME.SGP.Aplicacao
                             if (notaRegencia != null)
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
-                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;
-                                if (listaFechamentoNotaEmAprovacao.Any())
+                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;                             
+                                var listaFiltrada = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id);
+                                if (listaFiltrada != null)
                                 {
-                                    double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id).NotaEmAprovacao;
+                                    double notaConceitoWF = listaFiltrada.NotaEmAprovacao;
                                     VerificaNotaEmAprovacao(notaConceitoWF, nota);
                                 }
                             }                            
@@ -295,8 +299,12 @@ namespace SME.SGP.Aplicacao
 
                             if (listaFechamentoNotaEmAprovacao.Any())
                             {
-                                double notaConceitoWF = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id).NotaEmAprovacao;
-                                VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                                var listaFiltrada = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaConceitoBimestre.Id);
+                                if (listaFiltrada != null)
+                                {
+                                    double notaConceitoWF = listaFiltrada.NotaEmAprovacao;
+                                    VerificaNotaEmAprovacao(notaConceitoWF, nota);
+                                }
                             }
 
                             notaConceitoAluno.NotasBimestre.Add(nota);

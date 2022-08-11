@@ -58,6 +58,8 @@ namespace SME.SGP.Fechamento.Worker
             Comandos.Add(RotasRabbitSgpFechamento.VerificarPendenciasFechamentoTurmaDisciplina, new ComandoRabbit("Verifica prendencias no fechamento de turma para disciplina", typeof(IVerificarPendenciasFechamentoTurmaDisciplinaUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.AlterarPeriodosComHierarquiaInferiorFechamento, new ComandoRabbit("Altera o periodo com hierarquia inferior", typeof(IAlterarPeriodosComHierarquiaInferiorFechamentoUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoResultadoInsatisfatorio, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(INotificarResultadoInsatisfatorioUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamento, new ComandoRabbit("Notificar usuário sobre alteração de nota de fechamento nos anos anteriores", typeof(INotificarAlteracaoNotaFechamentoAgrupadaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamentoPorTurma, new ComandoRabbit("Notificar usuário sobre alteração de nota de fechamento segregado por turma nos anos anteriores", typeof(INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase)));
         }
     }
 }

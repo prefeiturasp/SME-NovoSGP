@@ -95,8 +95,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar, bool turmaPossuiFrequenciaRegistrada = false)
         {
-
-
             var turmaPossuiFrequenciasRegistradas = frequenciaAlunosRegistrada.ToList().Count > 0;
 
             List<AlunoFrequenciaDto> novaListaAlunos = new List<AlunoFrequenciaDto>();
@@ -109,8 +107,9 @@ namespace SME.SGP.Aplicacao
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo));
                 var remotos = frequenciaAlunoRegistrada?.TotalRemotos ?? default;
                 var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
+                var totalAulas = frequenciaAlunoRegistrada?.TotalAulas ?? default;
 
-                var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada
+                var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0
                 ?
                 "100"
                 :
@@ -132,7 +131,8 @@ namespace SME.SGP.Aplicacao
                     PossuiJustificativas = ausencias > 0,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
                     Remotos = remotos,
-                    Presencas = presencas
+                    Presencas = presencas,
+                    TotalAulas = totalAulas
                 });
             }
 

@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -20,19 +21,19 @@ namespace SME.SGP.Dominio.Servicos
                         marcador = new MarcadorFrequenciaDto()
                         {
                             Tipo = TipoMarcadorFrequencia.Novo,
-                            Descricao = $"{(ehInfantil ? "Criança Nova" : "Estudante Novo")}: Data da matrícula {dataSituacao}"
+                            Descricao = $"{(ehInfantil ? MensagemNegocioAluno.CRIANCA_NOVA : MensagemNegocioAluno.ESTUDANTE_NOVO)}: {MensagemNegocioAluno.DATA_MATRICULA} {dataSituacao}"
                         };
                     break;
 
                 case SituacaoMatriculaAluno.Transferido:
                     var detalheEscola = aluno.Transferencia_Interna ?
-                                        $"para escola {aluno.EscolaTransferencia} e turma {aluno.TurmaTransferencia}" :
-                                        "para outras redes";
+                                        $"{MensagemNegocioAluno.PARA_ESCOLA} {aluno.EscolaTransferencia} {MensagemNegocioAluno.E_TURMA} {aluno.TurmaTransferencia}" :
+                                        MensagemNegocioAluno.PARA_OUTRAS_REDES;
 
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Transferido,
-                        Descricao = $"{(ehInfantil ? "Criança Transferida" : "Estudante Transferido")}: {detalheEscola} em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? MensagemNegocioAluno.CRIANCA_TRANSFERIDA : MensagemNegocioAluno.ESTUDANTE_TRANSFERIDO)}: {detalheEscola} {MensagemNegocioAluno.EM} {dataSituacao}"
                     };
 
                     break;
@@ -41,7 +42,7 @@ namespace SME.SGP.Dominio.Servicos
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Remanejado,
-                        Descricao = $"{(ehInfantil ? "Criança Remanejada" : "Estudante Remanejado")}: turma {aluno.TurmaRemanejamento} em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? MensagemNegocioAluno.CRIANCA_REMANEJADA : MensagemNegocioAluno.ESTUDANTE_REMANEJADO)}: {MensagemNegocioAluno.TURMA} {aluno.TurmaRemanejamento} {MensagemNegocioAluno.EM} {dataSituacao}"
                     };
 
                     break;
@@ -56,7 +57,7 @@ namespace SME.SGP.Dominio.Servicos
                     marcador = new MarcadorFrequenciaDto()
                     {
                         Tipo = TipoMarcadorFrequencia.Inativo,
-                        Descricao = $"{(ehInfantil ? "Criança Inativa" : "Estudante Inativo")} em {dataSituacao}"
+                        Descricao = $"{(ehInfantil ? MensagemNegocioAluno.CRIANCA_INATIVA : MensagemNegocioAluno.ESTUDANTE_INATIVO)} em {dataSituacao}"
                     };
 
                     break;

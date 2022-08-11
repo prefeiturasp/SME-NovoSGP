@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.FrequenciaTurmaEvasao
 {
     public class Ao_obter_frequencia_turma_evasao : TesteBase
     {
@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Medio,
                 DreCodigo = "-99",
                 UeCodigo = "-99"
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio,
                 UeCodigo = "-99"
@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Modalidade = Modalidade.Medio,
                 DreCodigo = "-99",
                 UeCodigo = "-99"
@@ -120,7 +120,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 Modalidade = Modalidade.Medio,
                 UeCodigo = "-99"
@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao
 
             var filtro = new FiltroGraficoFrequenciaTurmaEvasaoDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 DreCodigo = "1",
                 UeCodigo = "1",
                 Modalidade = Modalidade.Medio
@@ -196,7 +196,7 @@ namespace SME.SGP.TesteIntegracao
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Medio,
                 Nome = "7A"
             });
@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao
                 UeId = 2,
                 Ano = "1",
                 CodigoTurma = "2",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Medio,
                 Nome = "8A"
             });
@@ -223,7 +223,7 @@ namespace SME.SGP.TesteIntegracao
 
         private async Task CriarRegistrosParaConsulta()
         {
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -232,7 +232,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 0
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -241,7 +241,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 0
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -250,7 +250,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 2
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -268,7 +268,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,
@@ -277,7 +277,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 1,
@@ -286,7 +286,7 @@ namespace SME.SGP.TesteIntegracao
                 QuantidadeAlunos0Porcento = 1
             });
 
-            await InserirNaBase(new FrequenciaTurmaEvasao
+            await InserirNaBase(new Dominio.FrequenciaTurmaEvasao
             {
                 Id = 1,
                 TurmaId = 2,

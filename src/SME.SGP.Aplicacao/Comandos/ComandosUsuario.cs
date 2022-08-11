@@ -6,8 +6,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCache repositorioCache;
         private readonly IRepositorioUsuario repositorioUsuario;
         private readonly IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario;
+        private readonly IRepositorioSuporteUsuario repositorioSuporteUsuario;
         private readonly IServicoAbrangencia servicoAbrangencia;
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEol servicoEOL;
@@ -40,6 +41,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtribuicaoEsporadica repositorioAtribuicaoEsporadica,
             IRepositorioAtribuicaoCJ repositorioAtribuicaoCJ,
             IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario,
+            IRepositorioSuporteUsuario repositorioSuporteUsuario,
             IMediator mediator)
         {
             this.repositorioUsuario = repositorioUsuario ?? throw new ArgumentNullException(nameof(repositorioUsuario));
@@ -52,6 +54,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoEsporadica = repositorioAtribuicaoEsporadica ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoEsporadica));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
             this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
+            this.repositorioSuporteUsuario = repositorioSuporteUsuario ?? throw new ArgumentNullException(nameof(repositorioSuporteUsuario));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -108,6 +111,11 @@ namespace SME.SGP.Aplicacao
 
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
+            return await ObtenhaAutenticacao(retornoAutenticacaoEol, login);
+        }
+
+        public async Task<UsuarioAutenticacaoRetornoDto> ObtenhaAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol, string login, List<Claim> claims = null)
+        {
             if (!retornoAutenticacaoEol.Item1.Autenticado)
                 return retornoAutenticacaoEol.Item1;
 
@@ -135,12 +143,9 @@ namespace SME.SGP.Aplicacao
                 .Select(a => (Permissao)a)
                 .ToList();
 
-            // Revoga token atual para geração de um novo
-            //await servicoTokenJwt.RevogarToken(login);
-
             // Gera novo token e guarda em cache
             retornoAutenticacaoEol.Item1.Token =
-                servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes);
+                servicoTokenJwt.GerarToken(login, dadosUsuario.Nome, usuario.CodigoRf, retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado, listaPermissoes, claims);
 
             retornoAutenticacaoEol.Item1.DataHoraExpiracao = servicoTokenJwt.ObterDataHoraExpiracao();
 
@@ -177,12 +182,24 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 await servicoAbrangencia.Salvar(loginAtual, perfil, false);
-                var usuario = await servicoUsuario.ObterUsuarioLogado();
+                var usuario = await servicoUsuario.ObterUsuarioLogado();                
+
+                var login = servicoUsuario.ObterClaim("login_adm_suporte");
+                var nome = servicoUsuario.ObterClaim("nome_adm_suporte");
 
                 usuario.DefinirPerfilAtual(perfil);
 
-                //await servicoTokenJwt.RevogarToken(loginAtual);
-                var tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes);
+                List<Claim> claims = null;
+                var tokenStr = "";
+
+                if (login != null && nome != null)
+                {
+                    claims = new List<Claim>();
+                    claims.Add(new Claim("login_adm_suporte", login));
+                    claims.Add(new Claim("nome_adm_suporte", nome));
+                }   
+                    tokenStr = servicoTokenJwt.GerarToken(loginAtual, nomeLoginAtual, codigoRfAtual, perfil, listaPermissoes, claims);
+                
 
                 return new TrocaPerfilDto
                 {
@@ -276,5 +293,44 @@ namespace SME.SGP.Aplicacao
             return await mediator.Send(new ValidarTokenRecuperacaoSenhaCommand(token));
         }
 
+        public async Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login)
+        {
+            login = login.Trim().ToLower();
+
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(login);
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var claims = new List<Claim>();
+            claims.Add(new Claim("login_adm_suporte", usuarioLogado.Login));
+            claims.Add(new Claim("nome_adm_suporte", usuarioLogado.Nome));
+
+            var dto = await ObtenhaAutenticacao(retornoAutenticacaoEol, login, claims);
+
+            dto.AdministradorSuporte = new AdministradorSuporteDto() { Login = usuarioLogado.Login, Nome = usuarioLogado.Nome };
+
+            repositorioSuporteUsuario.Salvar(new SuporteUsuario()
+            {
+                UsuarioAdministrador = usuarioLogado.Login,
+                UsuarioSimulado = login,
+                DataAcesso = DateTime.Now,
+                TokenAcesso = dto.Token
+            });
+
+            return dto;
+        }
+        public async Task<UsuarioAutenticacaoRetornoDto> DeslogarSuporte()
+        {
+            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+
+            if (administrador == null || string.IsNullOrEmpty(administrador.Login))
+            {
+                throw new NegocioException($"O usuário não está em suporte de um administrador!");
+            }
+
+            var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(administrador.Login);
+
+            return await ObtenhaAutenticacao(retornoAutenticacaoEol, administrador.Login);
+        }
     }
 }

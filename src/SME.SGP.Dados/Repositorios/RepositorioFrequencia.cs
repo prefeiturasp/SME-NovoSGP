@@ -20,10 +20,7 @@ namespace SME.SGP.Dados.Repositorios
             var command = @"update registro_frequencia_aluno
                                 set excluido = true
                             where not excluido
-                              and registro_frequencia_id in (
-                                select id from registro_frequencia
-                                 where not excluido
-                                   and aula_id = @aulaId)";
+                                and aula_id  in (@aulaId) ";
             await database.ExecuteAsync(command, new { aulaId });
 
             // Exclui registro de frequencia da aula
