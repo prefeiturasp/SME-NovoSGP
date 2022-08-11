@@ -24,8 +24,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio);
             
-            // TODO 
-
             var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
             useCase.ShouldNotBeNull();
 
@@ -35,19 +33,28 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
             turma.ShouldNotBeNull();
             
-            var retorno = await useCase.Executar(turma.Id);
+            var retorno = (await useCase.Executar(turma.Id)).GroupBy(c => c.Bimestre);
             retorno.Count().ShouldBe(4);
         }
         
-        private ConselhoClasseNotaDto ObterConselhoClasseNota(long componente)
+        [Fact]
+        public async Task Deve_listar_2_bimestres_para_eja()
         {
-            return new ConselhoClasseNotaDto()
-            {
-                CodigoComponenteCurricular = componente,
-                Nota = NOTA_7,
-                Justificativa = JUSTIFICATIVA
-            };
-        }        
+            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.EJA,
+                ModalidadeTipoCalendario.EJA);
+            
+            var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
+            useCase.ShouldNotBeNull();
+
+            var turmas = ObterTodos<Turma>();
+            turmas.ShouldNotBeNull();
+
+            var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
+            turma.ShouldNotBeNull();
+            
+            var retorno = (await useCase.Executar(turma.Id)).GroupBy(c => c.Bimestre);
+            retorno.Count().ShouldBe(2);
+        }
         
         private async Task CriarDados(
             string componenteCurricular,
@@ -66,7 +73,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 DataAula = DATA_03_01_INICIO_BIMESTRE_1,
                 TipoNota = TipoNota.Nota,
                 SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
-                CriarFechamentoDisciplinaAlunoNota = true
+                CriarFechamentoDisciplinaAlunoNota = true,
+                CriarConselhosTodosBimestres = true
             };
             
             await CriarDadosBase(filtroNota);

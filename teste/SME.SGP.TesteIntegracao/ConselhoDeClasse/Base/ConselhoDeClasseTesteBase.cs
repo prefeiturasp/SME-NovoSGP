@@ -203,7 +203,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurmaTipoCalendario(filtroNota);
 
             if (filtroNota.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroNota.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(filtroNota);
 
             if (filtroNota.CriarPeriodoAbertura)
                 await CriarPeriodoAbertura(filtroNota);
@@ -844,15 +844,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
-        protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
+        protected async Task CriarPeriodoEscolar(FiltroNotasDto filtroNotasDto)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            if (filtroNotasDto.Modalidade == Modalidade.EJA)
+            {
+                await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
+                return;
+            }
+            
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
         }
 
         protected async Task CriarPeriodoAbertura(FiltroNotasDto filtroNotasDto)
