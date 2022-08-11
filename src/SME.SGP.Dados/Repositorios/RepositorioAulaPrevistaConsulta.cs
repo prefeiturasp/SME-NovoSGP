@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Threading.Tasks;
 
@@ -8,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaPrevistaConsulta : RepositorioBase<AulaPrevista>, IRepositorioAulaPrevistaConsulta
     {
-        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

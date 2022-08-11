@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioObjetivoAprendizagemAula : RepositorioBase<ObjetivoAprendizagemAula>, IRepositorioObjetivoAprendizagemAula
     {
-        public RepositorioObjetivoAprendizagemAula(ISgpContext database) : base(database)
+        public RepositorioObjetivoAprendizagemAula(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         { }
 
         public async Task LimparObjetivosAula(long planoAulaId)

@@ -6,6 +6,7 @@ using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.EscolaAqui.ComunicadosFiltro;
 using SME.SGP.Infra.Dtos.EscolaAqui.Dashboard;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace SME.SGP.Dados.Repositorios
             return query.ToString();
         }
 
-        public RepositorioComunicado(ISgpContext conexao) : base(conexao)
+        public RepositorioComunicado(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
         private string ObterCamposListagem(string prefixoComunicado, string prefixoGrupoComunicado, string prefixoTurmaComunicado)
