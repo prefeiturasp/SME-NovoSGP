@@ -67,27 +67,34 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> RemoverASPPCoreSSoSemAtribuicao(IEnumerable<SupervisorEscolasDreDto> responsaveisSGP, IEnumerable<UsuarioEolRetornoDto> responsaveisEol)
         {
-            var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
-
-            var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
-            var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
-            var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
-
-            if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
-                listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
-
-            if (psicologosEscolasSemAtribuicao != null && psicologosEscolasSemAtribuicao.Any())
-                listaAsspSemAtribuicao.AddRange(psicologosEscolasSemAtribuicao);
-
-            if (psicopedagogosEscolasSemAtribuicao != null && psicopedagogosEscolasSemAtribuicao.Any())
-                listaAsspSemAtribuicao.AddRange(psicopedagogosEscolasSemAtribuicao);
-
-            foreach (var supervisor in listaAsspSemAtribuicao)
+            try
             {
-                var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
-                await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
+                var listaAsspSemAtribuicao = new List<SupervisorEscolasDreDto>();
+
+                var assitenteSocialEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.AssistenteSocial && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
+                var psicologosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.PsicologoEscolar && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
+                var psicopedagogosEscolasSemAtribuicao = responsaveisSGP.Where(s => s.TipoAtribuicao == (int)TipoResponsavelAtribuicao.Psicopedagogo && !responsaveisEol.Select(e => e.Login.ToString()).Contains(s.SupervisorId));
+
+                if (assitenteSocialEscolasSemAtribuicao != null && assitenteSocialEscolasSemAtribuicao.Any())
+                    listaAsspSemAtribuicao.AddRange(assitenteSocialEscolasSemAtribuicao);
+
+                if (psicologosEscolasSemAtribuicao != null && psicologosEscolasSemAtribuicao.Any())
+                    listaAsspSemAtribuicao.AddRange(psicologosEscolasSemAtribuicao);
+
+                if (psicopedagogosEscolasSemAtribuicao != null && psicopedagogosEscolasSemAtribuicao.Any())
+                    listaAsspSemAtribuicao.AddRange(psicopedagogosEscolasSemAtribuicao);
+
+                foreach (var supervisor in listaAsspSemAtribuicao)
+                {
+                    var supervisorEntidadeExclusao = MapearDtoParaEntidade(supervisor);
+                    await mediator.Send(new RemoverAtribuicaoSupervisorCommand(supervisorEntidadeExclusao));
+                }
+                return true;
             }
-            return true;
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
         }
         private static SupervisorEscolaDre MapearDtoParaEntidade(SupervisorEscolasDreDto dto)
         {
