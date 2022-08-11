@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_2, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_1, TURMA_CODIGO_1, bimestre);
             dtoRetorno.ShouldNotBeNull();
             
             var conselhosClasse = ObterTodos<ConselhoClasse>();
@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
                 await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
             else
-                await CriarFechamentoTurma(PERIODO_ESCOLAR_CODIGO_2);
+                await CriarFechamentoTurma(filtroNota.Bimestre);
             
             await CriarComponenteGrupoAreaOrdenacao();
 
@@ -243,7 +243,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await InserirNaBase(new FechamentoTurma()
             {
-                PeriodoEscolarId = periodoEscolarId,
+                PeriodoEscolarId = periodoEscolarId == 0 ? null : periodoEscolarId,
                 TurmaId = TURMA_ID_1,
                 Excluido = false,
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
