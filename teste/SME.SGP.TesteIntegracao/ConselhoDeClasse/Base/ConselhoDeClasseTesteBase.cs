@@ -71,18 +71,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ExecuteTeste(
+        protected async Task ExecutarTeste(
                     ConselhoClasseNotaDto conselhoClasseNotaDto, 
                     int conselhoClasseId,
                     bool anoAnterior, 
                     string codigoAluno, 
                     TipoNota tipoNota,
                     int bimestre,
-                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado)
+                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_2, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId, TURMA_CODIGO_1, bimestre);
             dtoRetorno.ShouldNotBeNull();
             
             var conselhosClasse = ObterTodos<ConselhoClasse>();
@@ -190,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
                 await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
             else
-                await CriarFechamentoTurma(PERIODO_ESCOLAR_CODIGO_2);
+                await CriarFechamentoTurma(filtroNota.Bimestre);
             
             await CriarComponenteGrupoAreaOrdenacao();
 
@@ -206,31 +206,44 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var fechamentoTurmaId = 1;
             var fechamentoTurmaDisciplinaId = 1;
             
+            //Lançamento de fechamento bimestral 
             foreach (var periodoEscolar in periodosEscolares)
             {
                 await CriarFechamentoTurma(periodoEscolar.Id);
                 
-                await InserirNaBase(new FechamentoTurmaDisciplina()
-                {
-                    DisciplinaId = componenteCurricular,
-                    FechamentoTurmaId = fechamentoTurmaId,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                });
+                await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
                 
                 await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
-            
-                await CriarFechamentoTurmaAlunoNota(componenteCurricular);
                 
                 fechamentoTurmaDisciplinaId++;
                 fechamentoTurmaId++;
             }
+            
+            //Lançamento de fechamento Final
+            await CriarFechamentoTurma(null);
+                
+            await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
+                
+            await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
+            
+            await CriarFechamentoTurmaAlunoNota(componenteCurricular);
         }
 
-        private async Task CriarFechamentoTurma(long periodoEscolarId)
+        private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
+        {
+            await InserirNaBase(new FechamentoTurmaDisciplina()
+            {
+                DisciplinaId = componenteCurricular,
+                FechamentoTurmaId = fechamentoTurmaId,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarFechamentoTurma(long? periodoEscolarId)
         {
             await InserirNaBase(new FechamentoTurma()
             {
-                PeriodoEscolarId = periodoEscolarId,
+                PeriodoEscolarId = periodoEscolarId == 0 ? null : periodoEscolarId,
                 TurmaId = TURMA_ID_1,
                 Excluido = false,
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF

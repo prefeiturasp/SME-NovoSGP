@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task ExecuteTeste(long componente, int conceitoClasseId, long conceito, bool anoAnterior)
         {
-            await ExecuteTeste(
+            await ExecutarTeste(
                         ObtenhaDto(componente, conceito),
                         conceitoClasseId,
                         anoAnterior,

@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task ExecuteTeste(long componente, bool anoAnterior)
         {
-            await ExecuteTeste(
+            await ExecutarTeste(
                         ObtenhaDto(componente),
                         0,
                         anoAnterior,
