@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
                 new { turmaCodigo, disciplinaId, bimestre });
         }
 
-        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId)
+        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId, int? bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
@@ -137,11 +137,13 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on t.id = ft.turma_id
                         where not f.excluido
                           and t.turma_id = @turmaCodigo
-                          and f.disciplina_id = @disciplinaId ");
-
+                          and f.disciplina_id = @disciplinaId 
+                          and f.situacao != 0 ");
+            if (bimestre > 0)
+                query.AppendLine(" and p.bimestre = @bimestre ");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(),
-                new { turmaCodigo, disciplinaId });
+                new { turmaCodigo, disciplinaId , bimestre});
         }
 
 

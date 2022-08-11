@@ -58,8 +58,6 @@ namespace SME.SGP.Aplicacao
 
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
 
- 
-
             foreach (var aluno in alunos)
             {
 
@@ -88,35 +86,51 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var componenteCurricular in componentes)
                     {
-                        try
+                        if (componenteCurricular.Regencia)
                         {
-                            var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno,
-                                                                                                                          consolidacaoTurmaConselhoClasse.TurmaId,
-                                                                                                                          consolidacaoTurmaConselhoClasse.Bimestre,
-                                                                                                                          aluno.Inativo,
-                                                                                                                          null,
-                                                                                                                          null,
-                                                                                                                          long.Parse(componenteCurricular.Codigo));
-
-                            var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
-
-                            var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
-                            if (!publicarFilaConsolidacaoConselhoClasseAluno)
+                            var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaQuery(turma, long.Parse(componenteCurricular.Codigo)));
+                            foreach (var regencia in componentesRegencia)
                             {
-                                var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
-                                await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));                        
-                                return false;
+                                await PublicarMensagem(aluno, consolidacaoTurmaConselhoClasse, regencia.Codigo, mensagemRabbit.CodigoCorrelacao);    
                             }
+                            continue;
                         }
-                        catch (Exception ex)
-                        {
-                            await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
-                            return false;
-                        }
+                        await PublicarMensagem(aluno,consolidacaoTurmaConselhoClasse,long.Parse(componenteCurricular.Codigo),mensagemRabbit.CodigoCorrelacao);
                     }
                 }
             }
             return true;
+        }
+
+        private async Task<bool> PublicarMensagem(AlunoPorTurmaResposta aluno, ConsolidacaoTurmaDto consolidacaoTurmaConselhoClasse, long codigoComponenteCurricular, Guid CodigoCorrelacao)
+        {
+            try
+            {
+                var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(aluno.CodigoAluno,
+                                                                                                              consolidacaoTurmaConselhoClasse.TurmaId,
+                                                                                                              consolidacaoTurmaConselhoClasse.Bimestre,
+                                                                                                              aluno.Inativo,
+                                                                                                              null,
+                                                                                                              null,
+                                                                                                             codigoComponenteCurricular);
+
+                var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
+
+                var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, CodigoCorrelacao, null));
+                if (!publicarFilaConsolidacaoConselhoClasseAluno)
+                {
+                    var mensagem = $"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.";
+                    await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, LogNivel.Critico, LogContexto.ConselhoClasse));
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir o aluno de codígo : {aluno.CodigoAluno} na fila de consolidação do conselho de classe.", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                return false;
+            }
+
         }
     }
 }
