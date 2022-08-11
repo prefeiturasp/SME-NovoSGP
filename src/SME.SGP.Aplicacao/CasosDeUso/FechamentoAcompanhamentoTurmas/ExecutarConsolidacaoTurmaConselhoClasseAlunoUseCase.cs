@@ -31,9 +31,10 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
+            var statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
+                .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
@@ -46,25 +47,23 @@ namespace SME.SGP.Aplicacao
             }
 
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId,filtro.Bimestre));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId, filtro.Bimestre));
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasAluno = null;
             IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
+
             if (fechamentoTurma != null)
             {
                 var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId,filtro.Bimestre));
-                
+                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
+
                 if (fechamentoTurmaDisciplina != null)
-                { 
-                var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
-                fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, filtro.AlunoCodigo));
+                {
+                    var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
+                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, filtro.AlunoCodigo));
                 }
 
                 if (conselhoClasseId != null)
-                {
                     conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.ComponenteCurricularId));
-                }
-
             }
 
             if (!filtro.Inativo)
@@ -74,7 +73,6 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesDoAluno != null && componentesDoAluno.Any())
                 {
-                    
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });
@@ -146,15 +144,15 @@ namespace SME.SGP.Aplicacao
                 if (filtro.ComponenteCurricularId.HasValue && ((filtro.Nota != null || filtro.ConceitoId != null) || (nota != null || conceito != null)))
                 {
                     var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre, filtro.ComponenteCurricularId);
-                    if (consolidadoNota == null) 
-                        consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota() 
-                        { 
+                    if (consolidadoNota == null)
+                        consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota()
+                        {
                             ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
                             Bimestre = filtro.Bimestre
                         };
-                    
+
                     consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
-                    consolidadoNota.Nota = (double?)(filtro.Nota != null ? filtro.Nota: nota);
+                    consolidadoNota.Nota = (double?)(filtro.Nota != null ? filtro.Nota : nota);
                     consolidadoNota.ConceitoId = (long?)(filtro.ConceitoId != null ? filtro.ConceitoId : conceito);
 
                     await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
