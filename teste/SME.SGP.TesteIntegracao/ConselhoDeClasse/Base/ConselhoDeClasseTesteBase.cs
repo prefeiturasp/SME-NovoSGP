@@ -72,13 +72,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         protected async Task ExecutarTeste(
-                    ConselhoClasseNotaDto conselhoClasseNotaDto, 
-                    int conselhoClasseId,
-                    bool anoAnterior, 
-                    string codigoAluno, 
-                    TipoNota tipoNota,
-                    int bimestre,
-                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
+            ConselhoClasseNotaDto conselhoClasseNotaDto, 
+            int conselhoClasseId,
+            bool anoAnterior, 
+            string codigoAluno, 
+            TipoNota tipoNota,
+            int bimestre,
+            SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado,
+            long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
