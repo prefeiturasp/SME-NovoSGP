@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivo.Id));
             await mediator.Send(new ExcluirArquivoFisicoCommand(arquivo.Codigo, arquivo.Tipo, arquivo.Nome));
-
+            
             return true;
         }
     }
