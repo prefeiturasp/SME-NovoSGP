@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,7 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ExcluirFotoMinio(string nomeArquivo)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoMinio,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento,
                 new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = nomeArquivo},
                 Guid.NewGuid(), null));
         }

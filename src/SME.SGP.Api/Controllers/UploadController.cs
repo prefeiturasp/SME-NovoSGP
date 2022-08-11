@@ -46,7 +46,7 @@ namespace SME.SGP.Api.Controllers
                 var file = files.FirstOrDefault();
                 if (file.Length > 0)
                     return Ok(await useCase.Executar(files.FirstOrDefault(), 
-                        $"https://{Request.Host}{Request.PathBase}{configuracaoArmazenamentoOptions.BucketTemp}", 
+                        $"https://{Request.Host}{Request.PathBase}/{configuracaoArmazenamentoOptions.BucketTemp}", 
                         Dominio.TipoArquivo.Editor));
             }
                 
@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ArmazenarTemporarioServicoArmazenamento(IFormFile iFromFile)
         {
             if (iFromFile != null) 
-                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,new Guid().ToString(),TipoArquivo.temp)));
+                return Ok(await mediator.Send(new ArmazenarArquivoFisicoCommand(iFromFile,Guid.NewGuid().ToString(),TipoArquivo.temp)));
                 
             return BadRequest();
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Minio;
 using SME.SGP.Infra.Interface;
@@ -13,10 +14,12 @@ namespace SME.SGP.Infra
     {
         private MinioClient minioClient;
         private ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
+        private readonly IConfiguration configuration;
 
-        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+        public ServicoArmazenamento(IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions,IConfiguration configuration)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 
             Inicializar();
         }
@@ -26,6 +29,7 @@ namespace SME.SGP.Infra
             minioClient = new MinioClient()
                 .WithEndpoint(configuracaoArmazenamentoOptions.EndPoint,configuracaoArmazenamentoOptions.Port)
                 .WithCredentials(configuracaoArmazenamentoOptions.AccessKey,configuracaoArmazenamentoOptions.SecretKey)
+                .WithSSL()
                 .Build();
         }
         
@@ -135,7 +139,8 @@ namespace SME.SGP.Infra
         
         private string ObterUrl(string nomeArquivo, string bucketName)
         {
-            return $"{configuracaoArmazenamentoOptions.TipoRequisicao}://{configuracaoArmazenamentoOptions.EndPoint}:{configuracaoArmazenamentoOptions.Port}/{bucketName}/{nomeArquivo}";
+            var hostAplicacao = configuration["UrlFrontEnd"];
+            return $"{hostAplicacao}{bucketName}/{nomeArquivo}";
         }
     }
 }
