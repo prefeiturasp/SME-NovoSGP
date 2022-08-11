@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
 
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
 
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if ((turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
             {
                 var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -374,7 +374,7 @@ namespace SME.SGP.Aplicacao
                                                                                                              disciplina.LancaNota,
                                                                                                              visualizaNotas);
                         }
-                        else if(!turma.EhEJA())
+                        else
                         {
                             var turmaPossuiRegistroFrequencia = VerificarSePossuiRegistroFrequencia(alunoCodigo, disciplinaEol.TurmaCodigo, disciplina.CodigoComponenteCurricular,
                                                                                                     periodoEscolar, frequenciasAlunoParaTratar, registrosFrequencia);
