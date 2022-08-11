@@ -5,8 +5,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.TesteIntegracao.Frequencia.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Frequencia
@@ -20,87 +25,74 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         protected readonly DateTime DATA_02_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 02);
         private const string SITUACAO_15 = "15";
 
-        [Fact]
-        public async Task Alunos_novos_devem_aparecer_com_tooltip_durante_15_dias()
+        protected override void RegistrarFakes(IServiceCollection services)
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
-            await InserirParametroSistema();
+            base.RegistrarFakes(services);
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
+        }
+        
+        [Fact]
+        public async Task Deve_exibir_tooltip_alunos_novos_durante_15_dias()
+        {
+            var retorno = await ExecutarTesteToolTip();
 
-            var useCase = ServiceProvider.GetService<IObterFrequenciaPorAulaUseCase>();
-
-            var filtroFrequencia = new FiltroFrequenciaDto()
-            {
-                AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            var retorno = await useCase.Executar(filtroFrequencia);
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_2);
-
-            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.SituacaoMatricula == ((int)SituacaoMatriculaAluno.Ativo).ToString());
-            retornoAluno.DataSituacao.ShouldBeGreaterThanOrEqualTo(periodoEscolar.PeriodoInicio);
-            retornoAluno.DataSituacao.ShouldBeLessThanOrEqualTo(periodoEscolar.PeriodoFim);
-
-            retornoAluno.Marcador.ShouldNotBeNull();
+            var retornoAluno = retorno.ListaFrequencia;
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_1)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();      
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_2)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_NOVO).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_3)).Marcador == null).ShouldBeTrue();
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_4)).Marcador == null).ShouldBeTrue();
         }
 
         [Fact]
-        public async Task Alunos_novos_nao_devem_aparecer_com_tooltip_apos_15_dias()
+        public async Task Deve_exibir_tooltip_alunos_inativos_ate_data_sua_inativacao()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
-            await InserirParametroSistema();
-
-            var useCase = ServiceProvider.GetService<IObterFrequenciaPorAulaUseCase>();
-
-            var filtroFrequencia = new FiltroFrequenciaDto()
-            {
-                AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_2);
-
-            var retorno = await useCase.Executar(filtroFrequencia);
-
-            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_4);
-
-            retornoAluno.DataSituacao.ShouldBeGreaterThanOrEqualTo(periodoEscolar.PeriodoInicio);
-            retornoAluno.DataSituacao.ShouldBeLessThanOrEqualTo(periodoEscolar.PeriodoFim);
-
-            var marcador = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_4).Marcador;
-
-            retornoAluno.Marcador.ShouldBeNull();
+            var retorno = await ExecutarTesteToolTip();
+            var retornoAluno = retorno.ListaFrequencia;
+            
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_5)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_6)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_7)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_8)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_9)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_10)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
+            retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_11)).Marcador.Descricao.Contains(MensagemNegocioAluno.ESTUDANTE_INATIVO).ShouldBeTrue();  
         }
 
         [Fact]
-        public async Task Alunos_inativos_devem_aparecer_com_tooltip_ate_data_de_inativacao()
+        public async Task Nao_deve_exibir_alunos_inativos_antes_do_comeco_do_ano_ou_bimestre()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_09, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
-            await InserirParametroSistema();
-
-            var useCase = ServiceProvider.GetService<IObterFrequenciaPorAulaUseCase>();
-
-            var filtroFrequencia = new FiltroFrequenciaDto()
-            {
-                AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            var retorno = await useCase.Executar(filtroFrequencia);
-
-            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_2);
-
-            retornoAluno.SituacaoMatricula.ShouldBe(SITUACAO_15);
-            retornoAluno.Marcador.ShouldNotBeNull();
+            var retorno = await ExecutarTesteToolTip();
+            
+            var retornoAluno = retorno.ListaFrequencia;
+            
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_12)) == null).ShouldBeTrue();
+            
+            (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
         }
-
-        [Fact]
-        public async Task Alunos_inativos_antes_do_inicio_do_ano_letivo_nao_devem_aparecer_na_tela()
+        
+        private async Task InserirPeriodoEscolarCustomizado()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_09, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+            
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-45), dataReferencia.AddDays(+30), BIMESTRE_1, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(40), dataReferencia.AddDays(115), BIMESTRE_2, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(125), dataReferencia.AddDays(200), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(210), dataReferencia.AddDays(285), BIMESTRE_4, TIPO_CALENDARIO_1);
+        }
+        
+        private async Task<FrequenciaDto> ExecutarTesteToolTip()
+        {
+            await CriarDadosBasicosSemPeriodoEscolar(ObterPerfilProfessor(), Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio, DateTimeExtension.HorarioBrasilia().Date,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NUMERO_AULAS_1);
+
             await InserirParametroSistema();
+
+            await InserirPeriodoEscolarCustomizado();
 
             var useCase = ServiceProvider.GetService<IObterFrequenciaPorAulaUseCase>();
 
@@ -110,15 +102,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
             };
 
-            var periodosEscolares = ObterTodos<PeriodoEscolar>();
-            var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.Bimestre == BIMESTRE_1);
-
             var retorno = await useCase.Executar(filtroFrequencia);
-
-            var retornoAluno = retorno.ListaFrequencia.FirstOrDefault(x => x.CodigoAluno == CODIGO_ALUNO_3);
-
-            retornoAluno.DataSituacao.ShouldBeLessThan(periodoEscolar.PeriodoInicio);
-            retornoAluno.Desabilitado.ShouldBeTrue();
+            return retorno;
         }
     }
 }

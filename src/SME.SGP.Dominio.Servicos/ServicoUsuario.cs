@@ -201,7 +201,7 @@ namespace SME.SGP.Dominio
             var usuarioLogado = await ObterUsuarioLogado();
 
             if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, data);
+                return await mediator.Send(new ProfessorPodePersistirTurmaQuery(codigoRf, turmaId, data));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
 
@@ -233,7 +233,7 @@ namespace SME.SGP.Dominio
                 usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+                return await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, data, usuario));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 

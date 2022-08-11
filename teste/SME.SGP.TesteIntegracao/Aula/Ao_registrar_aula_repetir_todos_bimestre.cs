@@ -15,22 +15,6 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 {
     public class Ao_registrar_aula_repetir_todos_bimestre : AulaTeste
     {
-        private const long TIPO_CALENDARIO_1 = 1;
-
-        private readonly DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
-        private readonly DateTime DATA_29_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
-
-        private readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private readonly DateTime DATA_08_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
-
-        private readonly DateTime DATA_25_07 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
-        private readonly DateTime DATA_30_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
-
-        private readonly DateTime DATA_03_10 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
-        private readonly DateTime DATA_22_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
-
-        private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
-
         public Ao_registrar_aula_repetir_todos_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
 
@@ -50,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 
@@ -68,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 
@@ -86,7 +70,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 
@@ -109,7 +93,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(4);
 
@@ -131,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(4);
 
@@ -153,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(4);
 
@@ -176,7 +160,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(1);
 
@@ -198,7 +182,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(1);
 
@@ -220,7 +204,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(1);
 
@@ -239,7 +223,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 
@@ -257,7 +241,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 
@@ -275,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.CadastrarAulaRepetirTodosBimestres
 
             var retorno = await InserirAulaUseCaseSemValidacaoBasica(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_03_01, false, TIPO_CALENDARIO_1);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.Count().ShouldBeEquivalentTo(49);
 

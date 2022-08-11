@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotasConceitosConsulta : RepositorioBase<NotaConceito>, IRepositorioNotasConceitosConsulta
     {
-        public RepositorioNotasConceitosConsulta(ISgpContextConsultas sgpContext) : base(sgpContext)
+        public RepositorioNotasConceitosConsulta(ISgpContextConsultas sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
         {
         }
 
@@ -62,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.QueryAsync<NotaConceito>(sql, new { atividadesAvaliativasId, alunosIds, componenteCurricularId });
         }
 
-        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId,string codigoAluno)
+        public async Task<NotaConceito> ObterNotasPorAtividadeIdCodigoAluno(long atividadeId, string codigoAluno)
         {
             var sql = $@"select nc.id, 
                                 nc.atividade_avaliativa, 
@@ -92,17 +93,41 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<double> ObterNotaEmAprovacao(string codigoAluno, long disciplinaId, long turmaFechamentoId)
         {
-            var sql = $@"select coalesce(coalesce(w.nota,w.conceito_id),-1)
+            var sql = $@"select coalesce(coalesce(coalesce(w.nota, fn.nota), coalesce(w.conceito_id, fn.conceito_id), -1))
                             from fechamento_turma ft 
                             inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                             inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                             inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                            inner join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id
+                            left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id
                             where ft.id = @turmaFechamentoId and fn.disciplina_id = @disciplinaId and fa.aluno_codigo = @codigoAluno
                         order by w.id desc";
 
             return database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
 
+        public async Task<IEnumerable<NotaConceito>> ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(string codigoTurma)
+        {
+            var sql = @"select  
+                            nc.id, 
+                            nc.atividade_avaliativa, 
+                            nc.aluno_id, 
+                            nc.nota, 
+                            nc.conceito, 
+                            nc.tipo_nota, 
+                            nc.criado_em,
+                            nc.criado_por, 
+                            nc.criado_rf, 
+                            nc.alterado_em, 
+                            nc.alterado_por, 
+                            nc.alterado_rf,
+                            nc.status_gsa 
+                        from notas_conceito nc 
+                        join atividade_avaliativa aa on nc.atividade_avaliativa  = aa.id 
+                        join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id  = aa.id
+                        join turma t on aa.turma_id = t.turma_id::text 
+                        where aa.turma_id  = @codigoTurma";
+
+            return await database.QueryAsync<NotaConceito>(sql, new { codigoTurma });
+        }
     }
 }

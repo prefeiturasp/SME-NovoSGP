@@ -182,7 +182,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
                 
-                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno.AlteradoEm.HasValue)
+                if (conselhoClasseNota.Id > 0 || (conselhoClasseAluno != null && conselhoClasseAluno.AlteradoEm.HasValue))
                     await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 enviarAprovacao = await EnviarParaAprovacao(turma, usuarioLogado);
@@ -213,7 +213,7 @@ namespace SME.SGP.Dominio.Servicos
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(turma.Id, bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
@@ -389,7 +389,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 unitOfWork.PersistirTransacao();
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
             }
             catch (Exception e)
             {
@@ -648,7 +648,7 @@ namespace SME.SGP.Dominio.Servicos
                 .SerializeObject(consolidacaoTurma);
 
             await mediator
-                .Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
+                .Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid(), null));
 
         }
     }

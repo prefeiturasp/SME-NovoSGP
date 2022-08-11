@@ -7,6 +7,7 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 
 namespace SME.SGP.Dados.Repositorios
@@ -41,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                          where not ft.excluido
                            and cc.permite_lancamento_nota ";
 
-        public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -73,18 +74,19 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
             var query = $@"{queryNotasFechamento}
                            and t.turma_id = ANY(@turmasCodigos)
                            and fa.aluno_codigo = @alunoCodigo 
                            and pe.bimestre = @bimestre";
 
-            if (dataMatricula.HasValue)
+            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
 
-            if (dataSituacao.HasValue)
-                query += " and @dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio";
+            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+                query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
+                             or @dataSituacao > pe.periodo_fim)";
 
             query += " and ftd.excluido != true";
 

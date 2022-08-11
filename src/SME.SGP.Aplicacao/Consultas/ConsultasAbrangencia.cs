@@ -55,6 +55,17 @@ namespace SME.SGP.Aplicacao
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
+        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurmaComUsuario(string turma, Usuario usuario, bool consideraHistorico = false)
+        {
+            var login = usuario.Login;
+            var perfil = usuario.PerfilAtual;
+            AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));
+            bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
+                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
+                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
+
+            return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
+        }
 
         public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
         {
@@ -177,7 +188,20 @@ namespace SME.SGP.Aplicacao
             var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
            
             var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+
+            result = modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, codigoUe) : result;
+
             return OrdernarTurmasItinerario(result);
+        }
+
+        private async Task<IEnumerable<AbrangenciaTurmaRetorno>> VerificaTurmasCEMEI(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoUe)
+        {
+            var tipoEscola = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(codigoUe));
+
+            if (tipoEscola == TipoEscola.CEMEI || tipoEscola == TipoEscola.CEUCEMEI)
+                return turmas.Where(t => int.Parse(t.Ano) > 4);
+
+            return turmas;
         }
 
         public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)

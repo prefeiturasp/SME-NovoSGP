@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -17,15 +16,15 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
-        private readonly IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio;
         private readonly IRepositorioTipoRelatorio repositorioTipoRelatorio;
 
-        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao, IContextoAplicacao contextoAplicacao, IMediator mediator, IObterDataCriacaoRelatorioUseCase obterDataCriacaoRelatorio, IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
+        public ConsultasNotificacao(IRepositorioNotificacao repositorioNotificacao,
+            IContextoAplicacao contextoAplicacao, IMediator mediator,
+            IRepositorioTipoRelatorio repositorioTipoRelatorio) : base(contextoAplicacao)
         {
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
-            this.obterDataCriacaoRelatorio = obterDataCriacaoRelatorio ?? throw new System.ArgumentNullException(nameof(obterDataCriacaoRelatorio));
-            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new System.ArgumentNullException(nameof(repositorioTipoRelatorio));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.repositorioTipoRelatorio = repositorioTipoRelatorio ?? throw new ArgumentNullException(nameof(repositorioTipoRelatorio));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<PaginacaoResultadoDto<NotificacaoBasicaDto>> Listar(NotificacaoFiltroDto filtroNotificacaoDto)
@@ -40,20 +39,20 @@ namespace SME.SGP.Aplicacao
                 TotalPaginas = retorno.TotalPaginas,
 
                 Items = from r in retorno.Items
-                        select new NotificacaoBasicaDto()
-                        {
-                            Id = r.Id,
-                            Titulo = r.Titulo,
-                            Data = r.CriadoEm,
-                            DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
-                            Status = r.Status,
-                            Categoria = r.Categoria,
-                            DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
-                            Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
-                            Codigo = r.Codigo,
-                            PodeRemover = r.PodeRemover,
-                            PodeMarcarComoLida = r.DeveMarcarComoLido
-                        }
+                    select new NotificacaoBasicaDto()
+                    {
+                        Id = r.Id,
+                        Titulo = r.Titulo,
+                        Data = r.CriadoEm,
+                        DescricaoStatus = r.Status.GetAttribute<DisplayAttribute>().Name,
+                        Status = r.Status,
+                        Categoria = r.Categoria,
+                        DescricaoCategoria = r.Categoria.GetAttribute<DisplayAttribute>().Name,
+                        Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
+                        Codigo = r.Codigo,
+                        PodeRemover = r.PodeRemover,
+                        PodeMarcarComoLida = r.DeveMarcarComoLido
+                    }
             };
 
             return retornoPaginadoDto;
@@ -125,6 +124,7 @@ namespace SME.SGP.Aplicacao
             string codigoRelatorio = string.Empty;
             int tipoRelatorio = 0;
             bool relatorioExiste = true;
+
             if (NotificacaoTipo.Relatorio == retorno.Tipo)
                 codigoRelatorio = ObterCodigoArquivo(retorno.Mensagem);
 
@@ -161,14 +161,15 @@ namespace SME.SGP.Aplicacao
         private static string ObterCodigoArquivo(string mensagem)
         {
             string pattern = "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
-            Regex rg = new Regex(pattern);
+            Regex rg = new(pattern);
             var codigo = rg.Match(mensagem);
             return codigo.ToString();
         }
+
         private async Task<bool> VerificarSeArquivoExiste(string codigoArquivo)
         {
             var guidRelatorio = new Guid(codigoArquivo);
-            return await obterDataCriacaoRelatorio.Executar(guidRelatorio);
+            return await mediator.Send(new VerificarExistenciaRelatorioPorCodigoQuery(guidRelatorio));
         }
     }
 }

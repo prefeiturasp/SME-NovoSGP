@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes.Rabbit;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
@@ -16,7 +18,7 @@ namespace SME.SGP.TesteIntegracao
     [Collection("TesteIntegradoSGP")]
     public class TesteBase : IClassFixture<TestFixture>
     {
-        private readonly CollectionFixture _collectionFixture;
+        protected readonly CollectionFixture _collectionFixture;
 
         public ServiceProvider ServiceProvider => _collectionFixture.ServiceProvider;
 
@@ -34,12 +36,18 @@ namespace SME.SGP.TesteIntegracao
         {
             RegistrarCommandFakes(services);
             RegistrarQueryFakes(services);
+            
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache),
+                typeof(RepositorioCacheFake), ServiceLifetime.Scoped));            
         }
 
         protected virtual void RegistrarCommandFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaEmLoteSgpCommand, bool>),typeof(PublicarFilaEmLoteSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>),typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
         }
 
         protected virtual void RegistrarQueryFakes(IServiceCollection services)

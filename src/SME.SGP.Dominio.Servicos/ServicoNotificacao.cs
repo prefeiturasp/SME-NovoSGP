@@ -78,9 +78,10 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<UsuarioEolRetornoDto> funcionarios = null;
 
             if (cargo == Cargo.Supervisor)
-                supervisoresEscola =  repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe).Result;
+                supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe).Result;
             else
-                funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
+                funcionarios = mediator.Send(
+                    new ObterFuncionariosPorCargoUeQuery(codigoUe, (int) cargo)).Result;
 
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 

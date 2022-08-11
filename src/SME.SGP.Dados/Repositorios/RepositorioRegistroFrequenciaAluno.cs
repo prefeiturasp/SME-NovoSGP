@@ -4,7 +4,7 @@ using NpgsqlTypes;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,7 +12,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao) : base(conexao)
+        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -43,6 +43,13 @@ namespace SME.SGP.Dados
         public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
         {
             return await InserirVariosComLog(registros, true);
+        }
+
+        public async Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId)
+        {
+            var query = " update registro_frequencia_aluno set aula_id = @aulaId where registro_frequencia_id = @registroFrequenciaId ";
+
+            await database.Conexao.ExecuteAsync(query, new { aulaId, registroFrequenciaId });
         }
 
         private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)

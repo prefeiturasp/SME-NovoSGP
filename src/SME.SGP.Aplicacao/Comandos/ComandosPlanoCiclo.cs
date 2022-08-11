@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,16 +19,20 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+
         public ComandosPlanoCiclo(IRepositorioPlanoCiclo repositorioPlanoCiclo,
                                   IRepositorioMatrizSaberPlano repositorioMatrizSaberPlano,
                                   IRepositorioObjetivoDesenvolvimentoPlano repositorioObjetivoDesenvolvimentoPlano,
-                                  IUnitOfWork unitOfWork, IMediator mediator)
+                                  IUnitOfWork unitOfWork, IMediator mediator,
+                                  IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoCiclo = repositorioPlanoCiclo ?? throw new ArgumentNullException(nameof(repositorioPlanoCiclo));
             this.repositorioMatrizSaberPlano = repositorioMatrizSaberPlano ?? throw new ArgumentNullException(nameof(repositorioMatrizSaberPlano));
             this.repositorioObjetivoDesenvolvimentoPlano = repositorioObjetivoDesenvolvimentoPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoDesenvolvimentoPlano));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public void Salvar(PlanoCicloDto planoCicloDto)
@@ -121,7 +127,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
                 }
             }
-            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoCiclo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             planoCiclo.CicloId = planoCicloDto.CicloId;
             planoCiclo.Ano = planoCicloDto.Ano;
             planoCiclo.EscolaId = planoCicloDto.EscolaId;

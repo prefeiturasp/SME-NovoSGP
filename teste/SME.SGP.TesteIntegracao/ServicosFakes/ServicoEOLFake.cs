@@ -15,6 +15,22 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 {
     public class ServicoEOLFake : IServicoEol
     {
+        private readonly string ALUNO_CODIGO_1 = "1";
+        private readonly string ALUNO_CODIGO_2 = "2";
+        private readonly string ALUNO_CODIGO_3 = "3";
+        private readonly string ALUNO_CODIGO_4 = "4";
+        private readonly string ALUNO_CODIGO_5 = "5";
+        private readonly string ALUNO_CODIGO_6 = "6";
+        private readonly string ALUNO_CODIGO_7 = "7";
+        private readonly string ALUNO_CODIGO_8 = "8";
+        private readonly string ALUNO_CODIGO_9 = "9";
+        private readonly string ALUNO_CODIGO_10 = "10";
+
+        private readonly string ATIVO = "Ativo";
+        private readonly string RESPONSAVEL = "RESPONSAVEL";
+        private readonly string TIPO_RESPONSAVEL_4 = "4";
+        private readonly string CELULAR_RESPONSAVEL = "11111111111";
+
         private const string ESCOLA_CODIGO_1 = "1";
         private const string ESCOLA_CODIGO_2 = "2";
         private const string ANO_7 = "7";
@@ -243,92 +259,248 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return alunos.Where(x => x.CodigoTurma.ToString() == turmaId);
         }
 
-
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorTurma(string turmaId, string codigoAluno, bool consideraInativos = false)
         {
             var alunos = new List<AlunoPorTurmaResposta>
             {
-               new AlunoPorTurmaResposta
+                   new AlunoPorTurmaResposta
                     {
-                          Ano=0,
-                          CodigoAluno = "11223344",
-                          CodigoComponenteCurricular=0,
-                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                          CodigoTurma=int.Parse(turmaId),
-                          DataNascimento=new DateTime(1959,01,16,00,00,00),
-                          DataSituacao= new DateTime(2021,11,09,17,25,31),
-                          DataMatricula= new DateTime(2021,11,09,17,25,31),
-                          EscolaTransferencia=null,
-                          NomeAluno="Maria Aluno teste",
-                          NomeSocialAluno=null,
-                          NumeroAlunoChamada=1,
-                          ParecerConclusivo=null,
-                          PossuiDeficiencia=false,
-                          SituacaoMatricula="Ativo",
-                          Transferencia_Interna=false,
-                          TurmaEscola=null,
-                          TurmaRemanejamento=null,
-                          TurmaTransferencia=null,
-                          NomeResponsavel="João teste",
-                          TipoResponsavel="4",
-                          CelularResponsavel="11961861993",
-                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                      Ano = 0,
+                      CodigoAluno = "11223344",
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_1,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     },
                new AlunoPorTurmaResposta
                     {
-                          Ano=0,
-                          CodigoAluno = "6523614",
-                          CodigoComponenteCurricular=0,
-                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
-                          CodigoTurma=int.Parse(turmaId),
-                          DataNascimento=new DateTime(1959,01,16,00,00,00),
-                          DataSituacao= new DateTime(2021,11,09,17,25,31),
-                          DataMatricula= new DateTime(2021,11,09,17,25,31),
-                          EscolaTransferencia=null,
-                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
-                          NomeSocialAluno=null,
-                          NumeroAlunoChamada=1,
-                          ParecerConclusivo=null,
-                          PossuiDeficiencia=false,
-                          SituacaoMatricula="Ativo",
-                          Transferencia_Interna=false,
-                          TurmaEscola=null,
-                          TurmaRemanejamento=null,
-                          TurmaTransferencia=null,
-                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
-                          TipoResponsavel="4",
-                          CelularResponsavel="11961861993",
-                          DataAtualizacaoContato= new DateTime(2018,06,22,19,02,35),
+                      Ano = 0,
+                      CodigoAluno = "6523614",
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_1,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     },
                new AlunoPorTurmaResposta
                     {
-                          Ano=0,
-                          CodigoAluno = "666666",
-                          CodigoComponenteCurricular=0,
-                          CodigoSituacaoMatricula= SituacaoMatriculaAluno.PendenteRematricula,
-                          CodigoTurma=int.Parse(turmaId),
-                          DataNascimento=new DateTime(1959,01,16,00,00,00),
-                          DataSituacao= new DateTime(2000,11,09,17,25,31),
-                          DataMatricula= new DateTime(2018,11,09,17,25,31),
-                          EscolaTransferencia=null,
-                          NomeAluno="ANA RITA ANDRADE FERREIRA DOS SANTOS",
-                          NomeSocialAluno=null,
-                          NumeroAlunoChamada=1,
-                          ParecerConclusivo=null,
-                          PossuiDeficiencia=false,
-                          SituacaoMatricula="PendenteRematricula",
-                          Transferencia_Interna=false,
-                          TurmaEscola=null,
-                          TurmaRemanejamento=null,
-                          TurmaTransferencia=null,
-                          NomeResponsavel="ANA RITA ANDRADE FERREIRA DOS SANTOS,",
-                          TipoResponsavel="4",
-                          CelularResponsavel="11961861993",
-                          DataAtualizacaoContato= new DateTime(2000,06,22,19,02,35),
-                    }
+                      Ano = 0,
+                      CodigoAluno = "666666",
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_1,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                    },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_1,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_1,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_2,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_2,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_3,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_3,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_4,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_4,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_5,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_5,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_6,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_6,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_7,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_7,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_8,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_8,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_9,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_9,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                },
+                new AlunoPorTurmaResposta
+                {
+                      Ano = 0,
+                      CodigoAluno = ALUNO_CODIGO_10,
+                      CodigoComponenteCurricular = 0,
+                      CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
+                      CodigoTurma=int.Parse(turmaId),
+                      DataNascimento=new DateTime(1959,01,16,00,00,00),
+                      DataSituacao= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      DataMatricula= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                      NomeAluno= ALUNO_CODIGO_10,
+                      NumeroAlunoChamada=1,
+                      SituacaoMatricula= ATIVO,
+                      NomeResponsavel= RESPONSAVEL,
+                      TipoResponsavel= TIPO_RESPONSAVEL_4,
+                      CelularResponsavel=CELULAR_RESPONSAVEL,
+                      DataAtualizacaoContato= new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
+                }
             };
             return alunos.Where(x => x.CodigoTurma.ToString() == turmaId && x.CodigoAluno == codigoAluno);
         }
+
 
         public Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesCurriculares()
         {
@@ -377,7 +549,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             if (codidoAluno.Equals("77777"))
                 return ObterAlunosPorTurma("1", true);
             if (codidoAluno.Equals("666666"))
-                return ObterAlunosPorTurma("1",codidoAluno, true);
+                return ObterAlunosPorTurma("1", codidoAluno, true);
             return ObterAlunosPorTurma("1");
         }
 
@@ -455,7 +627,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UsuarioEolRetornoDto> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
+        public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
         {
             return new List<UsuarioEolRetornoDto>{
                 new UsuarioEolRetornoDto
@@ -780,11 +952,6 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         }
 
         public Task<bool> PodePersistirTurmaNoPeriodo(string professorRf, string codigoTurma, long componenteCurricularId, DateTime dataInicio, DateTime dataFim)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> ProfessorPodePersistirTurma(string professorRf, string codigoTurma, DateTime data)
         {
             throw new NotImplementedException();
         }

@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao
     public class ObterFrequenciaGeralAlunoPorTurmasQueryHandler : IRequestHandler<ObterFrequenciaGeralAlunoPorTurmasQuery, string>
     {
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
+        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequencia;
         private readonly IMediator mediator;
 
         public ObterFrequenciaGeralAlunoPorTurmasQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
@@ -24,13 +25,16 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(ObterFrequenciaGeralAlunoPorTurmasQuery request, CancellationToken cancellationToken)
         {
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
-            frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaComponentesAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
+            frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
             var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
 
             var aulasComponentesTurmas = await mediator.Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(request.CodigosTurmas,
                                                                                                                          request.TipoCalendarioId,
                                                                                                                          new string[] { },
                                                                                                                          bimestres.ToArray()));
+
+            int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
+
             foreach(var aulaComponenteTurma in aulasComponentesTurmas)
             {
                 if (!frequenciaAlunoPeriodos.Any(a => a.TurmaId == aulaComponenteTurma.TurmaCodigo 
@@ -51,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAluno = new FrequenciaAluno()
             {
-                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
+                TotalAulas = quantidadeTotalAulas,
                 TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };

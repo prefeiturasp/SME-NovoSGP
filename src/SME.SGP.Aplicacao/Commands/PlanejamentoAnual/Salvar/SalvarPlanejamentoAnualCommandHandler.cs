@@ -9,6 +9,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,19 +21,22 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente;
         private readonly IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public SalvarPlanejamentoAnualCommandHandler(IRepositorioPlanejamentoAnual repositorioPlanejamentoAnual,
                                                      IRepositorioPlanejamentoAnualPeriodoEscolar repositorioPlanejamentoAnualPeriodoEscolar,
                                                      IRepositorioPlanejamentoAnualComponente repositorioPlanejamentoAnualComponente,
                                                      IRepositorioPlanejamentoAnualObjetivosAprendizagem repositorioPlanejamentoAnualObjetivosAprendizagem,
                                                      IMediator mediator,
-                                                     IUnitOfWork unitOfWork) : base(mediator)
+                                                     IUnitOfWork unitOfWork,
+                                                     IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.repositorioPlanejamentoAnual = repositorioPlanejamentoAnual ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnual));
             this.repositorioPlanejamentoAnualPeriodoEscolar = repositorioPlanejamentoAnualPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualPeriodoEscolar));
             this.repositorioPlanejamentoAnualComponente = repositorioPlanejamentoAnualComponente ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualComponente));
             this.repositorioPlanejamentoAnualObjetivosAprendizagem = repositorioPlanejamentoAnualObjetivosAprendizagem ?? throw new System.ArgumentNullException(nameof(repositorioPlanejamentoAnualObjetivosAprendizagem));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
         public async Task<PlanejamentoAnualAuditoriaDto> Handle(SalvarPlanejamentoAnualCommand comando, CancellationToken cancellationToken)
         {
@@ -128,7 +133,7 @@ namespace SME.SGP.Aplicacao
                                     };
                                 }
                                 listaDescricao.Add(new PlanejamentoAnualComponenteResumidoDto() { DescricaoNovo = componente.Descricao,DescricaoAtual = planejamentoAnualComponente.Descricao });
-                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/"); ;
+                                planejamentoAnualComponente.Descricao = componente.Descricao = componente.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
                                 await repositorioPlanejamentoAnualComponente.SalvarAsync(planejamentoAnualComponente);
                                 auditoria.Componentes.Add(new PlanejamentoAnualComponenteDto
                                 {

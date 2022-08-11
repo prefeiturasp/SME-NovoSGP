@@ -183,6 +183,8 @@ namespace SME.SGP.Aplicacao
                     case (int)TipoResponsavelAtribuicao.Psicopedagogo:
                     case (int)TipoResponsavelAtribuicao.AssistenteSocial:
                         {
+                            if (supervisor[i].SupervisorId == null)
+                                break;
                             var nomesFuncionariosAtribuidos = await servicoEOL.ObterListaNomePorListaLogin(new List<string> { supervisor[i].SupervisorId });
                             if (nomesFuncionariosAtribuidos.Any())
                                 listaResponsaveis = new ResponsavelRetornoDto() { CodigoRfOuLogin = nomesFuncionariosAtribuidos.FirstOrDefault().Login, NomeServidor = nomesFuncionariosAtribuidos.FirstOrDefault().NomeServidor };

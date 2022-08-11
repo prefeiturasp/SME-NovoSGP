@@ -11,20 +11,15 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
-using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
-using SME.SGP.IoC.Extensions;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
+using SME.SGP.Infra.Interface;
+
 namespace SME.SGP.TesteIntegracao.Setup
 {
-    public class RegistradorDependencias : RegistraDependencias
+    public class RegistradorDependencias : RegistrarDependencias
     {
-        public override void RegistrarRabbit(IServiceCollection services, ConfiguracaoRabbitOptions configRabbit)
-        {
-            //Não registra Rabbit
-        }
-
         protected override void RegistrarContextos(IServiceCollection services)
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
@@ -36,6 +31,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 var contextoAplicacao = provider.GetService<IContextoAplicacao>();
                 return new SgpContext(connection, contextoAplicacao);
             });
+
             services.TryAddScoped<ISgpContextConsultas>(provider =>
             {
                 var connection = provider.GetService<IDbConnection>();
@@ -44,15 +40,16 @@ namespace SME.SGP.TesteIntegracao.Setup
             });
 
             services.TryAddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddPolicies();
+            base.RegistrarPolicies(services);
         }
 
         protected override void RegistrarServicos(IServiceCollection services)
         {
-            services.TryAddScoped<IServicoTelemetria, TelemetriaFake>();
+            services.TryAddSingleton<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
+            services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
             base.RegistrarServicos(services);
         }
     }

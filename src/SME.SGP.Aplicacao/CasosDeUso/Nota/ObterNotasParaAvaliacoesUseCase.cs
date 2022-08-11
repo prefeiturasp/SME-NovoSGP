@@ -91,7 +91,8 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
             long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
+            
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(),turmaCompleta.CodigoTurma));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
             
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
@@ -137,10 +138,10 @@ namespace SME.SGP.Aplicacao
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
             alunosAtivos = from a in alunos
-                            where a.EstaAtivo(periodoInicio, periodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido)
+                           where a.EstaAtivo(periodoInicio, periodoFim) || !a.EstaAtivo(periodoInicio, periodoFim) && !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && a.DataSituacao >= periodoInicio
                            orderby a.NomeValido(), a.NumeroAlunoChamada
-                            select a;
-          
+                           select a;
+
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -211,9 +212,11 @@ namespace SME.SGP.Aplicacao
                        (aluno.DataSituacao >= bimestreParaAdicionar.PeriodoInicio && bimestreParaAdicionar.PeriodoFim <= aluno.DataSituacao))));
 
                 notaConceitoAluno.Marcador = await mediator
-                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
+                    .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
+
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
+                
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
@@ -332,7 +335,7 @@ namespace SME.SGP.Aplicacao
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
-            
+            IEnumerable<DisciplinaDto> disciplinas;
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
             if (!componenteReferencia.Regencia)
@@ -357,8 +360,7 @@ namespace SME.SGP.Aplicacao
                 if (componenteReferencia.Regencia)
                 {
                     var atividadeDisciplinas = await ObterDisciplinasAtividadeAvaliativa(avaliacao.Id, avaliacao.EhRegencia);
-                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();
-                    IEnumerable<DisciplinaDto> disciplinas;
+                    var idsDisciplinas = atividadeDisciplinas?.Select(a => long.Parse(a.DisciplinaId)).ToArray();                    
                     if (idsDisciplinas != null && idsDisciplinas.Any())
                         disciplinas = await ObterDisciplinasPorIds(idsDisciplinas);
                     else
@@ -369,6 +371,12 @@ namespace SME.SGP.Aplicacao
                                                                                             turmaCompleta.TipoTurma == TipoTurma.Programa,
                                                                                             componenteReferencia.Regencia);
                     }
+                    var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
+                    avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
+                }
+                else
+                {
+                    disciplinas = disciplinasNaoRegencia;
                     var nomesDisciplinas = disciplinas?.Select(d => d.Nome).ToArray();
                     avaliacaoDoBimestre.Disciplinas = nomesDisciplinas;
                 }

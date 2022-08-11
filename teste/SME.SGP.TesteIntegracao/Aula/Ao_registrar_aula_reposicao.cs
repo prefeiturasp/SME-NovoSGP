@@ -9,6 +9,7 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,8 +18,6 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 {
     public class Ao_registrar_aula_reposicao : AulaTeste
     {
-        private DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        private DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         private const string TITULO_NOTIFICACAO = "Notificação Teste de Integração.";
         private const string MENSAGEM_NOTIFICACAO = "Mensagem notificação Teste de Integração.";
         private const string SISTEMA = "Sistema";
@@ -32,6 +31,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorCargoUeQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorCargoUeQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 
             retorno.Mensagens.Exists(mensagem => mensagem == "Aula cadastrada e enviada para aprovação com sucesso.").ShouldBe(true);
 
-            var aulasCadastradas = ObterTodos<Aula>();
+            var aulasCadastradas = ObterTodos<Dominio.Aula>();
 
             aulasCadastradas.ShouldNotBeEmpty();
 
@@ -107,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.AulaReposicao
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

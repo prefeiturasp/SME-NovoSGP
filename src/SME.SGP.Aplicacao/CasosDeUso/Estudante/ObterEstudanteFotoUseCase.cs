@@ -1,9 +1,12 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,9 +40,9 @@ namespace SME.SGP.Aplicacao
             {
                 Codigo = miniatura.CodigoFotoOriginal,
                 Nome = miniatura.Nome,
-                Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
+                Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome),
+                CriadoRf = miniatura.CriadoRf
             };
-
         }
 
     }

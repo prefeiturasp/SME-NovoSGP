@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
         protected async Task CrieAula(string componente, DateTime dataAula, int quantidade = 1, bool aulaCJ = false)
         {
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componente,

@@ -214,7 +214,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 CriadoPor = "Sistema",
                 CriadoRF = "0"
             });
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 UeId = "2345678",
                 DisciplinaId = "512",
@@ -313,7 +313,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 CriadoPor = "Sistema",
                 CriadoRF = "0"
             });
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 UeId = "2345678",
                 DisciplinaId = "512",
@@ -329,7 +329,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 CriadoRF = "0",
                 Excluido = false,
             });
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 UeId = "2345678",
                 DisciplinaId = "512",

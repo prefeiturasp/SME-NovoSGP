@@ -70,8 +70,8 @@ namespace SME.SGP.Aplicacao
                 return true;
             }
 
-            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(diarioBordo.Aula.Turma.CodigoTurma));
-
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(diarioBordo.Aula.Turma.CodigoTurma));
+            var titulares = professoresTitulares?.Select(x => x.ProfessorRf);
             if (titulares != null)
             {
                 titulares = titulares.Where(t => !string.IsNullOrEmpty(t));

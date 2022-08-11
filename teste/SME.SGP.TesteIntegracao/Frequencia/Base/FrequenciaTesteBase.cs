@@ -38,21 +38,11 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_77777 = "77777";        
         protected const string CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666 = "666666";        
 
-        private const string REABERTURA_GERAL = "Reabrir Geral";
-
-        protected readonly DateTime DATA_01_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
-
-        private readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
-
         protected const int ZERO = 0;
-
-        protected const long TURMA_ID_1 = 1;
 
         protected const decimal PERCENTUAL_100 = 100.0M;
         protected const decimal PERCENTUAL_ZERO = 0.00M;
 
-        protected readonly DateTime DATA_02_05 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
-        protected readonly DateTime DATA_07_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 07);
         protected readonly DateTime DATA_03_08 = new(DateTimeExtension.HorarioBrasilia().Year - 6, 03, 07);
 
         protected FrequenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -68,7 +58,6 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterSupervisorPorCodigoQuery, IEnumerable<SupervisoresRetornoDto>>), typeof(ObterSupervisorPorCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaInserirAulaRecorrenteCommand, bool>), typeof(IncluirFilaInserirAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<SalvarLogViaRabbitCommand, bool>), typeof(SalvarLogViaRabbitCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaExclusaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaExclusaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaAlteracaoAulaRecorrenteCommand, bool>), typeof(IncluirFilaAlteracaoAulaRecorrenteCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesDoProfessorNaTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesDoProfessorNaTurmaQueryHandlerAulaFake), ServiceLifetime.Scoped));
@@ -77,7 +66,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -139,6 +128,22 @@ namespace SME.SGP.TesteIntegracao
                 await CriarPeriodoEscolarEAbertura();
 
         }
+        protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
+        {
+            await CriarTipoCalendario(tipoCalendario);
+            
+            await CriarPadrao();
+            
+            await CriarComponenteCurricular();
+            
+            CriarClaimUsuario(perfil);
+            
+            await CriarUsuarios();
+            
+            await CriarTurma(modalidade);
+            
+            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
+        }
 
         protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
         {
@@ -196,9 +201,9 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
 
-        private Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
+        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
-            return new Aula
+            return new Dominio.Aula
             {
                 UeId = UE_CODIGO_1,
                 DisciplinaId = componenteCurricularCodigo,
@@ -432,7 +437,8 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = (int)TipoFrequencia.F,
-                NumeroAula = numeroAula
+                NumeroAula = numeroAula,
+                AulaId = 1
             });
         }
 
@@ -495,13 +501,13 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DO_ALUNO_1.ToString());
             await CriarDadosBase(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2);
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_139.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
+            await CriarAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), DATA_07_08, RecorrenciaAula.AulaUnica, NUMERO_AULAS_2);
             var parametrosFrontEnd = new SalvarAnotacaoFrequenciaAlunoDto
             {
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
                 Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
                 AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_139,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 CodigoAluno = CODIGO_ALUNO_99999,
                 EhInfantil = false
             };
@@ -515,7 +521,6 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new ParametrosSistema()
             {
-                Id = 403,
                 Nome = "PercentualFrequenciaCritico",
                 Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
                 Descricao = "",
@@ -529,7 +534,6 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(new ParametrosSistema()
             {
-                Id = 402,
                 Nome = "PercentualFrequenciaAlerta",
                 Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
                 Descricao = "",
@@ -539,6 +543,33 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = DateTime.Now,
                 CriadoPor = "",
                 CriadoRF = ""
+            });
+        }
+
+        protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)
+        {
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                PeriodoInicio = DATA_02_05,
+                PeriodoFim = DATA_07_08,
+                Bimestre = 2,
+                TotalAulas = 3,
+                TotalAusencias = totalAusencia,
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
+                CriadoPor = "Sistema",
+                AlteradoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 23, 21, 52, 51),
+                AlteradoPor = "Sistema",
+                CriadoRF = "0",
+                AlteradoRF = "0",
+                TotalCompensacoes = 0,
+                PeriodoEscolarId = 1,
+                TotalPresencas = 1,
+                TotalRemotos = 0,
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                CodigoAluno = codigoAluno,
+                TurmaId = TURMA_CODIGO_1,
+                Tipo = tipoFrequenciaAluno
+
             });
         }
     }

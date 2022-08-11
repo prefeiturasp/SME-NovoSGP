@@ -1,13 +1,14 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAlunoFoto : RepositorioBase<AlunoFoto>, IRepositorioAlunoFoto
     {
-        public RepositorioAlunoFoto(ISgpContext conexao) : base(conexao)
+        public RepositorioAlunoFoto(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -29,7 +30,8 @@ namespace SME.SGP.Dados.Repositorios
                         af.id as FotoId,
                         af.arquivo_id as ArquivoId,
                         af2.id as MiniaturaId,
-                        af2.arquivo_id as MiniaturaArquivoId
+                        af2.arquivo_id as MiniaturaArquivoId,
+                        af.criado_rf as CriadoRf
                     from
 	                    arquivo a
                     inner join aluno_foto af on
@@ -40,6 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    a2.id = af2.arquivo_id
                     where
 	                    not af.excluido and
+	                    not af2.excluido and
 	                    af.aluno_codigo = @alunoCodigo
                     order by af.id desc";
 

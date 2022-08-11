@@ -17,14 +17,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 {
     public class Ao_registrar_avaliacao_para_professor_regente : TesteAvaliacao
     {
-        private readonly DateTime DATA_24_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 24);
-
-        private const int NUMERO_0 = 0;
-        private const int NUMERO_1 = 1;
-        private const int NUMERO_2 = 2;
-        private const int NUMERO_3 = 3;
-        private const int RETORNAR_4 = 4;
-
+        
         public Ao_registrar_avaliacao_para_professor_regente(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
@@ -128,11 +121,9 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var atividadeAvaliativa = ObterAtividadeAvaliativaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), CategoriaAtividadeAvaliativa.Normal, DATA_24_01, TipoAvaliacaoCodigo.AvaliacaoBimestral);
 
+            await CriarTurma(dadosCriacao.ModalidadeTurma, ANO_2, TURMA_CODIGO_2);
+
             await CriarAula(DATA_24_01, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_2, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
-
-            await CriarTurma(dadosCriacao.ModalidadeTurma, TURMA_CODIGO_2);
-
-            var turmas = ObterTodos<Turma>();
 
             await ValidarInsercaoAvaliacao(atividadeAvaliativa, NUMERO_1, NUMERO_0, NUMERO_1);
 

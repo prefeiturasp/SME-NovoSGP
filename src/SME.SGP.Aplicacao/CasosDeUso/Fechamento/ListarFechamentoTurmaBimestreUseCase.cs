@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceitoNoPeriodo(periodoAtual, usuarioEPeriodoPodeEditar) : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -303,7 +303,7 @@ namespace SME.SGP.Aplicacao
             {
                 AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(componenteCurricularCodigo.ToString(), aluno, turma);
 
-                fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoFim, turma.EhTurmaInfantil));
+                fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoInicio, turma.EhTurmaInfantil));
 
                 foreach (var periodo in periodosEscolares.OrderBy(a => a.Bimestre))
                 {
@@ -471,7 +471,7 @@ namespace SME.SGP.Aplicacao
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
 
-            if (nota > 0)
+            if (nota >= 0)
             {
                 notasConceito.NotaConceito = nota;
                 notasConceito.EmAprovacao = true;
