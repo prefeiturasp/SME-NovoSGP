@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ExecuteTeste(
+        protected async Task ExecutarTeste(
                     ConselhoClasseNotaDto conselhoClasseNotaDto, 
                     int conselhoClasseId,
                     bool anoAnterior, 

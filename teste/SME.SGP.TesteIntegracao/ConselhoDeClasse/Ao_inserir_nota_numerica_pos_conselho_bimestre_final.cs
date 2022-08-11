@@ -29,10 +29,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         
         [Theory]
         [InlineData(false)]
-        // [InlineData(true)]
         public async Task Deve_lancar_numerica_pos_conselho_bimestre(bool anoAnterior)
         {
-            await CrieDados(ObterPerfilProfessor(), 
+            await CriarDados(ObterPerfilProfessor(), 
                             COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
                             TipoNota.Nota, 
                             ANO_8, 
@@ -42,10 +41,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             SituacaoConselhoClasse.EmAndamento,
                             true);
             
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior,SituacaoConselhoClasse.EmAndamento);
+            await ExecutarTeste(ObterConselhoClasseNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138),0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2,SituacaoConselhoClasse.EmAndamento);
         }
 
-        private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
+        private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -70,12 +69,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
         }
 
-        private async Task ExecuteTeste(long componente, bool anoAnterior,SituacaoConselhoClasse situacaoConselhoClasse)
-        {
-            await ExecuteTeste(ObtenhaDto(componente), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Nota, BIMESTRE_2,situacaoConselhoClasse);
-        }
-
-        private ConselhoClasseNotaDto ObtenhaDto(long componente)
+        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componente)
         {
             return new ConselhoClasseNotaDto()
             {
