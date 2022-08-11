@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao
         {
             CodigoTurma = codigoTurma;
         }
-        public string CodigoTurma { get; set; }
+
+        public string CodigoTurma { get; }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConselhoClasseAlunoCommandHandler : AsyncRequestHandler<SalvarConselhoClasseAlunoCommand>
+    public class SalvarConselhoClasseAlunoCommandHandler : IRequestHandler<SalvarConselhoClasseAlunoCommand, long>
     {
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
 
@@ -15,7 +15,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
-        protected override async Task Handle(SalvarConselhoClasseAlunoCommand request, CancellationToken cancellationToken)
-            => await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
+        public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request,CancellationToken cancellationToken)
+        {
+            return await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
+        }
     }
 }
