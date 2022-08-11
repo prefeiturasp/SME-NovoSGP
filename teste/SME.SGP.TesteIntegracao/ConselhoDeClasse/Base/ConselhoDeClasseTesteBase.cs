@@ -103,11 +103,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
+
+            var situacaoConselhoClasseInserida = ehBimestreFinal
+                                    ? conselhosClasse.LastOrDefault()
+                                    : conselhosClasse.FirstOrDefault();
+
             (conselhosClasse.FirstOrDefault().Situacao == situacaoConselhoClasse).ShouldBeTrue();
 
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
             conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
+
+            var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
+            conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
 
             var conselhosClasseNotas = ObterTodos<ConselhoClasseNota>();
             conselhosClasseNotas.ShouldNotBeNull();
