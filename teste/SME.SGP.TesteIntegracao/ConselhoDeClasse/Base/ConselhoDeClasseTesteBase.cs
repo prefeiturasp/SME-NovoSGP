@@ -85,13 +85,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         protected async Task ExecutarTeste(
-                    ConselhoClasseNotaDto conselhoClasseNotaDto, 
+                    ConselhoClasseNotaDto conselhoClasseNotaDto,
                     int conselhoClasseId,
-                    bool anoAnterior, 
-                    string codigoAluno, 
+                    bool anoAnterior,
+                    string codigoAluno,
                     TipoNota tipoNota,
                     int bimestre,
-                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
+                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
+                    long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
         {
             var ehBimestreFinal = bimestre == 0;
             
@@ -99,21 +100,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId, TURMA_CODIGO_1, bimestre);
             dtoRetorno.ShouldNotBeNull();
-            
+
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
+            (conselhosClasse.FirstOrDefault().Situacao == situacaoConselhoClasse).ShouldBeTrue();
 
-            var situacaoConselhoClasseInserida = ehBimestreFinal 
-                                                ? conselhosClasse.LastOrDefault() 
-                                                : conselhosClasse.FirstOrDefault();
-            
-            (situacaoConselhoClasseInserida.Situacao == situacaoConselhoClasse).ShouldBeTrue();
-            
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
-
-            var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
-            conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
+            conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
 
             var conselhosClasseNotas = ObterTodos<ConselhoClasseNota>();
             conselhosClasseNotas.ShouldNotBeNull();
@@ -147,22 +141,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
 
             var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
-            
-            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(codigoAluno, 
-                TURMA_ID_1, 
-                bimestre == 0 ? null : bimestre, 
+
+            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(codigoAluno,
+                TURMA_ID_1,
+                bimestre,
                 false,
-                conselhoClasseNotaDto.Nota, 
+                conselhoClasseNotaDto.Nota,
                 conselhoClasseNotaDto.Conceito,
                 conselhoClasseNotaDto.CodigoComponenteCurricular);
-            
+
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
 
             var alunosConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
             alunosConsolidacao.ShouldNotBeNull();
             alunosConsolidacao.Any(s => !s.AlunoCodigo.Equals(codigoAluno)).ShouldBeFalse();
             var conselhoClasseConsolidadoTurmaAlunoId = alunosConsolidacao.FirstOrDefault().Id;
-            
+
             (alunosConsolidacao.FirstOrDefault().Status == situacaoConselhoClasse).ShouldBeTrue();
 
             var notasConslidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
@@ -173,8 +167,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 .FirstOrDefault(w =>
                 w.ConselhoClasseConsolidadoTurmaAlunoId == conselhoClasseConsolidadoTurmaAlunoId
                 && w.ComponenteCurricularId == conselhoClasseNotaDto.CodigoComponenteCurricular
-                && w.Bimestre == (bimestre == 0 ? null : bimestre));
-            
+                && w.Bimestre == bimestre);
+
             if (notaConsolidacao.Nota.HasValue)
             {
                 var atual = notaConsolidacao.Nota;
@@ -217,7 +211,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
             else
                 await CriarFechamentoTurma(filtroNota.Bimestre);
-            
+
             await CriarComponenteGrupoAreaOrdenacao();
 
             await CriarConselhoClasseRecomendacao();
@@ -274,27 +268,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var fechamentoTurmaId = 1;
             var fechamentoTurmaDisciplinaId = 1;
-            
+
             //Lançamento de fechamento bimestral 
             foreach (var periodoEscolar in periodosEscolares)
             {
                 await CriarFechamentoTurma(periodoEscolar.Id);
-                
+
                 await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
-                
+
                 await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
-                
+
                 fechamentoTurmaDisciplinaId++;
                 fechamentoTurmaId++;
             }
-            
+
             //Lançamento de fechamento Final
             await CriarFechamentoTurma(null);
-                
+
             await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
-                
+
             await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
-            
+
             await CriarFechamentoTurmaAlunoNota(componenteCurricular);
         }
 
@@ -304,7 +298,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 DisciplinaId = componenteCurricular,
                 FechamentoTurmaId = fechamentoTurmaId,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
@@ -315,11 +311,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 PeriodoEscolarId = periodoEscolarId == 0 ? null : periodoEscolarId,
                 TurmaId = TURMA_ID_1,
                 Excluido = false,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
-        private async Task CriarComponenteGrupoAreaOrdenacao() 
+        private async Task CriarComponenteGrupoAreaOrdenacao()
         {
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO, CODIGO_1, CODIGO_1, CODIGO_1);
         }
@@ -343,7 +341,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF
             });
         }
-        
+
         private async Task CriarFechamentoTurmaAluno(long fechamentoTurmaDisciplinaId)
         {
             foreach (var aluno in ObterAlunos())
@@ -352,24 +350,28 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 {
                     FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId,
                     AlunoCodigo = aluno,
-                    CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                });    
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
             }
         }
-        
+
         private async Task CriarFechamentoTurmaAlunoNota(long componenteCurricular)
         {
             var fechamentoAlunos = ObterTodos<FechamentoAluno>();
-            
+
             foreach (var fechamentoAluno in fechamentoAlunos)
             {
                 await InserirNaBase(new FechamentoNota()
                 {
                     DisciplinaId = componenteCurricular,
                     FechamentoAlunoId = fechamentoAluno.Id,
-                    Nota = new Random().Next(1,10),
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                });  
+                    Nota = new Random().Next(1, 10),
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
             }
         }
 
