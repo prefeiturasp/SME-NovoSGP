@@ -206,27 +206,40 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var fechamentoTurmaId = 1;
             var fechamentoTurmaDisciplinaId = 1;
             
+            //Lançamento de fechamento bimestral 
             foreach (var periodoEscolar in periodosEscolares)
             {
                 await CriarFechamentoTurma(periodoEscolar.Id);
                 
-                await InserirNaBase(new FechamentoTurmaDisciplina()
-                {
-                    DisciplinaId = componenteCurricular,
-                    FechamentoTurmaId = fechamentoTurmaId,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
-                });
+                await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
                 
                 await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
-            
-                await CriarFechamentoTurmaAlunoNota(componenteCurricular);
                 
                 fechamentoTurmaDisciplinaId++;
                 fechamentoTurmaId++;
             }
+            
+            //Lançamento de fechamento Final
+            await CriarFechamentoTurma(null);
+                
+            await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
+                
+            await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
+            
+            await CriarFechamentoTurmaAlunoNota(componenteCurricular);
         }
 
-        private async Task CriarFechamentoTurma(long periodoEscolarId)
+        private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
+        {
+            await InserirNaBase(new FechamentoTurmaDisciplina()
+            {
+                DisciplinaId = componenteCurricular,
+                FechamentoTurmaId = fechamentoTurmaId,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+
+        private async Task CriarFechamentoTurma(long? periodoEscolarId)
         {
             await InserirNaBase(new FechamentoTurma()
             {
