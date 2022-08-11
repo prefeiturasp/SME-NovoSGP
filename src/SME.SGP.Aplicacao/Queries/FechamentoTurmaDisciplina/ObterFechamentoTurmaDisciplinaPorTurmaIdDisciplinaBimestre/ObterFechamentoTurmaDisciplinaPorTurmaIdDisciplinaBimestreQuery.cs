@@ -10,13 +10,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery : IRequest<FechamentoTurmaDisciplina>
     {
-        public ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(string turmaCodigo, long disciplinaId)
+        public ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(string turmaCodigo, long disciplinaId, int? bimestre = 0)
         {
             TurmaCodigo = turmaCodigo;
             DisciplinaId = disciplinaId;
+            Bimestre = bimestre;
         }
 
         public string TurmaCodigo { get; set; }
         public long DisciplinaId { get; set; }
+        public int? Bimestre { get; set; }
     }
 }
