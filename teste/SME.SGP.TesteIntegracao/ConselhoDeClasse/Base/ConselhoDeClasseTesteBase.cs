@@ -78,11 +78,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                     string codigoAluno, 
                     TipoNota tipoNota,
                     int bimestre,
-                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado)
+                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, long fechamentoTurmaId = FECHAMENTO_TURMA_ID_1)
         {
             var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
 
-            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, FECHAMENTO_TURMA_ID_1, TURMA_CODIGO_1, bimestre);
+            var dtoRetorno = await comando.SalvarAsync(conselhoClasseNotaDto, codigoAluno, conselhoClasseId, fechamentoTurmaId, TURMA_CODIGO_1, bimestre);
             dtoRetorno.ShouldNotBeNull();
             
             var conselhosClasse = ObterTodos<ConselhoClasse>();
