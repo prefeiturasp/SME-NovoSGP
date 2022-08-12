@@ -46,8 +46,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoRf = "4",
                 Login = "4",
                 EstaAfastado = false,
-                NomeServidor = "PsicoPedagogo Teste",
-                Login = "4"}
+                NomeServidor = "PsicoPedagogo Teste"}
             };
         }
         private static IEnumerable<UsuarioEolRetornoDto> RetornarAssistenteSocialUsuarioEOL()
@@ -59,8 +58,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoRf = "5",
                 Login = "5",
                 EstaAfastado = false,
-                NomeServidor = "Assistente Social Teste",
-                Login = "5"}
+                NomeServidor = "Assistente Social Teste"}
             };
         }
 
