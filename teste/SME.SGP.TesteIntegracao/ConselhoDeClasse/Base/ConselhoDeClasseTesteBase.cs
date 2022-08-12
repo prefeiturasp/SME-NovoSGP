@@ -52,6 +52,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const int CONSELHO_CLASSE_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_2 = 2;
+        protected const int FECHAMENTO_TURMA_ID_3 = 3;
+        protected const int FECHAMENTO_TURMA_ID_4 = 4;
         protected const int FECHAMENTO_TURMA_ID_5 = 5;
         protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
         protected const string JUSTIFICATIVA = "Nota pós conselho";
@@ -103,6 +105,25 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
         
+        protected async Task ExecutarTesteSemValidacao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
+        {
+            var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            
+            await comando.Executar(salvarConselhoClasseAlunoNotaDto);
+            
+            var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
+            
+            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(salvarConselhoClasseAlunoNotaDto.CodigoAluno, 
+                TURMA_ID_1, 
+                salvarConselhoClasseAlunoNotaDto.Bimestre == 0 ? null : salvarConselhoClasseAlunoNotaDto.Bimestre, 
+                false,
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota, 
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
+            
+            await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
+        }
+        
 
         protected async Task ExecutarTeste(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto,
                                     bool anoAnterior,
@@ -128,8 +149,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
-            conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
 
+            if (ehBimestreFinal)
+                conselhosDeClasseAlunos.Count(a=> a.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBe(5);
+            else
+                conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
+            
             var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
             conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
 
@@ -202,7 +227,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 && w.ComponenteCurricularId == salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular
                 && w.Bimestre == salvarConselhoClasseAlunoNotaDto.Bimestre);
 
-            if (notaConsolidacao.Nota.HasValue)
+            if (tipoNota == TipoNota.Nota)
             {
                 var atual = notaConsolidacao.Nota;
                 (salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota == atual).ShouldBeTrue();
@@ -283,15 +308,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                         ConselhoClasseId = conselhoClasseId,
                         CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
                     });
+
+                    var nota = new Random().Next(1, 10);
                     
                     await InserirNaBase(new ConselhoClasseNota()
                     {
                         ConselhoClasseAlunoId = conselhoClasseAlunoId, 
-                        Nota = new Random().Next(1,10),
+                        Nota = nota,
                         Justificativa = "Lançamento automático",
                         ComponenteCurricularCodigo = componenteCurricular,
                         CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
                     });
+                    
                     conselhoClasseAlunoId++;
                 }
                 conselhoClasseId++;
@@ -1111,7 +1139,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CodigoComponenteCurricular = componenteCurricular,
                 Justificativa = JUSTIFICATIVA,
                 Conceito = tipoNota == TipoNota.Conceito ? new Random().Next(1,3) : null,
-                Nota = tipoNota == TipoNota.Conceito ? new Random().Next(1,10) : null
+                Nota = tipoNota == TipoNota.Nota ? new Random().Next(1,10) : null
             };
         }
 
