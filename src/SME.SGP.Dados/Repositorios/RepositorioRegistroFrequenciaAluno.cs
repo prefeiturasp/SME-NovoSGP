@@ -35,25 +35,21 @@ namespace SME.SGP.Dados
 
         public async Task ExcluirVarios(List<long> idsParaExcluir)
         {
-            var query = "delete from registro_frequencia_aluno where = any(@idsParaExcluir)";
+            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
 
-            using (var conexao = (NpgsqlConnection)database.Conexao)
-            {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync(
-                    query,
-                    new
-                    {
-                        idsParaExcluir
-
-                    });
-                conexao.Close();
-            }
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
         public async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros)
         {
             return await InserirVariosComLog(registros, true);
+        }
+
+        public async Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId)
+        {
+            var query = " update registro_frequencia_aluno set aula_id = @aulaId where registro_frequencia_id = @registroFrequenciaId ";
+
+            await database.Conexao.ExecuteAsync(query, new { aulaId, registroFrequenciaId });
         }
 
         private async Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros, bool log)
@@ -65,7 +61,8 @@ namespace SME.SGP.Dados
                                         registro_frequencia_id, 
                                         criado_em,
                                         criado_por,                                        
-                                        criado_rf)
+                                        criado_rf,
+                                        aula_id)
                             from
                             stdin (FORMAT binary)";
 
@@ -81,6 +78,7 @@ namespace SME.SGP.Dados
                     writer.Write(frequencia.CriadoEm);
                     writer.Write(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
                     writer.Write(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
+                    writer.Write(frequencia.AulaId);
                 }
                 writer.Complete();
             }

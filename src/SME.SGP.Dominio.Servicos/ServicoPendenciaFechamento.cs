@@ -71,7 +71,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 foreach (var aula in aulasPendentes.OrderBy(a => a.DataAula))
                 {
-                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(aula.TurmaId));
+                    var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(aula.TurmaId));
 
                     var professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
 

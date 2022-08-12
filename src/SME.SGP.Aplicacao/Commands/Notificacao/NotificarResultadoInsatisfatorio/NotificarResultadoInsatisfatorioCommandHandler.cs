@@ -153,8 +153,8 @@ namespace SME.SGP.Aplicacao
             var listaUsuarios = new List<long>();
             foreach (var usuario in usuarios.Distinct())
             {
-                if (usuario != "")
-                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(usuario)));
+                if (usuario.Login != "")
+                    listaUsuarios.Add(await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(usuario.Login)));
             }
 
             return listaUsuarios.Distinct();

@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         string PerfilUsuario { get; }
         string UsuarioLogadoNomeCompleto { get; }
         string UsuarioLogadoRF { get; }
-
+        string Administrador { get; }
         void AbrirConexao();
         void FecharConexao();
     }

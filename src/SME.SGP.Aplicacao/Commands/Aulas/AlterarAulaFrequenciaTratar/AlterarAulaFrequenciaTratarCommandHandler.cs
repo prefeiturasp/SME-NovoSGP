@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
                 //TODO: Criar método genérico com Auditoria
                 if (idsParaExcluir.Count > 0)
-                    await repositorioRegistroFrequenciaAluno.ExcluirVarios(idsParaExcluir.ToArray());                
+                    await repositorioRegistroFrequenciaAluno.ExcluirVarios(idsParaExcluir);                
 
             }
 

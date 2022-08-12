@@ -12,5 +12,7 @@ namespace SME.SGP.Aplicacao
         Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEol(string login, string senha);
 
         bool TemPerfilNoToken(string guid);
+
+        Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEolSemSenha(string login);
     }
 }

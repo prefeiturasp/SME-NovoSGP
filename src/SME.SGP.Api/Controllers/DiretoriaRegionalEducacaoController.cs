@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿
+
+
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao;
@@ -24,19 +27,19 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<CicloDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
         public IActionResult Get()
         {
             return Ok(consultaDres.ObterTodos());
         }
 
-        [HttpGet("{dreId}/ues/sem-atribuicao")]
+        [HttpGet("{dreId}/ues/sem-atribuicao/{tipoResponsavel}")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId)
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEscolasSemAtribuicao(string dreId, int tipoResponsavel)
         {
-            var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId);
+            var retorno = await consultaDres.ObterEscolasSemAtribuicao(dreId, tipoResponsavel);
             if (retorno.Any())
                 return Ok(retorno);
             else return StatusCode(204);
@@ -45,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{dreId}/ues")]
         [ProducesResponseType(typeof(IEnumerable<UnidadeEscolarDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.ASP_I, Permissao.ASP_A, Permissao.ASP_C, Policy = "Bearer")]
+        [Permissao(Permissao.ARP_I, Permissao.ARP_A, Permissao.ARP_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterUesPorDre(string dreId)
         {
             var retorno = await consultaDres.ObterEscolasPorDre(dreId);

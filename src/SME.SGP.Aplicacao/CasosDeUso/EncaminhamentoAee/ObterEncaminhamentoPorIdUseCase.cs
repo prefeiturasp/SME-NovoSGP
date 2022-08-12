@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
         {
             var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
-            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
+            return funcionarios.Any(c => c.Login == usuarioLogado.CodigoRf);
         }
 
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)

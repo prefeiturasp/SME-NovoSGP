@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Configuration;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,20 +15,17 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
         private readonly IRepositorioPendencia repositorioPendencia;
-        private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
         private readonly IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE;
         private readonly IUnitOfWork unitOfWork;
 
-
         public GerarPendenciaAtribuirResponsavelEncaminhamentoAEECommandHandler(IMediator mediator, IConfiguration configuration,
-            IRepositorioPendencia repositorioPendencia, IRepositorioPendenciaUsuario repositorioPendenciaUsuario,
+            IRepositorioPendencia repositorioPendencia, 
             IRepositorioPendenciaEncaminhamentoAEE repositorioPendenciaEncaminhamentoAEE,
             IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
-            this.repositorioPendenciaUsuario = repositorioPendenciaUsuario ?? throw new ArgumentNullException(nameof(repositorioPendenciaUsuario));
             this.repositorioPendenciaEncaminhamentoAEE = repositorioPendenciaEncaminhamentoAEE ?? throw new ArgumentNullException(nameof(repositorioPendenciaEncaminhamentoAEE));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -39,12 +34,11 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentoAEE = request.EncaminhamentoAEE;
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
             if (request.EhCEFAI)
             {
                 await EnviarParaCEFAI(turma, encaminhamentoAEE);
-
                 return true;
             }
             else

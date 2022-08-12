@@ -56,19 +56,22 @@ namespace SME.SGP.Aplicacao
                         {
                             var professorTitularTurma = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(item.First().TurmaId, item.First().DisciplinaId));
 
-                            if (professorTitularTurma != null)
-                            {
-                                if (periodoEscolar != null)
-                                    await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                                if (professorTitularTurma != null)
+                                {
+                                    if (periodoEscolar != null)
+                                        await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe.CodigoTurma, turmaComDreUe.UeId);
+                                }
                             }
-                        }
-                        else
-                        {
-                            var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(item.First().TurmaId));
-
-                            if (professoresTitularesDaTurma != null)
+                            else
                             {
-                                string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
+                                var listaProfessoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(item.First().TurmaId));
+                                
+                                var professoresTitularesDaTurma =
+                                    listaProfessoresTitularesDaTurma?.Select(x => x.ProfessorRf);
+                                
+                                if (professoresTitularesDaTurma != null)
+                                {
+                                    string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');
 
                                 foreach (var professor in professoresSeparados)
                                 {

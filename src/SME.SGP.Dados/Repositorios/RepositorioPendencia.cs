@@ -403,7 +403,6 @@ namespace SME.SGP.Dados.Repositorios
                     break;
 
                 case TipoPendencia.AulaNaoLetivo:
-
                     query += @" LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
                                 LEFT JOIN aula a ON a.id = pa.aula_id
                                 LEFT JOIN turma t ON t.turma_id = a.turma_id ";
@@ -422,14 +421,12 @@ namespace SME.SGP.Dados.Repositorios
                 case TipoPendencia.AusenciaDeAvaliacaoProfessor:
                 case TipoPendencia.AusenciaDeAvaliacaoCP:
                 case TipoPendencia.AusenciaFechamento:
-
                     query += @" LEFT JOIN pendencia_professor pp ON pp.pendencia_id = p.id
                                 LEFT JOIN turma t on t.id = pp.turma_id ";
 
                     break;
 
                 case TipoPendencia.AusenciaDeRegistroIndividual:
-
                     query += @" LEFT JOIN pendencia_registro_individual pri ON pri.pendencia_id = p.id
                                 LEFT JOIN turma t ON t.id = pri.turma_id ";
 
@@ -448,10 +445,13 @@ namespace SME.SGP.Dados.Repositorios
                         break;
                     }
 
+                case TipoPendencia.Devolutiva:
+                    query += @" LEFT JOIN pendencia_devolutiva pd ON pd.pendencia_id = p.id
+                                LEFT JOIN turma t on t.id = pd.turma_id";
+                    break;
+
                 default:
-
                     tipoPendenciaAceito = false;
-
                     break;
             }
 
