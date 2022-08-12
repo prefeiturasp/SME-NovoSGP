@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
@@ -28,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         [Fact]
-        public async Task Deve_lancar_numerica_pos_conselho_bimestre_2()
+        public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_2()
         {
             var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
             
@@ -38,7 +39,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         [Fact]
-        public async Task Deve_lancar_numerica_pos_conselho_bimestre_final()
+        public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_final()
         {
             var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
             filtroConselhoClasse.BimestreConselhoClasse = BIMESTRE_FINAL;
@@ -46,6 +47,39 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             filtroConselhoClasse.CriarConselhosTodosBimestres = true;
             
             await CriarDados(filtroConselhoClasse);
+            
+            await ExecutarTeste(filtroConselhoClasse);
+        }
+        
+        [Fact]
+        public async Task Deve_alterar_nota_numerica_pos_conselho_bimestre_2()
+        {
+            var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
+            
+            await CriarDados(filtroConselhoClasse);
+            
+            await ExecutarTesteSemValidacao(filtroConselhoClasse);
+
+            filtroConselhoClasse.ConselhoClasseId = 1;
+            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
+            
+            await ExecutarTeste(filtroConselhoClasse);
+        }
+        
+        [Fact]
+        public async Task Deve_alterar_nota_numerica_pos_conselho_bimestre_final()
+        {
+            var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
+            filtroConselhoClasse.BimestreConselhoClasse = BIMESTRE_FINAL;
+            filtroConselhoClasse.FechamentoTurmaId = FECHAMENTO_TURMA_ID_5;
+            filtroConselhoClasse.CriarConselhosTodosBimestres = true;
+            
+            await CriarDados(filtroConselhoClasse);
+            
+            await ExecutarTesteSemValidacao(filtroConselhoClasse);
+
+            filtroConselhoClasse.ConselhoClasseId = 5;
+            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
             
             await ExecutarTeste(filtroConselhoClasse);
         }
@@ -103,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             return new ConselhoClasseNotaDto()
             {
                 CodigoComponenteCurricular = componente,
-                Nota = NOTA_7,
+                Nota = new Random().Next(1,10),
                 Justificativa = JUSTIFICATIVA
             };
         }

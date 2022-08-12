@@ -83,7 +83,32 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 filtroConselhoClasseDto.SituacaoConselho,
                 filtroConselhoClasseDto.FechamentoTurmaId);
         }
+
+        protected async Task ExecutarTesteSemValidacao(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        {
+            var comando = ServiceProvider.GetService<IComandosConselhoClasseNota>();
+            
+            await comando.SalvarAsync(filtroConselhoClasseDto.ConselhoClassePersistirDto, 
+                filtroConselhoClasseDto.AlunoCodigo, 
+                filtroConselhoClasseDto.ConselhoClasseId, 
+                filtroConselhoClasseDto.FechamentoTurmaId,
+                TURMA_CODIGO_1, 
+                filtroConselhoClasseDto.BimestreConselhoClasse);
+            
+            var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
+            
+            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(filtroConselhoClasseDto.AlunoCodigo, 
+                TURMA_ID_1, 
+                filtroConselhoClasseDto.BimestreConselhoClasse == 0 ? null : filtroConselhoClasseDto.BimestreConselhoClasse, 
+                false,
+                filtroConselhoClasseDto.ConselhoClassePersistirDto.Nota, 
+                filtroConselhoClasseDto.ConselhoClassePersistirDto.Conceito,
+                filtroConselhoClasseDto.ConselhoClassePersistirDto.CodigoComponenteCurricular);
+            
+            await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
+        }
         
+
         protected async Task ExecutarTeste(
                     ConselhoClasseNotaDto conselhoClasseNotaDto,
                     int conselhoClasseId,
