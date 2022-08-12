@@ -11,7 +11,6 @@ namespace SME.SGP.Dados
             Map(c => c.NumeroAula).ToColumn("numero_aula");
             Map(c => c.Valor).ToColumn("valor");
             Map(c => c.RegistroFrequenciaId).ToColumn("registro_frequencia_id");
-            Map(c => c.AulaId).ToColumn("aula_id");
         }
     }
 }

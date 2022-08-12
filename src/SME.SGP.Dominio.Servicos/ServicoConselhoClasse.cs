@@ -100,14 +100,7 @@ namespace SME.SGP.Dominio.Servicos
             else
             {
                 if (fechamentoTurma.PeriodoEscolarId != null)
-                {
                     periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
-                }
-                    
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
-                {
-                    DisciplinaId = conselhoClasseNotaDto.CodigoComponenteCurricular
-                };
             }
 
             await GravarFechamentoTurma(fechamentoTurma, fechamentoTurmaDisciplina, turma, periodoEscolar);
@@ -175,20 +168,15 @@ namespace SME.SGP.Dominio.Servicos
                         conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;                        
                     }
                     else conselhoClasseNota.Nota = null;
-                    
-                    // Gera histórico de alteração
+
                     if (conselhoClasseNotaDto.Conceito.HasValue)
                     {
+                        // Gera histórico de alteração
                         if (conselhoClasseNota.ConceitoId != conselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, conselhoClasseNotaDto.Conceito.Value));
-                    }
-                    else
-                    {
-                        if (conselhoClasseNota.ConceitoId != null)
-                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null));
-                    }
 
-                    conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.HasValue ? conselhoClasseNotaDto.Conceito.Value : null;
+                        conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+                    }
                 }
 
                 if (turma.AnoLetivo == 2020)

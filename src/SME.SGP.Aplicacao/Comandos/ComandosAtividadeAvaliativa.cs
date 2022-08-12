@@ -24,7 +24,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
-        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
@@ -38,8 +37,7 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IMediator mediator,
-            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
+            IMediator mediator)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -54,7 +52,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));
             this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
-            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id)
@@ -143,23 +140,6 @@ namespace SME.SGP.Aplicacao
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(atividadeAvaliativa.TurmaId));
-
-            var disciplinaId = long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId);
-
-            var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId), turma.CodigoTurma, DateTime.Now.Date, usuario));
-
-            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
-
-            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
-
-            var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
-
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
-
-            if (!temPeriodoAberto)
-                throw new NegocioException("Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
-
             if (!usuario.EhGestorEscolar())
             {
                 atividadeAvaliativa.PodeSerAlterada(usuario);
@@ -234,15 +214,6 @@ namespace SME.SGP.Aplicacao
 
             if (await AtividadeImportada(filtro.Id))
                 return;
-
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaId));
-
-            var mesmoAnoLetivo = DateTime.Today.Year == dataAvaliacao.Year;
-
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
-
-            if (!temPeriodoAberto)
-                throw new NegocioException("Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
             if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, filtro.Id))
@@ -498,7 +469,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (!usuario.EhProfessorCj() && !await mediator.Send(new PodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula.Ticks)))
+            if (usuario == null)
+                usuario = await servicoUsuario.ObterUsuarioLogado();
+
+            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
                 throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
         }
     }

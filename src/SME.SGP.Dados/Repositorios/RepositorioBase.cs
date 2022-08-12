@@ -1,24 +1,23 @@
 ﻿using Dapper;
-using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Dommel;
+using Npgsql;
+using System.Text;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public abstract class RepositorioBase<T> : IRepositorioBase<T> where T : EntidadeBase
     {
-        protected readonly ISgpContext database;
-        private readonly IServicoAuditoria servicoAuditoria;
+        protected readonly ISgpContext database;       
 
-        protected RepositorioBase(ISgpContext database, IServicoAuditoria servicoAuditoria)
+        protected RepositorioBase(ISgpContext database)
         {
-            this.database = database;
-            this.servicoAuditoria = servicoAuditoria ?? throw new ArgumentNullException(nameof(servicoAuditoria));
+            this.database = database;            
         }
 
         public virtual async Task<IEnumerable<T>> ListarAsync()
@@ -45,13 +44,13 @@ namespace SME.SGP.Dados.Repositorios
             var entidade = database.Conexao.Get<T>(id);
             database.Conexao.Delete(entidade);
             if (entidade != null)
-                AuditarAsync(entidade.Id, "E").Wait();
+                Auditar(entidade.Id, "E");
         }
 
         public virtual void Remover(T entidade)
         {
             database.Conexao.Delete(entidade);
-            AuditarAsync(entidade.Id, "E").Wait();
+            Auditar(entidade.Id, "E");
         }
         
         public virtual async Task RemoverAsync(T entidade)
@@ -68,14 +67,14 @@ namespace SME.SGP.Dados.Repositorios
                 entidade.AlteradoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.AlteradoRF = database.UsuarioLogadoRF;
                 database.Conexao.Update(entidade);
-                AuditarAsync(entidade.Id, "A").Wait();
+                Auditar(entidade.Id, "A");
             }
             else
             {
                 entidade.CriadoPor = database.UsuarioLogadoNomeCompleto;
                 entidade.CriadoRF = database.UsuarioLogadoRF;
                 entidade.Id = (long)database.Conexao.Insert(entidade);
-                AuditarAsync(entidade.Id, "I").Wait();
+                Auditar(entidade.Id, "I");
             }
 
             return entidade.Id;
@@ -131,11 +130,10 @@ namespace SME.SGP.Dados.Repositorios
                 });
         }
 
-        protected async Task AuditarAsync(long identificador, string acao)
+        private void Auditar(long identificador, string acao)
         {
             var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
-
-            var auditoria = new Auditoria()
+            database.Conexao.Insert<Auditoria>(new Auditoria()
             {
                 Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = typeof(T).Name.ToLower(),
@@ -143,11 +141,23 @@ namespace SME.SGP.Dados.Repositorios
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
                 Perfil = perfil,
-                Acao = acao,
-                Administrador = database.Administrador
-            };
+                Acao = acao
+            });
+        }
 
-            await servicoAuditoria.Auditar(auditoria);
+        protected async Task AuditarAsync(long identificador, string acao)
+        {
+            var perfil = database.PerfilUsuario != String.Empty ? Guid.Parse(database.PerfilUsuario) : (Guid?)null;
+            await database.Conexao.InsertAsync<Auditoria>(new Auditoria()
+            {
+                Data = DateTimeExtension.HorarioBrasilia(),
+                Entidade = typeof(T).Name.ToLower(),
+                Chave = identificador,
+                Usuario = database.UsuarioLogadoNomeCompleto,
+                RF = database.UsuarioLogadoRF,
+                Perfil = perfil,
+                Acao = acao
+            });
         }
        // public async Task SalvarVariosAsync(IEnumerable<T> entidades)
        // {

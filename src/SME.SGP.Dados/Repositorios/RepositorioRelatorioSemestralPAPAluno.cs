@@ -1,17 +1,17 @@
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
-using System;
+using Dapper;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioRelatorioSemestralPAPAluno : RepositorioBase<RelatorioSemestralPAPAluno>, IRepositorioRelatorioSemestralPAPAluno
     {
-        public RepositorioRelatorioSemestralPAPAluno(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioRelatorioSemestralPAPAluno(ISgpContext database) : base(database)
         {
         }
 

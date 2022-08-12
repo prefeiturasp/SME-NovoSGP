@@ -23,7 +23,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IEnviarNotificacaoCriacaoPlanoAEEUseCase, EnviarNotificacaoCriacaoPlanoAEEUseCase>();
             services.TryAddScoped<IEnviarNotificacaoEncerramentoPlanoAEEUseCase, EnviarNotificacaoEncerramentoPlanoAEEUseCase>();
             services.TryAddScoped<INotificacaoSalvarItineranciaUseCase, NotificacaoSalvarItineranciaUseCase>();
-            services.TryAddScoped<ITransferirPendenciaParaNovoResponsavelUseCase, TransferirPendenciaParaNovoResponsavelUseCase>();
         }
     }
 }

@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEvento : RepositorioBase<Evento>, IRepositorioEvento
     {
-        public RepositorioEvento(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioEvento(ISgpContext conexao) : base(conexao)
         {
         }
 
@@ -730,8 +730,8 @@ namespace SME.SGP.Dados.Repositorios
             queryNova.AppendLine($"{ (ehTodasDres ? "null" : string.IsNullOrWhiteSpace(dreId) ? "null" : $"'{dreId}'")}, ");
             queryNova.AppendLine($"{(ehTodasUes ? "null" : string.IsNullOrWhiteSpace(ueId) ? "null" : $"'{ueId}'")},");
             queryNova.AppendLine($"{podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme}, ");
-            queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE('{dataInicio.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
-            queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE('{dataFim.Value.ToString("MM-dd-yyyy")}', 'MM-dd-yyyy')" : "null")}, ");
+            queryNova.AppendLine($"{(dataInicio.HasValue ? $"TO_DATE(TO_CHAR('{dataInicio.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
+            queryNova.AppendLine($"{(dataFim.HasValue ? $"TO_DATE(TO_CHAR('{dataFim.Value.Date.ToString("MM-dd-yyyy")}':: DATE, 'yyyy-mm-dd'), 'yyyy-mm-dd')" : "null")}, ");
             queryNova.AppendLine($"{(tipoEventoId.HasValue ? tipoEventoId.ToString() : "null")}, ");
             queryNova.AppendLine($"{(string.IsNullOrWhiteSpace(nomeEvento) ? "null" : $"'{nomeEvento}'")},");
             queryNova.AppendLine($"{usuario.EhPerfilSME()},");
@@ -1360,37 +1360,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<EventoCalendarioRetornoDto>(query.ToString(), parametros);
 
-        }
-
-        public async Task<bool> DataPossuiEventoDeLiberacaoEoutroEventoLetivo(long tipoCalendarioId, DateTime data, string ueId)
-        {
-            var query = @"SELECT 1
-                         FROM evento e
-                         INNER JOIN evento_tipo et on et.id = e.tipo_evento_id
-                         LEFT JOIN (SELECT e.id 
-                                   FROM evento e 
-                                   INNER JOIN evento_tipo et ON et.id = e.tipo_evento_id
-                                   WHERE (et.codigo = @codigoLiberacaoExcepcional)) liberacao ON liberacao.id = e.id
-                         LEFT JOIN (SELECT e.id 
-                                    FROM evento e 
-                                    INNER JOIN evento_tipo et ON et.id = e.tipo_evento_id
-                                    WHERE (et.codigo <> @codigoLiberacaoExcepcional)) outros ON outros.id = e.id
-                         WHERE e.excluido = false
-                            AND e.letivo = @eventoLetivo
-                            AND e.tipo_calendario_id = @tipoCalendarioId
-                            AND ((e.dre_id is null and e.ue_id is null) OR (e.ue_id = @ueId))
-                            AND e.data_inicio <= @dataAula
-	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
-                            HAVING Count(liberacao.id) >= 1 AND Count(outros.id) >= 1";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
-            {
-                tipoCalendarioId,
-                dataAula = data.Date,
-                ueId,
-                codigoLiberacaoExcepcional = TipoEvento.LiberacaoExcepcional,
-                eventoLetivo = EventoLetivo.Sim
-            });
         }
     }
 }

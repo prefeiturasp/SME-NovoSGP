@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                     disciplinaDto = componentesCurriculares.SingleOrDefault();
                 }
 
-                var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(aula.TurmaId, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year ? planoAulaDto.ConsideraHistorico : true));
+                var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year ? planoAulaDto.ConsideraHistorico : true);
                 if (abrangenciaTurma == null)
                     throw new NegocioException("Usuario sem acesso a turma da respectiva aula");
 

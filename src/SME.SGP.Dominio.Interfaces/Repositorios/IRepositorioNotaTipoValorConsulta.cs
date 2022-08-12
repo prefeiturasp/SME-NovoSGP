@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotaTipoValorConsulta : IRepositorioBase<NotaTipoValor>
     {
-        Task<NotaTipoValor> ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao);
+        NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao);
 
         NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular);
 

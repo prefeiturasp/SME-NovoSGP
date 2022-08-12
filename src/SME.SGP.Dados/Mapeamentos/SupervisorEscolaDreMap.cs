@@ -11,7 +11,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.EscolaId).ToColumn("escola_id");
             Map(c => c.SupervisorId).ToColumn("supervisor_id");
             Map(c => c.Excluido).ToColumn("excluido");
-            Map(c => c.Tipo).ToColumn("tipo");
         }
     }
 }

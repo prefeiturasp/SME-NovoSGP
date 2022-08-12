@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -25,17 +24,17 @@ namespace SME.SGP.Aplicacao
         {
             var alunos = request.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
             if (alunos == null || !alunos.Any())
-                throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
+                throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId));
 
             if (aula == null)
-                throw new NegocioException(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
+                throw new NegocioException("A aula informada não foi encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
             if (turma == null)
-                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
+                throw new NegocioException("Turma informada não foi encontrada");
 
 
             if (usuario.EhProfessorCj())
@@ -47,13 +46,13 @@ namespace SME.SGP.Aplicacao
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
                     if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
+                        throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
                 }
             }
 
 
             if (!aula.PermiteRegistroFrequencia(turma))
-                throw new NegocioException(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
+                throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
 
 
             if (!usuario.EhGestorEscolar())
@@ -69,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 registroFrequencia = new RegistroFrequencia(aula);
 
             registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia));
-            await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id, long.Parse(aula.DisciplinaId),aula.Id));
+            await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id, long.Parse(aula.DisciplinaId)));
 
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
@@ -91,7 +90,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
             {
-                throw new NegocioException(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
+                throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
             }
         }
 

@@ -4,11 +4,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.FrequenciaAluno
+namespace SME.SGP.TesteIntegracao
 {
     public class RetornarTotalAulasPorAlunoTurmaDisciplinaTeste : TesteBase
     {
@@ -66,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new Dominio.FrequenciaAluno
+            await InserirNaBase(new FrequenciaAluno
             {
                 Id = 25510725,
                 PeriodoInicio = new DateTime(2020, 02, 05),

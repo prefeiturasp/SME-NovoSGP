@@ -36,7 +36,6 @@ namespace SME.SGP.AEE.Worker
             Comandos.Add(RotasRabbitSgpAEE.NotificarCriacaoPlanoAEE, new ComandoRabbit("Enviar Notificação de Criação de PlanoAEE", typeof(IEnviarNotificacaoCriacaoPlanoAEEUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.NotificarPlanoAEEEncerrado, new ComandoRabbit("Enviar Notificação de Encerramento de PlanoAEE", typeof(IEnviarNotificacaoEncerramentoPlanoAEEUseCase)));
             Comandos.Add(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase, new ComandoRabbit("Enviar Notificação quanto insere um novo Registro de Itinerância", typeof(INotificacaoSalvarItineranciaUseCase)));
-            Comandos.Add(RotasRabbitSgpAEE.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, new ComandoRabbit("Transferir pendência plano aee para novo responsável", typeof(ITransferirPendenciaParaNovoResponsavelUseCase)));
         }
     }
 }

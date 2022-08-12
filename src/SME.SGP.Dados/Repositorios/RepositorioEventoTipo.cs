@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Linq;
 using System.Text;
@@ -13,7 +12,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEventoTipo : RepositorioBase<EventoTipo>, IRepositorioEventoTipo
     {
-        public RepositorioEventoTipo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioEventoTipo(ISgpContext conexao) : base(conexao)
         {
         }
 

@@ -58,8 +58,5 @@ namespace SME.SGP.Dominio
         
         [Display(Name = "AEE", GroupName = "AEE")]
         AEE = 18,
-
-        [Display(Name = "Pendências de Devolutivas", GroupName = "Diario de Classe")]
-        Devolutiva = 19,
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -39,10 +40,9 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(fechamentoFinalSalvarDto.TurmaCodigo);
             var emAprovacao = await ExigeAprovacao(turma, usuarioLogado);
 
-            var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma);
+            var fechamentoTurmaDisciplina = await TransformarDtoSalvarEmEntidade(fechamentoFinalSalvarDto, turma, emAprovacao);
 
-            var auditoria = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma, usuarioLogado,
-                fechamentoFinalSalvarDto.Itens, emAprovacao);
+            var auditoria = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma, usuarioLogado, fechamentoFinalSalvarDto.Itens, emAprovacao);
 
             if (!auditoria.EmAprovacao)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
@@ -80,14 +80,12 @@ namespace SME.SGP.Aplicacao
             return parametro.Ativo;
         }
 
-        private async Task<FechamentoTurmaDisciplina> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma)
+        private async Task<FechamentoTurmaDisciplina> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma, bool emAprovacao)
         {
             var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? long.Parse(fechamentoFinalSalvarDto.DisciplinaId) : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina = null;
-
             var fechamentoFinalTurma = await repositorioFechamentoTurma.ObterPorTurmaPeriodo(turma.Id);
-
             if (fechamentoFinalTurma == null)
                 fechamentoFinalTurma = new FechamentoTurma(0, turma.Id);
             else
@@ -101,7 +99,6 @@ namespace SME.SGP.Aplicacao
             foreach (var agrupamentoAluno in fechamentoFinalSalvarDto.Itens.GroupBy(a => a.AlunoRf))
             {
                 var fechamentoAluno = await repositorioFechamentoAluno.ObterFechamentoAlunoENotas(fechamentoTurmaDisciplina.Id, agrupamentoAluno.Key);
-
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoAluno.Key };
 

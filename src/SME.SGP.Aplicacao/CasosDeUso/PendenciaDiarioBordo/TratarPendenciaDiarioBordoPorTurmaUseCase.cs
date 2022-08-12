@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             var professoresEComponentes = new List<ProfessorEComponenteInfantilDto>();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
 
-            var listaProfessoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId));
-            var professoresDaTurma = listaProfessoresDaTurma?.Select(x => x.ProfessorRf);
+            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turmaId));
+
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
 
             if (professoresDaTurma != null && professoresDaTurma.Any(a => !string.IsNullOrEmpty(a)))

@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioParametrosSistema : RepositorioBase<ParametrosSistema>, IRepositorioParametrosSistema
     {
-        public RepositorioParametrosSistema(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioParametrosSistema(ISgpContext database) : base(database)
         {
         }
 

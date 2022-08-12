@@ -50,7 +50,6 @@ namespace SME.SGP.Aplicacao.Workers
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
 
-            
             var scope = serviceScopeFactory.CreateScope();
             mediator = scope.ServiceProvider.GetService<IMediator>();
 
@@ -106,7 +105,7 @@ namespace SME.SGP.Aplicacao.Workers
             }
         }
 
-        public async Task TratarMensagem(BasicDeliverEventArgs ea)
+        private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;
@@ -137,36 +136,36 @@ namespace SME.SGP.Aplicacao.Workers
                 }
                 catch (NegocioException nex)
                 {
-                    transacao?.CaptureException(nex);
-
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+
+                    transacao.CaptureException(nex);
                 }
                 catch (ValidacaoException vex)
                 {
-                    transacao?.CaptureException(vex);
-
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+
+                    transacao.CaptureException(vex);
                 }
                 catch (Exception ex)
                 {
-                    transacao?.CaptureException(ex);
-
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
                         NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+
+                    transacao.CaptureException(ex);
                 }
                 finally
                 {
@@ -184,7 +183,7 @@ namespace SME.SGP.Aplicacao.Workers
         private async Task RegistrarLog(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
         {
             var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString()[..3]} - ERRO - {ea.RoutingKey}";
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex?.StackTrace, excecaoInterna: ex?.InnerException?.Message));
+            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerRabbit, observacao, rastreamento: ex?.StackTrace, excecaoInterna: ex.InnerException?.Message));
         }
 
         private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
@@ -199,8 +198,7 @@ namespace SME.SGP.Aplicacao.Workers
                     { "UsuarioLogado", mensagemRabbit.UsuarioLogadoRF },
                     { "RF", mensagemRabbit.UsuarioLogadoRF },
                     { "login", mensagemRabbit.UsuarioLogadoRF },
-                    { "Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } } },
-                    { "Administrador", mensagemRabbit.Administrador }
+                    { "Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } } }
                 };
 
                 contextoAplicacao.AdicionarVariaveis(variaveis);

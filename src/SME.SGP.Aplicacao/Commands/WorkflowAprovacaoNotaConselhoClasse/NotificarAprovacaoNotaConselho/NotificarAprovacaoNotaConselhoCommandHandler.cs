@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterBimestreDoPeriodoEscolarQuery(periodoEscolarId.Value)) :
                     0;
 
-                var alunosTurma =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
+                var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
 
                 var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);

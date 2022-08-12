@@ -11,7 +11,6 @@ namespace SME.SGP.Aplicacao
         Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorfiltro(string texto, bool consideraHistorico, bool consideraNovosAnosInfantil = false);
 
         Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, bool consideraHistorico = false);
-        Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurmaComUsuario(string turma, Usuario usuario, bool consideraHistorico = false);
 
         Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico);
 

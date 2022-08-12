@@ -4,7 +4,6 @@ using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IUnitOfWork unitOfWork;
 
-        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork) : base(conexao)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -105,7 +104,11 @@ namespace SME.SGP.Dados.Repositorios
                             alterado_por = 'Sistema', 
                             alterado_em = current_timestamp, 
                             alterado_rf = 'Sistema'
-                        where aula_id = any(@idsAulas) and excluido;";
+                        where id in (select rf.id
+                                        from registro_frequencia rf
+                                            inner join aula a
+                                                on rf.aula_id = a.id
+                                     where a.id = any(@idsAulas)) and excluido;";
 
                     database.Conexao
                         .Execute(sql, new { idsAulas = idsAulasAtualizacao });

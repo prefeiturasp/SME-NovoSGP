@@ -8,13 +8,12 @@ using System.Linq;
 using System.Text;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEventoMatricula: RepositorioBase<EventoMatricula>, IRepositorioEventoMatricula
     {
-        public RepositorioEventoMatricula(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioEventoMatricula(ISgpContext conexao) : base(conexao)
         {
         }
 

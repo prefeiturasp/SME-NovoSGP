@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
-using SME.SGP.Aplicacao.Servicos;
 using SME.SGP.Dados;
 using SME.SGP.Dados.Contexto;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
@@ -23,7 +20,6 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddScoped<IHttpContextAccessor, HttpContextAccessorFake>();
             services.TryAddScoped<IContextoAplicacao, ContextoHttp>();
-
             services.TryAddScoped<ISgpContext>(provider =>
             {
                 var connection = provider.GetService<IDbConnection>();
@@ -46,8 +42,6 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             services.TryAddSingleton<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
-            services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
-            services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
             base.RegistrarServicos(services);
         }
     }

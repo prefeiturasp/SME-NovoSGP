@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var usuarioId = await repositorioUsuario.ObterUsuarioIdPorLoginAsync(request.UsuarioRf);
 
             if (usuarioId == 0)
-                return await repositorioUsuario.SalvarAsync(new Usuario() { CodigoRf = request.UsuarioRf, Login = request.UsuarioRf, Nome = request.UsuarioNome });
+                return await repositorioUsuario.SalvarAsync(new Usuario() { CodigoRf = request.UsuarioRf, Login = request.UsuarioRf });
 
             return usuarioId;
         }

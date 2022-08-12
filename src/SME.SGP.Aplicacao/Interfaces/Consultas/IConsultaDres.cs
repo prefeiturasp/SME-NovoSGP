@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasPorDre(string dreId);
 
-        Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId, int tipoResponsavel);
+        Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId);
 
         IEnumerable<DreConsultaDto> ObterTodos();
     }

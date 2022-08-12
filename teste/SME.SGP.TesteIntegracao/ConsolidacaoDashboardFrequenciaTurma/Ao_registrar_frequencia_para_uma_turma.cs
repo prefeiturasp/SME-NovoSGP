@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -55,8 +55,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             await InserirNaBase(new ConsolidacaoDashBoardFrequencia 
@@ -107,8 +106,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             var useCase = ServiceProvider.GetService<IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase>();
@@ -133,7 +131,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -203,8 +201,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -215,8 +212,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
 

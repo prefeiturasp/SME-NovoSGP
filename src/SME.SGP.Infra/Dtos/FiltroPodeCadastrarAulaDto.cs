@@ -7,7 +7,6 @@ namespace SME.SGP.Infra
 {
     public class FiltroPodeCadastrarAulaDto
     {
-        public FiltroPodeCadastrarAulaDto() { }
         public FiltroPodeCadastrarAulaDto(long aulaId, string turmaCodigo, long componenteCurricular, DateTime dataAula, bool ehRegencia, TipoAula tipoAula)
         {
             AulaId = aulaId;

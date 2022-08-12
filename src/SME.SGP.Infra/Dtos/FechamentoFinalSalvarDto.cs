@@ -13,6 +13,5 @@ namespace SME.SGP.Infra
         public string DisciplinaId { get; set; }
         public IList<FechamentoFinalSalvarItemDto> Itens { get; set; }
         public string TurmaCodigo { get; set; }
-        public bool EhAlteracao { get; set; }
     }
 }

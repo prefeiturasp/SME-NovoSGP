@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotificacaoConsulta : RepositorioBase<Notificacao>, IRepositorioNotificacaoConsulta
     {
-        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao) : base(conexao)
         {
         }
 

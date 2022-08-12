@@ -54,12 +54,6 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequencia, new ComandoRabbit("Consolidar frequências por tipo período para o dashboard", typeof(IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasPorUe, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorUEUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
-            //Tratar a carga referência Aula no registro frequencia aluno
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAno, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por ano", typeof(ITratarRegistroFrequenciaAlunoUseCase)));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoUe, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por ue", typeof(ITratarRegistroFrequenciaAlunoUeUseCase)));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoTurma, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por turma", typeof(ITratarRegistroFrequenciaAlunoTurmaUseCase)));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAula, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por aula", typeof(ITratarRegistroFrequenciaAlunoAulaUseCase)));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoProcessamento, new ComandoRabbit("Processa a carga referência de aula no registro frequência aluno", typeof(ITratarRegistroFrequenciaAlunoProcessamentoUseCase)));
         }
     }
 }

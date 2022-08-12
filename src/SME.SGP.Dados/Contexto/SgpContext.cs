@@ -54,7 +54,6 @@ namespace SME.SGP.Dados.Contexto
         public string UsuarioLogadoRF =>
                                           contextoAplicacao.ObterVariavel<string>("RF") ?? "0";
 
-        public string Administrador => contextoAplicacao.Administrador;
 
         public IDbTransaction BeginTransaction()
         {

@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
 
             if (datasAulas == null || !datasAulas.Any())
                 return default;
@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                         || usuarioLogado.EhProfessorPoed()) || usuarioLogado.EhProfessorPap() || usuarioLogado.EhProfessorPaee()),
                         ProfessorRf = a.ProfessorRf,
                         CriadoPor = a.CriadoPor,
-                        PossuiFrequenciaRegistrada = a.PossuiFrequenciaRegistrada,
+                        PossuiFrequenciaRegistrada = await mediator.Send(new ObterAulaPossuiFrequenciaQuery(a.IdAula)),
                         TipoAula = a.TipoAula
                     }).DistinctBy(a => a.Result.AulaId).Select(a => a.Result)
                 });
@@ -109,26 +109,25 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf)
+        private IEnumerable<DataAulasProfessorDto> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf)
         {
-            var listaDataAulas = new List<DataAulasProfessorDto>();
-            var aulas = await repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(periodosEscolares.Select(s => s.Id).Distinct(), anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, null, null,false);
+            var aulas = repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Select(s => s.Id).Distinct(), anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, null, null,false);
             foreach (var periodoEscolar in periodosEscolares)
             {
-                listaDataAulas.AddRange(aulas.Select(aula => new DataAulasProfessorDto
+                foreach (var aula in aulas)
                 {
-                    Data = aula.DataAula,
-                    IdAula = aula.Id,
-                    AulaCJ = aula.AulaCJ,
-                    Bimestre = periodoEscolar.Bimestre,
-                    ProfessorRf = aula.ProfessorRf,
-                    CriadoPor = aula.CriadoPor,
-                    TipoAula = aula.TipoAula,
-                    PossuiFrequenciaRegistrada = aula.PossuiFrequenciaRegistrada
-                }));
+                    yield return new DataAulasProfessorDto
+                    {
+                        Data = aula.DataAula,
+                        IdAula = aula.Id,
+                        AulaCJ = aula.AulaCJ,
+                        Bimestre = periodoEscolar.Bimestre,
+                        ProfessorRf = aula.ProfessorRf,
+                        CriadoPor = aula.CriadoPor,
+                        TipoAula = aula.TipoAula
+                    };
+                }
             }
-
-            return listaDataAulas;
         }
 
     }

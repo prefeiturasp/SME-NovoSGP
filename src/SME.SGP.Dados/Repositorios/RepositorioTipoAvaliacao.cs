@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Linq;
 using System.Text;
@@ -12,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTipoAvaliacao : RepositorioBase<TipoAvaliacao>, IRepositorioTipoAvaliacao
     {
-        public RepositorioTipoAvaliacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioTipoAvaliacao(ISgpContext conexao) : base(conexao)
         {
         }
 

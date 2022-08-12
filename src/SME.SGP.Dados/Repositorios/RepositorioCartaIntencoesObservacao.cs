@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,10 +8,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCartaIntencoesObservacao : RepositorioBase<CartaIntencoesObservacao>, IRepositorioCartaIntencoesObservacao
     {
-		public RepositorioCartaIntencoesObservacao(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
-		{ }
+        public RepositorioCartaIntencoesObservacao(ISgpContext conexao) : base(conexao) { }
 
-		public async Task<IEnumerable<CartaIntencoesObservacaoDto>> ListarPorTurmaEComponenteCurricularAsync(long turmaId, long componenteCurricularId, long usuarioLogadoId)
+        public async Task<IEnumerable<CartaIntencoesObservacaoDto>> ListarPorTurmaEComponenteCurricularAsync(long turmaId, long componenteCurricularId, long usuarioLogadoId)
         {
             var sql = @"select
 							id,

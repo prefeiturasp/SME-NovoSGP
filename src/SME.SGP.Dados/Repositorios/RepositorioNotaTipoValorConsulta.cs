@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +10,10 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotaTipoValorConsulta : RepositorioBase<NotaTipoValor>, IRepositorioNotaTipoValorConsulta
     {
-        public RepositorioNotaTipoValorConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioNotaTipoValorConsulta(ISgpContextConsultas database) : base(database)
         {
         }
-        public async Task<NotaTipoValor> ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
+        public NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
         {
             var sql = @"select ntv.* from notas_tipo_valor ntv
                         inner join notas_conceitos_ciclos_parametos nccp
@@ -25,7 +24,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { cicloId, dataAvalicao };
 
-            return await database.QueryFirstOrDefaultAsync<NotaTipoValor>(sql, parametros);
+            return database.QueryFirstOrDefault<NotaTipoValor>(sql, parametros);
         }
 
         public NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)

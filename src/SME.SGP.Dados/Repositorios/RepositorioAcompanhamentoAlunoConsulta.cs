@@ -1,6 +1,5 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Threading.Tasks;
 
@@ -8,7 +7,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAcompanhamentoAlunoConsulta : RepositorioBase<AcompanhamentoAluno>, IRepositorioAcompanhamentoAlunoConsulta
     {
-        public RepositorioAcompanhamentoAlunoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioAcompanhamentoAlunoConsulta(ISgpContextConsultas conexao) : base(conexao)
         {
         }
 
@@ -61,7 +60,8 @@ namespace SME.SGP.Dados.Repositorios
 
             var query = $@"select count(distinct rfa.codigo_aluno)
                               from registro_frequencia_aluno rfa
-                             inner join aula a on a.id = rfa.aula_id and not a.excluido
+                             inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id and not rf.excluido
+                             inner join aula a on a.id = rf.aula_id and not a.excluido
                              inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula 
                              between pe.periodo_inicio and pe.periodo_fim
                              inner join turma t on t.turma_id = a.turma_id

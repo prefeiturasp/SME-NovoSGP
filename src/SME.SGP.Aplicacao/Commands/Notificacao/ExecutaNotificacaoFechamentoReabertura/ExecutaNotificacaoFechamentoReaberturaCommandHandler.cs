@@ -39,9 +39,7 @@ namespace SME.SGP.Aplicacao
                     
             }
 
-            var diretores =
-                await mediator.Send(
-                    new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long) Cargo.Diretor));
+            var diretores = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.Diretor);
             if (diretores != null && diretores.Any())
             {
                 foreach (var diretor in diretores)
@@ -51,8 +49,7 @@ namespace SME.SGP.Aplicacao
                 }
                     
             }
-            var ads = await mediator.Send(
-                new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.AD));
+            var ads = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.AD);
             if (ads != null && ads.Any())
             {
                 foreach (var ad in ads)
@@ -62,8 +59,7 @@ namespace SME.SGP.Aplicacao
                 }
                     
             }
-            var cps = await mediator.Send(
-                new ObterFuncionariosPorCargoUeQuery(fechamentoReabertura.UeCodigo, (long)Cargo.CP));
+            var cps = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.UeCodigo, (long)Cargo.CP);
             if (cps != null && cps.Any())
             {
                 foreach (var cp in cps)

@@ -13,6 +13,8 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task RemoverAsync(string nomeChave);
 
+        void Salvar(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false);
+
         Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false);
 
         Task SalvarAsync(string nomeChave, object valor, int minutosParaExpirar = 720, bool utilizarGZip = false);

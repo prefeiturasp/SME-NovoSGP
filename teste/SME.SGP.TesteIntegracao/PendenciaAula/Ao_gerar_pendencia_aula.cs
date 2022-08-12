@@ -13,7 +13,7 @@ using SME.SGP.Dominio;
 using MediatR;
 using System.Linq;
 
-namespace SME.SGP.TesteIntegracao.PendenciaAula
+namespace SME.SGP.TesteIntegracao
 {
     public class Ao_gerar_pendencia_aula : TesteBase
     {
@@ -27,8 +27,6 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
         {
             var useCase = ServiceProvider.GetService<IPendenciaAulaUseCase>();
 
-            var valorData = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
-
             await InserirNaBase(new ParametrosSistema
             {
                 Id = 1,
@@ -36,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Ativo = true,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = valorData.ToString("dd/MM/yyyy"),
+                Valor = "01/02/2022",
                 Nome = "DataInicioGeracaoPendencias",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Descricao = "Data de início da geração de pendências"
@@ -59,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Ativo = true,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 31).ToString(),
+                Valor = new DateTime(DateTime.Now.Year, 12, 31).ToString(),
                 Nome = "DataInicioGeracaoPendencias",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Descricao = "Data de início da geração de pendências"
@@ -82,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Titulo = "Aulas com pendência de plano de aula:  01/03",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
+                CriadoEm = new DateTime(2022, 03, 01)
             });
 
             await InserirNaBase(new Dre()
@@ -105,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Nome = "7P",
                 CodigoTurma = "2372753",
                 Ano = "1",
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = 2022,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1
@@ -118,17 +116,17 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
-                Nome = "Calendário Escolar Ano Atual",
+                CriadoEm = new DateTime(2022, 01, 10),
+                Nome = "Calendário Escolar 2022",
                 Periodo = Periodo.Anual,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = 2022,
                 Excluido = false
             });
 
-            await InserirNaBase(new Dominio.Aula()
+            await InserirNaBase(new Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                DataAula = new DateTime(2022, 01, 03),
                 ProfessorRf = "Sistema",
                 DisciplinaId = "512",
                 Excluido = false,
@@ -140,10 +138,10 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 TurmaId = "2372753",
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01),
+                CriadoEm = new DateTime(2022, 03, 01),
             });
 
-            await InserirNaBase(new Dominio.PendenciaAula()
+            await InserirNaBase(new PendenciaAula()
             {
                 Id = 1,
                 AulaId = 1,
@@ -159,28 +157,28 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
             });
 
-            await InserirNaBase(new Dominio.PendenciaUsuario()
+            await InserirNaBase(new PendenciaUsuario()
             {
                 Id = 1,
                 UsuarioId = 1,
                 PendenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
             });
 
             await InserirNaBase(new PeriodoEscolar()
             {
                 Bimestre = 1,
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 20),
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01),
+                PeriodoFim = new DateTime(2022, 04, 20),
+                PeriodoInicio = new DateTime(2022, 02, 01),
                 TipoCalendarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
             });
 
 

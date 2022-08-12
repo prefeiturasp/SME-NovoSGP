@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
+namespace SME.SGP.TesteIntegracao
 {
     public class Ao_registrar_consolidacao_frequencia_aluno_mensal : TesteBase
     {
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
+                DataAula = new DateTime(2022, 04, 26),
                 Quantidade = 1
             });
 
@@ -53,8 +53,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -63,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -80,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -90,7 +89,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 26),
+                DataAula = new DateTime(2022, 04, 26),
                 Quantidade = 1
             });
 
@@ -110,8 +109,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -122,8 +120,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -132,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 
@@ -165,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 UeId = 1,
                 Ano = "1",
                 CodigoTurma = "1",
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year
+                AnoLetivo = 2022
             });
 
             await InserirNaBase(new TipoCalendario
@@ -182,7 +179,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
         {
             await CriarItensBasicos();
 
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 Id = 1,
                 CriadoPor = "",
@@ -220,8 +217,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             await InserirNaBase(new RegistroFrequenciaAluno
@@ -232,8 +228,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 1,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             var useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -251,8 +246,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
-                AulaId = 1
+                NumeroAula = 1
             });
 
             useCase = ServiceProvider.GetService<IConsolidarFrequenciaAlunoPorTurmaEMesUseCase>();
@@ -261,7 +255,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoFrequenciaAlunoMensal
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            var consolidacoes = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
+            var consolidacoes = ObterTodos<ConsolidacaoFrequenciaAlunoMensal>();
 
             consolidacoes.ShouldNotBeEmpty();
 

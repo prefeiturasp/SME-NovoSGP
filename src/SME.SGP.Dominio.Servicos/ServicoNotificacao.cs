@@ -78,10 +78,9 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<UsuarioEolRetornoDto> funcionarios = null;
 
             if (cargo == Cargo.Supervisor)
-                supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe).Result;
+                supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe);
             else
-                funcionarios = mediator.Send(
-                    new ObterFuncionariosPorCargoUeQuery(codigoUe, (int) cargo)).Result;
+                funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
 
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
@@ -94,7 +93,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!cargoProximoNivel.HasValue)
                     return Enumerable.Empty<(Cargo?, string)>();
 
-                return  ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
+                return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
             }
             else
             {
@@ -171,5 +170,6 @@ namespace SME.SGP.Dominio.Servicos
         {
             await repositorioNotificacao.ExcluirPeloSistemaAsync(ids);
         }
+
     }
 }

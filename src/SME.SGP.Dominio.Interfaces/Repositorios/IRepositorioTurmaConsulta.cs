@@ -51,6 +51,5 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> VerificaSeVirouHistorica(long turmaId);
         Task<IEnumerable<RetornoConsultaTurmaNomeFiltroDto>> ObterTurmasNomeFiltro(string[] turmasCodigos);
         Task<IEnumerable<Turma>> ObterTurmasDreUeCompletaPorCodigos(string[] turmasCodigo);
-        Task<IEnumerable<long>> ObterIdsTurmasPorAnoModalidadeUeTipoRegular(int anoLetivo, int modalidade, long ueId);
     }
 }

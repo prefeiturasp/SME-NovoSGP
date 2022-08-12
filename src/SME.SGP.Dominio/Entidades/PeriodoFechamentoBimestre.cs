@@ -18,7 +18,7 @@ namespace SME.SGP.Dominio
             PeriodoEscolarId = periodoEscolar.Id;
         }
 
-        public PeriodoFechamentoBimestre()
+        protected PeriodoFechamentoBimestre()
         {
         }
 

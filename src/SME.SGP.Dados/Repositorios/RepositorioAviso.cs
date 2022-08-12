@@ -3,13 +3,12 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAviso : RepositorioBase<Aviso>, IRepositorioAviso
     {
-        public RepositorioAviso(ISgpContext context, IServicoAuditoria servicoAuditoria) : base(context, servicoAuditoria)
+        public RepositorioAviso(ISgpContext context) : base(context)
         {
         }
 

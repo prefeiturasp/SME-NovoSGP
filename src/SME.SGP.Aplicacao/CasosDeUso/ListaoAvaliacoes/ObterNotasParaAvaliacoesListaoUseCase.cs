@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
             long[] atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(),turmaCompleta.CodigoTurma));
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString()));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
@@ -202,7 +202,7 @@ namespace SME.SGP.Aplicacao
                         (aluno.Inativo == false || (aluno.Inativo && temPeriodoAberto));
 
                 notaConceitoAluno.Marcador = await mediator
-                                .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
+                                .Send(new ObterMarcadorAlunoQuery(aluno, periodoFim, turmaCompleta.EhTurmaInfantil));
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 notaConceitoAluno.EhAtendidoAEE = await mediator

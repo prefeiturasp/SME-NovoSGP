@@ -25,18 +25,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<PendenciaDto>> Handle(ObterPendenciasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            PaginacaoResultadoDto<Pendencia> pendencias;
+            var pendencias = new PaginacaoResultadoDto<Pendencia>();
 
             if (!string.IsNullOrEmpty(request.TurmaCodigo) || !string.IsNullOrEmpty(request.TituloPendencia) || request.TipoPendencia > 0)
             {
-                int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : Array.Empty<int>();
-
+                int[] tiposPendenciasAFiltrar = request.TipoPendencia > 0 ? RetornaTiposPendenciaGrupo((TipoPendenciaGrupo)request.TipoPendencia).ToArray() : new int[] { };
                 pendencias = await repositorioPendencia.ListarPendenciasUsuarioComFiltro(request.UsuarioId,
-                    tiposPendenciasAFiltrar.ToArray(),
-                    request.TituloPendencia,
-                    request.TurmaCodigo,
-                    Paginacao,
-                    request.TipoPendencia);
+                                                                                             tiposPendenciasAFiltrar.ToArray(),
+                                                                                             request.TituloPendencia,
+                                                                                             request.TurmaCodigo,
+                                                                                             Paginacao,
+                                                                                             request.TipoPendencia);
 
                 var itensDaLista = pendencias.Items.ToList();
 
@@ -44,7 +43,9 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var pendencia in pendencias.Items)
                     {
-                        var pendenciaFiltrada = await repositorioPendencia.FiltrarListaPendenciasUsuario(request.TurmaCodigo, pendencia);
+                        var pendenciaFiltrada = await repositorioPendencia
+                                                       .FiltrarListaPendenciasUsuario(request.TurmaCodigo,
+                                                                                      pendencia);
 
                         if (pendenciaFiltrada == null)
                             itensDaLista.Remove(pendencia);
@@ -72,14 +73,13 @@ namespace SME.SGP.Aplicacao
             return await MapearParaDtoPaginado(pendencias);
         }
 
-        public static IEnumerable<int> RetornaTiposPendenciaGrupo(TipoPendenciaGrupo tipoGrupo)
+        public IEnumerable<int> RetornaTiposPendenciaGrupo(TipoPendenciaGrupo tipoGrupo)
         {
             var tiposPendencias = Enum.GetValues(typeof(TipoPendencia))
-                .Cast<TipoPendencia>()
-                .Select(d => new { codigo = (int)d, descricao = d.ObterNomeGrupo() })
-                .Where(d => d.descricao == tipoGrupo.Name())
-                .ToList();
-
+                           .Cast<TipoPendencia>()
+                           .Select(d => new { codigo = (int)d, descricao = d.ObterNomeGrupo() })
+                           .Where(d => d.descricao == tipoGrupo.Name())
+                           .ToList();
             return tiposPendencias.Select(tp => tp.codigo);
         }
 
@@ -107,22 +107,20 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
             return pendencia.EhPendenciaAula() ?
-                    await ObterPendenciasAulasFormatadas(pendencia) :
-                pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
-                    await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
-                pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
-                    await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
-                pendencia.EhPendenciaFechamento() ?
-                    await ObterPendenciasFechamentoFormatadas(pendencia) :
-                    pendencia.EhAusenciaFechamento() ?
-                    await ObterPendenciasProfessorFormatadas(pendencia) :
-                pendencia.EhPendenciaDiarioBordo() ?
-                    await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf) :
-                pendencia.EhPendenciaAEE() ?
-                    await ObterPendenciasProfessorFormatadas(pendencia) :
-                pendencia.EhPendenciaDevolutiva() ?
-                    await ObterPendenciasDevolutivaFormatadas(pendencia) :
-                new List<PendenciaDto>();
+                        await ObterPendenciasAulasFormatadas(pendencia) :
+                    pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
+                        await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
+                    pendencia.EhPendenciaAusenciaAvaliacaoCP() ?
+                        await ObterDescricaoPendenciaAusenciaAvaliacaoCP(pendencia): 
+                    pendencia.EhPendenciaFechamento() ?
+                        await ObterPendenciasFechamentoFormatadas(pendencia) :
+                        pendencia.EhAusenciaFechamento() ?
+                        await ObterPendenciasProfessorFormatadas(pendencia) :
+                    pendencia.EhPendenciaDiarioBordo() ?
+                        await ObterPendenciasDiarioBordoFormatadas(pendencia, codigoRf):
+                    pendencia.EhPendenciaAEE() ?
+                        await ObterPendenciasProfessorFormatadas(pendencia) :
+                    new List<PendenciaDto>();
         }
         
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)
@@ -233,26 +231,6 @@ namespace SME.SGP.Aplicacao
             return ObterPendenciasFormatadas(pendencia, agrupamentoPendenciasBimestres);
         }
 
-        private async Task<IEnumerable<PendenciaDto>> ObterPendenciasDevolutivaFormatadas(Pendencia pendencia)
-        {
-            var turma = await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id));
-
-            var descricao = new StringBuilder(pendencia.Descricao);
-            descricao.AppendLine("<br /><ul>");
-            descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
-
-            return new List<PendenciaDto>
-            {
-                new PendenciaDto()
-                {
-                    Tipo = pendencia.Tipo.GroupName(),
-                    Titulo = !string.IsNullOrEmpty(pendencia.Titulo) ? pendencia.Titulo : pendencia.Tipo.Name(),
-                    Detalhe = descricao.ToString(),
-                    Turma = ObterNomeTurma(turma),
-                }
-            };
-        }
-
         private IEnumerable<PendenciaDto> ObterPendenciasFormatadas(Pendencia pendencia, IEnumerable<PendenciaAgrupamentoDto> agrupamentoPendenciasBimestres)
         {
             var pendenciasDiarioBordo = new List<PendenciaDto>();
@@ -288,17 +266,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterBimestreTurma(Pendencia pendencia)
         {
-            Turma turma = pendencia.EhPendenciaAula() ? 
-                    await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
-                pendencia.EhPendenciaFechamento() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
-                pendencia.EhPendenciaProfessor() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
-                pendencia.EhPendenciaDiarioBordo() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
-                pendencia.EhPendenciaDevolutiva() ?
-                    await mediator.Send(new ObterTurmaDaPendenciaDevolutivaQuery(pendencia.Id)) :
-                null;
+            Turma turma = pendencia.EhPendenciaAula() ?
+                         await mediator.Send(new ObterTurmaDaPendenciaAulaQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaFechamento() ?
+                         await mediator.Send(new ObterTurmaDaPendenciaFechamentoQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaProfessor() ?
+                        await mediator.Send(new ObterTurmaDaPendenciaProfessorQuery(pendencia.Id)) :
+                    pendencia.EhPendenciaDiarioBordo()?
+                         await mediator.Send(new ObterTurmaDaPendenciaDiarioQuery(pendencia.Id)) :
+                        null;
 
             if (turma == null)
                 return "";
@@ -312,24 +288,23 @@ namespace SME.SGP.Aplicacao
             return ObterNomeBimestre(bimestre);
         }
 
-        private static string ObterNomeTurma(Turma turma)
+        private string ObterNomeTurma(Turma turma)
             => turma != null ? $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}" : "";
 
-        private static string ObterNomeBimestre(int bimestre)
+        private string ObterNomeBimestre(int bimestre)
             => bimestre == 0 ? "Final" : $"{bimestre}º Bimestre";
 
-        /* TODO
         private async Task<string> ObterDescricaoPendencia(Pendencia pendencia )
         {           
             if (pendencia.EhPendenciaCadastroEvento())
                 return await ObterDescricaoPendenciaEvento(pendencia);
+           
             
             if (pendencia.EhPendenciaAusenciaDeRegistroIndividual())
                 return await ObterDescricaoPendenciaAusenciaRegistroIndividualAsync(pendencia);
 
             return ObterDescricaoPendenciaGeral(pendencia);
         }
-        */
 
         private async Task<IEnumerable<PendenciaDto>> ObterDescricaoPendenciaAusenciaAvaliacaoCP(Pendencia pendencia)
         {
@@ -366,15 +341,15 @@ namespace SME.SGP.Aplicacao
 
             return pendenciasCP;
         }
+                
 
-        /* TODO
+
         private string ObterDescricaoPendenciaGeral(Pendencia pendencia)
         {
             return ObterDescricaoPendenciaGeral(pendencia.Descricao,pendencia.Instrucao);
         }
-        */
 
-        private static string ObterDescricaoPendenciaGeral(string descricao, string instrucao)
+        private string ObterDescricaoPendenciaGeral(string descricao, string instrucao)
         {
             return $"{descricao}<br /><br/><b>{instrucao}</b>";
         }
@@ -390,14 +365,13 @@ namespace SME.SGP.Aplicacao
             {
                 descricao.AppendLine($"<li>{pendenciaEvento.Descricao} ({pendenciaEvento.Valor})</li>");
             }
-
             descricao.AppendLine("</ul>");
             descricao.AppendLine($"<br/><b>{pendencia.Instrucao}</b>");
 
             return descricao.ToString();
         }
 
-        private static string ObterComplementoReposicao(bool ehReposicao)
+        private string ObterComplementoReposicao(bool ehReposicao)
         {
             return ehReposicao ? " - Reposição" : "";
         }

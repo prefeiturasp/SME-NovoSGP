@@ -1,13 +1,13 @@
 ﻿using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IServicoTokenJwt
     {
-        string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos, List<Claim> claimsAdicionais = null);
+        string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos);
 
         DateTime ObterDataHoraCriacao();
 

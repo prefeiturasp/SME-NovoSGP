@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
+namespace SME.SGP.TesteIntegracao
 {
     public class Ao_registrar_anotacao_fechamento : TesteBase
     {
@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
 
             await CarregarDados();
 
-            var anotacaoFechamento = new Dominio.AnotacaoFechamentoAluno()
+            var anotacaoFechamento = new AnotacaoFechamentoAluno()
             {
                 FechamentoAlunoId = 1,
                 Anotacao = "Anotação teste",
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
 
             await mediator.Send(new SalvarAnotacaoFechamentoAlunoCommand(anotacaoFechamento));
 
-            var retorno = ObterTodos<Dominio.AnotacaoFechamentoAluno>();
+            var retorno = ObterTodos<AnotacaoFechamentoAluno>();
 
             retorno.ShouldNotBeEmpty();
             retorno.First().FechamentoAlunoId.ShouldBe(1, "Anotação salva com sucesso!");
@@ -46,8 +46,8 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
             await InserirNaBase(new TipoCalendario() 
             { 
                 Id = 1,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Nome = "Calendário Teste Ano Atual",
+                AnoLetivo = 2022,
+                Nome = "Calendário Teste 2022",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Periodo = Periodo.Anual,
                 CriadoEm = DateTime.Now,
@@ -59,8 +59,8 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
             {
                 Id = 1,
                 Bimestre = 1,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1,1),
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 1,12),
+                PeriodoInicio = new DateTime(2022,1,1),
+                PeriodoFim = new DateTime(2022,1,12),
                 TipoCalendarioId = 1,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "",
@@ -90,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
                 Nome = "1A",
                 CodigoTurma = "1234",
                 Ano = "1",
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = 2022,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
                 Id = 1,
                 PeriodoEscolarId = 1,
                 TurmaId = 1,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
                 Id = 1,
                 FechamentoTurmaId = 1,
                 DisciplinaId = 1,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });
@@ -120,7 +120,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
                 Id = 1,
                 FechamentoTurmaDisciplinaId = 1,
                 AlunoCodigo = "7071720",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                CriadoEm = new DateTime(2022, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""
             });

@@ -142,7 +142,7 @@
         AP_A = 45,
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
-           EhSubMenu = true, EhConsulta = true, OrdemSubMenu = 1, SubMenu = "Reiniciar Senha")]
+           EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
         [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
@@ -289,17 +289,17 @@
         [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhAlteracao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_A = 95,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-responsaveis/lista")]
-        ARP_C = 96,
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-supervisor-lista")]
+        ASP_C = 96,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
-        ARP_I = 97,
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
+        ASP_I = 97,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
-        ARP_E = 98,
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
+        ASP_E = 98,
 
-        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
-        ARP_A = 99,
+        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
+        ASP_A = 99,
 
         [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_C = 100,
@@ -692,10 +692,6 @@
         RFM_C = 232,
 
         [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/naapa")]
-        DNA_C = 233,
-
-        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, OrdemSubMenu = 2,
-            Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, EhInclusao = true, SubMenu = "Suporte")]
-        US_C = 234
+        DNA_C = 233
     }
 }

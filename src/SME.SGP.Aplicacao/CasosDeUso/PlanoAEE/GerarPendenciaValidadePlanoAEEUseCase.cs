@@ -61,8 +61,13 @@ namespace SME.SGP.Aplicacao
             var descricao = $"O Plano AEE {estudanteOuCrianca} {planoEncerrado.AlunoNome} ({planoEncerrado.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} expirou em {dataFim:dd/MM/yyyy}. <br/><a href='{hostAplicacao}aee/plano/editar/{planoEncerrado.Id}'>Clique aqui para acessar o plano.</a> " +
                 $"<br/><br/>Para resolver esta pendência você precisa alterar o vencimento do plano, criando uma nova versão ou encerrá-lo.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, planoEncerrado.ResponsavelId, titulo, descricao, turma.UeId));
+            var usuarioId = await ObterUsuarioPorRF(planoEncerrado.CriadoRF);
+
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoEncerrado.Id, usuarioId, titulo, descricao, turma.UeId));
         }
+
+        private async Task<long> ObterUsuarioPorRF(string criadoRF)
+            => await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(criadoRF));
 
         private async Task<Turma> ObterTurma(long turmaId)
         {

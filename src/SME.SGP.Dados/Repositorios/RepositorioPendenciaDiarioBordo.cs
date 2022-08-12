@@ -1,17 +1,20 @@
-﻿using Dapper;
+﻿using Npgsql;
+using NpgsqlTypes;
+using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaDiarioBordo : RepositorioBase<PendenciaDiarioBordo>, IRepositorioPendenciaDiarioBordo
     {
-        public RepositorioPendenciaDiarioBordo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioPendenciaDiarioBordo(ISgpContext conexao) : base(conexao)
         {
         }
 

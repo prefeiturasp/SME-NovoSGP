@@ -11,19 +11,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosSimplesDaTurmaQueryHandler : IRequestHandler<ObterAlunosSimplesDaTurmaQuery, IEnumerable<AlunoSimplesDto>>
     {
-        
-        private readonly IMediator mediator;
+        private readonly IServicoEol servicoEOL;
 
-        public ObterAlunosSimplesDaTurmaQueryHandler(IMediator mediator)
+        public ObterAlunosSimplesDaTurmaQueryHandler(IServicoEol servicoEOL)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosSimplesDaTurmaQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var alunosEOL =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
+                var alunosEOL = await servicoEOL.ObterAlunosPorTurma(request.TurmaCodigo);
                 alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
                 return MapearParaDto(alunosEOL);
             }

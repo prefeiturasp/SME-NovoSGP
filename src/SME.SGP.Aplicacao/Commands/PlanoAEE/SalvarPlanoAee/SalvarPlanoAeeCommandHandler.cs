@@ -15,20 +15,17 @@ namespace SME.SGP.Aplicacao.Commands
 
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao;
-        private readonly IRepositorioUsuarioConsulta repositorioUsuarioConsulta;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
         public SalvarPlanoAeeCommandHandler(
             IRepositorioPlanoAEE repositorioPlanoAEE,
             IRepositorioPlanoAEEVersao repositorioPlanoAEEVersao,
-            IRepositorioUsuarioConsulta repositorioUsuarioConsulta,
             IMediator mediator,
             IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.repositorioPlanoAEEVersao = repositorioPlanoAEEVersao ?? throw new ArgumentNullException(nameof(repositorioPlanoAEEVersao));
-            this.repositorioUsuarioConsulta = repositorioUsuarioConsulta ?? throw new ArgumentNullException(nameof(repositorioUsuarioConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -62,8 +59,6 @@ namespace SME.SGP.Aplicacao.Commands
 
                     planoId = await repositorioPlanoAEE.SalvarAsync(plano);
 
-                    await TransfereResponsavelDaPendecia(plano);
-
                     if (planoId > 0 && ultimaVersaoPlanoAee > 1)
                         await mediator.Send(new ResolverPendenciaPlanoAEECommand(planoId));
 
@@ -93,13 +88,6 @@ namespace SME.SGP.Aplicacao.Commands
                     throw;
                 }
             }
-        }
-
-        private async Task TransfereResponsavelDaPendecia(PlanoAEE plano)
-        {
-            var command = new TransferirPendenciaParaNovoResponsavelCommand(plano.Id, plano.ResponsavelId);
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaTransferirPendenciaPlanoAEEParaNovoResponsavel, command, Guid.NewGuid()));
         }
 
         private async Task<bool> ValidaPersistenciaResposta(string resposta, long questaoId)
@@ -138,13 +126,10 @@ namespace SME.SGP.Aplicacao.Commands
 
         private async Task<PlanoAEE> MapearParaEntidade(SalvarPlanoAeeCommand request)
         {
-            var responsavelId = await repositorioUsuarioConsulta.ObterUsuarioIdPorCodigoRfAsync(request.PlanoAEEDto.ResponsavelRF);
-
             if (request.PlanoAEEDto.Id.HasValue && request.PlanoAEEDto.Id > 0)
             {
                 var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEDto.Id.Value));
                 planoAEE.TurmaId = request.TurmaId;
-                planoAEE.ResponsavelId = responsavelId;
                 return planoAEE;
             }
 
@@ -155,8 +140,7 @@ namespace SME.SGP.Aplicacao.Commands
                 AlunoCodigo = request.AlunoCodigo,
                 AlunoNumero = request.AlunoNumero,
                 AlunoNome = request.AlunoNome,
-                Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>(),
-                ResponsavelId = responsavelId
+                Questoes = new System.Collections.Generic.List<PlanoAEEQuestao>()
             };
         }
 

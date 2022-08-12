@@ -40,13 +40,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase, ConsolidacaoDashBoardFrequenciaPorDataETipoUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaTurmasPorUEUseCase, ConsolidarFrequenciaTurmasPorUEUseCase>();
             services.TryAddScoped<IConsolidarFrequenciaPorTurmaUseCase, ConsolidarFrequenciaPorTurmaUseCase>();
-
-            //Tratar a carga referência Aula no registro frequencia aluno
-            services.TryAddScoped<ITratarRegistroFrequenciaAlunoUseCase, TratarRegistroFrequenciaAlunoUseCase>();
-            services.TryAddScoped<ITratarRegistroFrequenciaAlunoUeUseCase, TratarRegistroFrequenciaAlunoUeUseCase>();
-            services.TryAddScoped<ITratarRegistroFrequenciaAlunoTurmaUseCase, TratarRegistroFrequenciaAlunoTurmaUseCase>();
-            services.TryAddScoped<ITratarRegistroFrequenciaAlunoAulaUseCase, TratarRegistroFrequenciaAlunoAulaUseCase>();
-            services.TryAddScoped<ITratarRegistroFrequenciaAlunoProcessamentoUseCase, TratarRegistroFrequenciaAlunoProcessamentoUseCase>();
         }
     }
 }

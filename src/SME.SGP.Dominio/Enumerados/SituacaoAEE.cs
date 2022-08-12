@@ -23,8 +23,6 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Devolvido pela coordenação")]
         Devolvido = 9,
         [Display(Name = "Encerrado automaticamente")]
-        EncerradoAutomaticamente = 10,
-        [Display(Name = "Aguardando atribuição de PAAI")]
-        AtribuicaoPAAI = 11,
+        EncerradoAutomaticamente = 10
     }
 }

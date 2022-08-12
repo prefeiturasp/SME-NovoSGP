@@ -15,6 +15,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap());
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
+               config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
                config.AddMap(new CicloAnoMap());
                config.AddMap(new PlanoAnualMap());
@@ -203,9 +204,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.AddMap(new FrequenciaTurmaEvasaoMap());
-               config.AddMap(new SuporteUsuarioMap());
-               config.AddMap(new PendenciaDevolutivaMap());
-               
                config.ForDommel();
            });
         }

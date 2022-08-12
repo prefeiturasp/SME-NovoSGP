@@ -5,8 +5,6 @@ namespace SME.SGP.Infra
 {
     public class NotaConceitoListaDto
     {
-        public NotaConceitoListaDto() { }
-
         [Required(ErrorMessage = "É obrigatório informar o componente curricular da atividade avaliativa")]
         public string DisciplinaId { get; set; }
 

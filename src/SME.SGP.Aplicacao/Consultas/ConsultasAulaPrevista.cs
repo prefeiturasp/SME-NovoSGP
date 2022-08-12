@@ -56,14 +56,13 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
 
-            var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
+            var aulaPrevista = await repositorioAulaPrevistaConsulta
+                .ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, disciplinaId);
 
             if (disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
             {
                 aulaPrevista = await repositorioAulaPrevistaConsulta
                     .ObterAulaPrevistaFiltro(tipoCalendario.Id, turmaId, CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
-                var aulaTeste = totalAulasPrevistas.FirstOrDefault(x => x.DisciplinaId == CODIGO_ALTERNATIVO_DISCIPLINA_INGLES);
             }
 
             var ehAnoLetivo = turma.AnoLetivo == DateTime.Today.Year;
@@ -82,7 +81,7 @@ namespace SME.SGP.Aplicacao
                 aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
             }
 
-            return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
+            return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);            
         }
 
         public async Task<int> ObterAulasDadas(Turma turma, string componenteCurricularCodigo, int bimestre)

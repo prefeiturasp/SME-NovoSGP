@@ -1,4 +1,8 @@
-﻿namespace SME.SGP.Infra
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace SME.GoogleClassroom.Infra
 {
     public abstract class PoliticaPolly
     {

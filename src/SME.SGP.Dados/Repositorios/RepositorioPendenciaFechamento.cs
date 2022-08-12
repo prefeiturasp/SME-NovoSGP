@@ -8,13 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaFechamento : RepositorioBase<PendenciaFechamento>, IRepositorioPendenciaFechamento
     {
-        public RepositorioPendenciaFechamento(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioPendenciaFechamento(ISgpContext database) : base(database)
         {
         }
 

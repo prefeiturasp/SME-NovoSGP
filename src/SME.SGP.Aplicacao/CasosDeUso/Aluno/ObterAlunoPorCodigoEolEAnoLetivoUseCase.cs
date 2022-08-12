@@ -13,9 +13,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<AlunoReduzidoDto> Executar(string codigoAluno, int anoLetivo, string codigoTurma)
+        public async Task<AlunoReduzidoDto> Executar(string codigoAluno, int anoLetivo)
         {
-            var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, true, codigoTurma));
+            var alunoPorTurmaResposta = await mediator.Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo));
 
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");

@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,7 +8,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAnotacaoFechamentoAluno : RepositorioBase<AnotacaoFechamentoAluno>, IRepositorioAnotacaoFechamentoAluno
     {
-        public RepositorioAnotacaoFechamentoAluno(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioAnotacaoFechamentoAluno(ISgpContext database) : base(database)
         {
         }
 
@@ -63,24 +62,6 @@ namespace SME.SGP.Dados.Repositorios
                            and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId";
 
             return database.Conexao.QueryAsync<string>(query, new { fechamentoTurmaDisciplinaId });
-        }
-
-        public async Task<IEnumerable<AnotacaoFechamentoAluno>> ObterPorFechamentoEAluno(long[] fechamentosTurmasDisciplinasIds, string[] alunosCodigos)
-        {
-            var query = @"select aaf.*, fa.*, ftd.*
-                          from anotacao_fechamento_aluno aaf 
-                         inner join fechamento_aluno fa on fa.id = aaf.fechamento_aluno_id
-                         inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id
-                         where not fa.excluido 
-                           and fa.fechamento_turma_disciplina_id = any(@fechamentosTurmasDisciplinasIds)
-                           and fa.aluno_codigo = any(@alunosCodigos)";
-
-            return await database.Conexao.QueryAsync<AnotacaoFechamentoAluno, FechamentoAluno, FechamentoTurmaDisciplina, AnotacaoFechamentoAluno>(query, (anotacaoFechamentoAluno, fechamentoAluno, fechamentoTurmaDisciplina) =>
-            {
-                anotacaoFechamentoAluno.FechamentoAluno = fechamentoAluno;
-                anotacaoFechamentoAluno.FechamentoAluno.FechamentoTurmaDisciplina = fechamentoTurmaDisciplina;
-                return anotacaoFechamentoAluno;
-            }, new { fechamentosTurmasDisciplinasIds, alunosCodigos }, splitOn: "id, id, id");
         }
     }
 }

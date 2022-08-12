@@ -52,11 +52,7 @@ namespace SME.SGP.Aplicacao
                     PossuiEncaminhamentoAEE = planoAEE.PossuiEncaminhamentoAEE,
                     EhAtendidoAEE = planoAEE.EhAtendidoAEE(),
                     CriadoEm = planoAEE.CriadoEm,
-                    Versao = planoAEE.ObterVersaoPlano(),
-                    RfReponsavel = planoAEE.RfReponsavel,
-                    NomeReponsavel = planoAEE.NomeReponsavel,
-                    RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
-                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel 
+                    Versao = planoAEE.ObterVersaoPlano()
                 };
             }
         }

@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +24,8 @@ namespace SME.SGP.Aplicacao
             this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
             this.servicoUsuario = servicoUsuario ?? throw new System.ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));            
+            this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new System.ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
+
         }
 
         public async Task Salvar(NotaConceitoListaDto notaConceitoLista)
@@ -40,13 +40,6 @@ namespace SME.SGP.Aplicacao
                 .Select(x => x.AtividadeAvaliativaId)
                 .ToList();
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            var disciplinasDoProfessorLogado = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(notaConceitoLista.TurmaId, usuario.Login, usuario.PerfilAtual, true));
-
-            if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
-                throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
-
             var notasBanco = repositorioNotasConceitos
                 .ObterNotasPorAlunosAtividadesAvaliativas(avaliacoes, alunos, notaConceitoLista.DisciplinaId);
 
@@ -57,7 +50,7 @@ namespace SME.SGP.Aplicacao
             else
                 await TratarInclusaoEdicaoNotas(notasConceitosDto, notasBanco, professorRf, notaConceitoLista.TurmaId, notaConceitoLista.DisciplinaId);
 
-            var atividades = repositorioAtividadeAvaliativa
+            var atividades =  repositorioAtividadeAvaliativa
                 .ListarAtividadesIds(notasConceitosDto.Select(x => x.AtividadeAvaliativaId));
 
             foreach (var item in atividades)
@@ -74,8 +67,8 @@ namespace SME.SGP.Aplicacao
                 .Select(x => ObterEntidadeInclusao(x))
                 .ToList();
 
-            await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
+            await servicosDeNotasConceitos
+                .Salvar(notasSalvar, professorRf, turmaId, disiplinaId);
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
@@ -110,7 +103,6 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId);
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
 }

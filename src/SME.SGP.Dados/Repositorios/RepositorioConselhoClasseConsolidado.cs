@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioConselhoClasseConsolidado : RepositorioBase<ConselhoClasseConsolidadoTurmaAluno>, IRepositorioConselhoClasseConsolidado
     {
-        public RepositorioConselhoClasseConsolidado(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioConselhoClasseConsolidado(ISgpContext database) : base(database)
         {
         }
 

@@ -3,7 +3,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComunicadoTurma : RepositorioBase<ComunicadoTurma>, IRepositorioComunicadoTurma
     {
-        public RepositorioComunicadoTurma(ISgpContext sgpContext, IServicoAuditoria servicoAuditoria) : base(sgpContext, servicoAuditoria)
+        public RepositorioComunicadoTurma(ISgpContext sgpContext) : base(sgpContext)
         {
 
         }

@@ -15,10 +15,16 @@ namespace SME.SGP.Aplicacao
     {
         protected IEnumerable<ConselhoClasseParecerConclusivo> pareceresDoServico;
 
+        private readonly IRepositorioConceitoConsulta repositorioConceito;
+        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IMediator mediator;
 
-        public ObterParecerConclusivoAlunoQueryHandler(IMediator mediator)
+        public ObterParecerConclusivoAlunoQueryHandler(IRepositorioConceitoConsulta repositorioConceito,
+                                                       IConsultasFrequencia consultasFrequencia,
+                                                       IMediator mediator)
         {
+            this.repositorioConceito = repositorioConceito ?? throw new System.ArgumentNullException(nameof(repositorioConceito));
+            this.consultasFrequencia = consultasFrequencia ?? throw new System.ArgumentNullException(nameof(consultasFrequencia));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
@@ -139,7 +145,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var frequenciaAluno = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoPorTurmasQuery(alunoCodigo, turmasCodigos));
+            var frequenciaAluno = await consultasFrequencia.ObterFrequenciaGeralAlunoPorTurmas(alunoCodigo, turmasCodigos);
             double valorFrequenciaAluno = 0;
             if (frequenciaAluno != "")
                 valorFrequenciaAluno = Convert.ToDouble(frequenciaAluno);
@@ -174,7 +180,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarParecerPorConceito(IEnumerable<NotaConceitoBimestreComponenteDto> conceitosFechamentoAluno)
         {
-            var conceitosVigentes = await mediator.Send(new ObterConceitoPorDataQuery(DateTime.Today));
+            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoFechamentoAluno in conceitosFechamentoAluno)
             {
                 var conceitoAluno = conceitosVigentes.FirstOrDefault(c => c.Id == conceitoFechamentoAluno.ConceitoId);
@@ -219,7 +225,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> ValidarParecerConselhoPorConceito(IEnumerable<NotaConceitoFechamentoConselhoFinalDto> notasConselhoClasse)
         {
-            var conceitosVigentes = await mediator.Send(new ObterConceitoPorDataQuery(DateTime.Today));
+            var conceitosVigentes = await repositorioConceito.ObterPorData(DateTime.Today);
             foreach (var conceitoConselhoClasseAluno in notasConselhoClasse)
             {
                 var conceitoId = conceitoConselhoClasseAluno.ConceitoId;

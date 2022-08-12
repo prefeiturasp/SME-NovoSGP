@@ -66,11 +66,8 @@ namespace SME.SGP.Aplicacao
                             }
                             else
                             {
-                                var listaProfessoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(item.First().TurmaId));
-                                
-                                var professoresTitularesDaTurma =
-                                    listaProfessoresTitularesDaTurma?.Select(x => x.ProfessorRf);
-                                
+                                var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(item.First().TurmaId));
+
                                 if (professoresTitularesDaTurma != null)
                                 {
                                     string[] professoresSeparados = professoresTitularesDaTurma.FirstOrDefault().Split(',');

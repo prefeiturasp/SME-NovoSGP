@@ -6,7 +6,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly string connectionString;
 
-        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioFrequenciaAlunoDisciplinaPeriodo(ISgpContext database) : base(database)
         {
             this.connectionString = database.ConnectionString; //Raphael. Troquei uma connectionstring que pegava das configurações, pela connectionstring do contexto
         }

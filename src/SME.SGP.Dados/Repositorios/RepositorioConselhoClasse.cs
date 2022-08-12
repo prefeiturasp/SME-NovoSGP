@@ -1,14 +1,13 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConselhoClasse : RepositorioBase<ConselhoClasse>, IRepositorioConselhoClasse
     {
-        public RepositorioConselhoClasse(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioConselhoClasse(ISgpContext database) : base(database)
         {
         }
 

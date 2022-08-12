@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System;
 using System.Threading.Tasks;
 
@@ -10,7 +9,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFrequencia : RepositorioBase<RegistroFrequencia>, IRepositorioFrequencia
     {
-        public RepositorioFrequencia(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioFrequencia(ISgpContext database) : base(database)
         {
         }
 
@@ -20,7 +19,10 @@ namespace SME.SGP.Dados.Repositorios
             var command = @"update registro_frequencia_aluno
                                 set excluido = true
                             where not excluido
-                                and aula_id  in (@aulaId) ";
+                              and registro_frequencia_id in (
+                                select id from registro_frequencia
+                                 where not excluido
+                                   and aula_id = @aulaId)";
             await database.ExecuteAsync(command, new { aulaId });
 
             // Exclui registro de frequencia da aula

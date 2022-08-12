@@ -160,8 +160,5 @@ namespace SME.SGP.Dominio
         //Sistema
         HabilitarServicosEmBackground = 100,
         ProcessarDeadletter = 101,
-
-        //Ativar Geração de Pendencia Devolutiva
-        GerarPendenciaDevolutivaSemDiarioBordo = 102,
     }
 }

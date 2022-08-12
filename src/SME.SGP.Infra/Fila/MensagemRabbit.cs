@@ -3,9 +3,9 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class MensagemRabbit 
+    public class MensagemRabbit
     {
-        public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null, string administrador = null)
+        public MensagemRabbit(string action, object mensagem, Guid codigoCorrelacao, string usuarioLogadoRF, bool notificarErroUsuario = false, string perfilUsuario = null)
         {
             Action = action;
             Mensagem = mensagem;
@@ -13,10 +13,9 @@ namespace SME.SGP.Infra
             NotificarErroUsuario = notificarErroUsuario;
             UsuarioLogadoRF = usuarioLogadoRF;
             PerfilUsuario = perfilUsuario;
-            Administrador = administrador;
         }
 
-        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false, string administrador = null)
+        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false)
         {
             Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
@@ -24,7 +23,6 @@ namespace SME.SGP.Infra
             UsuarioLogadoRF = usuarioLogadoRF;
             NotificarErroUsuario = notificarErroUsuario;
             PerfilUsuario = perfil?.ToString();
-            Administrador = administrador;
         }
 
         public MensagemRabbit(object mensagem)
@@ -43,7 +41,6 @@ namespace SME.SGP.Infra
         public string UsuarioLogadoRF { get; set; }
         public bool NotificarErroUsuario { get; set; }
         public string PerfilUsuario { get; set; }
-        public string Administrador { get; set; }
 
         public T ObterObjetoMensagem<T>() where T : class
         {

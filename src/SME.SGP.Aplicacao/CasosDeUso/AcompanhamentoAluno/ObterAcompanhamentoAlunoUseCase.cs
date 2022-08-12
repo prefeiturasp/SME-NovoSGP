@@ -49,8 +49,7 @@ namespace SME.SGP.Aplicacao
                 if (periodosFechamento == null || !periodosFechamento.Any())
                     throw new NegocioException($"Não foi possível obter os periodos de fechamento do bimestre : {bimestre}");
 
-                if (dataReferencia >= periodosFechamento.FirstOrDefault().InicioDoFechamento.Date && dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date ||
-                    await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre))
+                if (dataReferencia >= periodosFechamento.FirstOrDefault().InicioDoFechamento.Date && dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date)
                     return true;
                 else
                     return false;

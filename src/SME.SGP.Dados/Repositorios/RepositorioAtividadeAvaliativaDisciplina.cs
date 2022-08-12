@@ -3,7 +3,6 @@ using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     public class RepositorioAtividadeAvaliativaDisciplina : RepositorioBase<AtividadeAvaliativaDisciplina>, IRepositorioAtividadeAvaliativaDisciplina
     {
         private readonly string connectionString;
-        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioAtividadeAvaliativaDisciplina(ISgpContext conexao) : base(conexao)
         {
             this.connectionString = conexao.ConnectionString;
         }

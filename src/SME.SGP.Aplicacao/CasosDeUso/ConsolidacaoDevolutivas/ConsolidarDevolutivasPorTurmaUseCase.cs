@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
                 var periodoDeDiasDevolutivas = await mediator.Send(new ObterParametroSistemaPorTipoQuery(Dominio.TipoParametroSistema.PeriodoDeDiasDevolutiva));
                 if (periodoDeDiasDevolutivas == null)
-                return false;
+                    return false;
 
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(diarioBordoTurma.TurmaId));
                 if (turma == null)

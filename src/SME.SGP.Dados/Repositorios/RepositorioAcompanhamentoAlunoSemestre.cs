@@ -4,13 +4,12 @@ using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAcompanhamentoAlunoSemestre : RepositorioBase<AcompanhamentoAlunoSemestre>, IRepositorioAcompanhamentoAlunoSemestre
     {
-        public RepositorioAcompanhamentoAlunoSemestre(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        public RepositorioAcompanhamentoAlunoSemestre(ISgpContext conexao) : base(conexao)
         {
         }
 

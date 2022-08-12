@@ -25,24 +25,22 @@ namespace SME.SGP.Aplicacao
 
             var turmaId = frequenciasAlunosTurmaEMes.Select(c => c.TurmaId).FirstOrDefault();
 
-            if (turmaId > 0)
+            unitOfWork.IniciarTransacao();
+            try
             {
                 var consolidacoesExistentesDaTurma = await mediator.Send(new ObterConsolidacoesFrequenciaAlunoMensalPorTurmaEMesQuery(turmaId, filtro.Mes));
+                await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes);
 
-                unitOfWork.IniciarTransacao();
-                try
-                {
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
 
-                    await AtualizaAlunos(consolidacoesExistentesDaTurma, frequenciasAlunosTurmaEMes, filtro.Mes);
-
-                    unitOfWork.PersistirTransacao();
-                }
-                catch
-                {
-                    unitOfWork.Rollback();
-                    throw;
-                }
-
+            if (turmaId > 0)
+            {
                 var comandoConsolidacaoFrequenciaTurmaEvasao = new FiltroConsolidacaoFrequenciaTurmaEvasao(turmaId, filtro.Mes);
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasao, comandoConsolidacaoFrequenciaTurmaEvasao, Guid.NewGuid(), null));
             }

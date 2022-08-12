@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioComunicadoTurma repositorioComunicadoTurma;
         private readonly IRepositorioComunicadoAluno repositorioComunicadoAluno;
         private readonly IServicoEol servicoEol;
-        private readonly IMediator mediator;
         private const string Todas = "todas";
 
         public ConsultaComunicado(
@@ -30,7 +28,6 @@ namespace SME.SGP.Aplicacao
             IConsultasAbrangencia consultasAbrangencia,
             IRepositorioComunicadoTurma repositorioComunicadoTurma,
             IRepositorioComunicadoAluno repositorioComunicadoAluno,
-            IMediator mediator,
             IServicoEol servicoEol) : base(contextoAplicacao)
         {
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
@@ -38,7 +35,6 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.repositorioComunicadoTurma = repositorioComunicadoTurma ?? throw new ArgumentNullException(nameof(repositorioComunicadoTurma));
             this.repositorioComunicadoAluno = repositorioComunicadoAluno ?? throw new ArgumentNullException(nameof(repositorioComunicadoAluno));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
         }
 
@@ -111,7 +107,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in filtroDto.Turmas)
             {
-                var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma.CodigoTurma));
+                var abrangenciaTurmas = await consultasAbrangencia.ObterAbrangenciaTurma(turma.CodigoTurma);
 
                 if (abrangenciaTurmas == null)
                     throw new NegocioException($"Usuário não possui permissão para visualizar comunicados da Turma com codigo {turma.CodigoTurma}");

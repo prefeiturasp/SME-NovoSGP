@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
         }
 
-        //[Fact]
+        [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Diferente_Regencia_Fundamental()
         {
             // Arrange
@@ -64,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             //retorno.ShouldNotBeNull();
             //Assert.IsType<OkResult>(retorno);
         }
-        //[Fact]
+        [Fact]
         public async Task Deve_Lancar_Conceito_Para_Componente_Regencia_Eja()
         {
             // Arrange
@@ -115,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Ano = "2",
                 CodigoTurma = "1",
                 Historica = true,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = 2022,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 Nome = "Turma Nome 2"
             });
@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 CodigoTurma = "1",
                 Historica = true,
                 ModalidadeCodigo = Modalidade.EJA,
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                AnoLetivo = 2022,
                 Semestre = 2,
                 Nome = "Turma Nome 1"
             });
@@ -142,7 +142,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 2,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                PeriodoInicio = new DateTime(2022, 01, 10),
                 PeriodoFim = DateTime.Now.AddYears(1),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -192,7 +192,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Id = 1,
                 Nome = "Avaliação bimestral",
                 Descricao = "Avaliação bimestral",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-3).Year, 12, 19),
+                CriadoEm = new DateTime(2019, 12, 19),
                 Situacao = true,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -357,24 +357,24 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Id = 1,
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = "2222222",
+                ProfessorRf = "6926886",
                 TurmaId = "1",
                 Categoria = CategoriaAtividadeAvaliativa.Normal,
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
-                DataAvaliacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
-                CriadoRF = "2222222",
-                CriadoPor = "João Usuário"
+                CriadoEm = new DateTime(2022, 02, 10),
+                DataAvaliacao = new DateTime(2022, 02, 10),
+                CriadoRF = "6926886",
+                CriadoPor = "ESTER CUSTODIA DOS SANTOS"
             });
             await InserirNaBase(new AtividadeAvaliativaDisciplina
             {
                 Id = 1,
                 AtividadeAvaliativaId = 1,
                 DisciplinaId = "1114",
-                CriadoPor = "João Usuário",
-                CriadoRF = "2222222"
+                CriadoPor = "ESTER CUSTODIA DOS SANTOS",
+                CriadoRF = "6926886"
             });
         }
         private async Task CriarAtividadeAvaliativaFundamental()
@@ -390,8 +390,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoAvaliacaoId = 1,
                 NomeAvaliacao = "Avaliação 04",
                 DescricaoAvaliacao = "Avaliação 04",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
-                DataAvaliacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                CriadoEm = new DateTime(2022, 02, 10),
+                DataAvaliacao = new DateTime(2022, 02, 10),
                 CriadoRF = "6737544",
                 CriadoPor = "GENILDO CLEBER DA SILVA"
             });
@@ -409,8 +409,8 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Nome = "Ano Letivo Ano Atual",
+                AnoLetivo = 2022,
+                Nome = "Ano Letivo 202",
                 Periodo = Periodo.Semestral,
                 Modalidade = ModalidadeTipoCalendario.EJA,
                 Situacao = true,
@@ -425,8 +425,8 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             await InserirNaBase(new TipoCalendario
             {
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Nome = "Ano Letivo Ano Atual",
+                AnoLetivo = 2022,
+                Nome = "Ano Letivo 202",
                 Periodo = Periodo.Semestral,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
@@ -468,7 +468,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Tipo = TipoParametroSistema.MediaBimestre,
                 Descricao = "Media final para aprovacão no bimestre",
                 Valor = "5",
-                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ano = 2022,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF= "1",
@@ -480,7 +480,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Tipo = TipoParametroSistema.PercentualAlunosInsuficientes,
                 Descricao = "Media final para aprovacão no bimestre",
                 Valor = "50",
-                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Ano = 2022,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
@@ -489,18 +489,18 @@ namespace SME.SGP.TesteIntegracao.Nota
         }
         private async Task CriarAulaProfRegenciaEja()
         {
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 UeId = "1",
                 DisciplinaId = "1114",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "2222222",
+                ProfessorRf = "6926886",
                 Quantidade = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                CriadoEm = new DateTime(2022, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
@@ -511,7 +511,7 @@ namespace SME.SGP.TesteIntegracao.Nota
 
         private async Task CriarAulaProfFundamental()
         {
-            await InserirNaBase(new Dominio.Aula
+            await InserirNaBase(new Aula
             {
                 UeId = "1",
                 DisciplinaId = "9",
@@ -519,10 +519,10 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TipoCalendarioId = 1,
                 ProfessorRf = "6737544",
                 Quantidade = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                DataAula = new DateTime(2022, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
+                CriadoEm = new DateTime(2022, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,
@@ -534,12 +534,12 @@ namespace SME.SGP.TesteIntegracao.Nota
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "João Usuário");
-            variaveis.Add("UsuarioLogado", "2222222");
-            variaveis.Add("RF", "2222222");
-            variaveis.Add("login", "2222222");
+            variaveis.Add("NomeUsuario", "ESTER CUSTODIA DOS SANTOS");
+            variaveis.Add("UsuarioLogado", "6926886");
+            variaveis.Add("RF", "6926886");
+            variaveis.Add("login", "6926886");
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "2222222", Type = "rf" },
+                new InternalClaim { Value = "6926886", Type = "rf" },
                 new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
@@ -563,9 +563,9 @@ namespace SME.SGP.TesteIntegracao.Nota
             await InserirNaBase(new Usuario
             {
                 Id = 29,
-                Login = "2222222",
-                CodigoRf = "2222222",
-                Nome = "João Usuário",
+                Login = "6926886",
+                CodigoRf = "6926886",
+                Nome = "ESTER CUSTODIA DOS SANTOS",
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });

@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotificacaoFrequenciaConsulta : RepositorioBase<NotificacaoFrequencia>, IRepositorioNotificacaoFrequenciaConsulta
 	{
-        public RepositorioNotificacaoFrequenciaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        public RepositorioNotificacaoFrequenciaConsulta(ISgpContextConsultas database) : base(database)
         {
         }
 

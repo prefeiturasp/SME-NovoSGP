@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<string>> ObtemUsuariosCEFAIDRE(string codigoDre)
         {
-            var cefais = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }))).Select(c => c.Login);
+            var cefais = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
             return cefais.ToList();
         }
 

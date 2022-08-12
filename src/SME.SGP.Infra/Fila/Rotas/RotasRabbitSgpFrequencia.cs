@@ -33,11 +33,5 @@
         public const string RotaConsolidacaoDashBoardFrequenciaPorUe = "sgp.consolidacao.frequencia.dashboard.ue";
         public const string NotificacaoFrequencia = "sgp.notificacoes.frequencia";
         public const string NotifificarRegistroFrequencia = "sgp.registro.frequencia.notificacao";
-
-        public const string RotaTratarCargaRegistroFrequenciaAlunoAno = "sgp.frequencia.tratar.carga.referencia.registro.aluno.ano";
-        public const string RotaTratarCargaRegistroFrequenciaAlunoUe = "sgp.frequencia.tratar.carga.referencia.registro.aluno.ue";
-        public const string RotaTratarCargaRegistroFrequenciaAlunoTurma = "sgp.frequencia.tratar.carga.referencia.registro.aluno.turma";
-        public const string RotaTratarCargaRegistroFrequenciaAlunoAula = "sgp.frequencia.tratar.carga.referencia.registro.aluno.aula";
-        public const string RotaTratarCargaRegistroFrequenciaAlunoProcessamento = "sgp.frequencia.tratar.carga.referencia.registro.aluno.processa";
     }
 }

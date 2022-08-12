@@ -35,19 +35,10 @@ namespace SME.SGP.Aplicacao
             await MoverRemoverExcluidos(param);
             AuditoriaDto auditoria = await mediator.Send(new InserirDevolutivaCommand(param.CodigoComponenteCurricular, idsDiarios, inicioEfetivo, fimEfetivo, param.Descricao, turma.Id));
 
-            await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
-
-            var filtro = new FiltroExclusaoPendenciasDevolutivaDto()
-            { 
-                TurmaId = turma.Id,
-                ComponenteId = param.CodigoComponenteCurricular
-            };
-
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDevolutiva, filtro, Guid.NewGuid()));
+            bool diariosAtualizados = await mediator.Send(new AtualizarDiarioBordoComDevolutivaCommand(idsDiarios, auditoria.Id));
 
             return auditoria;
         }
-
         private async  Task MoverRemoverExcluidos(InserirDevolutivaDto devolutiva)
         {
             if (!string.IsNullOrEmpty(devolutiva.Descricao))
@@ -56,7 +47,6 @@ namespace SME.SGP.Aplicacao
                 devolutiva.Descricao = moverArquivo;
             }
         }
-
         private async Task ValidarDevolutivaNoPeriodo(string turmaCodigo, long codigoComponenteCurricular, DateTime periodoInicio, DateTime periodoFim)
         {
             var devolutivasIds = await mediator.Send(new ObterDevolutivaPorTurmaComponenteNoPeriodoQuery(turmaCodigo, codigoComponenteCurricular, periodoInicio.Date, periodoFim.Date));

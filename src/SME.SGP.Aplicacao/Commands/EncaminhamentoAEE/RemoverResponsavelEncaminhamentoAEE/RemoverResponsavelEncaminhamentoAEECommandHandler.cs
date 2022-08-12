@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,18 +25,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId));
-
-            if (turma == null)
-                throw new NegocioException("turma não encontrada");
-
-            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI));
-
-            if(funcionarioPAAI != null && funcionarioPAAI.Any())
-                encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoPAAI;
-            else
-                encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
-
+            encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;
             encaminhamentoAEE.ResponsavelId = null;
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);

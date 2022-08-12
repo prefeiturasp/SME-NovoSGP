@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoClasseController
+namespace SME.SGP.TesteIntegracao
 {
     public class RetornarAulasComESemFrequenciaTeste : TesteBase
     {
@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
             await CriarAulaComFrequencia();
 
             //Act
-            var controller = new Api.Controllers.ConselhoClasseController();
+            var controller = new ConselhoClasseController();
             var retorno = await controller.ObterTotalAulasPorAlunoTurma("5854736", "2123463", useCase);
 
             //Assert
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new Dominio.FrequenciaAluno
+            await InserirNaBase(new FrequenciaAluno
             {
                 Id = 25510725,
                 PeriodoInicio = new DateTime(2020, 02, 05),

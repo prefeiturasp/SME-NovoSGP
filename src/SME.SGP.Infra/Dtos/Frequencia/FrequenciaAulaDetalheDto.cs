@@ -11,13 +11,13 @@ namespace SME.SGP.Infra
                                         AlunoPorTurmaResposta aluno,
                                         IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos,
                                         IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma,
-                                        FrequenciaPreDefinidaDto frequenciaPreDefinida, DateTime PeriodoFim)
+                                        FrequenciaPreDefinidaDto frequenciaPreDefinida)
         {
             DetalheFrequencia = new List<FrequenciaDetalheAulaDto>();
 
             AulaId = aula.Id;
-            Desabilitado = aluno.EstaInativo(aula.DataAula, PeriodoFim) || aula.EhDataSelecionadaFutura;
-            PermiteAnotacao = aluno.EstaAtivo(aula.DataAula, aula.DataAula);
+            Desabilitado = aluno.EstaInativo(aula.DataAula) || aula.EhDataSelecionadaFutura;
+            PermiteAnotacao = aluno.EstaAtivo(aula.DataAula);
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
 

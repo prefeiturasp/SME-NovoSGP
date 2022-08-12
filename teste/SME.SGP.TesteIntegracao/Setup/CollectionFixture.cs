@@ -1,53 +1,45 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Dados;
-using SME.SGP.Infra;
-using System;
+﻿using System;
 using System.Data;
 using System.Text;
-using Dapper.FluentMap;
+using MediatR;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.Dados;
+using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
     public class CollectionFixture : IDisposable
     {
-        public IServiceCollection Services { get; set; }
-        public InMemoryDatabase Database { get; }
-        public ServiceProvider ServiceProvider { get; set; }
-
+        private readonly IServiceCollection _services;
+        public readonly InMemoryDatabase Database;
+        public readonly ServiceProvider ServiceProvider;
+        
         public CollectionFixture()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            _services = new ServiceCollection();
+
             Database = new InMemoryDatabase();
-
-            IniciarServicos();
-
-        }
-
-        public void IniciarServicos()
-        {
-            Services = new ServiceCollection();
-
-            Services.AddScoped<IDbConnection>(x => Database.Conexao);
+            _services.AddScoped<IDbConnection>(x=> Database.Conexao);
 
             var config = new ConfigurationBuilder().AddJsonFile("appsettings.json", false).Build();
+            _services.AddSingleton<IConfiguration>(config);
+            _services.AddMemoryCache();
 
-            Services.AddSingleton<IConfiguration>(config);
-            Services.AddMemoryCache();
-            
-            FluentMapper.EntityMaps.Clear();
-            
-            new RegistradorDependencias().Registrar(Services, null);
+            new RegistradorDependencias().Registrar(_services, null);
 
-        }
+            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarFilaSgpCommand, bool>),typeof(PublicarFilaSgpCommandHandlerFake), ServiceLifetime.Scoped));
+            _services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery, TurmaParaSyncInstitucionalDto>), typeof(ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
 
-        public void BuildServiceProvider()
-        {
-            ServiceProvider = Services.BuildServiceProvider();
+            ServiceProvider = _services.BuildServiceProvider();
             DapperExtensionMethods.Init(ServiceProvider.GetService<IServicoTelemetria>());
         }
-
         public void Dispose()
         {
             Database.Dispose();

@@ -2,7 +2,6 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -46,8 +45,10 @@ namespace SME.SGP.Dados.Repositorios
 	                                public.pendencia_registro_individual_aluno pria 
 	                                on pri.id = pria.pendencia_registro_individual_id ";
 
-        public RepositorioPendenciaRegistroIndividual(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
-        { }
+        public RepositorioPendenciaRegistroIndividual(ISgpContext database)
+            : base(database)
+        {
+        }
 
 		public async Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia, 
 			SituacaoPendenciaRegistroIndividualAluno situacaoAluno)

@@ -1,7 +1,11 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using RabbitMQ.Client;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,27 +13,62 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommandHandler : IRequestHandler<SalvarLogViaRabbitCommand, bool>
     {
-        private readonly IServicoMensageriaLogs servicoMensageria;
+        private readonly ConfiguracaoRabbitLogOptions configuracaoRabbitOptions;
+        private readonly IServicoTelemetria servicoTelemetria;
 
-        public SalvarLogViaRabbitCommandHandler(IServicoMensageriaLogs servicoMensageria)
+        public SalvarLogViaRabbitCommandHandler(IOptions<ConfiguracaoRabbitLogOptions> configuracaoRabbitOptions, IServicoTelemetria servicoTelemetria)
         {
-            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
+            this.configuracaoRabbitOptions = configuracaoRabbitOptions.Value ?? throw new ArgumentNullException(nameof(configuracaoRabbitOptions));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
-
         public Task<bool> Handle(SalvarLogViaRabbitCommand request, CancellationToken cancellationToken)
         {
-            var mensagem = new LogMensagem(request.Mensagem,
-                                           request.Nivel.ToString(),
-                                           request.Contexto.ToString(),
-                                           request.Observacao,
-                                           request.Projeto,
-                                           request.Rastreamento,
-                                           request.ExcecaoInterna);
+            try
+            {
+                var mensagem = JsonConvert.SerializeObject(new LogMensagem(request.Mensagem,
+                                                                           request.Nivel.ToString(),
+                                                                           request.Contexto.ToString(),
+                                                                           request.Observacao,
+                                                                           request.Projeto,
+                                                                           request.Rastreamento,
+                                                                           request.ExcecaoInterna), new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
 
-            return servicoMensageria.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
+                });
+
+                var body = Encoding.UTF8.GetBytes(mensagem);
+
+                servicoTelemetria.Registrar(() => PublicarMensagem(body), "RabbitMQ", "Salvar Log Via Rabbit", RotasRabbitLogs.RotaLogs);
+
+                return Task.FromResult(true);
+            }
+            catch (System.Exception)
+            {
+                return Task.FromResult(false);
+            }
+        }
+        private void PublicarMensagem(byte[] body)
+        {
+            var factory = new ConnectionFactory
+            {
+                HostName =    configuracaoRabbitOptions.HostName,
+                UserName =    configuracaoRabbitOptions.UserName,
+                Password =    configuracaoRabbitOptions.Password,
+                VirtualHost = configuracaoRabbitOptions.VirtualHost
+            };
+
+            using (var conexaoRabbit = factory.CreateConnection())
+            {
+                using (IModel _channel = conexaoRabbit.CreateModel())
+                {
+                    var props = _channel.CreateBasicProperties();
+
+                    _channel.BasicPublish(ExchangeSgpRabbit.SgpLogs, RotasRabbitLogs.RotaLogs, props, body);
+                }                
+            }            
         }
     }
-
     public class LogMensagem
     {
         public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna)
