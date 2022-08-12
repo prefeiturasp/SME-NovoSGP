@@ -89,7 +89,7 @@ pipeline {
 			  dockerImage9.push()
 			  dockerImage10.push()
               }
-              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8 $imagename9"
+              sh "docker rmi $imagename1 $imagename2 $imagename3 $imagename4 $imagename5 $imagename6 $imagename7 $imagename8 $imagename9 $imagename10"
             }
           }
         }

@@ -11,6 +11,7 @@ using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
+using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -31,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_2()
         {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
+            
             var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
             
             await CriarDados(filtroConselhoClasse);
@@ -58,10 +61,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await CriarDados(filtroConselhoClasse);
             
-            await ExecutarTesteSemValidacao(filtroConselhoClasse);
+            await ExecutarTesteSemValidacao(filtroConselhoClasse,
+                                            filtroConselhoClasse.ConsiderarAnoAnterior, 
+                                            filtroConselhoClasse.TipoNota);
 
             filtroConselhoClasse.ConselhoClasseId = 1;
-            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
+            filtroConselhoClasse.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota = new Random().Next(1, 10);
             
             await ExecutarTeste(filtroConselhoClasse);
         }
@@ -76,10 +81,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await CriarDados(filtroConselhoClasse);
             
-            await ExecutarTesteSemValidacao(filtroConselhoClasse);
+            await ExecutarTesteSemValidacao(filtroConselhoClasse,
+                                            filtroConselhoClasse.ConsiderarAnoAnterior, 
+                                            filtroConselhoClasse.TipoNota);
 
             filtroConselhoClasse.ConselhoClasseId = 5;
-            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
+            filtroConselhoClasse.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota = new Random().Next(1, 10);
             
             await ExecutarTeste(filtroConselhoClasse);
         }
@@ -100,7 +107,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 AlunoCodigo = ALUNO_CODIGO_1,
                 BimestreConselhoClasse = BIMESTRE_2,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
-                ConselhoClassePersistirDto = ObterConselhoClasseNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138),
+                SalvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota),
                 Perfil = ObterPerfilProfessor()
             };
         }
@@ -130,16 +137,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarAula(filtroNota.ComponenteCurricular, DATA_02_05_INICIO_BIMESTRE_2, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
             await CriarAtividadeAvaliativa(DATA_02_05_INICIO_BIMESTRE_2, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
-        }
-
-        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componente)
-        {
-            return new ConselhoClasseNotaDto()
-            {
-                CodigoComponenteCurricular = componente,
-                Nota = new Random().Next(1,10),
-                Justificativa = JUSTIFICATIVA
-            };
         }
     }
 }

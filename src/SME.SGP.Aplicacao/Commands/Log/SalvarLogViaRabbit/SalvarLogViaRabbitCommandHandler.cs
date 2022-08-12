@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommandHandler : IRequestHandler<SalvarLogViaRabbitCommand, bool>
     {
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaLogs servicoMensageria;
 
-        public SalvarLogViaRabbitCommandHandler(IServicoMensageria servicoMensageria)
+        public SalvarLogViaRabbitCommandHandler(IServicoMensageriaLogs servicoMensageria)
         {
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }
@@ -24,7 +24,8 @@ namespace SME.SGP.Aplicacao
                                            request.Observacao,
                                            request.Projeto,
                                            request.Rastreamento,
-                                           request.ExcecaoInterna);
+                                           request.ExcecaoInterna,
+                                           request.InnerException);
 
             return servicoMensageria.Publicar(mensagem, RotasRabbitLogs.RotaLogs, ExchangeSgpRabbit.SgpLogs, "PublicarFilaLog");
         }
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
 
     public class LogMensagem
     {
-        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna)
+        public LogMensagem(string mensagem, string nivel, string contexto, string observacao, string projeto, string rastreamento, string excecaoInterna,string innerException)
         {
             Mensagem = mensagem;
             Nivel = nivel;
@@ -42,6 +43,7 @@ namespace SME.SGP.Aplicacao
             Rastreamento = rastreamento;
             ExcecaoInterna = excecaoInterna;
             DataHora = DateTime.Now;
+            InnerException = innerException;
         }
 
         public string Mensagem { get; set; }
@@ -51,6 +53,7 @@ namespace SME.SGP.Aplicacao
         public string Projeto { get; set; }
         public string Rastreamento { get; set; }
         public string ExcecaoInterna { get; set; }
+        public string InnerException { get; set; }
         public DateTime DataHora { get; set; }
 
     }

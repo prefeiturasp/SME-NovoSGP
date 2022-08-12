@@ -1,7 +1,13 @@
-﻿using SME.SGP.Dominio;
+﻿using System.Collections.Generic;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using SME.SGP.Aplicacao;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
@@ -12,52 +18,69 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+        }
+        
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_fundamental(bool anoAnterior) 
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental(bool anoAnterior) 
         {
-            await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_7, 
-                Modalidade.Fundamental, 
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilProfessor(), 
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                            ANO_7, 
+                            Modalidade.Fundamental, 
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior, 
+                            SituacaoConselhoClasse.EmAndamento, 
+                            true);
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_fundamental_cp(bool anoAnterior)
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_fundamental_cp(bool anoAnterior)
         {
-            await CrieDados(
-                ObterPerfilCP(),
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                ANO_5,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilCP(),
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                            ANO_5,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior, 
+                            SituacaoConselhoClasse.EmAndamento, 
+                            true);
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, false);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota,SituacaoConselhoClasse.EmAndamento,true);
         }
 
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio(bool anoAnterior)
+        public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_medio(bool anoAnterior)
         {
-            await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_7, 
-                Modalidade.Medio, 
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilProfessor(), 
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                            ANO_7, 
+                            Modalidade.Medio, 
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior, 
+                            SituacaoConselhoClasse.EmAndamento, 
+                            true);
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
         [Theory]
@@ -65,15 +88,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio_diretor(bool anoAnterior)
         {
-            await CrieDados(
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(
                 ObterPerfilDiretor(),
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                 ANO_5,
                 Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior);
+                anoAnterior, 
+                SituacaoConselhoClasse.EmAndamento, 
+                true);
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, false);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
         [Theory]
@@ -81,15 +108,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_eja(bool anoAnterior)
         {
-            await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 
-                ANO_9, 
-                Modalidade.EJA, 
-                ModalidadeTipoCalendario.EJA,
-                anoAnterior);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilProfessor(), 
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                            ANO_9, 
+                            Modalidade.EJA, 
+                            ModalidadeTipoCalendario.EJA,
+                            anoAnterior, 
+                            SituacaoConselhoClasse.EmAndamento, 
+                            true);
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
         [Theory]
@@ -97,45 +127,29 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_regencia_classe(bool anoAnterior)
         {
-            await CrieDados(
-                ObterPerfilProfessor(), 
-                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, 
-                ANO_1, 
-                Modalidade.Fundamental, 
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilProfessor(), 
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                            ANO_1, 
+                            Modalidade.Fundamental, 
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior, 
+                            SituacaoConselhoClasse.EmAndamento, 
+                            true);
 
-            await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, anoAnterior);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
-        private async Task ExecuteTeste(long componente, bool anoAnterior)
-        {
-            await ExecutarTeste(
-                        ObtenhaDto(componente),
-                        0,
-                        anoAnterior,
-                        ALUNO_CODIGO_1,
-                        TipoNota.Nota,
-                        BIMESTRE_2);
-        }
-
-        private ConselhoClasseNotaDto ObtenhaDto(long componente)
-        {
-            return new ConselhoClasseNotaDto()
-            {
-                CodigoComponenteCurricular = componente,
-                Nota = NOTA_7,
-                Justificativa = JUSTIFICATIVA
-            };
-        }
-
-        private async Task CrieDados(
+        private async Task CriarDados(
                         string perfil, 
                         long componente,
                         string anoTurma, 
                         Modalidade modalidade,
                         ModalidadeTipoCalendario modalidadeTipoCalendario,
-                        bool anoAnterior)
+                        bool anoAnterior, 
+                        SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, 
+                        bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -148,7 +162,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ComponenteCurricular = componente.ToString(),
                 AnoTurma = anoTurma,
                 ConsiderarAnoAnterior = anoAnterior,
-                DataAula = dataAula
+                DataAula = dataAula,
+                CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
+                SituacaoConselhoClasse = situacaoConselhoClasse
             };
             
             await CriarDadosBase(filtroNota);
