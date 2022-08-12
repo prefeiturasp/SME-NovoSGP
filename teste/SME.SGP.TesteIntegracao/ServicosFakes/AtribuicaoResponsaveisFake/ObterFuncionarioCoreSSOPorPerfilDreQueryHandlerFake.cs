@@ -33,6 +33,7 @@ namespace SME.SGP.TesteIntegracao
             {   UsuarioId = 3,
                 CodigoFuncaoAtividade = 0,
                 CodigoRf = "3",
+                Login = "3",
                 EstaAfastado = false,
                 NomeServidor = "Psicologo Teste" }
             };
