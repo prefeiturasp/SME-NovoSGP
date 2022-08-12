@@ -212,6 +212,7 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected const long TIPO_CALENDARIO_1 = 1;
+        protected const long TIPO_CALENDARIO_2 = 2;
 
         protected string DATA_INICIO_SGP = "DataInicioSGP";
         protected string NUMERO_50 = "50";
@@ -786,6 +787,23 @@ namespace SME.SGP.TesteIntegracao
                 Excluido = false,
                 Migrado = false
             });
+
+            if (tipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                await InserirNaBase(new TipoCalendario
+                {
+                    AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                    Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
+                    Periodo = Periodo.Semestral,
+                    Modalidade = tipoCalendario,
+                    Situacao = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    Excluido = false,
+                    Migrado = false
+                });                
+            }
         }
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)

@@ -225,7 +225,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurmaTipoCalendario(filtroNota);
 
             if (filtroNota.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroNota.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(filtroNota);
 
             if (filtroNota.CriarPeriodoAbertura)
                 await CriarPeriodoAbertura(filtroNota);
@@ -252,18 +252,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaConceito();
 
             if (filtroNota.CriarConselhosTodosBimestres)
-                await CriarConselhosTodosBimestres(long.Parse(filtroNota.ComponenteCurricular));
+                await CriarConselhosTodosBimestres(long.Parse(filtroNota.ComponenteCurricular), filtroNota.CriarConselhoClasseFinal);
         }
 
-        private async Task CriarConselhosTodosBimestres(long componenteCurricular)
+        private async Task CriarConselhosTodosBimestres(long componenteCurricular, bool criarConselhoClasseFinal)
         {
             var fechamentosTurma = ObterTodos<FechamentoTurma>();
             var alunos = ObterAlunos();
 
             var conselhoClasseAlunoId = 1;
             var conselhoClasseId = 1;
+
+            if (!criarConselhoClasseFinal)
+                fechamentosTurma = fechamentosTurma.Where(w => w.PeriodoEscolarId != null).ToList();
             
-            foreach (var fechamentoTurma in fechamentosTurma.Where(w=> w.PeriodoEscolarId != null))
+            foreach (var fechamentoTurma in fechamentosTurma)
             {
                 await InserirNaBase(new ConselhoClasse
                 {
@@ -874,15 +877,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
-        protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
+        protected async Task CriarPeriodoEscolar(FiltroNotasDto filtroNotasDto)
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, considerarAnoAnterior);
+            if (filtroNotasDto.Modalidade == Modalidade.EJA)
+            {
+                await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
+                return;
+            }
+            
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
         }
 
         protected async Task CriarPeriodoAbertura(FiltroNotasDto filtroNotasDto)
@@ -1119,6 +1129,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public bool CriarFechamentoDisciplinaAlunoNota { get; set; }
             public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
             public bool CriarConselhosTodosBimestres { get; set; }
+            public bool CriarConselhoClasseFinal { get; set; }
         }
 
         public class FiltroConselhoClasseDto

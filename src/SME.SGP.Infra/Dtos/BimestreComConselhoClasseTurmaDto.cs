@@ -2,8 +2,8 @@
 {
     public class BimestreComConselhoClasseTurmaDto
     {
-        public long conselhoClasseId { get; set; }
-        public long fechamentoTurmaId { get; set; }
-        public long bimestre { get; set; }
+        public long ConselhoClasseId { get; set; }
+        public long FechamentoTurmaId { get; set; }
+        public long Bimestre { get; set; }
     }
 }
