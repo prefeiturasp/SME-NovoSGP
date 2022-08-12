@@ -19,6 +19,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_inserir_alterar_nota_numerica_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+            //Resolvido
         }
         
         protected override void RegistrarFakes(IServiceCollection services)
