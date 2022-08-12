@@ -14,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioNotaTipoValorConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
-        public NotaTipoValor ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
+        public async Task<NotaTipoValor> ObterPorCicloIdDataAvalicacao(long cicloId, DateTime dataAvalicao)
         {
             var sql = @"select ntv.* from notas_tipo_valor ntv
                         inner join notas_conceitos_ciclos_parametos nccp
@@ -25,7 +25,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { cicloId, dataAvalicao };
 
-            return database.QueryFirstOrDefault<NotaTipoValor>(sql, parametros);
+            return await database.QueryFirstOrDefaultAsync<NotaTipoValor>(sql, parametros);
         }
 
         public NotaTipoValor ObterPorTurmaId(long turmaId, TipoTurma tipoTurma = TipoTurma.Regular)

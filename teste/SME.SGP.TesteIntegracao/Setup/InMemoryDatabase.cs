@@ -13,15 +13,20 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class InMemoryDatabase : IDisposable
     {
-        public readonly NpgsqlConnection Conexao;
+        public NpgsqlConnection Conexao;
         private readonly PostgresRunner _postgresRunner;
 
         public InMemoryDatabase()
         {
             _postgresRunner = PostgresRunner.Start();
+            CriarConexaoEAbrir();
+            new ConstrutorDeTabelas().Contruir(Conexao);
+        }
+
+        public void CriarConexaoEAbrir()
+        {
             Conexao = new NpgsqlConnection(_postgresRunner.GetConnectionString());
             Conexao.Open();
-            new ConstrutorDeTabelas().Contruir(Conexao);
         }
 
         public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()

@@ -16,5 +16,6 @@ namespace SME.SGP.Infra
         public string AlunoCodigo { get; set; }
         public SituacaoPlanoAEE Situacao { get; set; }
         public List<PlanoAEEQuestaoDto> Questoes { get; set; }
+        public string ResponsavelRF { get; set; }
     }
 }

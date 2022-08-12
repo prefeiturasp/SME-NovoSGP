@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioCompensacaoAusenciaAluno : IRepositorioBase<CompensacaoAusenciaAluno>
     {
+        Task<bool> InserirVarios(IEnumerable<CompensacaoAusenciaAluno> registros, Usuario usuarioLogado);
     }
 }

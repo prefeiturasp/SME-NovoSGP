@@ -259,7 +259,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
             if (ehSupervisor)
             {
-                var uesIds = ObterAbrangenciaEolSupervisor(login);
+                var uesIds = await ObterAbrangenciaEolSupervisor(login);
                 if (!uesIds.Any())
                     return;
                 var abrangenciaSupervisor = await servicoEOL.ObterAbrangenciaParaSupervisor(uesIds.ToArray());
@@ -346,9 +346,9 @@ namespace SME.SGP.Aplicacao.Servicos
             return new Tuple<IEnumerable<Dre>, IEnumerable<Ue>, IEnumerable<Turma>>(dres, ues, turmas);
         }
 
-        private string[] ObterAbrangenciaEolSupervisor(string login)
+        private async Task<string[]> ObterAbrangenciaEolSupervisor(string login)
         {
-            var listaEscolasDresSupervior = consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
+            var listaEscolasDresSupervior = await consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
             if (listaEscolasDresSupervior.Any())
             {

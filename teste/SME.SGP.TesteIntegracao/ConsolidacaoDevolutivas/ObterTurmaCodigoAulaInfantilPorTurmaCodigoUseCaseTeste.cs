@@ -130,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDevolutivas
                 AlteradoRF = "1",
             });
 
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 Id = 1,
                 UeId = "1",

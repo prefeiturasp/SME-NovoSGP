@@ -14,14 +14,11 @@
         public const string RotaSincronizaComponetesCurricularesEol = "sgp.componentes.curriculares.eol.sincronizar";
         public const string RotaExecutaExclusaoPendenciasDiasLetivosInsuficientes = "sgp.pendencias.gerais.pendencias.calendario.excluir";
         public const string RotaExecutaExclusaoPendenciaParametroEvento = "sgp.pendencias.gerais.pendencias.evento.excluir";
-        public const string RotaExecutaExclusaoPendenciasAusenciaAvaliacao = "sgp.pendencias.professor.avaliacao.excluir";
         public const string RotaTrataNotificacoesNiveis = "sgp.notificacao.tratamento.niveiscargos";
         public const string RotaNotificacaoReuniaoPedagogica = "sgp.evento.reuniao.pedagogica.notificar";
         public const string RotaPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual";
         public const string RotaAtualizarPendenciaAusenciaRegistroIndividual = "sgp.pendencias.professor.ausencia.registro.individual.atualizar";
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
-        public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";
-        public const string ConsolidarTurmaTratar = "sgp.consolidacao.turma.tratar";
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
         public const string SincronizaDevolutivasPorTurmaInfantilSync = "sgp.consolidacao.devolutivas.turma.sync";
@@ -38,8 +35,6 @@
         public const string ConsolidarAcompanhamentoAprendizagemAlunoPorUE = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.ue";
         public const string ConsolidarAcompanhamentoAprendizagemAlunoTratar = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.tratar";
         public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
-        public const string RotaAtividadesSync = "sgp.atividade.avaliativa.sync";
-        public const string RotaAtividadesNotasSync = "sgp.atividade.avaliativa.notas.sync";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
         public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
         public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
@@ -111,6 +106,24 @@
         public const string RotaMuralAvisosSyncAgendado = "sgp.mural.avisos.sync.agendado";
         public const string RotaAtividadesSyncAgendado = "sgp.atividade.avaliativa.sync.agendado";
         public const string RotaNotaAtividadesSyncAgendado = "sgp.nota.atividade.avaliativa.sync.agendado";
+
+        #endregion
+
+        #region Diário de bordo
+
+        public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorDre = "sgp.diario.bordo.pendencia.devolutiva.dre";
+        public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorUe = "sgp.diario.bordo.pendencia.devolutiva.ue";
+        public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma = "sgp.diario.bordo.pendencia.devolutiva.turma";
+        public const string RotaReprocessarDiarioBordoPendenciaDevolutivaPorComponente = "sgp.diario.bordo.pendencia.devolutiva.componente";
+
+        #endregion
+
+        #region Atribuição de responsáveis
+
+        public const string RemoverAtribuicaoResponsaveis = "sgp.remover.atribuicao.responsaveis";
+        public const string RemoverAtribuicaoResponsaveisSupervisorPorDre = "sgp.remover.atribuicao.responsaveis.supervisor.dre";
+        public const string RemoverAtribuicaoResponsaveisPAAIPorDre = "sgp.remover.atribuicao.responsaveis.paai.dre";
+        public const string RemoverAtribuicaoResponsaveisASPPorDre = "sgp.remover.atribuicao.responsaveis.aspp.dre";
 
         #endregion
     }

@@ -185,7 +185,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var turmaAgrupada in turmasAgrupadas)
             {
-                var alunosDaTurma = await servicoEOL.ObterAlunosPorTurma(turmaAgrupada.Key);
+                var alunosDaTurma =  await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupada.Key));
                 var alunosFaltososTurma = alunosDaTurma.Where(c => turmaAgrupada.Any(a => a.AlunoCodigo == c.CodigoAluno));
 
                 mensagem.AppendLine($"<p>Turma <b>{turmaAgrupada.First().TurmaModalidade.ObterNomeCurto()} - {turmaAgrupada.First().TurmaNome}</b></p>");
@@ -259,7 +259,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!alunosFaltososNaTurma.Any())
                     continue;
 
-                var alunosTurmaEOL = await servicoEOL.ObterAlunosPorTurma(turmaAgrupamento.Key);
+                var alunosTurmaEOL =  await  mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaAgrupamento.Key));
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaAgrupamento.Key);
 
                 var alunosFaltososEOL = alunosTurmaEOL.Where(c => alunosFaltososNaTurma.Any(a => a.CodigoAluno == c.CodigoAluno));
@@ -354,7 +354,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             if (turma.ModalidadeTurma == Modalidade.EducacaoInfantil)
             {
-                var disciplinaEols = await servicoEOL.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
+                var disciplinaEols = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
                 if (disciplinaEols != null)
                     foreach (var disciplina in disciplinaEols)
                     {

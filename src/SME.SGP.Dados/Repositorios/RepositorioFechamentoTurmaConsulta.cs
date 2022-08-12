@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
                         and f.disciplina_id = @componenteCurricularId
                         and ft.periodo_escolar_id = @periodoEscolarId
                         and fn.excluido = false
-                        order by fn.id desc";
+                        ORDER BY fn.alterado_em ,fn.criado_em  ";
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 

@@ -59,9 +59,9 @@ namespace SME.SGP.Aplicacao
                 Turma = turma
             });
 
-                retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
-                retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
-                retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
+            retorno.PodeCadastrarAula = podeCadastrarAulaEMensagem.PodeCadastrar;
+            retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
+            retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
             string[] componentesCurricularesDoProfessor = new string[0];
 
@@ -82,16 +82,18 @@ namespace SME.SGP.Aplicacao
             {
                 aulasParaVisualizar = aulasDoDia;
                 retorno.PodeCadastrarAula = false;
-            }
-                     
+            }                     
             else
             {
                 if (usuarioLogado.EhProfessor())
+                {
                     componentesCurricularesDoProfessor = await mediator
-                                                              .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
-                                                                                                                               usuarioLogado.PerfilAtual,
-                                                                                                                               filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                        .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                            usuarioLogado.PerfilAtual,
+                            filtroAulasEventosCalendarioDto.TurmaCodigo,
+                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                }
+
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
             }
