@@ -34,6 +34,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoFuncaoAtividade = 0,
                 CodigoRf = "3",
                 EstaAfastado = false,
+                Login = "3",
                 NomeServidor = "Psicologo Teste" }
             };
         }
@@ -44,6 +45,7 @@ namespace SME.SGP.TesteIntegracao
             {   UsuarioId = 4,
                 CodigoFuncaoAtividade = 0,
                 CodigoRf = "4",
+                Login = "4",
                 EstaAfastado = false,
                 NomeServidor = "PsicoPedagogo Teste" }
             };
@@ -55,6 +57,7 @@ namespace SME.SGP.TesteIntegracao
             {   UsuarioId = 5,
                 CodigoFuncaoAtividade = 0,
                 CodigoRf = "5",
+                Login = "5",
                 EstaAfastado = false,
                 NomeServidor = "Assistente Social Teste" }
             };
