@@ -2,13 +2,14 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAnotacaoFrequenciaAluno : RepositorioBase<AnotacaoFrequenciaAluno>, IRepositorioAnotacaoFrequenciaAluno
     {
-        public RepositorioAnotacaoFrequenciaAluno(ISgpContext conexao) : base(conexao)
+        public RepositorioAnotacaoFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

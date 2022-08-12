@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 ? DateTimeExtension.HorarioBrasilia().Date
                 : new DateTime(anoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(turmaId, dataReferencia, professorRf, false);
+            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, dataReferencia, professorRf, false));
 
             var listaAtribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo));
 

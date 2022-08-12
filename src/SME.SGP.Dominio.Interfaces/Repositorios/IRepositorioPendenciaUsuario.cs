@@ -6,5 +6,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task ExcluirPorPendenciaId(long pendenciaId);
         Task ExcluirPorPendenciaIdEUsuario(long pendenciaId, long usuarioId);
+        Task AlteraUsuarioDaPendencia(long pendenciaId, long usuarioId);
     }
 }

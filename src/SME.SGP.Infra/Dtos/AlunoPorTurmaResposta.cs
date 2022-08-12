@@ -84,6 +84,7 @@ namespace SME.SGP.Infra
         public bool EstaAtivo(DateTime dataBase) => TratarExcepcionalmenteSituacaoAtivo(dataBase) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
                                                     (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataMatricula.Date <= dataBase.Date) ||
                                                     (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date);
+
         /// <summary>
         /// Verifica se o aluno está ativo para Notas e Frequencia
         /// </summary>

@@ -6,6 +6,7 @@
         public string EscolaId { get; set; }
         public string SupervisorId { get; set; }
         public bool Excluido { get; set; }
+        public int Tipo { get; set; }
 
         public void Excluir()
         {

@@ -5,6 +5,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using MediatR;
 
 namespace SME.SGP.Aplicacao.Teste.Consultas
 {
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioTipoCalendario> repositorioTipoCalendatio;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoUsuario> servicoUsuario;
+        private readonly Mock<IMediator> mediator;
         private readonly Mock<IRepositorioComponenteCurricularConsulta> repositorioComponenteCurricular;
         
 
@@ -70,6 +72,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                                   consultasDisciplina.Object,
                                                                                   consultasAula.Object,
                                                                                   repositorioEventoTipo.Object,
+                                                                                  mediator.Object,
                                                                                   repositorioFechamentoReabertura.Object);
 
             comandosDiasLetivos = new ComandosDiasLetivos(repositorioPeriodoEscolar.Object,

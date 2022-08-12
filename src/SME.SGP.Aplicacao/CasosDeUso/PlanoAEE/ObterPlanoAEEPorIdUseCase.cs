@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 var alunoPorTurmaResposta = await mediator
-                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false));
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false, entidadePlano.Turma?.CodigoTurma));
 
                 if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
                 {
@@ -114,9 +114,12 @@ namespace SME.SGP.Aplicacao
 
                 plano.UltimaVersao = ultimaVersao;
                 plano.PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(entidadePlano.SituacaoPodeDevolverPlanoAEE());
-            }
-            else
+                plano.Responsavel = await ObtenhaResponsavel(entidadePlano.ResponsavelId);
+            } else
+            {
+                plano.Responsavel = await ObtenhaResponsavel();
                 turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
+            }
 
             var questionarioId = await mediator
                 .Send(new ObterQuestionarioPlanoAEEIdQuery());
@@ -156,6 +159,34 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Usuário não localizado");
 
             return usuario.EhPerfilProfessor() || !situacaoPodeDevolverPlanoAEE ? false : true;
+        }
+
+        private async Task<ResponsavelDto> ObtenhaResponsavel(long id)
+        {
+            var responsavel = new ResponsavelDto();
+
+            var usuario = await mediator.Send(new ObterUsuarioPorIdSemPerfilQuery(id));
+
+            if (usuario != null)
+            {
+                responsavel.ResponsavelId = usuario.Id;
+                responsavel.ResponsavelRF = usuario.CodigoRf;
+                responsavel.ResponsavelNome = usuario.Nome;
+            }
+
+            return responsavel;
+        }
+
+        private async Task<ResponsavelDto> ObtenhaResponsavel()
+        {
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            return new ResponsavelDto()
+            {
+                ResponsavelId = usuario.Id,
+                ResponsavelRF = usuario.CodigoRf,
+                ResponsavelNome = usuario.Nome
+            };
         }
     }
 }

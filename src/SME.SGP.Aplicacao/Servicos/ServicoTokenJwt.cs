@@ -24,9 +24,9 @@ namespace SME.SGP.Aplicacao.Servicos
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
         }
 
-        public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos)
+        public string GerarToken(string usuarioLogin, string usuarioNome, string codigoRf, Guid guidPerfil, IEnumerable<Permissao> permissionamentos, List<Claim> claimsAdicionais = null)
         {
-            IList<Claim> claims = new List<Claim>();
+            List<Claim> claims = new List<Claim>();
 
             claims.Add(new Claim(ClaimTypes.Name, usuarioLogin));
             claims.Add(new Claim("login", usuarioLogin));
@@ -37,6 +37,11 @@ namespace SME.SGP.Aplicacao.Servicos
             foreach (var permissao in permissionamentos)
             {
                 claims.Add(new Claim("roles", permissao.ToString()));
+            }
+
+            if (claimsAdicionais != null && claimsAdicionais.Any())
+            {
+                claims.AddRange(claimsAdicionais);
             }
 
             var now = DateTime.Now;

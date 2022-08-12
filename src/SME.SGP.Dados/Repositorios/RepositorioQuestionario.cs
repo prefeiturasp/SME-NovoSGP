@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioQuestionario : RepositorioBase<Questionario>, IRepositorioQuestionario
     {
-        public RepositorioQuestionario(ISgpContext database) : base(database)
+        public RepositorioQuestionario(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

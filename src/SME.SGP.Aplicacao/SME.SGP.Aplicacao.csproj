@@ -7,15 +7,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <Compile Remove="Interfaces\CasosDeUso\Aluno\**" />
     <Compile Remove="Queries\AcompanhamentoFrequencia\**" />
-    <Compile Remove="Servicos\Interfaces\**" />
+    <EmbeddedResource Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <EmbeddedResource Remove="Interfaces\CasosDeUso\Aluno\**" />
     <EmbeddedResource Remove="Queries\AcompanhamentoFrequencia\**" />
-    <EmbeddedResource Remove="Servicos\Interfaces\**" />
+    <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <None Remove="Interfaces\CasosDeUso\Aluno\**" />
     <None Remove="Queries\AcompanhamentoFrequencia\**" />
-    <None Remove="Servicos\Interfaces\**" />
+    <Compile Remove="Queries\EOL\Aluno\ObterAlunosPorTurma\ObterAlunosPorTurmaQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQueryHandler.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <EmbeddedResource Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <None Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQueryHandler.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQuery.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <EmbeddedResource Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <None Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQuery.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQueryHandler.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <EmbeddedResource Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <None Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,8 +61,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
+    <Folder Include="Servicos\Interfaces\" />
   </ItemGroup>
 </Project>

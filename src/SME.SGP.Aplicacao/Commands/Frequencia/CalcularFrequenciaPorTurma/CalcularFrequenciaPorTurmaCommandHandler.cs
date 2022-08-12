@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Polly;
 using Polly.Registry;
-using SME.GoogleClassroom.Infra;
+using SME.SGP.Infra;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             var excluirFrequenciaAlunoIds = new List<long>();
 
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
-
+            
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
             List<FrequenciaAluno> frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
