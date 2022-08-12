@@ -38,9 +38,8 @@ namespace SME.SGP.Aplicacao
                     .NotEmpty()
                     .WithMessage("Necessário informar o código do aluno para obter as notas de fechmamento");
                 RuleFor(a => a.Bimestre)
-                    .NotNull()
-                    .NotEmpty()
-                    .WithMessage("Necessário informar o bimestre para obter as notas de fechmamento");
+                    .GreaterThanOrEqualTo(0)
+                    .WithMessage("Necessário informar o bimestre para obter as notas de fechamento");
             }
         }
     }

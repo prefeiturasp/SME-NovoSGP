@@ -18,6 +18,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -31,8 +32,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Deve_lancar_conceito_pos_conselho_bimestre(bool anoAnterior)
         {
-            await CrieDados(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior);
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await CrieDados(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior, SituacaoConselhoClasse.EmAndamento, true);
+            await ExecutarTeste(ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2, SituacaoConselhoClasse.EmAndamento, FECHAMENTO_TURMA_ID_2);
         }
 
         [Theory]
@@ -40,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
         {
-            await CrieDados(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior);
-            await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, anoAnterior);
+            await CrieDados(ObterPerfilProfessor(), COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito, ANO_4, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, anoAnterior, SituacaoConselhoClasse.EmAndamento, true);
+            await ExecutarTeste(ObtenhaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2, SituacaoConselhoClasse.EmAndamento, FECHAMENTO_TURMA_ID_2);
         }
 
         [Theory]
@@ -50,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_lancar_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
         {
             await CrieDados(ObterPerfilProfessor(), COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, ANO_4, Modalidade.EJA, ModalidadeTipoCalendario.EJA, anoAnterior, SituacaoConselhoClasse.EmAndamento, true);
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, anoAnterior);
+            await ExecutarTeste(ObtenhaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), 0, anoAnterior, ALUNO_CODIGO_1, TipoNota.Conceito, BIMESTRE_2, SituacaoConselhoClasse.EmAndamento, FECHAMENTO_TURMA_ID_2);
         }
 
         private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
