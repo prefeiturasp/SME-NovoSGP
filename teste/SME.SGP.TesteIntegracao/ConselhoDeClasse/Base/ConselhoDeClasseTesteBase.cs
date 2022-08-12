@@ -251,18 +251,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaConceito();
 
             if (filtroNota.CriarConselhosTodosBimestres)
-                await CriarConselhosTodosBimestres(long.Parse(filtroNota.ComponenteCurricular));
+                await CriarConselhosTodosBimestres(long.Parse(filtroNota.ComponenteCurricular), filtroNota.CriarConselhoClasseFinal);
         }
 
-        private async Task CriarConselhosTodosBimestres(long componenteCurricular)
+        private async Task CriarConselhosTodosBimestres(long componenteCurricular, bool criarConselhoClasseFinal)
         {
             var fechamentosTurma = ObterTodos<FechamentoTurma>();
             var alunos = ObterAlunos();
 
             var conselhoClasseAlunoId = 1;
             var conselhoClasseId = 1;
+
+            if (!criarConselhoClasseFinal)
+                fechamentosTurma = fechamentosTurma.Where(w => w.PeriodoEscolarId != null).ToList();
             
-            foreach (var fechamentoTurma in fechamentosTurma.Where(w=> w.PeriodoEscolarId != null))
+            foreach (var fechamentoTurma in fechamentosTurma)
             {
                 await InserirNaBase(new ConselhoClasse
                 {
@@ -1100,6 +1103,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public bool CriarFechamentoDisciplinaAlunoNota { get; set; }
             public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
             public bool CriarConselhosTodosBimestres { get; set; }
+            public bool CriarConselhoClasseFinal { get; set; }
         }
 
         public class FiltroConselhoClasseDto

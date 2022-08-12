@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_listar_4_bimestres_para_modalidade_do_ensino_fundamental_e_medio()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
-                ModalidadeTipoCalendario.FundamentalMedio);
+                ModalidadeTipoCalendario.FundamentalMedio, true, false);
             
             var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
             useCase.ShouldNotBeNull();
@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_listar_2_bimestres_para_eja()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_4, Modalidade.EJA,
-                ModalidadeTipoCalendario.EJA);
+                ModalidadeTipoCalendario.EJA, true, false);
             
             var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
             useCase.ShouldNotBeNull();
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_exibir_opcao_final_apos_inicio_ultimo_bimestre()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
-                ModalidadeTipoCalendario.FundamentalMedio);
+                ModalidadeTipoCalendario.FundamentalMedio, true, true);
             
             var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
             useCase.ShouldNotBeNull();
@@ -74,15 +74,35 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
             turma.ShouldNotBeNull();
             
-            var retorno = (await useCase.Executar(turma.Id)).Where(c => c.Bimestre == 0);
-            retorno.Any().ShouldBeTrue();
+            (await useCase.Executar(turma.Id)).Any(c => c.Bimestre == 0).ShouldBeTrue();
         }
+        
+        [Fact]
+        public async Task Nao_deve_exibir_opcao_final()
+        {
+            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio, true, false);
+            
+            var useCase = ServiceProvider.GetService<IObterBimestresComConselhoClasseTurmaUseCase>();
+            useCase.ShouldNotBeNull();
+
+            var turmas = ObterTodos<Turma>();
+            turmas.ShouldNotBeNull();
+
+            var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
+            turma.ShouldNotBeNull();
+            
+            (await useCase.Executar(turma.Id)).Any(c => c.Bimestre == 0).ShouldBeFalse();
+        }        
         
         private async Task CriarDados(
             string componenteCurricular,
             string anoTurma, 
             Modalidade modalidade,
-            ModalidadeTipoCalendario modalidadeTipoCalendario)
+            ModalidadeTipoCalendario modalidadeTipoCalendario,
+            bool criarConselhosTodosBimestres,
+            bool criarConselhoClasseFinal
+            )
         {            
             var filtroNota = new FiltroNotasDto
             {
@@ -96,7 +116,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TipoNota = TipoNota.Nota,
                 SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
                 CriarFechamentoDisciplinaAlunoNota = true,
-                CriarConselhosTodosBimestres = true
+                CriarConselhosTodosBimestres = criarConselhosTodosBimestres,
+                CriarConselhoClasseFinal = criarConselhoClasseFinal
             };
             
             await CriarDadosBase(filtroNota);
