@@ -23,7 +23,7 @@ namespace SME.SGP.Infra
         public bool EhAtendidoAEE { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
-        public DateTime DataAtualizacaoContato { get; set; }
+        public DateTime? DataAtualizacaoContato { get; set; }
 
         public bool MarcadorDiasSemRegistroExibir { get; set; }
         public string MarcadorDiasSemRegistroTexto { get; set; }
