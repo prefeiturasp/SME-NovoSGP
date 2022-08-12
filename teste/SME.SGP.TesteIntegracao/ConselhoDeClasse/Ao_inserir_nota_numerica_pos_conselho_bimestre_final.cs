@@ -156,18 +156,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
         }
 
-        private async Task CriarConselhoClasseTodosBimestres()
-        {
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
-        }
-
         private async Task CriarDados(
                         string perfil,
                         long componente,
@@ -192,8 +180,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
-                SituacaoConselhoClasse = situacaoConselhoClasse,
-                CriarConselhosTodosBimestres = criarConselhosTodosBimestres
+                SituacaoConselhoClasse = situacaoConselhoClasse
             };
 
             await CriarDadosBase(filtroNota);
