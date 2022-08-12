@@ -96,7 +96,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
-            var query = @"select f.*, fa.*, fn.*
+            const string query = @"select f.*, fa.*, fn.*
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
@@ -112,10 +112,11 @@ namespace SME.SGP.Dados.Repositorios
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 
-            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoNota, FechamentoTurmaDisciplina>(query.ToString(),
+            await database.Conexao.QueryAsync<FechamentoTurmaDisciplina, FechamentoAluno, FechamentoNota, FechamentoTurmaDisciplina>(query,
                 (fechamentoTurmaDiscplina, fechamentoAluno, fechamentoNota) =>
                 {
                     var fechamentoTurmaDisciplinaLista = fechammentosTurmaDisciplina.FirstOrDefault(ftd => ftd.Id == fechamentoTurmaDiscplina.Id);
+
                     if (fechamentoTurmaDisciplinaLista == null)
                     {
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
@@ -130,7 +131,6 @@ namespace SME.SGP.Dados.Repositorios
                 }, new { turmaId, componenteCurricularId, periodoEscolarId });
 
             return fechammentosTurmaDisciplina;
-            
         }
 
         public async Task<bool> VerificaExistePorTurmaCCPeriodoEscolar(long turmaId, long componenteCurricularId, long? periodoEscolarId)

@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarConselhoClasseAlunoCommand : IRequest
+    public class SalvarConselhoClasseAlunoCommand : IRequest<long>
     {
         public SalvarConselhoClasseAlunoCommand(ConselhoClasseAluno conselhoClasseAluno)
         {

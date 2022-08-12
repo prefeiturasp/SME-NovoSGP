@@ -17,8 +17,8 @@ namespace SME.SGP.Aplicacao
 
         public CriarCacheDeAtividadeAvaliativaPorTurmaCommandHandler(IRepositorioCache repositorioCache, IRepositorioNotasConceitosConsulta repositorioNotasConceitos)
         {
-            this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
-            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new System.ArgumentNullException(nameof(repositorioNotasConceitos));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.repositorioNotasConceitos = repositorioNotasConceitos ?? throw new ArgumentNullException(nameof(repositorioNotasConceitos));
         }
 
         public async Task<IEnumerable<NotaConceito>> Handle(CriarCacheDeAtividadeAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)

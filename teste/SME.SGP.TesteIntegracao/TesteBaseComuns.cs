@@ -93,6 +93,7 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
+        protected const string COMPONENTE_EDUCACAO_FISICA_ID_6 = "6";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
         protected const string COMPONENTE_GEOGRAFIA_NOME = "'Geografia'";
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
@@ -362,7 +363,12 @@ namespace SME.SGP.TesteIntegracao
         protected const string PLENAMENTE_SATISFATORIO = "P";
         protected const string SATISFATORIO = "S";
         protected const string NAO_SATISFATORIO = "NS";
+        
+        protected readonly string NOTA = "NOTA";
+        protected readonly string CONCEITO = "CONCEITO";
 
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
 
         protected readonly CollectionFixture collectionFixture;
 

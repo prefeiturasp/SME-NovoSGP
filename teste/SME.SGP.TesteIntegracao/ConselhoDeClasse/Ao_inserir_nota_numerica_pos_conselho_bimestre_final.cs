@@ -11,6 +11,7 @@ using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
+using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -31,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_2()
         {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            
             var filtroConselhoClasse = ObterFiltroPadraoConselhoClasseDto();
             
             await CriarDados(filtroConselhoClasse);
@@ -61,7 +64,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTesteSemValidacao(filtroConselhoClasse);
 
             filtroConselhoClasse.ConselhoClasseId = 1;
-            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
+            filtroConselhoClasse.SalvarConselhoClasseAlunoNotaDto.Nota = new Random().Next(1, 10);
             
             await ExecutarTeste(filtroConselhoClasse);
         }
@@ -79,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTesteSemValidacao(filtroConselhoClasse);
 
             filtroConselhoClasse.ConselhoClasseId = 5;
-            filtroConselhoClasse.ConselhoClassePersistirDto.Nota = new Random().Next(1, 10);
+            filtroConselhoClasse.SalvarConselhoClasseAlunoNotaDto.Nota = new Random().Next(1, 10);
             
             await ExecutarTeste(filtroConselhoClasse);
         }
@@ -100,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 AlunoCodigo = ALUNO_CODIGO_1,
                 BimestreConselhoClasse = BIMESTRE_2,
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
-                ConselhoClassePersistirDto = ObterConselhoClasseNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138),
+                SalvarConselhoClasseAlunoNotaDto = ObterConselhoClasseNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138),
                 Perfil = ObterPerfilProfessor()
             };
         }
