@@ -11,11 +11,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Frequencia.Base
+namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_obter_frequencia_geral_de_aluno : FrequenciaTesteBase
     {
-        private const double VALOR_33 = 33.33;
+        private const string VALOR_33 = "33,33";
         private const string VALOR_100 = "100";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -39,9 +39,9 @@ namespace SME.SGP.TesteIntegracao.Frequencia.Base
 
             var mediator = ServiceProvider.GetService<IMediator>();
             var valor = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(CODIGO_ALUNO_1, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
-
-            valor.ShouldNotBeEmpty();
-            valor.ShouldBe(VALOR_33.ToString());
+            
+            valor.Replace(".",",").ShouldNotBeEmpty();
+            valor.Replace(".",",").ShouldBe(VALOR_33);
         }
 
         [Fact]

@@ -1,8 +1,6 @@
-﻿using Elastic.Apm.Api;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Moq;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -10,7 +8,6 @@ using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -18,14 +15,8 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_realizar_lancamento_de_justificativa : FrequenciaTesteBase
     {
-        private readonly Mock<IMediator> mediator;
-
         public Ao_realizar_lancamento_de_justificativa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            mediator = new Mock<IMediator>();
-
-            mediator.Setup(m => m.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(true);
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -33,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -125,9 +116,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 CodigoAluno = CODIGO_ALUNO_99999,
                 EhInfantil = false
             };
-
-            mediator.Setup(m => m.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
 
             await ExecutarSalvarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
@@ -222,14 +210,22 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Deve_Excluir_justificativa()
         {
-           (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
+            (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
         }
 
         [Fact]
         public async Task Nao_Deve_Excluir_justificativa_Anotacao_Nao_Localizada_Com_Id_Informado()
         {
             await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(8).ShouldThrowAsync<NegocioException>();
-        }       
+        }
+
+
+        [Fact]
+        public async Task Nao_Deve_Excluir_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
+        {
+            var criarJustificativa = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data();
+            await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(criarJustificativa).ShouldThrowAsync<NegocioException>();
+        }
 
         [Fact]
         public async Task Deve_Alterar_justificativa_com_motivo_e_descricao()
@@ -256,7 +252,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
         [Fact]
-        public async Task Deve_Alterar_justificativa_somente_com_motivo_sem_descricao() 
+        public async Task Deve_Alterar_justificativa_somente_com_motivo_sem_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
@@ -264,7 +260,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 Id = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Motivo(),
                 MotivoAusenciaId = ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2
             };
-           (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
+            (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
         [Fact]
@@ -295,12 +291,14 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Nao_Deve_Alterar_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Dato()
         {
-            mediator.Setup(m => m.Send(It.IsAny<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(false);
-
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
-
-            await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data().ShouldThrowAsync<NegocioException>();
+            var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
+            {
+                MotivoAusenciaId = ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2,
+                Anotacao = DESCRICAO_FREQUENCIA_ALUNO_2,
+                Id = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data(),
+            };
+            await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd).ShouldThrowAsync<NegocioException>();
         }
 
         [Fact]
