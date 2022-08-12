@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_final_fundamental(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(ObterPerfilProfessor(),
@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_final_fundamental_cp(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(
@@ -54,7 +54,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_medio(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(ObterPerfilProfessor(),
@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_final_medio_diretor(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(
@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_numerica_pos_conselho_bimestre_final_eja(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(
@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Ao_lancar_nota_pos_conselho_bimestre_numerica_regencia_classe(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             salvarConselhoClasseAlunoNotaDto.Bimestre = BIMESTRE_FINAL;
             
             await CrieDados(

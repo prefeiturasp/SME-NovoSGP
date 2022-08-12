@@ -13,76 +13,76 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        [Theory]
-        [InlineData(false, BIMESTRE_2)]
-        [InlineData(false, BIMESTRE_FINAL)]
-        [InlineData(true, BIMESTRE_2)]
-        [InlineData(true, BIMESTRE_FINAL)]
-        public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_fundamental(bool anoAnterior, int bimestre)
-        {
-            await CrieDados(
-                ObterPerfilProfessor(),
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                ANO_7,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior,
-                bimestre);
+        // [Theory]
+        // [InlineData(false, BIMESTRE_2)]
+        // [InlineData(false, BIMESTRE_FINAL)]
+        // [InlineData(true, BIMESTRE_2)]
+        // [InlineData(true, BIMESTRE_FINAL)]
+        // public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_fundamental(bool anoAnterior, int bimestre)
+        // {
+        //     await CrieDados(
+        //         ObterPerfilProfessor(),
+        //         COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+        //         ANO_7,
+        //         Modalidade.Fundamental,
+        //         ModalidadeTipoCalendario.FundamentalMedio,
+        //         anoAnterior,
+        //         bimestre);
+        //
+        //     await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 0, (int)ConceitoValores.NS, anoAnterior);
+        //     await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
+        // }
+        //
+        // [Theory]
+        // [InlineData(false, BIMESTRE_2)]
+        // [InlineData(false, BIMESTRE_FINAL)]
+        // [InlineData(true, BIMESTRE_2)]
+        // [InlineData(true, BIMESTRE_FINAL)]
+        // public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_eja(bool anoAnterior, int bimestre)
+        // {
+        //     await CrieDados(
+        //         ObterPerfilProfessor(),
+        //         COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+        //         ANO_9,
+        //         Modalidade.EJA,
+        //         ModalidadeTipoCalendario.EJA,
+        //         anoAnterior,
+        //         bimestre);
+        //
+        //     await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 0, (int)ConceitoValores.NS, anoAnterior);
+        //     await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
+        // }
+        //
+        // [Theory]
+        // [InlineData(false, BIMESTRE_2)]
+        // [InlineData(false, BIMESTRE_FINAL)]
+        // [InlineData(true, BIMESTRE_2)]
+        // [InlineData(true, BIMESTRE_FINAL)]
+        // public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_regencia_classe(bool anoAnterior, int bimestre)
+        // {
+        //     await CrieDados(
+        //         ObterPerfilProfessor(),
+        //         COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,
+        //         ANO_1,
+        //         Modalidade.Fundamental,
+        //         ModalidadeTipoCalendario.FundamentalMedio,
+        //         anoAnterior,
+        //         bimestre);
+        //
+        //     await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, 0, (int)ConceitoValores.NS, anoAnterior);
+        //     await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
+        // }
 
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 0, (int)ConceitoValores.NS, anoAnterior);
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
-        }
-
-        [Theory]
-        [InlineData(false, BIMESTRE_2)]
-        [InlineData(false, BIMESTRE_FINAL)]
-        [InlineData(true, BIMESTRE_2)]
-        [InlineData(true, BIMESTRE_FINAL)]
-        public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_eja(bool anoAnterior, int bimestre)
-        {
-            await CrieDados(
-                ObterPerfilProfessor(),
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                ANO_9,
-                Modalidade.EJA,
-                ModalidadeTipoCalendario.EJA,
-                anoAnterior,
-                bimestre);
-
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, 0, (int)ConceitoValores.NS, anoAnterior);
-            await ExecuteTeste(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
-        }
-
-        [Theory]
-        [InlineData(false, BIMESTRE_2)]
-        [InlineData(false, BIMESTRE_FINAL)]
-        [InlineData(true, BIMESTRE_2)]
-        [InlineData(true, BIMESTRE_FINAL)]
-        public async Task Ao_alterar_nota_conceito_pos_conselho_bimestre_e_final_regencia_classe(bool anoAnterior, int bimestre)
-        {
-            await CrieDados(
-                ObterPerfilProfessor(),
-                COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,
-                ANO_1,
-                Modalidade.Fundamental,
-                ModalidadeTipoCalendario.FundamentalMedio,
-                anoAnterior,
-                bimestre);
-
-            await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, 0, (int)ConceitoValores.NS, anoAnterior);
-            await ExecuteTeste(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, CONSELHO_CLASSE_ID_1, (int)ConceitoValores.P, anoAnterior);
-        }
-
-        private async Task ExecuteTeste(long componente, int conceitoClasseId, long conceito, bool anoAnterior)
-        {
-            await ExecutarTeste(
-                        ObtenhaDto(componente, conceito),
-                        conceitoClasseId,
-                        anoAnterior,
-                        ALUNO_CODIGO_1,
-                        TipoNota.Nota,
-                        BIMESTRE_FINAL);
-        }
+        // private async Task ExecuteTeste(long componente, int conceitoClasseId, long conceito, bool anoAnterior)
+        // {
+        //     await ExecutarTeste(
+        //                 ObtenhaDto(componente, conceito),
+        //                 conceitoClasseId,
+        //                 anoAnterior,
+        //                 ALUNO_CODIGO_1,
+        //                 TipoNota.Nota,
+        //                 BIMESTRE_FINAL);
+        // }
 
         private ConselhoClasseNotaDto ObtenhaDto(long componente, long conceito)
         {

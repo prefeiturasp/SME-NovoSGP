@@ -107,7 +107,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected async Task ExecutarTeste(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto,
                                     bool anoAnterior,
                                     TipoNota tipoNota,
-                                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento)
+                                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
+                                    bool ehPerfilGestor = false)
         {
             var ehBimestreFinal = salvarConselhoClasseAlunoNotaDto.Bimestre == 0;
 
@@ -146,14 +147,23 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 classeNota.Nota.ShouldBeNull();
                 classeNota.ConceitoId.ShouldBeNull();
+                
                 var aprovacoesNotasConselho = ObterTodos<WFAprovacaoNotaConselho>();
-                aprovacoesNotasConselho.ShouldNotBeNull();
-                var aprovacaoNotaConselho = aprovacoesNotasConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
-                aprovacaoNotaConselho.ShouldNotBeNull();
-                if (tipoNota == TipoNota.Nota)
-                    aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
+
+                if (ehPerfilGestor)
+                    aprovacoesNotasConselho.ShouldBeNull();
                 else
-                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);
+                {
+                    aprovacoesNotasConselho.ShouldNotBeNull();
+                
+                    var aprovacaoNotaConselho = aprovacoesNotasConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
+                    aprovacaoNotaConselho.ShouldNotBeNull();
+                
+                    if (tipoNota == TipoNota.Nota)
+                        aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
+                    else
+                        aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);                    
+                }
             }
             else
             {
@@ -1058,26 +1068,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular)
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
             return new SalvarConselhoClasseAlunoNotaDto()
             {
-                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular),
+                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular,tipoNota),
                 CodigoAluno = ALUNO_CODIGO_1,
                 ConselhoClasseId = 0,
-                FechamentoTurmaId = FECHAMENTO_TURMA_ID_2,
+                FechamentoTurmaId = fechamentoTurma,
                 CodigoTurma = TURMA_CODIGO_1,
-                Bimestre = BIMESTRE_2
+                Bimestre = bimestre
             };
         }
 
-        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componente)
+        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota)
         {
             return new ConselhoClasseNotaDto()
             {
-                CodigoComponenteCurricular = componente,
+                CodigoComponenteCurricular = componenteCurricular,
                 Justificativa = JUSTIFICATIVA,
-                Conceito = 1
+                Conceito = tipoNota == TipoNota.Conceito ? new Random().Next(1,3) : null,
+                Nota = tipoNota == TipoNota.Conceito ? new Random().Next(1,10) : null
             };
         }
 

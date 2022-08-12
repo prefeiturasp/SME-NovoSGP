@@ -18,6 +18,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+            //REVISADO
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -33,9 +34,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
             
-            await CrieDados(ObterPerfilProfessor(), 
+            await CriarDados(ObterPerfilProfessor(), 
                             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
                             TipoNota.Conceito, 
                             ANO_4, 
@@ -53,9 +54,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,TipoNota.Conceito);
             
-            await CrieDados(ObterPerfilProfessor(), 
+            await CriarDados(ObterPerfilProfessor(), 
                             salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
                             TipoNota.Conceito, 
                             ANO_4, 
@@ -65,9 +66,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             SituacaoConselhoClasse.EmAndamento, 
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);
-            
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);;
         }
 
         [Theory]
@@ -75,9 +74,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
             
-            await CrieDados(ObterPerfilProfessor(), 
+            await CriarDados(ObterPerfilProfessor(), 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                 TipoNota.Conceito, 
                 ANO_4, 
@@ -91,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         
-        private async Task CrieDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
+        private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
