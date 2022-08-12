@@ -859,6 +859,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
+            
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = "AprovacaoAlteracaoNotaConselho",
+                Descricao = "Solicita aprovação nas alterações de notas do conselho",
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+                Valor = string.Empty,
+                Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()
