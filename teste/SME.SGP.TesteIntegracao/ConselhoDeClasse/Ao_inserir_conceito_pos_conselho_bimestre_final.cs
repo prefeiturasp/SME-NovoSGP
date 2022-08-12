@@ -6,9 +6,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_conceito_pos_conselho_final : ConselhoDeClasseTesteBase
+    public class Ao_inserir_conceito_pos_conselho_bimestre_final : ConselhoDeClasseTesteBase
     {
-        public Ao_inserir_conceito_pos_conselho_final(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_inserir_conceito_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
