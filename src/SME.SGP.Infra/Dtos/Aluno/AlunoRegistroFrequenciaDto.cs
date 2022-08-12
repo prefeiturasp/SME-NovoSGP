@@ -31,12 +31,11 @@ namespace SME.SGP.Infra
 
         public IList<FrequenciaAulaDetalheDto> Aulas { get; set; }
 
-        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, AlunoPorTurmaResposta aluno, IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, FrequenciaPreDefinidaDto frequenciaPreDefinida)
+        public void CarregarAulas(IEnumerable<Aula> aulas, IEnumerable<RegistroFrequenciaAlunoPorAulaDto> registrosFrequenciaAlunos, AlunoPorTurmaResposta aluno, IEnumerable<AnotacaoAlunoAulaDto> anotacoesTurma, FrequenciaPreDefinidaDto frequenciaPreDefinida, DateTime PeriodoFim)
         {
             foreach (var aula in aulas.OrderBy(a => a.DataAula))
             {
-                if (aluno.EstaAtivo(aula.DataAula))
-                    Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, anotacoesTurma, frequenciaPreDefinida));
+                Aulas.Add(new FrequenciaAulaDetalheDto(aula, aluno, registrosFrequenciaAlunos, anotacoesTurma, frequenciaPreDefinida, PeriodoFim));
             }
         }
     }

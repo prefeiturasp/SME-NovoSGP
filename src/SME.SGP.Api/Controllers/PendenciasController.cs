@@ -16,7 +16,6 @@ namespace SME.SGP.Api.Controllers
         [Route("listar")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PendenciaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.RPF_C,Policy = "Bearer")]
         public async Task<IActionResult> Listar([FromServices] IObterPendenciasUseCase useCase,
             [FromQuery] string turmaCodigo = null, int tipoPendencia = 0, string tituloPendencia = null)
         {

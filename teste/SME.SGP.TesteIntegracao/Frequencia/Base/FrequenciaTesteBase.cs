@@ -34,9 +34,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string TIPO_FREQUENCIA_FALTOU = "F";
         protected const string TIPO_FREQUENCIA_REMOTO = "R";
 
-        protected const string CODIGO_ALUNO_99999 = "99999";        
-        protected const string CODIGO_ALUNO_77777 = "77777";        
-        protected const string CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666 = "666666";        
+        protected const string CODIGO_ALUNO_99999 = "99999";
+        protected const string CODIGO_ALUNO_77777 = "77777";
+        protected const string CODIGO_ALUNO_CRIANCA_NAO_ATIVO_666666 = "666666";
 
         protected const int ZERO = 0;
 
@@ -119,6 +119,7 @@ namespace SME.SGP.TesteIntegracao
             var useCase = ServiceProvider.GetService<IAlterarAnotacaoFrequenciaAlunoUseCase>();
             return await useCase.Executar(param);
         }
+
         protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3)
         {
             await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
@@ -126,22 +127,22 @@ namespace SME.SGP.TesteIntegracao
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
             if (criarPeriodoEscolarEAbertura)
                 await CriarPeriodoEscolarEAbertura();
-
         }
+
         protected async Task CriarDadosBasicosSemPeriodoEscolar(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataAula, string componenteCurricular, int quantidadeAula = QUANTIDADE_3)
         {
             await CriarTipoCalendario(tipoCalendario);
-            
+
             await CriarPadrao();
-            
+
             await CriarComponenteCurricular();
-            
+
             CriarClaimUsuario(perfil);
-            
+
             await CriarUsuarios();
-            
+
             await CriarTurma(modalidade);
-            
+
             await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
         }
 
@@ -235,9 +236,10 @@ namespace SME.SGP.TesteIntegracao
 
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
+
         protected async Task CriarMotivoAusencia(string descricao)
         {
-            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
+            await InserirNaBase(new MotivoAusencia() {Descricao = descricao});
         }
 
         protected async Task CriarPeriodoReabertura(long tipoCalendarioId)
@@ -379,10 +381,10 @@ namespace SME.SGP.TesteIntegracao
             var lista = new List<RegistroFrequenciaAlunoDto>();
             var aulas = ObtenhaFrenquenciaAula();
 
-            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
-            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
-            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "3", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
-            lista.Add(new RegistroFrequenciaAlunoDto() { CodigoAluno = "4", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName() });
+            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "1", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
+            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "2", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
+            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "3", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
+            lista.Add(new RegistroFrequenciaAlunoDto() {CodigoAluno = "4", Aulas = aulas, TipoFrequenciaPreDefinido = TipoFrequencia.C.ShortName()});
 
             return lista;
         }
@@ -391,7 +393,7 @@ namespace SME.SGP.TesteIntegracao
         {
             var lista = new List<FrequenciaAulaDto>();
 
-            lista.Add(new FrequenciaAulaDto() { NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName() });
+            lista.Add(new FrequenciaAulaDto() {NumeroAula = QUANTIDADE_AULA, TipoFrequencia = TipoFrequencia.C.ShortName()});
 
             return lista;
         }
@@ -406,7 +408,7 @@ namespace SME.SGP.TesteIntegracao
 
             var registroFrequenciaAluno = ObterTodos<RegistroFrequenciaAluno>();
             registroFrequenciaAluno.ShouldNotBeEmpty();
-            (registroFrequenciaAluno.FirstOrDefault().Valor == (int)tipoFrequenciaRegistrada).ShouldBeTrue();
+            (registroFrequenciaAluno.FirstOrDefault().Valor == (int) tipoFrequenciaRegistrada).ShouldBeTrue();
 
             var consolidacaoFrequenciaAlunoMensal = ObterTodos<Dominio.ConsolidacaoFrequenciaAlunoMensal>();
             consolidacaoFrequenciaAlunoMensal.ShouldNotBeEmpty();
@@ -436,7 +438,7 @@ namespace SME.SGP.TesteIntegracao
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = (int)TipoFrequencia.F,
+                Valor = (int) TipoFrequencia.F,
                 NumeroAula = numeroAula,
                 AulaId = 1
             });
@@ -507,7 +509,7 @@ namespace SME.SGP.TesteIntegracao
                 MotivoAusenciaId = ATESTADO_MEDICO_DO_ALUNO_1,
                 Anotacao = DESCRICAO_FREQUENCIA_ALUNO_1,
                 AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 CodigoAluno = CODIGO_ALUNO_99999,
                 EhInfantil = false
             };
@@ -569,7 +571,6 @@ namespace SME.SGP.TesteIntegracao
                 CodigoAluno = codigoAluno,
                 TurmaId = TURMA_CODIGO_1,
                 Tipo = tipoFrequenciaAluno
-
             });
         }
     }
