@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             base.RegistrarFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFakeValidarSituacaoConselho), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(
                 typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         [Fact]
-        public async Task Deve_apresentar_situacao_nao_iniciado()
+        public async Task Deve_apresentar_conselho_classe_situacao_nao_iniciado()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         [Fact]
-        public async Task Deve_apresentar_situacao_em_andamento()
+        public async Task Deve_apresentar_conselho_classe_situacao_em_andamento()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }        
         
         [Fact]
-        public async Task Deve_apresentar_situacao_concluido()
+        public async Task Deve_apresentar_conselho_classe_situacao_concluido()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
@@ -83,7 +83,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             useCase.ShouldNotBeNull();
 
             //-> Inserir conselho do primeiro aluno
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, 
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
             var conselhoClasseId = ObterTodos<ConselhoClasse>().Select(c => c.Id).FirstOrDefault();
@@ -107,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }        
         
         [Fact]
-        public async Task Deve_apresentar_situacao_concluido_aluno()
+        public async Task Deve_apresentar_conselho_classe_aluno_situacao_concluido()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
@@ -115,16 +116,20 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             useCase.ShouldNotBeNull();
 
-            //-> Inserir conselho do primeiro aluno
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+            //-> Inserir aluno aluno
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1,
+                COMPONENTE_CURRICULAR_ARTES_ID_139,
+                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
+            
+            var conselhoClasseId = ObterTodos<ConselhoClasse>().Select(c => c.Id).FirstOrDefault();
+            
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(conselhoClasseId, ALUNO_CODIGO_1,
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
             var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
             consulta.ShouldNotBeNull();
 
-            var conselhosClasses = ObterTodos<ConselhoClasse>();
-            var conselhoClasseId = conselhosClasses.Select(c => c.Id).FirstOrDefault();
-            
             var fechamentosTurmas = ObterTodos<FechamentoTurma>();
             var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
             
