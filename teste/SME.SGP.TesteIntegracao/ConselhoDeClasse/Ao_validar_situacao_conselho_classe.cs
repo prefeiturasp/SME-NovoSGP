@@ -40,21 +40,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         public async Task Deve_apresentar_situacao_nao_iniciado()
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
-                ModalidadeTipoCalendario.FundamentalMedio, false, false);
-
+                ModalidadeTipoCalendario.FundamentalMedio, true, false);
+            
             var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
             consulta.ShouldNotBeNull();
 
             var conselhosClasses = ObterTodos<ConselhoClasse>();
-            var conselhoClasseId = conselhosClasses.Select(c => c.Id).FirstOrDefault();
-
-            var fechamentosTurmas = ObterTodos<FechamentoTurma>();
-            var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
+            var situacaoConselhoClasse = conselhosClasses.Select(c => c.Situacao).FirstOrDefault();
             
-            var retorno = await consulta.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, ALUNO_CODIGO_1,
-                TURMA_CODIGO_1, BIMESTRE_1);
-            
-            (retorno.SituacaoConselho == SituacaoConselhoClasse.NaoIniciado.GetAttribute<DisplayAttribute>().Name).ShouldBeTrue();
+            (situacaoConselhoClasse == SituacaoConselhoClasse.NaoIniciado).ShouldBeTrue();
         }
         
         [Fact]
@@ -62,22 +56,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
                 ModalidadeTipoCalendario.FundamentalMedio, true, false);
+            
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            useCase.ShouldNotBeNull();
 
-            await CriarConselhoClasseTodosBimestres();
+            //-> Inserir conselho do primeiro aluno
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
             var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
             consulta.ShouldNotBeNull();
 
             var conselhosClasses = ObterTodos<ConselhoClasse>();
-            var conselhoClasseId = conselhosClasses.Select(c => c.Id).FirstOrDefault();
-
-            var fechamentosTurmas = ObterTodos<FechamentoTurma>();
-            var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
+            var situacaoConselhoClasse = conselhosClasses.Select(c => c.Situacao).FirstOrDefault();
             
-            var retorno = await consulta.ObterRecomendacoesAlunoFamilia(conselhoClasseId, fechamentoTurmaId, ALUNO_CODIGO_1,
-                TURMA_CODIGO_1, BIMESTRE_1);
-            
-            (retorno.SituacaoConselho == SituacaoConselhoClasse.EmAndamento.GetAttribute<DisplayAttribute>().Name).ShouldBeTrue();
+            (situacaoConselhoClasse == SituacaoConselhoClasse.EmAndamento).ShouldBeTrue();
         }        
         
         [Fact]
@@ -89,12 +82,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             useCase.ShouldNotBeNull();
 
-            string[] alunosCodigos = { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4 };
+            //-> Inserir conselho do primeiro aluno
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
+            var conselhoClasseId = ObterTodos<ConselhoClasse>().Select(c => c.Id).FirstOrDefault();
+            
+            //-> Inserir conselho para os demais alunos
+            string[] alunosCodigos = { ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4 };            
 
             foreach (var alunoCodigo in alunosCodigos)
             {
-                await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(alunoCodigo, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(conselhoClasseId, alunoCodigo, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                     TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
             }
             
@@ -102,8 +101,30 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             consulta.ShouldNotBeNull();
 
             var conselhosClasses = ObterTodos<ConselhoClasse>();
-            var conselhoClasseId = conselhosClasses.Select(c => c.Id).FirstOrDefault();
+            var situacaoConselhoClasse = conselhosClasses.Select(c => c.Situacao).FirstOrDefault();
+            
+            (situacaoConselhoClasse == SituacaoConselhoClasse.Concluido).ShouldBeTrue();
+        }        
+        
+        [Fact]
+        public async Task Deve_apresentar_situacao_concluido_aluno()
+        {
+            await CriarDados(COMPONENTE_LINGUA_PORTUGUESA_ID_138, ANO_8, Modalidade.Medio,
+                ModalidadeTipoCalendario.FundamentalMedio, true, false);
+            
+            var useCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            useCase.ShouldNotBeNull();
 
+            //-> Inserir conselho do primeiro aluno
+            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
+
+            var consulta = ServiceProvider.GetService<IConsultasConselhoClasseRecomendacao>();
+            consulta.ShouldNotBeNull();
+
+            var conselhosClasses = ObterTodos<ConselhoClasse>();
+            var conselhoClasseId = conselhosClasses.Select(c => c.Id).FirstOrDefault();
+            
             var fechamentosTurmas = ObterTodos<FechamentoTurma>();
             var fechamentoTurmaId = fechamentosTurmas.Select(c => c.Id).FirstOrDefault();
             

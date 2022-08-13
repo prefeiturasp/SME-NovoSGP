@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 if (request.Turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
-                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno.AlteradoEm.HasValue)
+                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno is { AlteradoEm: { } })
                     await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 enviarAprovacao = await EnviarParaAprovacao(request.Turma, request.UsuarioLogado);

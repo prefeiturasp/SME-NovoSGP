@@ -1092,27 +1092,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
             TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
-            return ObterSalvarConselhoClasseAlunoNotaDto(ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
+            return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
         }
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(string alunoCodigo, 
+        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
         {
-            return new SalvarConselhoClasseAlunoNotaDto()
+            return new SalvarConselhoClasseAlunoNotaDto
             {
-                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular,tipoNota),
+                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular, tipoNota),
                 CodigoAluno = alunoCodigo,
-                ConselhoClasseId = 0,
+                ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurma,
                 CodigoTurma = TURMA_CODIGO_1,
                 Bimestre = bimestre
             };
         }        
 
-        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota)
+        private static ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota)
         {
-            return new ConselhoClasseNotaDto()
+            return new ConselhoClasseNotaDto
             {
                 CodigoComponenteCurricular = componenteCurricular,
                 Justificativa = JUSTIFICATIVA,
