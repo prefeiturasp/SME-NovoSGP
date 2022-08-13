@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
         }
 
-        protected ConselhoClasseNota ObterConselhoClasseNota(ConselhoClasseNotaDto conselhoClasseNotaDto, long conselhoClasseAlunoId)
+        protected static ConselhoClasseNota ObterConselhoClasseNota(ConselhoClasseNotaDto conselhoClasseNotaDto, long conselhoClasseAlunoId)
         {
             var conselhoClasseNota = new ConselhoClasseNota()
             {
@@ -28,10 +28,13 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Justificativa = conselhoClasseNotaDto.Justificativa,
             };
+            
             if (conselhoClasseNotaDto.Nota.HasValue)
                 conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+            
             if (conselhoClasseNotaDto.Conceito.HasValue)
                 conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+            
             return conselhoClasseNota;
         }
 

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseNotaRetornoDto> Handle(InserirConselhoClasseNotaCommad request, CancellationToken cancellationToken)
         {
             AuditoriaDto auditoria = null;
-            bool enviarAprovacao = false;
+            var enviarAprovacao = false;
             ConselhoClasseNota conselhoClasseNota = null;
 
             var conselhoClasse = new ConselhoClasse { FechamentoTurmaId = request.FechamentoTurma.Id };
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
 
                 conselhoClasseAluno.Id = await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
                 
-                await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno));
+                await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno), cancellationToken);
 
                 conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAluno.Id);
 
@@ -53,6 +53,7 @@ namespace SME.SGP.Aplicacao
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
                 enviarAprovacao = await EnviarParaAprovacao(request.FechamentoTurma.Turma, request.UsuarioLogado);
+
                 if (enviarAprovacao)
                     await GerarWFAprovacao(conselhoClasseNota, request.FechamentoTurma.Turma, request.Bimestre, request.UsuarioLogado, request.CodigoAluno, null, null); 
                 else
@@ -62,10 +63,9 @@ namespace SME.SGP.Aplicacao
 
                 auditoria = (AuditoriaDto)conselhoClasseNota;
             }
-            catch (Exception e)
+            catch
             {
                 unitOfWork.Rollback();
-                throw e;
             }
 
             //Tratar após o fechamento da transação
