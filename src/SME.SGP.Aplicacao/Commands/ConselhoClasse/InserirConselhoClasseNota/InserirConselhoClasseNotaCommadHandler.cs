@@ -63,9 +63,10 @@ namespace SME.SGP.Aplicacao
 
                 auditoria = (AuditoriaDto)conselhoClasseNota;
             }
-            catch
+            catch(Exception e)
             {
                 unitOfWork.Rollback();
+                throw e;
             }
 
             //Tratar após o fechamento da transação
