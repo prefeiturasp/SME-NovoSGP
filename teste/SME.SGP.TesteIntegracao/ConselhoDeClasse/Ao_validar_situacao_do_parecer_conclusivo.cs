@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         [Fact]
-        public async Task Ao_reprocessar_parecer_conclusivo_aluno()
+        public async Task Ao_validar_situacao_parecer_conclusivo()
         {
             await CriarDados(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
             
-            await CriarConselhoClasseTodosBimestres(TipoNota.Nota,true);
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota,true);
             
             // await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
             
