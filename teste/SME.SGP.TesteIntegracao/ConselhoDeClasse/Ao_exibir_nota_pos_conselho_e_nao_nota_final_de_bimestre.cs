@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -25,10 +27,38 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterMatriculasAlunoNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterMatriculasAlunoNaTurmaQueryHandlerFakeAlunoCodigo1), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact]
-        public async Task Deve_exibir_as_notas_inseridas_na_tela_de_notas()
+        public async Task Deve_exibir_as_notas_de_fechamento_na_tela_de_conselho_de_classe()
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
+            
+            await CriarDados(ObterPerfilProfessor(), 
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                ANO_7, 
+                Modalidade.Fundamental, 
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false, 
+                SituacaoConselhoClasse.EmAndamento, 
+                true);
+
+            await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
+
+            var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
+
+            var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_3,ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_2, false);
+
+            retorno.ShouldNotBeNull();
+            var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
+            notas.NotaPosConselho.Nota.ShouldBeNull();
+            notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
+            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
+        }
+        
+        [Fact]
+        public async Task Deve_exibir_as_notas_de_conselho_na_tela_de_conselho_de_classe()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota);
             
@@ -45,7 +75,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
 
-            var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_1,ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_2, false);
+            var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_2,ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_2, false);
+
+            retorno.ShouldNotBeNull();
+            var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
+            notas.NotaPosConselho.Nota.ShouldNotBeNull();
+            notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
+            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
         }
         
         private async Task CriarDados(
