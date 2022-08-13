@@ -28,10 +28,13 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Justificativa = conselhoClasseNotaDto.Justificativa,
             };
+            
             if (conselhoClasseNotaDto.Nota.HasValue)
                 conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+            
             if (conselhoClasseNotaDto.Conceito.HasValue)
                 conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+            
             return conselhoClasseNota;
         }
 
