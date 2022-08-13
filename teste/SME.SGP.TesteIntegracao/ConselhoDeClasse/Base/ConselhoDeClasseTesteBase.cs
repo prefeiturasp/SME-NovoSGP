@@ -108,6 +108,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected async Task ExecutarTesteSemValidacao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
         {
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            comando.ShouldNotBeNull();
             
             await comando.Executar(salvarConselhoClasseAlunoNotaDto);
             
@@ -264,8 +265,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
                 await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
             else
-                await CriarFechamentoTurma(filtroNota.Bimestre);
-
+                await CriarFechamentoTurma(filtroNota.Bimestre);                
+            
             await CriarComponenteGrupoAreaOrdenacao();
 
             await CriarConselhoClasseRecomendacao();
@@ -1101,7 +1102,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
                 
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+                tipoNota));
             
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
@@ -1110,23 +1111,32 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
 
             if (gerarConselhoBimestreFinal)
+            {
                 await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                     tipoNota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL));
+            }
         }
         
-        
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
+            TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
-            return new SalvarConselhoClasseAlunoNotaDto()
+            return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
+                bimestre);
+        }
+        
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
+            long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
+        {
+            return new SalvarConselhoClasseAlunoNotaDto
             {
-                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular,tipoNota),
-                CodigoAluno = ALUNO_CODIGO_1,
-                ConselhoClasseId = 0,
+                ConselhoClasseNotaDto = ObterConselhoClasseNotaDto(componenteCurricular, tipoNota),
+                CodigoAluno = alunoCodigo,
+                ConselhoClasseId = conselhoClasseId,
                 FechamentoTurmaId = fechamentoTurma,
                 CodigoTurma = TURMA_CODIGO_1,
                 Bimestre = bimestre
             };
-        }
+        }        
         
         private async Task CriarConselhoClasseParecerAno()
         {
