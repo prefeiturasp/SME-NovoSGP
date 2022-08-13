@@ -1065,16 +1065,23 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             };
         }
 
-        protected async Task CriarConselhoClasseTodosBimestres()
+        protected async Task CriarConselhoClasseTodosBimestres(TipoNota tipoNota = TipoNota.Nota, bool gerarConselhoBimestreFinal = false)
         {
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
+                tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
+                
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+                tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+            
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
+                tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
+            
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                TipoNota.Nota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
+                tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
+
+            if (gerarConselhoBimestreFinal)
+                await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                    tipoNota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL));
         }
         
         protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)

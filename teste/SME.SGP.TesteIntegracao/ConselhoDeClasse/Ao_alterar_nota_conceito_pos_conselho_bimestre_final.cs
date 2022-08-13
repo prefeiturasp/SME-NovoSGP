@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
            
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(TipoNota.Conceito);
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
         
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(TipoNota.Conceito);
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
@@ -87,8 +87,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);
         }
-        
-        
         
         [Theory]
         [InlineData(false, BIMESTRE_2)]
@@ -108,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento,
                 true);
         
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(TipoNota.Conceito);
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
