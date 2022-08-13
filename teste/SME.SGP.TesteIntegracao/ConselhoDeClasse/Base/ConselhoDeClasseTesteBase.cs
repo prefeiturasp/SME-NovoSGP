@@ -1124,7 +1124,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 bimestre);
         }
         
-        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
         {
             return new SalvarConselhoClasseAlunoNotaDto
