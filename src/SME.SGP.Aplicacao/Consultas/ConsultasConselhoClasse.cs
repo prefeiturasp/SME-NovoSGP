@@ -72,8 +72,8 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                if (!retornoConselhoBimestre.possuiConselho)
-                    throw new NegocioException($"Para acessar esta aba você precisa registrar o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre");
+                if (!retornoConselhoBimestre.possuiConselho || !retornoConselhoBimestre.concluido)
+                    throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
             }
 
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
