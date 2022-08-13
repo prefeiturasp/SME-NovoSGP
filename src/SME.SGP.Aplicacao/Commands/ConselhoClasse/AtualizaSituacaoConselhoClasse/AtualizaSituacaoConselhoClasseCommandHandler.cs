@@ -23,11 +23,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AtualizaSituacaoConselhoClasseCommand request, CancellationToken cancellationToken)
         {
-            var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId));
+            var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken);
             
-            var alunosComNotaLancada = await mediator.Send(new ObterAlunosComNotaLancadaPorConselhoClasseIdQuery(request.ConselhoClasseId));
+            var alunosComNotaLancada = await mediator.Send(new ObterAlunosComNotaLancadaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken);
 
-            var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaCodigo));
+            var alunosTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaCodigo), cancellationToken);
 
             var situacaoConselhoClasse = ExisteAlunoSemNota(alunosTurma, alunosComNotaLancada) ?
                 SituacaoConselhoClasse.EmAndamento :
