@@ -151,7 +151,7 @@ namespace SME.SGP.Dados
             
         }
 
-        public Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
+        public async Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = @"select id as ConsolidacaoId, 
                         turma_id as TurmaId,
@@ -161,7 +161,7 @@ namespace SME.SGP.Dados
                         and turma_id = @turmaId 
                         and aluno_codigo = @alunoCodigo";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
     }
 }

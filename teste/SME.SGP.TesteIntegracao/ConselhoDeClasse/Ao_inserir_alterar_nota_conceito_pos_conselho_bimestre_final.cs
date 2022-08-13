@@ -8,18 +8,16 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
-using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_inserir_alterar_nota_numerica_pos_conselho_bimestre_final: ConselhoDeClasseTesteBase
+    public class Ao_inserir_alterar_nota_conceito_pos_conselho_bimestre_final: ConselhoDeClasseTesteBase
     {
-        public Ao_inserir_alterar_nota_numerica_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_inserir_alterar_nota_conceito_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            //Resolvido
+            //Revisado
         }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -31,13 +29,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
         
         [Fact]
-        public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_2()
+        public async Task Deve_inserir_nota_conceito_pos_conselho_bimestre_2()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
             
             await CriarDados(ObterPerfilProfessor(), 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
-                TipoNota.Nota, 
+                TipoNota.Conceito, 
                 ANO_4, 
                 Modalidade.Fundamental, 
                 ModalidadeTipoCalendario.FundamentalMedio, 
@@ -45,16 +43,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 SituacaoConselhoClasse.EmAndamento, 
                 true);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Conceito);
             
         }
 
         [Fact]
-        public async Task Deve_inserir_nota_numerica_pos_conselho_bimestre_final()
+        public async Task Deve_inserir_nota_conceito_pos_conselho_bimestre_final()
         {
             await CriarDados(ObterPerfilProfessor(),
                             COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                            TipoNota.Nota,
+                            TipoNota.Conceito,
                             ANO_7,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
@@ -62,21 +60,22 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                             SituacaoConselhoClasse.EmAndamento,
                             true);
             
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
+            var conselhoClasseNotas = ObterTodos<ConselhoClasseNota>();
             
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false, TipoNota.Conceito);
         }
         
         [Fact]
-        public async Task Deve_alterar_nota_numerica_pos_conselho_bimestre_2()
+        public async Task Deve_alterar_nota_conceito_pos_conselho_bimestre_2()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
             
             await CriarDados(ObterPerfilProfessor(), 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
-                TipoNota.Nota, 
+                TipoNota.Conceito, 
                 ANO_4, 
                 Modalidade.Fundamental, 
                 ModalidadeTipoCalendario.FundamentalMedio, 
@@ -87,19 +86,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
 
             salvarConselhoClasseAlunoNotaDto.ConselhoClasseId = 1;
-            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota = new Random().Next(1, 10);
+            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito = new Random().Next(1, 3);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Conceito);
         }
         
         [Fact]
-        public async Task Deve_alterar_nota_numerica_pos_conselho_bimestre_final()
+        public async Task Deve_alterar_nota_conceito_pos_conselho_bimestre_final()
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
            
             await CriarDados(ObterPerfilProfessor(),
             COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-            TipoNota.Nota,
+            TipoNota.Conceito,
             ANO_7,
             Modalidade.Fundamental,
             ModalidadeTipoCalendario.FundamentalMedio,
@@ -107,14 +106,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             SituacaoConselhoClasse.EmAndamento,
             true);
             
-            await CriarConselhoClasseTodosBimestres();
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
             
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
             
             salvarConselhoClasseAlunoNotaDto.ConselhoClasseId = 5;
-            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota = new Random().Next(1, 10);
+            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito = new Random().Next(1, 3);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Conceito);
         }
         
 

@@ -116,7 +116,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TipoNota = TipoNota.Nota,
                 SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
                 CriarFechamentoDisciplinaAlunoNota = true,
-                CriarConselhosTodosBimestres = criarConselhosTodosBimestres,
                 CriarConselhoClasseFinal = criarConselhoClasseFinal
             };
             
