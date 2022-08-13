@@ -865,6 +865,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
+            
+            await InserirNaBase(new ParametrosSistema()
+            {
+                Nome = "PercentualFrequenciaCritico",
+                Descricao = "Percentual de frequência para definir aluno em situação crítica na Base Nacional Comum",
+                Tipo = TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional,
+                Valor = "50",
+                Ano = dataAtualAnoAtual.Year,
+                Ativo = true,
+                CriadoEm = dataAtualAnoAtual,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoPor = SISTEMA_NOME
+            });
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()
@@ -1137,7 +1150,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Retido", Aprovado = false, Frequencia = false, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
+                Nome = "Retido", Aprovado = false, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             

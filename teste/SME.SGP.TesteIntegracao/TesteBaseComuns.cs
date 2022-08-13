@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -369,8 +370,11 @@ namespace SME.SGP.TesteIntegracao
         protected const double NOTA_10 = 10;
 
         protected const string PLENAMENTE_SATISFATORIO = "P";
+        protected const int PLENAMENTE_SATISFATORIO_ID_1 = 1;
         protected const string SATISFATORIO = "S";
+        protected const int SATISFATORIO_ID_2 = 2;
         protected const string NAO_SATISFATORIO = "NS";
+        protected const int NAO_SATISFATORIO_ID_3 = 3;
         
         protected readonly string NOTA = "NOTA";
         protected readonly string CONCEITO = "CONCEITO";
@@ -642,7 +646,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false)
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, TipoTurma tipoTurma = TipoTurma.Regular)
         {
             await InserirNaBase(new Turma
             {
@@ -653,7 +657,8 @@ namespace SME.SGP.TesteIntegracao
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1
+                Nome = TURMA_NOME_1,
+                TipoTurma = tipoTurma
             });
         }
 

@@ -392,24 +392,35 @@ namespace SME.SGP.Dados
                             from frequencia_aluno fa
                             inner join turma t on fa.turma_id = t.turma_id ");
 
+            var retorno = await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { });
+
             if (tipoCalendarioId > 0)
                 query.AppendLine("inner join periodo_escolar pe on fa.periodo_escolar_id = pe.id");
 
+            retorno = await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { });
+            
             query.AppendLine(@" where fa.tipo = 2 
                 and fa.codigo_aluno = @alunoCodigo 
-                and t.turma_id = any(@codigosTurmas)
-                and t.tipo_turma in(1,2,7) ");
+                and t.turma_id = any(@codigosTurmas) ");
+            
+            retorno = await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo,codigosTurmas,});
+            
+            query.AppendLine(@" and t.tipo_turma in(1,2,7) ");
 
+            retorno = await database.Conexao.QueryAsync<FrequenciaAluno>(query.ToString(), new { alunoCodigo,codigosTurmas,});
+            
             if (tipoCalendarioId > 0)
                 query.AppendLine(" and pe.tipo_calendario_id = @tipoCalendarioId");
 
-            return await database.Conexao
+            retorno = await database.Conexao
                 .QueryAsync<FrequenciaAluno>(query.ToString(), new
                 {
                     alunoCodigo,
                     codigosTurmas,
                     tipoCalendarioId
                 });
+
+            return retorno;
         }
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciasAlunosPorCodigoAlunoCodigoComponentesTurmaAsync(string alunoCodigo, string[] turmasCodigos, string[] componenteCurricularCodigos)
