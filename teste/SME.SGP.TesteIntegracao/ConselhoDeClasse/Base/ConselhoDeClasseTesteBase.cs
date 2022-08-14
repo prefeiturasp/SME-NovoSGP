@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
-                await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular));
+                await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular), filtroNota.NotaFixa);
             else
                 await CriarFechamentoTurma(filtroNota.Bimestre);                
             
@@ -272,7 +272,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseParecerAno();
         }
 
-        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(long componenteCurricular)
+        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(long componenteCurricular, double? nota)
         {
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
 
@@ -299,7 +299,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
-            await CriarFechamentoTurmaAlunoNota(componenteCurricular);
+            await CriarFechamentoTurmaAlunoNota(componenteCurricular, nota);
         }
 
         private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
@@ -367,7 +367,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
 
-        private async Task CriarFechamentoTurmaAlunoNota(long componenteCurricular)
+        private async Task CriarFechamentoTurmaAlunoNota(long componenteCurricular, double? nota)
         {
             var fechamentoAlunos = ObterTodos<FechamentoAluno>();
 
@@ -377,7 +377,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 {
                     DisciplinaId = componenteCurricular,
                     FechamentoAlunoId = fechamentoAluno.Id,
-                    Nota = new Random().Next(1, 10),
+                    Nota = nota.HasValue ? nota : new Random().Next(1, 10),
                     CriadoEm = DateTime.Now,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -1552,6 +1552,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public bool CriarFechamentoDisciplinaAlunoNota { get; set; }
             public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
             public bool CriarConselhoClasseFinal { get; set; }
+            public double? NotaFixa { get; set; }
         }
 
         public class FiltroConselhoClasseDto

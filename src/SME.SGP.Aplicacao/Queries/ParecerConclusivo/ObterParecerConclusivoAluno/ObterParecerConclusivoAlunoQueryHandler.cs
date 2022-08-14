@@ -181,7 +181,7 @@ namespace SME.SGP.Aplicacao
         private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
-            if (notasConselhoClasse == null || !notasConselhoClasse.Any())
+            if (notasConselhoClasse == null || !notasConselhoClasse.Any(a=> a.ConselhoClasseAlunoId > 0))
                 return (false, false);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
