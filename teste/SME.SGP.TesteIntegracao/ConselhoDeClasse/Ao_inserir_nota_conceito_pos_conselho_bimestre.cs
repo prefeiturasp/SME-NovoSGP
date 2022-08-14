@@ -18,7 +18,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_inserir_conceito_pos_conselho_bimestre(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            //REVISADO
         }
 
         protected override void RegistrarFakes(IServiceCollection services)

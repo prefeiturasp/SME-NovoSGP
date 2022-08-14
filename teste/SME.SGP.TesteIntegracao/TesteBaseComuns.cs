@@ -171,6 +171,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
+        protected const string USUARIO_LOGIN_CP999999 = "CP999999";
+        protected const string USUARIO_LOGIN_DIRETOR999998 = "DIR999998";
+        protected const string USUARIO_LOGIN_AD999997 = "AD999997";
+        
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
@@ -392,22 +396,43 @@ namespace SME.SGP.TesteIntegracao
         protected void CriarClaimUsuario(string perfil)
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = new Dictionary<string, object>
+            var variaveis = ObterVariaveisPorPerfil(perfil);
+            contextoAplicacao.AdicionarVariaveis(variaveis);
+        }
+
+        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
+        {
+            var rfLoginPerfil = ObterRfLoginPerfil(perfil);
+            
+            return new Dictionary<string, object>
             {
-                { USUARIO_CHAVE, USUARIO_PROFESSOR_NOME_2222222 },
-                { USUARIO_LOGADO_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
-                { USUARIO_RF_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
-                { USUARIO_LOGIN_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
+                { USUARIO_CHAVE, rfLoginPerfil },
+                { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
+                { USUARIO_RF_CHAVE, rfLoginPerfil },
+                { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
 
                 {
-                   USUARIO_CLAIMS_CHAVE,
+                    USUARIO_CLAIMS_CHAVE,
                     new List<InternalClaim> {
-                        new InternalClaim { Value = USUARIO_PROFESSOR_LOGIN_2222222, Type = USUARIO_CLAIM_TIPO_RF },
+                        new InternalClaim { Value = rfLoginPerfil, Type = USUARIO_CLAIM_TIPO_RF },
                         new InternalClaim { Value = perfil, Type = USUARIO_CLAIM_TIPO_PERFIL }
                     }
                 }
             };
-            contextoAplicacao.AdicionarVariaveis(variaveis);
+        }
+
+        private string ObterRfLoginPerfil(string perfil)
+        {
+            if (perfil.Equals(ObterPerfilProfessor()) || perfil.Equals(ObterPerfilCJ()))
+                return USUARIO_PROFESSOR_LOGIN_2222222;
+
+            if (perfil.Equals(ObterPerfilDiretor()))
+                return USUARIO_LOGIN_DIRETOR999998;
+            
+            if (perfil.Equals(ObterPerfilAD()))
+                return USUARIO_LOGIN_AD999997;
+            
+            return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
         protected string ObterPerfilProfessor()
@@ -624,6 +649,39 @@ namespace SME.SGP.TesteIntegracao
                 Login = USUARIO_CP_LOGIN_3333333,
                 Nome = USUARIO_CP_NOME_3333333,
                 PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_CP999999,
+                Login = USUARIO_LOGIN_CP999999,
+                Nome = USUARIO_LOGIN_CP999999,
+                PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_DIRETOR999998,
+                Login = USUARIO_LOGIN_DIRETOR999998,
+                Nome = USUARIO_LOGIN_DIRETOR999998,
+                PerfilAtual = Guid.Parse(PerfilUsuario.DIRETOR.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_AD999997,
+                Login = USUARIO_LOGIN_AD999997,
+                Nome = USUARIO_LOGIN_AD999997,
+                PerfilAtual = Guid.Parse(PerfilUsuario.AD.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
@@ -927,6 +985,24 @@ namespace SME.SGP.TesteIntegracao
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 230,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "AD",
+                CodigoPerfil = Perfis.PERFIL_AD,
+                CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 220,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "DIRETOR",
+                CodigoPerfil = Perfis.PERFIL_DIRETOR,
+                CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 

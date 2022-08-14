@@ -16,9 +16,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
     {
         public Ao_inserir_nota_numerica_pos_conselho_bimestre_final(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            //Resolvido parcialmente
-            //	Ao_lancar_nota_numerica_pos_conselho_bimestre_final_fundamental_cp = problema com o usuario
-            // Ao_lancar_nota_numerica_pos_conselho_bimestre_final_medio_diretor = problema com o usuario
+             
         }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -68,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota,SituacaoConselhoClasse.EmAndamento,true);
         }
 
         [Theory]
@@ -110,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Nota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL);
             
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota);
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Nota,SituacaoConselhoClasse.EmAndamento,true);
         }
 
         [Theory]

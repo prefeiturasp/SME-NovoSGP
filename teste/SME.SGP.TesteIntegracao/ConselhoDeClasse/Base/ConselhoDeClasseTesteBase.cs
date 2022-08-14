@@ -167,27 +167,23 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             classeNota.ShouldNotBeNull();
             classeNota.Justificativa.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Justificativa);                
 
-            if (anoAnterior)
+            if (anoAnterior && !ehPerfilGestor)
             {
                 classeNota.Nota.ShouldBeNull();
                 classeNota.ConceitoId.ShouldBeNull();
                 
                 var aprovacoesNotasConselho = ObterTodos<WFAprovacaoNotaConselho>();
-
-                if (ehPerfilGestor)
-                    aprovacoesNotasConselho.ShouldBeNull();
+               
+                aprovacoesNotasConselho.ShouldNotBeNull();
+            
+                var aprovacaoNotaConselho = aprovacoesNotasConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
+                aprovacaoNotaConselho.ShouldNotBeNull();
+            
+                if (tipoNota == TipoNota.Nota)
+                    aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
                 else
-                {
-                    aprovacoesNotasConselho.ShouldNotBeNull();
-                
-                    var aprovacaoNotaConselho = aprovacoesNotasConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
-                    aprovacaoNotaConselho.ShouldNotBeNull();
-                
-                    if (tipoNota == TipoNota.Nota)
-                        aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
-                    else
-                        aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);                    
-                }
+                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);                   
+               
             }
             else
             {
