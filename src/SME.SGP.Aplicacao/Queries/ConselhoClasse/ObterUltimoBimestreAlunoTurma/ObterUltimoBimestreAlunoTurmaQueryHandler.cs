@@ -31,7 +31,10 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseUltimoBimestre = await repositorioConselhoClasseConsulta.ObterPorTurmaAlunoEPeriodoAsync(request.Turma.Id, request.AlunoCodigo, periodoEscolar.Id);
 
-            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null, conselhoClasseUltimoBimestre.Situacao == SituacaoConselhoClasse.Concluido);
+            return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null, conselhoClasseUltimoBimestre is
+            {
+                Situacao: SituacaoConselhoClasse.Concluido
+            });
         }
     }
 }
