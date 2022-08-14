@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
         protected async Task<bool> EnviarParaAprovacao(Turma turma, Usuario usuarioLogado)
         {
-            return turma.AnoLetivo < DateTime.Today.Year
+           return turma.AnoLetivo < DateTime.Today.Year
                 && !usuarioLogado.EhGestorEscolar()
                 && await ParametroAprovacaoAtivo(turma.AnoLetivo);
         }

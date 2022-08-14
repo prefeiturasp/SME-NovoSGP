@@ -435,7 +435,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<bool> VerificaSePodeEditarNota(string alunoCodigo, Turma turma, PeriodoEscolar periodoEscolar)
         {
-            var turmaFechamento = await servicoEOL.ObterAlunosAtivosPorTurma(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia());
+            var turmaFechamento = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
 
             if (turmaFechamento == null || !turmaFechamento.Any())
                 throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");

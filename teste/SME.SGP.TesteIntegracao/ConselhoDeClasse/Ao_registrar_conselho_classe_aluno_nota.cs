@@ -30,6 +30,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            
         }
 
         [Fact]
@@ -106,13 +108,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var listaConselho = ObterTodos<ConselhoClasse>();
             listaConselho.ShouldNotBeNull();
-            var conselho = listaConselho.FirstOrDefault();
-            conselho.ShouldNotBeNull();
-            conselho.FechamentoTurmaId.ShouldBe(1);
+            listaConselho.Any(a=> a.FechamentoTurmaId == 1).ShouldBeTrue();
+            var conselhoClasse = listaConselho.FirstOrDefault(f => f.FechamentoTurmaId == 1);
+            conselhoClasse.ShouldNotBeNull();
 
             var listaConselhoAluno = ObterTodos<ConselhoClasseAluno>();
             listaConselhoAluno.ShouldNotBeNull();
-            var conselhoAluno = listaConselhoAluno.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1);
+            var conselhoAluno = listaConselhoAluno.FirstOrDefault(aluno => aluno.AlunoCodigo == ALUNO_CODIGO_1 && aluno.ConselhoClasseId == conselhoClasse.Id);
             conselhoAluno.ShouldNotBeNull();
 
             var listaConselhoNota = ObterTodos<ConselhoClasseNota>();

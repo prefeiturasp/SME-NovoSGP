@@ -222,7 +222,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        where cca.aluno_codigo = @alunoCodigo
 	                        and ft.turma_id  = @turmaId");
 
-            if (bimestre.HasValue)
+            if (bimestre.HasValue && bimestre.Value > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
             else
                 query.AppendLine(" and ft.periodo_escolar_id is null ");
