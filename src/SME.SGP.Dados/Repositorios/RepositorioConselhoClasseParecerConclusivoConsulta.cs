@@ -19,27 +19,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaIdAsync(long turmaId, DateTime dataConsulta)
         {
-            // var where = "t.id = @parametro";
-            //
-            // return await ObterListaPorTurma(where, turmaId, dataConsulta);
+            var where = "t.id = @parametro";
             
-            var query = @"select ccp.* from conselho_classe_parecer ccp 
-                        inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
-                        inner join turma t on ccpa.modalidade = t.modalidade_codigo 
-	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano)";
-            
-            var retorno = await database.Conexao.QueryAsync<ConselhoClasseParecerConclusivo>(query);
-            
-            query = @"select ccp.* from conselho_classe_parecer ccp 
-                        inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
-                        inner join turma t on ccpa.modalidade = t.modalidade_codigo 
-	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
-                        where t.id = @turmaId and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";	
-						
-            
-            retorno = await database.Conexao.QueryAsync<ConselhoClasseParecerConclusivo>(query, new{ turmaId,dataConsulta});
-
-            return retorno;
+            return await ObterListaPorTurma(where, turmaId, dataConsulta);
         }
 
         public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaCodigoAsync(long turmaCodigo, DateTime dataConsulta)
