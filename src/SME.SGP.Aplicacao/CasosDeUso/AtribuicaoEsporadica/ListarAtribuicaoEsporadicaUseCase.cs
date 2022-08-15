@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AtribuicaoEsporadicaDto>> ListaEntidadeParaListaDto(IEnumerable<Dominio.AtribuicaoEsporadica> entidades)
         {
-            var professores = await mediator.Send(new ObterListaNomePorListaRFQuery(entidades.Select(x => x.ProfessorRf)));
+            var professores = await mediator.Send(new ObterFuncionariosPorRFsQuery(entidades.Select(x => x.ProfessorRf)));
 
             var lstDto = new List<AtribuicaoEsporadicaDto>();
 

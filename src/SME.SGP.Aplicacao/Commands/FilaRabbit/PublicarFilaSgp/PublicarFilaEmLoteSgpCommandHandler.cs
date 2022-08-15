@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
                 string usuarioLogadoNomeCompleto = command.Usuario?.Nome;
                 string usuarioLogadoRf = command.Usuario?.CodigoRf;
                 Guid? perfilUsuario = command.Usuario?.PerfilAtual;
+                var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
 
                 if (command.Usuario == null)
                 {
@@ -40,7 +41,8 @@ namespace SME.SGP.Aplicacao
                                                   usuarioLogadoNomeCompleto,
                                                   usuarioLogadoRf,
                                                   perfilUsuario,
-                                                  command.NotificarErroUsuario);
+                                                  command.NotificarErroUsuario,
+                                                  administrador.Login);
 
                 await servicoMensageria.Publicar(mensagem
                                                , command.Rota

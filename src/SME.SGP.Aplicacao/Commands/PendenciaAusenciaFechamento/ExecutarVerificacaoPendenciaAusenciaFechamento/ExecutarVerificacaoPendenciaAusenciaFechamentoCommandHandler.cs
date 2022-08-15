@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                     if (periodoFechamentoBimestre.PeriodoEscolar.TipoCalendario.Modalidade == ModalidadeTipoCalendario.Infantil)
                         continue;
 
-                    var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turma.CodigoTurma);
+                    var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
                     foreach (var professorTurma in professoresTurma)
                     {
                         var obterComponenteCurricular = componentes.FirstOrDefault(c => long.Parse(c.Codigo) == professorTurma.DisciplinaId);

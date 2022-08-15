@@ -9,12 +9,10 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 {
     public class RetornarTotalCompensacoesNaoLancamNotaTeste : TesteBase
     {
@@ -30,7 +28,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarCompensacaoQueNaoLancaNota();
 
             //Act
-            var controller = new ConselhoClasseController();
+            var controller = new Api.Controllers.ConselhoClasseController();
             var retorno = await controller.ObterTotalCompensacoesComponentesNaoLancamNota("2370993", 1, useCase);
 
             //Assert
@@ -72,12 +70,12 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new TipoCalendario
             {
                 Id = 1,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Periodo = Periodo.Anual,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
                 Migrado = true,
-                CriadoEm = new DateTime(2021, 01, 15, 23, 48, 43),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
                 AlteradoEm = null,
                 AlteradoPor = "",
@@ -90,10 +88,10 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 TipoCalendarioId = 1,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 Bimestre = 1,
-                CriadoEm = new DateTime(2021, 01, 15, 23, 48, 43),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
                 AlteradoEm = null,
                 AlteradoPor = "",
@@ -101,17 +99,17 @@ namespace SME.SGP.TesteIntegracao
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 2084687593,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 Bimestre = 1,
                 TotalAulas = 1,
                 TotalAusencias = 0,
-                CriadoEm = new DateTime(2022, 04, 21, 12, 46, 29),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
                 CriadoPor = "Sistema",
-                AlteradoEm = new DateTime(2022, 04, 23, 21, 52, 51),
+                AlteradoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 23, 21, 52, 51),
                 AlteradoPor = "Sistema",
                 CriadoRF = "0",
                 AlteradoRF = "0",

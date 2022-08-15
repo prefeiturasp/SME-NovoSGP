@@ -2,18 +2,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 {
     public class Ao_gerar_pendencia_diario_bordo : TesteBase
     {
@@ -109,28 +107,28 @@ namespace SME.SGP.TesteIntegracao
                 Modalidade = ModalidadeTipoCalendario.Infantil,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 10),
-                Nome = "2022 - Calendário Infantil ",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                Nome = "Ano Atual - Calendário Infantil ",
                 Periodo = Periodo.Anual,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Excluido = false
             });
 
             await InserirNaBase(new PeriodoEscolar()
             {
                 Bimestre = 1,
-                PeriodoFim = new DateTime(2022, 08, 20),
-                PeriodoInicio = new DateTime(2022, 02, 01),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 20),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01),
                 TipoCalendarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 09),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_4h_512.ToString(),
                 Excluido = false,
@@ -142,13 +140,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7P,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_4h_512.ToString(),
                 Excluido = false,
@@ -160,13 +158,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7P,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 11),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_4h_512.ToString(),
                 Excluido = false,
@@ -178,13 +176,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7P,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 09),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
                 Excluido = false,
@@ -196,13 +194,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7A,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
                 Excluido = false,
@@ -214,13 +212,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7A,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 11),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_2h_513.ToString(),
                 Excluido = false,
@@ -232,13 +230,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7A,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 09),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
                 Excluido = false,
@@ -250,13 +248,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7B,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 10),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
                 Excluido = false,
@@ -268,13 +266,13 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7B,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
-            await InserirNaBase(new Aula()
+            await InserirNaBase(new Dominio.Aula()
             {
                 AulaCJ = false,
-                DataAula = new DateTime(2022, 05, 11),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 11),
                 ProfessorRf = "Sistema",
                 DisciplinaId = Codigo_Regencia_Infantil_Emei_Manha_534.ToString(),
                 Excluido = false,
@@ -286,7 +284,7 @@ namespace SME.SGP.TesteIntegracao
                 TurmaId = Turma_Emei_7B,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 05, 09),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
             });
 
             await InserirNaBase(new Usuario()
@@ -297,7 +295,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -308,7 +306,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -319,7 +317,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -330,7 +328,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -341,7 +339,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -352,7 +350,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -363,7 +361,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -374,7 +372,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase(new Usuario()
@@ -385,7 +383,7 @@ namespace SME.SGP.TesteIntegracao
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(2022, 01, 01),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
 
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
@@ -420,7 +418,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = "7P",
                 CodigoTurma = "EI - 7P",
                 Ano = "1",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1
@@ -431,7 +429,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = "7A",
                 CodigoTurma = "EI - 7A",
                 Ano = "1",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1
@@ -442,7 +440,7 @@ namespace SME.SGP.TesteIntegracao
                 Nome = "7B",
                 CodigoTurma = "EI - 7B",
                 Ano = "1",
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
                 ModalidadeCodigo = Modalidade.Fundamental,
                 UeId = 1

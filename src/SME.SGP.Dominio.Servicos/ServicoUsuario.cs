@@ -165,15 +165,12 @@ namespace SME.SGP.Dominio
 
             if (usuario != null)
             {
-                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                    usuario.Nome = nome;
-
-                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                    usuario.CodigoRf = codigoRf;
+                var atualizouNome = AtualizouNomeDoUsuario(usuario, nome);
+                var atualizouRF = AtualizouRfDoUsuario(usuario, codigoRf);
 
                 usuario.Nome = usuario?.Nome ?? "";
 
-                if (!usuario.Nome.Equals(nome) || (usuario.CodigoRf != null && !usuario.CodigoRf.Equals(codigoRf)))
+                if (atualizouNome || atualizouRF)
                     await repositorioUsuario.SalvarAsync(usuario);
 
                 return usuario;
@@ -204,7 +201,7 @@ namespace SME.SGP.Dominio
             var usuarioLogado = await ObterUsuarioLogado();
 
             if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, data);
+                return await mediator.Send(new ProfessorPodePersistirTurmaQuery(codigoRf, turmaId, data));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
 
@@ -236,7 +233,7 @@ namespace SME.SGP.Dominio
                 usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+                return await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, data, usuario));
 
             var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
 
@@ -300,6 +297,30 @@ namespace SME.SGP.Dominio
             }
 
             return componentesCurricularesParaVisualizar.ToArray();
+        }
+
+        private bool AtualizouNomeDoUsuario(Usuario usuario, string nome)
+        {
+            if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+            {
+                usuario.Nome = nome;
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool AtualizouRfDoUsuario(Usuario usuario, string codigoRf)
+        {
+            if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+            {
+                usuario.CodigoRf = codigoRf;
+
+                return true;
+            }
+
+            return false;
         }
     }
 }
