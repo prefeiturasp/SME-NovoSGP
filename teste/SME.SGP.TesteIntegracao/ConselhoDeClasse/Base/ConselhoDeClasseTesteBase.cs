@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
             if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
-                await CriarFechamentoTurmaDisciplinaAlunoNota(long.Parse(filtroNota.ComponenteCurricular), filtroNota.NotaFixa);
+                await CriarFechamentoTurmaDisciplinaAlunoNota(filtroNota);
             else
                 await CriarFechamentoTurma(filtroNota.Bimestre);                
             
@@ -272,7 +272,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseParecerAno();
         }
 
-        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(long componenteCurricular, double? nota)
+        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(FiltroNotasDto filtroNotasDto)
         {
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
 
@@ -284,7 +284,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 await CriarFechamentoTurma(periodoEscolar.Id);
 
-                await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
+                await CriarFechamentoTurmaDisciplina(long.Parse(filtroNotasDto.ComponenteCurricular), fechamentoTurmaId);
 
                 await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
@@ -295,11 +295,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             //Lançamento de fechamento Final
             await CriarFechamentoTurma(null);
 
-            await CriarFechamentoTurmaDisciplina(componenteCurricular, fechamentoTurmaId);
+            await CriarFechamentoTurmaDisciplina(long.Parse(filtroNotasDto.ComponenteCurricular), fechamentoTurmaId);
 
             await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
-            await CriarFechamentoTurmaAlunoNota(componenteCurricular, nota);
+            await CriarFechamentoTurmaAlunoNota(filtroNotasDto);
         }
 
         private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
@@ -367,7 +367,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
 
-        private async Task CriarFechamentoTurmaAlunoNota(long componenteCurricular, double? nota)
+        private async Task CriarFechamentoTurmaAlunoNota(FiltroNotasDto filtroNotasDto)
         {
             var fechamentoAlunos = ObterTodos<FechamentoAluno>();
 
@@ -375,9 +375,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 await InserirNaBase(new FechamentoNota()
                 {
-                    DisciplinaId = componenteCurricular,
+                    DisciplinaId = long.Parse(filtroNotasDto.ComponenteCurricular),
                     FechamentoAlunoId = fechamentoAluno.Id,
-                    Nota = nota.HasValue ? nota : new Random().Next(1, 10),
+                    Nota = filtroNotasDto.TipoNota == TipoNota.Nota ? filtroNotasDto.NotaFixa.HasValue ? filtroNotasDto.NotaFixa : new Random().Next(1, 10) : null,
+                    ConceitoId = filtroNotasDto.TipoNota == TipoNota.Conceito ?filtroNotasDto.ConceitoFixo.HasValue ? filtroNotasDto.ConceitoFixo : new Random().Next(1, 3) : null,
                     CriadoEm = DateTime.Now,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -1068,7 +1069,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new Conceito()
             {
                 Descricao = "Ruim",
-                Aprovado = true,
+                Aprovado = false,
                 Ativo = true,
                 InicioVigencia = DATA_01_01,
                 FimVigencia = DATA_31_12,
@@ -1553,6 +1554,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
             public bool CriarConselhoClasseFinal { get; set; }
             public double? NotaFixa { get; set; }
+            public int? ConceitoFixo { get; set; }
         }
 
         public class FiltroConselhoClasseDto
