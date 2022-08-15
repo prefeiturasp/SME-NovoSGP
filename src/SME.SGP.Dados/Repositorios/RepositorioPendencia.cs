@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }
 
-        public async void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
+        public async Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
             var idsEntidade = await ObterIdPendenciasParaExclusao(fechamentoId,tipoPendencia);
             if (idsEntidade != null && idsEntidade.Any())
@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
 	                     	                set excluido = TRUE
 	                                     WHERE p.id = any(@ids) ";
 
-                database.Conexao.Execute(queryUpdate, new { ids= idsEntidade.ToArray() });
+                await database.Conexao.ExecuteAsync(queryUpdate, new { ids= idsEntidade.ToArray() });
             }
         }
 
