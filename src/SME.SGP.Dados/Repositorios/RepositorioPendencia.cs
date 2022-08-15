@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
         public async void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
             var idsEntidade = await ObterIdPendenciasParaExclusao(fechamentoId,tipoPendencia);
-            if (idsEntidade.Count()>0)
+            if (idsEntidade != null && idsEntidade.Any())
             {
                 var queryUpdate = @"update pendencia p
 	                     	                set excluido = TRUE
