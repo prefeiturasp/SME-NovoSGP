@@ -1,12 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,28 +13,21 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioArquivo repositorioArquivo;
 
-        public CopiarArquivoCommandHandler(IRepositorioArquivo repositorioArquivo)
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        
+        public CopiarArquivoCommandHandler(IRepositorioArquivo repositorioArquivo,IServicoArmazenamento servicoArmazenamento)
         {
             this.repositorioArquivo = repositorioArquivo ?? throw new ArgumentNullException(nameof(repositorioArquivo));
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         }
 
         public async Task<string> Handle(CopiarArquivoCommand request, CancellationToken cancellationToken)
         {
-            var caminhoBase = UtilArquivo.ObterDiretorioBase();
-            var nomeArquivo = Path.GetFileName(request.Nome);
-            string caminhoArquivoOriginal;
-            if (request.TipoArquivoOriginal == TipoArquivo.temp)
-            {
-                caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name());
-            }
-            else
-            {
-                caminhoArquivoOriginal = Path.Combine(caminhoBase, request.TipoArquivoOriginal.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
-            }
-            var caminhoArquivoDestino = Path.Combine(caminhoBase, request.TipoArquivoDestino.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
-            CopiarArquivo(caminhoArquivoOriginal, caminhoArquivoDestino, nomeArquivo);
+            var retorno = await servicoArmazenamento.Copiar(request.Nome);
+                
             await SalvarCopiaArquivo(request.TipoArquivoDestino, request.Nome);
-            return $@"/{request.TipoArquivoDestino.Name()}/{DateTime.Now.Year}/{DateTime.Now.Month:00}/";
+            
+            return retorno;
         }
         private async Task SalvarCopiaArquivo(TipoArquivo tipo, string nomeArquivo)
         {
@@ -55,17 +47,6 @@ namespace SME.SGP.Aplicacao
                 Tipo = tipo,
                 TipoConteudo = arquivo.TipoConteudo
             };
-        }
-
-        private void CopiarArquivo(string caminhoArquivoOrigem, string caminhoArquivoDestino, string nomeArquivo)
-        {
-            if (!Directory.Exists(caminhoArquivoDestino))
-                Directory.CreateDirectory(caminhoArquivoDestino);
-
-            var pathArquivoDestino = Path.Combine(caminhoArquivoDestino, nomeArquivo);
-            var pathArquivoOrigem = Path.Combine(caminhoArquivoOrigem, nomeArquivo);
-            if (File.Exists(pathArquivoOrigem) && !File.Exists(pathArquivoDestino))
-                File.Copy(pathArquivoOrigem, pathArquivoDestino);
         }
     }
 }
