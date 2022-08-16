@@ -262,7 +262,17 @@ namespace SME.SGP.Dados.Repositorios
                                               and not tc.excluido
                                               and t.ano_letivo = @anoLetivo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo });
+            DateTime dataReferencia = DateTime.MinValue;
+            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = bimestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, bimestre == 1 ? 6 : 8, 1);
+            }
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, dataReferencia });
         }
 
         public async Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulaCj)
