@@ -72,6 +72,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 true);
 
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
+
+            var fechamentos = ObterTodos<FechamentoNota>();
             
             var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
 
@@ -92,7 +94,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ModalidadeTipoCalendario modalidadeTipoCalendario,
             bool anoAnterior, 
             SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, 
-            bool criarFechamentoDisciplinaAlunoNota = false)
+            bool criarFechamentoDisciplinaAlunoNota = false,
+            TipoNota tipoNota = TipoNota.Nota)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -107,7 +110,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
-                SituacaoConselhoClasse = situacaoConselhoClasse
+                SituacaoConselhoClasse = situacaoConselhoClasse,
+                TipoNota = tipoNota
             };
             
             await CriarDadosBase(filtroNota);
