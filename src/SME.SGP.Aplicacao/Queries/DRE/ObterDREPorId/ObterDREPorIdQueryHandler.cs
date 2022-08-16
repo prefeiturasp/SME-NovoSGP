@@ -22,7 +22,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Dre> Handle(ObterDREPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCache.ObterAsync(ObterChave(request.DreId), async () => await repositorioDre.ObterPorIdAsync(request.DreId));
+            return await repositorioCache.ObterAsync(ObterChave(request.DreId),
+                async () => await repositorioDre.ObterPorIdAsync(request.DreId),
+                "Obter DRE");
         }
         private string ObterChave(long id)
         {
