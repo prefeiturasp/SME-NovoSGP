@@ -6,6 +6,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,6 +27,9 @@ namespace SME.SGP.Aplicacao
         {
             var id = await repositorioTurma.ObterTurmaIdPorCodigo(request.TurmaCodigo);
 
+            if (id == 0)
+                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
+            
             return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id)); 
         }
     }
