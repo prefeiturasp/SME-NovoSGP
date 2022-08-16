@@ -28,10 +28,13 @@ namespace SME.SGP.Aplicacao
                 ComponenteCurricularCodigo = conselhoClasseNotaDto.CodigoComponenteCurricular,
                 Justificativa = conselhoClasseNotaDto.Justificativa,
             };
+            
             if (conselhoClasseNotaDto.Nota.HasValue)
                 conselhoClasseNota.Nota = conselhoClasseNotaDto.Nota.Value;
+            
             if (conselhoClasseNotaDto.Conceito.HasValue)
                 conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
+            
             return conselhoClasseNota;
         }
 
@@ -45,7 +48,7 @@ namespace SME.SGP.Aplicacao
 
         protected async Task<bool> EnviarParaAprovacao(Turma turma, Usuario usuarioLogado)
         {
-            return turma.AnoLetivo < DateTime.Today.Year
+           return turma.AnoLetivo < DateTime.Today.Year
                 && !usuarioLogado.EhGestorEscolar()
                 && await ParametroAprovacaoAtivo(turma.AnoLetivo);
         }

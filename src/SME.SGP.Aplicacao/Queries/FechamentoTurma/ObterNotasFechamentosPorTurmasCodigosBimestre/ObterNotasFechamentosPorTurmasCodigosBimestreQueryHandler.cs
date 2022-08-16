@@ -31,7 +31,8 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in request.TurmasCodigos)
             {
                 var notasConceitos = (await repositorioCache.ObterAsync(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_BIMESTRE, turmaCodigo, request.Bimestre),
-                    async () => await repositorioFechamentoNota.ObterNotasPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre))).ToList();
+                    async () => await repositorioFechamentoNota.ObterNotasPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre),
+                    "Obter notas do fechamento")).ToList();
             
                 if (notasConceitos.Any())
                     retorno.AddRange(notasConceitos);

@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, request.CodigoDisciplina, request.CodigoTurma);
 
-            var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChaveCache), cancellationToken);
+            var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChaveCache, "Obter fechamentos da turma"), cancellationToken);
             var retornoCache = await MapearRetornoParaDto(dadosCache);
 
             if (retornoCache != null)

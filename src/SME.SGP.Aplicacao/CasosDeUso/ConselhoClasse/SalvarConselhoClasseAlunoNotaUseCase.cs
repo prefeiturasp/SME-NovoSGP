@@ -61,6 +61,11 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoTurma.PeriodoEscolarId != null)
                     periodoEscolar =
                         await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+
+                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
+                {
+                    DisciplinaId = dto.ConselhoClasseNotaDto.CodigoComponenteCurricular
+                };
             }
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
