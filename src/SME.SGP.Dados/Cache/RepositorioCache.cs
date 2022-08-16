@@ -27,19 +27,65 @@ namespace SME.SGP.Dados.Repositorios
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
 
-        public string Obter(string nomeChave, bool utilizarGZip = false)
+        public string Obter(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
         {
-            var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter", "");
+            var param = new
+            {
+                NomeChave = nomeChave,
+                UtilizarGZip = utilizarGZip
+            };
+            
+            var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), 
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
             if (utilizarGZip)
                 cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
 
-            return cacheParaRetorno;
+            return cacheParaRetorno;            
         }
         
-        public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720, bool utilizarGZip = false)
+        public string Obter(string nomeChave, bool utilizarGZip = false)
         {
-            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter async<T>", "");
+            return Obter(nomeChave, $"{NomeServicoCache} Obter", utilizarGZip);
+        }        
+
+        public async Task<string> ObterAsync(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
+        {
+            var param = new
+            {
+                NomeChave = nomeChave,
+                UtilizarGZip = utilizarGZip
+            };
+                
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+
+            if (string.IsNullOrWhiteSpace(stringCache)) 
+                return await Task.FromResult(string.Empty);
+            
+            if (utilizarGZip)
+                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+            
+            return stringCache;
+        }
+        
+        public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
+        {
+            return await ObterAsync(nomeChave, $"{NomeServicoCache} Obter async<string>", utilizarGZip);
+        }
+
+        public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, string telemetriaNome, int minutosParaExpirar = 720,
+            bool utilizarGZip = false)
+        {
+            var param = new
+            {
+                NomeChave = nomeChave,
+                MinutosParaExpirar = minutosParaExpirar,
+                UtilizarGZip = utilizarGZip
+            };
+            
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
             if (!string.IsNullOrWhiteSpace(stringCache))
             {
@@ -53,27 +99,26 @@ namespace SME.SGP.Dados.Repositorios
 
             await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
 
-            return dados;
+            return dados;            
         }
-
-        public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
+        
+        public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720,
+            bool utilizarGZip = false)
         {
-            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Obter async<T>", "");
-
-            if (string.IsNullOrWhiteSpace(stringCache)) 
-                return await Task.FromResult(string.Empty);
-            
-            if (utilizarGZip)
-                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
-            
-            return stringCache;
+            return await ObterAsync(nomeChave, buscarDados, $"{NomeServicoCache} Obter async<T>", minutosParaExpirar, utilizarGZip);
         }
 
         public async Task RemoverAsync(string nomeChave)
         {
+            var param = new
+            {
+                NomeChave = nomeChave
+            };
+            
             try
             {
-                await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave), NomeServicoCache, $"{NomeServicoCache} Remover async", "");
+                await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
+                    NomeServicoCache, $"{NomeServicoCache} Remover async", "", param.ToString());
             }
             catch (Exception)
             {
@@ -82,6 +127,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarAsync(string nomeChave, string valor, int minutosParaExpirar = 720, bool utilizarGZip = false)
         {
+            var param = new
+            {
+                NomeChave = nomeChave,
+                MinutosParaExpirar = minutosParaExpirar,
+                UtilizarGZip = utilizarGZip
+            };
+            
             try
             {
                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
@@ -92,7 +144,8 @@ namespace SME.SGP.Dados.Repositorios
                         valor = Convert.ToBase64String(valorComprimido);
                     }
 
-                    await servicoTelemetria.RegistrarAsync(async () => await SalvarValor(nomeChave, valor, minutosParaExpirar), NomeServicoCache, $"{NomeServicoCache} Salvar async", "");
+                    await servicoTelemetria.RegistrarAsync(async () => await SalvarValor(nomeChave, valor, minutosParaExpirar),
+                        NomeServicoCache, $"{NomeServicoCache} Salvar async", "", param.ToString());
                 }
             }
             catch (Exception)
