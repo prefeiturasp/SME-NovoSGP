@@ -73,8 +73,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await ExecutarTesteSemValidacao(salvarConselhoClasseAlunoNotaDto);
 
-            var fechamentos = ObterTodos<FechamentoNota>();
-            
             var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
 
             var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_2,ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_2, false);
