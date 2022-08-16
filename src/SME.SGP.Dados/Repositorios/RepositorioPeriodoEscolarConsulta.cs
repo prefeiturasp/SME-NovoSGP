@@ -272,7 +272,6 @@ namespace SME.SGP.Dados.Repositorios
                 // 1/6/ano ou 1/7/ano dependendo do semestre
                 dataReferencia = new DateTime(anoLetivo, bimestre == 1 ? 6 : 8, 1);
             }
-
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, dataReferencia });
         }
 
