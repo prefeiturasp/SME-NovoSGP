@@ -15,7 +15,9 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPeriodoEscolarConsulta : RepositorioBase<PeriodoEscolar>, IRepositorioPeriodoEscolarConsulta
     {
-        public RepositorioPeriodoEscolarConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
+        public RepositorioPeriodoEscolarConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        {
+        }
 
         public async Task<IEnumerable<PeriodoEscolar>> ObterPorTipoCalendario(long tipoCalendarioId)
         {
@@ -95,7 +97,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterUltimoBimestreAsync(int anoLetivo, ModalidadeTipoCalendario modalidade, int semestre = 0)
         {
-            var query = new StringBuilder(@"select p.* 
+            var query = new StringBuilder(@"select p.*
                             from tipo_calendario t
                          inner join periodo_escolar p on p.tipo_calendario_id = t.id
                           where t.excluido = false and t.situacao
@@ -121,12 +123,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select pe.bimestre
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                               where tc.modalidade = @modalidade
                                               and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
                                               and not tc.excluido ");
-
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
         }
@@ -135,7 +136,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select pe.bimestre
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and t.id = @turmaId
                                              where tc.modalidade = @modalidade
                                                and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
@@ -148,7 +149,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string sql = @"select pe.*
                                 from periodo_escolar pe
-                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                 inner join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                 where tc.modalidade = @modalidade
                                 and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
@@ -160,7 +161,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false, bool ehModalidadeInfantil = false)
         {
             var query = new StringBuilder(@"select count(pe.Id)
-                          from periodo_escolar pe 
+                          from periodo_escolar pe
                          where pe.tipo_calendario_id = @tipoCalendarioId
                            and periodo_fim >= @dataReferencia ");
 
@@ -179,7 +180,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterPorTipoCalendarioEBimestreAsync(long tipoCalendarioId, int bimestre)
         {
-            var query = $@"select p.* 
+            var query = $@"select p.*
                             from periodo_escolar p
                           where p.tipo_calendario_id = @tipoCalendarioId
                             and p.bimestre = @bimestre";
@@ -211,14 +212,14 @@ namespace SME.SGP.Dados.Repositorios
                 dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
             }
 
-            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario, anoLetivo, dataReferencia },queryName: "ObterPorAnoLetivoEModalidadeTurma");
+            return await database.Conexao.QueryAsync<PeriodoEscolar>(query.ToString(), new { modalidadeTipoCalendario, anoLetivo, dataReferencia }, queryName: "ObterPorAnoLetivoEModalidadeTurma");
         }
 
         public async Task<long> ObterPeriodoEscolarIdPorTurma(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia)
         {
             var query = new StringBuilder(@"select pe.id
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                               where tc.modalidade = @modalidade
                                               and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
@@ -231,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select pe.bimestre
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
                                               where tc.modalidade = @modalidade
                                               and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
@@ -255,21 +256,30 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select pe.id
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
                                               where tc.modalidade = @modalidade
                                               and pe.bimestre = @bimestre
                                               and not tc.excluido
                                               and t.ano_letivo = @anoLetivo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo });
+            DateTime dataReferencia = DateTime.MinValue;
+            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = bimestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, bimestre == 1 ? 6 : 8, 1);
+            }
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, dataReferencia });
         }
 
         public async Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulaCj)
         {
-
-            var sql = new StringBuilder(@"select 
-				                distinct pe.id 
+            var sql = new StringBuilder(@"select
+				                distinct pe.id
 				                ,pe.tipo_calendario_id as TipoCalendarioId
 				                ,pe.bimestre
 				                ,pe.periodo_inicio as PeriodoInicio
@@ -277,9 +287,9 @@ namespace SME.SGP.Dados.Repositorios
 				                ,pe.migrado
 				                ,a.aula_cj  as AulaCj
                                 from tipo_calendario tc
-                                inner join periodo_escolar pe on tc.id = pe.tipo_calendario_id 
-                                inner join aula a  on a.tipo_calendario_id  = tc.id 
-                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                inner join periodo_escolar pe on tc.id = pe.tipo_calendario_id
+                                inner join aula a  on a.tipo_calendario_id  = tc.id
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                                 where tc.modalidade = @modalidade
                                 and a.turma_id = @turmaCodigo
                                 and pe.bimestre = @bimestre
@@ -293,7 +303,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string sql = @"select pe.*
                                 from periodo_escolar pe
-                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                 inner join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
                                 where tc.modalidade = @modalidade
                                 and pe.bimestre = @bimestre
@@ -306,7 +316,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder(@"select pe.id
                                               from periodo_escolar pe
-                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                              left join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                               left join turma t on t.ano_letivo = tc.ano_letivo and id = @turmaId
                                               where tc.modalidade = @modalidade
                                               and pe.periodo_inicio <= @dataReferencia and pe.periodo_fim >= @dataReferencia
@@ -317,7 +327,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterPorModalidadeAnoEDataFinal(ModalidadeTipoCalendario modalidade, int ano, DateTime dataFim)
         {
-            var query = @"select p.* 
+            var query = @"select p.*
                     from periodo_escolar p
                    inner join tipo_calendario t on t.id = p.tipo_calendario_id
                    where not t.excluido
@@ -330,14 +340,14 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PeriodoEscolar> ObterUltimoPeriodoEscolarPorData(int anoLetivo, ModalidadeTipoCalendario modalidade, DateTime dataAtual)
         {
-            var query = @"select p.* 
+            var query = @"select p.*
                             from tipo_calendario t
                          inner join periodo_escolar p on p.tipo_calendario_id = t.id
                           where t.excluido = false and t.situacao
                             and t.ano_letivo = @anoLetivo
-                            and t.modalidade = @modalidade 
-                            and periodo_inicio <= @dataAtual 
-                            order by bimestre desc 
+                            and t.modalidade = @modalidade
+                            and periodo_inicio <= @dataAtual
+                            order by bimestre desc
                             limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(query, new { anoLetivo, modalidade = (int)modalidade, dataAtual });
@@ -346,7 +356,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterBimestreAtualComAberturaPorTurmaAsync(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, long ueId, DateTime dataReferencia)
         {
             var query = @"select
-	                        pe.bimestre 
+	                        pe.bimestre
                         from
 	                        periodo_fechamento pf
                         inner join ue u on
@@ -370,7 +380,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterBimestreAtualComAberturaPorAnoModalidade(int anoLetivo, ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia)
         {
             var query = @"select
-	                        pe.bimestre 
+	                        pe.bimestre
                         from
 	                        periodo_fechamento pf
                         inner join periodo_fechamento_bimestre pfb on
@@ -394,10 +404,10 @@ namespace SME.SGP.Dados.Repositorios
  	                    , pe.bimestre
  	                    , pe.periodo_inicio as DataInicio
  	                    , pe.periodo_fim as DataFim
-                       from tipo_calendario tc 
+                       from tipo_calendario tc
                       inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
-                      where not tc.excluido 
-                        and tc.situacao 
+                      where not tc.excluido
+                        and tc.situacao
                         and tc.ano_letivo = @ano
                         and pe.periodo_inicio <= @data ";
 
@@ -408,7 +418,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             const string sql = @"select pe.*
                                 from periodo_escolar pe
-                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id
                                 inner join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
                                 where tc.modalidade = @modalidade
                                 and pe.bimestre = ANY(@bimestres)
@@ -433,9 +443,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<int> ObterBimestrePorDataPendenciaEModalidade(DateTime dataPendenciaCriada, int modalidadeTipoCalendario)
         {
-            var query = @"select pe.bimestre from periodo_escolar pe 
-                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id 
-                                where tc.modalidade = @modalidadeTipoCalendario 
+            var query = @"select pe.bimestre from periodo_escolar pe
+                                inner join tipo_calendario tc on pe.tipo_calendario_id = tc.id
+                                where tc.modalidade = @modalidadeTipoCalendario
                                 and @dataPendenciaCriada between pe.periodo_inicio and pe.periodo_fim";
 
             return database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { dataPendenciaCriada, modalidadeTipoCalendario });
@@ -444,17 +454,17 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<PeriodoEscolarVerificaRegenciaDto>> ObterPeriodoEscolaresPorTurmaComponenteBimestre(string turmaCodigo, long componenteCurricularId, int bimestre, bool aulaCj)
         {
             var query = new StringBuilder(@"select distinct pe.id as Id,
-                                   pe.periodo_inicio as DataInicio,    
-                                   pe.periodo_fim as DataFim, 
+                                   pe.periodo_inicio as DataInicio,
+                                   pe.periodo_fim as DataFim,
                                    pe.bimestre as Bimestre,
                                    a.data_aula as DataAula,
                                    a.aula_cj as AulaCj
-                            from periodo_escolar pe 
-                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id 
+                            from periodo_escolar pe
+                                inner join aula a on a.tipo_calendario_id = pe.tipo_calendario_id
                                 where a.turma_id = @turmaCodigo
                                 and pe.bimestre = @bimestre
                                 and a.disciplina_id = cast(@componenteCurricularId as varchar)
-                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                                 and not a.excluido ");
 
             if (aulaCj)
@@ -470,7 +480,7 @@ namespace SME.SGP.Dados.Repositorios
                                             from periodo_escolar pe
                                                 inner join tipo_calendario tc on (tc.id = pe.tipo_calendario_id)
                                             where tc.modalidade = @modalidadeTipoCalendario
-                                            and pe.periodo_inicio <= @dataReferencia 
+                                            and pe.periodo_inicio <= @dataReferencia
                                             and pe.periodo_fim >= @dataReferencia
                                             and not tc.excluido ");
 
