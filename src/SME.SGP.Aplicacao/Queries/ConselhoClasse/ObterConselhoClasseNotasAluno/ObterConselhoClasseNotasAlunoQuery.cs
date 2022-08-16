@@ -6,13 +6,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseNotasAlunoQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterConselhoClasseNotasAlunoQuery(long conselhoClasseId, string alunoCodigo)
+        public ObterConselhoClasseNotasAlunoQuery(long conselhoClasseId, string alunoCodigo, int bimestre)
         {
             ConselhoClasseId = conselhoClasseId;
             AlunoCodigo = alunoCodigo;
+            Bimestre = bimestre;
         }
 
-        public long ConselhoClasseId { get; set; }
-        public string AlunoCodigo { get; set; }
+        public long ConselhoClasseId { get; }
+        public string AlunoCodigo { get; }
+        public int Bimestre { get; }
     }
 }

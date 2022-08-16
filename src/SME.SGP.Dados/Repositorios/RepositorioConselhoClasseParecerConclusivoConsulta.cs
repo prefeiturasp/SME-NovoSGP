@@ -20,7 +20,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaIdAsync(long turmaId, DateTime dataConsulta)
         {
             var where = "t.id = @parametro";
-
+            
             return await ObterListaPorTurma(where, turmaId, dataConsulta);
         }
 
