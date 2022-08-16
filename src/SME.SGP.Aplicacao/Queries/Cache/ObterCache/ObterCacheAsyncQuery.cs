@@ -5,15 +5,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterCacheAsyncQuery : IRequest<string>
     {
-        public ObterCacheAsyncQuery(string nomeChave, string nomeAcao = "", bool utilizarGZip = false)
+        public ObterCacheAsyncQuery(string nomeChave, string telemetriaNome = "", bool utilizarGZip = false)
         {
             NomeChave = nomeChave;
-            NomeAcao = nomeAcao;
+            TelemetriaNome = telemetriaNome;
             UtilizarGzip = utilizarGZip;
         }
 
         public string NomeChave { get; }
-        public string NomeAcao { get; }
+        public string TelemetriaNome { get; }
         public bool UtilizarGzip { get; }
     }
     public class ObterCacheAsyncQueryValidator : AbstractValidator<ObterCacheAsyncQuery>
