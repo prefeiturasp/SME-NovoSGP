@@ -103,7 +103,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0,
             DateTime? dataMatricula = null, DateTime? dataSituacao = null)
         {
-            var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
+            var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null";
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             
