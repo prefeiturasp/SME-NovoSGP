@@ -30,7 +30,6 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioObjetivoDesenvolvimentoPlano = new Mock<IRepositorioObjetivoDesenvolvimentoPlano>();
             unitOfWork = new Mock<IUnitOfWork>();
             mediator = new Mock<IMediator>();
-            //configuracaoArmazenamentoOptions = new Mock<IOptions<ConfiguracaoArmazenamentoOptions>>();
             configuracaoArmazenamentoOptions = Options.Create<ConfiguracaoArmazenamentoOptions>(new ConfiguracaoArmazenamentoOptions()
             {
                 BucketArquivos = "Teste",
