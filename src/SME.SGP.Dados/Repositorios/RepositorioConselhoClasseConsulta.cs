@@ -22,8 +22,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select c.* 
                             from conselho_classe c 
-                           where not c.excluido 
-                            and c.fechamento_turma_id = @fechamentoTurmaId";
+                           where c.fechamento_turma_id = @fechamentoTurmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
