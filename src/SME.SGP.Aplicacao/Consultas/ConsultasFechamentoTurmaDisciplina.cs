@@ -368,7 +368,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ExigeAprovacao(Turma turma)
         {
             return turma.AnoLetivo < DateTime.Today.Year
-                && !(await servicoUsuario.ObterUsuarioLogado()).EhGestorEscolar()
+                && !(await mediator.Send(new ObterUsuarioLogadoQuery())).EhGestorEscolar()
                 && await ParametroAprovacaoAtivo(turma.AnoLetivo);
         }
 
