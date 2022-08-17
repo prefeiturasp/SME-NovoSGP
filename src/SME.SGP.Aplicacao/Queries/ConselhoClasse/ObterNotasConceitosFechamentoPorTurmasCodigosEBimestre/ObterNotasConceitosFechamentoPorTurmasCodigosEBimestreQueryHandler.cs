@@ -35,7 +35,8 @@ namespace SME.SGP.Aplicacao
                         string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, turmaCodigo,
                             request.Bimestre),
                         async () => await repositorioConselhoClasseNota
-                            .ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre)))
+                            .ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre),
+                        "Obter notas ou conceitos do fechamento."))
                     .ToList();
 
                 if (notasConceitosFechamento.Any())

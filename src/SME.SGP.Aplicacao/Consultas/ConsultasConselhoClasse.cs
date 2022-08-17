@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Aplicacao
 {
@@ -21,12 +22,14 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
+        private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                        IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
                                        IRepositorioParametrosSistemaConsulta repositorioParametrosSistema,
+                                       IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado,
                                        IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                        IConsultasTurma consultasTurma,
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
@@ -35,6 +38,7 @@ namespace SME.SGP.Aplicacao
                                        IMediator mediator)
         {
             this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
+            this.repositorioConselhoClasseConsolidado = repositorioConselhoClasseConsolidado ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsolidado));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
@@ -72,8 +76,9 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                if (!retornoConselhoBimestre.possuiConselho)
-                    throw new NegocioException($"Para acessar esta aba você precisa registrar o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre");
+                var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, turma);
+                if (!retornoConselhoBimestre.possuiConselho || (!retornoConselhoBimestre.concluido && situacaoConselhoAluno != SituacaoConselhoClasse.Concluido))
+                    throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
             }
 
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
@@ -208,6 +213,17 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator
                 .Send(new ObterUltimoBimestreTurmaQuery(turma));
+        }
+        private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, Turma turma)
+        {
+            var statusAluno = SituacaoConselhoClasse.NaoIniciado;
+
+            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, alunoCodigo);
+
+            if (statusConselhoAluno != null)
+                statusAluno = statusConselhoAluno.Status;
+
+            return statusAluno;
         }
     }
 }

@@ -71,23 +71,26 @@ namespace SME.SGP.Aplicacao
 
                         conselhoClasseNota.Nota = request.ConselhoClasseNotaDto.Nota.Value;
                     }
-                    else 
-                        conselhoClasseNota.Nota = null;
-
+                    else conselhoClasseNota.Nota = null;
+                    
+                    // Gera histórico de alteração
                     if (request.ConselhoClasseNotaDto.Conceito.HasValue)
                     {
-                        // Gera histórico de alteração
-                        if (conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
+                        if (conselhoClasseNota.ConceitoId != null &&  conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, request.ConselhoClasseNotaDto.Conceito.Value), cancellationToken);
-
-                        conselhoClasseNota.ConceitoId = request.ConselhoClasseNotaDto.Conceito.Value;
                     }
+                    else
+                    {
+                        if (conselhoClasseNota.ConceitoId != null && request.ConselhoClasseNotaDto.Conceito == null)
+                            await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, null), cancellationToken);
+                    }
+                    conselhoClasseNota.ConceitoId = request.ConselhoClasseNotaDto.Conceito.HasValue ? request.ConselhoClasseNotaDto.Conceito.Value : null;
                 }
 
                 if (request.Turma.AnoLetivo == 2020)
                     ValidarNotasFechamentoConselhoClasse2020(conselhoClasseNota);
 
-                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno.AlteradoEm.HasValue)
+                if (conselhoClasseNota.Id > 0 || conselhoClasseAluno is { AlteradoEm: { } })
                     await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
 
                 enviarAprovacao = await EnviarParaAprovacao(request.Turma, request.UsuarioLogado);
@@ -101,7 +104,7 @@ namespace SME.SGP.Aplicacao
 
                 unitOfWork.PersistirTransacao();
             }
-            catch
+            catch (Exception e)
             {
                 unitOfWork.Rollback();
             }
