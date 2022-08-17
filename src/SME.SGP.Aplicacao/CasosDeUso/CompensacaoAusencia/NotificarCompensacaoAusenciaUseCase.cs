@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                 var alunoEol = alunosTurma.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
                 alunosDto.Add(new CompensacaoAusenciaAlunoQtdDto()
                 {
-                    NumeroAluno = alunoEol.NumeroAlunoChamada,
+                    NumeroAluno = alunoEol.ObterNumeroAlunoChamada(),
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = alunoEol.NomeAluno,
                     QuantidadeCompensacoes = aluno.QuantidadeFaltasCompensadas
