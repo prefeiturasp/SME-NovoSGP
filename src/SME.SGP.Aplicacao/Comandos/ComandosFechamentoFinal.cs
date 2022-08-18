@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Aplicacao
@@ -19,6 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
-            IMediator mediator)
+            IMediator mediator,
+            IRepositorioCache repositorioCache)
         {
             this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new ArgumentNullException(nameof(servicoFechamentoFinal));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
@@ -34,6 +35,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
@@ -66,9 +68,8 @@ namespace SME.SGP.Aplicacao
             
             var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA,
                 disciplinaId, fechamentoFinalSalvar.TurmaCodigo);
-            
-            var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChaveCache, "Obter fechamento nota final"));
-            var retornoCacheMapeado = (await MapearDadosCacheParaDto(dadosCache)).ToList();
+
+            var retornoCacheMapeado = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamento nota final");
 
             foreach (var fechamentoFinal in fechamentoFinalSalvar.Itens)
             {
@@ -93,18 +94,10 @@ namespace SME.SGP.Aplicacao
                 cacheAluno.ConceitoId = fechamentoFinal.ConceitoId;
                 cacheAluno.EmAprovacao = emAprovacao;
             }
-            
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChaveCache, retornoCacheMapeado));
-        }
 
-        private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearDadosCacheParaDto(string dadosCache)
-        {
-            if (string.IsNullOrEmpty(dadosCache))
-                return Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
-            
-            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(dadosCache));
+            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado);
         }
-
+        
         private Task<Usuario> ObterUsuarioLogado()
             => mediator.Send(new ObterUsuarioLogadoQuery());
 

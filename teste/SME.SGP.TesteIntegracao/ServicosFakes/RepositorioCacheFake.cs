@@ -37,6 +37,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return buscarDados();
         }
 
+        public Task<T> ObterObjetoAsync<T>(string nomeChave, bool utilizarGZip = false) where T : new()
+        {
+            return ObterObjetoAsync<T>(nomeChave, "", utilizarGZip);
+        }
+
+        public Task<T> ObterObjetoAsync<T>(string nomeChave, string telemetriaNome, bool utilizarGZip = false) where T : new()
+        {
+            return Task.FromResult(new T());
+        }
+
         public Task RemoverAsync(string nomeChave)
         {
             return Task.FromResult(string.Empty);
