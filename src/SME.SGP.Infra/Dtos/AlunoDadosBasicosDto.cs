@@ -61,7 +61,7 @@ namespace SME.SGP.Infra
             => dadosAluno == null ? null : new AlunoDadosBasicosDto()
             {
                 Nome = dadosAluno.NomeValido(),
-                NumeroChamada = dadosAluno.NumeroAlunoChamada,
+                NumeroChamada = dadosAluno.ObterNumeroAlunoChamada(),
                 DataNascimento = dadosAluno.DataNascimento,
                 CodigoEOL = dadosAluno.CodigoAluno,
                 SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,

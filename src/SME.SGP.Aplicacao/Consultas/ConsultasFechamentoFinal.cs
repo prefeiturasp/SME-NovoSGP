@@ -280,7 +280,7 @@ namespace SME.SGP.Aplicacao
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequencia.ToString() : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
-                NumeroChamada = aluno.NumeroAlunoChamada,
+                NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };
             return fechamentoFinalAluno;

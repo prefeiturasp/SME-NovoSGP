@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     DataSituacao = aluno.DataSituacao,
                     Nome = aluno.NomeValido(),
                     NomeResponsavel = aluno.NomeResponsavel,
-                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     Situacao = aluno.SituacaoMatricula,
                     SituacaoCodigo = aluno.CodigoSituacaoMatricula,
                     TipoResponsavel = ObterTipoResponsavel(aluno.TipoResponsavel),
