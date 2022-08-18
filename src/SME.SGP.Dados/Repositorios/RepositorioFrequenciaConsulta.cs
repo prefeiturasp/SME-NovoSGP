@@ -390,8 +390,7 @@ namespace SME.SGP.Dados.Repositorios
                                 , rfa.alterado_por as AlteradoPor
                                 , rfa.alterado_rf as AlteradoRf
                            from registro_frequencia_aluno rfa 
-                           inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
-                           inner join aula a on a.id = rf.aula_id 
+                           inner join aula a on a.id = rfa.aula_id 
                            where rfa.codigo_aluno = any(@codigosAlunos)
                             and not rfa.excluido
                             and not a.excluido 
