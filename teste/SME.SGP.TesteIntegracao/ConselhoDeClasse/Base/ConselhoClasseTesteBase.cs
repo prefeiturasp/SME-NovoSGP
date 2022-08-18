@@ -1212,25 +1212,5 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.Base
             public long? ConceitoId { get; set; }
             public string Justificativa { get; set; } = string.Empty;
         }    
-        
-        protected IMediator RetornarServicoMediator()
-        {
-            return ServiceProvider.GetService<IMediator>();
-        }
-        
-        protected IGerarParecerConclusivoUseCase RetornarGerarParecerConclusivoUseCase()
-        {
-            return ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();
-        }
-        
-        protected IConsolidarConselhoClasseUseCase RetornarConsolidarConselhoClasseUseCase()
-        {
-            return ServiceProvider.GetService<IConsolidarConselhoClasseUseCase>();
-        }
-        
-        protected IReprocessarParecerConclusivoAlunoUseCase RetornarReprocessarParecerConclusivoAlunoUseCase()
-        {
-            return ServiceProvider.GetService<IReprocessarParecerConclusivoAlunoUseCase>();
-        }
     }
 }

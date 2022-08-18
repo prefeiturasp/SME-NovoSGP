@@ -7,7 +7,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_reprocessar_conselho_classe_aluno: ConselhoClasseTesteBase
+    public class Ao_reprocessar_conselho_classe_aluno: ConselhoDeClasseTesteBase
     {
         public Ao_reprocessar_conselho_classe_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -16,25 +16,21 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Ao_reprocessar_situacao_conselho_classe_aluno()
         {
-            var filtroConselhoClasse = new FiltroConselhoClasseDto()
+            var filtroConselhoClasse = new FiltroNotasDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_1,
-                SituacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
-                InserirConselhoClassePadrao = true,
-                InserirFechamentoAlunoPadrao = true,
-                CriarPeriodoEscolar = true,
-                TipoNota = TipoNota.Nota,
-                AnoTurma = "6"
+                ComponenteCurricular = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                AnoTurma = ANO_6
             };
 
             await CriarDadosBase(filtroConselhoClasse);
 
             var consolidarConselhoClasseUseCase = RetornarConsolidarConselhoClasseUseCase();
 
-            var retorno = await consolidarConselhoClasseUseCase.Executar(1);
+            var retorno = await consolidarConselhoClasseUseCase.Executar(int.Parse(DRE_ID_1.ToString()));
             
             retorno.ShouldBeTrue();
         }

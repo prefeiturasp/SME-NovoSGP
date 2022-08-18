@@ -1525,6 +1525,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Nota = tipoNota == TipoNota.Nota ? new Random().Next(1,10) : null
             };
         }
+        
+        protected IConsolidarConselhoClasseUseCase RetornarConsolidarConselhoClasseUseCase()
+        {
+            return ServiceProvider.GetService<IConsolidarConselhoClasseUseCase>();
+        }
 
         protected class FiltroNotasDto
         {
