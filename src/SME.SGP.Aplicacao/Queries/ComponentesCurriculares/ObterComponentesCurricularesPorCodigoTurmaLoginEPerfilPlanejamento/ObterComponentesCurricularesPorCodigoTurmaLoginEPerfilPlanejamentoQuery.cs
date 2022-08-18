@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
         {
 
             RuleFor(c => c.CodigoTurma)
-                .IsInEnum()
+                .NotEmpty()
                 .WithMessage("O código da turma deve ser informado para obter componentes curriculares por turma, login e perfil.");
 
             RuleFor(c => c.Login)
