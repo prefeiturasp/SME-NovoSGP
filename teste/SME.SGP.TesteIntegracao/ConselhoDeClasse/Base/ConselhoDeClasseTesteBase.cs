@@ -272,7 +272,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseParecerAno();
         }
 
-        private async Task CriarFechamentoTurmaDisciplinaAlunoNota(FiltroNotasDto filtroNotasDto)
+        protected async Task CriarFechamentoTurmaDisciplinaAlunoNota(FiltroNotasDto filtroNotasDto)
         {
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
 
@@ -336,16 +336,35 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
-                Recomendacao = "Recomendação aluno",
                 Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
+                Recomendacao = "Recomendação estudante teste 1",
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+
             await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
-                Recomendacao = "Recomendação familia",
+                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
+                Recomendacao = "Recomendação estudante teste 2",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
+            {
                 Tipo = ConselhoClasseRecomendacaoTipo.Familia,
+                Recomendacao = "Recomendação família teste 1",
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
+            {
+                Tipo = ConselhoClasseRecomendacaoTipo.Familia,
+                Recomendacao = "Recomendação família teste 2",
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
@@ -907,6 +926,71 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+        }
+
+        protected async Task InserirConselhoClassePadrao(FiltroNotasDto filtroConselhoClasseDto)
+        {
+            var fechamentoTurmas = ObterTodos<FechamentoTurma>();
+
+            long conselhoClasseId = 1;
+
+            long conselhoClasseAlunoId = 1;
+
+            foreach (var fechamentoTurma in fechamentoTurmas)
+            {
+                await InserirNaBase(new ConselhoClasse()
+                {
+                    FechamentoTurmaId = fechamentoTurma.Id,
+                    Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                foreach (var alunoCodigo in ObterAlunos())
+                {
+                    await InserirNaBase(new ConselhoClasseAluno()
+                    {
+                        ConselhoClasseId = conselhoClasseId,
+                        AlunoCodigo = alunoCodigo,
+                        CriadoEm = DateTime.Now,
+                        CriadoPor = SISTEMA_NOME,
+                        CriadoRF = SISTEMA_CODIGO_RF
+                    });
+
+                    foreach (var componenteCurricular in ObterComponentesCurriculares())
+                    {
+                        await InserirNaBase(new ConselhoClasseNota()
+                        {
+                            ComponenteCurricularCodigo = componenteCurricular,
+                            ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                            Justificativa = JUSTIFICATIVA,
+                            Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
+                            ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                            CriadoEm = DateTime.Now,
+                            CriadoPor = SISTEMA_NOME,
+                            CriadoRF = SISTEMA_CODIGO_RF
+                        });
+                    }
+                    conselhoClasseAlunoId++;
+                }
+
+                conselhoClasseId++;
+            }
+        }
+
+        protected IEnumerable<long> ObterComponentesCurriculares()
+        {
+            return new List<long>()
+            {
+                long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                long.Parse(COMPONENTE_HISTORIA_ID_7),
+                long.Parse(COMPONENTE_GEOGRAFIA_ID_8),
+                long.Parse(COMPONENTE_CIENCIAS_ID_89),
+                long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6),
+                COMPONENTE_CURRICULAR_ARTES_ID_139,
+                long.Parse(COMPONENTE_MATEMATICA_ID_2)
+            };
         }
 
         protected async Task CriarPeriodoAbertura(FiltroNotasDto filtroNotasDto)

@@ -3,7 +3,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.Base;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_Inserir_Recomendacoes : ConselhoClasseTesteBase
+    public class Ao_Inserir_Recomendacoes : ConselhoDeClasseTesteBase
     {
         private const string TEXTO_LIVRE_ALUNO = "Recomendações ao estudante texto livre";
         private const string TEXTO_LIVRE_FAMILIA = "Recomendações a família texto livre";
@@ -23,8 +22,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        //[Fact]
-        //BULCK INSERT
+        [Fact]
         public async Task Ao_inserir_apenas_recomendacoes_a_familia_e_aos_estudantes_pre_cadastrados()
         {
             await CriarDados();
@@ -44,8 +42,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ValidaRecomendacaoPreCadastradas(dto);
         }
 
-        //[Fact]
-        //BULCK INSERT
+        [Fact]
         public async Task Ao_inserir_apenas_o_texto_livre_nos_campos_de_recomendacao_a_familia_e_estudante()
         {
             await CriarDados();
@@ -67,8 +64,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ValidaRecomendacaoCampoLivres(conselhoAluno);
         }
 
-        //[Fact]
         //BULCK INSERT
+        [Fact]
         public async Task Ao_inserir_recomendacoes_pre_cadastradas_e_texto_livre_nos_dois_campos()
         {
             await CriarDados();
@@ -81,8 +78,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ValidaRecomendacaoPreCadastradas(dto);
         }
 
-        //[Fact]
         //BULCK INSERT
+        [Fact]
         public async Task Ao_alterar_recomendacoes_pre_cadastradas_e_texto_livre_nos_dois_campos()
         {
             await CriarDados();
@@ -168,58 +165,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task CriarDados()
         {
-            var filtroNota = new FiltroConselhoClasseDto()
+            var filtroNota = new FiltroNotasDto()
             {
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_2,
-                AnoTurma = ANO_7,
-                InserirFechamentoAlunoPadrao = true,
-                InserirConselhoClassePadrao = true
+                AnoTurma = ANO_7
             };
 
             await CriarDadosBase(filtroNota);
-            await CriaBaseRecomendacao();
-        }
-
-        private async Task CriaBaseRecomendacao()
-        {
-            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
-            {
-                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
-                Recomendacao = "Recomendação estudante teste 1",
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
-            {
-                Tipo = ConselhoClasseRecomendacaoTipo.Aluno,
-                Recomendacao = "Recomendação estudante teste 2",
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
-            {
-                Tipo = ConselhoClasseRecomendacaoTipo.Familia,
-                Recomendacao = "Recomendação família teste 1",
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
-            {
-                Tipo = ConselhoClasseRecomendacaoTipo.Familia,
-                Recomendacao = "Recomendação família teste 2",
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await InserirConselhoClassePadrao(filtroNota);
+            await CriarFechamentoTurmaDisciplinaAlunoNota(filtroNota);
         }
     }
 }
