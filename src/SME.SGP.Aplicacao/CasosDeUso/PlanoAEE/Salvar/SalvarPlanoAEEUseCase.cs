@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
+            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
             
             return planoAeePersistidoDto;
         }     
