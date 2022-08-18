@@ -48,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         protected const string NOTA = "NOTA";
         protected const string CONCEITO = "CONCEITO";
-
+        
         protected const int CONSELHO_CLASSE_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_2 = 2;
@@ -58,6 +58,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
+        protected int ANO_LETIVO_Ano_Atual_NUMERO = DateTimeExtension.HorarioBrasilia().Year;
 
         protected ConselhoDeClasseTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
