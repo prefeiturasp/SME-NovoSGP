@@ -98,9 +98,9 @@ namespace SME.SGP.Infra
                 ? configuracaoArmazenamentoOptions.BucketArquivos
                 : nomeBucket;
 
-            var args = new RemoveObjectArgs();
-                // .WithBucket(nomeBucket)
-                // .WithObject(nomeArquivo);
+            var args = new RemoveObjectArgs()
+                .WithBucket(nomeBucket)
+                .WithObject(nomeArquivo);
 
             await minioClient.RemoveObjectAsync(args);
             return true;
