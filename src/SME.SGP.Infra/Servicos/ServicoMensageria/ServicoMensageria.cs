@@ -4,6 +4,7 @@ using Polly.Registry;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -75,7 +76,9 @@ namespace SME.SGP.Infra
     {
         public override string ObterParametrosMensagem(MensagemRabbit mensagemRabbit)
         {
-           return mensagemRabbit.ObterObjetoMensagem<LogMensagem>().Mensagem;
+            var json = JsonConvert.SerializeObject(mensagemRabbit.Mensagem);
+            var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
+            return mensagem!.Mensagem;
         }
 
         public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 

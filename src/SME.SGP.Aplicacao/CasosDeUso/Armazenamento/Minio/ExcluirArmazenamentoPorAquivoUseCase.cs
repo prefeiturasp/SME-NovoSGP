@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Excluir o Arquivo {filtro.ArquivoNome} no armazenamento do Minio", LogNivel.Critico, LogContexto.Geral, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
+               await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Excluir o Arquivo {filtro.ArquivoNome} no armazenamento do Minio", LogNivel.Critico, LogContexto.Geral, ex.Message,rastreamento:ex.StackTrace,excecaoInterna:ex.InnerException?.ToString()));
                 throw;
             }
         }
