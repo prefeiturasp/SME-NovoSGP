@@ -14,7 +14,6 @@ namespace SME.SGP.Dados.Repositorios
             this.memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
 
             NomeServicoCache = "Cache Memória";
-            
         }
 
         protected override string ObterValor(string nomeChave)

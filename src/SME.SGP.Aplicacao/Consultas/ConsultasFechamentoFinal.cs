@@ -1,9 +1,12 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +30,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
-
+        private readonly IRepositorioCache repositorioCache;
         public ConsultasFechamentoFinal(IRepositorioTurmaConsulta repositorioTurma, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                             IServicoEol servicoEOL, IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
@@ -36,7 +39,8 @@ namespace SME.SGP.Aplicacao
                             IServicoUsuario servicoUsuario, IRepositorioParametrosSistema repositorioParametrosSistema,
                             IConsultasDisciplina consultasDisciplina, IConsultasPeriodoFechamento consultasPeriodoFechamento,
                             IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
-                            IMediator mediator)
+                            IMediator mediator,
+                            IRepositorioCache repositorioCache)
         {
             this.repositorioTurma = repositorioTurma ?? throw new System.ArgumentNullException(nameof(repositorioTurma));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
@@ -52,6 +56,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<FechamentoFinalConsultaRetornoDto> ObterFechamentos(FechamentoFinalConsultaFiltroDto filtros)
@@ -111,12 +116,15 @@ namespace SME.SGP.Aplicacao
 
             var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { filtros.DisciplinaCodigo });
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
+
             if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
-                notasFechamentosFinais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray());
+                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
+
             if (!retorno.EhSintese)
                 notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
             var alunosValidosOrdenados = alunosDaTurma
@@ -185,7 +193,6 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-
                 fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
@@ -245,7 +252,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilDRE() && !usuarioLogado.EhPerfilSME())
             {
-                var usuarioPodeEditar = await mediator.Send( new PodePersistirTurmaDisciplinaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data.Ticks));
+                var usuarioPodeEditar = await mediator.Send(new PodePersistirTurmaDisciplinaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, codigoComponenteCurricular, data.Ticks));
                 if (!usuarioPodeEditar)
                     return false;
             }
@@ -259,7 +266,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmaEComponenteQuery(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
-            var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma, 
+            var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
                 filtros.DisciplinaCodigo.ToString(), periodosEscolares.Select(c => c.Id).ToArray());
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 0;
@@ -273,7 +280,7 @@ namespace SME.SGP.Aplicacao
                 TotalAusenciasCompensadas = frequenciaAluno?.TotalCompensacoes ?? 0,
                 Frequencia = existeFrequenciaComponenteCurricular ? percentualFrequencia.ToString() : null,
                 TotalFaltas = frequenciaAluno?.TotalAusencias ?? 0,
-                NumeroChamada = aluno.NumeroAlunoChamada,
+                NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };
             return fechamentoFinalAluno;

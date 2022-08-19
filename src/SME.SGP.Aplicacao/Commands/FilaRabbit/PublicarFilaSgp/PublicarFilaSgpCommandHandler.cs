@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IServicoMensageria servicoMensageria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public PublicarFilaSgpCommandHandler(IMediator mediator, IServicoMensageria servicoMensageria)
+        public PublicarFilaSgpCommandHandler(IMediator mediator, IServicoMensageriaSGP servicoMensageria)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));

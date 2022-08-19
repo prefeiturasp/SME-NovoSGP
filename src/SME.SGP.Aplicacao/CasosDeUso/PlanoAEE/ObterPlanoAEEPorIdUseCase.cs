@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
                 var aluno = new AlunoReduzidoDto()
                 {
                     Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
-                    NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
+                    NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                     DataNascimento = alunoPorTurmaResposta.DataNascimento,
                     DataSituacao = alunoPorTurmaResposta.DataSituacao,
                     CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
@@ -116,7 +116,10 @@ namespace SME.SGP.Aplicacao
                 plano.PodeDevolverPlanoAEE = await PodeDevolverPlanoAEE(entidadePlano.SituacaoPodeDevolverPlanoAEE());
                 plano.Responsavel = await ObtenhaResponsavel(entidadePlano.ResponsavelId);
             } else
+            {
+                plano.Responsavel = await ObtenhaResponsavel();
                 turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
+            }
 
             var questionarioId = await mediator
                 .Send(new ObterQuestionarioPlanoAEEIdQuery());

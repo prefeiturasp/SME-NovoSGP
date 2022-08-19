@@ -92,8 +92,7 @@ namespace SME.SGP.Aplicacao
             var periodosAberto = await consultasPeriodoFechamento
                 .ObterPeriodosComFechamentoEmAberto(turma.UeId, turma.AnoLetivo);
 
-            var tipoCalendario = await repositorioTipoCalendario
-                .BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
+            var tipoCalendario = await mediator.Send(new ObterTipoDeCalendarioDaTurmaQuery {Turma = turma});
 
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
@@ -234,7 +233,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
                         CodigoAluno = aluno.CodigoAluno,
-                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
                         EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)

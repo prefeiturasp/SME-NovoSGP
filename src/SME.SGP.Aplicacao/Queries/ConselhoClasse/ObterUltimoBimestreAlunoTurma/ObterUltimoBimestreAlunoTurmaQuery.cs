@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterUltimoBimestreAlunoTurmaQuery : IRequest<(int bimestre, bool possuiConselho)>
+    public class ObterUltimoBimestreAlunoTurmaQuery : IRequest<(int bimestre, bool possuiConselho, bool concluido)>
     {
         public Turma Turma { get; set; }
         public string AlunoCodigo { get; set; }

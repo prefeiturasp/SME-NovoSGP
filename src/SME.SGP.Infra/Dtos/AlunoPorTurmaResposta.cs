@@ -25,7 +25,8 @@ namespace SME.SGP.Infra
         }
 
         public string NomeSocialAluno { get; set; }
-        public int NumeroAlunoChamada { get; set; }
+        public int? NumeroAlunoChamada { get; set; }
+        public int ObterNumeroAlunoChamada() => NumeroAlunoChamada.HasValue ? NumeroAlunoChamada.Value : 0;
         public char? ParecerConclusivo { get; set; }
         public bool PossuiDeficiencia { get; set; }
         public string SituacaoMatricula { get; set; }
@@ -36,7 +37,7 @@ namespace SME.SGP.Infra
         public string NomeResponsavel { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
-        public DateTime DataAtualizacaoContato { get; set; }
+        public DateTime? DataAtualizacaoContato { get; set; }
         public string CodigoEscola { get; set; }
 
         public bool Inativo

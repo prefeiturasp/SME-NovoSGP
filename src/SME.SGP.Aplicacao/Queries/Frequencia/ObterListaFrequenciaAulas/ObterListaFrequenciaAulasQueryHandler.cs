@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 {
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                    NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     DataSituacao = aluno.DataSituacao,
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                         var registrosFrequenciaAluno = request.RegistrosFrequenciaAlunos.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
                         var anotacoesAluno = request.AnotacoesTurma.Where(a => a.AlunoCodigo == aluno.CodigoAluno);
 
-                        registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida);
+                        registroFrequenciaAluno.CarregarAulas(request.Aulas, registrosFrequenciaAluno, aluno, anotacoesAluno, frequenciaPreDefinida, request.PeriodoEscolar.PeriodoFim);
                     }
 
                     registrosFrequencias.Alunos.Add(registroFrequenciaAluno);
