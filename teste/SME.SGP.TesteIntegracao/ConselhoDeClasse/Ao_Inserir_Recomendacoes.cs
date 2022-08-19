@@ -22,7 +22,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        [Fact]
+        //BULCK INSERT
+        //[Fact]
         public async Task Ao_inserir_apenas_recomendacoes_a_familia_e_aos_estudantes_pre_cadastrados()
         {
             await CriarDados();
@@ -42,7 +43,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             ValidaRecomendacaoPreCadastradas(dto);
         }
 
-        [Fact]
+        //BULCK INSERT
+        //[Fact]
         public async Task Ao_inserir_apenas_o_texto_livre_nos_campos_de_recomendacao_a_familia_e_estudante()
         {
             await CriarDados();
@@ -65,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         //BULCK INSERT
-        [Fact]
+        //[Fact]
         public async Task Ao_inserir_recomendacoes_pre_cadastradas_e_texto_livre_nos_dois_campos()
         {
             await CriarDados();
@@ -79,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         //BULCK INSERT
-        [Fact]
+        //[Fact]
         public async Task Ao_alterar_recomendacoes_pre_cadastradas_e_texto_livre_nos_dois_campos()
         {
             await CriarDados();
