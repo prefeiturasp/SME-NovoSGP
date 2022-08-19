@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Deve_retornar_lista_com_alunos_e_seus_dados()
         {
-            await CriarDadosBase(new FiltroNotasDto
+            await CriarDadosBase(new FiltroConselhoClasseDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Medio,

@@ -167,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task CriarDados()
         {
-            var filtroNota = new FiltroNotasDto()
+            var filtroNota = new FiltroConselhoClasseDto()
             {
                 ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 Perfil = ObterPerfilProfessor(),

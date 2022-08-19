@@ -40,10 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 ModalidadeTipoCalendario.FundamentalMedio, 
                 false);
 
-            obterFiltroConselhoClasse.CriarPeriodoEscolar = false;
-            obterFiltroConselhoClasse.CriarPeriodoAbertura = false;
-            
-            await CriarDadosBaseSemFechamentoTurma(obterFiltroConselhoClasse);
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
             await InserirPeriodoEscolarCustomizadoQuartoBimestre();
 
@@ -65,15 +62,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 ModalidadeTipoCalendario.FundamentalMedio, 
                 false);
 
-            obterFiltroConselhoClasse.CriarPeriodoEscolar = false;
-            obterFiltroConselhoClasse.CriarPeriodoAbertura = false;
-            obterFiltroConselhoClasse.CriarPeriodoReabertura = true;
-            
-            await CriarDadosBaseSemFechamentoTurma(obterFiltroConselhoClasse);
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
             await InserirPeriodoEscolarCustomizadoQuartoBimestre();
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
+
+            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }
@@ -91,17 +86,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                 ModalidadeTipoCalendario.FundamentalMedio, 
                 false);
 
-            obterFiltroConselhoClasse.CriarPeriodoEscolar = false;
-            obterFiltroConselhoClasse.CriarPeriodoAbertura = false;
-            
-            await CriarDadosBaseSemFechamentoTurma(obterFiltroConselhoClasse);
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
             await InserirPeriodoEscolarCustomizadoQuartoBimestre();
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
+            await CriarPeriodoAberturaCustomizado(obterFiltroConselhoClasse);
+
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }
+        
         
         private FiltroConselhoClasseDto ObterFiltroConselhoClasse(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {

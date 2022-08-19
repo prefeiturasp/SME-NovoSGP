@@ -35,7 +35,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Ao_consultar_valide_anotacao_fechamento()
         {
-            var dtoFiltro = new FiltroNotasDto
+            var dtoFiltro = new FiltroConselhoClasseDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Medio,

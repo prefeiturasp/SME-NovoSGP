@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Modalidade modalidade,
                 ModalidadeTipoCalendario modalidadeTipoCalendario)
         {
-            var filtroNota = new FiltroNotasDto()
+            var filtroNota = new FiltroConselhoClasseDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,
