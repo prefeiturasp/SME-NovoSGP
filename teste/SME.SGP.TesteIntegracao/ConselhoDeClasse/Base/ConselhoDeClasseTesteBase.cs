@@ -248,10 +248,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 await CriarFechamentoTurma(filtroConselhoClasse.Bimestre);
             
             if (filtroConselhoClasse.CriarPeriodoAbertura)
-                await CriarPeriodoAberturaCustomizado(filtroConselhoClasse);
+                await CriarPeriodoAberturaCustomizadoQuartoBimestre();
             
             if (filtroConselhoClasse.CriarPeriodoReabertura)
-                await CriarPeriodoReaberturaCustomizadoQuartoBimestre(filtroConselhoClasse);
+                await CriarPeriodoReaberturaCustomizadoQuartoBimestre(filtroConselhoClasse.TipoCalendarioId, filtroConselhoClasse.ConsiderarAnoAnterior);
 
         }
         
@@ -968,7 +968,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
-            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -989,7 +989,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
         }
         
-        protected async Task InserirPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
+        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
             
@@ -1001,13 +1001,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
-
-        protected async Task CriarPeriodoReaberturaCustomizadoQuartoBimestre(FiltroConselhoClasseDto filtroConselhoClasseDto)
-        {
-            await CriarPeriodoReabertura(filtroConselhoClasseDto.TipoCalendarioId, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-        }
         
-        protected async Task CriarPeriodoAberturaCustomizado(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        protected async Task CriarPeriodoAberturaCustomizadoQuartoBimestre(bool periodoEscolarValido = true)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
@@ -1050,8 +1045,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
                 PeriodoFechamentoId = 1, 
-                InicioDoFechamento = dataReferencia,
-                FinalDoFechamento =  dataReferencia.AddDays(4)
+                InicioDoFechamento = periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5),
+                FinalDoFechamento =  periodoEscolarValido ? dataReferencia.AddDays(4) : dataReferencia.AddDays(-2)
             });  
         }
 
@@ -1121,7 +1116,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
-            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarMotivosAusencias(string descricao)
@@ -1129,7 +1124,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
-        protected async Task CriarPeriodoReabertura(long tipoCalendarioId, bool considerarAnoAnterior = false)
+        protected async Task CriarPeriodoReaberturaCustomizadoQuartoBimestre(long tipoCalendarioId, bool considerarAnoAnterior = false)
         {
             await InserirNaBase(new FechamentoReabertura()
             {

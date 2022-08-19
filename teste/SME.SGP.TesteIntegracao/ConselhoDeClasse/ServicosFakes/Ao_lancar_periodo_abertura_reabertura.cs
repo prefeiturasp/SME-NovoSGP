@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
-            await InserirPeriodoEscolarCustomizadoQuartoBimestre();
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
@@ -64,11 +64,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
-            await InserirPeriodoEscolarCustomizadoQuartoBimestre();
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse);
+            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse.TipoCalendarioId);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }
@@ -88,16 +88,42 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
             
-            await InserirPeriodoEscolarCustomizadoQuartoBimestre();
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
-            await CriarPeriodoAberturaCustomizado(obterFiltroConselhoClasse);
+            await CriarPeriodoAberturaCustomizadoQuartoBimestre();
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }
         
-        
+        [Fact]
+        public async Task Deve_lancar_nota_numerica_pos_conselho_durante_periodo_reabertura_pos_encerramento_bimestre_e_abertura()
+        {
+            // Lançar nota pós-conselho durante o período de reabertura no ano atual (após encerramento da abertura)
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota,FECHAMENTO_TURMA_ID_4,BIMESTRE_4);
+            
+            var obterFiltroConselhoClasse = ObterFiltroConselhoClasse(ObterPerfilProfessor(), 
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
+                TipoNota.Conceito, 
+                ANO_4, 
+                Modalidade.Fundamental, 
+                ModalidadeTipoCalendario.FundamentalMedio, 
+                false);
+
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(obterFiltroConselhoClasse);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+
+            await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
+
+            await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
+            
+            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse.TipoCalendarioId);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
+        }
+
         private FiltroConselhoClasseDto ObterFiltroConselhoClasse(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_03_10_INICIO_BIMESTRE_4.AddYears(-1) : DATA_03_10_INICIO_BIMESTRE_4;
