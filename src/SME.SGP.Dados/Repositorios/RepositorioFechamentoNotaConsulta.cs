@@ -78,8 +78,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"{queryNotasFechamento}
                            and t.turma_id = ANY(@turmasCodigos)
-                           and fa.aluno_codigo = @alunoCodigo 
-                           and pe.bimestre = @bimestre";
+                           and fa.aluno_codigo = @alunoCodigo";
 
             if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
@@ -87,6 +86,11 @@ namespace SME.SGP.Dados.Repositorios
             if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
                 query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
                              or @dataSituacao > pe.periodo_fim)";
+
+            if (bimestre == 0)
+                query += $@" and pe.bimestre is null";
+            else
+                query += $@" and pe.bimestre = @bimestre";
 
             query += " and ftd.excluido != true";
 
