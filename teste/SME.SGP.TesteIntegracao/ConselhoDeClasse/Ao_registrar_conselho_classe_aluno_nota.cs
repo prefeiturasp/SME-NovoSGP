@@ -131,7 +131,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private async Task CriarBase(TipoNota tipoNota, bool ehAlterar)
         {
-            var filtro = new FiltroNotasDto()
+            var filtro = new FiltroConselhoClasseDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Fundamental,
@@ -147,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 InserirConselhoClassePadrao(filtro);
         }
         
-        private async Task InserirConselhoClassePadrao(FiltroNotasDto filtroConselhoClasseDto)
+        private async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             var fechamentoTurmas = ObterTodos<FechamentoTurma>();
 

@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Ao_reprocessar_situacao_conselho_classe_aluno()
         {
-            var filtroConselhoClasse = new FiltroNotasDto()
+            var filtroConselhoClasse = new FiltroConselhoClasseDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Fundamental,
