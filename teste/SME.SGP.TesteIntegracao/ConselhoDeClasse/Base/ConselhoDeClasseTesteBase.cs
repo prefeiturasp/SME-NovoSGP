@@ -16,7 +16,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
-using Xunit;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
@@ -125,12 +124,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
-
-        protected async Task<NegocioException> ValidarTesteComExcecao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
-        {
-            var salvarConselhoClasseAlunoNotaUseCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            return await Assert.ThrowsAsync<NegocioException>(async () => await salvarConselhoClasseAlunoNotaUseCase.Executar(salvarConselhoClasseAlunoNotaDto));
-        }
+        
 
         protected async Task ExecutarTeste(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto,
                                     bool anoAnterior,
@@ -238,45 +232,37 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
 
-        protected async Task CriarDadosBase(FiltroConselhoClasseDto filtroConselhoClasse)
-        {
-            await CriarDadosBaseSemFechamentoTurma(filtroConselhoClasse);
-
-            if (filtroConselhoClasse.CriarFechamentoDisciplinaAlunoNota)
-                await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
-            else
-                await CriarFechamentoTurma(filtroConselhoClasse.Bimestre);
-        }
-        
-        protected async Task CriarDadosBaseSemFechamentoTurma(FiltroConselhoClasseDto filtroConselhoClasse)
+        protected async Task CriarDadosBase(FiltroNotasDto filtroNota)
         {
             await CriarDreUePerfilComponenteCurricular();
 
-            CriarClaimUsuario(filtroConselhoClasse.Perfil);
+            CriarClaimUsuario(filtroNota.Perfil);
 
             await CriarUsuarios();
 
-            await CriarTurmaTipoCalendario(filtroConselhoClasse);
+            await CriarTurmaTipoCalendario(filtroNota);
 
-            if (filtroConselhoClasse.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroConselhoClasse);
+            if (filtroNota.CriarPeriodoEscolar)
+                await CriarPeriodoEscolar(filtroNota);
 
-            if (filtroConselhoClasse.CriarPeriodoAbertura)
-                await CriarPeriodoAbertura(filtroConselhoClasse);
-            
-            if (filtroConselhoClasse.CriarPeriodoReabertura)
-                await CriarPeriodoReabertura(filtroConselhoClasse);
+            if (filtroNota.CriarPeriodoAbertura)
+                await CriarPeriodoAbertura(filtroNota);
 
-            await CriarAula(filtroConselhoClasse.ComponenteCurricular, filtroConselhoClasse.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CriarAula(filtroNota.ComponenteCurricular, filtroNota.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 
             await CriarParametrosNotas();
 
-            await CriarAbrangencia(filtroConselhoClasse.Perfil);
+            await CriarAbrangencia(filtroNota.Perfil);
 
             await CriarCiclo();
 
-            await CriarNotasTipoEParametros(filtroConselhoClasse.ConsiderarAnoAnterior);
+            await CriarNotasTipoEParametros(filtroNota.ConsiderarAnoAnterior);
 
+            if (filtroNota.CriarFechamentoDisciplinaAlunoNota)
+                await CriarFechamentoTurmaDisciplinaAlunoNota(filtroNota);
+            else
+                await CriarFechamentoTurma(filtroNota.Bimestre);                
+            
             await CriarComponenteGrupoAreaOrdenacao();
 
             await CriarConselhoClasseRecomendacao();
@@ -298,7 +284,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 await CriarFechamentoTurma(periodoEscolar.Id);
 
-                await CriarFechamentoTurmaDisciplina(long.Parse(filtroConselhoClasseDto.ComponenteCurricular), fechamentoTurmaId);
+                await CriarFechamentoTurmaDisciplina(long.Parse(filtroNotasDto.ComponenteCurricular), fechamentoTurmaId);
 
                 await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
@@ -309,11 +295,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             //Lançamento de fechamento Final
             await CriarFechamentoTurma(null);
 
-            await CriarFechamentoTurmaDisciplina(long.Parse(filtroConselhoClasseDto.ComponenteCurricular), fechamentoTurmaId);
+            await CriarFechamentoTurmaDisciplina(long.Parse(filtroNotasDto.ComponenteCurricular), fechamentoTurmaId);
 
             await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
-            await CriarFechamentoTurmaAlunoNota(filtroConselhoClasseDto);
+            await CriarFechamentoTurmaAlunoNota(filtroNotasDto);
         }
 
         private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
@@ -381,7 +367,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
 
-        private async Task CriarFechamentoTurmaAlunoNota(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        private async Task CriarFechamentoTurmaAlunoNota(FiltroNotasDto filtroNotasDto)
         {
             var fechamentoAlunos = ObterTodos<FechamentoAluno>();
 
@@ -389,10 +375,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 await InserirNaBase(new FechamentoNota()
                 {
-                    DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
+                    DisciplinaId = long.Parse(filtroNotasDto.ComponenteCurricular),
                     FechamentoAlunoId = fechamentoAluno.Id,
-                    Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? filtroConselhoClasseDto.NotaFixa.HasValue ? filtroConselhoClasseDto.NotaFixa : new Random().Next(1, 10) : null,
-                    ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ?filtroConselhoClasseDto.ConceitoFixo.HasValue ? filtroConselhoClasseDto.ConceitoFixo : new Random().Next(1, 3) : null,
+                    Nota = filtroNotasDto.TipoNota == TipoNota.Nota ? filtroNotasDto.NotaFixa.HasValue ? filtroNotasDto.NotaFixa : new Random().Next(1, 10) : null,
+                    ConceitoId = filtroNotasDto.TipoNota == TipoNota.Conceito ?filtroNotasDto.ConceitoFixo.HasValue ? filtroNotasDto.ConceitoFixo : new Random().Next(1, 3) : null,
                     CriadoEm = DateTime.Now,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -406,10 +392,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5 };
         }
 
-        protected async Task CriarTurmaTipoCalendario(FiltroConselhoClasseDto filtroConselhoClasse)
+        protected async Task CriarTurmaTipoCalendario(FiltroNotasDto filtroNota)
         {
-            await CriarTipoCalendario(filtroConselhoClasse.TipoCalendario, filtroConselhoClasse.ConsiderarAnoAnterior);
-            await CriarTurma(filtroConselhoClasse.Modalidade, filtroConselhoClasse.AnoTurma, filtroConselhoClasse.ConsiderarAnoAnterior);
+            await CriarTipoCalendario(filtroNota.TipoCalendario, filtroNota.ConsiderarAnoAnterior);
+            await CriarTurma(filtroNota.Modalidade, filtroNota.AnoTurma, filtroNota.ConsiderarAnoAnterior);
         }
 
         private async Task CriarNotasTipoEParametros(bool consideraAnoAnterior = false)
@@ -905,47 +891,24 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
-        protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
+        protected async Task CriarPeriodoEscolar(FiltroNotasDto filtroNotasDto)
         {
-            if (filtroConselhoClasseDto.Modalidade == Modalidade.EJA)
+            if (filtroNotasDto.Modalidade == Modalidade.EJA)
             {
-                await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-                await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-                await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_2, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-                await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2, filtroConselhoClasseDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_1, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
+                await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_2, TIPO_CALENDARIO_2, filtroNotasDto.ConsiderarAnoAnterior);
 
                 return;
             }
             
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-        }
-        
-        protected async Task InserirPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroNotasDto.ConsiderarAnoAnterior);
         }
 
-        protected async Task CriarPeriodoReabertura(FiltroConselhoClasseDto filtroConselhoClasseDto)
-        {
-            await CriarPeriodoReabertura(filtroConselhoClasseDto.TipoCalendarioId, filtroConselhoClasseDto.ConsiderarAnoAnterior);
-        }
-        
-        protected async Task CriarPeriodoAbertura(FiltroConselhoClasseDto filtroConselhoClasseDto)
-        {
-            await InserirPeriodoAberturaCustomizado();
-        }
-        
         private async Task InserirPeriodoAberturaCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
@@ -956,42 +919,112 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-209),
-                FinalDoFechamento =  dataReferencia.AddDays(-205)
+                FinalDoFechamento = dataReferencia.AddDays(-205)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_3,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-38),
-                FinalDoFechamento =  dataReferencia.AddDays(-34)
-            });  
-            
+                FinalDoFechamento = dataReferencia.AddDays(-34)
+            });
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia,
-                FinalDoFechamento =  dataReferencia.AddDays(4)
-            });  
+                FinalDoFechamento = dataReferencia.AddDays(4)
+            });
+        }
+
+        protected async Task InserirConselhoClassePadrao(FiltroNotasDto filtroConselhoClasseDto)
+        {
+            var fechamentoTurmas = ObterTodos<FechamentoTurma>();
+
+            long conselhoClasseId = 1;
+
+            long conselhoClasseAlunoId = 1;
+
+            foreach (var fechamentoTurma in fechamentoTurmas)
+            {
+                await InserirNaBase(new ConselhoClasse()
+                {
+                    FechamentoTurmaId = fechamentoTurma.Id,
+                    Situacao = filtroConselhoClasseDto.SituacaoConselhoClasse,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+
+                foreach (var alunoCodigo in ObterAlunos())
+                {
+                    await InserirNaBase(new ConselhoClasseAluno()
+                    {
+                        ConselhoClasseId = conselhoClasseId,
+                        AlunoCodigo = alunoCodigo,
+                        CriadoEm = DateTime.Now,
+                        CriadoPor = SISTEMA_NOME,
+                        CriadoRF = SISTEMA_CODIGO_RF
+                    });
+
+                    foreach (var componenteCurricular in ObterComponentesCurriculares())
+                    {
+                        await InserirNaBase(new ConselhoClasseNota()
+                        {
+                            ComponenteCurricularCodigo = componenteCurricular,
+                            ConselhoClasseAlunoId = conselhoClasseAlunoId,
+                            Justificativa = JUSTIFICATIVA,
+                            Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? new Random().Next(0, 10) : null,
+                            ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                            CriadoEm = DateTime.Now,
+                            CriadoPor = SISTEMA_NOME,
+                            CriadoRF = SISTEMA_CODIGO_RF
+                        });
+                    }
+                    conselhoClasseAlunoId++;
+                }
+
+                conselhoClasseId++;
+            }
+        }
+
+        protected IEnumerable<long> ObterComponentesCurriculares()
+        {
+            return new List<long>()
+            {
+                long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                long.Parse(COMPONENTE_HISTORIA_ID_7),
+                long.Parse(COMPONENTE_GEOGRAFIA_ID_8),
+                long.Parse(COMPONENTE_CIENCIAS_ID_89),
+                long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6),
+                COMPONENTE_CURRICULAR_ARTES_ID_139,
+                long.Parse(COMPONENTE_MATEMATICA_ID_2)
+            };
+        }
+
+        protected async Task CriarPeriodoAbertura(FiltroNotasDto filtroNotasDto)
+        {
+            await CriarPeriodoReabertura(filtroNotasDto.TipoCalendarioId, filtroNotasDto.ConsiderarAnoAnterior);
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -1611,9 +1644,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             return ServiceProvider.GetService<IConsolidarConselhoClasseUseCase>();
         }
 
-        protected class FiltroConselhoClasseDto
+        protected class FiltroNotasDto
         {
-            public FiltroConselhoClasseDto()
+            public FiltroNotasDto()
             {
                 CriarPeriodoEscolar = true;
                 TipoCalendarioId = TIPO_CALENDARIO_1;
@@ -1621,6 +1654,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = false;
             }
 
+            public DateTime? DataReferencia { get; set; }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
@@ -1632,17 +1666,36 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public TipoNota TipoNota { get; set; }
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
+            public string ProfessorRf { get; set; }
             public DateTime DataAula { get; set; }
             public bool CriarFechamentoDisciplinaAlunoNota { get; set; }
             public SituacaoConselhoClasse SituacaoConselhoClasse { get; set; }
             public bool CriarConselhoClasseFinal { get; set; }
             public double? NotaFixa { get; set; }
             public int? ConceitoFixo { get; set; }
+        }
+
+        public class FiltroConselhoClasseDto
+        {
+            public FiltroConselhoClasseDto()
+            {
+            }
+
+            public long ComponenteCurricularId { get; set; }
+            public TipoNota TipoNota { get; set; }
+            public string AnoTurma { get; set; }
+            public Modalidade Modalidade { get; set; }
+            public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
+            public bool ConsiderarAnoAnterior { get; set; }
             public SituacaoConselhoClasse SituacaoConselho { get; set; }
+            public bool CriarFechamentoBimestreFinal { get; set; }
+            public int ConselhoClasseId { get; set; }
             public string AlunoCodigo { get; set; }
             public int BimestreConselhoClasse { get; set; }
+            public int FechamentoTurmaId { get; set; }
             public SalvarConselhoClasseAlunoNotaDto SalvarConselhoClasseAlunoNotaDto { get; set; }
-            public bool CriarPeriodoReabertura { get; set; }
+            public string Perfil { get; set; }
+            public bool CriarConselhosTodosBimestres { get; set; }
         }
     }
 }

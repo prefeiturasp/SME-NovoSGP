@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -68,11 +69,22 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            await ValidarAtribuicaoUsuario(dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, turma.Id.ToString(), periodoEscolar.PeriodoFim, usuario);
+
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
 
             return await mediator.Send(new GravarConselhoClasseCommad(fechamentoTurma, dto.ConselhoClasseId, dto.CodigoAluno,
-                dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre));
+                dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre, usuario));
+        }
+
+        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula, Usuario usuarioLogado)
+        {
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turmaId, dataAula, usuarioLogado));
+            if (!usuarioPossuiAtribuicaoNaTurmaNaData)
+                throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
         }
     }
 }
