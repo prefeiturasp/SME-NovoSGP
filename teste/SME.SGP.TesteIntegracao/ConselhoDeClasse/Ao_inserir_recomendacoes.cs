@@ -117,6 +117,76 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             listaAlunoRecomendacao.Exists(recomenda => recomenda.ConselhoClasseRecomendacaoId == 1).ShouldBeFalse();
             listaAlunoRecomendacao.Exists(recomenda => recomenda.ConselhoClasseRecomendacaoId == 3).ShouldBeFalse();
         }
+        
+        [Fact]
+        public async Task Nao_deve_inserir_recomendacoes_sem_periodo_abertura_apos_encerramento_bimestre()
+        {
+            var filtroConselhoClasse = new FiltroConselhoClasseDto()
+            {
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_4,
+                AnoTurma = ANO_7
+            };
+
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(filtroConselhoClasse);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+            
+            await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
+
+            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var dto = new ConselhoClasseAlunoAnotacoesDto()
+            {
+                AlunoCodigo = ALUNO_CODIGO_1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                RecomendacaoAluno = TEXTO_LIVRE_ALUNO,
+                RecomendacaoFamilia = TEXTO_LIVRE_FAMILIA,
+                RecomendacaoAlunoIds = new long[] { },
+                RecomendacaoFamiliaIds = new long[] { }
+            };
+
+            await Assert.ThrowsAsync<NegocioException>(async () => await comando.SalvarAsync(dto));
+        }
+        
+        [Fact]
+        public async Task Nao_deve_inserir_recomendacoes_sem_periodo_rabertura_apos_encerramento_bimestre_e_abertura()
+        {
+            var filtroConselhoClasse = new FiltroConselhoClasseDto()
+            {
+                ComponenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Bimestre = BIMESTRE_4,
+                AnoTurma = ANO_7
+            };
+
+            await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(filtroConselhoClasse);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+            
+            await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
+
+            await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
+
+            var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
+            var dto = new ConselhoClasseAlunoAnotacoesDto()
+            {
+                AlunoCodigo = ALUNO_CODIGO_1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                RecomendacaoAluno = TEXTO_LIVRE_ALUNO,
+                RecomendacaoFamilia = TEXTO_LIVRE_FAMILIA,
+                RecomendacaoAlunoIds = new long[] { },
+                RecomendacaoFamiliaIds = new long[] { }
+            };
+
+            await Assert.ThrowsAsync<NegocioException>(async () => await comando.SalvarAsync(dto));
+        }
 
         private ConselhoClasseAlunoAnotacoesDto ObterConselhoAlunoAnotacaoDto()
         {

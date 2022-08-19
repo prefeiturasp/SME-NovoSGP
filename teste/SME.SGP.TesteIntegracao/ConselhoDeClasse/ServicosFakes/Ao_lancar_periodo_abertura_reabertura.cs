@@ -100,7 +100,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
         [Fact]
         public async Task Deve_lancar_nota_numerica_pos_conselho_durante_periodo_reabertura_pos_encerramento_bimestre_e_abertura()
         {
-            // Lançar nota pós-conselho durante o período de reabertura no ano atual (após encerramento da abertura)
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Nota,FECHAMENTO_TURMA_ID_4,BIMESTRE_4);
             
             var obterFiltroConselhoClasse = ObterFiltroConselhoClasse(ObterPerfilProfessor(), 
