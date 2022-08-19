@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao
                      objetivos.Count()),
                     ParecerConclusivo = aluno.ParecerConclusivo,
                     Nome = aluno.NomeAluno,
-                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     CodAluno = a.AlunoId,
                     Turma = aluno.TurmaEscola,
                     TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,

@@ -233,7 +233,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
                         CodigoAluno = aluno.CodigoAluno,
-                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
                         EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
