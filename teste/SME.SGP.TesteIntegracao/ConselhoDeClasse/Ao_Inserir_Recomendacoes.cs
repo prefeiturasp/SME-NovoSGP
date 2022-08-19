@@ -32,8 +32,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
-                ConselhoClasseId = 1,
-                FechamentoTurmaId = 1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
                 RecomendacaoAlunoIds = new long[] { 1,2 },
                 RecomendacaoFamiliaIds = new long[] { 3,4 }
             };
@@ -53,8 +53,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var dto = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
-                ConselhoClasseId = 1,
-                FechamentoTurmaId = 1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
                 RecomendacaoAluno = TEXTO_LIVRE_ALUNO,
                 RecomendacaoFamilia = TEXTO_LIVRE_FAMILIA,
                 RecomendacaoAlunoIds = new long[] { },
@@ -93,8 +93,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var dtoAlteracao = new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
-                ConselhoClasseId = 1,
-                FechamentoTurmaId = 1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
                 RecomendacaoAluno = TEXTO_LIVRE_ALUNO_ALTERAR,
                 RecomendacaoFamilia = TEXTO_LIVRE_FAMILIA_ALTERAR,
                 RecomendacaoAlunoIds = new long[] { 2 },
