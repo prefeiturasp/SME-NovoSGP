@@ -121,8 +121,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             return new ConselhoClasseAlunoAnotacoesDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
-                ConselhoClasseId = 1,
-                FechamentoTurmaId = 1,
+                ConselhoClasseId = CONSELHO_CLASSE_ID_1,
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
                 RecomendacaoAluno = TEXTO_LIVRE_ALUNO,
                 RecomendacaoFamilia = TEXTO_LIVRE_FAMILIA,
                 RecomendacaoAlunoIds = new long[] { 1, 2 },

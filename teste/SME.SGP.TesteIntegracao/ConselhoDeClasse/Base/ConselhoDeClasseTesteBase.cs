@@ -303,7 +303,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarFechamentoTurmaAlunoNota(filtroNotasDto);
         }
 
-        private async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
+        protected async Task CriarFechamentoTurmaDisciplina(long componenteCurricular, int fechamentoTurmaId)
         {
             await InserirNaBase(new FechamentoTurmaDisciplina()
             {
@@ -315,7 +315,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        private async Task CriarFechamentoTurma(long? periodoEscolarId)
+        protected async Task CriarFechamentoTurma(long? periodoEscolarId)
         {
             await InserirNaBase(new FechamentoTurma()
             {
