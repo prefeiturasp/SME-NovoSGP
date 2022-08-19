@@ -78,7 +78,7 @@ namespace SME.SGP.Infra
         {
             var json = JsonConvert.SerializeObject(mensagemRabbit.Mensagem);
             var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
-            return mensagem!.Mensagem;
+            return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
         }
 
         public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
