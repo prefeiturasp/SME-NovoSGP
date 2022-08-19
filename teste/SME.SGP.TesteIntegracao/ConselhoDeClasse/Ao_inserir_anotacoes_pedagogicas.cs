@@ -18,7 +18,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        [Fact]
+        //bulk insert
+        //[Fact]
         public async Task Deve_inserir_anotacoes()
         {
             var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);

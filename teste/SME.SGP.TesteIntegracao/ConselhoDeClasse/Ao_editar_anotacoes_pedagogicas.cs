@@ -23,7 +23,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        [Fact]
+        //bulk insert
+        //[Fact]
         public async Task Deve_permitir_alterar_anotacoes()
         {
             await InserirAnotacaoPedagogica();

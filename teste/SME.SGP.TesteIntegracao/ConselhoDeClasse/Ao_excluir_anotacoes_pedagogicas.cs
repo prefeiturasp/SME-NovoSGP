@@ -24,7 +24,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
         }
 
-        [Fact]
+        //bulk insert
+        //[Fact]
         public async Task Deve_excluir_anotacao()
         {
             await InserirAnotacaoPedagogica();
