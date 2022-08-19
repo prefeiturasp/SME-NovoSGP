@@ -41,30 +41,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public void InserirRecomendacaoAlunoFamilia(long[] recomendacoesId, long conselhoClasseAlunoId)
         {
-            //var sql = @"copy conselho_classe_aluno_recomendacao ( 
-            //                            conselho_classe_aluno_id, 
-            //                            conselho_classe_recomendacao_id)
-            //                from
-            //                stdin (FORMAT binary)";
-            //using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-            //{
-            //    foreach (var recomendacao in recomendacoesId)
-            //    {
-            //        writer.StartRow();
-            //        writer.Write(conselhoClasseAlunoId, NpgsqlTypes.NpgsqlDbType.Bigint);
-            //        writer.Write(recomendacao, NpgsqlTypes.NpgsqlDbType.Bigint);
-            //    }
-            //    writer.Complete();
-            //}
-
-
-            var sql = @"insert into conselho_classe_aluno_recomendacao ( 
+            var sql = @"copy conselho_classe_aluno_recomendacao ( 
                                         conselho_classe_aluno_id, 
-                                        conselho_classe_recomendacao_id) values(@conselhoClasseAlunoId,@recomendacao)";
-
-            foreach (var recomendacao in recomendacoesId)
+                                        conselho_classe_recomendacao_id)
+                            from
+                            stdin (FORMAT binary)";
+            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
             {
-                database.Conexao.ExecuteScalar(sql.ToString(), new { conselhoClasseAlunoId, recomendacao });
+                foreach (var recomendacao in recomendacoesId)
+                {
+                    writer.StartRow();
+                    writer.Write(conselhoClasseAlunoId, NpgsqlTypes.NpgsqlDbType.Bigint);
+                    writer.Write(recomendacao, NpgsqlTypes.NpgsqlDbType.Bigint);
+                }
+                writer.Complete();
             }
         }
 
