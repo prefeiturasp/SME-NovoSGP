@@ -41,7 +41,11 @@ namespace SME.SGP.Aplicacao
             if (request.CriadoEm.HasValue)
                 notificacao.CriadoEm = request.CriadoEm.Value;
 
-            return await repositorioNotificacao.SalvarAsync(notificacao);            
+            var notificacaoId = await repositorioNotificacao.SalvarAsync(notificacao);
+
+            await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao, request.UsuarioRf));
+
+            return notificacaoId;
         }         
     }
 }
