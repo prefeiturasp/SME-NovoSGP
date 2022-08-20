@@ -58,18 +58,12 @@ namespace SME.SGP.Dominio.Servicos
             return await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1;
         }
 
-        public void Salvar(Notificacao notificacao)
-        {
-            GeraNovoCodigo(notificacao);
-
-            repositorioNotificacao.Salvar(notificacao);
-        }
-
-        public async Task SalvarAsync(Notificacao notificacao)
+        public async Task Salvar(Notificacao notificacao)
         {
             await GeraNovoCodigoAsync(notificacao);
 
             await repositorioNotificacao.SalvarAsync(notificacao);
+            await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao));
         }
 
         public IEnumerable<(Cargo? Cargo, string Id)> ObterFuncionariosPorNivel(string codigoUe, Cargo? cargo, bool primeiroNivel = true, bool? notificacaoExigeAcao = false)

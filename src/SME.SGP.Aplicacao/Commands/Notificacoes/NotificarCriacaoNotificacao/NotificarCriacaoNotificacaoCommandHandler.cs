@@ -1,0 +1,31 @@
+﻿using MediatR;
+using SME.SGP.Infra;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SME.SGP.Aplicacao
+{
+    public class NotificarCriacaoNotificacaoCommandHandler : AsyncRequestHandler<NotificarCriacaoNotificacaoCommand>
+    {
+        private readonly IMediator mediator;
+
+        public NotificarCriacaoNotificacaoCommandHandler(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        protected override async Task Handle(NotificarCriacaoNotificacaoCommand request, CancellationToken cancellationToken)
+        {
+            var usuarioRf = string.IsNullOrEmpty(request.UsuarioRf) ?
+                await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value)) :
+                request.UsuarioRf;
+
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Notificar,
+                                                           new MensagemNotificacaoDto(request.Notificacao.Codigo,
+                                                                                      request.Notificacao.Titulo,
+                                                                                      request.Notificacao.CriadoEm,
+                                                                                      usuarioRf)));
+        }
+    }
+}
