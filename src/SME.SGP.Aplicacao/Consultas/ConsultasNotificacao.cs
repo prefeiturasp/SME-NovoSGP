@@ -84,6 +84,7 @@ namespace SME.SGP.Aplicacao
 
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
+            await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
 
             var retorno = await MapearEntidadeParaDetalheDto(notificacao);
 
