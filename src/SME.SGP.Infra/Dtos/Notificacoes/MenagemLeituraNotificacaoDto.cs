@@ -1,14 +1,9 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class MenagemLeituraNotificacaoDto
+    public class MenagemLeituraNotificacaoDto : MensagemNotificacaoDto
     {
-        public MenagemLeituraNotificacaoDto(long codigo, string usuarioRf)
+        public MenagemLeituraNotificacaoDto(long codigo, string usuarioRf) : base(codigo, usuarioRf)
         {
-            Codigo = codigo;
-            UsuarioRf = usuarioRf;
         }
-
-        public long Codigo { get; }
-        public string UsuarioRf { get; }
     }
 }

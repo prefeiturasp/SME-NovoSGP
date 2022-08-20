@@ -34,6 +34,11 @@ namespace SME.SGP.Dominio.Servicos
         public async Task ExcluirFisicamenteAsync(long[] ids)
         {
             await repositorioNotificacao.ExcluirPorIdsAsync(ids);
+
+            foreach(var id in ids)
+            {
+                await mediator.Send(new NotificarExclusaoNotificacaoCommand());
+            }
         }
 
         public void GeraNovoCodigo(Notificacao notificacao)
