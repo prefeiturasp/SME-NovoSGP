@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -78,10 +79,10 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
-        public void Salvar(NotificacaoDto notificacaoDto)
+        public Task Salvar(NotificacaoDto notificacaoDto)
         {
             var notificacao = MapearParaDominio(notificacaoDto);
-            servicoNotificacao.Salvar(notificacao);
+            return servicoNotificacao.SalvarAsync(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)

@@ -61,7 +61,6 @@ namespace SME.SGP.Dominio.Servicos
         public void Salvar(Notificacao notificacao)
         {
             GeraNovoCodigo(notificacao);
-
             repositorioNotificacao.Salvar(notificacao);
         }
 

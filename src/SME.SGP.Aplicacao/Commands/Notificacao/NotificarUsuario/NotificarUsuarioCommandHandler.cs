@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 DreId = request.DreCodigo,
                 UeId = request.UeCodigo,
                 TurmaId = request.TurmaCodigo,
-                Ano = request.Ano,
+                Ano = request.Ano > 0 ? request.Ano : DateTimeExtension.HorarioBrasilia().Year,
                 Categoria = request.Categoria,
                 Tipo = request.Tipo,
                 UsuarioId = usuarioId,

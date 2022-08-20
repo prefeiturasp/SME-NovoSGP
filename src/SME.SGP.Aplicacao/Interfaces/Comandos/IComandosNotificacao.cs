@@ -1,5 +1,6 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -9,6 +10,6 @@ namespace SME.SGP.Aplicacao
 
         List<AlteracaoStatusNotificacaoDto> MarcarComoLida(IList<long> notificacoesId);
 
-        void Salvar(NotificacaoDto notificacaoDto);
+        Task Salvar(NotificacaoDto notificacaoDto);
     }
 }
