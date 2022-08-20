@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
         public Task Salvar(NotificacaoDto notificacaoDto)
         {
             var notificacao = MapearParaDominio(notificacaoDto);
-            return servicoNotificacao.SalvarAsync(notificacao);
+            return servicoNotificacao.Salvar(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)

@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                             DreId = "",
                         };
 
-                        await servicoNotificacao.SalvarAsync(notificacao);
+                        await servicoNotificacao.Salvar(notificacao);
 
                         var notificacaoDevolutiva = new NotificacaoDevolutiva()
                         {
