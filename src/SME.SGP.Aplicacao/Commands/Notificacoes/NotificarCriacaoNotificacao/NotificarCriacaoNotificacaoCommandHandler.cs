@@ -21,8 +21,8 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value)) :
                 request.UsuarioRf;
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Notificar,
-                                                           new MensagemNotificacaoDto(request.Notificacao.Codigo,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Criacao,
+                                                           new MensagemCriacaoNotificacaoDto(request.Notificacao.Codigo,
                                                                                       request.Notificacao.Titulo,
                                                                                       request.Notificacao.CriadoEm,
                                                                                       usuarioRf)));

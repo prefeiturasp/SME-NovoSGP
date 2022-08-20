@@ -3,9 +3,9 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class MensagemNotificacaoDto
+    public class MensagemCriacaoNotificacaoDto
     {
-        public MensagemNotificacaoDto(long codigo, string titulo, DateTime data, string usuarioRf)
+        public MensagemCriacaoNotificacaoDto(long codigo, string titulo, DateTime data, string usuarioRf)
         {
             Codigo = codigo;
             Titulo = titulo;
@@ -19,7 +19,7 @@ namespace SME.SGP.Infra
         public string UsuarioRf { get; }
     }
 
-    public class MensagemNotificacaoDtoValidator : AbstractValidator<MensagemNotificacaoDto>
+    public class MensagemNotificacaoDtoValidator : AbstractValidator<MensagemCriacaoNotificacaoDto>
     {
         public MensagemNotificacaoDtoValidator()
         {
