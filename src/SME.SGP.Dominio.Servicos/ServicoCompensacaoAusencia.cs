@@ -23,7 +23,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
@@ -36,7 +35,6 @@ namespace SME.SGP.Dominio.Servicos
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
             IConsultasDisciplina consultasDisciplina,
             IUnitOfWork unitOfWork,
             IMediator mediator)
@@ -47,7 +45,6 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -395,7 +392,7 @@ namespace SME.SGP.Dominio.Servicos
                     // Exclui compensação
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
                     // Excluir notificações
-                    repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoExcluir.Id);
+                    await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
 
                     unitOfWork.PersistirTransacao();
 

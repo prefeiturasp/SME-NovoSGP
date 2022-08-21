@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
     {
         List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId);
 
-        List<AlteracaoStatusNotificacaoDto> MarcarComoLida(IList<long> notificacoesId);
+        Task<List<AlteracaoStatusNotificacaoDto>> MarcarComoLida(IList<long> notificacoesId);
 
         Task Salvar(NotificacaoDto notificacaoDto);
     }

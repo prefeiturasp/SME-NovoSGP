@@ -3,20 +3,16 @@ using System;
 
 namespace SME.SGP.Infra
 {
-    public class MensagemCriacaoNotificacaoDto
+    public class MensagemCriacaoNotificacaoDto : MensagemNotificacaoDto
     {
-        public MensagemCriacaoNotificacaoDto(long codigo, string titulo, DateTime data, string usuarioRf)
+        public MensagemCriacaoNotificacaoDto(long codigo, string titulo, DateTime data, string usuarioRf) : base(codigo, usuarioRf)
         {
-            Codigo = codigo;
             Titulo = titulo;
             Data = data;
-            UsuarioRf = usuarioRf;
         }
 
-        public long Codigo { get; }
         public string Titulo { get; }
         public DateTime Data { get; }
-        public string UsuarioRf { get; }
     }
 
     public class MensagemNotificacaoDtoValidator : AbstractValidator<MensagemCriacaoNotificacaoDto>

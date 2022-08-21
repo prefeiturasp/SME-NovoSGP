@@ -56,9 +56,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status/lida")]
         [Permissao(Permissao.N_A, Policy = "Bearer")]
-        public IActionResult MarcarComoLida(IList<long> notificaoesId)
+        public async Task<IActionResult> MarcarComoLida(IList<long> notificaoesId)
         {
-            return Ok(comandosNotificacao.MarcarComoLida(notificaoesId));
+            return Ok(await comandosNotificacao.MarcarComoLida(notificaoesId));
         }
 
         [HttpGet]
