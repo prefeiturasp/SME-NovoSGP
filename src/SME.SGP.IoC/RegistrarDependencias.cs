@@ -139,7 +139,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPeriodoFechamento, ComandosPeriodoFechamento>();
             services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScoped<IComandosFechamentoNota, ComandosFechamentoNota>();
-            services.TryAddScoped<IComandosNotificacaoAula, ComandosNotificacaoAula>();
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();

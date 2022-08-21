@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
                     repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
-                    repositorioNotificacao.Remover(notificacao);
+                    await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }
 
