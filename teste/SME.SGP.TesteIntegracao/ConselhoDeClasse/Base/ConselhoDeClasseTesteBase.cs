@@ -23,32 +23,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public abstract class ConselhoDeClasseTesteBase : TesteBaseComuns
     {
-        protected const long AULA_ID_1 = 1;
-
-        protected const string TIPO_FREQUENCIA_COMPARECEU = "C";
-        protected const string TIPO_FREQUENCIA_FALTOU = "F";
-        protected const string TIPO_FREQUENCIA_REMOTO = "R";
-
-        protected const string CODIGO_ALUNO_99999 = "99999";
-
         protected const string ALUNO_CODIGO_1 = "1";
         protected const string ALUNO_CODIGO_2 = "2";
         protected const string ALUNO_CODIGO_3 = "3";
         protected const string ALUNO_CODIGO_4 = "4";
 
-        protected const double NOTA_1 = 1;
-        protected const double NOTA_2 = 2;
-        protected const double NOTA_3 = 3;
         protected const double NOTA_4 = 4;
-        protected const double NOTA_5 = 5;
         protected const double NOTA_6 = 6;
-        protected const double NOTA_7 = 7;
         protected const double NOTA_8 = 8;
         protected const double NOTA_9 = 9;
-        protected const double NOTA_10 = 10;
 
-        protected const string NOTA = "NOTA";
-        protected const string CONCEITO = "CONCEITO";
+        private const string NOTA = "NOTA";
+        private const string CONCEITO = "CONCEITO";
 
         protected const int CONSELHO_CLASSE_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_1 = 1;
@@ -56,7 +42,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const int FECHAMENTO_TURMA_ID_3 = 3;
         protected const int FECHAMENTO_TURMA_ID_4 = 4;
         protected const int FECHAMENTO_TURMA_ID_5 = 5;
-        protected const int CONSELHO_CLASSE_ALUNO_ID_1 = 1;
         protected const string JUSTIFICATIVA = "Nota pós conselho";
         private const string COMPONENTE_CURRICULAR_GRUPO_AREA_ORDENACAO = "componente_curricular_grupo_area_ordenacao";
 
@@ -68,44 +53,25 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasTurmasEolQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasTurmasEolQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>),
+                typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>),
+                typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosPorTurmaQueryHandlerComRegistroFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasTurmasEolQuery, IEnumerable<DisciplinaResposta>>),
+                typeof(ObterDisciplinasTurmasEolQueryHandlerFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task ExecutarTeste(FiltroConselhoClasseDto filtroConselhoClasseDto)
-        {
-            await ExecutarTeste(filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto,
-                filtroConselhoClasseDto.ConsiderarAnoAnterior,
-                filtroConselhoClasseDto.TipoNota,
-                filtroConselhoClasseDto.SituacaoConselho);
-        }
-
-        protected async Task ExecutarTesteSemValidacao(FiltroConselhoClasseDto filtroConselhoClasseDto,
-                                                       bool anoAnterior,
-                                                       TipoNota tipoNota,
-                                                       SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento)
-        {
-            var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            
-            await comando.Executar(filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto);
-            
-            var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
-            
-            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(filtroConselhoClasseDto.AlunoCodigo, 
-                TURMA_ID_1, 
-                filtroConselhoClasseDto.BimestreConselhoClasse == 0 ? null : filtroConselhoClasseDto.BimestreConselhoClasse, 
-                false,
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota, 
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
-            
-            await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
-        }
-        
         protected async Task ExecutarTesteSemValidacao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
         {
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
@@ -122,25 +88,25 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota, 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
-            
+
+            consolidacaoAluno.ShouldNotBeNull();
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
 
-        protected async Task<NegocioException> ValidarTesteComExcecao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
+        protected async Task ValidarTesteComExcecao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
         {
             var salvarConselhoClasseAlunoNotaUseCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            return await Assert.ThrowsAsync<NegocioException>(async () => await salvarConselhoClasseAlunoNotaUseCase.Executar(salvarConselhoClasseAlunoNotaDto));
+            await Assert.ThrowsAsync<NegocioException>(async () => await salvarConselhoClasseAlunoNotaUseCase.Executar(salvarConselhoClasseAlunoNotaDto));
         }
 
         protected async Task ExecutarTeste(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto,
-                                    bool anoAnterior,
-                                    TipoNota tipoNota,
-                                    SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
-                                    bool ehPerfilGestor = false)
+            bool anoAnterior, TipoNota tipoNota, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
+            bool ehPerfilGestor = false)
         {
             var ehBimestreFinal = salvarConselhoClasseAlunoNotaDto.Bimestre == 0;
 
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
+            comando.ShouldNotBeNull();
 
             var dtoRetorno = await comando.Executar(salvarConselhoClasseAlunoNotaDto);
             dtoRetorno.ShouldNotBeNull();
@@ -148,11 +114,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
 
-            var situacaoConselhoClasseInserida = ehBimestreFinal
-                                    ? conselhosClasse.LastOrDefault()
-                                    : conselhosClasse.FirstOrDefault();
+            var situacaoConselhoClasseInserida = ehBimestreFinal ? conselhosClasse.LastOrDefault() : conselhosClasse.FirstOrDefault();
+            situacaoConselhoClasseInserida.ShouldNotBeNull();
 
-            (conselhosClasse.FirstOrDefault().Situacao == situacaoConselhoClasse).ShouldBeTrue();
+            (conselhosClasse.FirstOrDefault()?.Situacao == situacaoConselhoClasse).ShouldBeTrue();
 
             var conselhosDeClasseAlunos = ObterTodos<ConselhoClasseAluno>();
             conselhosDeClasseAlunos.ShouldNotBeNull();
@@ -162,13 +127,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             else
                 conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
             
-            var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
+            var conselhoClasseAlunoInserido = (conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id)).ToList();
             conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
 
             var conselhosClasseNotas = ObterTodos<ConselhoClasseNota>();
             conselhosClasseNotas.ShouldNotBeNull();
 
-            var classeNota = conselhosClasseNotas.LastOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoInserido.FirstOrDefault().Id);
+            var classeNota = conselhosClasseNotas.LastOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoInserido.FirstOrDefault()?.Id);
             
             classeNota.ShouldNotBeNull();
             classeNota.Justificativa.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Justificativa);                
@@ -188,8 +153,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 if (tipoNota == TipoNota.Nota)
                     aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
                 else
-                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);                   
-               
+                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito); 
             }
             else
             {
@@ -200,6 +164,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
 
             var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
+            consolidacaoAluno.ShouldNotBeNull();
 
             var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(salvarConselhoClasseAlunoNotaDto.CodigoAluno,
                 TURMA_ID_1,
@@ -215,7 +180,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             alunosConsolidacao.ShouldNotBeNull();
             
             var alunoConsolidado = alunosConsolidacao.LastOrDefault(nota =>
-                    nota.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno));
+                nota.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno));
 
             alunoConsolidado.ShouldNotBeNull();
             (alunoConsolidado.Status == situacaoConselhoClasse).ShouldBeTrue();
@@ -228,8 +193,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             if (tipoNota == TipoNota.Nota)
             {
-                var atual = notaConsolidacao.Nota;
-                (salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota == atual).ShouldBeTrue();
+                var atual = notaConsolidacao.Nota.GetValueOrDefault();
+                var nota = salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota.GetValueOrDefault(); 
+                nota.Equals(atual).ShouldBeTrue();
             }
             else
             {
@@ -252,7 +218,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             if (filtroConselhoClasse.CriarPeriodoReabertura)
                 await CriarPeriodoReaberturaCustomizadoQuartoBimestre(filtroConselhoClasse.TipoCalendarioId, filtroConselhoClasse.ConsiderarAnoAnterior);
-
         }
         
         protected async Task CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(FiltroConselhoClasseDto filtroConselhoClasse)
@@ -370,7 +335,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         protected IEnumerable<long> ObterComponentesCurriculares()
         {
-            return new List<long>()
+            return new List<long>
             {
                 long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
                 long.Parse(COMPONENTE_HISTORIA_ID_7),
@@ -422,6 +387,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            
             await InserirNaBase(new Dominio.ConselhoClasseRecomendacao()
             {
                 Recomendacao = "Recomendação familia",
@@ -468,8 +434,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private List<string> ObterAlunos()
         {
-            return new List<string>()
-                { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5 };
+            return new List<string> { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5 };
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroConselhoClasseDto filtroConselhoClasse)
@@ -622,7 +587,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarCiclo()
+        private async Task CriarCiclo()
         {
             await InserirNaBase(new Ciclo()
             {
@@ -808,7 +773,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarAbrangencia(string perfil)
+        private async Task CriarAbrangencia(string perfil)
         {
             await InserirNaBase(new Abrangencia()
             {
@@ -958,19 +923,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarPeriodoEscolarEAbertura()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
-        }
-
         protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             if (filtroConselhoClasseDto.Modalidade == Modalidade.EJA)
@@ -1050,42 +1002,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });  
         }
 
-        private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
-        {
-            if (componenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                    Descricao = COMPONENTE_CURRICULAR_PORTUGUES_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
-                    Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
-                    Descricao = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
-                    Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
-                };
-
-            return null;
-        }
-
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, tipoAula));
         }
 
-        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
+        private static Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
             return new Dominio.Aula
             {
@@ -1104,24 +1026,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Excluido = false,
                 Migrado = false
             };
-        }
-
-        protected async Task CriarPeriodoEscolarEAberturaPadrao()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
-        }
-
-        protected async Task CriarMotivosAusencias(string descricao)
-        {
-            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
         protected async Task CriarPeriodoReaberturaCustomizadoQuartoBimestre(long tipoCalendarioId, bool considerarAnoAnterior = false)
@@ -1174,7 +1078,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriaConceito()
+        private async Task CriaConceito()
         {
             await InserirNaBase(new Conceito()
             {
@@ -1216,17 +1120,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected static ConselhoClasseNotaDto ObterFiltroConselhoClasseNotaDto(double? nota, long? conceito, string justificavtiva, long codigoComponenteCurricular)
-        {
-            return new ConselhoClasseNotaDto()
-            {
-                CodigoComponenteCurricular = codigoComponenteCurricular,
-                Conceito = conceito,
-                Nota = nota,
-                Justificativa = justificavtiva
-            };
-        }
-
         protected async Task CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                                                                TipoNota tipoNota = TipoNota.Nota, 
                                                                bool gerarConselhoBimestreFinal = false)
@@ -1250,14 +1143,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
+        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
             TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
             return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
         }
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
+        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
         {
             return new SalvarConselhoClasseAlunoNotaDto
@@ -1273,73 +1166,73 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         
         private async Task CriarConselhoClasseParecerAno()
         {
-            await InserirNaBase(new ConselhoClasseParecer()
+            await InserirNaBase(new ConselhoClasseParecer
             {
                 Nome = "Promovido", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecer()
+            await InserirNaBase(new ConselhoClasseParecer
             {
                 Nome = "Promovido pelo conselho", Aprovado = true, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecer()
+            await InserirNaBase(new ConselhoClasseParecer
             {
                 Nome = "Continuidade dos estudos", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecer()
+            await InserirNaBase(new ConselhoClasseParecer
             {
                 Nome = "Retido", Aprovado = false, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecer()
+            await InserirNaBase(new ConselhoClasseParecer
             {
                 Nome = "Retido por frequência", Aprovado = false, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
 
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 3, AnoTurma = 1, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 3, AnoTurma = 1, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 3, AnoTurma = 2, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 3, AnoTurma = 4, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 3, AnoTurma = 5, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 5, AnoTurma = 1, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             
-            await InserirNaBase(new ConselhoClasseParecerAno()
+            await InserirNaBase(new ConselhoClasseParecerAno
             {
                 ParecerId = 5, AnoTurma = 1, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
@@ -1651,7 +1544,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        private ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota)
+        private static ConselhoClasseNotaDto ObterConselhoClasseNotaDto(long componenteCurricular, TipoNota tipoNota)
         {
             return new ConselhoClasseNotaDto()
             {
@@ -1694,10 +1587,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public bool CriarConselhoClasseFinal { get; set; }
             public double? NotaFixa { get; set; }
             public int? ConceitoFixo { get; set; }
-            public SituacaoConselhoClasse SituacaoConselho { get; set; }
-            public string AlunoCodigo { get; set; }
-            public int BimestreConselhoClasse { get; set; }
-            public SalvarConselhoClasseAlunoNotaDto SalvarConselhoClasseAlunoNotaDto { get; set; }
             public bool CriarPeriodoReabertura { get; set; }
         }
     }
