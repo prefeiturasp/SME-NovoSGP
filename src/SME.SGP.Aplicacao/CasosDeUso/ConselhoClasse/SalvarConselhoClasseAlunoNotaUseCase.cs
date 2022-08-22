@@ -10,6 +10,8 @@ namespace SME.SGP.Aplicacao
     public class SalvarConselhoClasseAlunoNotaUseCase : ISalvarConselhoClasseAlunoNotaUseCase
     {
         private readonly IMediator mediator;
+        private const int BIMESTRE_2 = 2;
+        private const int BIMESTRE_4 = 4;
 
         public SalvarConselhoClasseAlunoNotaUseCase(IMediator mediator)
         {
@@ -71,7 +73,7 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ValidarAtribuicaoUsuario(dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, turma.Id.ToString(), periodoEscolar.PeriodoFim, usuario);
+            await ValidarAtribuicaoUsuario(dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, turma, periodoEscolar.PeriodoFim, usuario);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
@@ -80,9 +82,15 @@ namespace SME.SGP.Aplicacao
                 dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre, usuario));
         }
 
-        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, string turmaId, DateTime dataAula, Usuario usuarioLogado)
+        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, Turma turma, DateTime dataAula, Usuario usuarioLogado)
         {
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turmaId, dataAula, usuarioLogado));
+            if (dataAula == DateTime.MinValue)
+            {
+                var periodoEscolar4Bimestre =  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4));
+                dataAula = periodoEscolar4Bimestre.PeriodoFim;
+            }
+            
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turma.Id.ToString(), dataAula, usuarioLogado));
             if (!usuarioPossuiAtribuicaoNaTurmaNaData)
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
         }

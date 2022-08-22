@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarFechamentoTurmaDisciplinaAlunoNota(obterFiltroConselhoClasse);
 
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse.TipoCalendarioId);
+            await CriarPeriodoReabertura(obterFiltroConselhoClasse.TipoCalendarioId);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
             
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(obterFiltroConselhoClasse.TipoCalendarioId);
+            await CriarPeriodoReabertura(obterFiltroConselhoClasse.TipoCalendarioId);
 
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, false,TipoNota.Nota);
         }

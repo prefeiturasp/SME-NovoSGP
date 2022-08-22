@@ -117,7 +117,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);
         }
 
-        private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, int bimestre, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
+        private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, int bimestre, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false, bool criarPeriodoReabertura = true)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
@@ -133,7 +133,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ConsiderarAnoAnterior = anoAnterior,
                 DataAula = dataAula,
                 CriarFechamentoDisciplinaAlunoNota = criarFechamentoDisciplinaAlunoNota,
-                SituacaoConselhoClasse = situacaoConselhoClasse
+                SituacaoConselhoClasse = situacaoConselhoClasse,
+                CriarPeriodoReabertura = criarPeriodoReabertura
             };
 
             await CriarDadosBase(filtroNota);

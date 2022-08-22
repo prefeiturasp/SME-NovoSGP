@@ -251,7 +251,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 await CriarPeriodoAberturaCustomizadoQuartoBimestre();
             
             if (filtroConselhoClasse.CriarPeriodoReabertura)
-                await CriarPeriodoReaberturaCustomizadoQuartoBimestre(filtroConselhoClasse.TipoCalendarioId, filtroConselhoClasse.ConsiderarAnoAnterior);
+                await CriarPeriodoReabertura(filtroConselhoClasse.TipoCalendarioId, filtroConselhoClasse.ConsiderarAnoAnterior);
 
         }
         
@@ -968,7 +968,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -1116,7 +1116,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
 
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarMotivosAusencias(string descricao)
@@ -1124,7 +1124,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
-        protected async Task CriarPeriodoReaberturaCustomizadoQuartoBimestre(long tipoCalendarioId, bool considerarAnoAnterior = false)
+        protected async Task CriarPeriodoReabertura(long tipoCalendarioId, bool considerarAnoAnterior = false)
         {
             await InserirNaBase(new FechamentoReabertura()
             {
@@ -1698,7 +1698,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public string AlunoCodigo { get; set; }
             public int BimestreConselhoClasse { get; set; }
             public SalvarConselhoClasseAlunoNotaDto SalvarConselhoClasseAlunoNotaDto { get; set; }
-            public bool CriarPeriodoReabertura { get; set; }
+            public bool CriarPeriodoReabertura { get; set; } = true;
         }
     }
 }
