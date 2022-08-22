@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,30 +8,34 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
+using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
-    public class Ao_listar_estudantes : ConselhoDeClasseTesteBase
+    public class Ao_validar_informacoes_card_aluno : ConselhoDeClasseTesteBase
     {
-        public Ao_listar_estudantes(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_validar_informacoes_card_aluno(CollectionFixture collectionFixture): base(collectionFixture)
         {
+            
         }
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+
         }
 
         [Fact]
-        public async Task Deve_ser_carregado_em_ordem_alfabetica()
+        public async Task Deve_retornar_lista_com_alunos_e_seus_dados()
         {
-            await CriarDadosBase(new FiltroConselhoClasseDto
+            await CriarDadosBase(new FiltroConselhoClasseDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Medio,
@@ -48,13 +52,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             var turmas = ObterTodos<Turma>();
             var turma = turmas.FirstOrDefault(c => c.CodigoTurma == TURMA_CODIGO_1);
+            
+            var obterDadosAlunos = await consulta!.ObterDadosAlunos(turma.CodigoTurma, turma.AnoLetivo, turma.Semestre);
+            
+            
+            obterDadosAlunos.ShouldNotBeNull();
+            obterDadosAlunos.ShouldNotBeNull().Any();
+            obterDadosAlunos.FirstOrDefault().Nome.ShouldNotBeNull();
+            obterDadosAlunos.FirstOrDefault().CodigoEOL.ShouldNotBeNull();
+            obterDadosAlunos.FirstOrDefault().NomeResponsavel.ShouldNotBeNull();
 
-            turma.ShouldNotBeNull();
-
-            var alunos = (await consulta.ObterDadosAlunos(turma.CodigoTurma, turma.AnoLetivo, turma.Semestre)).ToList();
-            var alunosOrdenados = alunos.OrderBy(c => c.Nome);
-
-            alunosOrdenados.SequenceEqual(alunos).ShouldBeTrue();
         }
     }
 }

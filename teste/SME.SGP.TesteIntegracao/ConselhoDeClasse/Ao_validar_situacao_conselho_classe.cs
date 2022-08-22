@@ -148,7 +148,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             bool criarConselhoClasseFinal
         )
         {            
-            var filtroNota = new FiltroNotasDto
+            var filtroNota = new FiltroConselhoClasseDto
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = modalidade,

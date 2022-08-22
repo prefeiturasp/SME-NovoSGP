@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MediatR;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,6 +15,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
+        private const int BIMESTRE_4 = 4;
 
         public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                            IConsultasConselhoClasse consultasConselhoClasse,
@@ -26,6 +28,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
+
+            var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue
+                ? fechamentoTurma.PeriodoEscolar.Bimestre
+                : BIMESTRE_4;
+            
+            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, DateTime.Today, bimestre, fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year));
+            
+            if (!periodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+            
             var conselhoClasseAluno = await MapearParaEntidade(conselhoClasseAlunoDto);
             
             conselhoClasseAluno.Id = await mediator.Send(new SalvarConselhoClasseAlunoCommand(conselhoClasseAluno));
