@@ -10,7 +10,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
+namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
     public class Ao_lancar_periodo_abertura_reabertura : ConselhoDeClasseTesteBase
     {
