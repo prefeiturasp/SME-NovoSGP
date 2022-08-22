@@ -33,8 +33,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         protected const double NOTA_8 = 8;
         protected const double NOTA_9 = 9;
 
-        protected const string NOTA = "NOTA";
-        protected const string CONCEITO = "CONCEITO";
+        private const string NOTA = "NOTA";
+        private const string CONCEITO = "CONCEITO";
 
         protected const int CONSELHO_CLASSE_ID_1 = 1;
         protected const int FECHAMENTO_TURMA_ID_1 = 1;
@@ -93,10 +93,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
 
-        protected async Task<NegocioException> ValidarTesteComExcecao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
+        protected async Task ValidarTesteComExcecao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
         {
             var salvarConselhoClasseAlunoNotaUseCase = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            return await Assert.ThrowsAsync<NegocioException>(async () => await salvarConselhoClasseAlunoNotaUseCase.Executar(salvarConselhoClasseAlunoNotaDto));
+            await Assert.ThrowsAsync<NegocioException>(async () => await salvarConselhoClasseAlunoNotaUseCase.Executar(salvarConselhoClasseAlunoNotaDto));
         }
 
         protected async Task ExecutarTeste(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto,
@@ -335,7 +335,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         protected IEnumerable<long> ObterComponentesCurriculares()
         {
-            return new List<long>()
+            return new List<long>
             {
                 long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
                 long.Parse(COMPONENTE_HISTORIA_ID_7),
@@ -434,8 +434,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
         private List<string> ObterAlunos()
         {
-            return new List<string>()
-                { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5 };
+            return new List<string> { ALUNO_CODIGO_1, ALUNO_CODIGO_2, ALUNO_CODIGO_3, ALUNO_CODIGO_4, ALUNO_CODIGO_5 };
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroConselhoClasseDto filtroConselhoClasse)
@@ -588,7 +587,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarCiclo()
+        private async Task CriarCiclo()
         {
             await InserirNaBase(new Ciclo()
             {
@@ -774,7 +773,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarAbrangencia(string perfil)
+        private async Task CriarAbrangencia(string perfil)
         {
             await InserirNaBase(new Abrangencia()
             {
@@ -924,19 +923,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriarPeriodoEscolarEAbertura()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
-        }
-
         protected async Task CriarPeriodoEscolar(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             if (filtroConselhoClasseDto.Modalidade == Modalidade.EJA)
@@ -1016,42 +1002,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });  
         }
 
-        private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
-        {
-            if (componenteCurricularId == COMPONENTE_CURRICULAR_PORTUGUES_ID_138)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                    Descricao = COMPONENTE_CURRICULAR_PORTUGUES_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999.ToString(),
-                    Descricao = COMPONENTE_CURRICULAR_DESCONHECIDO_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(),
-                    Descricao = COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME
-                };
-            else if (componenteCurricularId == COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113)
-                return new ComponenteCurricularDto()
-                {
-                    Codigo = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113.ToString(),
-                    Descricao = COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME
-                };
-
-            return null;
-        }
-
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf, tipoAula));
         }
 
-        private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
+        private static Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222, TipoAula tipoAula = TipoAula.Normal)
         {
             return new Dominio.Aula
             {
@@ -1070,24 +1026,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Excluido = false,
                 Migrado = false
             };
-        }
-
-        protected async Task CriarPeriodoEscolarEAberturaPadrao()
-        {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-
-            await CriarPeriodoReaberturaCustomizadoQuartoBimestre(TIPO_CALENDARIO_1);
-        }
-
-        protected async Task CriarMotivosAusencias(string descricao)
-        {
-            await InserirNaBase(new MotivoAusencia() { Descricao = descricao });
         }
 
         protected async Task CriarPeriodoReaberturaCustomizadoQuartoBimestre(long tipoCalendarioId, bool considerarAnoAnterior = false)
@@ -1140,7 +1078,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected async Task CriaConceito()
+        private async Task CriaConceito()
         {
             await InserirNaBase(new Conceito()
             {
@@ -1182,17 +1120,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             });
         }
 
-        protected static ConselhoClasseNotaDto ObterFiltroConselhoClasseNotaDto(double? nota, long? conceito, string justificavtiva, long codigoComponenteCurricular)
-        {
-            return new ConselhoClasseNotaDto()
-            {
-                CodigoComponenteCurricular = codigoComponenteCurricular,
-                Conceito = conceito,
-                Nota = nota,
-                Justificativa = justificavtiva
-            };
-        }
-
         protected async Task CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                                                                TipoNota tipoNota = TipoNota.Nota, 
                                                                bool gerarConselhoBimestreFinal = false)
@@ -1216,14 +1143,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             }
         }
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
+        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
             TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
             return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
         }
         
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
+        protected static SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
         {
             return new SalvarConselhoClasseAlunoNotaDto
@@ -1648,9 +1575,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public ModalidadeTipoCalendario TipoCalendario { get; set; }
             public int Bimestre { get; set; }
             public string ComponenteCurricular { get; set; }
-            public long TipoCalendarioId { get; }
-            public bool CriarPeriodoEscolar { get; }
-            public bool CriarPeriodoAbertura { get; }
+            public long TipoCalendarioId { get; set; }
+            public bool CriarPeriodoEscolar { get; set; }
+            public bool CriarPeriodoAbertura { get; set; }
             public TipoNota TipoNota { get; set; }
             public string AnoTurma { get; set; }
             public bool ConsiderarAnoAnterior { get; set; }
@@ -1660,10 +1587,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             public bool CriarConselhoClasseFinal { get; set; }
             public double? NotaFixa { get; set; }
             public int? ConceitoFixo { get; set; }
-            public SituacaoConselhoClasse SituacaoConselho { get; set; }
-            public string AlunoCodigo { get; set; }
-            public int BimestreConselhoClasse { get; set; }
-            public SalvarConselhoClasseAlunoNotaDto SalvarConselhoClasseAlunoNotaDto { get; set; }
             public bool CriarPeriodoReabertura { get; set; }
         }
     }
