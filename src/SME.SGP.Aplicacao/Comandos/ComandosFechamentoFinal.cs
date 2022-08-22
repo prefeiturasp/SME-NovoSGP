@@ -71,6 +71,9 @@ namespace SME.SGP.Aplicacao
 
             var retornoCacheMapeado = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamento nota final");
 
+            if (retornoCacheMapeado == null)
+                return;
+
             foreach (var fechamentoFinal in fechamentoFinalSalvar.Itens)
             {
                 var cacheAluno = retornoCacheMapeado.FirstOrDefault(c => c.AlunoCodigo == fechamentoFinal.AlunoRf);
