@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery : IRequest<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>
     {
-        public ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(long[] ids,string alunoCodigo)
+        public ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(long[] ids, string alunoCodigo)
         {
             Ids = ids;
             AlunoCodigo = alunoCodigo;

@@ -36,9 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             if (componenteCurricularId != null)
                 query += @"  and ccn.componente_curricular_codigo = @componenteCurricularId";
 
-
-
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo , componenteCurricularId });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { conselhoClasseId, alunoCodigo, componenteCurricularId });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoAsync(string alunoCodigo, string turmaCodigo, long? periodoEscolarId = null)
