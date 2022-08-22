@@ -15,13 +15,13 @@ namespace SME.SGP.Aplicacao
     public class ObterFechamentoPorTurmaPeriodoCCQueryHandler : IRequestHandler<ObterFechamentosPorTurmaPeriodoCCQuery, IEnumerable<FechamentoPorTurmaPeriodoCCDto>>
     {
         private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma;
-        private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
         public ObterFechamentoPorTurmaPeriodoCCQueryHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,
-            IMediator mediator)
+            IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         private static async Task<List<FechamentoPorTurmaPeriodoCCDto>> MapearDadosDbParaCache(IEnumerable<FechamentoTurmaDisciplina> dadosBd)
@@ -74,25 +74,15 @@ namespace SME.SGP.Aplicacao
 
             return await Task.FromResult(dadosCache);
         }
-        
-        private static async Task<List<FechamentoPorTurmaPeriodoCCDto>> MapearDadosCacheParaRetorno(string dadosCache)
-        {
-            if (string.IsNullOrEmpty(dadosCache))
-                return null;
-
-            return await Task.FromResult(JsonConvert.DeserializeObject<List<FechamentoPorTurmaPeriodoCCDto>>(dadosCache));
-        }        
 
         public async Task<IEnumerable<FechamentoPorTurmaPeriodoCCDto>> Handle(ObterFechamentosPorTurmaPeriodoCCQuery request, CancellationToken cancellationToken)
         {
             var nomeChave = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                 request.TurmaId, request.PeriodoEscolarId, request.ComponenteCurricularId);
 
-            var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChave,
-                "Obter fechamento por turma, período e conselho de classe"), cancellationToken);
-
-            var retornoCache = await MapearDadosCacheParaRetorno(dadosCache);
-
+            var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoPorTurmaPeriodoCCDto>>(nomeChave,
+                "Obter fechamento por turma, período e conselho de classe");
+            
             if (retornoCache != null) 
                 return retornoCache;
             
@@ -100,7 +90,7 @@ namespace SME.SGP.Aplicacao
                 request.PeriodoEscolarId, request.ComponenteCurricularId);
 
             var retornoDb = await MapearDadosDbParaCache(dadosBd);
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChave, retornoDb), cancellationToken);
+            await repositorioCache.SalvarAsync(nomeChave, retornoDb);
 
             return retornoDb;
         }
