@@ -1,9 +1,11 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -38,16 +40,23 @@ namespace SME.SGP.Aplicacao
         {
             var arquivos = new List<ArquivoDto>();
 
-            foreach(var miniatura in miniaturas)
+            try
             {
-                var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
-
-                arquivos.Add(new ArquivoDto()
+                foreach(var miniatura in miniaturas)
                 {
-                    Codigo = miniatura.CodigoFotoOriginal,
-                    Nome = miniatura.Nome,
-                    Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
-                });
+                    var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
+
+                    arquivos.Add(new ArquivoDto()
+                    {
+                        Codigo = miniatura.CodigoFotoOriginal,
+                        Nome = miniatura.Nome,
+                        Download = (arquivoFisico, miniatura.TipoConteudo, miniatura.Nome)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Falha ao carregar miniaturas das fotos do aluno", ex);
             }
 
             return arquivos;
