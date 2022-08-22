@@ -51,6 +51,9 @@ namespace SME.SGP.Aplicacao
                         }
                 }
 
+                if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && SituacaoAtivaPlanoAEE(entidadePlano))
+                    anoLetivo = entidadePlano.Turma.AnoLetivo;
+
                 var alunoPorTurmaResposta = await mediator
                     .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false, entidadePlano.Turma?.CodigoTurma));
 
@@ -144,6 +147,13 @@ namespace SME.SGP.Aplicacao
 
 
             return plano;
+        }
+
+        private bool SituacaoAtivaPlanoAEE(PlanoAEE entidadePlano)
+        {
+            return entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado 
+                || entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente 
+                || entidadePlano.Situacao != SituacaoPlanoAEE.Expirado;
         }
 
         private string ObterNomeTurmaFormatado(Turma turma)
