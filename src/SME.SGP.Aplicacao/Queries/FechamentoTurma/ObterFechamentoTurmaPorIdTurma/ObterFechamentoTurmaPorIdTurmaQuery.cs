@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaPorIdTurmaQuery : IRequest<FechamentoTurma>
     {
-        public ObterFechamentoTurmaPorIdTurmaQuery(long turmaId,int? bimestre = 0)
+        public ObterFechamentoTurmaPorIdTurmaQuery(long turmaId, int? bimestre = 0)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;

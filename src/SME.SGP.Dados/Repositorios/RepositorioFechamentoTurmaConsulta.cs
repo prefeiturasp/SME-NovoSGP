@@ -171,6 +171,6 @@ namespace SME.SGP.Dados.Repositorios
                           and pe.bimestre = @bimestre ";
 
             return database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaPeriodoEscolarDto>(query, new { turmaId, bimestre });
-        }
+        }       
     }
 }
