@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                     if (turma == null)
                         throw new NegocioException($"Não foi possível localizar a turma {atribuicaoCJ.TurmaId} da abrangência.");
 
-                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = turma.Historica } };
+                    var abrangencias = new Abrangencia[] { new Abrangencia() { Perfil = perfil, TurmaId = turma.Id, Historico = ehHistorico } };
 
                     repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
