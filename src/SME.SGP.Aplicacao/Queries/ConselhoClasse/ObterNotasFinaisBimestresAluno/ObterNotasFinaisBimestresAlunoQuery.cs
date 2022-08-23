@@ -7,13 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFinaisBimestresAlunoQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int bimestre = 0)
+        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int bimestre = 0, bool validaMatricula = true)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
             DataMatricula = dataMatricula;
             DataSituacao = dataSituacao;
+            ValidaMatricula = validaMatricula;
         }
 
         public string[] TurmasCodigos { get; set; }
@@ -21,5 +22,6 @@ namespace SME.SGP.Aplicacao
         public int Bimestre { get; set; }
         public DateTime? DataMatricula { get; set; }
         public DateTime? DataSituacao { get; set; }
+        public bool ValidaMatricula { get; set; }
     }
 }
