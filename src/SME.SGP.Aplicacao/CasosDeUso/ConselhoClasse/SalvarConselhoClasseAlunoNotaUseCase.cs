@@ -1,8 +1,15 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -74,6 +81,16 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             await ValidarAtribuicaoUsuario(dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, turma, periodoEscolar.PeriodoFim, usuario);
+
+            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = turma.UeId });
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
+            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);
+
+            if (alunoConselho.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo)
+            {
+                if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
+                    throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_REABERTURA);
+            }
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
