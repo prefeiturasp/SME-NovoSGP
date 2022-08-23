@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    HubNotificacoes!
+    <div class="row">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+
+    <script src="signalr.min.js"></script>
+    <script>
+        let connection = null;
+
+        const _connect = function (rf) {
+            connection = new signalR.HubConnectionBuilder()
+                .withUrl(`/notificacao?usuarioRf=${rf}`, { accessTokenFactory: () => 123 })
+                .build()
+            connection.start()
+                .then(() => {
+                    connection.on("NotificacaoCriada", function (codigo, data, titulo, id) {
+                        console.log(`Mensagem Recebida [${codigo}]`)
+                        var li = document.createElement("li");
+                        document.getElementById("messagesList").appendChild(li);
+                        li.textContent = `${data}: ${codigo} - ${titulo} [${id}]`;
+                    });
+                });
+            
+        }
+
+        const _criada = (data) => connection.invoke('Criada', data).then(r => console.log(r))
+    </script>
+</body>
+</html>
