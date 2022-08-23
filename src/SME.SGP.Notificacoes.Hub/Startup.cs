@@ -41,35 +41,7 @@ namespace SME.SGP.Notificacoes.Hub
 
         private void RegistrarAutenticacao(IServiceCollection services)
         {
-            services.AddAuthentication()
-                .AddJwtBearer(CustomTokenScheme, o =>
-                {
-                    o.Events = new()
-                    {
-                        OnMessageReceived = (context) =>
-                        {
-                            var path = context.HttpContext.Request.Path;
-                            if (path.StartsWithSegments("/login"))
-                            {
-                                var usuarioRf = context.Request.Query["usuarioRf"];
-
-                                if (!string.IsNullOrWhiteSpace(usuarioRf))
-                                {
-                                    var claims = new Claim[]
-                                    {
-                                    new("usuario_rf", usuarioRf),
-                                    new("token", "token_claim"),
-                                    };
-                                    var identity = new ClaimsIdentity(claims, CustomTokenScheme);
-                                    context.Principal = new(identity);
-                                    context.Success();
-                                }
-
-                            }
-                            return Task.CompletedTask;
-                        },
-                    };
-                });
+            services.AddAuthentication();
 
             services.AddAuthorization(c =>
             {
@@ -144,16 +116,6 @@ namespace SME.SGP.Notificacoes.Hub
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<NotificacaoHub>("/notificacao");
-                endpoints.Map("/user", ctx =>
-                {
-                    ctx.Response.StatusCode = 200;
-                    return ctx.Response.WriteAsync(ctx.User?.Claims.FirstOrDefault(x => x.Type == "usuario_rf")?.Value);
-                }).RequireAuthorization("Token");
-                endpoints.Map("/login", ctx =>
-                {
-                    ctx.Response.StatusCode = 200;
-                    return ctx.Response.WriteAsync(ctx.User?.Claims.FirstOrDefault(x => x.Type == "usuario_rf")?.Value);
-                }).RequireAuthorization("Token");
             });
         }
     }
