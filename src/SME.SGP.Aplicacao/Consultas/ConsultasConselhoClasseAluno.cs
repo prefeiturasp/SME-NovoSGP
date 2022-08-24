@@ -460,7 +460,11 @@ namespace SME.SGP.Aplicacao
             var temPeriodoAberto = false;
 
             if (periodoEscolar != null)
+            {
                 temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, aluno.DataSituacao, periodoEscolar.Bimestre);
+
+                if (aluno.DataMatricula > periodoEscolar.PeriodoInicio.Date) return false;
+            }
 
             return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, temPeriodoAberto);
         }
