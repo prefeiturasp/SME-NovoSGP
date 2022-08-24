@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Notificacoes.Hub.Interface;
 using System.Threading;
 using System.Threading.Tasks;
 

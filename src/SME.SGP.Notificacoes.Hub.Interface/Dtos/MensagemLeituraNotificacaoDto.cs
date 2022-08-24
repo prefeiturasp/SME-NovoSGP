@@ -2,5 +2,11 @@
 {
     public class MensagemLeituraNotificacaoDto : MensagemNotificacaoDto
     {
+        public MensagemLeituraNotificacaoDto() { }
+        public MensagemLeituraNotificacaoDto(long codigo, string usuarioRf)
+        { 
+            Codigo = codigo;
+            UsuarioRf = usuarioRf;
+        }
     }
 }

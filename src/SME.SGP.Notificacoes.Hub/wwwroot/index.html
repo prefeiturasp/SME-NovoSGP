@@ -18,7 +18,7 @@
 
         const _connect = function (rf) {
             connection = new signalR.HubConnectionBuilder()
-                .withUrl(`/notificacao?usuarioRf=${rf}`, { accessTokenFactory: () => 123 })
+                .withUrl(`/notificacao?usuarioRf=${rf}`)//, { accessTokenFactory: () => 123 })
                 .build()
             connection.start()
                 .then(() => {

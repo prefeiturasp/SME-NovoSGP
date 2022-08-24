@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
+using SME.SGP.Notificacoes.Hub.Interface;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,10 +23,12 @@ namespace SME.SGP.Aplicacao
                 request.UsuarioRf;
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Criacao,
-                                                           new MensagemCriacaoNotificacaoDto(request.Notificacao.Codigo,
-                                                                                      request.Notificacao.Titulo,
-                                                                                      request.Notificacao.CriadoEm,
-                                                                                      usuarioRf)));
+                                                           new MensagemCriacaoNotificacaoDto(
+                                                               request.Notificacao.Id,
+                                                               request.Notificacao.Codigo,
+                                                               request.Notificacao.Titulo,
+                                                               request.Notificacao.CriadoEm,
+                                                               usuarioRf)));
         }
     }
 }
