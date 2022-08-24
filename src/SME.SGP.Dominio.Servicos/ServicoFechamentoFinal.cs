@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private const int BIMESTRE_4 = 4;
-
+        private const int BIMESTRE_2 = 2;
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
                                       IRepositorioFechamentoAluno repositorioFechamentoAluno,
@@ -62,8 +62,8 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(turma.CodigoTurma, fechamentoFinal.DisciplinaId, usuarioLogado);
 
             var mesmoAnoLetivo = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
-            
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, BIMESTRE_4, mesmoAnoLetivo)); 
+            var bimestre = turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, mesmoAnoLetivo)); 
             
             if(!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
