@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId)
+        public async Task<List<AlteracaoStatusNotificacaoDto>> Excluir(IList<long> notificacoesId)
         {
             if (notificacoesId == null)
             {
@@ -38,8 +38,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
-                    notificacao.Remover();
-                    repositorioNotificacao.Salvar(notificacao);
+                    await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                     resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' excluída com sucesso.", true));
                 }
                 catch (NegocioException nex)
