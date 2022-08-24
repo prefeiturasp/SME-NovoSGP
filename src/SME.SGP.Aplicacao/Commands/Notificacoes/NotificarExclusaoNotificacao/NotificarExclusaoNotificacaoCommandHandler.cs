@@ -18,8 +18,10 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(NotificarExclusaoNotificacaoCommand request, CancellationToken cancellationToken)
         {
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Exclusao,
-                                                           new MensagemExclusaoNotificacaoDto(request.Codigo,
-                                                                                              request.UsuarioRf)));
+                                                           new MensagemExclusaoNotificacaoDto(
+                                                               request.Codigo,
+                                                               (int)request.Status,
+                                                               request.UsuarioRf)));
         }
     }
 }

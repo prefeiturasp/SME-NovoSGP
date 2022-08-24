@@ -7,6 +7,6 @@ namespace SME.SGP.Notificacoes.Hub
     public class EventoNotificacaoExcluida : IEventoNotificacaoExcluida
     {
         public Task Enviar(IHubCallerClients clients, MensagemExclusaoNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoExcluida", mensagem.Codigo);
+            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoExcluida", mensagem.Codigo, mensagem.Status);
     }
 }

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var usuarioRf = await repositorioNotificacaoconsulta.ObterUsuarioNotificacaoPorId(request.Notificacao.Id);
 
             await repositorioNotificacao.RemoverAsync(request.Notificacao);
-            await mediator.Send(new NotificarExclusaoNotificacaoCommand(request.Notificacao.Codigo, usuarioRf));
+            await mediator.Send(new NotificarExclusaoNotificacaoCommand(request.Notificacao.Codigo, request.Notificacao.Status, usuarioRf));
         }
     }
 }

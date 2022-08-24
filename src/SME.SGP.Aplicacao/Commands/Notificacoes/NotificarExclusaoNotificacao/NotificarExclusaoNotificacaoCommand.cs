@@ -6,13 +6,15 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarExclusaoNotificacaoCommand : IRequest
     {
-        public NotificarExclusaoNotificacaoCommand(long codigo, string usuarioRf)
+        public NotificarExclusaoNotificacaoCommand(long codigo, NotificacaoStatus status,  string usuarioRf)
         {
             Codigo = codigo;
+            Status = status;
             UsuarioRf = usuarioRf;
         }
 
         public long Codigo { get; }
+        public NotificacaoStatus Status { get; }
         public string UsuarioRf { get; }
     }
 
