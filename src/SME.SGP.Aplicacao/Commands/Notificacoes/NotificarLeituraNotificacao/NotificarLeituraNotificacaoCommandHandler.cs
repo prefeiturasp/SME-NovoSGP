@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             var usuarioRf = await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value));
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Leitura,
-                                                           new MenagemLeituraNotificacaoDto(request.Notificacao.Codigo,
+                                                           new MensagemLeituraNotificacaoDto(request.Notificacao.Codigo,
                                                                                             usuarioRf)));
         }
     }
