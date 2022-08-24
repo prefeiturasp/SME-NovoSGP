@@ -21,14 +21,11 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FrequenciaAlunoSimplificadoDto>> ObterFrequenciasPorAulaId(long aulaId)
         {
             var query = @"SELECT rfa.codigo_aluno AS CodigoAluno,
-                                 rfa.numero_aula AS NumeroAula,
-                                 rfa.valor AS TipoFrequencia
-                        from registro_frequencia_aluno rfa
-                            inner join registro_frequencia rf
-                                on rfa.registro_frequencia_id = rf.id
-                        where not rfa.excluido
-                          and not rf.excluido   
-                          and rf.aula_id = @aulaId";
+                               rfa.numero_aula AS NumeroAula,
+                               rfa.valor AS TipoFrequencia
+                        FROM registro_frequencia_aluno rfa
+                        WHERE NOT rfa.excluido
+                          AND rfa.aula_id = @aulaId";
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoSimplificadoDto>(query, new { aulaId });
         }
