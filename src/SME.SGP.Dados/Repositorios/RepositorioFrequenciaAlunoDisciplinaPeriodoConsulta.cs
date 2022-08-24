@@ -314,15 +314,20 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
         {
-            const string sql = @"select 
-	                                fa.*
-                                from 
-	                                frequencia_aluno fa 
-                                where
-	                                turma_id = @codigoTurma and 
-	                                disciplina_id = @componenteCurricularId and 
-	                                tipo = @tipoFrequencia and
-	                                periodo_escolar_id = any(@periodosEscolaresIds)";
+            const string sql = @"select *
+	                                from (     
+		                                select 
+			                                    fa.*,
+			                                    row_number() over (partition by fa.codigo_aluno,fa.bimestre, fa.disciplina_id) sequencia
+			                                from 
+			                                    frequencia_aluno fa 
+		                                    where
+                                                turma_id = @codigoTurma and 
+                                                disciplina_id = @componenteCurricularId and 
+                                                tipo = @tipoFrequencia and
+                                                periodo_escolar_id = any(@periodosEscolaresIds)
+		                                )rf
+	                                where rf.sequencia = 1";
 
             var parametros = new { codigoTurma, componenteCurricularId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);

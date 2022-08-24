@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
 
                 else
-                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => componentesCurricularesProfessor.Any(c => c.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
             }
         }
 
@@ -197,6 +197,10 @@ namespace SME.SGP.Dominio
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
 
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && PossuiPerfilAD() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_AD;
+
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_AD;
@@ -311,6 +315,9 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJInfantil()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+
+        public bool PossuiPerfilAD()
+           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
 
         public bool PossuiPerfilProfessor()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
