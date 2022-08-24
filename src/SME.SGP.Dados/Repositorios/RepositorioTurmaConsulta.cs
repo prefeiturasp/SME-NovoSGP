@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
