@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.data_atualizacao,
                             t.tipo_turma,
                             t.data_inicio,
+	                        t.historica,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -138,7 +139,7 @@ namespace SME.SGP.Dados.Repositorios
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
+            }, new { turmaId }, splitOn: "UeId, DreId")).FirstOrDefault();
         }
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
@@ -706,7 +707,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
                                     where t.ano_letivo  = @anoLetivo   
-                                    and pe.periodo_inicio < @dataReferencia
+                                    and pe.periodo_inicio::data <= @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
 
