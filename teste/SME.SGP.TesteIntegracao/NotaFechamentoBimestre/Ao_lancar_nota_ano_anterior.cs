@@ -71,7 +71,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNotaBimestre.ShouldNotBeNull();
 
-            fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
+            fechamentoNotaBimestre.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => b.EmAprovacao)).ShouldBeTrue();
         }
 
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.ShouldNotBeNull();
 
-            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
         }
 
@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.ShouldNotBeNull();
 
-            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
         }
 
@@ -144,6 +144,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
                 false,
                 true);
+
+            filtroFechamentoNota.PeriodoEscolarValido = true;
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
@@ -160,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoNota.ShouldNotBeNull();
 
-            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_1)!
+            fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
                 .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();            
         }
 
@@ -196,11 +198,11 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var resultado = new NotasConceitosRetornoDto();
             
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
-            var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_1)!.Id;
-            var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoInicio.Ticks;
-            var dataFimTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_1))!.PeriodoFim.Ticks;
+            var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_3)!.Id;
+            var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_3))!.PeriodoInicio.Ticks;
+            var dataFimTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_3))!.PeriodoFim.Ticks;
 
-            var listaNotasConceitos = await ObterListaNotasConceitos(BIMESTRE_1,
+            var listaNotasConceitos = await ObterListaNotasConceitos(BIMESTRE_3,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 filtroFechamentoNota.Modalidade,
                 0,
@@ -267,7 +269,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new()
                 {
-                    Bimestre = BIMESTRE_1,
+                    Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplinaId,
                     Justificativa = "",
                     TurmaId = TURMA_CODIGO_1 ,
