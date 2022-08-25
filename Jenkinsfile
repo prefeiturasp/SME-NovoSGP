@@ -80,8 +80,8 @@ pipeline {
               dockerImage8 = docker.build(imagename8, "-f src/SME.SGP.Pendencias.Worker/Dockerfile .")
               dockerImage9 = docker.build(imagename9, "-f src/SME.SGP.Avaliacao.Worker/Dockerfile .")
               dockerImage10 = docker.build(imagename10, "-f src/SME.SGP.Auditoria.Worker/Dockerfile .")
-              dockerImage11 = docker.build(imagename10, "-f src/SME.SGP.Notificacoes.Worker/Dockerfile .")
-              dockerImage12 = docker.build(imagename10, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
+              dockerImage11 = docker.build(imagename11, "-f src/SME.SGP.Notificacoes.Worker/Dockerfile .")
+              dockerImage12 = docker.build(imagename12, "-f src/SME.SGP.Notificacoes.Hub/Dockerfile .")
 
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
               dockerImage1.push()
