@@ -108,7 +108,16 @@ namespace SME.SGP.Aplicacao
                 consolidadoTurmaAluno.Id = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
                 var consolidadoTurmaAlunoId = await repositorioConselhoClasseConsolidado.SalvarAsync(consolidadoTurmaAluno);
-                
+
+                var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, filtro.Bimestre, filtro.ComponenteCurricularId);
+                if (consolidadoNota == null) 
+                    consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota() 
+                    { 
+                        ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
+                        Bimestre = filtro.Bimestre,
+                        ComponenteCurricularId = filtro.ComponenteCurricularId
+                    };
+
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
                 if (!filtro.EhParecer)
                 {
