@@ -1,19 +1,16 @@
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Notificacoes.Hub
 {

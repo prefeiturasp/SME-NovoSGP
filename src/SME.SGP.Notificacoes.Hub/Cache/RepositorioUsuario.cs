@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Dominio.Interfaces;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Notificacoes.Hub
 {

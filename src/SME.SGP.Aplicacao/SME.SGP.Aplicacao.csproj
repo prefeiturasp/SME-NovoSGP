@@ -54,9 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dados.Cache\SME.SGP.Dados.Cache.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Consts\SME.SGP.Infra.Consts.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.Notificacoes.Hub.Interface\SME.SGP.Notificacoes.Hub.Interface.csproj" />
   </ItemGroup>
