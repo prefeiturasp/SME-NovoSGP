@@ -10,6 +10,6 @@
             Status = status;
         }
 
-        public int Status { get; }
+        public int Status { get; set; }
     }
 }

@@ -23,16 +23,27 @@
             connection.start()
                 .then(() => {
                     connection.on("NotificacaoCriada", function (codigo, data, titulo, id) {
-                        console.log(`Mensagem Recebida [${codigo}]`)
                         var li = document.createElement("li");
                         document.getElementById("messagesList").appendChild(li);
-                        li.textContent = `${data}: ${codigo} - ${titulo} [${id}]`;
+                        li.textContent = `Criada: ${data}: ${codigo} - ${titulo} [${id}]`;
+                    });
+                    connection.on("NotificacaoExcluida", function (codigo, status) {
+                        var li = document.createElement("li");
+                        document.getElementById("messagesList").appendChild(li);
+                        li.textContent = `Excluida: ${codigo} - ${status}`;
+                    });
+                    connection.on("NotificacaoLida", function (codigo, data, titulo, id) {
+                        var li = document.createElement("li");
+                        document.getElementById("messagesList").appendChild(li);
+                        li.textContent = `Lida: ${codigo}`;
                     });
                 });
             
         }
 
-        const _criada = (data) => connection.invoke('Criada', data).then(r => console.log(r))
+        const _criar = (data) => connection.invoke('Criada', data).then(r => console.log(r))
+        const _ler = (data) => connection.invoke('Lida', data).then(r => console.log(r))
+        const _excluir = (data) => connection.invoke('Excluida', data).then(r => console.log(r))
     </script>
 </body>
 </html>
