@@ -27,9 +27,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_E, Policy = "Bearer")]
-        public IActionResult Delete(long[] notificacoesId)
+        public async Task<IActionResult> Delete(long[] notificacoesId)
         {
-            return Ok(comandosNotificacao.Excluir(notificacoesId));
+            return Ok(await comandosNotificacao.Excluir(notificacoesId));
         }
 
         [HttpGet]

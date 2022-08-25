@@ -311,6 +311,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select 
                             n.id as Id,
                             n.codigo as Codigo,
+                            n.status as Status,
                             u.rf_codigo as UsuarioRf
                          from notificacao n 
                          left join usuario u on u.id = n.usuario_id

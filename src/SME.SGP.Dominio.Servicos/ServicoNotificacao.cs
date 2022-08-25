@@ -38,7 +38,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach(var notificacao in notificacoes)
             {
-                await mediator.Send(new NotificarExclusaoNotificacaoCommand(notificacao.Codigo, notificacao.UsuarioRf));
+                await mediator.Send(new NotificarExclusaoNotificacaoCommand(notificacao.Codigo, notificacao.Status, notificacao.UsuarioRf));
             }
         }
 

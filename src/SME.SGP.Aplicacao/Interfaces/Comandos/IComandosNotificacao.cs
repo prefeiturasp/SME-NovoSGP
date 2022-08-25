@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public interface IComandosNotificacao
     {
-        List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId);
+        Task<List<AlteracaoStatusNotificacaoDto>> Excluir(IList<long> notificacoesId);
 
         Task<List<AlteracaoStatusNotificacaoDto>> MarcarComoLida(IList<long> notificacoesId);
 
