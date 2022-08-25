@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.data_atualizacao,
                             t.tipo_turma,
                             t.data_inicio,
+	                        t.historica,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
