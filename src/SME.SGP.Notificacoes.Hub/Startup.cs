@@ -6,17 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra.Contexto;
-using SME.SGP.Infra.Utilitarios;
+using SME.SGP.IoC;
 
 namespace SME.SGP.Notificacoes.Hub
 {
     public class Startup
     {
-        public const string CustomCookieScheme = nameof(CustomCookieScheme);
         public const string CustomTokenScheme = nameof(CustomTokenScheme);
 
         public Startup(IConfiguration configuration)
@@ -29,9 +25,11 @@ namespace SME.SGP.Notificacoes.Hub
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            RegistrarSignalR(services);
-            RegistrarEventosNotificacao(services);
+            services.AddSignalR();
+            services.ConfigurarTelemetria(Configuration);
+            services.AddPolicies();
             RegistrarCache(services);
+            RegistrarEventosNotificacao(services);
 
             RegistrarAutenticacao(services);
         }
@@ -52,17 +50,8 @@ namespace SME.SGP.Notificacoes.Hub
 
         private void RegistrarCache(IServiceCollection services)
         {
-            services.AddOptions<RedisOptions>()
-                .Bind(Configuration.GetSection(RedisOptions.Secao), c => c.BindNonPublicProperties = true);
-            services.AddSingleton<RedisOptions>();
+            services.ConfigurarCache(Configuration);
 
-            services.AddSingleton<IRepositorioCache>(serviceProvider =>
-            {
-                var redisOptions = serviceProvider.GetService<IOptions<RedisOptions>>()?.Value;
-                var connection = new ConnectionMultiplexerSME(redisOptions);
-                return new RepositorioCacheRedis(connection, redisOptions);
-
-            });
             services.AddSingleton<IRepositorioUsuario>(serviceProvider =>
             {
                 var repositorioCache = serviceProvider.GetService<IRepositorioCache>();
@@ -79,11 +68,6 @@ namespace SME.SGP.Notificacoes.Hub
             services.TryAddScoped<IEventoNotificacaoCriada, EventoNotificacaoCriada>();
             services.TryAddScoped<IEventoNotificacaoLida, EventoNotificacaoLida>();
             services.TryAddScoped<IEventoNotificacaoExcluida, EventoNotificacaoExcluida>();
-        }
-
-        private void RegistrarSignalR(IServiceCollection services)
-        {
-            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

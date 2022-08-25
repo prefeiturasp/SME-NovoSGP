@@ -5,6 +5,8 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -18,15 +20,15 @@ namespace SME.SGP.Notificacoes.Worker
     {
         private readonly IConnection conexaoRabbit;
         private readonly IModel canalRabbit;
-        private readonly TelemetriaOptions telemetriaOptions;
+        private readonly IServicoTelemetria servicoTelemetria;
         private readonly IServiceScopeFactory serviceScopeFactory;
 
         private Dictionary<string, string> Comandos = new Dictionary<string, string>();
 
-        public WorkerRabbitNotificacao(IConnectionFactory factory, IOptions<TelemetriaOptions> telemetriaOptions, IServiceScopeFactory serviceScopeFactory)
+        public WorkerRabbitNotificacao(IConnectionFactory factory, IServicoTelemetria servicoTelemetria, IServiceScopeFactory serviceScopeFactory)
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
-            this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
 
             conexaoRabbit = factory.CreateConnection();
             canalRabbit = conexaoRabbit.CreateModel();
@@ -100,7 +102,7 @@ namespace SME.SGP.Notificacoes.Worker
             var tipoHub = typeof(INotificacaoSgpHub);
             var hubNotificacoes = scope.ServiceProvider.GetService(tipoHub);
 
-            var transacao = telemetriaOptions.Apm ? Agent.Tracer.StartTransaction(rota, "WorkerRabbitNotificacao") : null;
+            var transacao = servicoTelemetria.Iniciar(rota, "WorkerRabbitNotificacao");
             if (Comandos.ContainsKey(rota))
             {
                 try
@@ -109,14 +111,12 @@ namespace SME.SGP.Notificacoes.Worker
                     var comando = Comandos[rota];
                     var metodo = UtilMethod.ObterMetodo(tipoHub, comando);
 
-                    if (telemetriaOptions.Apm)
-                        await transacao.CaptureSpan(mensagemRabbit.Action, "RabbitMQ", async (span) =>
-                        {
-                            span.SetLabel("Mensagem", mensagem);
-                            await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit });
-                        });
-                    else
-                        await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit });
+                    await servicoTelemetria.RegistrarAsync(
+                        async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }), 
+                        "RabbitMQ", 
+                        mensagemRabbit.Action, 
+                        mensagemRabbit.Action, 
+                        mensagem);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
                 }
@@ -128,9 +128,8 @@ namespace SME.SGP.Notificacoes.Worker
                 }
                 finally
                 {
-                    transacao?.End();
+                    servicoTelemetria.Finalizar(transacao);
                 }
-
             }        
         }
 
