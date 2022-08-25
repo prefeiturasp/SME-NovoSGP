@@ -85,7 +85,17 @@ namespace SME.SGP.Aplicacao
                 var usuariosCPs = await ObterUsuariosCPs(turma);
 
                 foreach (var usuarioCP in usuariosCPs)
-                    await mediator.Send(new GerarNotificacaoCommand(DateTimeExtension.HorarioBrasilia().Year, NotificacaoCategoria.Alerta, atividadeAvaliativa.DreId, mensagemNotasConceitos, usuarioCP.Id, NotificacaoTipo.Notas, $"Alteração em Atividade Avaliativa - Turma {turma.Nome}", atividadeAvaliativa.TurmaId, atividadeAvaliativa.UeId));
+                    await mediator.Send(new NotificarUsuarioCommand(
+                        $"Alteração em Atividade Avaliativa - Turma {turma.Nome}",
+                        mensagemNotasConceitos,
+                        usuarioCP.CodigoRf,
+                        NotificacaoCategoria.Alerta,
+                        NotificacaoTipo.Notas,
+                        atividadeAvaliativa.DreId,
+                        atividadeAvaliativa.UeId,
+                        atividadeAvaliativa.TurmaId,
+                        DateTimeExtension.HorarioBrasilia().Year,
+                        usuarioId: usuarioCP.Id ));
             }
 
             return true;

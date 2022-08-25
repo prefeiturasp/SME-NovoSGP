@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
                 });
             }
 
-            repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoId);
+            await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoId));
 
             var cargos = new Cargo[] { Cargo.CP };
             if (GerarNotificacaoExtemporanea(possuirPeriodoAberto, parametroAtivo != null ? parametroAtivo.Ativo : false))

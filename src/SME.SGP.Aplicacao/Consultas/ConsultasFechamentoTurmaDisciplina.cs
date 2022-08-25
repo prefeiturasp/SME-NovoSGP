@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
             IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
-            
+
             if (disciplina.Regencia)
                 disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
             
@@ -198,6 +198,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
+
+                var exigeAprovacao = await ExigeAprovacao(turma);
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
@@ -319,7 +321,8 @@ namespace SME.SGP.Aplicacao
                                         ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
                                     };
 
-                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                                    if (exigeAprovacao)
+                                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
 
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }
@@ -359,6 +362,22 @@ namespace SME.SGP.Aplicacao
             {
                 notasConceito.EmAprovacao = false;
             }
+        }
+
+        private async Task<bool> ExigeAprovacao(Turma turma)
+        {
+            return turma.AnoLetivo < DateTime.Today.Year
+                && !(await mediator.Send(new ObterUsuarioLogadoQuery())).EhGestorEscolar()
+                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
+        }
+
+        private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
+        {
+            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
+            if (parametro == null)
+                throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
+
+            return parametro.Ativo;
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)

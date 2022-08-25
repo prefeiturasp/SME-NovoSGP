@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
             Administrador = administrador;
         }
 
-        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false, string administrador = null)
+        public MensagemRabbit(object mensagem, Guid codigoCorrelacao, string usuarioLogadoNomeCompleto, string usuarioLogadoRF, Guid? perfil, bool notificarErroUsuario = false, string administrador = null, string acao = null)
         {
             Mensagem = mensagem;
             CodigoCorrelacao = codigoCorrelacao;
@@ -25,6 +25,7 @@ namespace SME.SGP.Infra
             NotificarErroUsuario = notificarErroUsuario;
             PerfilUsuario = perfil?.ToString();
             Administrador = administrador;
+            Action = acao;
         }
 
         public MensagemRabbit(object mensagem)
