@@ -114,6 +114,7 @@ namespace SME.SGP.Aplicacao
                     { 
                         ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
                         Bimestre = filtro.Bimestre,
+                        ComponenteCurricularId = filtro.ComponenteCurricularId
                     };
 
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
