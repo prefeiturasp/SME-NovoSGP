@@ -10,9 +10,9 @@ using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.IoC
 {
-    internal static class RegistrarRabbit
+    public static class RegistrarRabbit
     {
-        internal static void ConfigurarRabbitParaLogs(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigurarRabbitParaLogs(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions<ConfiguracaoRabbitLogOptions>()
                 .Bind(configuration.GetSection(ConfiguracaoRabbitLogOptions.Secao), c => c.BindNonPublicProperties = true);
@@ -28,7 +28,7 @@ namespace SME.SGP.IoC
             services.AddSingleton<IServicoMensageriaLogs, ServicoMensageriaLogs>();
         }
 
-        internal static void ConfigurarRabbit(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigurarRabbit(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration == null)
                 return;

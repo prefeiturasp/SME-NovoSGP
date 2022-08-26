@@ -1,6 +1,8 @@
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
@@ -33,6 +35,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 
 namespace SME.SGP.IoC
@@ -1182,6 +1185,12 @@ namespace SME.SGP.IoC
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
         {
             services.ConfigurarTelemetria(configuration);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            DapperExtensionMethods.Init(servicoTelemetria);
         }
 
         public virtual void RegistrarPolicies(IServiceCollection services)

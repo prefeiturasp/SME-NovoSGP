@@ -1,11 +1,16 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Notificacoes.Hub
+namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCache : IRepositorioCache
     {
+        private readonly IServicoTelemetria servicoTelemetria;
+
         protected string NomeServicoCache { get; set; }
 
         protected virtual string ObterValor(string nomeChave)
@@ -17,8 +22,9 @@ namespace SME.SGP.Notificacoes.Hub
         protected virtual Task SalvarValor(string nomeChave, string valor, int minutosParaExpirar)
             => throw new NotImplementedException($"Método SalvarValor do serviço {NomeServicoCache} não implementado");
 
-        public RepositorioCache()
+        public RepositorioCache(IServicoTelemetria servicoTelemetria)
         {
+            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
         }
 
         public string Obter(string nomeChave, string telemetriaNome, bool utilizarGZip = false)
@@ -29,7 +35,11 @@ namespace SME.SGP.Notificacoes.Hub
                 UtilizarGZip = utilizarGZip
             };
             
-            var cacheParaRetorno = ObterValor(nomeChave);
+            var cacheParaRetorno = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave), 
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+
+            if (utilizarGZip)
+                cacheParaRetorno = UtilGZip.Descomprimir(Convert.FromBase64String(cacheParaRetorno));
 
             return cacheParaRetorno;            
         }
@@ -47,17 +57,21 @@ namespace SME.SGP.Notificacoes.Hub
                 UtilizarGZip = utilizarGZip
             };
                 
-            var stringCache = ObterValor(nomeChave);
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
             if (string.IsNullOrWhiteSpace(stringCache)) 
                 return await Task.FromResult(string.Empty);
+            
+            if (utilizarGZip)
+                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
             
             return stringCache;
         }
         
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
-            return await ObterAsync(nomeChave, $"{NomeServicoCache} Obter async<string>", utilizarGZip);
+            return await ObterAsync(nomeChave, $"Obter async<string>", utilizarGZip);
         }
 
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, string telemetriaNome, int minutosParaExpirar = 720,
@@ -70,10 +84,14 @@ namespace SME.SGP.Notificacoes.Hub
                 UtilizarGZip = utilizarGZip
             };
             
-            var stringCache = ObterValor(nomeChave);
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
 
             if (!string.IsNullOrWhiteSpace(stringCache))
             {
+                if (utilizarGZip)
+                    stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+
                 return JsonConvert.DeserializeObject<T>(stringCache);
             }
 
@@ -99,7 +117,8 @@ namespace SME.SGP.Notificacoes.Hub
             
             try
             {
-                await RemoverValor(nomeChave);
+                await servicoTelemetria.RegistrarAsync(async () => await RemoverValor(nomeChave),
+                    NomeServicoCache, $"{NomeServicoCache} Remover async", "", param.ToString());
             }
             catch (Exception)
             {
@@ -119,7 +138,14 @@ namespace SME.SGP.Notificacoes.Hub
             {
                 if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
                 {
-                    await SalvarValor(nomeChave, valor, minutosParaExpirar);
+                    if (utilizarGZip)
+                    {
+                        var valorComprimido = UtilGZip.Comprimir(valor);
+                        valor = Convert.ToBase64String(valorComprimido);
+                    }
+
+                    await servicoTelemetria.RegistrarAsync(async () => await SalvarValor(nomeChave, valor, minutosParaExpirar),
+                        NomeServicoCache, $"{NomeServicoCache} Salvar async", "", param.ToString());
                 }
             }
             catch (Exception)

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SME.SGP.Dominio.Interfaces;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Notificacoes.Hub
 {
@@ -15,7 +16,7 @@ namespace SME.SGP.Notificacoes.Hub
             => repositorioCache.RemoverAsync(usuarioRf);
 
         public Task<string> Obter(string usuarioRf)
-            => repositorioCache.ObterAsync(usuarioRf);
+            => repositorioCache.ObterAsync(usuarioRf, "Obter Conexão Usuario");
 
         public Task Salvar(string usuarioRf, string connectionId)
             => repositorioCache.SalvarAsync(usuarioRf, connectionId);
