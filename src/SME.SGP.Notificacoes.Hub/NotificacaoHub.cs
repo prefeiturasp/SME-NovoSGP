@@ -60,11 +60,6 @@ namespace SME.SGP.Notificacoes.Hub
             await Clients.All.SendAsync("ReceiveMessage", user, message);
         }
 
-        public Task Login(string usuarioRf)
-        {
-            return Task.CompletedTask;
-        }
-
         public Task Criada(MensagemCriacaoNotificacaoDto mensagem)
             => eventoCriada.Enviar(Clients, mensagem);
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
+using SME.SGP.IoC;
 
 namespace SME.SGP.Notificacoes.Worker
 {
@@ -21,10 +22,10 @@ namespace SME.SGP.Notificacoes.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            RegistrarDependencias(services);
-            RegistrarRabbitMQ(services);
-            RegistrarTelemetria(services);
-            //RegistrarSignalR(services);
+            services.AddPolicies();
+            services.ConfigurarRabbit(Configuration);
+            services.ConfigurarTelemetria(Configuration);
+
             RegistrarHub(services);
 
             services.AddHostedService<WorkerRabbitNotificacao>();
@@ -37,48 +38,6 @@ namespace SME.SGP.Notificacoes.Worker
 
             services.AddSingleton<HubOptions>();
             services.AddSingleton<INotificacaoSgpHub, NotificacaoSgpHub>();
-        }
-
-
-        private void RegistrarSignalR(IServiceCollection services)
-        {
-            services.AddSignalR();
-        }
-
-        private void RegistrarTelemetria(IServiceCollection services)
-        {
-            services.AddOptions<TelemetriaOptions>()
-                .Bind(Configuration.GetSection(TelemetriaOptions.Secao), c => c.BindNonPublicProperties = true);
-            services.AddSingleton<TelemetriaOptions>();
-        }
-
-        private void RegistrarRabbitMQ(IServiceCollection services)
-        {
-            services.AddOptions<ConfiguracaoRabbitOptions>()
-                .Bind(Configuration.GetSection(ConfiguracaoRabbitOptions.Secao), c => c.BindNonPublicProperties = true);
-
-            var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IOptions<ConfiguracaoRabbitOptions>>().Value;
-
-            services.AddSingleton<IConnectionFactory>(serviceProvider =>
-            {
-                var factory = new ConnectionFactory
-                {
-                    HostName = options.HostName,
-                    UserName = options.UserName,
-                    Password = options.Password,
-                    VirtualHost = options.VirtualHost,
-                    RequestedHeartbeat = System.TimeSpan.FromSeconds(options.TempoHeartBeat),
-                };
-
-                return factory;
-            });
-            services.AddSingleton<ConfiguracaoRabbitOptions>();
-        }
-
-        private void RegistrarDependencias(IServiceCollection services)
-        {
-            //services.TryAddScoped<IRegistrarAuditoriaUseCase, RegistrarAuditoriaUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -100,12 +59,9 @@ namespace SME.SGP.Notificacoes.Worker
 
             app.UseRouting();
 
-            //app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 //endpoints.MapRazorPages();
-                //endpoints.MapHub<NotificacaoHub>("/notificacao");
             });
 
             app.Run(async (context) =>

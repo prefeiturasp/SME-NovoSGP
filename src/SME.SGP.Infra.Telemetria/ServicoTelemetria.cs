@@ -1,4 +1,5 @@
 ﻿using Elastic.Apm;
+using Elastic.Apm.Api;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
@@ -164,5 +165,17 @@ namespace SME.SGP.Infra
             }            
         }
 
+        public ITransaction Iniciar(string nome, string tipo)
+        {
+            return  telemetriaOptions.Apm ?
+                Agent.Tracer.StartTransaction(nome, tipo) :
+                null;
+        }
+
+        public void Finalizar(ITransaction transacao)
+        {
+            if (telemetriaOptions.Apm)
+                transacao.End();
+        }
     }
 }

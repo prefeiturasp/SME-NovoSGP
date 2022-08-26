@@ -6,9 +6,9 @@ using System;
 
 namespace SME.SGP.IoC
 {
-    internal static class RegistrarPolicies
+    public static class RegistrarPolicies
     {
-        internal static void AddPolicies(this IServiceCollection services)
+        public static void AddPolicies(this IServiceCollection services)
         {
             IPolicyRegistry<string> registry = services.AddPolicyRegistry();
 

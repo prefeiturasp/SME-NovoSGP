@@ -11,9 +11,9 @@ using System;
 
 namespace SME.SGP.IoC
 {
-    internal static class RegistrarCache
+    public static class RegistrarCache
     {
-        internal static void ConfigurarCache(this IServiceCollection services, IConfiguration configuration)
+        public static void ConfigurarCache(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration == null)
                 return;
