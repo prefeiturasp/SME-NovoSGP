@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
-            return await ObterAsync(nomeChave, $"{NomeServicoCache} Obter async<string>", utilizarGZip);
+            return await ObterAsync(nomeChave, $"Obter async<string>", utilizarGZip);
         }
 
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, string telemetriaNome, int minutosParaExpirar = 720,
