@@ -85,5 +85,12 @@ namespace SME.SGP.Dados
 
             return true;
         }
+
+        public async Task ExcluirVarios(long[] idsParaExcluir)
+        {
+            var query = "delete from registro_frequencia_aluno where id = any(@idsParaExcluir)";
+
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
+        }
     }
 }
