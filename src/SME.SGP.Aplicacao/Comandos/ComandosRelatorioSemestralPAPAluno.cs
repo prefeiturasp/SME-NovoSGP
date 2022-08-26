@@ -7,6 +7,7 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,6 +21,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasTurma consultasTurma;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions;
 
         public ComandosRelatorioSemestralPAPAluno(IRepositorioRelatorioSemestralPAPAluno repositorioRelatorioSemestralAluno,
                                                IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -27,7 +29,8 @@ namespace SME.SGP.Aplicacao
                                                IConsultasRelatorioSemestralTurmaPAP consultasRelatorioSemestral,
                                                IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,
                                                IConsultasTurma consultasTurma,
-                                               IUnitOfWork unitOfWork, IMediator mediator)
+                                               IUnitOfWork unitOfWork, IMediator mediator,
+                                               ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
         {
             this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
@@ -37,6 +40,7 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
@@ -69,7 +73,7 @@ namespace SME.SGP.Aplicacao
                         {
                             secaoRelatorioAluno.RelatorioSemestralPAPAlunoId = relatorioSemestralAluno.Id;
                             listaSecaoDto.Add(new RelatorioSemestralAlunoSecaoResumidaDto() { SecaoAtual = secaoRelatorioAluno.Valor,SecaoNovo = secaoRelatorio.Valor });
-                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+                            secaoRelatorio.Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos);
                             secaoRelatorioAluno.Valor = secaoRelatorio.Valor;
                             if (!string.IsNullOrEmpty(secaoRelatorioAluno.Valor))
                                 // Relatorio Semestral Aluno x Secao
@@ -83,7 +87,7 @@ namespace SME.SGP.Aplicacao
                             {
                                 RelatorioSemestralPAPAlunoId = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId,
                                 SecaoRelatorioSemestralPAPId = secaoRelatorio.Id,
-                                Valor = secaoRelatorio.Valor.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.RelatorioSemestralPAP.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/")
+                                Valor = secaoRelatorio.Valor.Replace(configuracaoArmazenamentoOptions.BucketTemp, configuracaoArmazenamentoOptions.BucketArquivos)
                         };
 
                             await comandosRelatorioSemestralAlunoSecao.SalvarAsync(secaoRelatorioAluno);
