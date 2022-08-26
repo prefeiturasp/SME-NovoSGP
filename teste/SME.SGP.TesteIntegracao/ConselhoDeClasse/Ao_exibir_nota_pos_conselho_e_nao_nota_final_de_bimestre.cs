@@ -54,7 +54,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
             notas.NotaPosConselho.Nota.ShouldBeNull();
             notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
-            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
         }
         
         [Fact]
@@ -81,7 +80,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
             notas.NotaPosConselho.Nota.ShouldNotBeNull();
             notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
-            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
         }
         
         private async Task CriarDados(

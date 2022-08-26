@@ -6,15 +6,13 @@ namespace SME.SGP.Aplicacao
 {
     public class CopiarArquivoCommand : IRequest<string>
     {
-        public CopiarArquivoCommand(string nome, TipoArquivo tipoArquivoOriginal, TipoArquivo tipoArquivoDestino)
+        public CopiarArquivoCommand(string nome,TipoArquivo tipoArquivoDestino)
         {
             Nome = nome;
-            TipoArquivoOriginal = tipoArquivoOriginal;
             TipoArquivoDestino = tipoArquivoDestino;
         }
 
         public string Nome { get; set; }
-        public TipoArquivo TipoArquivoOriginal { get; set; }
         public TipoArquivo TipoArquivoDestino { get; set; }
     }
         
@@ -25,10 +23,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.Nome)
                 .NotEmpty()
                 .WithMessage("O Nome do Arquivo deve ser informado para registrar no repositório.");
-
-            RuleFor(c => c.TipoArquivoOriginal)
-                .NotEmpty()
-                .WithMessage("O Tipo do Arquivo original deve ser informado para registrar no repositório.");
 
             RuleFor(c => c.TipoArquivoDestino)
                .NotEmpty()

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma não encontrada");
 
             return await repositorioPeriodoEscolar.ObterPeriodoEscolarIdPorTurmaBimestre(request.TurmaCodigo,
-                turma.ModalidadeTipoCalendario, request.Bimestre, request.AnoLetivo);
+                turma.ModalidadeTipoCalendario, request.Bimestre, request.AnoLetivo, turma.Semestre);
         }
     }
 }

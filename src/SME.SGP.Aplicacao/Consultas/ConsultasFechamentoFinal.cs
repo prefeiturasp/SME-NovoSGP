@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
 
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
@@ -203,7 +203,7 @@ namespace SME.SGP.Aplicacao
 
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
             retorno.FrequenciaMedia = await mediator.Send(new ObterFrequenciaMediaQuery(disciplinaEOL, turma.AnoLetivo));
-            retorno.PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
+            retorno.PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
 
             return retorno;
         }

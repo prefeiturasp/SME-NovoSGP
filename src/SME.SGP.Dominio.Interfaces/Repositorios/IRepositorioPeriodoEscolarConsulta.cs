@@ -27,7 +27,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterBimestreAtualAsync(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia);
         Task<PeriodoEscolar> ObterPeriodoEscolarAtualPorTurmaIdAsync(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia);
         Task<PeriodoEscolar> ObterPeriodoEscolarAtualAsync(ModalidadeTipoCalendario modalidadeTipoCalendario, DateTime dataReferencia);
-        Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int anoLetivo);
+        Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int anoLetivo, int semestre);
         Task<PeriodoEscolar> ObterPeriodoEscolarPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre);
         Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulCj);
 
