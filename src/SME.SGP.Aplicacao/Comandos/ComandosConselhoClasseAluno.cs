@@ -1,13 +1,12 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using MediatR;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using System.Linq;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -37,7 +36,6 @@ namespace SME.SGP.Aplicacao
 
             if (!periodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
-
             
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
@@ -48,12 +46,19 @@ namespace SME.SGP.Aplicacao
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == conselhoClasseAlunoDto.AlunoCodigo);
 
+            if (alunoConselho == null)
+                throw new NegocioException("Aluno não encontrado para salvar o conselho de classe.");
+
             if (alunoConselho.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo)
             {
                 if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
                     throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_REABERTURA);
             }
             
+            var existeConselhoClasseBimestre = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno, fechamentoTurma.Turma, periodoEscolar.Id));
+
+            if (!existeConselhoClasseBimestre)
+                throw new NegocioException(MensagemNegocioFechamentoNota.EXISTE_COMPONENTES_SEM_NOTA_INFORMADA);
 
             var conselhoClasseAluno = await MapearParaEntidade(conselhoClasseAlunoDto);
 
