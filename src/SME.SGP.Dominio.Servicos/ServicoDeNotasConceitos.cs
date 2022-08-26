@@ -175,7 +175,7 @@ namespace SME.SGP.Dominio
             try
             {
 
-                var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
+                var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && !String.IsNullOrEmpty(x.ObterNota())).ToList();
                 var notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
                 var notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
 
