@@ -114,8 +114,8 @@ namespace SME.SGP.Notificacoes.Worker
                     await servicoTelemetria.RegistrarAsync(
                         async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }), 
                         "RabbitMQ", 
-                        mensagemRabbit.Action, 
-                        mensagemRabbit.Action, 
+                        rota, 
+                        comando, 
                         mensagem);
 
                     canalRabbit.BasicAck(ea.DeliveryTag, false);
