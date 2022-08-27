@@ -208,36 +208,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"CREATE TEMPORARY TABLE temp_dados
-                                            (
-                                                turmaanonome varchar(200),
-                                                bimestre int8,
-                                                componentecurricularcodigo int8,
-                                                conselhoclassenotaid varchar(10),
-                                                conceitoid int8,
-                                                nota int8,
-                                                alunocodigo varchar(10),
-                                                conceito varchar(10),
-                                                prioridade int8
-                                            ); ");
-
-            query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-            query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-
-            query.AppendLine(@" select
-                                x.TurmaAnoNome,
-                                x.Bimestre,
-                                x.ComponenteCurricularCodigo,
-                                x.ConselhoClasseNotaId,
-                                x.ConceitoId,
-                                x.Nota,
-                                x.AlunoCodigo,
-                                x.Conceito,
-                                row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
-                                order by x.Prioridade) as linha
-                                from temp_dados x; ");
-
-            query.AppendLine(@" drop table temp_dados; ");
+            var query = new StringBuilder(@"select * from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre)");
 
             var parametros = new
             {
@@ -265,7 +236,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     2 as prioridade
                                                 from
                                                     fechamento_turma ft
-                                                left join periodo_escolar pe on
+                                                inner join periodo_escolar pe on
                                                     pe.id = ft.periodo_escolar_id
                                                 inner join turma t on
                                                     t.id = ft.turma_id
@@ -317,7 +288,7 @@ namespace SME.SGP.Dados.Repositorios
 		                                            1 as prioridade
 	                                            from
 		                                            fechamento_turma ft
-	                                            left join periodo_escolar pe on
+	                                            inner join periodo_escolar pe on
 		                                            pe.id = ft.periodo_escolar_id
 	                                            inner join turma t on
 		                                            t.id = ft.turma_id
