@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                 etapaConcluida = DeterminaEtapaConcluida(matriculas, planoAEE.AlunoCodigo, turma, ultimaMatricula);
 
             if (matriculas.Select(m => m.CodigoTurma).Distinct().Count() > 1)
-                transferenciaUe = DeterminaTransferenciaUe(matriculas, registroMatriculaTurmaAnterior);
+                transferenciaUe = DeterminaTransferenciaUe(matriculas, registroMatriculaTurmaAnterior, turma);
 
             return (matriculas != null && matriculas.Any() && !matriculas.Any(a => a.EstaAtivo(DateTime.Today))) || etapaConcluida || transferenciaUe;
         }
@@ -198,7 +198,7 @@ namespace SME.SGP.Aplicacao
             return false;
         }
 
-        private bool DeterminaTransferenciaUe(IEnumerable<AlunoPorTurmaResposta> matriculas, AlunoPorTurmaResposta registroMatriculaTurmaAnterior)
+        private bool DeterminaTransferenciaUe(IEnumerable<AlunoPorTurmaResposta> matriculas, AlunoPorTurmaResposta registroMatriculaTurmaAnterior, Turma turmaPlano)
         {
             var registroMatriculaMaisRecente = matriculas
                 .OrderBy(m => m.DataSituacao)
@@ -209,7 +209,8 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(m => m.DataSituacao)
                 .Last();
 
-            return (registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido ||
+            return !turmaPlano.CodigoTurma.Equals(registroMatriculaMaisRecente.CodigoTurma.ToString()) &&
+                   (registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Transferido ||
                     registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Deslocamento ||
                     registroMatriculaTurmaAnterior.CodigoSituacaoMatricula == SituacaoMatriculaAluno.TransferidoSED) &&
                    !registroMatriculaTurmaAnterior.CodigoEscola.Equals(registroMatriculaMaisRecente.CodigoEscola);
