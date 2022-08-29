@@ -29,7 +29,7 @@ namespace SME.SGP.Infra
         {
             minioClient = new MinioClient()
                 .WithEndpoint(configuracaoArmazenamentoOptions.EndPoint, configuracaoArmazenamentoOptions.Port)
-                .WithCredentials(configuracaoArmazenamentoOptions.AccessKey,configuracaoArmazenamentoOptions.SecretKey)
+                .WithCredentials(configuracaoArmazenamentoOptions.AccessKey, configuracaoArmazenamentoOptions.SecretKey)
                 .WithSSL()
                 .Build();
         }
@@ -38,7 +38,7 @@ namespace SME.SGP.Infra
         {
             await ArmazenarArquivo(nomeArquivo, stream, contentType, configuracaoArmazenamentoOptions.BucketTemp);
 
-            return ObterUrl(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
+            return await ObterUrl(nomeArquivo, configuracaoArmazenamentoOptions.BucketTemp);
         }
 
         public async Task<string> Armazenar(string nomeArquivo, Stream stream, string contentType)
@@ -58,7 +58,7 @@ namespace SME.SGP.Infra
 
             await minioClient.PutObjectAsync(args);
 
-            return ObterUrl(nomeArquivo, bucket);
+            return await ObterUrl(nomeArquivo, bucket);
         }
 
         public async Task<string> Copiar(string nomeArquivo)
@@ -124,16 +124,10 @@ namespace SME.SGP.Infra
                 ? configuracaoArmazenamentoOptions.BucketTemp
                 : configuracaoArmazenamentoOptions.BucketArquivos;
 
-            var statObjectArgs = new StatObjectArgs()
-                .WithBucket(bucketNome)
-                .WithObject(nomeArquivo);
-
-            var arquivo = await minioClient.StatObjectAsync(statObjectArgs);
-
-            return ObterUrl(nomeArquivo, bucketNome);
+            return await ObterUrl(nomeArquivo, bucketNome);
         }
 
-        private string ObterUrl(string nomeArquivo, string bucketName)
+        private async Task<string> ObterUrl(string nomeArquivo, string bucketName)
         {
             var hostAplicacao = configuration["UrlFrontEnd"];
             return $"{hostAplicacao}{bucketName}/{nomeArquivo}";
