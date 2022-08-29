@@ -14,6 +14,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.TesteIntegracao.Setup
 {
@@ -48,6 +49,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
+            services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
             base.RegistrarServicos(services);
         }
     }

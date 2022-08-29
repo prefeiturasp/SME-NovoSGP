@@ -57,8 +57,17 @@ namespace SME.SGP.IoC
             RegistrarTelemetria(services, configuration);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services, configuration);
 
             RegistrarMapeamentos.Registrar();
+        }
+
+        private void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
+        {
+            if (configuration == null)
+                return;
+
+            services.ConfigurarArmazenamento(configuration);
         }
 
         private void RegistrarAuditoria(IServiceCollection services)
@@ -92,6 +101,7 @@ namespace SME.SGP.IoC
             RegistrarTelemetria(services, configuration);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services,configuration);
 
             RegistrarMapeamentos.Registrar();
         }

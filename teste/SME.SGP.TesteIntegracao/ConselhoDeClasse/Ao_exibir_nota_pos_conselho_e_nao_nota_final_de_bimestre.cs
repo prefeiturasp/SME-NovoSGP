@@ -54,7 +54,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
             notas.NotaPosConselho.Nota.ShouldBeNull();
             notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
-            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
         }
         
         [Fact]
@@ -81,7 +80,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
             notas.NotaPosConselho.Nota.ShouldNotBeNull();
             notas.NotasFechamentos.FirstOrDefault().NotaConceito.ShouldNotBeNull();
-            notas.NotasFechamentos.FirstOrDefault().NotaConceito.Value.ShouldBeGreaterThan(1);
         }
         
         private async Task CriarDados(
@@ -97,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
-            var filtroNota = new FiltroNotasDto()
+            var filtroNota = new FiltroConselhoClasseDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,

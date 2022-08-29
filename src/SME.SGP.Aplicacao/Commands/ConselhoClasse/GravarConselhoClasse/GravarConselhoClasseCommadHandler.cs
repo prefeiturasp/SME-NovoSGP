@@ -25,15 +25,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseNotaRetornoDto> Handle(GravarConselhoClasseCommad request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
-
             var conselhoClasseNotaRetorno = request.ConselhoClasseId == 0 ?
                 await mediator.Send(new InserirConselhoClasseNotaCommad(
                                             request.FechamentoTurma,
                                             request.CodigoAluno,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            usuarioLogado), cancellationToken) :
+                                            request.Usuario), cancellationToken) :
                 await mediator.Send(new AlterarConselhoClasseCommad(
                                             request.ConselhoClasseId,
                                             request.FechamentoTurma.Id,
@@ -41,7 +39,7 @@ namespace SME.SGP.Aplicacao
                                             request.FechamentoTurma.Turma,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            usuarioLogado), cancellationToken);
+                                            request.Usuario), cancellationToken);
 
             // TODO Verificar se o fechamentoTurma.Turma carregou UE
             if (await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(

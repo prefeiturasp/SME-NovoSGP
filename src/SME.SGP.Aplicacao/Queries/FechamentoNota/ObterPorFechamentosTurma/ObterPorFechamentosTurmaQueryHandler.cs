@@ -13,33 +13,28 @@ namespace SME.SGP.Aplicacao
     public class ObterPorFechamentosTurmaQueryHandler : IRequestHandler<ObterPorFechamentosTurmaQuery, IEnumerable<FechamentoNotaAlunoAprovacaoDto>>
     {
         private readonly IRepositorioFechamentoNotaConsulta repositorioFechamentoNota;
-        private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterPorFechamentosTurmaQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota, IMediator mediator)
+        public ObterPorFechamentosTurmaQueryHandler(IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
+            IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.mediator = mediator;
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> Handle(ObterPorFechamentosTurmaQuery request, CancellationToken cancellationToken)
         {
             var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, request.CodigoDisciplina, request.CodigoTurma);
 
-            var dadosCache = await mediator.Send(new ObterCacheAsyncQuery(nomeChaveCache, "Obter fechamentos da turma"), cancellationToken);
-            var retornoCache = await MapearRetornoParaDto(dadosCache);
+            var retornoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamentos da turma");
 
             if (retornoCache != null)
                 return retornoCache;
 
             var retornoDb = await repositorioFechamentoNota.ObterPorFechamentosTurma(request.Ids);
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(nomeChaveCache, retornoDb), cancellationToken);
+            await repositorioCache.SalvarAsync(nomeChaveCache, retornoDb);
 
             return retornoDb;
-        }
-
-        private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearRetornoParaDto(string dadosCache)
-        {
-            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(dadosCache));
         }
     }
 }

@@ -147,6 +147,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, periodoAtual, turma, componenteCurricularCodigo.ToString(), periodoAtual.PeriodoInicio);
+            var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(turma));
 
             foreach (var aluno in alunos)
             {
@@ -209,7 +210,8 @@ namespace SME.SGP.Aplicacao
                                 NotaConceito = notaConceito
                             };
 
-                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+                            if (exigeAprovacao)
+                                await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
 
                             ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                         }

@@ -4,6 +4,7 @@ using Polly.Registry;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,11 +33,11 @@ namespace SME.SGP.Infra
 
             await servicoTelemetria.RegistrarAsync(async () =>
                     await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange)),
-                            "RabbitMQ", nomeAcao, rota);
+                            "RabbitMQ", nomeAcao, rota,ObterParametrosMensagem(request));
 
             return true;
         }
-
+        
         public Task<bool> Publicar<T>(T mensagem, string rota, string exchange, string nomeAcao)
             => Publicar(new MensagemRabbit(mensagem), rota, exchange, nomeAcao);
 
@@ -57,6 +58,12 @@ namespace SME.SGP.Infra
 
             return Task.CompletedTask;
         }
+
+        
+        public virtual string ObterParametrosMensagem(MensagemRabbit mensagemRabbit)
+        {
+            return "";
+        }
     }
 
     public class ServicoMensageriaSGP : ServicoMensageria, IServicoMensageriaSGP
@@ -67,6 +74,13 @@ namespace SME.SGP.Infra
 
     public class ServicoMensageriaLogs : ServicoMensageria, IServicoMensageriaLogs
     {
+        public override string ObterParametrosMensagem(MensagemRabbit mensagemRabbit)
+        {
+            var json = JsonConvert.SerializeObject(mensagemRabbit.Mensagem);
+            var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
+            return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
+        }
+
         public ServicoMensageriaLogs(IConexoesRabbitFilasLog conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
             : base(conexaoRabbit, servicoTelemetria, registry) { }
     }
