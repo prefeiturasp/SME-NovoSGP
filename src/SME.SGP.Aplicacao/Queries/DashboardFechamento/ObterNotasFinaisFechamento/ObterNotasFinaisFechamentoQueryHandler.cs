@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.Semestre,
                                                                           request.Bimestre);
 
-            return retorno.Where(x => x.Linha == 1);
+            return retorno;
         }
     }
 }
