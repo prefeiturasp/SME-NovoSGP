@@ -130,7 +130,7 @@ namespace SME.SGP.Infra
         private async Task<string> ObterUrl(string nomeArquivo, string bucketName)
         {
             var hostAplicacao = configuration["UrlFrontEnd"];
-            return await Task.FromResult($"{hostAplicacao}{bucketName}/{nomeArquivo}");
+            return $"{hostAplicacao}{bucketName}/{nomeArquivo}";
         }
     }
 }
