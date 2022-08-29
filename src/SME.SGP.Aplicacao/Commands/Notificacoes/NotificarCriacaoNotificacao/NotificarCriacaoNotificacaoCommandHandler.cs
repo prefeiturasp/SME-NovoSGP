@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Notificacoes.Hub.Interface;
 using System;
@@ -27,7 +28,7 @@ namespace SME.SGP.Aplicacao
                                                                request.Notificacao.Id,
                                                                request.Notificacao.Codigo,
                                                                request.Notificacao.Titulo,
-                                                               request.Notificacao.CriadoEm,
+                                                               DateTimeExtension.HorarioBrasilia(),
                                                                usuarioRf)));
         }
     }
