@@ -386,5 +386,10 @@ namespace SME.SGP.Dados.Repositorios
         {
             return contexto.Conexao.QueryFirstOrDefaultAsync<string>("select ue_id from UE where id = @ueId", new { ueId });
         }
+
+        public Task<string> ObterNomePorCodigo(string ueCodigo)
+        {
+            return contexto.Conexao.QueryFirstOrDefaultAsync<string>("select nome from UE where ue_id = @ueCodigo", new { ueCodigo });
+        }
     }
 }

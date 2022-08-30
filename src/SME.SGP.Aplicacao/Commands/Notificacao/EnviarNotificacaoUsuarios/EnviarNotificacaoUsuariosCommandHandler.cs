@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -39,6 +41,8 @@ namespace SME.SGP.Aplicacao
                 };
 
                 notificacoes.Add(await repositorioNotificacao.SalvarAsync(notificacao));
+
+                await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao));
             }
 
             return notificacoes;
