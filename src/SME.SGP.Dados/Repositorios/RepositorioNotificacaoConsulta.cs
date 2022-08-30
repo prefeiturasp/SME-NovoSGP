@@ -322,10 +322,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<string> ObterUsuarioNotificacaoPorId(long id)
         {
-            var query = @"select u.rf_codigo
-                         from notificacao n 
-                         left join usuario u on u.id = n.usuario_id
-	                    where n.id = @id";
+            var query = @"select rf_codigo
+                         from usuario 
+	                    where id = @id";
 
             return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
