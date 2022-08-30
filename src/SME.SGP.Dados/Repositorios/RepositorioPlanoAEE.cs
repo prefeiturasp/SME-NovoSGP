@@ -21,5 +21,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
         }        
+
+        public async Task<int> AtualizarTurmaParaRegularPlanoAEE(long planoAEEId, long turmaId)
+        {
+            var query = @"update plano_aee 
+                            set turma_id = @turmaId 
+                            where id = @planoAEEId";
+
+            return await database.Conexao.ExecuteAsync(query, new { planoAEEId, turmaId });                  
+        }
     }
 }

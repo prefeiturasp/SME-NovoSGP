@@ -39,6 +39,17 @@ namespace SME.SGP.Aplicacao
 
                 var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
+                if(entidadePlano.Turma.TipoTurma == TipoTurma.Programa && SituacaoAtivaPlanoAEE(entidadePlano))
+                {
+                    bool turmaAtualizada = false;
+                    var turmaAlunoEol = await mediator.Send(new ObterTurmaPorCodigoQuery(alunoTurma.CodigoTurma));
+                    if (turmaAlunoEol.EhTurmaRegular())
+                       turmaAtualizada = await mediator.Send(new AtualizarTurmaAlunoPlanoAEECommand() { PlanoAEEId = entidadePlano.Id, TurmaId = turmaAlunoEol.Id });
+
+                    if(turmaAtualizada)
+                        entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
+                }
+
                 switch (alunoTurma.CodigoSituacaoMatricula)
                 {
                     case SituacaoMatriculaAluno.Ativo:
