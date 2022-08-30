@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
             string[] turmasCodigos;
-
+            
             if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
                 var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
@@ -64,6 +64,7 @@ namespace SME.SGP.Aplicacao
 
             if (!turmasCodigos.Any())
                 turmasCodigos = new string[] { turma.CodigoTurma };
+            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(turmasCodigos,turma.Ue.CodigoUe));
 
             // Frequencia
             Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
@@ -76,7 +77,7 @@ namespace SME.SGP.Aplicacao
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
-            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo));
+            var parecerNota = ObterParecerValidacao(await ValidarParecerPorNota(request.AlunoCodigo, turmasCodigos, turma.AnoLetivo, componentes.Count()));
 
             // Conselho
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Conselho), "Conselho"))
@@ -141,9 +142,12 @@ namespace SME.SGP.Aplicacao
         #endregion
 
         #region Nota
-        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
+        private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo, int quantidadeComponentesDaTurma)
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
+
+            if(notasFechamentoAluno.Count() == quantidadeComponentesDaTurma)
+
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
 
