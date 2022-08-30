@@ -53,7 +53,7 @@ namespace SME.SGP.Notificacoes.Worker
         {
             var args = new Dictionary<string, object>();
 
-            args.Add("x-dead-letter-exchange", RotasRabbitNotificacao.ExchangeSgpDeadLetter);
+            args.Add("x-dead-letter-exchange", ExchangeSgpRabbit.SgpDeadLetter);
 
             DeclararFila(RotasRabbitNotificacao.Criacao, args);
             DeclararFila(RotasRabbitNotificacao.Leitura, args);
@@ -63,12 +63,12 @@ namespace SME.SGP.Notificacoes.Worker
         private void DeclararFila(string fila, Dictionary<string, object> args)
         {
             canalRabbit.QueueDeclare(fila, true, false, false, args);
-            canalRabbit.QueueBind(fila, RotasRabbitNotificacao.ExchangeSgp, fila, null);
+            canalRabbit.QueueBind(fila, ExchangeSgpRabbit.Sgp, fila, null);
 
             var filaDeadLetter = $"{fila}.deadletter";
 
             canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-            canalRabbit.QueueBind(filaDeadLetter, RotasRabbitNotificacao.ExchangeSgpDeadLetter, fila, null);
+            canalRabbit.QueueBind(filaDeadLetter, ExchangeSgpRabbit.SgpDeadLetter, fila, null);
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
