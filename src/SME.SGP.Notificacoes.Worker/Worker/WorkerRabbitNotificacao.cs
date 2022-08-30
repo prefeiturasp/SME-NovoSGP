@@ -35,8 +35,8 @@ namespace SME.SGP.Notificacoes.Worker
 
             canalRabbit.BasicQos(0, 10, false);
 
-            canalRabbit.ExchangeDeclare(RotasRabbitNotificacao.ExchangeSgp, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(RotasRabbitNotificacao.ExchangeSgpDeadLetter, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
 
             DeclararFilas();
             RegistrarComandos();

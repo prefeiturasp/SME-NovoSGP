@@ -64,11 +64,6 @@ namespace SME.SGP.Notificacoes.Worker
 
             app.UseRouting();
 
-            app.UseEndpoints(endpoints =>
-            {
-                //endpoints.MapRazorPages();
-            });
-
             app.Run(async (context) =>
             {
                 await context.Response.WriteAsync("WorkerRabbitNotificacoes!");
