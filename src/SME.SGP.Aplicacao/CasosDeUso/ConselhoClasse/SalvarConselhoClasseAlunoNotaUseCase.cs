@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ValidarAtribuicaoUsuario(dto.ConselhoClasseNotaDto.CodigoComponenteCurricular, turma, periodoEscolar.PeriodoFim, usuario);
+            await ValidarAtribuicaoUsuario(turma, periodoEscolar.PeriodoFim, usuario);
 
             var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = turma.UeId });
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre, usuario));
         }
 
-        private async Task ValidarAtribuicaoUsuario(long componenteCurricularId, Turma turma, DateTime dataAula, Usuario usuarioLogado)
+        private async Task ValidarAtribuicaoUsuario(Turma turma, DateTime dataAula, Usuario usuarioLogado)
         {
             if (dataAula == DateTime.MinValue)
             {
@@ -107,7 +107,7 @@ namespace SME.SGP.Aplicacao
                 dataAula = periodoEscolar4Bimestre.PeriodoFim;
             }
             
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(componenteCurricularId, turma.Id.ToString(), dataAula, usuarioLogado));
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ProfessorPodePersistirTurmaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, dataAula));
             if (!usuarioPossuiAtribuicaoNaTurmaNaData)
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
         }
