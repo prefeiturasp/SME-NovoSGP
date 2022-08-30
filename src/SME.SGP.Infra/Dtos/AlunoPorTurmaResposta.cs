@@ -122,7 +122,8 @@ namespace SME.SGP.Infra
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade &&
-                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido)
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Transferido)
                 return false;
 
             return true;
