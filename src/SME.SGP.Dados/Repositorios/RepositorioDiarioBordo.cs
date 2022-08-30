@@ -97,8 +97,7 @@ namespace SME.SGP.Dados.Repositorios
                                , a.data_aula as item2 
                           from diario_bordo db
                          inner join aula a on a.id = db.aula_id
-                         where not db.excluido
-                           and db.devolutiva_id is null
+                         where not db.excluido                           
                            and a.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
