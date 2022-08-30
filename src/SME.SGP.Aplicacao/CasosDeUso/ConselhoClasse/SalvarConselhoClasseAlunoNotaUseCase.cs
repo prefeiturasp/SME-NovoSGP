@@ -126,6 +126,9 @@ namespace SME.SGP.Aplicacao
                 return;
             
             var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId, fechamentoTurma.Turma.TipoTurma));
+
+            if (notaTipoValor == null)
+                return;
             
             switch (notaTipoValor.TipoNota)
             {

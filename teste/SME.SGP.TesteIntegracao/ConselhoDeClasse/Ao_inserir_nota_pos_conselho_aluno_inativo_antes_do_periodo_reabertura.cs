@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var obterFiltroConselhoClasse = ObterFiltroConselhoClasse(ObterPerfilProfessor(),
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
                 TipoNota.Conceito,
-                ANO_4,
+                ANO_3,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false);

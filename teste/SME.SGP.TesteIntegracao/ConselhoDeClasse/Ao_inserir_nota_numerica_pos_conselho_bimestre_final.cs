@@ -143,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             await CriarDados(ObterPerfilProfessor(),
             COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-            ANO_1,
+            ANO_6,
             Modalidade.Fundamental,
             ModalidadeTipoCalendario.FundamentalMedio,
             anoAnterior, 
