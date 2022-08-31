@@ -106,7 +106,7 @@ namespace SME.SGP.Aplicacao
                 var periodoEscolar4Bimestre =  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4));
                 dataAula = periodoEscolar4Bimestre.PeriodoFim;
             }
-            
+
             var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ProfessorPodePersistirTurmaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, dataAula));
             if (!usuarioPossuiAtribuicaoNaTurmaNaData)
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
