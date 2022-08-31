@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                              request.Usuario.EhProfessorInfantilOuCjInfantil()));
 
                 if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => (c.Codigo == request.ComponenteCurricularCodigo && !c.TerritorioSaber
-                                                                                     || c.Codigo % (10000) == request.ComponenteCurricularCodigo && c.TerritorioSaber)))
+                                                                                     || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber)))
                     return (false, "Você não pode criar aulas para essa Turma.");
 
                 if (!request.Usuario.EhGestorEscolar())
