@@ -22,7 +22,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select c.* 
                             from conselho_classe c 
-                           where c.fechamento_turma_id = @fechamentoTurmaId";
+                           where not c.excluido 
+                            and c.fechamento_turma_id = @fechamentoTurmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
@@ -148,7 +149,7 @@ namespace SME.SGP.Dados.Repositorios
                                                        x.AnoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
-                                                                count(cccat.id) as Quantidade, ");
+                                                                count(distinct cccat.id) as Quantidade, ");
             if (ueId > 0)
                 sqlQuery.AppendLine(" t.nome as AnoTurma ");
             else
