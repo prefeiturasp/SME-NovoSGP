@@ -149,7 +149,7 @@ namespace SME.SGP.Dados.Repositorios
                                                        x.AnoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
-                                                                count(cccat.id) as Quantidade, ");
+                                                                count(distinct cccat.id) as Quantidade, ");
             if (ueId > 0)
                 sqlQuery.AppendLine(" t.nome as AnoTurma ");
             else
