@@ -12,6 +12,7 @@ using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using Xunit;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
+using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
