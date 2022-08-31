@@ -80,17 +80,11 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await ValidarAtribuicaoUsuario(turma, periodoEscolar.PeriodoFim, usuario);
+            periodoEscolar = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
 
-            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = turma.UeId });
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
-            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);
+            await ValidaProfessorPodePersistirTurma(turma, periodoEscolar, usuario);
 
-            if (alunoConselho.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo)
-            {
-                if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
-                    throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_REABERTURA);
-            }
+            await VerificaSePodeEditarNota(periodoEscolar, turma, dto.CodigoAluno, dto.Bimestre);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
@@ -99,16 +93,41 @@ namespace SME.SGP.Aplicacao
                 dto.ConselhoClasseNotaDto, periodoEscolar?.Bimestre, usuario));
         }
 
-        private async Task ValidarAtribuicaoUsuario(Turma turma, DateTime dataAula, Usuario usuarioLogado)
+        private async Task<PeriodoEscolar> ObtenhaPeriodoEscolar(PeriodoEscolar periodo, Turma turma, int bimestre)
         {
-            if (dataAula == DateTime.MinValue)
+            if (periodo.PeriodoFim == DateTime.MinValue)
             {
-                var periodoEscolar4Bimestre =  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4));
-                dataAula = periodoEscolar4Bimestre.PeriodoFim;
+                bimestre = bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre;
+                
+                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
-            
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ProfessorPodePersistirTurmaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, dataAula));
-            if (!usuarioPossuiAtribuicaoNaTurmaNaData)
+
+            return periodo;
+        }
+
+        private async Task VerificaSePodeEditarNota(PeriodoEscolar periodoEscolar, Turma turma, string codigoAluno, int bimestre)
+        {
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
+            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == codigoAluno);
+            var visualizaNotas = (periodoEscolar is null && !alunoConselho.Inativo) ||
+                     (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
+                     (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoInicio);
+
+            if (!visualizaNotas || !await this.mediator.Send(new VerificaSePodeEditarNotaQuery(codigoAluno, turma, periodoEscolar)))
+                throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
+        }
+
+        private async Task<bool> PossuiPermissaoTurma(Turma turma, PeriodoEscolar periodo, Usuario usuarioLogado)
+        {
+            if (usuarioLogado.EhProfessorCj())
+                return await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue?.Dre?.CodigoDre, turma.Ue?.CodigoUe, turma.Id.ToString(), usuarioLogado.CodigoRf));
+
+            return await mediator.Send(new ProfessorPodePersistirTurmaQuery(usuarioLogado.CodigoRf, turma.CodigoTurma, periodo.PeriodoFim));
+        }
+
+        private async Task ValidaProfessorPodePersistirTurma(Turma turma, PeriodoEscolar periodo, Usuario usuarioLogado)
+        {
+            if (!usuarioLogado.EhGestorEscolar() && !await PossuiPermissaoTurma(turma, periodo, usuarioLogado))
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
         }
     }
