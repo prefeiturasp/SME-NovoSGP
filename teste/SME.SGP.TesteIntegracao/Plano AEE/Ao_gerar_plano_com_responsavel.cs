@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         [Fact]
         public async Task Deve_gerar_plano_com_responsavel()
         {
-            await _builder.CriaItensComunsEja();
+            await _builder.CriaItensComuns();
 
             var useCase = ServiceProvider.GetService<ISalvarPlanoAEEUseCase>();
 
