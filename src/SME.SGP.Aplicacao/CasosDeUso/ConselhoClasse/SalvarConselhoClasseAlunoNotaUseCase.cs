@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
-using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -37,7 +32,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(dto.FechamentoTurmaId,
                 dto.CodigoAluno, ehAnoAnterior));
 
-            var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
+            FechamentoTurmaDisciplina fechamentoTurmaDisciplina;
             var periodoEscolar = new PeriodoEscolar();
 
             if (fechamentoTurma == null)
@@ -45,9 +40,7 @@ namespace SME.SGP.Aplicacao
                 if (!ehAnoAnterior)
                     throw new NegocioException("Não existe fechamento de turma para o conselho de classe");
 
-                periodoEscolar =
-                    await mediator.Send(
-                        new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, dto.Bimestre));
+                periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, dto.Bimestre));
 
                 if (periodoEscolar == null && dto.Bimestre > 0)
                     throw new NegocioException("Período escolar não encontrado");
@@ -69,8 +62,10 @@ namespace SME.SGP.Aplicacao
             else
             {
                 if (fechamentoTurma.PeriodoEscolarId != null)
+                {
                     periodoEscolar =
                         await mediator.Send(new ObterPeriodoEscolarePorIdQuery(fechamentoTurma.PeriodoEscolarId.Value));
+                }
 
                 fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina()
                 {
@@ -85,6 +80,8 @@ namespace SME.SGP.Aplicacao
             await ValidaProfessorPodePersistirTurma(turma, periodoEscolar, usuario);
 
             await VerificaSePodeEditarNota(periodoEscolar, turma, dto.CodigoAluno, dto.Bimestre);
+
+            await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolar);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
@@ -129,6 +126,36 @@ namespace SME.SGP.Aplicacao
         {
             if (!usuarioLogado.EhGestorEscolar() && !await PossuiPermissaoTurma(turma, periodo, usuarioLogado))
                 throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
+        }
+
+        private async Task ValidarConceitoOuNota(SalvarConselhoClasseAlunoNotaDto dto, FechamentoTurma fechamentoTurma,
+            AlunoPorTurmaResposta alunoConselho, PeriodoEscolar periodoEscolar)
+        {
+            var turmasCodigos = new[] { dto.CodigoTurma };
+                
+            var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
+                await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
+                    dto.Bimestre, alunoConselho.DataMatricula, !alunoConselho.EstaInativo(periodoEscolar.PeriodoFim) 
+                        ? periodoEscolar.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
+                await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno, 
+                    alunoConselho.DataMatricula, !alunoConselho.EstaInativo(periodoEscolar.PeriodoFim) 
+                        ? periodoEscolar.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
+
+            if (notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular) == null)
+                return;
+            
+            var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId, fechamentoTurma.Turma.TipoTurma));
+
+            if (notaTipoValor == null)
+                return;
+            
+            switch (notaTipoValor.TipoNota)
+            {
+                case TipoNota.Conceito when dto.ConselhoClasseNotaDto.Conceito == null:
+                    throw new NegocioException("O conceito pós-conselho deve ser informado no conselho de classe do aluno.");
+                case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota == null:
+                    throw new NegocioException("A nota pós-conselho deve ser informada no conselho de classe do aluno.");
+            }
         }
     }
 }
