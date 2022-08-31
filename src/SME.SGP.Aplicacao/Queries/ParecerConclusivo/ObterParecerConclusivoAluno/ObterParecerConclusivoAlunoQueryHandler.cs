@@ -45,6 +45,13 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseParecerConclusivo ObterParecerValidacao(bool retornoValidacao)
             => pareceresDoServico.FirstOrDefault(c => c.Aprovado == retornoValidacao);
+        private async Task<bool> ValidarTodasNotasComponentesLancadas(string alunoCodigo, string[] turmasCodigos, int quantidadeComponentesDaTurma)
+        {
+            var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
+
+            return notasFechamentoAluno.Count() == quantidadeComponentesDaTurma;
+        }
+
 
         public async Task<ConselhoClasseParecerConclusivo> Handle(ObterParecerConclusivoAlunoQuery request, CancellationToken cancellationToken)
         {
@@ -64,6 +71,7 @@ namespace SME.SGP.Aplicacao
 
             if (!turmasCodigos.Any())
                 turmasCodigos = new string[] { turma.CodigoTurma };
+            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(turmasCodigos, turma.Ue.CodigoUe));
 
             // Frequencia
             Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
@@ -73,6 +81,9 @@ namespace SME.SGP.Aplicacao
             var parecerFrequencia = ObterParecerValidacao(true);
 
             // Nota
+            if (!await ValidarTodasNotasComponentesLancadas(request.AlunoCodigo, turmasCodigos, componentes.Count()))
+                return new ConselhoClasseParecerConclusivo() { Nota = true, Conselho = false, Frequencia = false, Nome = "Sem Parecer", Id = 4 };
+
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
@@ -113,7 +124,7 @@ namespace SME.SGP.Aplicacao
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
             var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));
 
-            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional)) 
+            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional))
                 return false;
 
             return true;
@@ -144,6 +155,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
+
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
 
