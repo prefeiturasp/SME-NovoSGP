@@ -78,9 +78,11 @@ namespace SME.SGP.Aplicacao
             periodoEscolar = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
 
             await ValidaProfessorPodePersistirTurma(turma, periodoEscolar, usuario);
+            
+            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
+            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);            
 
-            await VerificaSePodeEditarNota(periodoEscolar, turma, dto.CodigoAluno, dto.Bimestre);
-
+            await VerificaSePodeEditarNota(periodoEscolar, turma, alunoConselho);
             await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolar);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
@@ -102,15 +104,13 @@ namespace SME.SGP.Aplicacao
             return periodo;
         }
 
-        private async Task VerificaSePodeEditarNota(PeriodoEscolar periodoEscolar, Turma turma, string codigoAluno, int bimestre)
+        private async Task VerificaSePodeEditarNota(PeriodoEscolar periodoEscolar, Turma turma, AlunoPorTurmaResposta alunoConselho)
         {
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
-            var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == codigoAluno);
             var visualizaNotas = (periodoEscolar is null && !alunoConselho.Inativo) ||
-                     (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
-                     (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoInicio);
+                (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
+                (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoInicio);
 
-            if (!visualizaNotas || !await this.mediator.Send(new VerificaSePodeEditarNotaQuery(codigoAluno, turma, periodoEscolar)))
+            if (!visualizaNotas || !await mediator.Send(new VerificaSePodeEditarNotaQuery(alunoConselho.CodigoAluno, turma, periodoEscolar)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
         }
 
