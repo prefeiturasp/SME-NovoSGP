@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var dataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+            var dataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 01);
 
             var alunos = new List<AlunoPorTurmaResposta> {
                 new AlunoPorTurmaResposta

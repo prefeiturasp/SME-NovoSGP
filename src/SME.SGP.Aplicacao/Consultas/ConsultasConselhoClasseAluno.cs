@@ -397,7 +397,7 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = conselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo);
-            retorno.PodeEditarNota = visualizaNotas && await VerificaSePodeEditarNota(alunoCodigo, turma, periodoEscolar);
+            retorno.PodeEditarNota = visualizaNotas && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(alunoCodigo, turma, periodoEscolar));
             retorno.NotasConceitos = gruposMatrizesNotas;
             
             return retorno;
@@ -431,28 +431,6 @@ namespace SME.SGP.Aplicacao
                                                 f.CodigoAluno == alunoCodigo &&
                                                 f.CodigoComponenteCurricular == codigoComponenteCurricular &&
                                                 f.CodigoTurma == turmaCodigo);
-        }
-
-        private async Task<bool> VerificaSePodeEditarNota(string alunoCodigo, Turma turma, PeriodoEscolar periodoEscolar)
-        {
-            var turmaFechamento = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
-
-            if (turmaFechamento == null || !turmaFechamento.Any())
-                throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
-
-            var turmaFechamentoOrdenada = turmaFechamento.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
-
-            var aluno = turmaFechamentoOrdenada.Last(a => a.CodigoAluno == alunoCodigo);
-
-            if (aluno == null)
-                throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
-
-            var temPeriodoAberto = false;
-
-            if (periodoEscolar != null)
-                temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, aluno.DataSituacao, periodoEscolar.Bimestre);
-
-            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, temPeriodoAberto);
         }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico = false)

@@ -15,5 +15,7 @@
 
         public const string EXISTE_COMPONENTES_SEM_NOTA_INFORMADA =
             "Existe(m) componente(s) curriculares sem a nota informada.";
+
+        public const string NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO = "A nota do aluno não pode ser alterada ou incluída no periodo.";
     }
 }
