@@ -140,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_1,
                 ComponenteCurricular = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
-                AnoTurma = ANO_7,
+                AnoTurma = ANO_1,
                 CriarFechamentoDisciplinaAlunoNota = true
             };
             
