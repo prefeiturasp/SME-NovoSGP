@@ -208,7 +208,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"select * from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre)");
+            var query = new StringBuilder(@"select
+                                            x.TurmaAnoNome,
+                                            x.Bimestre,
+                                            x.ComponenteCurricularCodigo,
+                                            x.ConselhoClasseNotaId,
+                                            x.ConceitoId,
+                                            x.Nota,
+                                            x.AlunoCodigo,
+                                            x.Conceito,
+                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                            order by x.Prioridade) as linha ");
+            query.AppendLine("from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre) x");
 
             var parametros = new
             {
