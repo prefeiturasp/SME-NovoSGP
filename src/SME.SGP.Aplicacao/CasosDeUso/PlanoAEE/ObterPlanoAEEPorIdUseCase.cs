@@ -39,16 +39,8 @@ namespace SME.SGP.Aplicacao
 
                 var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
-                if(entidadePlano.Turma.TipoTurma == TipoTurma.Programa && SituacaoAtivaPlanoAEE(entidadePlano))
-                {
-                    bool turmaAtualizada = false;
-                    var turmaAlunoEol = await mediator.Send(new ObterTurmaPorCodigoQuery(alunoTurma.CodigoTurma));
-                    if (turmaAlunoEol.EhTurmaRegular())
-                       turmaAtualizada = await mediator.Send(new AtualizarTurmaAlunoPlanoAEECommand() { PlanoAEEId = entidadePlano.Id, TurmaId = turmaAlunoEol.Id });
-
-                    if(turmaAtualizada)
-                        entidadePlano = await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
-                }
+                if (entidadePlano.Turma.TipoTurma == TipoTurma.Programa)
+                    entidadePlano = await VerificaTurmaProgramaEAtribuiRegularNoPlano(alunoTurma.CodigoTurma, entidadePlano);
 
                 switch (alunoTurma.CodigoSituacaoMatricula)
                 {
@@ -68,11 +60,15 @@ namespace SME.SGP.Aplicacao
                 var alunoPorTurmaResposta = await mediator
                     .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false, entidadePlano.Turma?.CodigoTurma));
 
+
                 if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
                 {
                     alunoPorTurmaResposta = await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
                 }
+                else
+                    if(alunoPorTurmaResposta == null && !SituacaoAtivaPlanoAEE(entidadePlano) && entidadePlano.Turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
+                          alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo);
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
@@ -160,11 +156,40 @@ namespace SME.SGP.Aplicacao
             return plano;
         }
 
+        private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
+        {
+            var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, false, true));
+            if(turmasAluno.Any())
+            {
+                if(turmasAluno.Count() > 1)
+                {
+                    var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
+
+                    return await mediator
+                        .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
+                }
+            }
+            return null;
+        }
+
+        public async Task<PlanoAEE> VerificaTurmaProgramaEAtribuiRegularNoPlano(string codigoTurma, PlanoAEE entidadePlano)
+        {
+            bool turmaAtualizada = false;
+            var turmaAlunoEol = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
+            if (turmaAlunoEol.EhTurmaRegular())
+                turmaAtualizada = await mediator.Send(new AtualizarTurmaAlunoPlanoAEECommand() { PlanoAEEId = entidadePlano.Id, TurmaId = turmaAlunoEol.Id });
+
+            if (turmaAtualizada)
+                return await mediator.Send(new ObterPlanoAEEComTurmaPorIdQuery(entidadePlano.Id));
+
+            return entidadePlano;
+        }
+
         private bool SituacaoAtivaPlanoAEE(PlanoAEE entidadePlano)
         {
             return entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado 
-                || entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente 
-                || entidadePlano.Situacao != SituacaoPlanoAEE.Expirado;
+                && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente 
+                && entidadePlano.Situacao != SituacaoPlanoAEE.Expirado;
         }
 
         private string ObterNomeTurmaFormatado(Turma turma)
