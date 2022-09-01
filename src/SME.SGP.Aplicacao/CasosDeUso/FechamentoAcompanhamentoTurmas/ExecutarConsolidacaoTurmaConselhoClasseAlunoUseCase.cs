@@ -31,9 +31,10 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            SituacaoConselhoClasse statusNovo = SituacaoConselhoClasse.NaoIniciado;
+            var statusNovo = SituacaoConselhoClasse.NaoIniciado;
 
-            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
+            var consolidadoTurmaAluno = await repositorioConselhoClasseConsolidado
+                .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(filtro.TurmaId, filtro.AlunoCodigo);
 
             if (consolidadoTurmaAluno == null)
             {
@@ -54,7 +55,6 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesDoAluno != null && componentesDoAluno.Any())
                 {
-
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
                         var fechamento = await mediator.Send(new ObterFechamentoPorTurmaPeriodoQuery() { TurmaId = filtro.TurmaId });

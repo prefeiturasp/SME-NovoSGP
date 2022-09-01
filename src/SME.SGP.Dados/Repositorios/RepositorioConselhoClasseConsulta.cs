@@ -22,7 +22,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select c.* 
                             from conselho_classe c 
-                           where c.fechamento_turma_id = @fechamentoTurmaId";
+                           where not c.excluido 
+                            and c.fechamento_turma_id = @fechamentoTurmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query, new { fechamentoTurmaId });
         }
@@ -148,7 +149,7 @@ namespace SME.SGP.Dados.Repositorios
                                                        x.AnoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
-                                                                count(cccat.id) as Quantidade, ");
+                                                                count(distinct cccat.id) as Quantidade, ");
             if (ueId > 0)
                 sqlQuery.AppendLine(" t.nome as AnoTurma ");
             else
@@ -207,7 +208,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"select * from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre)");
+            var query = new StringBuilder(@"select
+                                            x.TurmaAnoNome,
+                                            x.Bimestre,
+                                            x.ComponenteCurricularCodigo,
+                                            x.ConselhoClasseNotaId,
+                                            x.ConceitoId,
+                                            x.Nota,
+                                            x.AlunoCodigo,
+                                            x.Conceito,
+                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                            order by x.Prioridade) as linha ");
+            query.AppendLine("from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre) x");
 
             var parametros = new
             {

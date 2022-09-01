@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -173,7 +174,7 @@ namespace SME.SGP.Aplicacao
         private bool DeterminaEtapaConcluida(IEnumerable<AlunoPorTurmaResposta> matriculas, string alunoCodigo, Turma turma, AlunoPorTurmaResposta ultimaMatricula)
         {
             var matriculasAnoTurma = mediator
-                .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma.AnoLetivo)).Result;
+                .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(alunoCodigo, turma?.AnoLetivo ?? DateTime.Today.Year)).Result;
 
             var concluiuTurma = matriculasAnoTurma
                 .Any(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
@@ -191,8 +192,8 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(m => m.DataSituacao)
                     .FirstOrDefault(m => m.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido);
 
-                return turma.Ue.CodigoUe != turmaAtual.Ue.CodigoUe &&
-                       (turma.EhTurmaInfantil && !turmaAtual.EhTurmaInfantil);
+                return turma.Ue.CodigoUe != turmaAtual?.Ue.CodigoUe &&
+                       (turma.EhTurmaInfantil && (!turmaAtual?.EhTurmaInfantil ?? turma.EhTurmaInfantil));
             }
 
             return false;
