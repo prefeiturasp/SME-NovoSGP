@@ -135,7 +135,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
+                NumeroAula = 2,
                 AulaId = 1
             });
 
@@ -202,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
+                NumeroAula = 2,
                 AulaId = 1
             });
             
@@ -281,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 1,
+                NumeroAula = 2,
                 AulaId = 1
             });
             
