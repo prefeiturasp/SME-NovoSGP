@@ -82,6 +82,10 @@ namespace SME.SGP.Aplicacao
                     var componentesDaTurmaEol = await mediator
                         .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
 
+                    //Excessão de disciplina ED. Fisica para modalidade EJA
+                    if (turma.EhEJA())
+                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != "6");
+
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
                         .Select(ct => ct.Codigo)
@@ -124,7 +128,8 @@ namespace SME.SGP.Aplicacao
                     consolidadoNota.ConceitoId = filtro.ConceitoId;
                 }
 
-                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+                if (consolidadoNota.ComponenteCurricularId.HasValue)
+                    await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
 
                 return true;
             }
