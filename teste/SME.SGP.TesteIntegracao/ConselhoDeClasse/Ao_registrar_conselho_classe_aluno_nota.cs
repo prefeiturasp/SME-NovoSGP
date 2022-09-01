@@ -140,13 +140,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_1,
                 ComponenteCurricular = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
-                AnoTurma = ANO_1,
+                AnoTurma = tipoNota == TipoNota.Conceito ? ANO_1 : ANO_7,
                 CriarFechamentoDisciplinaAlunoNota = true
             };
             
             await CriarDadosBase(filtro);
+
             if (ehAlterar)
-                InserirConselhoClassePadrao(filtro);
+                await InserirConselhoClassePadrao(filtro);
         }
         
         private async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
