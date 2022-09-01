@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {
-            var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
+            var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, false, true));
             if(turmasAluno.Any())
             {
                 if(turmasAluno.Count() > 1)
