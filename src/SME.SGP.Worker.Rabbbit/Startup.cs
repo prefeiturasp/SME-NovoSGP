@@ -31,6 +31,7 @@ namespace SME.SGP.Worker.Rabbbit
             registrarDependencias.RegistrarCasoDeUsoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitMQ>();
+            services.AddHostedService<ProcessMessageConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
