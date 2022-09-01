@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -20,46 +21,59 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(VerificaFrequenciaRegistradaParaAlunosInativosCommand request, CancellationToken cancellationToken)
         {
-            var alunosComRegistroExcluido = new List<string>();
             var frequenciaAlunoParaRecalcular = new List<FrequenciaAulaARecalcularDto>();
             var dadosTurma = await mediator.Send(new ObterTurmaPorCodigoQuery() { TurmaCodigo = request.TurmaCodigo });
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaCodigo, true));
 
             foreach (var aluno in alunosDaTurma)
             {
-                //var frequenciasDoAluno = await mediator.Send(new ObterFrequenciaBimestresQuery() { CodigoAluno = aluno.CodigoAluno, CodigoTurma = request.TurmaCodigo, 
-                //                                              TipoFrequencia = TipoFrequenciaAluno.PorDisciplina });
-
-                //agrupar aula e componente afetado juntos
-
                 var registroFrequenciaAluno = await mediator.Send(new ObterRegistroFrequenciaAlunoPorTurmaEAlunoCodigoQuery(request.TurmaCodigo, aluno.CodigoAluno));
 
                 if (registroFrequenciaAluno.Any())
                 {
-                    DateTime dataReferencia = aluno.PossuiSituacaoAtiva() ? aluno.DataMatricula : aluno.DataSituacao;
+                    DateTime? dataReferencia = !aluno.PossuiSituacaoAtiva() && aluno.DataSituacao.Year == dadosTurma.AnoLetivo ? aluno.DataSituacao : null;
 
-                    var registroFrequenciasAExcluir = registroFrequenciaAluno.Where(f => f.DataAula.Date > dataReferencia.Date).Select(r => r.RegistroFrequenciaAlunoId);
-
-                    if (registroFrequenciasAExcluir.Any())
+                    if(dataReferencia != null)
                     {
-                        bool excluido = await mediator.Send(new ExcluirRegistroFrequenciaAlunoPorIdCommand(registroFrequenciasAExcluir.ToArray()));
+                        var registroFrequenciasAExcluir = registroFrequenciaAluno.Where(f => f.DataAula.Date > dataReferencia.Value.Date).Select(r => r.RegistroFrequenciaAlunoId);
 
-                        if (!excluido)
-                            return false;
-                        else
+                        if (registroFrequenciasAExcluir.Any())
                         {
-                            //frequenciaAlunoParaRecalcular.AddRange(registroFrequenciaAluno.Select(r=> new FrequenciaAulaARecalcularDto(){
-                            //    AulaId = r.AulaId,
-                            //    DisciplinaCodigo = r.DisciplinaCodigo
-                            //    }))
-                            //alunosComRegistroExcluido.Add(aluno.CodigoAluno);
+                            bool excluido = await mediator.Send(new ExcluirRegistroFrequenciaAlunoPorIdCommand(registroFrequenciasAExcluir.ToArray()));
+
+                            if (!excluido)
+                                return false;
+                            else
+                            {
+                                frequenciaAlunoParaRecalcular.AddRange(registroFrequenciaAluno
+                                    .Where(f => f.DataAula.Date > dataReferencia.Value.Date)
+                                    .Select(r => new FrequenciaAulaARecalcularDto()
+                                    {
+                                        AulaId = r.AulaId,
+                                        DisciplinaCodigo = r.DisciplinaCodigo
+                                    }));
+                            }
+
                         }
-                            
-                    }
+                    }     
                 }
             }
-            //await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunosComRegistroExcluido, ))
-            return true;
+
+            try
+            {
+                frequenciaAlunoParaRecalcular = frequenciaAlunoParaRecalcular.DistinctBy(f => f.AulaId).ToList();
+
+                foreach (var frequencia in frequenciaAlunoParaRecalcular)
+                   await mediator.Send(new RecalcularFrequenciaPorTurmaCommand(request.TurmaCodigo, frequencia.DisciplinaCodigo, frequencia.AulaId));
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao recalcular frequência da turma de código {request.TurmaCodigo}", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
+                return false;
+            }
+            
         }
     }
 }

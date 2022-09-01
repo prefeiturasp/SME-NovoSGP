@@ -843,6 +843,7 @@ namespace SME.SGP.IoC
             // Frequência
             services.TryAddScoped<IExecutaConsolidacaoFrequenciaPorAnoUseCase, ExecutaConsolidacaoFrequenciaPorAnoUseCase>();
             services.TryAddScoped<IInserirFrequenciaListaoUseCase, InserirFrequenciaListaoUseCase>();
+            services.TryAddScoped<IVerificaFrequenciaRegistradaAlunosInativosUseCase, VerificaFrequenciaRegistradaAlunosInativosUseCase>();
 
             //Objetivo Curricular
             services.TryAddScoped<IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase, ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase>();
