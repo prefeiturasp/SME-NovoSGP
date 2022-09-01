@@ -53,6 +53,11 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre,turma.CodigoTurma));
+            
+            if (fechamentoTurma == null && !turma.EhAnoAnterior())
+                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
+            
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
             if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
@@ -71,8 +76,7 @@ namespace SME.SGP.Aplicacao
                 if (bimestre == 0)
                     bimestre = 1;
             }
-            var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestre);
-
+            
             if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
@@ -80,9 +84,6 @@ namespace SME.SGP.Aplicacao
                 if (!retornoConselhoBimestre.possuiConselho || (!retornoConselhoBimestre.concluido && situacaoConselhoAluno != SituacaoConselhoClasse.Concluido))
                     throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
             }
-
-            if (fechamentoTurma == null && !turma.EhAnoAnterior())
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
 
