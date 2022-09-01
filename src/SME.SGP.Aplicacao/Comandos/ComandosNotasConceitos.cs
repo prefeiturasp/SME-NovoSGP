@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplinasDoProfessorLogado = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(notaConceitoLista.TurmaId, usuario.Login, usuario.PerfilAtual, true));
 
-            if (disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any())
+            if ((disciplinasDoProfessorLogado == null || !disciplinasDoProfessorLogado.Any()) && !usuario.EhProfessorCj())
                 throw new NegocioException("Não foi possível obter os componentes curriculares do usuário logado.");
 
             var notasBanco = repositorioNotasConceitos
