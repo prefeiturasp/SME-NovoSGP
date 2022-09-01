@@ -24,14 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-
-            bool ehHistorico = false;
-            
-            if(request.AnoLetivo > 0 )
-                if (request.AnoLetivo != DateTime.Today.Year)
-                    ehHistorico = true;
-
-            var url = $"alunos/{request.CodidoAluno}/turmas/anosLetivos/{request.AnoLetivo}/matriculaTurma/{request.FiltrarSituacaoMatricula}/ehHistorico/{ehHistorico}/tipoTurma/{request.TipoTurma}";
+            var url = $"alunos/{request.CodidoAluno}/turmas/anosLetivos/{request.AnoLetivo}/matriculaTurma/{request.FiltrarSituacaoMatricula}/ehHistorico/{request.Historica}/tipoTurma/{request.TipoTurma}";
             try
             {
                 var resposta = await httpClient.GetAsync(url);

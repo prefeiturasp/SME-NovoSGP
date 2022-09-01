@@ -215,7 +215,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 
