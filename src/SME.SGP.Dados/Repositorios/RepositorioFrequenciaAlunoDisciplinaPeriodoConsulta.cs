@@ -523,7 +523,8 @@ namespace SME.SGP.Dados
         {
             const string sql = @"select distinct(1)
                                    from registro_frequencia_aluno rfa
-                                  inner join aula a on a.id = rfa.aula_id 
+                                  inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                                  inner join aula a on a.id = rf.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = ANY(@periodosEscolaresIds)
