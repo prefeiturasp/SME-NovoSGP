@@ -18,10 +18,10 @@ namespace SME.SGP.Infra
         {
             var factory = new ConnectionFactory()
             {
-                HostName = configuracaoRabbit.HostName,
-                UserName = configuracaoRabbit.UserName,
-                Password = configuracaoRabbit.Password,
-                VirtualHost = configuracaoRabbit.VirtualHost,
+                HostName = "localhost",
+                UserName = "user",
+                Password = "bitnami",
+                VirtualHost = "dev"
             };
 
             return factory.CreateConnection();
