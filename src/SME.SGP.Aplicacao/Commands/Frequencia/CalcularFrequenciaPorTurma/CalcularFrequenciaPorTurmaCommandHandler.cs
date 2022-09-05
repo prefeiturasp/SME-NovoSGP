@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
 
         public void VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registrosLancados, IEnumerable<FrequenciaAluno> frequenciasConsolidadas, List<long> frequenciasParaExcluir)
         {
-            if (frequenciasConsolidadas.Any())
+            if (frequenciasConsolidadas.Any() && registrosLancados.Any())
             {
                 var frequenciasParaRealizarExclusao = frequenciasConsolidadas.Where(f => !registrosLancados.Any(r => r.AlunoCodigo == f.CodigoAluno
                                                                                 && r.Bimestre == f.Bimestre && r.PeriodoEscolarId == f.PeriodoEscolarId))
