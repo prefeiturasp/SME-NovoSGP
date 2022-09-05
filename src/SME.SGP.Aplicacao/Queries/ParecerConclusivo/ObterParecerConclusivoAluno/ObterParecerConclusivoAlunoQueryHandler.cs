@@ -45,13 +45,6 @@ namespace SME.SGP.Aplicacao
 
         private ConselhoClasseParecerConclusivo ObterParecerValidacao(bool retornoValidacao)
             => pareceresDoServico.FirstOrDefault(c => c.Aprovado == retornoValidacao);
-        private async Task<bool> ValidarTodasNotasComponentesLancadas(string alunoCodigo, string[] turmasCodigos, int quantidadeComponentesDaTurma)
-        {
-            var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
-
-            return notasFechamentoAluno.Count() == quantidadeComponentesDaTurma;
-        }
-
 
         public async Task<ConselhoClasseParecerConclusivo> Handle(ObterParecerConclusivoAlunoQuery request, CancellationToken cancellationToken)
         {
@@ -71,7 +64,6 @@ namespace SME.SGP.Aplicacao
 
             if (!turmasCodigos.Any())
                 turmasCodigos = new string[] { turma.CodigoTurma };
-            var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(turmasCodigos, turma.Ue.CodigoUe));
 
             // Frequencia
             Filtrar(request.PareceresDaTurma.Where(c => c.Frequencia), "Frequência");
