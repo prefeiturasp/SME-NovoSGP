@@ -81,8 +81,6 @@ namespace SME.SGP.Aplicacao
             var parecerFrequencia = ObterParecerValidacao(true);
 
             // Nota
-            if (!await ValidarTodasNotasComponentesLancadas(request.AlunoCodigo, turmasCodigos, componentes.Count()))
-                return new ConselhoClasseParecerConclusivo() { Nota = true, Conselho = false, Frequencia = false, Nome = "Sem Parecer", Id = 4 };
 
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
