@@ -28,11 +28,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ConselhoClasseAluno> SalvarAsync(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto)
         {
+            var dataAtual = DateTimeExtension.HorarioBrasilia();
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
 
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre : BIMESTRE_4;
 
-            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, DateTime.Today, bimestre, fechamentoTurma.Turma.AnoLetivo == DateTime.Today.Year));
+            var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, dataAtual.Date, bimestre, fechamentoTurma.Turma.AnoLetivo == dataAtual.Year));
 
             if (!periodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
@@ -42,14 +43,14 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null && bimestre > 0)
                 throw new NegocioException("Período escolar não encontrado");
 
-            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = DateTime.Now, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = fechamentoTurma.Turma.UeId });
+            var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery() { DataParaVerificar = dataAtual, TipoCalendarioId = periodoEscolar.TipoCalendarioId, UeId = fechamentoTurma.Turma.UeId });
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == conselhoClasseAlunoDto.AlunoCodigo);
 
             if (alunoConselho == null)
                 throw new NegocioException("Aluno não encontrado para salvar o conselho de classe.");
 
-            if (alunoConselho.CodigoSituacaoMatricula != SituacaoMatriculaAluno.Ativo)
+            if (alunoConselho.Inativo && fechamentoTurma.Turma.AnoLetivo == dataAtual.Year)
             {
                 if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
                     throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_REABERTURA);
