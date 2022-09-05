@@ -297,8 +297,8 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
 
-            var permiteEdicao = (periodoEscolar is null && dadosAluno.EstAtivo()) ||
-                                 (dadosAluno.EstAtivo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
+            var permiteEdicao = (periodoEscolar is null && dadosAluno.EstaAtivo()) ||
+                                 (dadosAluno.EstaAtivo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
                                  (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoFim);
 
             var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
