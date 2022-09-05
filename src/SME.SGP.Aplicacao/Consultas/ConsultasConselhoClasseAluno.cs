@@ -222,26 +222,6 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            if (periodoEscolar != null)
-            {
-                if (periodoInicio.Year >= DateTime.Now.Year)
-                {
-                    var periodoReaberturaCorrespondente = await mediator.Send(
-                        new ObterFechamentoReaberturaPorDataTurmaQuery()
-                        {
-                            DataParaVerificar = DateTime.Now,
-                            TipoCalendarioId = periodoEscolar.TipoCalendarioId,
-                            UeId = turma.Ue.Id
-                        });
-
-                    if (periodoReaberturaCorrespondente != null)
-                    {
-                        periodoInicio = periodoReaberturaCorrespondente.Inicio.Date;
-                        periodoFim = periodoReaberturaCorrespondente.Fim.Date;
-                    }
-                }
-            }
-
             var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
 
             if (turmasComMatriculasValidas.Any())
@@ -317,9 +297,9 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
 
-            var visualizaNotas = (periodoEscolar is null && !dadosAluno.EstaInativo()) ||
-                                 (!dadosAluno.EstaInativo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
-                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoInicio);
+            var permiteEdicao = (periodoEscolar is null && dadosAluno.EstAtivo()) ||
+                                 (dadosAluno.EstAtivo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
+                                 (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date > periodoFim);
 
             var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
 
@@ -382,7 +362,7 @@ namespace SME.SGP.Aplicacao
                         {
                             conselhoClasseAlunoNotas.ComponenteRegencia = await ObterNotasFrequenciaRegencia(disciplina.CodigoComponenteCurricular,
                                 frequenciaAluno, periodoEscolar, turma, notasConselhoClasseAluno, notasFechamentoAluno, disciplina.LancaNota,
-                                visualizaNotas);
+                                permiteEdicao);
                         }
                         else
                         {
@@ -392,7 +372,7 @@ namespace SME.SGP.Aplicacao
                             conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterNotasFrequenciaComponente(disciplina.Nome,
                                 disciplina.CodigoComponenteCurricular, frequenciaAluno, periodoEscolar, turma, notasConselhoClasseAluno,
                                 notasFechamentoAluno, turmaPossuiRegistroFrequencia, disciplina.LancaNota, percentualFrequenciaPadrao,
-                                visualizaNotas, alunoCodigo));
+                                permiteEdicao, alunoCodigo));
                         }
                     }
                 }
@@ -401,7 +381,7 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = conselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo);
-            retorno.PodeEditarNota = visualizaNotas && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(alunoCodigo, turma, periodoEscolar));
+            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(alunoCodigo, turma, periodoEscolar));
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
