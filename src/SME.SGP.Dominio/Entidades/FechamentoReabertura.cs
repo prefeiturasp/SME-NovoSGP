@@ -9,11 +9,9 @@ namespace SME.SGP.Dominio
         public FechamentoReabertura()
         {
             Status = EntidadeStatus.Aprovado;
-            bimestres = new List<FechamentoReaberturaBimestre>();
+            Bimestres = new List<FechamentoReaberturaBimestre>();
             Excluido = false;
         }
-
-        public IEnumerable<FechamentoReaberturaBimestre> Bimestres { get { return bimestres; } }
 
         public string Descricao { get; set; }
         public Dre Dre { get; set; }
@@ -29,7 +27,7 @@ namespace SME.SGP.Dominio
         public long? UeId { get; set; }
         public WorkflowAprovacao WorkflowAprovacao { get; set; }
         public long? WorkflowAprovacaoId { get; set; }
-        private List<FechamentoReaberturaBimestre> bimestres { get; set; }
+        public List<FechamentoReaberturaBimestre> Bimestres { get; set; }
         public Usuario Aprovador { get; set; }
         public long? AprovadorId { get; set; }
         public DateTime? AprovadoEm { get; set; }
@@ -40,17 +38,17 @@ namespace SME.SGP.Dominio
             {
                 bimestre.FechamentoAbertura = this;
                 bimestre.FechamentoAberturaId = this.Id;                
-                bimestres.Add(bimestre);
+                Bimestres.Add(bimestre);
             }
         }
 
         public void AdicionarBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
         {
-            bimestres.AddRange(listaBimestres);
+            Bimestres.AddRange(listaBimestres);
         }
         public void SobrescreverBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
         {
-            bimestres = listaBimestres.ToList();
+            Bimestres = listaBimestres.ToList();
         }
 
         public void AprovarWorkFlow()
@@ -130,15 +128,16 @@ namespace SME.SGP.Dominio
 
         public object ObterBimestresNumeral()
         {
-            var bimestresOrdenados = bimestres.OrderBy(a => a.Bimestre);
+            var bimestresOrdenados = Bimestres.OrderBy(a => a.Bimestre);
             return string.Join(",", bimestresOrdenados.Select(a => $"{a.Bimestre.ToString()}º").ToArray());
         }
 
         public bool[] ObterBimestresSelecionados()
         {
-            bool[] bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
+            //bool[] bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
+            bool[] bimestresArray = new bool[Bimestres.Count()];
 
-            foreach (var bimestre in bimestres)
+            foreach (var bimestre in Bimestres)
             {
                 bimestresArray[bimestre.Bimestre - 1] = true;
             }

@@ -22,8 +22,8 @@
             return Modalidade == ModalidadeTipoCalendario.EJA ?
                     Dominio.Modalidade.EJA :
                     Modalidade == ModalidadeTipoCalendario.Infantil ?
-                        Dominio.Modalidade.EducacaoInfantil :
-                        Dominio.Modalidade.Medio;
+                    Dominio.Modalidade.EducacaoInfantil :
+                    Dominio.Modalidade.Medio;
         }
     }
 }
