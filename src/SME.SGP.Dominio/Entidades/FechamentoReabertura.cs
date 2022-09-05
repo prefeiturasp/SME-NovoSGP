@@ -134,7 +134,6 @@ namespace SME.SGP.Dominio
 
         public bool[] ObterBimestresSelecionados()
         {
-            //bool[] bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
             bool[] bimestresArray = new bool[Bimestres.Count()];
 
             foreach (var bimestre in Bimestres)
