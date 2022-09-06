@@ -78,8 +78,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var consultasConselhoClasseAluno = ServiceProvider.GetService<IConsultasConselhoClasseAluno>();
 
+            var ret = ObterTodos<ConselhoClasseNota>();
+            
             var retorno = await consultasConselhoClasseAluno.ObterNotasFrequencia(CONSELHO_CLASSE_ID_1, FECHAMENTO_TURMA_ID_2,ALUNO_CODIGO_1, TURMA_CODIGO_1, BIMESTRE_2, false);
-
+            
             retorno.ShouldNotBeNull();
             var notas = retorno.NotasConceitos.FirstOrDefault().ComponentesCurriculares.FirstOrDefault();
             notas.NotaPosConselho.Nota.ShouldNotBeNull();
