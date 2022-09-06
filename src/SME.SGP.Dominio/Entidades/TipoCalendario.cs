@@ -14,7 +14,8 @@
         {
             if (Modalidade == ModalidadeTipoCalendario.EJA && AnoLetivo > 2020)
                 return 2;
-            else return 4;
+ 
+            return 4;
         }
 
         public Modalidade ObterModalidadeTurma()
