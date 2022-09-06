@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseUltimoBimestre == null)
                 return false;
 
-            return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id);
+            return await servicoConselhoClasse.VerificaNotasTodosComponentesCurriculares(alunoCodigo, turma, periodoEscolar.Id,turma.Historica);
         }
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
@@ -120,6 +120,8 @@ namespace SME.SGP.Aplicacao
 
             var registrosFrequencia = await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, new string[] { turma.CodigoTurma }, disciplinas.Select(d => !d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : d.CodigoComponenteTerritorioSaber.ToString()).ToArray(),
                 periodoEscolar?.Id));
+
+            retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
@@ -187,6 +189,7 @@ namespace SME.SGP.Aplicacao
 
                 consideraHistorico = alunoNaTurma.Inativo;
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
+                
                 if (!turmasCodigos.Any())
                 {
                     turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -267,7 +270,9 @@ namespace SME.SGP.Aplicacao
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
-                var turmasParaNotasFinais = turma.EhEJA() ? turmasCodigos : new string[] { codigoTurma };
+                var turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
+                    ? turmasCodigos 
+                    : new string[] { codigoTurma };
 
                 bool validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
@@ -276,7 +281,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasParaNotasFinais, alunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, bimestre, validaMatricula));
             }
 
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var disciplinasDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false));
 
@@ -406,6 +411,19 @@ namespace SME.SGP.Aplicacao
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
+        }
+
+        private async Task<bool> ValidaTurmaRegularJuntoAEdFisica(List<string> turmasCodigos, string turmaPrincipal)
+        {
+            if(turmasCodigos.Count() == 2)
+            {
+                turmasCodigos.Remove(turmaPrincipal);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmasCodigos.FirstOrDefault()));
+                if (turma.TipoTurma == TipoTurma.EdFisica)
+                    return true;
+            }
+
+            return false;
         }
 
         private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
@@ -689,7 +707,7 @@ namespace SME.SGP.Aplicacao
             // Busca nota do conselho de classe consultado
             var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
             var notaComponenteId = notaComponente?.Id;
-            if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
+            if (notaComponente == null)
             {
                 var notaComponenteFechamento =
                     notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo && c.Bimestre == bimestre && c.ConselhoClasseNotaId > 0)
@@ -763,7 +781,7 @@ namespace SME.SGP.Aplicacao
             var percentualFrequencia = double.MinValue;
 
             if (turmaPossuiRegistroFrequencia)
-                percentualFrequencia = Math.Round(frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100);
+                percentualFrequencia = frequenciaAluno != null ? frequenciaAluno.PercentualFrequencia : 100;
 
             if (componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
                 totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));

@@ -45,6 +45,7 @@ namespace SME.SGP.Dominio
             ComponentesDeAulaPAP = new List<string> {
                 "1322",
             };
+
         }
 
         public bool AulaCJ { get; set; }
