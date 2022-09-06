@@ -10,17 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasAlunoPorFiltroQuery : IRequest<IEnumerable<AlunoPorTurmaResposta>>
     {
-        public ObterTurmasAlunoPorFiltroQuery(string codidoAluno, int? anoLetivo, bool? filtrarSituacaoMatricula,
+        public ObterTurmasAlunoPorFiltroQuery(string codigoAluno, int? anoLetivo, bool? filtrarSituacaoMatricula,
             bool historica = false, bool tipoTurma = false)
         {
-            CodidoAluno = codidoAluno;
+            CodigoAluno = codigoAluno;
             AnoLetivo = anoLetivo;
             FiltrarSituacaoMatricula = filtrarSituacaoMatricula;
             Historica = historica;
             TipoTurma = tipoTurma;
+            Historica = historica;
         }
 
-        public string CodidoAluno { get; }
+        public string CodigoAluno { get; }
         public int? AnoLetivo { get; }
         public bool? FiltrarSituacaoMatricula { get; }
         public bool Historica { get; }
@@ -32,7 +33,7 @@ namespace SME.SGP.Aplicacao
     {
         public ObterTurmasAlunoPorFiltroQueryValidator()
         {
-            RuleFor(c => c.CodidoAluno)
+            RuleFor(c => c.CodigoAluno)
             .NotEmpty()
             .WithMessage("O código do aluno deve ser informado.");
         }        
