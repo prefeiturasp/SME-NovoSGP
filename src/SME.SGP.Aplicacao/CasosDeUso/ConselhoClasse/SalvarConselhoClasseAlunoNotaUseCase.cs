@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
@@ -158,11 +157,11 @@ namespace SME.SGP.Aplicacao
                 
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
                 await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
-                    dto.Bimestre, alunoConselho.DataMatricula, !alunoConselho.EstaInativo(periodoEscolar.PeriodoFim) 
-                        ? periodoEscolar.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
+                    dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
+                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
                 await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno, 
-                    alunoConselho.DataMatricula, !alunoConselho.EstaInativo(periodoEscolar.PeriodoFim) 
-                        ? periodoEscolar.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
+                    alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
+                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
 
             if (notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular) == null)
                 return;
