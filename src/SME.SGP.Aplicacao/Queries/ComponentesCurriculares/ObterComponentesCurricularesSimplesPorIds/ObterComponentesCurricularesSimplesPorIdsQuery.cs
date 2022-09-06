@@ -15,9 +15,9 @@ namespace SME.SGP.Aplicacao
         }
     }
 
-    public class ObterDescPermLanctoNotaComponentesCurricularesPorIdsQueryValidator : AbstractValidator<ObterComponentesCurricularesSimplesPorIdsQuery>
+    public class ObterComponentesCurricularesSimplesPorIdsQueryValidator : AbstractValidator<ObterComponentesCurricularesSimplesPorIdsQuery>
     {
-        public ObterDescPermLanctoNotaComponentesCurricularesPorIdsQueryValidator()
+        public ObterComponentesCurricularesSimplesPorIdsQueryValidator()
         {
             RuleFor(a => a.Ids)
                 .NotEmpty()
