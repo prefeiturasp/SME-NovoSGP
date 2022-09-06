@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             string[] turmasCodigos;
 
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (!turma.Historica &&( turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
                 var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -113,7 +113,7 @@ namespace SME.SGP.Aplicacao
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
             var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));
 
-            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional)) 
+            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional,turma.AnoLetivo)) 
                 return false;
 
             return true;
@@ -124,9 +124,18 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(
                     new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, anoLetivo)));
 
-        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional)
-            => frequenciasComponentes
-            .Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional,int anoLetivo)
+        {
+            if (anoLetivo != 2020)
+            {
+                return frequenciasComponentes.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+            }
+            else
+            {
+                return false;
+            }
+        }
+            
 
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
