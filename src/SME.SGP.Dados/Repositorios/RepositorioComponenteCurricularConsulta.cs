@@ -279,7 +279,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil, permite_lancamento_nota as permiteLanctoNota from componente_curricular where id = Any(@ids)";
 
-            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterDescsPermLanctoNotaPorIds");
+            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterComponentesSimplesPorIds");
         }
     }
 }
