@@ -76,15 +76,15 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            periodoEscolar = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
+            var periodoEscolarValidacao = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
 
-            await ValidaProfessorPodePersistirTurma(turma, periodoEscolar, usuario);
+            await ValidaProfessorPodePersistirTurma(turma, periodoEscolarValidacao, usuario);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);            
 
-            await VerificaSePodeEditarNota(periodoEscolar, turma, alunoConselho, dto.Bimestre);
-            await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolar);
+            await VerificaSePodeEditarNota(periodoEscolarValidacao, turma, alunoConselho, dto.Bimestre);
+            await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolarValidacao);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
                 fechamentoTurma, fechamentoTurmaDisciplina, periodoEscolar?.Bimestre));
@@ -95,9 +95,9 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PeriodoEscolar> ObtenhaPeriodoEscolar(PeriodoEscolar periodo, Turma turma, int bimestre)
         {
-            if (periodo.PeriodoFim == DateTime.MinValue && bimestre != 0)
+            if (periodo.PeriodoFim == DateTime.MinValue)
             {
-                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
+                return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre));
             }
 
             return periodo;
