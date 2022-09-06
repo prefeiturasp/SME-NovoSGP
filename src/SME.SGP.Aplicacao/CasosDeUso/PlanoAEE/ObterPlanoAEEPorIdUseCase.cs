@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
                 var alunoTurma = await mediator
-                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, false, true));
+                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
                 if (alunoTurma == null)
                     throw new NegocioException("Aluno não encontrado.");
@@ -158,7 +158,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {
-            var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, false, true));
+            var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
             if(turmasAluno.Any())
             {
                 if(turmasAluno.Count() > 1)
