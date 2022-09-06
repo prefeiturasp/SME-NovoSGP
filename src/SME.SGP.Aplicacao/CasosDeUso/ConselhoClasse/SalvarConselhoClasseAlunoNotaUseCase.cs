@@ -95,10 +95,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PeriodoEscolar> ObtenhaPeriodoEscolar(PeriodoEscolar periodo, Turma turma, int bimestre)
         {
-            if (periodo.PeriodoFim == DateTime.MinValue)
+            if (periodo.PeriodoFim == DateTime.MinValue && bimestre != 0)
             {
-                bimestre = bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre;
-                
                 return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
