@@ -7,8 +7,8 @@ namespace SME.SGP.Infra.Utilitarios
     {
         public static int ObterSemanaDoAno(DateTime data)
         {
-            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;            
-            return dfi.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstDay, DayOfWeek.Sunday);
+            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+            return dfi.Calendar.GetWeekOfYear(data, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
         }
 
         public static int ObterDiferencaDeMesesEntreDatas(DateTime dataInicial, DateTime dataFinal) 
