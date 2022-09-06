@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -78,11 +79,11 @@ namespace SME.SGP.Aplicacao
             periodoEscolar = await ObtenhaPeriodoEscolar(periodoEscolar, turma, dto.Bimestre);
 
             await ValidaProfessorPodePersistirTurma(turma, periodoEscolar, usuario);
-            
+
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == dto.CodigoAluno);            
 
-            await VerificaSePodeEditarNota(periodoEscolar, turma, alunoConselho);
+            await VerificaSePodeEditarNota(periodoEscolar, turma, alunoConselho, dto.Bimestre);
             await ValidarConceitoOuNota(dto, fechamentoTurma, alunoConselho, periodoEscolar);
 
             await mediator.Send(new GravarFechamentoTurmaConselhoClasseCommand(
@@ -94,24 +95,46 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PeriodoEscolar> ObtenhaPeriodoEscolar(PeriodoEscolar periodo, Turma turma, int bimestre)
         {
-            if (periodo.PeriodoFim == DateTime.MinValue)
+            if (periodo.PeriodoFim == DateTime.MinValue && bimestre != 0)
             {
-                bimestre = bimestre == 0 ? turma.ModalidadeTipoCalendario == ModalidadeTipoCalendario.EJA ? BIMESTRE_2 : BIMESTRE_4 : bimestre;
-                
                 return await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
             }
 
             return periodo;
         }
 
-        private async Task VerificaSePodeEditarNota(PeriodoEscolar periodoEscolar, Turma turma, AlunoPorTurmaResposta alunoConselho)
+        private async Task VerificaSePodeEditarNota(PeriodoEscolar periodoEscolar, Turma turma, AlunoPorTurmaResposta alunoConselho, int bimestre)
         {
+            DateTime? periodoInicio = periodoEscolar?.PeriodoInicio;
+            DateTime? periodoFim = periodoEscolar?.PeriodoFim;
+
+            if (bimestre == 0)
+            {
+                var periodosLetivos = await ObtenhaListaDePeriodoLetivo(turma);
+
+                if (periodosLetivos != null || periodosLetivos.Any())
+                {
+                    periodoInicio = periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
+                    periodoFim = periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
+                }
+            }
+
             var visualizaNotas = (periodoEscolar is null && !alunoConselho.Inativo) ||
-                (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
-                (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoInicio);
+                (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoFim) ||
+                (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoInicio);
 
             if (!visualizaNotas || !await mediator.Send(new VerificaSePodeEditarNotaQuery(alunoConselho.CodigoAluno, turma, periodoEscolar)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
+        }
+
+        private async Task<List<PeriodoEscolar>> ObtenhaListaDePeriodoLetivo(Turma turma)
+        {
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
+
+            if (tipoCalendario != null)
+                return (await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioQuery(tipoCalendario.Id))).ToList();
+
+            return null;
         }
 
         private async Task<bool> PossuiPermissaoTurma(Turma turma, PeriodoEscolar periodo, Usuario usuarioLogado)
