@@ -1,2 +1,0 @@
-update wf_aprovacao set excluido = true
-where id in(1340416, 1340423, 1340471, 1340466, 1343745, 1343746, 1343747, 1343748, 1343909);		
