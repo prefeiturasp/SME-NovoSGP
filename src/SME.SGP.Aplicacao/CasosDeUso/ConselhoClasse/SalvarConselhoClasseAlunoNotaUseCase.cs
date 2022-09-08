@@ -119,12 +119,39 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
+            var periodoReabertura = await ObtenhaPeriodoDeAbertura(periodoEscolar, turma, periodoInicio);
+
+            if (periodoReabertura != null)
+            {
+                periodoInicio = periodoReabertura.Inicio.Date;
+                periodoFim = periodoReabertura.Fim.Date;
+            }
+
             var visualizaNotas = (periodoEscolar is null && !alunoConselho.Inativo) ||
                 (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoFim) ||
                 (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoInicio);
 
             if (!visualizaNotas || !await mediator.Send(new VerificaSePodeEditarNotaQuery(alunoConselho.CodigoAluno, turma, periodoEscolar)))
                 throw new NegocioException(MensagemNegocioFechamentoNota.NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO);
+        }
+
+        private async Task<FechamentoReabertura> ObtenhaPeriodoDeAbertura(PeriodoEscolar periodoEscolar, Turma turma, DateTime? periodoInicio)
+        {
+            if (periodoEscolar != null)
+            {
+                if (periodoInicio.GetValueOrDefault().Year >= DateTime.Now.Year)
+                {
+                    return await mediator.Send(
+                        new ObterFechamentoReaberturaPorDataTurmaQuery()
+                        {
+                            DataParaVerificar = DateTime.Now,
+                            TipoCalendarioId = periodoEscolar.TipoCalendarioId,
+                            UeId = turma.Ue.Id
+                        });
+                }
+            }
+
+            return null;
         }
 
         private async Task<List<PeriodoEscolar>> ObtenhaListaDePeriodoLetivo(Turma turma)
