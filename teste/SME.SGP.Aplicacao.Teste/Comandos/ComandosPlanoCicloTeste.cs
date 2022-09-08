@@ -9,6 +9,7 @@ using System.Threading;
 using Microsoft.Extensions.Options;
 using SME.SGP.Infra.Utilitarios;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Teste.Comandos
 {
@@ -53,7 +54,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "DeveSalvarPlanoCiclo")]
-        public void DeveSalvarPlanoCiclo()
+        public async Task DeveSalvarPlanoCiclo()
         {
             repositorioPlanoCiclo.Setup(c => c.Salvar(It.IsAny<PlanoCiclo>()))
                 .Returns(1);
@@ -63,7 +64,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
                 .ReturnsAsync("Teste");
 
 
-            comandosPlanoCiclo.Salvar(new PlanoCicloDto()
+            await comandosPlanoCiclo.Salvar(new PlanoCicloDto()
             {
                 Ano = 2019,
                 CicloId = 1,
@@ -82,7 +83,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "DeveSalvarPlanoCicloAlterandoObjetivosEMatrizDoSaber")]
-        public void DeveSalvarPlanoCicloAlterandoObjetivosEMatrizDoSaber()
+        public async Task DeveSalvarPlanoCicloAlterandoObjetivosEMatrizDoSaber()
         {
             repositorioObjetivoDesenvolvimentoPlano.Setup(c => c.ObterObjetivosDesenvolvimentoPorIdPlano(It.IsAny<long>()))
                 .Returns(new List<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>()
@@ -109,7 +110,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioPlanoCiclo.Setup(c => c.Salvar(It.IsAny<PlanoCiclo>()))
                 .Returns(1);
 
-            comandosPlanoCiclo.Salvar(new PlanoCicloDto()
+            await comandosPlanoCiclo.Salvar(new PlanoCicloDto()
             {
                 Id = 1,
                 Ano = 2019,
@@ -129,7 +130,7 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Fact(DisplayName = "NaoDeveSalvarPlanoCicloDuplicado")]
-        public void NaoDeveSalvarPlanoCicloDuplicado()
+        public async Task NaoDeveSalvarPlanoCicloDuplicado()
         {
             repositorioPlanoCiclo.Setup(c => c.ObterPlanoCicloPorAnoCicloEEscola(It.IsAny<int>(), It.IsAny<long>(), It.IsAny<string>()))
                 .Returns(true);
@@ -137,66 +138,71 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             repositorioPlanoCiclo.Setup(c => c.Salvar(It.IsAny<PlanoCiclo>()))
                 .Returns(1);
 
-            Assert.Equal("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.",
-                Assert.Throws<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
-                {
-                    Ano = 2019,
-                    CicloId = 1,
-                    Descricao = "Teste",
-                    EscolaId = "1",
-                    IdsMatrizesSaber = new List<long>()
+            var exception = await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
+            {
+                Ano = 2019,
+                CicloId = 1,
+                Descricao = "Teste",
+                EscolaId = "1",
+                IdsMatrizesSaber = new List<long>()
                     {
                         1, 2, 3
                     },
-                    IdsObjetivosDesenvolvimento = new List<long>()
+                IdsObjetivosDesenvolvimento = new List<long>()
                     {
                         1, 2, 3
                     }
-                })).Message);
+            }));
+            Assert.Equal("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.",
+                exception.Message);
             unitOfWork.Verify(c => c.PersistirTransacao(), Times.Never);
         }
 
         [Fact(DisplayName = "NaoDeveSalvarPlanoCicloSemIdsDaMatrizDoSaberParaTurmasEnsinoFundamental")]
-        public void NaoDeveSalvarPlanoCicloSemIdsDaMatrizDoSaberParaTurmasEnsinoFundamental()
+        public async Task NaoDeveSalvarPlanoCicloSemIdsDaMatrizDoSaberParaTurmasEnsinoFundamental()
         {
-            Assert.Equal("A matriz de saberes deve conter ao menos 1 elemento.",
-                Assert.Throws<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
-                {
-                    Ano = 2019,
-                    CicloId = 1,
-                    Descricao = "Teste",
-                    EscolaId = "1",
-                    IdsObjetivosDesenvolvimento = new List<long>()
+            var exception = await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
+            {
+                Ano = 2019,
+                CicloId = 1,
+                Descricao = "Teste",
+                EscolaId = "1",
+                IdsObjetivosDesenvolvimento = new List<long>()
                     {
                         1, 2, 3
                     }
-                })).Message);
+            }));
+            Assert.Equal("A matriz de saberes deve conter ao menos 1 elemento.",
+                exception.Message);
             unitOfWork.Verify(c => c.PersistirTransacao(), Times.Never);
         }
 
         [Fact(DisplayName = "NaoDeveSalvarPlanoCicloSemIdsDosObjetivosDeDesenvolvimentoParaTurmasEnsinoFundamental")]
-        public void NaoDeveSalvarPlanoCicloSemIdsDosObjetivosDeDesenvolvimentoParaTurmasEnsinoFundamental()
+        public async Task NaoDeveSalvarPlanoCicloSemIdsDosObjetivosDeDesenvolvimentoParaTurmasEnsinoFundamental()
         {
-            Assert.Equal("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.",
-                Assert.Throws<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
-                {
-                    Ano = 2019,
-                    CicloId = 1,
-                    Descricao = "Teste",
-                    EscolaId = "1",
-                    IdsMatrizesSaber = new List<long>()
+            var exception = await Assert.ThrowsAsync<NegocioException>(() => comandosPlanoCiclo.Salvar(new PlanoCicloDto()
+            {
+                Ano = 2019,
+                CicloId = 1,
+                Descricao = "Teste",
+                EscolaId = "1",
+                IdsMatrizesSaber = new List<long>()
                     {
                         1, 2, 3
                     }
-                })).Message);
+            }));
+
+            Assert.Equal("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.",
+               exception.Message);
             unitOfWork.Verify(c => c.PersistirTransacao(), Times.Never);
         }
 
         [Fact(DisplayName = "NaoDeveSalvarPlanoCicloSemParametros")]
-        public void NaoDeveSalvarPlanoCicloSemParametros()
+        public async Task NaoDeveSalvarPlanoCicloSemParametros()
         {
+            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => comandosPlanoCiclo.Salvar(null));
             Assert.Equal("planoCicloDto",
-                Assert.Throws<ArgumentNullException>(() => comandosPlanoCiclo.Salvar(null)).ParamName);
+                exception.ParamName);
             unitOfWork.Verify(c => c.PersistirTransacao(), Times.Never);
         }
     }
