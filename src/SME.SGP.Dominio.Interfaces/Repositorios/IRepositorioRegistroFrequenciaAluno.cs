@@ -14,6 +14,7 @@ namespace SME.SGP.Dominio
         Task<bool> InserirVariosComLog(IEnumerable<RegistroFrequenciaAluno> registros);
         Task ExcluirVarios(List<long> idsParaExcluir);
         Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId);
+        Task ExcluirVariosLogicamente(long[] idsParaExcluir);
         Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> alunos, bool somenteAusencias = false);
     }
 }

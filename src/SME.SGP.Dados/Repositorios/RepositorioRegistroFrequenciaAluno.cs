@@ -87,6 +87,13 @@ namespace SME.SGP.Dados
             return true;
         }
 
+        public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
+        {
+            var query = "update registro_frequencia_aluno set excluido = true where id = any(@idsParaExcluir)";
+
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
+        }
+
         public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos, bool somenteAusencias = false)
         {
             var query = $@"           
