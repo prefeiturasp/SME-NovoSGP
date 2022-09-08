@@ -56,7 +56,7 @@ namespace SME.SGP.Infra
                         SituacaoMatriculaAluno.Concluido
                     }).Contains(SituacaoCodigo);
 
-
+        public bool EstaAtivo() => !EstaInativo();
         public static explicit operator AlunoDadosBasicosDto(AlunoPorTurmaResposta dadosAluno)
             => dadosAluno == null ? null : new AlunoDadosBasicosDto()
             {

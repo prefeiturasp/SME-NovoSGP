@@ -5,19 +5,19 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDescricaoComponentesCurricularesPorIdsQuery : IRequest<IEnumerable<ComponenteCurricularDescricaoDto>>
+    public class ObterComponentesCurricularesSimplesPorIdsQuery : IRequest<IEnumerable<ComponenteCurricularSimplesDto>>
     {
         public long[] Ids { get; }
 
-        public ObterDescricaoComponentesCurricularesPorIdsQuery(long[] ids)
+        public ObterComponentesCurricularesSimplesPorIdsQuery(long[] ids)
         {
             Ids = ids;
         }
     }
 
-    public class ObterDescricaoComponentesCurricularesPorIdsQueryValidator : AbstractValidator<ObterDescricaoComponentesCurricularesPorIdsQuery>
+    public class ObterComponentesCurricularesSimplesPorIdsQueryValidator : AbstractValidator<ObterComponentesCurricularesSimplesPorIdsQuery>
     {
-        public ObterDescricaoComponentesCurricularesPorIdsQueryValidator()
+        public ObterComponentesCurricularesSimplesPorIdsQueryValidator()
         {
             RuleFor(a => a.Ids)
                 .NotEmpty()

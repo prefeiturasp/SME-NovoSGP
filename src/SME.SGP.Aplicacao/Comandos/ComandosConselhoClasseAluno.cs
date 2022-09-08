@@ -15,9 +15,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasConselhoClasseAluno consultasConselhoClasseAluno;
         private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
-        
-        private const int BIMESTRE_2 = 2;
-        private const int BIMESTRE_4 = 4;
+        private const int BIMESTRE_FINAL_FUNDAMENTAL_MEDIO = 4;
+        private const int BIMESTRE_FINAL_EJA = 2;
 
         public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                            IConsultasConselhoClasse consultasConselhoClasse,
@@ -34,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
 
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre : 
-                fechamentoTurma.Turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+                fechamentoTurma.Turma.EhEJA() ? BIMESTRE_FINAL_EJA : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
 
             var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(fechamentoTurma.Turma, dataAtual.Date, bimestre,
                 fechamentoTurma.Turma.AnoLetivo == dataAtual.Year));
@@ -52,7 +51,8 @@ namespace SME.SGP.Aplicacao
 
             if (alunoConselho == null)
                 throw new NegocioException("Aluno não encontrado para salvar o conselho de classe.");
-
+            
+            
             if (fechamentoTurma.Turma.AnoLetivo == dataAtual.Year && alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim))
             {
                 var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery
@@ -62,8 +62,12 @@ namespace SME.SGP.Aplicacao
                     UeId = fechamentoTurma.Turma.UeId
                 });
                 
-                if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
-                    throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_REABERTURA);
+                var permiteEdicao = (alunoConselho.PossuiSituacaoAtiva() && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
+                                    (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoFim);
+                
+                if (permiteEdicao)
+                    if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
+                        throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
             
             var existeConselhoClasseBimestre = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
