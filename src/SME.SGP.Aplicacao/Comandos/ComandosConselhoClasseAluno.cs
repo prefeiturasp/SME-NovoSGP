@@ -65,9 +65,8 @@ namespace SME.SGP.Aplicacao
                 var permiteEdicao = (alunoConselho.PossuiSituacaoAtiva() && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
                                     (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoFim);
                 
-                if (permiteEdicao)
-                    if (alunoConselho.DataSituacao < periodoReaberturaCorrespondente.Inicio || alunoConselho.DataSituacao > periodoReaberturaCorrespondente.Fim)
-                        throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
+                if (!permiteEdicao)
+                       throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
             
             var existeConselhoClasseBimestre = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
@@ -120,36 +119,33 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(conselhoClasseAlunoDto.AnotacoesPedagogicas))
             {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas));
-                conselhoClasseAlunoDto.AnotacoesPedagogicas = moverArquivo;
+                conselhoClasseAlunoDto.AnotacoesPedagogicas = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas));
             }
             if (!string.IsNullOrEmpty(conselhoClasseAluno.AnotacoesPedagogicas))
             {
-                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas, TipoArquivo.ConselhoClasse.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.AnotacoesPedagogicas, conselhoClasseAlunoDto.AnotacoesPedagogicas, TipoArquivo.ConselhoClasse.Name()));
             }
         }
         private async Task MoverRecomendacoesAluno(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, ConselhoClasseAluno conselhoClasseAluno)
         {
             if (!string.IsNullOrEmpty(conselhoClasseAlunoDto.RecomendacaoAluno))
             {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.RecomendacoesAluno, conselhoClasseAlunoDto.RecomendacaoAluno));
-                conselhoClasseAlunoDto.RecomendacaoAluno = moverArquivo;
+                conselhoClasseAlunoDto.RecomendacaoAluno = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.RecomendacoesAluno, conselhoClasseAlunoDto.RecomendacaoAluno));
             }
             if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno))
             {
-                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.RecomendacoesAluno, conselhoClasseAlunoDto.RecomendacaoAluno, TipoArquivo.ConselhoClasse.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.RecomendacoesAluno, conselhoClasseAlunoDto.RecomendacaoAluno, TipoArquivo.ConselhoClasse.Name()));
             }
         }
         private async Task MoverRecomendacoesFamilia(ConselhoClasseAlunoAnotacoesDto conselhoClasseAlunoDto, ConselhoClasseAluno conselhoClasseAluno)
         {
             if (!string.IsNullOrEmpty(conselhoClasseAlunoDto.RecomendacaoFamilia))
             {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.RecomendacoesFamilia, conselhoClasseAlunoDto.RecomendacaoFamilia));
-                conselhoClasseAlunoDto.RecomendacaoFamilia = moverArquivo;
+                conselhoClasseAlunoDto.RecomendacaoFamilia = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.ConselhoClasse, conselhoClasseAluno.RecomendacoesFamilia, conselhoClasseAlunoDto.RecomendacaoFamilia));
             }
             if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
             {
-                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.RecomendacoesFamilia, conselhoClasseAlunoDto.RecomendacaoFamilia, TipoArquivo.ConselhoClasse.Name()));
+                await mediator.Send(new RemoverArquivosExcluidosCommand(conselhoClasseAluno.RecomendacoesFamilia, conselhoClasseAlunoDto.RecomendacaoFamilia, TipoArquivo.ConselhoClasse.Name()));
             }
         }
     }

@@ -55,6 +55,8 @@ namespace SME.SGP.Aplicacao
                 double? notaAnterior = null;
                 long? conceitoIdAnterior = null;
 
+                await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseNota == null ? string.Empty : conselhoClasseNota.Justificativa);
+
                 if (conselhoClasseNota == null)
                     conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAlunoId);
                 else
