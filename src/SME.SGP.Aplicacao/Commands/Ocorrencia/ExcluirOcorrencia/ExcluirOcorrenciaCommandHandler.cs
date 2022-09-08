@@ -36,10 +36,10 @@ namespace SME.SGP.Aplicacao
 
                 ocorrencia.Excluir();
                 await repositorioOcorrencia.SalvarAsync(ocorrencia);
-                /*if (!String.IsNullOrEmpty(ocorrencia?.Descricao))
+                if (!String.IsNullOrEmpty(ocorrencia?.Descricao))
                 {
-                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia));
-                }*/
+                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia.Name()));
+                }
             }
             catch(Exception ex)
             {
