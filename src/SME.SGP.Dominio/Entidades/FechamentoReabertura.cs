@@ -34,11 +34,11 @@ namespace SME.SGP.Dominio
 
         public void Adicionar(FechamentoReaberturaBimestre bimestre)
         {
-            if (bimestre == null) 
+            if (bimestre == null)
                 return;
-            
+
             bimestre.FechamentoAbertura = this;
-            bimestre.FechamentoAberturaId = Id;                
+            bimestre.FechamentoAberturaId = Id;
             Bimestres.Add(bimestre);
         }
 
@@ -46,7 +46,7 @@ namespace SME.SGP.Dominio
         {
             Bimestres.AddRange(listaBimestres);
         }
-        
+
         public void SobrescreverBimestres(IEnumerable<FechamentoReaberturaBimestre> listaBimestres)
         {
             Bimestres = listaBimestres.ToList();
@@ -54,45 +54,45 @@ namespace SME.SGP.Dominio
 
         public void AprovarWorkFlow()
         {
-            if (Status != EntidadeStatus.AguardandoAprovacao) 
+            if (Status != EntidadeStatus.AguardandoAprovacao)
                 return;
-            
+
             Status = EntidadeStatus.Aprovado;
             AprovadoEm = DateTime.Now;
         }
 
         public void AtualizarDre(Dre dre)
         {
-            if (dre == null) 
+            if (dre == null)
                 return;
-            
+
             Dre = dre;
             DreId = dre.Id;
         }
 
         public void AtualizarTipoCalendario(TipoCalendario tipoCalendario)
         {
-            if (tipoCalendario == null) 
+            if (tipoCalendario == null)
                 return;
-            
+
             TipoCalendario = tipoCalendario;
             TipoCalendarioId = tipoCalendario.Id;
         }
 
         public void AtualizarUe(Ue ue)
         {
-            if (ue == null) 
+            if (ue == null)
                 return;
-            
+
             Ue = ue;
             UeId = ue.Id;
         }
 
         public void AtualizarAprovador(Usuario aprovador)
         {
-            if (aprovador == null) 
+            if (aprovador == null)
                 return;
-            
+
             Aprovador = aprovador;
             AprovadorId = aprovador.Id;
         }
@@ -135,11 +135,11 @@ namespace SME.SGP.Dominio
 
         public bool[] ObterBimestresSelecionados()
         {
-            var bimestresArray = new bool[Bimestres.Count];
+            var bimestresArray = new bool[TipoCalendario.QuantidadeDeBimestres()];
 
-            foreach (var bimestre in Bimestres)
-                bimestresArray[bimestre.Bimestre - 1] = true;
-            
+            for (int numero = 0; numero < TipoCalendario.QuantidadeDeBimestres(); numero++)
+                bimestresArray[numero] = Bimestres.Any(a => a.Bimestre == numero + 1);
+
             return bimestresArray;
         }
 
@@ -150,7 +150,7 @@ namespace SME.SGP.Dominio
 
             if (usuario.EhPerfilDRE() && VerificaAnoAtual())
                 throw new NegocioException("Somente SME pode cadastrar reabertura no ano atual.");
-                        
+
             VerificaFechamentosNoMesmoPeriodo(fechamentosCadastrados);
         }
 
@@ -179,9 +179,9 @@ namespace SME.SGP.Dominio
             {
                 var fechamentosSME = fechamentosCadastrados.Where(a => a.EhParaSme());
 
-                if (fechamentosSME is null || !fechamentosSME.Any()) 
+                if (fechamentosSME is null || !fechamentosSME.Any())
                     return;
-                
+
                 foreach (var fechamento in fechamentosSME)
                 {
                     if (EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim))
@@ -192,9 +192,9 @@ namespace SME.SGP.Dominio
             {
                 var fechamentosDre = (fechamentosCadastrados.Where(a => a.EhParaDre() && a.DreId == DreId)).ToList();
 
-                if (!fechamentosDre.Any()) 
+                if (!fechamentosDre.Any())
                     return;
-                
+
                 foreach (var fechamento in fechamentosDre.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
                     throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
             }
@@ -202,9 +202,9 @@ namespace SME.SGP.Dominio
             {
                 var fechamentosUe = fechamentosCadastrados.Where(a => a.EhParaUe() && a.UeId == UeId).ToList();
 
-                if (!fechamentosUe.Any()) 
+                if (!fechamentosUe.Any())
                     return;
-                
+
                 foreach (var fechamento in fechamentosUe.Where(fechamento => EstaNoRangeDeDatas(fechamento.Inicio, fechamento.Fim)))
                     throw new NegocioException($"Não é possível persistir pois já existe uma reabertura cadastrada que começa em {fechamento.Inicio:dd/MM/yyyy} e termina em {fechamento.Fim:dd/MM/yyyy}");
             }
