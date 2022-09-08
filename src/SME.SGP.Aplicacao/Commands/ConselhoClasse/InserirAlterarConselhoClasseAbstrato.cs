@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
             
             if (conselhoClasseNotaDto.Conceito.HasValue)
                 conselhoClasseNota.ConceitoId = conselhoClasseNotaDto.Conceito.Value;
-            
+
             return conselhoClasseNota;
         }
 
@@ -88,6 +88,17 @@ namespace SME.SGP.Aplicacao
         protected int? ObterBimestre(int? bimestre)
         {
             return bimestre.HasValue ? bimestre.Value > 0 ? bimestre : null : null;
+        }
+        protected async Task MoverJustificativaConselhoClasseNota(ConselhoClasseNotaDto conselhoClasseNotaDto, string justificativaObj)
+        {
+            if (!string.IsNullOrEmpty(conselhoClasseNotaDto.Justificativa))
+            {
+                conselhoClasseNotaDto.Justificativa = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Editor, justificativaObj, conselhoClasseNotaDto.Justificativa));
+            }
+            if (!string.IsNullOrEmpty(justificativaObj))
+            {
+                await mediator.Send(new RemoverArquivosExcluidosCommand(justificativaObj, conselhoClasseNotaDto.Justificativa, TipoArquivo.Editor.Name()));
+            }
         }
 
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)

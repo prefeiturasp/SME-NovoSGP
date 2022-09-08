@@ -47,6 +47,8 @@ namespace SME.SGP.Aplicacao
                 
                 await mediator.Send(new InserirTurmasComplementaresCommand(request.FechamentoTurma.TurmaId, conselhoClasseAluno.Id, request.CodigoAluno), cancellationToken);
 
+                await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, string.Empty);
+
                 conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAluno.Id);
 
                 if (request.FechamentoTurma.Turma.AnoLetivo == 2020)
