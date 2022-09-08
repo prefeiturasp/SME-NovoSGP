@@ -23,8 +23,14 @@ namespace SME.SGP.Aplicacao
             if (registroPoaDto.Id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
 
-            var entidade = MapearParaAtualizacao(registroPoaDto);
+            var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
+
+            if (entidade == null || entidade.Excluido)
+                throw new NegocioException("Registro para atualização não encontrado na base de dados");
+
             await MoverRemoverExcluidos(registroPoaDto, entidade);
+
+            entidade = MapearParaAtualizacao(entidade, registroPoaDto);
             repositorioRegistroPoa.Salvar(entidade);
         }
 
@@ -53,13 +59,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private RegistroPoa MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
+        private RegistroPoa MapearParaAtualizacao(RegistroPoa entidade, RegistroPoaDto registroPoaDto)
         {
-            var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
-
-            if (entidade == null || entidade.Excluido)
-                throw new NegocioException("Registro para atualização não encontrado na base de dados");
-            //MoverRemoverExcluidos(registroPoaDto, entidade);
             entidade.Titulo = registroPoaDto.Titulo;
             entidade.Descricao = registroPoaDto.Descricao;
             entidade.Bimestre = registroPoaDto.Bimestre;
@@ -80,7 +81,6 @@ namespace SME.SGP.Aplicacao
         }
         private RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
-            //MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() {Descricao = string.Empty });
             return new RegistroPoa
             {
                 Descricao = registroPoaDto.Descricao,
