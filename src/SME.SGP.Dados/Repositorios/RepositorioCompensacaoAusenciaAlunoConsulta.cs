@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private String BuildQueryObterTotalCompensacoesECompensacaoAlunoIdPorAlunoETurma(string disciplinaId)
         {
-            var query = new StringBuilder(@"select a.id as CompensacaoAlunoId, coalesce(sum(a.qtd_faltas_compensadas), 0)
+            var query = new StringBuilder(@"select a.id as CompensacaoAlunoId, coalesce(a.qtd_faltas_compensadas, 0) as Quantidade
                                 from compensacao_ausencia_aluno a
                                 inner join compensacao_ausencia c on c.id = a.compensacao_ausencia_id
                                 inner join turma t on t.id = c.turma_id
@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<TotalCompensacaoAlunoPorCompensacaoIdDto> ObterTotalCompensacoesECompensacaoIdPorAlunoETurmaAsync(int bimestre, string codigoAluno, string disciplinaId, string turmaId)
         {
             var query = BuildQueryObterTotalCompensacoesECompensacaoAlunoIdPorAlunoETurma(disciplinaId);
-            return await database.Conexao.QueryFirstAsync<TotalCompensacaoAlunoPorCompensacaoIdDto>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<TotalCompensacaoAlunoPorCompensacaoIdDto>(query.ToString(), new { bimestre, codigoAluno, disciplinaId, turmaId });
         }
 
         public async Task<IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto>> ObterTotalCompensacoesPorAlunosETurmaAsync(int bimestre, List<string> alunoCodigos, string turmaCodigo)

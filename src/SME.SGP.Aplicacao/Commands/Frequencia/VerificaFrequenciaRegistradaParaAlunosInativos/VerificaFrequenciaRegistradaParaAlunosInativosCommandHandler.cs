@@ -46,7 +46,8 @@ namespace SME.SGP.Aplicacao
                                 return false;
                             else
                             {
-                                await VerificaCompensacoesDeAlunosInativos(registroFrequenciaAluno, periodosEscolaresTurma, aluno.CodigoAluno, dadosTurma.CodigoTurma);
+                                var registrosFrequenciaValidos = registroFrequenciaAluno.Where(r => !registroFrequenciasAExcluir.Any(rf=> rf == r.RegistroFrequenciaAlunoId));
+                                await VerificaCompensacoesDeAlunosInativos(registrosFrequenciaValidos, periodosEscolaresTurma, aluno.CodigoAluno, dadosTurma.CodigoTurma);
 
                                 frequenciaAlunoParaRecalcular.AddRange(registroFrequenciaAluno
                                     .Where(f => f.DataAula.Date > dataReferencia.Value.Date)
@@ -85,13 +86,16 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var periodo in periodosEscolares)
                 {
-                    var quantidade = frequencias.Count(f => f.DataAula >= periodo.PeriodoInicio && f.DataAula <= periodo.PeriodoFim);
+                    var quantidade = frequencias.Count(f => f.DataAula >= periodo.PeriodoInicio && f.DataAula <= periodo.PeriodoFim && f.Valor == (int)TipoFrequencia.F);
                     var compensacaoAluno = await mediator.Send(new ObterCompensacoesPorAlunoETurmaQuery(periodo.Bimestre, codigoAluno, frequencias.Key, turmaCodigo));
 
-                    if (compensacaoAluno.Quantidade > quantidade && quantidade > 0)
-                        await mediator.Send(new AlterarTotalCompensacoesPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId, Quantidade = quantidade });
-                    else if (compensacaoAluno.Quantidade > 0 && quantidade == 0)
-                        await mediator.Send(new ExcluiCompensacaoAlunoPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId });
+                    if(compensacaoAluno != null)
+                    {
+                        if (compensacaoAluno.Quantidade > quantidade && quantidade > 0)
+                            await mediator.Send(new AlterarTotalCompensacoesPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId, Quantidade = quantidade });
+                        else if (compensacaoAluno.Quantidade > 0 && quantidade == 0)
+                            await mediator.Send(new ExcluiCompensacaoAlunoPorCompensacaoAlunoIdCommand() { CompensacaoAlunoId = compensacaoAluno.CompensacaoAlunoId });
+                    }     
                 }
             }
         }
