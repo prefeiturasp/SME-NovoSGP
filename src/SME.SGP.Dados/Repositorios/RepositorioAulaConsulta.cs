@@ -437,7 +437,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where not excluido and tipo_aula = @aulaNomal ");
             query.AppendLine("and turma_id = @turma ");
             query.AppendLine("and disciplina_id = @componenteCurricular ");
-            query.AppendLine("and extract('week' from data_aula::date + 1) = (@semana - 1)");
+            query.AppendLine("and extract('week' from data_aula::date + 1) = @semana");
             query.AppendLine("and Date(data_aula) <> @dataExcecao");
 
             if (!string.IsNullOrEmpty(codigoRf) && !ehGestor)
