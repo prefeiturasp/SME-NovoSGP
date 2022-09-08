@@ -60,6 +60,9 @@ namespace SME.SGP.Dominio.Servicos
         {
             try
             {
+                if (!compensacaoDto.Alunos.Any())
+                    throw new NegocioException(MensagemNegocioComuns.E_NECESSARIO_SELECIONAR_ESTUDANTE_ALUNO_PARA_COMPENSACAO);
+                
                 // Busca dados da turma
                 var turma = await BuscaTurma(compensacaoDto.TurmaId);
 
