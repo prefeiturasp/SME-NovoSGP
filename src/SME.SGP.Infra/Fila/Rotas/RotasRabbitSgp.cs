@@ -36,6 +36,8 @@
         public const string ConsolidarAcompanhamentoAprendizagemAlunoTratar = "sgp.sincronizacao.acompanhamento.aprendizado.aluno.tratar";
         public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
+        public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
+        public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
 
         #region Relatórios
 

@@ -49,9 +49,13 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
+
+            if (turma == null)
+                throw new NegocioException("Turma não encontrada");
+
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (turma.EhTurmaEdFisicaOuItinerario() || (turmasitinerarioEnsinoMedio != null && turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
                 var tipos = new List<int>();
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
