@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterChaveEValorPorTipoEAnoQuery : IRequest<IEnumerable<KeyValuePair<string, string>>>
+    public class ObterChaveEValorPorTipoEAnoQuery : IRequest<IEnumerable<ParametroSistemaRetornoDto>>
     {
         public ObterChaveEValorPorTipoEAnoQuery(TipoParametroSistema tipo, int ano)
         {
