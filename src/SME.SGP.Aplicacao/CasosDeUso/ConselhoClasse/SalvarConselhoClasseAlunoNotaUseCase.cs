@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
                     if (notaFechamentoAluno?.Nota == null)
                         return;
 
-                    throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADO);
+                    throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADA);
                 }
             }
         }
