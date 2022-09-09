@@ -17,7 +17,7 @@
         public const string EXISTE_COMPONENTES_SEM_NOTA_INFORMADA =
             "Existe(m) componente(s) curriculares sem a nota informada.";
 
-        public const string FECHAMNETO_TURMA_NAO_LOCALIZADO = "Fechamento da turma não localizado";
+        public const string FECHAMENTO_TURMA_NAO_LOCALIZADO = "Fechamento da turma não localizado";
 
         public const string NOTA_ALUNO_NAO_PODE_SER_INSERIDA_OU_ALTERADA_NO_PERIODO = "A nota do aluno não pode ser alterada ou incluída no periodo.";
     }
