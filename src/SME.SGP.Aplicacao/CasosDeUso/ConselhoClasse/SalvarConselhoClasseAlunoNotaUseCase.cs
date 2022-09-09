@@ -207,17 +207,15 @@ namespace SME.SGP.Aplicacao
                 {
                     if (notaFechamentoAluno?.ConceitoId == null)
                         return;
-                    
-                    throw new NegocioException(
-                        "O conceito pós-conselho deve ser informado no conselho de classe do aluno.");
+
+                    throw new NegocioException(MensagemNegocioConselhoClasse.CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO);
                 }
                 case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota == null:
                 {
                     if (notaFechamentoAluno?.Nota == null)
                         return;
-                    
-                    throw new NegocioException(
-                        "A nota pós-conselho deve ser informada no conselho de classe do aluno.");
+
+                    throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADO);
                 }
             }
         }
