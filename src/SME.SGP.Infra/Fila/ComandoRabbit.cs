@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
 
         public string NomeProcesso { get; private set; }
         public Type TipoCasoUso { get; private set; }
+        public ulong QuantidadeRetry { get; private set; } = 3;
     }
 }
