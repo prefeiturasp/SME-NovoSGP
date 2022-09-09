@@ -14,7 +14,9 @@ using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -93,15 +95,36 @@ namespace SME.SGP.Aplicacao.Workers
 
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
+
+                if (!fila.StartsWith("sgp.notificacao.usuario")) //TODO RESET
+                {
+                    continue;
+                }
+
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
                 if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
+                    var argsDlq = new Dictionary<string, object>();
+                    argsDlq.Add("x-dead-letter-exchange", exchange);
+                    argsDlq.Add("x-message-ttl", 10000);
+
                     var filaDeadLetter = $"{fila}.deadletter";
 
-                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+
+                    var queueLimbu = $"{fila}.limbu";
+                    canalRabbit.QueueDeclare(
+                        queue: queueLimbu,
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                    );
+
+                    canalRabbit.QueueBind(queueLimbu, exchangeDeadLetter, queueLimbu, null);
                 }
             }
         }
@@ -125,6 +148,8 @@ namespace SME.SGP.Aplicacao.Workers
                     var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
 
                     var metodo = UtilMethod.ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
+
+                    throw new Exception("Erro forçado!");
 
                     await servicoTelemetria.RegistrarAsync(async () =>
                         await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
@@ -161,12 +186,21 @@ namespace SME.SGP.Aplicacao.Workers
                 {
                     transacao?.CaptureException(ex);
 
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    if (ea.DeliveryTag > comandoRabbit.QuantidadeRetry)
+                    {
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
+                        
+                        var queueLimbu = $"{ea.RoutingKey}.limbu";
+                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbu, null, ea.Body.ToArray());
 
-                    await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
+                    }
+                    else canalRabbit.BasicReject(ea.DeliveryTag, false);
+
+                    //TODO RESET
+                    /*await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
                     if (mensagemRabbit.NotificarErroUsuario)
-                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
+                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);*/
                 }
                 finally
                 {
