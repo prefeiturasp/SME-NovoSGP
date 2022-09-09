@@ -66,7 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 		                         rfa.codigo_aluno";
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaGeralPorDisciplinaAlunoTurmaDataDto>(query, new { ano });
-        }       
+        }
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorAulaAsync(long aulaId)
         {
@@ -94,14 +94,14 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<FrequenciaAlunoAulaDto>(query, new { aulaId, codigoAluno });
         }
 
-
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, params string[] turmasId)
+        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, params string[] turmasId)
         {
-            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId);
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmasId });
+            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId, dataMatriculaAluno, dataSituacaoAluno);
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
+                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null });
         }
 
-        private String BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId)
+        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
             StringBuilder query = new StringBuilder();
             query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
@@ -116,6 +116,13 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrWhiteSpace(disciplinaId))
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
+
+            if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
+                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno and @dataMatriculaAluno");
+            else if (dataMatriculaAluno.HasValue)
+                query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno");
+            else if (dataSituacaoAluno.HasValue)
+                query.AppendLine("and a.data_aula::date <= @dataSituacaoAluno");
 
             query.AppendLine("and a.turma_id = any(@turmasId)");
             query.AppendLine("and exists (select 1");
@@ -164,7 +171,7 @@ namespace SME.SGP.Dados.Repositorios
                                             and not rfa.excluido and not a.excluido 
                                             order by a.data_aula";
 
-            var parametros = new { turmaCodigo, alunoCodigo};
+            var parametros = new { turmaCodigo, alunoCodigo };
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoTurmaDto>(query, parametros);
         }
