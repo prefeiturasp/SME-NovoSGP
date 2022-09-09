@@ -166,7 +166,7 @@ namespace SME.SGP.Aplicacao
             var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
             if(turmasAluno.Any())
             {
-                if(turmasAluno.Count() > 1)
+                if(turmasAluno.Count() > 0)
                 {
                     var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
 
