@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo));
 
-            return await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
+            return conselhoClasseAlunoId;
         }
         public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse, FechamentoTurma fechamentoTurma)
         {
