@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaCompletoPorIdQuery(conselhoClasseAlunoDto.FechamentoTurmaId));
 
             if (fechamentoTurma == null)
-                throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMNETO_TURMA_NAO_LOCALIZADO);
+                throw new NegocioException(MensagemNegocioFechamentoNota.FECHAMENTO_TURMA_NAO_LOCALIZADO);
             
             var bimestre = fechamentoTurma.PeriodoEscolarId.HasValue ? fechamentoTurma.PeriodoEscolar.Bimestre : 
                 fechamentoTurma.Turma.EhEJA() ? BIMESTRE_FINAL_EJA : BIMESTRE_FINAL_FUNDAMENTAL_MEDIO;
