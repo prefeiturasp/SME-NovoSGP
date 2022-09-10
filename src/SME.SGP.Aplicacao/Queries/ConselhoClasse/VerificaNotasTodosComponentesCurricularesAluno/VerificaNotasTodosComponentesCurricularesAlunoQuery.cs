@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao
 {
     public class VerificaNotasTodosComponentesCurricularesAlunoQuery : IRequest<bool>
     {
-        public VerificaNotasTodosComponentesCurricularesAlunoQuery(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
+        public VerificaNotasTodosComponentesCurricularesAlunoQuery(string alunoCodigo, Turma turma, long? periodoEscolarId = 0, bool? historico = false)
         {
             AlunoCodigo = alunoCodigo;
             TurmaAluno = turma;
