@@ -77,11 +77,11 @@ namespace SME.SGP.Aplicacao
                     bimestre = 1;
             }
             
-            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
+            if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, turma);
-                if (!retornoConselhoBimestre.possuiConselho || (!retornoConselhoBimestre.concluido && situacaoConselhoAluno != SituacaoConselhoClasse.Concluido))
+                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(alunoCodigo, turma, fechamentoTurma?.PeriodoEscolarId));
+                if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
                     throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
             }
 
@@ -214,17 +214,6 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator
                 .Send(new ObterUltimoBimestreTurmaQuery(turma));
-        }
-        private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, Turma turma)
-        {
-            var statusAluno = SituacaoConselhoClasse.NaoIniciado;
-
-            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, alunoCodigo);
-
-            if (statusConselhoAluno != null)
-                statusAluno = statusConselhoAluno.Status;
-
-            return statusAluno;
         }
     }
 }

@@ -51,7 +51,8 @@ namespace SME.SGP.Aplicacao
                 await VerificaRecomendacoesAluno(conselhoClasseAluno);
             }
 
-            if (!await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken))
+            var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
+            if (!situacaoConselhoAtualizada)
                 throw new NegocioException("Erro ao atualizar situação do conselho de classe");
 
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);

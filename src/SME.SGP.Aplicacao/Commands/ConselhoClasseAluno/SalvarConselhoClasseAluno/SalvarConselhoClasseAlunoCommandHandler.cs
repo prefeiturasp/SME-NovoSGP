@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator
                 .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo));
 
-            if (!await VerificaNotasTodosComponentesCurriculares(request.ConselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId))
+            var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(request.ConselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId));
+            if (!alunoPossuiNotasTodosComponentesCurriculares)
                 throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
 
             // Se não existir conselho de classe para o fechamento gera
