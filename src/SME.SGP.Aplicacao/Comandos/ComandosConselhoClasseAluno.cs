@@ -43,8 +43,9 @@ namespace SME.SGP.Aplicacao
 
             if (!periodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
-            
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
+
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar ?? 
+                                 await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não encontrado");
