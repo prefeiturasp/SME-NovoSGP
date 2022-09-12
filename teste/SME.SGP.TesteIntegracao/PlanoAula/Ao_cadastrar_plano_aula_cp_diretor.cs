@@ -41,6 +41,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
 
             retorno.ShouldNotBeNull();
+            retorno.ShouldNotBeNull();
+            Assert.True(retorno.Id > 0);
+            retorno.Descricao.ShouldNotBeNull();
+            retorno.LicaoCasa.ShouldNotBeNull();
+            retorno.RecuperacaoAula.ShouldNotBeNull();
+            Assert.True(retorno.ObjetivosAprendizagemComponente.Count == 3);
         }
         [Fact]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
@@ -52,8 +58,13 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-
+            
             retorno.ShouldNotBeNull();
+            Assert.True(retorno.Id > 0);
+            retorno.Descricao.ShouldNotBeNull();
+            retorno.LicaoCasa.ShouldNotBeNull();
+            retorno.RecuperacaoAula.ShouldNotBeNull();
+            Assert.True(retorno.ObjetivosAprendizagemComponente.Count == 3);
         }
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {
