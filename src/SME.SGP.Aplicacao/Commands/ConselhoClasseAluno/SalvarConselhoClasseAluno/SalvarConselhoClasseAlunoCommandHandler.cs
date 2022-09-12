@@ -33,11 +33,6 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator
                 .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo));
 
-            /*var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(request.ConselhoClasseAluno.AlunoCodigo, 
-                                                                                   fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolar.Bimestre));
-            if (!alunoPossuiNotasTodosComponentesCurriculares)
-                throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");*/
-
             // Se não existir conselho de classe para o fechamento gera
             if (request.ConselhoClasseAluno.ConselhoClasse.Id == 0)
             {
@@ -80,18 +75,7 @@ namespace SME.SGP.Aplicacao
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
             return (AuditoriaDto)conselhoClasse;
         }
-        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
-        {
-            var componentesTurma = new List<DisciplinaDto>();
-            Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
-            if (componentesCurriculares != null && componentesCurriculares.Any())
-                componentesTurma.AddRange(componentesCurriculares);
-            else throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
-
-            return componentesTurma;
-        }
+        
         
     }
 }

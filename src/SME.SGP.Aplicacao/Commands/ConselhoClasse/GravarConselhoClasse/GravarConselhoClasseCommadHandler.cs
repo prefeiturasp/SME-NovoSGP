@@ -41,16 +41,6 @@ namespace SME.SGP.Aplicacao
                                             request.Bimestre,
                                             request.Usuario), cancellationToken);
 
-            // TODO Verificar se o fechamentoTurma.Turma carregou UE
-            if (await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(
-                                                        request.CodigoAluno, 
-                                                        request.FechamentoTurma.Turma, 
-                                                        request.FechamentoTurma.PeriodoEscolarId), cancellationToken))
-            {
-                var conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorIdAsync(conselhoClasseNotaRetorno.ConselhoClasseAlunoId);
-                await VerificaRecomendacoesAluno(conselhoClasseAluno);
-            }
-
             var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException("Erro ao atualizar situação do conselho de classe");
@@ -66,18 +56,5 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
         }
 
-        private async Task VerificaRecomendacoesAluno(ConselhoClasseAluno conselhoClasseAluno)
-        {
-            if (!string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) &&
-                !string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia))
-            {
-                return;
-            }
-
-            var recomendacoes = await mediator.Send(new ObterTextoRecomendacoesAlunoFamiliaQuery());
-
-            conselhoClasseAluno.RecomendacoesAluno = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesAluno) ? recomendacoes.recomendacoesAluno : conselhoClasseAluno.RecomendacoesAluno;
-            conselhoClasseAluno.RecomendacoesFamilia = string.IsNullOrEmpty(conselhoClasseAluno.RecomendacoesFamilia) ? recomendacoes.recomendacoesFamilia : conselhoClasseAluno.RecomendacoesFamilia;
-        }
     }
 }
