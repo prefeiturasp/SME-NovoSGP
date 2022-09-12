@@ -1,0 +1,1 @@
+ALTER TABLE plano_anual DROP COLUMN IF EXISTS desenvolvimento_aula;
