@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.PlanoDeAula.Base
+namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 {
     public abstract class PlanoAulaTesteBase : TesteBaseComuns
     {

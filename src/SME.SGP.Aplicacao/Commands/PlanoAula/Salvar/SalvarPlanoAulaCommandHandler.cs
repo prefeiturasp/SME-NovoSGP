@@ -44,7 +44,6 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                unitOfWork.IniciarTransacao();
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
@@ -107,7 +106,8 @@ namespace SME.SGP.Aplicacao
                     if (!permitePlanoSemObjetivos)
                         throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
                 }                            
-
+                unitOfWork.IniciarTransacao();
+                
                 await repositorioPlanoAula.SalvarAsync(planoAula);
 
                 await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
