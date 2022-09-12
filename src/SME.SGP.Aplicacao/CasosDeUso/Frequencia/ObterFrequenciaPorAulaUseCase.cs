@@ -86,12 +86,12 @@ namespace SME.SGP.Aplicacao
             if (turma.ModalidadeCodigo == Modalidade.EJA)
             {
                 alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => !a.Inativo || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-                (a.Inativo && a.DataSituacao >= aula.DataAula)).OrderBy(c => c.NomeAluno);
+                (a.Inativo && a.DataSituacao >= aula.DataAula) && a.DataMatricula <= aula.DataAula).OrderBy(c => c.NomeAluno);
             }
             else
             {
                 alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => a.EstaAtivo(aula.DataAula, aula.DataAula) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-                (a.Inativo && a.DataSituacao >= aula.DataAula)).OrderBy(c => c.NomeAluno);
+                (a.Inativo && a.DataSituacao >= aula.DataAula) && a.DataMatricula <= aula.DataAula).OrderBy(c => c.NomeAluno);
             }
              
 

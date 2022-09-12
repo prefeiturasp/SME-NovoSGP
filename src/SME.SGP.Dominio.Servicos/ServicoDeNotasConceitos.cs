@@ -172,22 +172,29 @@ namespace SME.SGP.Dominio
         private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
         {
             unitOfWork.IniciarTransacao();
+            try
+            {
 
-            var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && x.ObterNota() != null).ToList();
-            var notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
-            var notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
+                var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && !String.IsNullOrEmpty(x.ObterNota())).ToList();
+                var notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
+                var notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
 
-            foreach (var entidade in notaConceitoParaRemover)
-                await mediator.Send(new RemoverNotaConceitoCommand(entidade));
+                foreach (var entidade in notaConceitoParaRemover)
+                    await mediator.Send(new RemoverNotaConceitoCommand(entidade));
 
-            if (notaConceitoParaInserir.Any())
-                await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir, criadoPor));
+                if (notaConceitoParaInserir.Any())
+                    await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir, criadoPor));
 
-            foreach (var notaConceito in notaConceitoParaAtualizar)
-                repositorioNotasConceitos.Salvar(notaConceito);
+                foreach (var notaConceito in notaConceitoParaAtualizar)
+                    repositorioNotasConceitos.Salvar(notaConceito);
 
-            unitOfWork.PersistirTransacao();
-
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
             await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma));
         }
 

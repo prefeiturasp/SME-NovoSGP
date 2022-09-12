@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterChaveEValorPorTipoEAnoQueryHandler : IRequestHandler<ObterChaveEValorPorTipoEAnoQuery, IEnumerable<KeyValuePair<string, string>>>
+    public class ObterChaveEValorPorTipoEAnoQueryHandler : IRequestHandler<ObterChaveEValorPorTipoEAnoQuery, IEnumerable<ParametroSistemaRetornoDto>>
     {
         private readonly IRepositorioParametrosSistemaConsulta repositorioParametrosSistema;
 
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
         }
 
-        public Task<IEnumerable<KeyValuePair<string, string>>> Handle(ObterChaveEValorPorTipoEAnoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<ParametroSistemaRetornoDto>> Handle(ObterChaveEValorPorTipoEAnoQuery request, CancellationToken cancellationToken)
                         => repositorioParametrosSistema.ObterChaveEValorPorTipoEAno(request.Tipo, request.Ano);
     }
 }

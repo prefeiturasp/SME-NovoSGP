@@ -12,7 +12,7 @@
 
         public int QuantidadeDeBimestres()
         {
-            if (Modalidade == ModalidadeTipoCalendario.EJA && AnoLetivo > 2020)
+            if (Modalidade == ModalidadeTipoCalendario.EJA && AnoLetivo > 2021)
                 return 2;
  
             return 4;

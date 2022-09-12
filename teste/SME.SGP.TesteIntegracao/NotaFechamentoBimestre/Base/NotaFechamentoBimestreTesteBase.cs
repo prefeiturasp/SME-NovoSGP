@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             public string AnoTurma { get; set; }
             public TipoFrequenciaAluno TipoFrequenciaAluno { get; set; }
             public string ProfessorRf { get; set; }
-            public string ComponenteCurricular { get; set;  }
+            public string ComponenteCurricular { get; set; }
             public bool CriarPeriodoEscolar { get; set; } = true;
             public bool CriarPeriodoEscolarCustomizado { get; set; }
             public bool CriarPeriodoAbertura { get; set; } = true;
@@ -83,38 +83,38 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             if (filtroFechamentoNota.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar(filtroFechamentoNota.ConsiderarAnoAnterior);
-            
+
             if (filtroFechamentoNota.CriarPeriodoEscolarCustomizado)
-                await InserirPeriodoEscolarCustomizado(filtroFechamentoNota.PeriodoEscolarValido); 
+                await InserirPeriodoEscolarCustomizado(filtroFechamentoNota.PeriodoEscolarValido, filtroFechamentoNota.ConsiderarAnoAnterior);
 
             await CriarPeriodoFechamento();
             await CriarPeriodoReaberturaAnoAnterior(TIPO_CALENDARIO_1);
             await CriarFrequenciaAluno(filtroFechamentoNota.TipoFrequenciaAluno);
-            
+
             await CriarSintese();
             await CrieConceitoValores();
         }
-        
+
         protected async Task<NegocioException> ExecutarComandosFechamentoTurmaDisciplinaComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
         {
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
 
             return await Assert.ThrowsAsync<NegocioException>(async () => await comando.Salvar(fechamentoTurma));
         }
-        
+
         protected async Task<NotasConceitosRetornoDto> ExecutarTeste(ListaNotasConceitosDto filtroListaNotasConceitos)
         {
             NotasConceitosRetornoDto retorno = null;
-            
+
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
-            
-            if (useCase != null) 
+
+            if (useCase != null)
                 retorno = await useCase.Executar(filtroListaNotasConceitos);
 
             retorno.ShouldNotBeNull();
 
             return retorno;
-        }        
+        }
 
         protected async Task ExecutarTeste(IEnumerable<FechamentoTurmaDisciplinaDto> notasLancadas,
             bool gerarExcecao = false)
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 TipoFrequenciaAluno = TipoFrequenciaAluno.PorDisciplina
             };
         }
-        
+
         protected async Task<IEnumerable<AuditoriaPersistenciaDto>> ExecutarTesteComValidacaoNota(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma, TipoNota tipoNota)
         {
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
@@ -207,7 +207,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         {
             var listaTurmaFechamento = ObterTodos<FechamentoTurmaDisciplina>();
             listaTurmaFechamento.ShouldNotBeNull();
-            var turmaFechamento = listaTurmaFechamento.FirstOrDefault(fechamento => fechamento.Id == id); 
+            var turmaFechamento = listaTurmaFechamento.FirstOrDefault(fechamento => fechamento.Id == id);
             turmaFechamento.DisciplinaId.ShouldBe(fechamentoDto.DisciplinaId);
         }
 
@@ -364,63 +364,63 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, considerarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
-        
-        protected async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3);
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia.Date : dataReferencia.AddDays(-5), BIMESTRE_4);
+        protected async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false, bool considerarAnoAnterior = false)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().AddYears(considerarAnoAnterior ? -1 : 0);
+
+            await CriarPeriodoEscolar(periodoEscolarValido ? new DateTime(dataReferencia.Year, 02, 01) : dataReferencia.AddDays(-285), periodoEscolarValido ? new DateTime(dataReferencia.Year, 03, 31) : dataReferencia.AddDays(-210), BIMESTRE_1);
+            await CriarPeriodoEscolar(periodoEscolarValido ? new DateTime(dataReferencia.Year, 04, 01) : dataReferencia.AddDays(-200), periodoEscolarValido ? new DateTime(dataReferencia.Year, 07, 15) : dataReferencia.AddDays(-125), BIMESTRE_2);
+            await CriarPeriodoEscolar(periodoEscolarValido ? new DateTime(dataReferencia.Year, 08, 01) : dataReferencia.AddDays(-115), periodoEscolarValido ? new DateTime(dataReferencia.Year, 09, 30) : dataReferencia.AddDays(-40), BIMESTRE_3);
+            await CriarPeriodoEscolar(periodoEscolarValido ? new DateTime(dataReferencia.Year, 10, 01) : dataReferencia.AddDays(-20), periodoEscolarValido ? new DateTime(dataReferencia.Year, 12, 15) : dataReferencia.AddDays(-5), BIMESTRE_4);
         }
-        
+
         protected async Task InserirPeriodoAberturaCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new PeriodoFechamento()
-                { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-209),
-                FinalDoFechamento =  dataReferencia.AddDays(-205)
+                FinalDoFechamento = dataReferencia.AddDays(-205)
             });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_3,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-38),
-                FinalDoFechamento =  dataReferencia.AddDays(-34)
-            });  
+                FinalDoFechamento = dataReferencia.AddDays(-34)
+            });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia,
-                FinalDoFechamento =  dataReferencia.AddDays(4)
-            });  
+                FinalDoFechamento = dataReferencia.AddDays(4)
+            });
         }
 
         private async Task CriarParametrosNotaFechamento()
@@ -502,7 +502,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });
-            
+
             await InserirNaBase(new ParametrosSistema
             {
                 Nome = PARAMETRO_APROVACAO_ALTERACAO_NOTA_CONSELHO_NOME,

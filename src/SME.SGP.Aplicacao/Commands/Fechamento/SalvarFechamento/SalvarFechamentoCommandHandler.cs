@@ -65,7 +65,10 @@ namespace SME.SGP.Aplicacao
 
             var ue = turma.Ue;
 
-            var bimestre = fechamentoTurma.EhFinal ? 4 : fechamentoTurma.Bimestre;
+            var bimestre = fechamentoTurma.EhFinal && 
+                           turma.ModalidadeTipoCalendario != ModalidadeTipoCalendario.EJA ? 4
+                                                                                          : fechamentoTurma.EhFinal && turma.ModalidadeTipoCalendario.Equals(ModalidadeTipoCalendario.EJA) ? 2 
+                                                                                                                                                                                           : fechamentoTurma.Bimestre;
 
             var periodos = await ObterPeriodoEscolarFechamentoReabertura(tipoCalendario, ue, bimestre);
             periodoEscolar = periodos.periodoEscolar;
