@@ -29,10 +29,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         }
 
-        //[Fact]
+        [Fact]
         public async Task Deve_cadastrar_plano_aula_usuario_cp()
         {
-            
+            var planoAulaDto = ObterPlanoAula();
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilCP());
+            await CriarDadosBasicos(filtroPlanoAulaDiretor);
+
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
+
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+
+            retorno.ShouldNotBeNull();
         }
         [Fact]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
@@ -80,17 +88,17 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1008
+                        Id = 1
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1009
+                        Id = 2
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1006
+                        Id = 3
                     },
                 },
                 RecuperacaoAula = "<p><span>Recuperacao de Aula</span></p>"
