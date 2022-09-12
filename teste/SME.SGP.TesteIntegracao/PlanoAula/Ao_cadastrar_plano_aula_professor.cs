@@ -56,8 +56,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-
             retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
 
         private PlanoAulaDto ObterPlanoAula()
