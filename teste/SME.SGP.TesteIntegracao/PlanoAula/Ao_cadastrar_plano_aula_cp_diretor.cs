@@ -46,7 +46,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Descricao.ShouldNotBeNull();
             retorno.LicaoCasa.ShouldNotBeNull();
             retorno.RecuperacaoAula.ShouldNotBeNull();
-            retorno.ObjetivosAprendizagemComponente.Count.ShouldBeGreaterThanOrEqualTo(3);
+            
+            var planoAlunaTodos = ObterTodos<Dominio.PlanoAula>();
+            planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
+            
+            var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAula.Count.ShouldBeGreaterThanOrEqualTo(3);
         }
         [Fact]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
@@ -64,7 +69,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Descricao.ShouldNotBeNull();
             retorno.LicaoCasa.ShouldNotBeNull();
             retorno.RecuperacaoAula.ShouldNotBeNull();
-            retorno.ObjetivosAprendizagemComponente.Count.ShouldBeGreaterThanOrEqualTo(3);
+            
+            var planoAlunaTodos = ObterTodos<Dominio.PlanoAula>();
+            planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
+            
+            var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAula.Count.ShouldBeGreaterThanOrEqualTo(3);
         }
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {
