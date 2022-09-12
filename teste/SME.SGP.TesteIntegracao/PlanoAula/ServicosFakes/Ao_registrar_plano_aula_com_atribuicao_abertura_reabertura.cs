@@ -17,9 +17,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
-    public class Ao_cadastrar_plano_aula_professor : PlanoAulaTesteBase
+    public class Ao_registrar_plano_aula_com_atribuicao_abertura_reabertura: PlanoAulaTesteBase
     {
-        public Ao_cadastrar_plano_aula_professor(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_registrar_plano_aula_com_atribuicao_abertura_reabertura(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
         protected override void RegistrarFakes(IServiceCollection services)
@@ -31,12 +31,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         }
 
         [Fact]
-        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_com_objetivos_aprendizagem()
+        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_sem_reabertura()
         {
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138, 
-                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
+            var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            filtroPlanoAula.CriarPeriodoEscolarBimestre = false;
+            filtroPlanoAula.CriarPeriodoAbertura = false;
+                
+            await CriarDadosBasicos(filtroPlanoAula);
                 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
@@ -47,61 +51,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.ShouldNotBeNull();
             objetivoAprendizagemAulas.Count.ShouldBe(3);
-        }
-        
-        [Fact]
-        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_sem_objetivos_aprendizagem()
-        {
-            var planoAulaDto = ObterPlanoAula(false, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
-
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138, 
-                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
-            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBe(1);
-
-            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count.ShouldBe(0);
-        }
-        
-        [Fact]
-        public async Task Deve_cadastrar_plano_aula_componente_regencia_com_objetivos_aprendizagem()
-        {
-            var planoAulaDto = ObterPlanoAula(true,COMPONENTE_CURRICULAR_ARTES_ID_139);
-
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), 
-                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio));
-                
-            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBe(1);
-
-            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.ShouldNotBeNull();
-            objetivoAprendizagemAulas.Count.ShouldBe(3);
-        }
-        
-        [Fact]
-        public async Task Deve_cadastrar_plano_aula_componente_regencia_sem_objetivos_aprendizagem_eja()
-        {
-            var planoAulaDto = ObterPlanoAula(false,COMPONENTE_CURRICULAR_ARTES_ID_139);
-        
-            await CriarDadosBasicos(ObterFiltroPlanoAula(COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(),
-                Modalidade.EJA, ModalidadeTipoCalendario.EJA));
-                
-            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-        
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBe(1);
-        
-            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Count.ShouldBe(0);
         }
 
         private FiltroPlanoAula ObterFiltroPlanoAula(string componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
