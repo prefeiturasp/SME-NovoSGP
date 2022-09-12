@@ -11,5 +11,9 @@
         public const string ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE =
             "Aluno não possui conselho de classe do último bimestre";
 
+        public const string JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA = "Já existe um conselho de classe gerado para a turma {0}!";
+
+        public const string ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE = "Erro ao atualizar situação do conselho de classe";
+
     }
 }

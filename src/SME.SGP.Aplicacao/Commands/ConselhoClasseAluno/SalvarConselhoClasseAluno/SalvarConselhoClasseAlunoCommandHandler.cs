@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -53,7 +54,7 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseExistente = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
             if (conselhoClasseExistente != null)
-                throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
+               throw new NegocioException(String.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
 
             if (fechamentoTurma.PeriodoEscolarId.HasValue)
             {
