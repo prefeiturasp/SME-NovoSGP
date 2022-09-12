@@ -16,16 +16,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
     {
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
-        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_1 = "OBJETIVO APRENDIZAGEM 1";
-        private const string OBJETIVO_APRENDIZAGEM_CODIGO_1 = "CDGAPRE1";
-        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_2 = "OBJETIVO APRENDIZAGEM 2";
-        private const string OBJETIVO_APRENDIZAGEM_CODIGO_2 = "CDGAPRE2";
-        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_3 = "OBJETIVO APRENDIZAGEM 3";
-        private const string OBJETIVO_APRENDIZAGEM_CODIGO_3 = "CDGAPRE3";
-        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_4 = "OBJETIVO APRENDIZAGEM 4";
-        private const string OBJETIVO_APRENDIZAGEM_CODIGO_4 = "CDGAPRE4";
-        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_5 = "OBJETIVO APRENDIZAGEM 5";
-        private const string OBJETIVO_APRENDIZAGEM_CODIGO_5 = "CDGAPRE5";
+        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_1 = "'OBJETIVO APRENDIZAGEM 1'";
+        private const string OBJETIVO_APRENDIZAGEM_CODIGO_1 = "'CDGAPRE1'";
+        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_2 = "'OBJETIVO APRENDIZAGEM 2'";
+        private const string OBJETIVO_APRENDIZAGEM_CODIGO_2 = "'CDGAPRE2'";
+        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_3 = "'OBJETIVO APRENDIZAGEM 3'";
+        private const string OBJETIVO_APRENDIZAGEM_CODIGO_3 = "'CDGAPRE3'";
+        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_4 = "'OBJETIVO APRENDIZAGEM 4'";
+        private const string OBJETIVO_APRENDIZAGEM_CODIGO_4 = "'CDGAPRE4'";
+        private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_5 = "'OBJETIVO APRENDIZAGEM 5'";
+        private const string OBJETIVO_APRENDIZAGEM_CODIGO_5 = "'CDGAPRE5'";
+        private const string OBJETIVO_APRENDIZAGEM_TABELA = "objetivo_aprendizagem";
+        
         protected PlanoAulaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -71,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
         {
             await CriarTipoCalendario(filtroPlanoAula.TipoCalendario);
             
-            await CriarItensComuns(filtroPlanoAula.CriarPeriodo, filtroPlanoAula.DataInicio, filtroPlanoAula.DataFim, filtroPlanoAula.Bimestre, filtroPlanoAula.TipoCalendarioId);
+            await CriarItensComuns(filtroPlanoAula.CriarPeriodoEscolarBimestre, filtroPlanoAula.DataInicio, filtroPlanoAula.DataFim, filtroPlanoAula.Bimestre, filtroPlanoAula.TipoCalendarioId);
             
             CriarClaimUsuario(filtroPlanoAula.Perfil);
             
@@ -79,9 +81,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             
             await CriarTurma(filtroPlanoAula.Modalidade);
             
-            await CriarAula(filtroPlanoAula.ComponenteCurricularCodigo, filtroPlanoAula.DataAula, RecorrenciaAula.AulaUnica, filtroPlanoAula.quantidadeAula);
+            await CriarAula(filtroPlanoAula.ComponenteCurricularCodigo, filtroPlanoAula.DataAula, RecorrenciaAula.AulaUnica, filtroPlanoAula.QuantidadeAula);
             
-            if (filtroPlanoAula.CriarPeriodoEscolarEAbertura)
+            if (filtroPlanoAula.CriarPeriodoEscolarEAberturaTodosBimestres)
                 await CriarPeriodoEscolarEAbertura();
 
             await CriarObjetivoAprendizagem(filtroPlanoAula.ComponenteCurricularCodigo);
@@ -89,55 +91,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
         private async Task CriarObjetivoAprendizagem(string componenteCurricularCodigo)
         {
-            await InserirNaBase(new ObjetivoAprendizagem()
-            {
-                Descricao = OBJETIVO_APRENDIZAGEM_DESCRICAO_1,
-                CodigoCompleto = OBJETIVO_APRENDIZAGEM_CODIGO_1,
-                AnoTurma = "first",
-                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
-                CriadoEm = DateTime.Now,
-                AtualizadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new ObjetivoAprendizagem()
-            {
-                Descricao = OBJETIVO_APRENDIZAGEM_DESCRICAO_2,
-                CodigoCompleto = OBJETIVO_APRENDIZAGEM_CODIGO_2,
-                AnoTurma = "first",
-                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
-                CriadoEm = DateTime.Now,
-                AtualizadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new ObjetivoAprendizagem()
-            {
-                Descricao = OBJETIVO_APRENDIZAGEM_DESCRICAO_3,
-                CodigoCompleto = OBJETIVO_APRENDIZAGEM_CODIGO_3,
-                AnoTurma = "first",
-                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
-                CriadoEm = DateTime.Now,
-                AtualizadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new ObjetivoAprendizagem()
-            {
-                Descricao = OBJETIVO_APRENDIZAGEM_DESCRICAO_4,
-                CodigoCompleto = OBJETIVO_APRENDIZAGEM_CODIGO_4,
-                AnoTurma = "first",
-                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
-                CriadoEm = DateTime.Now,
-                AtualizadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new ObjetivoAprendizagem()
-            {
-                Descricao = OBJETIVO_APRENDIZAGEM_DESCRICAO_5,
-                CodigoCompleto = OBJETIVO_APRENDIZAGEM_CODIGO_5,
-                AnoTurma = "first",
-                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
-                CriadoEm = DateTime.Now,
-                AtualizadoEm = DateTime.Now
-            });
+            await InserirNaBase(OBJETIVO_APRENDIZAGEM_TABELA, CODIGO_1,OBJETIVO_APRENDIZAGEM_DESCRICAO_1,OBJETIVO_APRENDIZAGEM_CODIGO_1,"'first'",componenteCurricularCodigo,FALSE,"'2022-09-12'","'2022-09-12'");
+            await InserirNaBase(OBJETIVO_APRENDIZAGEM_TABELA, CODIGO_2,OBJETIVO_APRENDIZAGEM_DESCRICAO_2,OBJETIVO_APRENDIZAGEM_CODIGO_2,"'first'",componenteCurricularCodigo,FALSE,"'2022-09-12'","'2022-09-12'");
+            await InserirNaBase(OBJETIVO_APRENDIZAGEM_TABELA, CODIGO_3,OBJETIVO_APRENDIZAGEM_DESCRICAO_3,OBJETIVO_APRENDIZAGEM_CODIGO_3,"'first'",componenteCurricularCodigo,FALSE,"'2022-09-12'","'2022-09-12'");
+            await InserirNaBase(OBJETIVO_APRENDIZAGEM_TABELA, CODIGO_4,OBJETIVO_APRENDIZAGEM_DESCRICAO_4,OBJETIVO_APRENDIZAGEM_CODIGO_4,"'first'",componenteCurricularCodigo,FALSE,"'2022-09-12'","'2022-09-12'");
+            await InserirNaBase(OBJETIVO_APRENDIZAGEM_TABELA, CODIGO_5,OBJETIVO_APRENDIZAGEM_DESCRICAO_5,OBJETIVO_APRENDIZAGEM_CODIGO_5,"'first'",componenteCurricularCodigo,FALSE,"'2022-09-12'","'2022-09-12'");
         }
 
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)

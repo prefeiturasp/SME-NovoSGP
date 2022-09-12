@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
@@ -36,6 +37,22 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAula();
 
+            await CriarDadosBasicos(new FiltroPlanoAula()
+            {
+                Bimestre = BIMESTRE_2,
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilProfessor(),
+                QuantidadeAula = 1,
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
+                DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
+                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                CriarPeriodoEscolarBimestre = false,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                CriarPeriodoEscolarEAberturaTodosBimestres = true
+            });
+                
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -57,17 +74,17 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1008
+                        Id = 1
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1009
+                        Id = 2
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1006
+                        Id = 3
                     },
                 },
                 RecuperacaoAula = null
