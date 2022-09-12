@@ -112,11 +112,28 @@ namespace SME.SGP.Aplicacao
 
             if (turma.DeveVerificarRegraRegulares())
             {
-                turmasCodigos = await mediator
+               var turmasCodigosEOL = await mediator
                     .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), historico));
 
-                turmasCodigos = turmasCodigos
-                    .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                if (historico == true)
+                {
+                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                    {
+                        turmasCodigos = turmasCodigosEOL;
+                        turmasCodigos = turmasCodigos
+                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
+                    }
+                    else
+                    {
+                        turmasCodigos = new string[] { turma.CodigoTurma };
+                    }
+                }
+                else
+                    turmasCodigos = turmasCodigosEOL
+                        .Concat(new string[] { turma.CodigoTurma }).ToArray();
+
             }
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
