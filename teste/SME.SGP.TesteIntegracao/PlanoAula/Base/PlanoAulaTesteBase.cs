@@ -88,7 +88,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
             await CriarObjetivoAprendizagem(filtroPlanoAula.ComponenteCurricularCodigo);
             
-            await CriarPlanejamentoAnual(filtroPlanoAula.ComponenteCurricularCodigo);
+            if(filtroPlanoAula.CriarPlanejamentoAnual)
+                await CriarPlanejamentoAnual(filtroPlanoAula.ComponenteCurricularCodigo);
         }
 
         private async Task CriarPlanejamentoAnual(string componenteCurricularCodigo)
