@@ -55,7 +55,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             retorno.ShouldNotBeNull();
         }
-
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {
             return new FiltroPlanoAula()
