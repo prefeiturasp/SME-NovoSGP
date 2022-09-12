@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
@@ -17,58 +18,32 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula
 {
-    public class Ao_cadastrar_plano_aula_cp_diretor : PlanoAulaTesteBase
+    public class Ao_cadastrar_plano_aula_sem_plano_anual : PlanoAulaTesteBase
     {
-        public Ao_cadastrar_plano_aula_cp_diretor(CollectionFixture collectionFixture) : base(collectionFixture){}
+        public Ao_cadastrar_plano_aula_sem_plano_anual(CollectionFixture collectionFixture) : base(collectionFixture){}
         
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-
         }
 
         [Fact]
-        public async Task Deve_cadastrar_plano_aula_usuario_cp()
+        public async Task Nao_deve_cadastrar_plano_aula_sem_plano_anual()
         {
             var planoAulaDto = ObterPlanoAula();
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilCP());
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor());
             await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-
-            retorno.ShouldNotBeNull();
-            retorno.ShouldNotBeNull();
-            Assert.True(retorno.Id > 0);
-            retorno.Descricao.ShouldNotBeNull();
-            retorno.LicaoCasa.ShouldNotBeNull();
-            retorno.RecuperacaoAula.ShouldNotBeNull();
-            retorno.ObjetivosAprendizagemComponente.Count.ShouldBeGreaterThanOrEqualTo(3);
-        }
-        [Fact]
-        public async Task Deve_cadastrar_plano_aula_usuario_diretor()
-        {
-            var planoAulaDto = ObterPlanoAula();
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilDiretor());
-            await CriarDadosBasicos(filtroPlanoAulaDiretor);
-
-            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-            
-            retorno.ShouldNotBeNull();
-            Assert.True(retorno.Id > 0);
-            retorno.Descricao.ShouldNotBeNull();
-            retorno.LicaoCasa.ShouldNotBeNull();
-            retorno.RecuperacaoAula.ShouldNotBeNull();
-            retorno.ObjetivosAprendizagemComponente.Count.ShouldBeGreaterThanOrEqualTo(3);
+            var ex = await Assert.ThrowsAsync<NegocioException>(() =>  salvarPlanoAulaUseCase.Executar(planoAulaDto));
+            ex.Message.ShouldNotBeNullOrEmpty();
+            ex.Message.ShouldBeEquivalentTo(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
         }
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {
-            return new FiltroPlanoAula()
+            var filtro = new FiltroPlanoAula()
             {
                 Bimestre = BIMESTRE_2,
                 Modalidade = Modalidade.Fundamental,
@@ -81,8 +56,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolarEAberturaTodosBimestres = true
+                CriarPeriodoEscolarEAberturaTodosBimestres = true,
+                CriarPlanejamentoAnual = false
             };
+            
+            return filtro;
         }
         private PlanoAulaDto ObterPlanoAula()
         {
