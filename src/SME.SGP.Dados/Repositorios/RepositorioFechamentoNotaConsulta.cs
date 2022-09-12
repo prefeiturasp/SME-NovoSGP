@@ -92,8 +92,6 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query += $@" and pe.bimestre = @bimestre";
 
-            query += " and ftd.excluido != true";
-
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
 
