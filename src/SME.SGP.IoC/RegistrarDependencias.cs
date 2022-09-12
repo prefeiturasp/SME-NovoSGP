@@ -744,6 +744,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
             services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020UseCase, GerarFechamentoTurmaEdFisica2020UseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase, GerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase>();
 
             // Fechamento Aluno
             services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();

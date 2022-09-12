@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioParametrosSistemaConsulta : IRepositorioBase<ParametrosSistema>
     {
-        Task<IEnumerable<KeyValuePair<string, string>>> ObterChaveEValorPorTipoEAno(TipoParametroSistema tipo, int ano);
+        Task<IEnumerable<ParametroSistemaRetornoDto>> ObterChaveEValorPorTipoEAno(TipoParametroSistema tipo, int ano);
         Task<KeyValuePair<string, string>?> ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo);
         Task<string> ObterValorUnicoPorTipo(TipoParametroSistema tipo);
         Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema);
