@@ -87,6 +87,25 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 await CriarPeriodoEscolarEAbertura();
 
             await CriarObjetivoAprendizagem(filtroPlanoAula.ComponenteCurricularCodigo);
+            
+            await CriarPlanejamentoAnual(filtroPlanoAula.ComponenteCurricularCodigo);
+        }
+
+        private async Task CriarPlanejamentoAnual(string componenteCurricularCodigo)
+        {
+            await InserirNaBase(new PlanejamentoAnual()
+            {
+                TurmaId = TURMA_ID_1,
+                ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new PlanejamentoAnualPeriodoEscolar()
+            {
+                PeriodoEscolarId = 2,
+                PlanejamentoAnualId = 1,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         private async Task CriarObjetivoAprendizagem(string componenteCurricularCodigo)
