@@ -57,6 +57,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
 
             retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBeGreaterThan(0);
+            retorno.ObjetivosAprendizagemComponente.ShouldNotBeNull();
         }
 
         [Fact]
@@ -85,6 +87,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
 
             retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBeGreaterThan(0);
+            retorno.ObjetivosAprendizagemComponente.ShouldBeNull();
         }
 
         private PlanoAulaDto ObterPlanoAula()
