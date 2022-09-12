@@ -59,6 +59,34 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.ShouldNotBeNull();
         }
 
+        [Fact]
+        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_sem_objetivos_aprendizagem()
+        {
+            var planoAulaDto = ObterPlanoAulaSemObjetivosDeAprendizagem();
+
+            await CriarDadosBasicos(new FiltroPlanoAula()
+            {
+                Bimestre = BIMESTRE_2,
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCJ(),
+                QuantidadeAula = 1,
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
+                DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
+                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                CriarPeriodoEscolarBimestre = false,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                TipoCalendarioId = TIPO_CALENDARIO_1,
+                CriarPeriodoEscolarEAberturaTodosBimestres = true
+            });
+
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
+
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+
+            retorno.ShouldNotBeNull();
+        }
+
         private PlanoAulaDto ObterPlanoAula()
         {
             return new PlanoAulaDto()
@@ -73,19 +101,33 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1008
+                        Id = 1
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1009
+                        Id = 2
                     },
                     new()
                     {
                         ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
-                        Id = 1006
+                        Id = 3
                     },
                 },
+                RecuperacaoAula = null
+            };
+        }
+
+        private PlanoAulaDto ObterPlanoAulaSemObjetivosDeAprendizagem()
+        {
+            return new PlanoAulaDto()
+            {
+                ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                ConsideraHistorico = false,
+                AulaId = AULA_ID_1,
+                Descricao = "<p><span>Objetivos específicos e desenvolvimento da aula</span></p>",
+                LicaoCasa = null,
+                ObjetivosAprendizagemComponente = null,
                 RecuperacaoAula = null
             };
         }
