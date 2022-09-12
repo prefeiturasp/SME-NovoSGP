@@ -48,13 +48,13 @@ namespace SME.SGP.Aplicacao
                                  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
             if (periodoEscolar == null)
-                throw new NegocioException("Período escolar não encontrado");
+                throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
 
             var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(fechamentoTurma.Turma.CodigoTurma));
             var alunoConselho = alunos.FirstOrDefault(x => x.CodigoAluno == conselhoClasseAlunoDto.AlunoCodigo);
 
             if (alunoConselho == null)
-                throw new NegocioException("Aluno não encontrado para salvar o conselho de classe.");
+                throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE);
             
             
             if (fechamentoTurma.Turma.AnoLetivo == dataAtual.Year && alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim))
@@ -73,8 +73,7 @@ namespace SME.SGP.Aplicacao
                        throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
             
-            var existeConselhoClasseBimestre = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
-                fechamentoTurma.Turma, periodoEscolar.Id));
+            var existeConselhoClasseBimestre = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno, fechamentoTurma.Turma, bimestre));
 
             if (!existeConselhoClasseBimestre)
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTE_COMPONENTES_SEM_NOTA_INFORMADA);

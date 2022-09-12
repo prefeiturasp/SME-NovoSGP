@@ -6,16 +6,16 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class VerificaNotasTodosComponentesCurricularesQuery : IRequest<bool>
     {
-        public VerificaNotasTodosComponentesCurricularesQuery(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
+        public VerificaNotasTodosComponentesCurricularesQuery(string alunoCodigo, Turma turma, int? bimestre = null, bool? historico = false)
         {
             AlunoCodigo = alunoCodigo;
             Turma = turma;
-            PeriodoEscolarId = periodoEscolarId;
+            Bimestre = bimestre;
             Historico = historico;
         }
         public Turma Turma { get; set; }
         public string AlunoCodigo { get; set; }
-        public long? PeriodoEscolarId { get; set; }
+        public int? Bimestre { get; set; }
         public bool? Historico { get; set; }
     }
 
