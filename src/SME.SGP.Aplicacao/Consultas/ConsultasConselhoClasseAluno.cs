@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
 
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
 
-            if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
             {
                 var tiposTurmasParaConsulta = new List<int> { (int)turma.TipoTurma };
 
@@ -247,7 +247,7 @@ namespace SME.SGP.Aplicacao
             }
 
             //Verificar as notas finais
-            var notasFechamentoAluno = new List<NotaConceitoBimestreComponenteDto>();
+            var notasFechamentoAluno = Enumerable.Empty<NotaConceitoBimestreComponenteDto>();
             var dadosAlunos = await mediator.Send(new ObterDadosAlunosQuery(codigoTurma, turma.AnoLetivo, null, true));
             var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendario.Id))).ToList();
 
@@ -261,13 +261,15 @@ namespace SME.SGP.Aplicacao
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
-                var turmasParaNotasFinais = turma.EhEJA() ? turmasCodigos : new[] { codigoTurma };
+                var turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
+                    ? turmasCodigos 
+                    : new string[] { codigoTurma };
 
-                notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
-                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo,
-                        bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
-                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasParaNotasFinais, alunoCodigo,
-                        dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, bimestre))).ToList();
+                bool validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
+
+                notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
+                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
+                    await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasParaNotasFinais, alunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, bimestre, validaMatricula));
             }
 
             var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
@@ -322,8 +324,9 @@ namespace SME.SGP.Aplicacao
 
                         var dataFim = periodoEscolar?.PeriodoFim ?? periodoFim;
 
-                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString()
-                            && alunoNaTurma.DataMatricula <= dataFim);
+                        var frequenciasAlunoParaTratar = frequenciasAluno.Where(a => a.DisciplinaId == disciplina.Id.ToString() 
+                                                         && (alunoNaTurma.DataMatricula <= dataFim 
+                                                         || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma)));
 
                         frequenciasAlunoParaTratar = (periodoMatricula != null ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
 
@@ -386,6 +389,24 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
+        private async Task<bool> ValidaTurmaRegularJuntoAEdFisica(List<string> turmasCodigos, string turmaPrincipal)
+        {
+            if(turmasCodigos.Count() == 2)
+            {
+                turmasCodigos.Remove(turmaPrincipal);
+                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmasCodigos.FirstOrDefault()));
+                if (turma.TipoTurma == Dominio.Enumerados.TipoTurma.EdFisica)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
+        {
+            return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;
+        }
+
         public async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
         {
             var turmasCodigosComMatriculasValidas = new List<string>();
@@ -414,6 +435,32 @@ namespace SME.SGP.Aplicacao
                                                 f.CodigoAluno == alunoCodigo &&
                                                 f.CodigoComponenteCurricular == codigoComponenteCurricular &&
                                                 f.CodigoTurma == turmaCodigo);
+        }
+
+        private async Task<bool> VerificaSePodeEditarNota(string alunoCodigo, Turma turma, PeriodoEscolar periodoEscolar)
+        {
+            var turmaFechamento = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
+
+            if (turmaFechamento == null || !turmaFechamento.Any())
+                throw new NegocioException($"Não foi possível obter os dados da turma {turma.CodigoTurma}");
+
+            var turmaFechamentoOrdenada = turmaFechamento.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
+
+            var aluno = turmaFechamentoOrdenada.Last(a => a.CodigoAluno == alunoCodigo);
+
+            if (aluno == null)
+                throw new NegocioException($"Não foi possível obter os dados do aluno {alunoCodigo}");
+
+            var temPeriodoAberto = false;
+
+            if (periodoEscolar != null)
+            {
+                temPeriodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, aluno.DataSituacao, periodoEscolar.Bimestre);
+
+                if (aluno.DataMatricula > periodoEscolar.PeriodoFim.Date) return false;
+            }
+
+            return aluno.PodeEditarNotaConceitoNoPeriodo(periodoEscolar, temPeriodoAberto);
         }
 
         public async Task<ParecerConclusivoDto> ObterParecerConclusivo(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, bool consideraHistorico = false)
