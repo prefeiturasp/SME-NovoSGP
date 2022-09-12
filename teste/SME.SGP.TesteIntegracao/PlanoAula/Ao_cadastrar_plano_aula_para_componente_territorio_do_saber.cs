@@ -19,8 +19,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 {
     public class Ao_cadastrar_plano_aula_para_componente_territorio_do_saber : PlanoAulaTesteBase
     {
-        //protected const string COMPONENTE_CURRICULAR_TERRIT_SABER_ARTE_ID_1520 = "1520";
-        //protected const string COMPONENTE_CURRICULAR_TERRIT_SABER_ARTE_NOME = "TERRIT SABER / ARTE";
         public Ao_cadastrar_plano_aula_para_componente_territorio_do_saber(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
