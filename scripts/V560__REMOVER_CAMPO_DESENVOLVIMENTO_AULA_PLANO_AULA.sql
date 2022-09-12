@@ -1,1 +1,1 @@
-ALTER TABLE plano_anual DROP COLUMN IF EXISTS desenvolvimento_aula;
+ALTER TABLE plano_aula DROP COLUMN IF EXISTS desenvolvimento_aula;
