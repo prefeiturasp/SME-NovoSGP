@@ -61,6 +61,26 @@ namespace SME.SGP.IoC
 
             RegistrarMapeamentos.Registrar();
         }
+        
+        public virtual void RegistrarParaTestes(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AdicionarMediatr();
+            services.AdicionarValidadoresFluentValidation();
+
+            RegistrarRepositorios(services);
+            RegistrarContextos(services);
+            RegistrarComandos(services);
+            RegistrarConsultas(services);
+            RegistrarServicos(services);
+            RegistrarCasosDeUso(services);
+            RegistrarRabbit(services, null);
+            RegistrarTelemetria(services, null);
+            RegistrarCache(services, null);
+            RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services, configuration);
+
+            RegistrarMapeamentos.Registrar();
+        }
 
         private void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
         {
