@@ -1,7 +1,6 @@
 ﻿
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesAlunoQuery request, CancellationToken cancellationToken)
         {
-            int bimestre;
             long[] conselhosClassesIds;
             string[] turmasCodigos;
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
@@ -40,39 +38,24 @@ namespace SME.SGP.Aplicacao
             }
             else turmasCodigos = new string[] { request.TurmaAluno.CodigoTurma };
 
-
-            if (request.PeriodoEscolarId != 0)
-            {
-                var periodoEscolar = await mediator
-                    .Send(new ObterPeriodoEscolarePorIdQuery(request.PeriodoEscolarId));
-
-                if (periodoEscolar == null)
-                    throw new NegocioException("Não foi possível localizar o período escolar");
-
-                bimestre = periodoEscolar.Bimestre;
-
-                conselhosClassesIds = await mediator
-                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
-            }
-            else
-            {
-                bimestre = 0;
-                conselhosClassesIds = new long[0];
-            }
+            conselhosClassesIds = await mediator
+                      .Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre));
+            
 
             var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
             if (conselhosClassesIds != null)
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, request.AlunoCodigo, bimestre));
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, request.AlunoCodigo, 
+                                                                 (request.Bimestre?? 0) ));
 
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
             }
 
-            if (request.PeriodoEscolarId != 0)
-                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, bimestre)));
+            if ((request.Bimestre??0) > 0)
+                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre??0))));
             else
             {
                 var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo));

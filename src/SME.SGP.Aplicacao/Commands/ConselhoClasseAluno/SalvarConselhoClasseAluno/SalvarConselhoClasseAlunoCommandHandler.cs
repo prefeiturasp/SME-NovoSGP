@@ -33,9 +33,10 @@ namespace SME.SGP.Aplicacao
             var fechamentoTurma = await mediator
                 .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo));
 
-            var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(request.ConselhoClasseAluno.AlunoCodigo, fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolarId));
+            /*var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(request.ConselhoClasseAluno.AlunoCodigo, 
+                                                                                   fechamentoTurma.Turma, fechamentoTurma.PeriodoEscolar.Bimestre));
             if (!alunoPossuiNotasTodosComponentesCurriculares)
-                throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");
+                throw new NegocioException("É necessário que todos os componentes tenham nota/conceito informados!");*/
 
             // Se não existir conselho de classe para o fechamento gera
             if (request.ConselhoClasseAluno.ConselhoClasse.Id == 0)
@@ -91,81 +92,6 @@ namespace SME.SGP.Aplicacao
 
             return componentesTurma;
         }
-        public async Task<bool> VerificaNotasTodosComponentesCurriculares(string alunoCodigo, Turma turma, long? periodoEscolarId, bool? historico = false)
-        {
-            int bimestre;
-            long[] conselhosClassesIds;
-            string[] turmasCodigos;
-            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
-
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
-            {
-                var turmasCodigosParaConsulta = new List<int>();
-                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
-
-                turmasCodigos = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turmasCodigosParaConsulta, historico));
-
-                turmasCodigos = turmasCodigos
-                    .Concat(new string[] { turma.CodigoTurma }).ToArray();
-            }
-            else turmasCodigos = new string[] { turma.CodigoTurma };
-
-
-            if (periodoEscolarId.HasValue)
-            {
-                var periodoEscolar = await mediator
-                    .Send(new ObterPeriodoEscolarePorIdQuery(periodoEscolarId.Value));
-
-                if (periodoEscolar == null)
-                    throw new NegocioException("Não foi possível localizar o período escolar");
-
-                bimestre = periodoEscolar.Bimestre;
-
-                conselhosClassesIds = await mediator
-                    .Send(new ObterConselhoClasseIdsPorTurmaEPeriodoQuery(turmasCodigos, periodoEscolar?.Id));
-            }
-            else
-            {
-                bimestre = 0;
-                conselhosClassesIds = new long[0];
-            }
-
-            var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
-            if (conselhosClassesIds != null)
-            {
-                foreach (var conselhosClassesId in conselhosClassesIds)
-                {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo,bimestre));
-
-                    notasParaVerificar.AddRange(notasParaAdicionar);
-                }
-            }
-
-            if (periodoEscolarId.HasValue)
-                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre)));
-            else
-            {
-                var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, alunoCodigo));
-
-                if (todasAsNotas != null && todasAsNotas.Any())
-                    notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
-            }
-
-            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares);
-            var disciplinasDaTurma = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
-
-            // Checa se todas as disciplinas da turma receberam nota
-            var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null);
-            foreach (var componenteCurricular in disciplinasLancamNota)
-            {
-                if (!notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular))
-                    return false;
-            }
-
-            return true;
-        }
+        
     }
 }

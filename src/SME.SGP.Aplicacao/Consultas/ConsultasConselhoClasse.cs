@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
-
+        
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                        IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -80,7 +80,9 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(alunoCodigo, turma));
+                
+                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesAlunoQuery(alunoCodigo, turma,
+                                                                                       retornoConselhoBimestre.bimestre));
                 if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
                     throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
             }
