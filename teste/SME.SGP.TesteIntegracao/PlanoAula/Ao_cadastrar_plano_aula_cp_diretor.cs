@@ -37,12 +37,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
         {
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil("46e1e074-37d6-e911-abd6-f81654fe895d");
-            await CriarDadosBasicos(filtroPlanoAulaDiretor);
-            // await CriarTipoCalendario(DateTime.Now.Year, ModalidadeTipoCalendario.FundamentalMedio, Periodo.Anual);
-            // await CriarAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,DateTime.Now,RecorrenciaAula.AulaUnica,1,USUARIO_LOGIN_DIRETOR999998);
-            // await CriarTurma(Modalidade.Fundamental);
             var planoAulaDto = ObterPlanoAula();
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilDiretor());
+            await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
@@ -55,18 +52,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             return new FiltroPlanoAula()
             {
-                Perfil = perfil,
+                Bimestre = BIMESTRE_2,
                 Modalidade = Modalidade.Fundamental,
+                Perfil = perfil,
+                QuantidadeAula = 1,
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
+                DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
+                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                CriarPeriodoEscolarBimestre = false,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                DataInicio = DateTime.Now,
-                DataFim = DateTime.Now.AddDays(2),
-                Bimestre = 2,
-                DataAula = DateTime.Now,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
-                CriarPeriodo = false,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolarEAbertura = false,
-                quantidadeAula = 1
+                CriarPeriodoEscolarEAberturaTodosBimestres = true
             };
         }
         private PlanoAulaDto ObterPlanoAula()
