@@ -16,17 +16,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
     {
         private const int QUANTIDADE_3 = 3;
         protected const long AULA_ID_1 = 1;
-        protected const int NUMERO_AULAS_1 = 1;
-        protected const int NUMERO_AULAS_2 = 2;
-        protected const int NUMERO_AULAS_3 = 3;
-
-        protected const int QTDE_1 = 1;
-        protected const int QTDE_2 = 2;
-        protected const int QTDE_3 = 3;
-
-        protected readonly DateTime DATA_01_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 01);
-        protected readonly DateTime DATA_02_08 = new(DateTimeExtension.HorarioBrasilia().Year, 08, 02);
-
+        
         protected PlanoAulaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -39,60 +29,51 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        #region Execução dos UseCases
-
-        protected async Task<PlanoAulaDto> ExecutarSalvarPlanoDeAulaUseCase(PlanoAulaDto planoAulaDto)
+        protected ISalvarPlanoAulaUseCase ObterServicoISalvarPlanoAulaUseCase()
         {
-            var useCase = ServiceProvider.GetService<ISalvarPlanoAulaUseCase>();
-
-            return await useCase.Executar(planoAulaDto);
+            return ServiceProvider.GetService<ISalvarPlanoAulaUseCase>();
         }
 
-        protected async Task<PlanoAulaRetornoDto> ExecutarObterPlanoDeAulaUseCase(long aulaId, long turmaId, long? componenteCurricularId)
+        protected ISalvarPlanoAulaUseCase ObterServicoSalvarPlanoAulaUseCase()
         {
-            var useCase = ServiceProvider.GetService<IObterPlanoAulaUseCase>();
-
-            return await useCase.Executar(new FiltroObterPlanoAulaDto(aulaId, turmaId, componenteCurricularId));
+            return ServiceProvider.GetService<ISalvarPlanoAulaUseCase>();
+        }
+        protected IObterPlanoAulaUseCase ObterServicoObterPlanoAulaUseCase()
+        {
+            return ServiceProvider.GetService<IObterPlanoAulaUseCase>();
         }
 
-        protected async Task<IEnumerable<PlanoAulaRetornoDto>> ExecutarObterPlanoDeAulaPorTurmaComponentePeriodoUseCase(string turmaCodigo, string componenteCurricularCodigo, string componenteCurricularId, [FromQuery] DateTime aulaInicio, [FromQuery] DateTime aulaFim)
+        protected IObterPlanoAulasPorTurmaEComponentePeriodoUseCase ObterServicoObterPlanoAulasPorTurmaEComponentePeriodoUseCase()
         {
-            var useCase = ServiceProvider.GetService<IObterPlanoAulasPorTurmaEComponentePeriodoUseCase>();
-
-            return await useCase.Executar(new FiltroObterPlanoAulaPeriodoDto(turmaCodigo, componenteCurricularCodigo, componenteCurricularId, aulaInicio, aulaFim));
+            return ServiceProvider.GetService<IObterPlanoAulasPorTurmaEComponentePeriodoUseCase>();
         }
 
-        protected async Task<bool> ExecutarMigrarPlanoDeAulaUseCase(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        protected IMigrarPlanoAulaUseCase ObterServicoMigrarPlanoAulaUseCase(MigrarPlanoAulaDto migrarPlanoAulaDto)
         {
-            var useCase = ServiceProvider.GetService<IMigrarPlanoAulaUseCase>();
-
-            return await useCase.Executar(migrarPlanoAulaDto);
+            return ServiceProvider.GetService<IMigrarPlanoAulaUseCase>();
         }
 
-        protected IEnumerable<PlanoAulaExistenteRetornoDto> ExecutarValidarPlanoDeAulaExistenteUseCase(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
+        protected IConsultasPlanoAula ObterServicoIConsultasPlanoAula()
         {
-            var consulta = ServiceProvider.GetService<IConsultasPlanoAula>();
-
-            return consulta.ValidarPlanoAulaExistente(filtroPlanoAulaExistenteDto);
+            return ServiceProvider.GetService<IConsultasPlanoAula>();
         }
 
-        #endregion Execução dos UseCases
-
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, DateTime dataAula, string componenteCurricular, bool criarPeriodo = true, long tipoCalendarioId = 1, bool criarPeriodoEscolarEAbertura = true, int quantidadeAula = QUANTIDADE_3)
+        protected async Task CriarDadosBasicos(FiltroPlanoAula filtroPlanoAula)
         {
-            await CriarDadosBase(perfil, modalidade, tipoCalendario, dataInicio, dataFim, bimestre, tipoCalendarioId, criarPeriodo);
-            await CriarTurma(modalidade);
-            await CriarAula(componenteCurricular, dataAula, RecorrenciaAula.AulaUnica, quantidadeAula);
-            if (criarPeriodoEscolarEAbertura)
-                await CriarPeriodoEscolarEAbertura();
-        }
-
-        protected async Task CriarDadosBase(string perfil, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool criarPeriodo = true)
-        {
-            await CriarTipoCalendario(tipoCalendario);
-            await CriarItensComuns(criarPeriodo, dataInicio, dataFim, bimestre, tipoCalendarioId);
-            CriarClaimUsuario(perfil);
+            await CriarTipoCalendario(filtroPlanoAula.TipoCalendario);
+            
+            await CriarItensComuns(filtroPlanoAula.CriarPeriodo, filtroPlanoAula.DataInicio, filtroPlanoAula.DataFim, filtroPlanoAula.Bimestre, filtroPlanoAula.TipoCalendarioId);
+            
+            CriarClaimUsuario(filtroPlanoAula.Perfil);
+            
             await CriarUsuarios();
+            
+            await CriarTurma(filtroPlanoAula.Modalidade);
+            
+            await CriarAula(filtroPlanoAula.ComponenteCurricularCodigo, filtroPlanoAula.DataAula, RecorrenciaAula.AulaUnica, filtroPlanoAula.quantidadeAula);
+            
+            if (filtroPlanoAula.CriarPeriodoEscolarEAbertura)
+                await CriarPeriodoEscolarEAbertura();
         }
 
         protected async Task CriarAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula = QUANTIDADE_3, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
