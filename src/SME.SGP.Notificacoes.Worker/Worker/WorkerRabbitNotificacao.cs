@@ -95,42 +95,50 @@ namespace SME.SGP.Notificacoes.Worker
 
         private async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
-            var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
-            var rota = ea.RoutingKey;
-
-            using var scope = serviceScopeFactory.CreateScope();
-            var tipoHub = typeof(INotificacaoSgpHub);
-            var hubNotificacoes = scope.ServiceProvider.GetService(tipoHub);
-
-            var transacao = servicoTelemetria.Iniciar(rota, "WorkerRabbitNotificacao");
-            if (Comandos.ContainsKey(rota))
+            try
             {
-                try
-                {
-                    var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                    var comando = Comandos[rota];
-                    var metodo = UtilMethod.ObterMetodo(tipoHub, comando);
+                var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
+                var rota = ea.RoutingKey;
 
-                    await servicoTelemetria.RegistrarAsync(
-                        async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }), 
-                        "RabbitMQ", 
-                        rota, 
-                        comando, 
-                        mensagem);
+                using var scope = serviceScopeFactory.CreateScope();
+                var tipoHub = typeof(INotificacaoSgpHub);
+                var hubNotificacoes = scope.ServiceProvider.GetService(tipoHub);
 
-                    canalRabbit.BasicAck(ea.DeliveryTag, false);
-                }
-                catch (Exception ex)
+                var transacao = servicoTelemetria.Iniciar(rota, "WorkerRabbitNotificacao");
+                if (Comandos.ContainsKey(rota))
                 {
-                    transacao?.CaptureException(ex);
+                    try
+                    {
+                        var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
+                        var comando = Comandos[rota];
+                        var metodo = UtilMethod.ObterMetodo(tipoHub, comando);
 
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                        await servicoTelemetria.RegistrarAsync(
+                            async () => await (Task)metodo.Invoke(hubNotificacoes, new object[] { mensagemRabbit }),
+                            "RabbitMQ",
+                            rota,
+                            comando,
+                            mensagem);
+
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        transacao?.CaptureException(ex);
+
+                        canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    }
+                    finally
+                    {
+                        servicoTelemetria.Finalizar(transacao);
+                    }
                 }
-                finally
-                {
-                    servicoTelemetria.Finalizar(transacao);
-                }
-            }        
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"*** ERRO: {ex.Message}");
+                throw;
+            } 
         }
 
         private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
