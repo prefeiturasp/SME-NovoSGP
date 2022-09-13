@@ -125,7 +125,7 @@ namespace SME.SGP.Notificacoes.Worker
                 {
                     transacao?.CaptureException(ex);
 
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    throw;
                 }
                 finally
                 {
