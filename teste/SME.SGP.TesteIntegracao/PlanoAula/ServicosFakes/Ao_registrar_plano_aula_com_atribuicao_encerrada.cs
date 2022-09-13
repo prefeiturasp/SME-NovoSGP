@@ -58,7 +58,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = tipoCalendario,
                 ComponenteCurricularCodigo = componenteCurricular,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
+                CriarPeriodoReabertura = true
             };
         }
 

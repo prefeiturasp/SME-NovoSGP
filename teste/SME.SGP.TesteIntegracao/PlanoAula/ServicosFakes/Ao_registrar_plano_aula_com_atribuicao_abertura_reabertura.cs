@@ -31,16 +31,103 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         }
 
         [Fact]
-        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_sem_reabertura()
+        public async Task Nao_deve_cadastrar_plano_aula_componente_diferente_regencia_sem_reabertura()
         {
             var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
 
             var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
             filtroPlanoAula.CriarPeriodoEscolarBimestre = false;
-            filtroPlanoAula.CriarPeriodoAbertura = false;
-                
+            filtroPlanoAula.CriarPeriodoEscolarTodosBimestres = false;
+            filtroPlanoAula.CriarPeriodoReabertura = false;
+            filtroPlanoAula.CriarPlanejamentoAnual = false;
+
             await CriarDadosBasicos(filtroPlanoAula);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+
+            await CriarPlanejamentoAnualTodosBimestres(COMPONENTE_LINGUA_PORTUGUESA_ID_138);
+                
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
+
+            await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
+        }
+        
+        [Fact]
+        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_com_reabertura()
+        {
+            var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
+
+            var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            filtroPlanoAula.CriarPeriodoEscolarBimestre = false;
+            filtroPlanoAula.CriarPeriodoEscolarTodosBimestres = false;
+            filtroPlanoAula.CriarPeriodoReabertura = false;
+            filtroPlanoAula.CriarPlanejamentoAnual = false;
+
+            await CriarDadosBasicos(filtroPlanoAula);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+
+            await CriarPlanejamentoAnualTodosBimestres(COMPONENTE_LINGUA_PORTUGUESA_ID_138);
+                
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
+
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
+        }
+        
+        [Fact]
+        public async Task Nao_deve_cadastrar_plano_aula_componente_diferente_regencia_sem_periodo_abertura()
+        {
+            var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
+
+            var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            filtroPlanoAula.CriarPeriodoEscolarBimestre = false;
+            filtroPlanoAula.CriarPeriodoEscolarTodosBimestres = false;
+            filtroPlanoAula.CriarPeriodoReabertura = false;
+            filtroPlanoAula.CriarPlanejamentoAnual = false;
+
+            await CriarDadosBasicos(filtroPlanoAula);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+
+            await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
+
+            await CriarPlanejamentoAnualTodosBimestres(COMPONENTE_LINGUA_PORTUGUESA_ID_138);
+                
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
+
+            await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
+        }
+        
+        [Fact]
+        public async Task Deve_cadastrar_plano_aula_componente_diferente_regencia_com_periodo_abertura()
+        {
+            var planoAulaDto = ObterPlanoAula(true, long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138));
+
+            var filtroPlanoAula = ObterFiltroPlanoAula(COMPONENTE_LINGUA_PORTUGUESA_ID_138,
+                Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            filtroPlanoAula.CriarPeriodoEscolarBimestre = false;
+            filtroPlanoAula.CriarPeriodoEscolarTodosBimestres = false;
+            filtroPlanoAula.CriarPeriodoReabertura = false;
+            filtroPlanoAula.CriarPlanejamentoAnual = false;
+
+            await CriarDadosBasicos(filtroPlanoAula);
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
+
+            await CriarPeriodoAberturaCustomizadoQuartoBimestre();
+
+            await CriarPlanejamentoAnualTodosBimestres(COMPONENTE_LINGUA_PORTUGUESA_ID_138);
                 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
@@ -55,20 +142,22 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         private FiltroPlanoAula ObterFiltroPlanoAula(string componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
         {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+            
             return new FiltroPlanoAula()
             {
-                Bimestre = BIMESTRE_2,
+                Bimestre = BIMESTRE_4,
                 Modalidade = modalidade,
                 Perfil = ObterPerfilProfessor(),
                 QuantidadeAula = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
-                DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
-                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                DataAula = dataReferencia.AddDays(-10).Date,
+                DataInicio = dataReferencia.AddDays(-20),
+                DataFim = dataReferencia.AddDays(-5),
                 CriarPeriodoEscolarBimestre = false,
                 TipoCalendario = tipoCalendario,
                 ComponenteCurricularCodigo = componenteCurricular,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
+                CriarPeriodoReabertura = true
             };
         }
 
