@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -53,13 +54,13 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseExistente = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
             if (conselhoClasseExistente != null)
-                throw new NegocioException($"Já existe um conselho de classe gerado para a turma {fechamentoTurma.Turma.Nome}!");
+               throw new NegocioException(String.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
 
             if (fechamentoTurma.PeriodoEscolarId.HasValue)
             {
                 // Fechamento Bimestral
                 if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
-                    throw new NegocioException($"Turma {fechamentoTurma.Turma.Nome} não esta em período de fechamento para o {fechamentoTurma.PeriodoEscolar.Bimestre}º Bimestre!");
+                    throw new NegocioException(String.Format(MensagemNegocioFechamentoTurma.TURMA_NAO_ESTA_EM_PERIODO_FECHAMENTO_PARA_BIMESTRE, fechamentoTurma.Turma.Nome, fechamentoTurma.PeriodoEscolar.Bimestre));
             }
             else
             {
@@ -68,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                     if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException($"Para acessar este aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                        throw new NegocioException(String.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE, validacaoConselhoFinal.Item1));
                 }
             }
 
