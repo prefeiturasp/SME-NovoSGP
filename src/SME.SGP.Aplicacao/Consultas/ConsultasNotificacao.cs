@@ -82,14 +82,12 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
-            if (Regex.Match(notificacao.Mensagem, "<a [^>]*?>").Success && notificacao.Mensagem.Contains("Para visualizar a aula clique"))
-            {
-                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"Para visualizar a aula clique(\s)?.", "", RegexOptions.IgnoreCase);
-                notificacao.Mensagem = Regex.Replace(notificacao.Mensagem, @"<a [^>]*?>(.*?)<\/a>?.", "");
-            }
-            
+            var notificarLeitura = notificacao.Status == NotificacaoStatus.Pendente;
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
                 repositorioNotificacao.Salvar(notificacao);
+
+            if (notificarLeitura)
+                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
 
             var retorno = await MapearEntidadeParaDetalheDto(notificacao);
 

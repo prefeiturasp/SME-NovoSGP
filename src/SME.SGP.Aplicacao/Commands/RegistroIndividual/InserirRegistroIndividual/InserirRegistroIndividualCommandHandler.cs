@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(novo.Registro))
             {
-                novo.Registro = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, string.Empty, novo.Registro));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, string.Empty, novo.Registro));
+                novo.Registro = moverArquivo;
             }
         }
         private RegistroIndividual MapearParaEntidade(InserirRegistroIndividualCommand request)

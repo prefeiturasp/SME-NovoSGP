@@ -83,6 +83,10 @@ namespace SME.SGP.Aplicacao
                     var componentesDaTurmaEol = await mediator
                         .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
 
+                    //Excessão de disciplina ED. Fisica para modalidade EJA
+                    if (turma.EhEJA())
+                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != "6");
+
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
                         .Select(ct => ct.Codigo)
@@ -154,7 +158,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Ocorreu um erro na persistência da consolidação do conselho de classe da turma aluno/nota", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message,"SGP","ConselhoClasseConsolidado",ex.InnerException.ToString()));
                 return false;
             }
         }
@@ -174,10 +178,9 @@ namespace SME.SGP.Aplicacao
                     var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
                     fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, alunoCodigo));
                 }
+
                 if (conselhoClasseId != null)
-                {
-                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, alunoCodigo, componenteCurricularId));
-                }
+                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, alunoCodigo, bimestre ?? 0, componenteCurricularId));
             }
 
             double? nota = null;

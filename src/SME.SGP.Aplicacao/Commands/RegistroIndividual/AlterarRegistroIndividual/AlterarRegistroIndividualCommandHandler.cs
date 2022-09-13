@@ -49,11 +49,12 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(novo.Registro))
             {
-                novo.Registro = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, atual, novo.Registro));
+                novo.Registro = moverArquivo;
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Registro, TipoArquivo.RegistroIndividual.Name()));
             }
         }
         private void MapearAlteracoes(RegistroIndividual entidade, AlterarRegistroIndividualCommand request)

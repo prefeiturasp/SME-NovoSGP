@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
-                    NumeroChamada = alunoEOL.NumeroAlunoChamada,
+                    NumeroChamada = alunoEOL.ObterNumeroAlunoChamada(),
                     Nome = $"{alunoEOL.NomeValido()} {situacao}"
                 };
             }

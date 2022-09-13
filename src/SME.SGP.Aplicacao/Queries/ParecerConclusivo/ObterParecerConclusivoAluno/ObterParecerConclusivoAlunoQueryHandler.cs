@@ -73,6 +73,7 @@ namespace SME.SGP.Aplicacao
             var parecerFrequencia = ObterParecerValidacao(true);
 
             // Nota
+
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
@@ -153,6 +154,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
+
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
 
@@ -189,7 +191,7 @@ namespace SME.SGP.Aplicacao
         #region Conselho
         private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
+            var notasConselhoClasse = await mediator.Send(new ObterNotasConselhoClassePorAlunoTurmaQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
 

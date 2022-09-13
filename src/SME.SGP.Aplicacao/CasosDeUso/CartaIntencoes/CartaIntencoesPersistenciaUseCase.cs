@@ -63,11 +63,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             if (!string.IsNullOrEmpty(carta.Planejamento))
             {
-                carta.Planejamento = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CartaIntencoes, existente.Planejamento, carta.Planejamento));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CartaIntencoes, existente.Planejamento, carta.Planejamento));
+                carta.Planejamento = moverArquivo;
             }
             if (!string.IsNullOrEmpty(existente.Planejamento))
             {
-                await mediator.Send(new RemoverArquivosExcluidosCommand(existente.Planejamento, carta.Planejamento, TipoArquivo.CartaIntencoes.Name()));
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(existente.Planejamento, carta.Planejamento, TipoArquivo.CartaIntencoes.Name()));
             }
         }
 

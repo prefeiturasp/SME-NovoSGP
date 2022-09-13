@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
             {
-                anotacaoAluno.Anotacao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, string.Empty, anotacaoAluno.Anotacao));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, string.Empty, anotacaoAluno.Anotacao));
+                anotacaoAluno.Anotacao = moverArquivo;
             }
         }
     }

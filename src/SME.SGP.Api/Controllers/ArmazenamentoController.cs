@@ -40,6 +40,8 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Download(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
         {
             var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
+            if (arquivo == null) return NoContent();
+
             return File(arquivo, contentType, nomeArquivo);
         }
 

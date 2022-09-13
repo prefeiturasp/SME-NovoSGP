@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, filtro.AlunoCodigo));
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, filtro.AlunoCodigo, bimestre));
                     notasConselhoClasseAluno.AddRange(notasParaAdicionar);
                 }
             }            
@@ -297,7 +297,7 @@ namespace SME.SGP.Aplicacao
 
             return new NotaPosConselhoDto()
             {
-                Id = notaComponente?.Id,
+                Id = notaComponente?.ConceitoId,
                 Nota = notaComponente?.NotaConceito,
                 NotaConceito = notaComponente?.NotaConceitoFormatado
             };

@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,15 +19,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public AlterarOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IUnitOfWork unitOfWork, IMediator mediator)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IUnitOfWork unitOfWork, IMediator mediator,
+            IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo)); ;
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno)); ;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AuditoriaDto> Handle(AlterarOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -42,6 +47,7 @@ namespace SME.SGP.Aplicacao
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
+                    var descricaoAtual = ocorrencia.Descricao;
                     await MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
                     await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
@@ -57,7 +63,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
-                    
+                    await MoverRemoverExcluidos(request.Descricao, descricaoAtual);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -67,24 +73,25 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        private async Task<string> MoverRemoverExcluidos(string novo, string atual)
+        private async Task MoverRemoverExcluidos(string novo, string atual)
         {
             var caminho = string.Empty;
 
             if (!string.IsNullOrEmpty(novo))
-                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
-
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
+            }
             if (!string.IsNullOrEmpty(atual))
-                await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
-
-            return caminho;
+            {
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
+            }
         }
         private async Task MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
         {
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
-            entidade.Descricao = await MoverRemoverExcluidos(request.Descricao, entidade.Descricao);
+            entidade.Descricao = request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }
