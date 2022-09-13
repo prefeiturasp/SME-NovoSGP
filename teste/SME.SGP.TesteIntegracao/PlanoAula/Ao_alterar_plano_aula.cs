@@ -39,7 +39,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAula();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-            var obterPlanoAulaUseCase = ObterServicoObterPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
             {
@@ -54,7 +53,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
             });
 
             await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -65,7 +63,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var planoAulaAlteradoDto = ObterPlanoAulaAlterado(planoAulaPersistido.Id, NOVA_DESCRICAO_PlANO_AULA);
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
 
             var listaPlanoAulaEditado = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
@@ -79,7 +79,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAulaSemObjetivos();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-            var obterPlanoAulaUseCase = ObterServicoObterPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
             {
@@ -94,7 +93,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
             });
 
             await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -105,7 +103,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var planoAulaAlteradoDto = ObterPlanoAulaAlteradoSemObetivos(planoAulaPersistido.Id, NOVA_DESCRICAO_PlANO_AULA);
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
 
             var listaPlanoAulaEditado = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
@@ -119,7 +119,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             var planoAulaDto = ObterPlanoAula();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-            var obterPlanoAulaUseCase = ObterServicoObterPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
             {
@@ -134,7 +133,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
             });
 
             await salvarPlanoAulaUseCase.Executar(planoAulaDto);
@@ -145,7 +143,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var planoAulaAlteradoDto = ObterPlanoAulaAlterado(planoAulaPersistido.Id, NOVA_DESCRICAO_PlANO_AULA);
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaAlteradoDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
 
             var listaPlanoAulaEditado = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
