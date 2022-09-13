@@ -375,10 +375,10 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             abrangenciaSintetica = RemoverAbrangenciaSinteticaDuplicada(abrangenciaSintetica);
             var abr = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
-            IEnumerable<long> idsParaAtualizar = Enumerable.Empty<long>();
+            var idsParaAtualizar = new List<long>();
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
-                idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id);
+                idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id).ToList();
 
             var novas = turmas.Where(x => !abrangenciaSintetica.Select(y => y.TurmaId).Contains(x.Id));
 
@@ -390,13 +390,28 @@ namespace SME.SGP.Aplicacao.Servicos
             listaAbrangenciaSintetica.AddRange(abrangenciaSintetica.ToList());
             listaParaAtualizar.AddRange(paraAtualizar.ToList());
             var registrosDuplicados = listaAbrangenciaSintetica.Except(listaParaAtualizar);
+            
+            if(registrosDuplicados.Any())
+                idsParaAtualizar = registrosDuplicados.Select(x => x.Id).ToList();
 
-            if (registrosDuplicados.Any())
-                idsParaAtualizar = registrosDuplicados.Select(x => x.Id);
+            if(abrangenciaSintetica.Any() && turmas.Any())
+                if(abrangenciaSintetica.Count() != turmas.Count())
+                    idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
 
             repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, TurmaId = x.Id}), login);
 
             repositorioAbrangencia.AtualizaAbrangenciaHistorica(idsParaAtualizar);
+        }
+
+        public IEnumerable<long> VerificaTurmasAbrangenciaAtualParaHistorica(IEnumerable<AbrangenciaSinteticaDto> abrangenciaAtual, IEnumerable<Turma> turmasAbrangenciaEol)
+        {
+            var turmasNaAbrangenciaAtualExistentesEol = from ta in turmasAbrangenciaEol
+                                                        join aa in abrangenciaAtual
+                                                        on ta.Id equals aa.TurmaId into turmasIguais
+                                                        from tI in turmasIguais.DefaultIfEmpty()
+                                                        select tI;
+
+            return abrangenciaAtual.Except(turmasNaAbrangenciaAtualExistentesEol).Select(t=> t.Id);
         }
 
         private void SincronizarAbrangencia(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, Infra.Enumerados.Abrangencia? abrangencia, bool ehSupervisor, IEnumerable<Dre> dres, IEnumerable<Ue> ues, IEnumerable<Turma> turmas, string login, Guid perfil)
