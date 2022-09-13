@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Cadastro do plano de aula quando não há plano anual (não deve permitir)")]
         public async Task Nao_deve_cadastrar_plano_aula_sem_plano_anual()
         {
             var planoAulaDto = ObterPlanoAula();

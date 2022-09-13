@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             return ServiceProvider.GetService<IObterPlanoAulasPorTurmaEComponentePeriodoUseCase>();
         }
 
-        protected IMigrarPlanoAulaUseCase ObterServicoMigrarPlanoAulaUseCase(MigrarPlanoAulaDto migrarPlanoAulaDto)
+        protected IMigrarPlanoAulaUseCase ObterServicoMigrarPlanoAulaUseCase()
         {
             return ServiceProvider.GetService<IMigrarPlanoAulaUseCase>();
         }

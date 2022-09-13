@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
             Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
             turmaAula.AdicionarUe(ue);
 
-            var turmasAbrangencia = await consultasAbrangencia.ObterTurmasRegulares(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
+            var turmasAbrangencia = await mediator.Send(new ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo));
 
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 

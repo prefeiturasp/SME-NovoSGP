@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Cadastro do plano de aula pelo CP")]
         public async Task Deve_cadastrar_plano_aula_usuario_cp()
         {
             var planoAulaDto = ObterPlanoAula();
@@ -40,7 +40,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
 
-            retorno.ShouldNotBeNull();
             retorno.ShouldNotBeNull();
             Assert.True(retorno.Id > 0);
             retorno.Descricao.ShouldNotBeNull();
@@ -53,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAula.Count.ShouldBeGreaterThanOrEqualTo(3);
         }
-        [Fact]
+        [Fact(DisplayName = "Cadastro do plano de aula pelo Diretor")]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
         {
             var planoAulaDto = ObterPlanoAula();

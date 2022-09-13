@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(),
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolarEAberturaTodosBimestres = true
+                //CriarPeriodoEscolarEAberturaTodosBimestres = true
             });
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
