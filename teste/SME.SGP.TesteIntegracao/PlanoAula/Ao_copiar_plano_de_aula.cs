@@ -187,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
+                CriarPlanejamentoAnual = true
             };
         }
         private PlanoAulaDto ObterPlanoAula()
