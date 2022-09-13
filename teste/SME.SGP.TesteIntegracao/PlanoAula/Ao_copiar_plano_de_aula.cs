@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_sem_sobrescrever()
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
-            await CriarPlanoDeAula();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
             
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_com_sobrescrever()
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
-            await CriarPlanoDeAula();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             var planoAula = ObterTodos<Dominio.PlanoAula>();
@@ -77,16 +77,64 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.ShouldBeTrue();
         }
 
-       // [Fact(DisplayName = "Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
-        public async Task Copiar_plano_para_outra_turma_de_componente_direferente()
+        
+        [Fact(DisplayName = "Cópia de plano de aula para outra turma com o mesmo componente curricular")]
+        public async Task Copiar_plano_para_outra_turma_com_o_mesmo_componente_curricular()
         {
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             
+            var dataAula = DateTimeExtension.HorarioBrasilia().AddDays(1);
+            await CriarTurma(Modalidade.Medio);
+            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
+                USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
+            var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
+            
+            var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
+            
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.Id,dataAula);
+            
+            
+            var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
+            
+            var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
+            
+            var planosAula = ObterTodos<Dominio.PlanoAula>();
+            
+            planosAula.ShouldNotBeNull();
+            planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
+
+            planosAula.FirstOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(1);
+            planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(2);
+
+            retorno.ShouldBeTrue();
         }
 
-        private async Task CriarPlanoDeAula()
+        [Fact(DisplayName = "Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
+        public async Task Copiar_plano_para_outra_turma_de_componente_direferente()
+        {
+            await CriarPlanoDeAula(Modalidade.Fundamental);
+            
+            var dataAula = DateTimeExtension.HorarioBrasilia().AddDays(1);
+            await CriarTurma(Modalidade.Medio);
+            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
+                USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
+            var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
+            
+            var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
+            
+            var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.Id,dataAula);
+            
+            
+            var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
+            
+            var ex = await Assert.ThrowsAsync<NegocioException>(() =>  servicoMigrarPlano.Executar(dtoMigrarPlanoAula));
+            ex.Message.ShouldNotBeNullOrEmpty();
+        }
+
+        private async Task CriarPlanoDeAula(Modalidade modalidade)
         {
             var planoAulaDto = ObterPlanoAula();
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor());
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor(),Modalidade.Fundamental);
             await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
@@ -112,12 +160,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 MigrarObjetivos = true
             };
         }
-        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
+        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil,Modalidade modalidade)
         {
             return new FiltroPlanoAula()
             {
                 Bimestre = BIMESTRE_2,
-                Modalidade = Modalidade.Fundamental,
+                Modalidade = modalidade,
                 Perfil = perfil,
                 QuantidadeAula = 1,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
