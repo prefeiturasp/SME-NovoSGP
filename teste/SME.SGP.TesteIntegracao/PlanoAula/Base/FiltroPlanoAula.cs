@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
         public string ComponenteCurricularCodigo { get; set; }
         public bool CriarPeriodoEscolarBimestre { get; set; }
         public long TipoCalendarioId { get; set; }
-        public bool CriarPeriodoAbertura { get; set; }
+        public bool CriarPeriodoReabertura { get; set; }
         public bool CriarPeriodoEscolarTodosBimestres { get; set; } = true;
         public int QuantidadeAula { get; set; }
 
