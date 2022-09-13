@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,11 @@ namespace SME.SGP.Aplicacao
                     {
                         await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(documento.Id, arquivoAntigo.Id));
                         await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivoAntigo.Id));
-                        await mediator.Send(new ExcluirArquivoFisicoCommand(arquivoAntigo.Codigo, arquivoAntigo.Tipo, arquivoAntigo.Nome));
+                        
+                        var extencao = Path.GetExtension(arquivoAntigo.Nome);
+
+                        var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = arquivoAntigo.Codigo.ToString() + extencao};
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
                     }
                 }
 

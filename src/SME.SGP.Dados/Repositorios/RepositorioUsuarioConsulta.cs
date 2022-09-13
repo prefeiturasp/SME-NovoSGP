@@ -123,5 +123,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { login });
         }
+
+        public Task<string> ObterRfPorId(long id)
+        {
+            var query = @"select rf_codigo
+                            from usuario 
+                           where id = @id";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
+        }
     }
 }

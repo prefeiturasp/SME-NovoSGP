@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,15 +18,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AuditoriaDto> Handle(InserirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -43,8 +47,8 @@ namespace SME.SGP.Aplicacao
 
                     var ocorrencia = new Ocorrencia(request.DataOcorrencia, 
                                                     request.HoraOcorrencia,
-                                                    request.Titulo,
-                                                    await MoverArquivos(request.Descricao),
+                                                    request.Titulo, 
+                                                    request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos),
                                                     ocorrenciaTipo,
                                                     turma);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
@@ -56,6 +60,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
+                    await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -65,14 +70,12 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        private async Task<string> MoverArquivos(string descricao)
+        private async Task MoverArquivos(InserirOcorrenciaCommand novo)
         {
-            var caminho = string.Empty;
-
-            if (!string.IsNullOrEmpty(descricao))
-                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, descricao));
-
-            return caminho;
+            if (!string.IsNullOrEmpty(novo.Descricao))
+            {
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
+            }
         }
     }
 }

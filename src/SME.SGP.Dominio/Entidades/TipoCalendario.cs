@@ -14,7 +14,8 @@
         {
             if (Modalidade == ModalidadeTipoCalendario.EJA && AnoLetivo > 2021)
                 return 2;
-            else return 4;
+ 
+            return 4;
         }
 
         public Modalidade ObterModalidadeTurma()
@@ -22,8 +23,8 @@
             return Modalidade == ModalidadeTipoCalendario.EJA ?
                     Dominio.Modalidade.EJA :
                     Modalidade == ModalidadeTipoCalendario.Infantil ?
-                        Dominio.Modalidade.EducacaoInfantil :
-                        Dominio.Modalidade.Medio;
+                    Dominio.Modalidade.EducacaoInfantil :
+                    Dominio.Modalidade.Medio;
         }
     }
 }

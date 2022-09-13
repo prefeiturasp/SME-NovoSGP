@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 {
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                    NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     DataSituacao = aluno.DataSituacao,

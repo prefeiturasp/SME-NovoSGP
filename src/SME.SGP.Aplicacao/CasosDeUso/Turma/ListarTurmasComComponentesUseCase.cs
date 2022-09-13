@@ -103,8 +103,8 @@ namespace SME.SGP.Aplicacao
                 turmasPaginadas.Items = turmasItems;
             }
 
-            var componentesRetorno = await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(retornoComponentesTurma.ToArray()));
-
+            var componentesRetorno = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(retornoComponentesTurma.ToArray()));
+                                                                     
             turmasPaginadas.TotalRegistros = turmasPaginadas.Items != null && turmasPaginadas.Items.Any() ? turmasPaginadas.Items.Count() : 0;
             turmasPaginadas.TotalPaginas = (int)Math.Ceiling((double)turmasPaginadas.TotalRegistros / qtdeRegistros);
             turmasPaginadas.Items = turmasPaginadas.Items.Skip(qtdeRegistrosIgnorados).Take(qtdeRegistros);
@@ -159,12 +159,10 @@ namespace SME.SGP.Aplicacao
 
         private TurmaComComponenteDto MapearParaDto(RetornoConsultaListagemTurmaComponenteDto turmas, IEnumerable<ComponenteCurricularSimplesDto> listaComponentes)
         {
-            var nomeComponente = string.Empty;
+            var componente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo);
 
-            //if (turmas.Modalidade == Modalidade.EducacaoInfantil)
-            //    nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.DescricaoInfantil;
-            //else
-                nomeComponente = listaComponentes.FirstOrDefault(c => c.Id == turmas.ComponenteCurricularCodigo)?.Descricao ?? turmas.NomeComponenteCurricular;
+            var nomeComponente = componente?.Descricao ?? turmas.NomeComponenteCurricular;
+            var componentePermiteLanctoNota = componente?.PermiteLanctoNota ?? false;
 
             return turmas == null ? null : new TurmaComComponenteDto
             {
@@ -172,7 +170,8 @@ namespace SME.SGP.Aplicacao
                 NomeTurma = (turmas.Ano == null && turmas.SerieEnsino == null && turmas.NomeFiltro == null) ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,
-                Turno = turmas.Turno.ObterNome()
+                Turno = turmas.Turno.ObterNome(),
+                LancaNota = componentePermiteLanctoNota
             };
         }
 
@@ -212,7 +211,7 @@ namespace SME.SGP.Aplicacao
                     turmaComponente.PendenciaAvaliacoes = pendencias?.PendenciaAvaliacoes ?? false;
                     turmaComponente.PendenciaFrequencia = pendencias?.PendenciaFrequencia ?? false;
                     turmaComponente.PendenciaPlanoAula = pendencias?.PendenciaPlanoAula ?? false;
-                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento;
+                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento && turmaComponente.LancaNota;
                     turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
                     itensComPendencias.Add(turmaComponente);

@@ -23,11 +23,20 @@ namespace SME.SGP.Aplicacao
             if (registroPoaDto.Id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
 
-            repositorioRegistroPoa.Salvar(await MapearParaAtualizacao(registroPoaDto));
+            var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
+
+            if (entidade == null || entidade.Excluido)
+                throw new NegocioException("Registro para atualização não encontrado na base de dados");
+
+            await MoverRemoverExcluidos(registroPoaDto, entidade);
+
+            entidade = MapearParaAtualizacao(entidade, registroPoaDto);
+            repositorioRegistroPoa.Salvar(entidade);
         }
 
         public async Task Cadastrar(RegistroPoaDto registroPoaDto)
         {
+            await MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() { Descricao = string.Empty });
             repositorioRegistroPoa.Salvar(await MapearParaEntidade(registroPoaDto));
         }
 
@@ -50,13 +59,8 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<RegistroPoa> MapearParaAtualizacao(RegistroPoaDto registroPoaDto)
+        private RegistroPoa MapearParaAtualizacao(RegistroPoa entidade, RegistroPoaDto registroPoaDto)
         {
-            var entidade = repositorioRegistroPoa.ObterPorId(registroPoaDto.Id);
-
-            if (entidade == null || entidade.Excluido)
-                throw new NegocioException("Registro para atualização não encontrado na base de dados");
-            await MoverRemoverExcluidos(registroPoaDto, entidade);
             entidade.Titulo = registroPoaDto.Titulo;
             entidade.Descricao = registroPoaDto.Descricao;
             entidade.Bimestre = registroPoaDto.Bimestre;
@@ -67,16 +71,16 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(registroPoaDto.Descricao))
             {
-                registroPoaDto.Descricao = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroPOA, entidade.Descricao, registroPoaDto.Descricao));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroPOA, entidade.Descricao, registroPoaDto.Descricao));
+                registroPoaDto.Descricao = moverArquivo;
             }
             if (!string.IsNullOrEmpty(entidade.Descricao))
             {
-                await mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
             }
         }
         private async Task<RegistroPoa> MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
-            await MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() {Descricao = string.Empty });
             return new RegistroPoa
             {
                 Descricao = registroPoaDto.Descricao,

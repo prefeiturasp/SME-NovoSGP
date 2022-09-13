@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(usuarioRf));
 
-            if(usuario != null)
+            if (usuario != null)
             {
                 var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
                 var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
@@ -52,17 +52,7 @@ namespace SME.SGP.Aplicacao
                 var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
                 var componenteCurricular = await ObterComponente(request.NotasEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
 
-                repositorioNotificacao.Salvar(new Notificacao()
-                {
-                    UeId = turma.Ue.CodigoUe,
-                    UsuarioId = usuario.Id,
-                    Ano = DateTime.Today.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {componenteCurricular} - {turma.Nome} ({turma.AnoLetivo})",
-                    Tipo = NotificacaoTipo.Notas,
-                    Codigo = request.CodigoDaNotificacao ?? 0,
-                    Mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
+                var mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
                                                                            aluno,
                                                                            request.NotasEmAprovacao,
                                                                            request.Aprovada,
@@ -70,8 +60,20 @@ namespace SME.SGP.Aplicacao
                                                                            bimestre,
                                                                            request.NotaAnterior,
                                                                            request.ConceitoAnterior,
-                                                                           componenteCurricular)
-                });
+                                                                           componenteCurricular);
+
+                await mediator.Send(new NotificarUsuarioCommand(
+                    $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {componenteCurricular} - {turma.Nome} ({turma.AnoLetivo})",
+                    mensagem,
+                    usuarioRf,
+                    NotificacaoCategoria.Aviso,
+                    NotificacaoTipo.Notas,
+                    turma.Ue.Dre.CodigoDre,
+                    turma.Ue.CodigoUe,
+                    turma.CodigoTurma,
+                    DateTime.Today.Year,
+                    request.CodigoDaNotificacao ?? 0,
+                    usuarioId: usuario.Id ));
             }
         }
 

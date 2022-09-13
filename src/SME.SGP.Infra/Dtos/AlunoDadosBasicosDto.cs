@@ -23,7 +23,7 @@ namespace SME.SGP.Infra
         public bool EhAtendidoAEE { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
-        public DateTime DataAtualizacaoContato { get; set; }
+        public DateTime? DataAtualizacaoContato { get; set; }
 
         public bool MarcadorDiasSemRegistroExibir { get; set; }
         public string MarcadorDiasSemRegistroTexto { get; set; }
@@ -56,12 +56,12 @@ namespace SME.SGP.Infra
                         SituacaoMatriculaAluno.Concluido
                     }).Contains(SituacaoCodigo);
 
-
+        public bool EstaAtivo() => !EstaInativo();
         public static explicit operator AlunoDadosBasicosDto(AlunoPorTurmaResposta dadosAluno)
             => dadosAluno == null ? null : new AlunoDadosBasicosDto()
             {
                 Nome = dadosAluno.NomeValido(),
-                NumeroChamada = dadosAluno.NumeroAlunoChamada,
+                NumeroChamada = dadosAluno.ObterNumeroAlunoChamada(),
                 DataNascimento = dadosAluno.DataNascimento,
                 CodigoEOL = dadosAluno.CodigoAluno,
                 SituacaoCodigo = dadosAluno.CodigoSituacaoMatricula,

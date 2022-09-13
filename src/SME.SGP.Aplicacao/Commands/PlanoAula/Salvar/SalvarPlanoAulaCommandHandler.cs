@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,13 +20,16 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        
         public SalvarPlanoAulaCommandHandler(IMediator mediator,
             IRepositorioAula repositorioAula,
             IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
             IRepositorioPlanoAula repositorioPlanoAula,
             IConsultasAbrangencia consultasAbrangencia,
             IUnitOfWork unitOfWork,
-            IServicoUsuario servicoUsuario) : base(mediator)
+            IServicoUsuario servicoUsuario,
+            IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -32,7 +37,7 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<PlanoAulaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
@@ -152,9 +157,9 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = await MoverRemoverExcluidos(planoDto.Descricao, planoAula.Descricao, TipoArquivo.PlanoAula); 
-            planoAula.RecuperacaoAula = await MoverRemoverExcluidos(planoDto.RecuperacaoAula, planoAula.RecuperacaoAula, TipoArquivo.PlanoAulaRecuperacao);
-            planoAula.LicaoCasa = await MoverRemoverExcluidos(planoDto.LicaoCasa, planoAula.LicaoCasa, TipoArquivo.PlanoAulaLicaoCasa);
+            planoAula.Descricao = planoDto.Descricao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
 
             return planoAula;
         }
