@@ -93,9 +93,22 @@ namespace SME.SGP.Aplicacao
                     TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, totalAulasDaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFrequenciaAgregado);
                     TrataFrequenciaGlobalAluno(codigoAluno, totalAulasDaTurmaGeral, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                 }
+
+                VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
             }
             await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             await TrataPersistencia(frequenciaDosAlunos);
+        }
+
+        public void VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registrosLancados, IEnumerable<FrequenciaAluno> frequenciasConsolidadas, List<long> frequenciasParaExcluir)
+        {
+            if (frequenciasConsolidadas.Any() && registrosLancados.Any())
+            {
+                var frequenciasParaRealizarExclusao = frequenciasConsolidadas.Where(f => !registrosLancados.Any(r => r.AlunoCodigo == f.CodigoAluno
+                                                                                && r.Bimestre == f.Bimestre && r.PeriodoEscolarId == f.PeriodoEscolarId))
+                                                                             .Select(f => f.Id).ToList();
+                frequenciasParaExcluir.AddRange(frequenciasParaRealizarExclusao);
+            }  
         }
 
         private void VerificaFrequenciasDuplicadas(IEnumerable<FrequenciaAluno> frequenciasAlunos, string disciplinaId, List<long> frequenciaAlunosIdsParaExcluir, int bimestre)

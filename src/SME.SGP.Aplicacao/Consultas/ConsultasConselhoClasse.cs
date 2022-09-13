@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
-
+        
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                        IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -77,12 +79,14 @@ namespace SME.SGP.Aplicacao
                     bimestre = 1;
             }
             
-            if (bimestre == 0 && !consideraHistorico && turma.AnoLetivo == DateTime.Now.Year)
+            if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                var situacaoConselhoAluno = await BuscaSituacaoConselhoAluno(alunoCodigo, turma);
-                if (!retornoConselhoBimestre.possuiConselho || (!retornoConselhoBimestre.concluido && situacaoConselhoAluno != SituacaoConselhoClasse.Concluido))
-                    throw new NegocioException($"Para acessar esta aba você precisa concluir o conselho de classe do {retornoConselhoBimestre.bimestre}º bimestre.");
+                
+                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
+                                                                                       retornoConselhoBimestre.bimestre));
+                if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
+                throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
             }
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
@@ -94,7 +98,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolarId == null)
             {
                 var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-                if (tipoCalendario == null) throw new NegocioException("Tipo de calendário não encontrado");
+                if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
                 periodoEscolar = await repositorioPeriodoEscolar.ObterPorTipoCalendarioEBimestreAsync(tipoCalendario.Id, bimestre);
 
@@ -214,17 +218,6 @@ namespace SME.SGP.Aplicacao
         {
             return await mediator
                 .Send(new ObterUltimoBimestreTurmaQuery(turma));
-        }
-        private async Task<SituacaoConselhoClasse> BuscaSituacaoConselhoAluno(string alunoCodigo, Turma turma)
-        {
-            var statusAluno = SituacaoConselhoClasse.NaoIniciado;
-
-            var statusConselhoAluno = await repositorioConselhoClasseConsolidado.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(turma.Id, alunoCodigo);
-
-            if (statusConselhoAluno != null)
-                statusAluno = statusConselhoAluno.Status;
-
-            return statusAluno;
         }
     }
 }

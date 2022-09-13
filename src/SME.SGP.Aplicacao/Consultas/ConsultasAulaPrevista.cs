@@ -144,7 +144,7 @@ namespace SME.SGP.Aplicacao
                     Inicio = x.Inicio,
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
-                    Reposicoes = x.LancaFrequencia ? x.Reposicoes : x.ReposicoesSemFrequencia,
+                    Reposicoes = x.LancaFrequencia || x.Reposicoes !=0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
                     PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
                 }).ToList()
             };

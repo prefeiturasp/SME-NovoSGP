@@ -629,7 +629,7 @@ namespace SME.SGP.Dados.Repositorios
                             and vau.ue_codigo = @codigoUe
                             and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
             }
-            
+
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });
@@ -909,7 +909,7 @@ namespace SME.SGP.Dados.Repositorios
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
-                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId});
+                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
 
                 if (modalidade > 0)
                 {
@@ -930,32 +930,33 @@ namespace SME.SGP.Dados.Repositorios
                 else
                 {
                     uesComplementares = (from da in dadosAbrangenciaSupervisor
-                                             where da.CodigoDre == dre &&
-                                                   !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
-                                                   (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                                                   !ues.Contains(da.UeId)
-                                             select new
-                                             {
-                                                 da.CodigoUe,
-                                                 da.UeNome,
-                                                 da.TipoEscola,
-                                                 da.UeId
-                                             }).Distinct();
+                                         where da.CodigoDre == dre &&
+                                               !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                               !ues.Contains(da.UeId)
+                                         select new
+                                         {
+                                             da.CodigoUe,
+                                             da.UeNome,
+                                             da.TipoEscola,
+                                             da.UeId
+                                         }).Distinct();
                 }
-                
 
-                var listaDistinta = uesComplementares
-                   .Select(u => new AbrangenciaUeRetorno()
-                   {
-                       Codigo = u.CodigoUe,
-                       NomeSimples = u.UeNome,
-                       TipoEscola = u.TipoEscola,
-                       Id = u.UeId
-                   });
+                if (uesComplementares.Any())
+                {
+                    var listaDistinta = uesComplementares
+                                                      .Select(u => new AbrangenciaUeRetorno()
+                                                      {
+                                                          Codigo = u.CodigoUe,
+                                                          NomeSimples = u.UeNome,
+                                                          TipoEscola = u.TipoEscola,
+                                                          Id = u.UeId
+                                                      });
 
-                retorno = retorno
-                    .Concat(listaDistinta)
-                    .OrderBy(d => d.Nome);
+                    retorno = listaDistinta.OrderBy(d => d.Nome);
+                }
+
             }
 
             return retorno;
