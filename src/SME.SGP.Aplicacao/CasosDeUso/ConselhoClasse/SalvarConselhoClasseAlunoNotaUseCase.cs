@@ -180,6 +180,9 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarConceitoOuNota(SalvarConselhoClasseAlunoNotaDto dto, FechamentoTurma fechamentoTurma,
             AlunoPorTurmaResposta alunoConselho, PeriodoEscolar periodoEscolar)
         {
+            if (fechamentoTurma.Turma == null)
+                return;
+            
             var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
                 fechamentoTurma.Turma.TipoTurma));
 
