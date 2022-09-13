@@ -31,7 +31,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>), typeof(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake), ServiceLifetime.Scoped));
 
         }
-
+        
+        
         [Fact(DisplayName = "Cópia de plano de aula para outra aula da mesma turma e componente curricular - Sem sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_sem_sobrescrever()
         {
@@ -114,10 +115,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
             
-            var dataAula = DateTimeExtension.HorarioBrasilia().AddDays(1);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             await CriarTurma(Modalidade.Medio);
-            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
-                USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
+            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             
             var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
