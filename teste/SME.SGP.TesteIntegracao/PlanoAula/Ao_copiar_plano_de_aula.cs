@@ -49,12 +49,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
             
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
-            
+            retorno.ShouldBeTrue();
+
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             planosAula.ShouldNotBeNull();
             planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(6);
 
-            retorno.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Cópia de plano de aula para outra aula da mesma turma e componente curricular - Com sobrescrever o plano existente")]
@@ -70,12 +74,16 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
             
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
-            
+            retorno.ShouldBeTrue();
+
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             planosAula.ShouldNotBeNull();
             planoAula.Count.ShouldBeGreaterThanOrEqualTo(1);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
 
-            retorno.ShouldBeTrue();
         }
 
         
@@ -98,7 +106,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
             
             var retorno = await servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
-            
+            retorno.ShouldBeTrue();
+
             var planosAula = ObterTodos<Dominio.PlanoAula>();
             
             planosAula.ShouldNotBeNull();
@@ -106,8 +115,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             planosAula.FirstOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(1);
             planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(2);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(6);
 
-            retorno.ShouldBeTrue();
         }
 
         [Fact(DisplayName = "Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
