@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
             "A auditoria não foi registrada pelo administrador.";
 
         public const string E_NECESSARIO_SELECIONAR_ESTUDANTE_ALUNO_PARA_COMPENSACAO = "É necessário selecionar um estudante para realizar a compensação de ausência";
+        public const string USUARIO_SEM_ACESSO_TURMA_RESPECTIVA_AULA = "Usuario sem acesso a turma da respectiva aula";
     }
 }
