@@ -50,15 +50,15 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(),
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoAbertura = true
             });
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaDto);
-
-            var objetivosAprendizagem = ObterTodos<ObjetivoAprendizagemAula>();
-
-            objetivosAprendizagem.ShouldNotBeNull();
-            objetivosAprendizagem.Count.ShouldBe(3);
+            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
 
         private PlanoAulaDto ObterPlanoAula()
