@@ -5,6 +5,9 @@
         public const string NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE =
             "Para acessar esta aba você precisa concluir o conselho de classe do {0}º bimestre.";
 
+        public const string NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE =
+            "Para acessar este aba você precisa registrar o conselho de classe do {0}º bimestre";
+
         public const string ALUNO_NAO_ENCONTRADO_PARA_SALVAR_CONSELHO_CLASSE =
             "Aluno não encontrado para salvar o conselho de classe.";
 

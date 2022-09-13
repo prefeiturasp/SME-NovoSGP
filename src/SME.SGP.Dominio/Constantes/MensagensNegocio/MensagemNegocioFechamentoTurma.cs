@@ -11,5 +11,8 @@
         public const string FECHAMENTO_TURMA_NAO_LOCALIZADO =
           "Fechamento da turma não localizado";
 
+        public const string TURMA_NAO_ESTA_EM_PERIODO_FECHAMENTO_PARA_BIMESTRE =
+            "Turma {0} não esta em período de fechamento para o {}º Bimestre!";
+
     }
 }
