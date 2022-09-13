@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,8 +22,12 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(param.DocumentoId, entidadeArquivo.Id));
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
-            await mediator.Send(new ExcluirArquivoFisicoCommand(entidadeArquivo.Codigo, entidadeArquivo.Tipo, entidadeArquivo.Nome));
+            
+            var extencao = Path.GetExtension(entidadeArquivo.Nome);
 
+            var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = entidadeArquivo.Codigo.ToString() + extencao};
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
+            
             return true;
         }
     }

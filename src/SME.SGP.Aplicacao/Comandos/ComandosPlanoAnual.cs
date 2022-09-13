@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,6 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public ComandosPlanoAnual(IRepositorioPlanoAnual repositorioPlanoAnual,
                                   IRepositorioObjetivoAprendizagemPlano repositorioObjetivoAprendizagemPlano,
@@ -32,7 +35,8 @@ namespace SME.SGP.Aplicacao
                                   IConsultasTurma consultasTurma,
                                   IConsultasPlanoAnual consultasPlanoAnual,
                                   IUnitOfWork unitOfWork,
-                                  IServicoUsuario servicoUsuario, IMediator mediator)
+                                  IServicoUsuario servicoUsuario, IMediator mediator,
+                                  IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoAnual = repositorioPlanoAnual ?? throw new ArgumentNullException(nameof(repositorioPlanoAnual));
             this.repositorioObjetivoAprendizagemPlano = repositorioObjetivoAprendizagemPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoAprendizagemPlano));
@@ -44,6 +48,7 @@ namespace SME.SGP.Aplicacao
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
@@ -162,7 +167,7 @@ namespace SME.SGP.Aplicacao
             }
             planoAnual.Ano = planoAnualDto.AnoLetivo.Value;
             planoAnual.Bimestre = bimestre;
-            planoAnual.Descricao = descricao.Replace(ArquivoConstants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanejamentoAnual.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAnual.Descricao = descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             planoAnual.EscolaId = planoAnualDto.EscolaId;
             planoAnual.TurmaId = planoAnualDto.TurmaId.Value;
             planoAnual.ComponenteCurricularEolId = planoAnualDto.ComponenteCurricularEolId;

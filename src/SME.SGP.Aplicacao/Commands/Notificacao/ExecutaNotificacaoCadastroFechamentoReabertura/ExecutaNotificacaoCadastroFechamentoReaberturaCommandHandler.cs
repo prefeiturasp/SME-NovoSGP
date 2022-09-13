@@ -31,13 +31,13 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ExecutaNotificacaoCadastroFechamentoReaberturaCommand request, CancellationToken cancellationToken)
         {
             var usuario = await mediator.Send(new ObterUsuarioPorRfOuCriaQuery(request.FechamentoReabertura.CodigoRf));
-            var notificacao = CriaNotificacaoCadastro(request.FechamentoReabertura, usuario.Id);
+            var notificacao = await CriaNotificacaoCadastro(request.FechamentoReabertura, usuario.Id);
             await repositorioFechamentoReabertura.SalvarNotificacaoAsync(new FechamentoReaberturaNotificacao() { FechamentoReaberturaId = request.FechamentoReabertura.Id, NotificacaoId = notificacao.Id });
 
             return true;
         }
 
-        private Notificacao CriaNotificacaoCadastro(FiltroFechamentoReaberturaNotificacaoDto fechamentoReabertura, long usuarioId)
+        private async Task<Notificacao> CriaNotificacaoCadastro(FiltroFechamentoReaberturaNotificacaoDto fechamentoReabertura, long usuarioId)
         {
             var tituloNotificacao = $"Período de reabertura - {fechamentoReabertura.TipoCalendarioNome}";
 
@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 Mensagem = notificacaoMensagem
             };
 
-            servicoNotificacao.Salvar(notificacao);
+            await servicoNotificacao.Salvar(notificacao);
 
             return notificacao;
         }
