@@ -35,6 +35,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         public async Task Deve_cadastrar_plano_aula()
         {
             var planoAulaDto = ObterPlanoAula();
+            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
             {
@@ -49,12 +50,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(),
                 TipoCalendarioId = TIPO_CALENDARIO_1,
-                CriarPeriodoEscolarEAberturaTodosBimestres = true
+                CriarPeriodoAbertura = true
             });
 
-            var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
-
-            var retorno = await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            await salvarPlanoAulaUseCase.Executar(planoAulaDto);
 
             var objetivosAprendizagem = ObterTodos<ObjetivoAprendizagemAula>();
 
