@@ -1,7 +1,10 @@
 ﻿namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
-    public class MensagemNegocioConselhoClasse
+    public static class MensagemNegocioConselhoClasse
     {
+        public const string CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO = "O conceito pós-conselho deve ser informado no conselho de classe do aluno.";
+        public const string NOTA_POS_CONSELHO_DEVE_SER_INFORMADA = "A nota pós-conselho deve ser informada no conselho de classe do aluno.";
+        
         public const string NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE =
             "Para acessar esta aba você precisa concluir o conselho de classe do {0}º bimestre.";
 
@@ -17,6 +20,5 @@
         public const string JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA = "Já existe um conselho de classe gerado para a turma {0}!";
 
         public const string ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE = "Erro ao atualizar situação do conselho de classe";
-
     }
 }
