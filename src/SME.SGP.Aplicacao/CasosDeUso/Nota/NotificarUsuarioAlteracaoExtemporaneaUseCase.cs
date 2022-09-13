@@ -47,13 +47,28 @@ namespace SME.SGP.Aplicacao
             var usuariosCPs = await ObterUsuariosPorCodigoUeETipo(filtro.CodigoUe, Cargo.CP);
 
             foreach (var usuarioCP in usuariosCPs)
-                await mediator.Send(new GerarNotificacaoCommand(DateTimeExtension.HorarioBrasilia().Year, NotificacaoCategoria.Alerta, filtro.AtividadeAvaliativa.DreId,filtro.MensagemNotificacao, usuarioCP.Id, NotificacaoTipo.Notas, $"Alteração em Atividade Avaliativa - Turma {filtro.TurmaNome}", filtro.AtividadeAvaliativa.TurmaId, filtro.AtividadeAvaliativa.UeId));
+                await NotificarUsuario(filtro, usuarioCP);
 
             var usuarioDiretor = (await ObterUsuariosPorCodigoUeETipo(filtro.CodigoUe, Cargo.CP)).FirstOrDefault();
 
-            await mediator.Send(new GerarNotificacaoCommand(DateTimeExtension.HorarioBrasilia().Year, NotificacaoCategoria.Alerta, filtro.AtividadeAvaliativa.DreId, filtro.MensagemNotificacao, usuarioDiretor.Id, NotificacaoTipo.Notas, $"Alteração em Atividade Avaliativa - Turma {filtro.TurmaNome}", filtro.AtividadeAvaliativa.TurmaId, filtro.AtividadeAvaliativa.UeId));
+            await NotificarUsuario(filtro, usuarioDiretor);
 
             return true;
+        }
+
+        private Task NotificarUsuario(FiltroNotificarUsuarioAlteracaoExtemporaneaDto filtro, Usuario usuario)
+        {
+            return mediator.Send(new NotificarUsuarioCommand(
+                $"Alteração em Atividade Avaliativa - Turma {filtro.TurmaNome}",
+                filtro.MensagemNotificacao,
+                usuario.CodigoRf,
+                NotificacaoCategoria.Alerta,
+                NotificacaoTipo.Notas,
+                filtro.AtividadeAvaliativa.DreId,
+                filtro.AtividadeAvaliativa.UeId,
+                filtro.AtividadeAvaliativa.TurmaId,
+                usuarioId: usuario.Id
+                ));
         }
 
         private async Task<IEnumerable<Usuario>> ObterUsuariosPorCodigoUeETipo(string codigoUe, Cargo tipo)

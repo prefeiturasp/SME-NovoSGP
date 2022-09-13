@@ -13,17 +13,17 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
-        private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IMediator mediator;
 
         public ExcluirWorkflowCommandHandler(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                              IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel,
                                              IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao,
-                                             IRepositorioNotificacao repositorioNotificacao)
+                                             IMediator mediator)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
             this.repositorioWorkflowAprovacaoNivelNotificacao = repositorioWorkflowAprovacaoNivelNotificacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelNotificacao));
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(ExcluirWorkflowCommand request, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ namespace SME.SGP.Aplicacao
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
                     repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
-                    repositorioNotificacao.Remover(notificacao);
+                    await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }
 

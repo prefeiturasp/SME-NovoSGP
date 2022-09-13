@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDescricaoComponentesCurricularesPorIdsQuery : IRequest<IEnumerable<ComponenteCurricularSimplesDto>>
+    public class ObterDescricaoComponentesCurricularesPorIdsQuery : IRequest<IEnumerable<ComponenteCurricularDescricaoDto>>
     {
         public long[] Ids { get; }
 

@@ -235,22 +235,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosAtivosPorTurma(string codigoTurma, DateTime dataAula)
-        {
-            var alunos = new List<AlunoPorTurmaResposta>();
-            var resposta = await httpClient.GetAsync($"turmas/{codigoTurma}/alunos-ativos/data-aula-ticks/{dataAula.Ticks}");
-
-            if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException($"Não foi encontrado alunos ativos para a turma {codigoTurma}");
-
-            if (resposta.StatusCode == HttpStatusCode.NoContent)
-                return alunos;
-
-            var json = await resposta.Content.ReadAsStringAsync();
-
-            return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
-        }
-        
         public async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunosPorNomeCodigoEol(string anoLetivo, string codigoUe, long codigoTurma, string nome, long? codigoEol, bool? somenteAtivos)
         {
             var alunos = new List<AlunoPorTurmaResposta>();
@@ -1067,8 +1051,6 @@ namespace SME.SGP.Aplicacao.Integracoes
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<AutenticacaoApiEolDto>(json);
         }
-
-
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterUsuarioFuncionario(Guid perfil, FiltroFuncionarioDto filtroFuncionariosDto)
         {

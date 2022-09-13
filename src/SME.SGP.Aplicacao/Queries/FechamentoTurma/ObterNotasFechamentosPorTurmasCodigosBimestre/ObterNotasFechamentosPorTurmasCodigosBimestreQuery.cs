@@ -3,13 +3,13 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFechamentosPorTurmasCodigosBimestreQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFechamentosPorTurmasCodigosBimestreQuery(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
+        public ObterNotasFechamentosPorTurmasCodigosBimestreQuery(string[] turmasCodigos, string alunoCodigo, int bimestre,
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;
@@ -18,29 +18,32 @@ namespace SME.SGP.Aplicacao
             DataSituacao = dataSituacao;
             AnoLetivo = anoLetivo;
         }
-        public string[] TurmasCodigos { get; set; }
-        public string AlunoCodigo { get; set; }
-        public int Bimestre { get; set; }
-        public DateTime? DataMatricula { get; set; }
-        public DateTime? DataSituacao { get; set; }
-        public int? AnoLetivo { get; set; }
-
-        public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosBimestreQuery>
-        {
-            public ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator()
-            {
-                RuleFor(a => a.TurmasCodigos)
-                    .NotNull()
-                    .NotEmpty()
-                    .WithMessage("Necessário informar os códigos de turmas para obter as notas de fechmamento");
-                RuleFor(a => a.AlunoCodigo)
-                    .NotNull()
-                    .NotEmpty()
-                    .WithMessage("Necessário informar o código do aluno para obter as notas de fechmamento");
-                RuleFor(a => a.Bimestre)
-                    .NotNull()
-                    .WithMessage("Necessário informar o bimestre para obter as notas de fechamento");
-            }
-        }
+        
+        public string[] TurmasCodigos { get; }
+        public string AlunoCodigo { get; }
+        public int Bimestre { get; }
+        public DateTime? DataMatricula { get; }
+        public DateTime? DataSituacao { get; }
+        public int? AnoLetivo { get; }
     }
+    
+    public class ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator : AbstractValidator<ObterNotasFechamentosPorTurmasCodigosBimestreQuery>
+    {
+        public ObterNotasFechamentosPorTurmasCodigosBimestreQueryValidator()
+        {
+            RuleFor(a => a.TurmasCodigos)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Necessário informar os códigos de turmas para obter as notas de fechamento");
+
+            RuleFor(a => a.AlunoCodigo)
+                .NotNull()
+                .NotEmpty()
+                .WithMessage("Necessário informar o código do aluno para obter as notas de fechamento");
+
+            RuleFor(a => a.Bimestre)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Necessário informar o bimestre para obter as notas de fechamento");
+        }
+    }    
 }

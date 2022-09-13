@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -10,13 +12,26 @@ namespace SME.SGP.Aplicacao
     public class ObterTurmaComUeEDrePorIdQueryHandler : IRequestHandler<ObterTurmaComUeEDrePorIdQuery, Turma>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterTurmaComUeEDrePorIdQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
+        public ObterTurmaComUeEDrePorIdQueryHandler(
+                    IRepositorioTurmaConsulta repositorioTurmaConsulta, 
+                    IRepositorioCache repositorioCache) 
         {
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<Turma> Handle(ObterTurmaComUeEDrePorIdQuery request, CancellationToken cancellationToken)
-            => await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId);
+        {
+            return await repositorioCache.ObterAsync(ObterChave(request.TurmaId), 
+                async () => await repositorioTurmaConsulta.ObterTurmaComUeEDrePorId(request.TurmaId),
+                "Obter turma");
+        }
+
+        private string ObterChave(long id)
+        {
+            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, id); 
+        }
     }
 }
