@@ -32,12 +32,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
         public async Task Deve_alterar_plano_componentes_com_objetivos()
         {
-            var planoAulaDto = ObterPlanoAula();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
@@ -55,7 +55,30 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendarioId = TIPO_CALENDARIO_1,
             });
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            await InserirNaBase(new Dominio.PlanoAula()
+            {
+                AulaId = AULA_ID_1,
+                Descricao = "Descrição do plano de aula",
+                RecuperacaoAula = "Recuperação aula do plano de aula",
+                LicaoCasa = "Lição de casa do plano de aula",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new Dominio.ObjetivoAprendizagemAula()
+            {
+                PlanoAulaId = 1,
+                ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                ObjetivoAprendizagemId = 1,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new Dominio.ObjetivoAprendizagemAula()
+            {
+                PlanoAulaId = 1,
+                ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                ObjetivoAprendizagemId = 2,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
 
             var listaPlanoAulaPersistido = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
@@ -68,16 +91,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var listaPlanoAulaEditado = ObterTodos<SME.SGP.Dominio.PlanoAula>();
-
             listaPlanoAulaEditado.ShouldNotBeNull();
             listaPlanoAulaEditado.FirstOrDefault().Id.ShouldBe(planoAulaPersistido.Id);
             listaPlanoAulaEditado.FirstOrDefault().Descricao.ShouldNotBe(planoAulaPersistido.Descricao);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
 
         [Fact]
         public async Task Deve_alterar_plano_componentes_sem_objetivos()
         {
-            var planoAulaDto = ObterPlanoAulaSemObjetivos();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
@@ -95,7 +120,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendarioId = TIPO_CALENDARIO_1,
             });
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            await InserirNaBase(new Dominio.PlanoAula()
+            {
+                AulaId = AULA_ID_1,
+                Descricao = "Descrição do plano de aula",
+                RecuperacaoAula = "Recuperação aula do plano de aula",
+                LicaoCasa = "Lição de casa do plano de aula",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
 
             var listaPlanoAulaPersistido = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
@@ -117,7 +149,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact]
         public async Task Deve_alterar_plano_pelo_CP()
         {
-            var planoAulaDto = ObterPlanoAula();
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAula()
@@ -135,7 +166,30 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 TipoCalendarioId = TIPO_CALENDARIO_1,
             });
 
-            await salvarPlanoAulaUseCase.Executar(planoAulaDto);
+            await InserirNaBase(new Dominio.PlanoAula()
+            {
+                AulaId = AULA_ID_1,
+                Descricao = "Descrição do plano de aula",
+                RecuperacaoAula = "Recuperação aula do plano de aula",
+                LicaoCasa = "Lição de casa do plano de aula",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new Dominio.ObjetivoAprendizagemAula()
+            {
+                PlanoAulaId = 1,
+                ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                ObjetivoAprendizagemId = 1,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new Dominio.ObjetivoAprendizagemAula()
+            {
+                PlanoAulaId = 1,
+                ComponenteCurricularId = long.Parse(COMPONENTE_LINGUA_PORTUGUESA_ID_138),
+                ObjetivoAprendizagemId = 2,
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
 
             var listaPlanoAulaPersistido = ObterTodos<SME.SGP.Dominio.PlanoAula>();
 
@@ -152,6 +206,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             listaPlanoAulaEditado.ShouldNotBeNull();
             listaPlanoAulaEditado.FirstOrDefault().Id.ShouldBe(planoAulaPersistido.Id);
             listaPlanoAulaEditado.FirstOrDefault().Descricao.ShouldNotBe(planoAulaPersistido.Descricao);
+            
+            var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
 
         private PlanoAulaDto ObterPlanoAula()
