@@ -5,7 +5,7 @@ namespace SME.SGP.Infra
 {
     public class AuditoriaPersistenciaDto: AuditoriaDto
     {
-        public AuditoriaPersistenciaDto(): base()
+        public AuditoriaPersistenciaDto()
         {
             Sucesso = true;
             Mensagens = new List<string>();
@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
         public bool EmAprovacao { get; set; }
 
         public static explicit operator AuditoriaPersistenciaDto(EntidadeBase entidade)
-            => new AuditoriaPersistenciaDto()
+            => new()
             {
                 Id = entidade.Id,
                 CriadoEm = entidade.CriadoEm,

@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -19,9 +18,8 @@ namespace SME.SGP.Infra
         public string AuditoriaInclusao { get; set; }
         public double PercentualAlunosInsuficientes { get; set; }
         public List<string> Observacoes { get; set; }
-
         public SituacaoFechamento Situacao { get; set; }
-        public String SituacaoNome { get; set; }
+        public string SituacaoNome { get; set; }
 
         public FechamentoNotaConceitoTurmaDto()
         {
