@@ -24,17 +24,23 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         [Fact]
         public async Task Deve_exibir_historico_ao_selecionar_turma_de_2021()
         {
+
             var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
             var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
             var filtroPlanoAeeDto = ObterFiltroPlanoAEEDto();
             var planoAEEPersistenciaDto = ObterPlanoAEEPersistenciaDto();
+
+            await CriarQuestoesPlanoAee();
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
             });
-            await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
+            // await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
+            var questao = ObterTodos<Questao>();
+            var questaoPlano = ObterTodos<PlanoAEEQuestao>();
+
             var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
             retorno.ShouldNotBeNull();
         }
@@ -68,8 +74,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return new List<PlanoAEEQuestaoDto>()
                 { new PlanoAEEQuestaoDto()
-                    { QuestaoId = 1,
-                        Resposta = "teset",
+                    {   QuestaoId = 2,
+                        Resposta = "teste",
                         RespostaPlanoId = 1,
                         TipoQuestao = TipoQuestao.Frase
                     }
