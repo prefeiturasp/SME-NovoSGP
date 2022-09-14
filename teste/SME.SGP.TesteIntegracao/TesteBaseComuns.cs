@@ -882,14 +882,14 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
-            await CriarPadrao();
+            await CriarDreUePerfil();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
             await CriarComponenteCurricular();
         }
 
         protected async Task CriarDreUePerfilComponenteCurricular()
         {
-            await CriarPadrao();
+            await CriarDreUePerfil();
             await CriarComponenteCurricular();
         }
 
@@ -944,7 +944,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarPadrao()
+        protected async Task CriarDreUePerfil()
         {
             await InserirNaBase(new Dre
             {

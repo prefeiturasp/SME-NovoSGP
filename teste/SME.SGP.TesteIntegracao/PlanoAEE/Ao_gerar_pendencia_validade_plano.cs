@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.PlanoAEEPendenciaUsuario
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_gerar_pendencia_validade_plano : TesteBase
     {
