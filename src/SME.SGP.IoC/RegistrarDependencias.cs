@@ -62,11 +62,8 @@ namespace SME.SGP.IoC
             RegistrarMapeamentos.Registrar();
         }
 
-        private void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
+        protected virtual void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-                return;
-
             services.ConfigurarArmazenamento(configuration);
         }
 
@@ -1203,8 +1200,6 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-                return;
 
             services.ConfigurarRabbit(configuration);
             services.ConfigurarRabbitParaLogs(configuration);

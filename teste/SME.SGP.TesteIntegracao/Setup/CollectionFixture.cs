@@ -38,8 +38,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             
             FluentMapper.EntityMaps.Clear();
             
-            new RegistradorDependencias().Registrar(Services, null);
-
+            new RegistradorDependencias().Registrar(Services, config);
         }
 
         public void BuildServiceProvider()

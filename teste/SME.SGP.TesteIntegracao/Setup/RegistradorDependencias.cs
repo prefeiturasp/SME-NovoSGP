@@ -14,6 +14,7 @@ using SME.SGP.Infra.Interfaces;
 using SME.SGP.IoC;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using System.Data;
+using Microsoft.Extensions.Configuration;
 using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.TesteIntegracao.Setup
@@ -45,12 +46,22 @@ namespace SME.SGP.TesteIntegracao.Setup
 
         protected override void RegistrarServicos(IServiceCollection services)
         {
-            services.TryAddSingleton<IServicoTelemetria, TelemetriaFake>();
             services.TryAddScoped<IServicoEol, ServicoEOLFake>();
             services.TryAddScoped<IServicoJurema, ServicoJuremaFake>();
             services.TryAddScoped<IRepositorioCache, RepositorioCacheFake>();
             services.TryAddScoped<IServicoArmazenamento, ServicoArmazenamentoFake>();
             base.RegistrarServicos(services);
+        }
+
+        public override void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
+        {
+            services.TryAddSingleton<IServicoTelemetria, TelemetriaFake>();
+        }
+
+        public override void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
+        {
+            //Não faz nada, pois não registramos o Rabbit
+
         }
     }
 }
