@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
-                typeof(ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
+                typeof(PlanoAEE.ServicosFakes.ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
             
         }
         
