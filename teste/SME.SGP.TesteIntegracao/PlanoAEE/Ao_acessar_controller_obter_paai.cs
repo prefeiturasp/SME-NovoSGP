@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_acessar_controller_obter_paai : TesteBase
     {

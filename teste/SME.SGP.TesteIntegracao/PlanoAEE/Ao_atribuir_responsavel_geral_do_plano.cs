@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_atribuir_responsavel_geral_do_plano : TesteBase
     {
