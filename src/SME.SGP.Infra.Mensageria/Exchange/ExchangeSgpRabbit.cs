@@ -10,6 +10,6 @@
         public static string SgpDeadLetter => "sme.sgp.workers.deadletter";
         public static string ServidorRelatoriosDeadLetter => "sme.sr.workers.relatorios.deadletter";
 
-        public static int SgpDeadLetterTTL => 20000;
+        public static int SgpDeadLetterTTL => 5000;
     }
 }
