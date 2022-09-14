@@ -213,7 +213,9 @@ namespace SME.SGP.Aplicacao
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
-                conselhosClassesIds = new long[1] { conselhoClasseId };
+                conselhosClassesIds = conselhoClasseId != 0 ?
+                    new long[1] { conselhoClasseId } :
+                    null;
             }
 
             var periodosLetivos = (await mediator
