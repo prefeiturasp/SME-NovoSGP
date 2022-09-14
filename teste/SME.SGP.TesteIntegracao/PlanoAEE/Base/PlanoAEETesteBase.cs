@@ -14,7 +14,7 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
-    public class PlanoAEETesteBase : TesteBaseComuns
+    public abstract class PlanoAEETesteBase : TesteBaseComuns
     {
         public PlanoAEETesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -26,10 +26,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
                 typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
-            
+         
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(PlanoAEE.ServicosFakes.ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
-            
         }
         
         protected ISalvarPlanoAEEUseCase ObterServicoSalvarPlanoAEEUseCase()
