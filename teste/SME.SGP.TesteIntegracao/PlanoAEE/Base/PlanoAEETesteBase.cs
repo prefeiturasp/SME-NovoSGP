@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
@@ -34,7 +35,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<ISalvarPlanoAEEUseCase>();
         }
-        
+        protected IObterAlunosPorCodigoEolNomeUseCase ObterAlunosPorCodigoEolNomeUseCase()
+        {
+            return ServiceProvider.GetService<IObterAlunosPorCodigoEolNomeUseCase>();
+        }
         protected IObterPlanosAEEUseCase ObterServicoObterPlanosAEEUseCase()
         {
             return ServiceProvider.GetService<IObterPlanosAEEUseCase>();
