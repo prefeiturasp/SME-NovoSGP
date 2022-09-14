@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries
@@ -103,7 +104,7 @@ namespace SME.SGP.Aplicacao.Queries
 	        var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
 	        if (componentesCurriculares != null && componentesCurriculares.Any())
 		        componentesTurma.AddRange(componentesCurriculares);
-	        else throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+	        else throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_DISCIPLINAS_TURMA_EOL);
 
 	        return componentesTurma;
         }
