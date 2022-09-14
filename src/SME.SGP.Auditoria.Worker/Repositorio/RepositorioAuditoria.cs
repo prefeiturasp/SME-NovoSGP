@@ -1,19 +1,22 @@
-﻿using Dommel;
+﻿using System.Threading.Tasks;
+using Nest;
 using SME.SGP.Auditoria.Worker.Interfaces;
-using System.Threading.Tasks;
+using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
+using SME.SGP.Dados.ElasticSearch;
+using SME.SGP.Infra;
 
-namespace SME.SGP.Auditoria.Worker
+namespace SME.SGP.Auditoria.Worker.Repositorio
 {
-    public class RepositorioAuditoria : IRepositorioAuditoria
+    public class RepositorioAuditoria : RepositorioElasticBase<Entidade.Auditoria>, IRepositorioAuditoria
     {
-        private readonly ISgpContext database;
-
-        public RepositorioAuditoria(ISgpContext database)
+        private const string Indice = "auditoria";
+        
+        public RepositorioAuditoria(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria) : base(elasticClient, servicoTelemetria)
         {
-            this.database = database ?? throw new System.ArgumentNullException(nameof(database));
         }
-
+        
         public Task Salvar(Entidade.Auditoria auditoria)
-            => database.Conexao.InsertAsync(auditoria);
+            => InserirAsync(auditoria, Indice);
+        
     }
 }

@@ -14,11 +14,13 @@
     <PackageReference Include="Elastic.Apm.AspNetCore" Version="1.11.1" />
     <PackageReference Include="Elastic.Apm.SqlClient" Version="1.11.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+    <PackageReference Include="NEST" Version="7.17.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Npgsql" Version="5.0.10" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dados.ElasticSearch\SME.SGP.Dados.ElasticSearch.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Telemetria\SME.SGP.Infra.Telemetria.csproj" />
   </ItemGroup>
