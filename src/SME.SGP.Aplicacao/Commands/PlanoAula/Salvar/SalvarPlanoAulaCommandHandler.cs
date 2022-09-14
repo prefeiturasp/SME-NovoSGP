@@ -157,7 +157,7 @@ namespace SME.SGP.Aplicacao
             {
                 unitOfWork.Rollback();
                 await mediator.Send(new SalvarLogViaRabbitCommand("Não foi registrar o plano de aula.", LogNivel.Negocio, LogContexto.PlanoAula,ex.Message,"SGP",string.Empty,ex.StackTrace));
-                return null;
+                throw;
             }
         }
 
