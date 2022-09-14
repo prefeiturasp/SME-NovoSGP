@@ -8,12 +8,13 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
-    public class PlanoAEETesteBase : TesteBaseComuns
+    public abstract class PlanoAEETesteBase : TesteBaseComuns
     {
         public PlanoAEETesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -25,11 +26,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
                 typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
-            
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
-                typeof(PlanoAEE.ServicosFakes.ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
-            
         }
+
+        // protected IObterAlunosPorCodigoEolNomeUseCase ObterAlunosPorCodigoEolNomeUseCase()
+        // {
+        //     return ServiceProvider.GetService<IObterAlunosPorCodigoEolNomeUseCase>();
+        // }
         
         protected ISalvarPlanoAEEUseCase ObterServicoSalvarPlanoAEEUseCase()
         {
@@ -55,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<IVerificarExistenciaPlanoAEEPorEstudanteUseCase>();
         }
-        
+
         protected IObterRestruturacoesPlanoAEEPorIdUseCase ObterServicoObterRestruturacoesPlanoAEEPorIdUseCase()
         {
             return ServiceProvider.GetService<IObterRestruturacoesPlanoAEEPorIdUseCase>();
