@@ -14,7 +14,9 @@ using SME.SGP.Infra.Excecoes;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,12 +30,12 @@ namespace SME.SGP.Aplicacao.Workers
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
         private readonly TelemetriaOptions telemetriaOptions;
-        private readonly IMediator mediator;        
+        private readonly IMediator mediator;
         private readonly string apmTransactionType;
         private readonly Type tipoRotas;
 
         protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
-            IServicoTelemetria servicoTelemetria, 
+            IServicoTelemetria servicoTelemetria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
@@ -50,7 +52,7 @@ namespace SME.SGP.Aplicacao.Workers
             this.apmTransactionType = apmTransactionType ?? "WorkerRabbitSGP";
             this.tipoRotas = tipoRotas ?? throw new ArgumentNullException(nameof(tipoRotas));
 
-            
+
             var scope = serviceScopeFactory.CreateScope();
             mediator = scope.ServiceProvider.GetService<IMediator>();
 
@@ -66,7 +68,7 @@ namespace SME.SGP.Aplicacao.Workers
             DeclararFilasSgp();
 
             Comandos = new Dictionary<string, ComandoRabbit>();
-            RegistrarUseCases();            
+            RegistrarUseCases();
         }
 
         protected Dictionary<string, ComandoRabbit> Comandos { get; }
@@ -98,10 +100,25 @@ namespace SME.SGP.Aplicacao.Workers
 
                 if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
+                    var argsDlq = new Dictionary<string, object>();
+                    argsDlq.Add("x-dead-letter-exchange", exchange);
+                    argsDlq.Add("x-message-ttl", ExchangeSgpRabbit.SgpDeadLetterTTL);
+
                     var filaDeadLetter = $"{fila}.deadletter";
 
-                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
+                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+
+                    var queueLimbu = $"{fila}.limbu";
+                    canalRabbit.QueueDeclare(
+                        queue: queueLimbu,
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                    );
+
+                    canalRabbit.QueueBind(queueLimbu, exchangeDeadLetter, queueLimbu, null);
                 }
             }
         }
@@ -161,7 +178,15 @@ namespace SME.SGP.Aplicacao.Workers
                 {
                     transacao?.CaptureException(ex);
 
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    if (ea.DeliveryTag > comandoRabbit.QuantidadeReprocessamentoDeadLetter)
+                    {
+                        canalRabbit.BasicAck(ea.DeliveryTag, false);
+
+                        var queueLimbu = $"{ea.RoutingKey}.limbu";
+                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbu, null, ea.Body.ToArray());
+
+                    }
+                    else canalRabbit.BasicReject(ea.DeliveryTag, false);
 
                     await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
 
