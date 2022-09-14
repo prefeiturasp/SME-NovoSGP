@@ -154,9 +154,7 @@ namespace SME.SGP.Aplicacao
                     var str = new StringBuilder();
                     str.AppendLine($"Os seguintes erros foram encontrados: ");
                     foreach (var t in excessoes)
-                    {
                         str.AppendLine($"- {t}");
-                    }
 
                     throw new NegocioException(str.ToString());
                 }
@@ -178,6 +176,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanejamentoAnual, atual, novo));

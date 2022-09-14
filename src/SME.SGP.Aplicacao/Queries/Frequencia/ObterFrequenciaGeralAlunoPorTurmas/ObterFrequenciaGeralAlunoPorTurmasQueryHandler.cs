@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             };
 
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
-                return "0";
+                return "";
 
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequencia.ToString();
@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
             else if (aulasComponentesTurmas.Any())
                 return "100";
 
-            return "0";
+            return "";
         }
     }
 }

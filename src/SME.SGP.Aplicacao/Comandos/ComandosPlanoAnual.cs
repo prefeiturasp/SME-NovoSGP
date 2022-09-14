@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public void Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
+        public async Task Migrar(MigrarPlanoAnualDto migrarPlanoAnualDto)
         {
             var planoAnualDto = migrarPlanoAnualDto.PlanoAnual;
             var planoCopia = new PlanoAnualDto(
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                     var planoAnual = ObterPlanoAnualSimplificado(planoCopia, bimestrePlanoAnual);
 
                     if (planoAnual == null)
-                        planoAnual = MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
+                        planoAnual = await MapearParaDominio(planoCopia, planoAnual, bimestrePlanoAnual, bimestreAtual.Descricao, bimestreAtual.ObjetivosAprendizagemOpcionais);
 
                     planoAnual.Descricao = planoAnualOrigem.Descricao;
                     Salvar(planoCopia, planoAnual, bimestreAtual);
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
-                planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
+                planoAnual = await MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);
             }
             unitOfWork.PersistirTransacao();
@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoAnual MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
+        private async Task<PlanoAnual> MapearParaDominio(PlanoAnualDto planoAnualDto, PlanoAnual planoAnual, int bimestre, string descricao, bool objetivosAprendizagemOpcionais)
         {
             if (planoAnual == null)
             {

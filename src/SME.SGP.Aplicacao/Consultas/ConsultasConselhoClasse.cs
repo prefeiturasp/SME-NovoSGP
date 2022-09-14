@@ -56,13 +56,16 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await ObterTurma(turmaCodigo);
             var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre,turma.CodigoTurma));
-            
+
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
+                if (!ehFinal && bimestre > 0)
+                    throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, bimestre));
+                else
+                    throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
             
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (turma.EhTurmaEdFisicaOuItinerario() || (turmasitinerarioEnsinoMedio != null && turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
                 var tipos = new List<int>();
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -182,7 +185,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));
             if (tipoNota == null)
-                throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
+                throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
 
             return tipoNota.TipoNota;
         }
@@ -191,7 +194,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodoEscolarUltimoBimestre = await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (periodoEscolarUltimoBimestre == null)
-                throw new NegocioException("Não foi possível localizar o período escolar do ultimo bimestre da turma");
+                throw new NegocioException(MensagemNegocioPeriodo.NAO_FOi_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;
         }
@@ -200,7 +203,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
-                throw new NegocioException("Turma não localizada");
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             return turma;
         }
