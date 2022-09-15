@@ -10,7 +10,7 @@
         public static string SgpDeadLetter => "sme.sgp.workers.deadletter";
         public static string ServidorRelatoriosDeadLetter => "sme.sr.workers.relatorios.deadletter";
 
-        public static int SgpDeadLetterTTL => 10 * 60 * 1000; /*10 Min * 60 Seg * 1000 milisegundos = 10 minutos em milisegundos*/
+        public static int SgpDeadLetterTTL => 8000;//10 * 60 * 1000; /*10 Min * 60 Seg * 1000 milisegundos = 10 minutos em milisegundos*/
 
 
     }

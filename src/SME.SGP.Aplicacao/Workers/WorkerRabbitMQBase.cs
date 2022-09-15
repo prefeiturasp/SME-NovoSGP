@@ -123,6 +123,21 @@ namespace SME.SGP.Aplicacao.Workers
             }
         }
 
+        private ulong GetRetryCount(IBasicProperties properties)
+        {
+            if (properties.Headers != null && properties.Headers.ContainsKey("x-death"))
+            {
+                var deathProperties = (List<object>)properties.Headers["x-death"];
+                var lastRetry = (Dictionary<string, object>)deathProperties[0];
+                var count = lastRetry["count"];
+                return (ulong) Convert.ToInt64(count);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
         public async Task TratarMensagem(BasicDeliverEventArgs ea)
         {
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
@@ -177,8 +192,9 @@ namespace SME.SGP.Aplicacao.Workers
                 catch (Exception ex)
                 {
                     transacao?.CaptureException(ex);
-
-                    if (ea.DeliveryTag > comandoRabbit.QuantidadeReprocessamentoDeadLetter)
+ 
+                    var retryCount = GetRetryCount(ea.BasicProperties);
+                    if (retryCount > comandoRabbit.QuantidadeReprocessamentoDeadLetter)
                     {
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
 
