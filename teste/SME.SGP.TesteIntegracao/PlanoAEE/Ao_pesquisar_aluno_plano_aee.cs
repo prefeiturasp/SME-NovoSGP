@@ -55,13 +55,34 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         [Fact(DisplayName = "Pesquisar por nome e código EOL em uma turma com usuário de professor")]
         public async Task Pesquisar_por_nome_codigo_eol_em_uma_turma_com__professor()
         {
+            var filtro = new FiltroBuscaEstudanteDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year.ToString(),
+                CodigoUe = "1",
+                CodigoTurma = 1,
+                Nome = ALUNO_CODIGO_1
+            };
+            var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
+            var aluno = await obterAlunosServico.Executar(filtro);
             
+            aluno.ShouldNotBeNull();
+            Assert.True(aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count() == 1);
         }
 
         [Fact(DisplayName = "Pesquisar por nome e código EOL com usuário CP (pesquisar sem informar a turma")]
         public async Task Pesquisar_por_nome_codigo_EOL_com_usuário_CP_sem_informar_turma()
         {
+            var filtro = new FiltroBuscaEstudanteDto()
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year.ToString(),
+                CodigoUe = "1",
+                Nome = ALUNO_CODIGO_1
+            };
+            var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
+            var aluno = await obterAlunosServico.Executar(filtro);
             
+            aluno.ShouldNotBeNull();
+            Assert.True(aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count() == 1);
         }
     }
 }

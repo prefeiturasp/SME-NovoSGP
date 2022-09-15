@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
                {
                     Codigo = "1",
                     NumeroChamada = 1,
-                    Nome = "Nome Aluno",
+                    Nome = "1",
                     CodigoTurma = "1",
                     TurmaId = 1,
                     NomeComModalidadeTurma = "Nome Modalidade"
