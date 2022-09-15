@@ -15,7 +15,12 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes
             {
                new AlunoSimplesDto()
                {
-
+                    Codigo = "1",
+                    NumeroChamada = 1,
+                    Nome = "Nome Aluno",
+                    CodigoTurma = "1",
+                    TurmaId = 1,
+                    NomeComModalidadeTurma = "Nome Modalidade"
                }   
             };
             return listaRetorno;

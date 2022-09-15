@@ -48,9 +48,20 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             aluno.Items.Count().ShouldBeGreaterThanOrEqualTo(1);
 
             var verificarExistenciaPlanoAee = ObterServicoVerificarExistenciaPlanoAEEPorEstudanteUseCase();
-            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(ALUNO_CODIGO_1));
+            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(aluno.Items.FirstOrDefault().Codigo));
             ex.Message.ShouldNotBeNullOrEmpty();
         }
-        
+
+        [Fact(DisplayName = "Pesquisar por nome e código EOL em uma turma com usuário de professor")]
+        public async Task Pesquisar_por_nome_codigo_eol_em_uma_turma_com__professor()
+        {
+            
+        }
+
+        [Fact(DisplayName = "Pesquisar por nome e código EOL com usuário CP (pesquisar sem informar a turma")]
+        public async Task Pesquisar_por_nome_codigo_EOL_com_usuário_CP_sem_informar_turma()
+        {
+            
+        }
     }
 }
