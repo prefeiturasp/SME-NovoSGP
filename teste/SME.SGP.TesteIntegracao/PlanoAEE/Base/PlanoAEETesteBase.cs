@@ -154,8 +154,78 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
+                OpcaoRespostaId = 3,
+                QuestaoComplementarId = 5,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 5,
+                QuestaoComplementarId = 5,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 10,
+                QuestaoComplementarId = 5,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 14,
+                QuestaoComplementarId = 9,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 1,
+                QuestaoComplementarId = 11,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 2,
+                QuestaoComplementarId = 13,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 6,
+                QuestaoComplementarId = 15,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 9,
+                QuestaoComplementarId = 9,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 8,
+                QuestaoComplementarId = 11,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
                 OpcaoRespostaId = 7,
-                QuestaoComplementarId = 
+                QuestaoComplementarId = 13,
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 12,
+                QuestaoComplementarId = 15,
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
         }

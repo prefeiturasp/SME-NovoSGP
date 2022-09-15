@@ -38,7 +38,20 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
             var retorno = await salvarPlanoAEEUseCase.Executar(planoAEEPersistenciaDto);
             retorno.ShouldNotBeNull();
+            retorno.PlanoId.ShouldBe(1);
+            retorno.PlanoVersaoId.ShouldBe(1);
+
+            var planoAeeVersaos = ObterTodos<PlanoAEEVersao>();
+            planoAeeVersaos.ShouldNotBeNull();
+            planoAeeVersaos.Count.ShouldBe(1);
+
+            var questoesPlanoAeeQuestaos = ObterTodos<PlanoAEEQuestao>();
+            questoesPlanoAeeQuestaos.ShouldNotBeNull();
+            questoesPlanoAeeQuestaos.Count.ShouldBeGreaterThan(1);
             
+            var questoesPlanoAeeRespostas = ObterTodos<PlanoAEEResposta>();
+            questoesPlanoAeeRespostas.ShouldNotBeNull();
+            questoesPlanoAeeRespostas.Count.ShouldBeGreaterThan(1);
         }
 
         private List<PlanoAEEQuestaoDto> ObterQuestoes()
@@ -54,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 new PlanoAEEQuestaoDto()
                 { 
                     QuestaoId   = 2,
-                    Resposta = "2",
+                    Resposta = "4",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
@@ -90,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 new PlanoAEEQuestaoDto()
                 { 
                     QuestaoId   = 8,
-                    Resposta = "4",
+                    Resposta = "14",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
@@ -102,7 +115,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 new PlanoAEEQuestaoDto()
                 { 
                     QuestaoId   = 10,
-                    Resposta = "5",
+                    Resposta = "1",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
@@ -114,7 +127,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 new PlanoAEEQuestaoDto()
                 { 
                     QuestaoId   = 12,
-                    Resposta = "6",
+                    Resposta = "2",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()
@@ -126,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 new PlanoAEEQuestaoDto()
                 { 
                     QuestaoId   = 14,
-                    Resposta = "7",
+                    Resposta = "6",
                     TipoQuestao = TipoQuestao.Radio
                 },
                 new PlanoAEEQuestaoDto()

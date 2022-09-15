@@ -143,6 +143,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new QuestionarioMap());
                config.AddMap(new QuestaoMap());
                config.AddMap(new OpcaoRespostaMap());
+               config.AddMap(new OpcaoQuestaoComplementarMap());
                config.AddMap(new SecaoEncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEESecaoMap());
