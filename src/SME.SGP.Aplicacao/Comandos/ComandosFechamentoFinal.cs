@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var fechamentoFinal in fechamentoFinalSalvar.Itens)
             {
-                var cacheAluno = retornoCacheMapeado.FirstOrDefault(c => c.AlunoCodigo == fechamentoFinal.AlunoRf);
+                var cacheAluno = retornoCacheMapeado.FirstOrDefault(c => c.AlunoCodigo == fechamentoFinal.AlunoRf && c.ComponenteCurricularId == fechamentoFinal.ComponenteCurricularCodigo);
 
                 if (cacheAluno == null)
                 {
