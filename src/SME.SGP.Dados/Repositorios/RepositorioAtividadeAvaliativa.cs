@@ -602,7 +602,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
-            var query = @"SELECT aa.nome_avaliacao as Nome
+            var query = @"SELECT distinct aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
 	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
                           FROM atividade_avaliativa aa
