@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
@@ -145,31 +146,35 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             await CriarQuestoes();
 
             await CriarRespostas();
+
+            await CriarRespostasComplementares();
+        }
+
+        private async Task CriarRespostasComplementares()
+        {
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = 7,
+                QuestaoComplementarId = 
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
         }
 
         private async Task CriarRespostas()
         {
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 42,
+                QuestaoId = 10,
                 Ordem = 1,
-                Nome = "Colaborativo",
+                Nome = "Sim",
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
             
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 2,
-                Ordem = 2,
-                Nome = "Contraturno",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 2,
-                Ordem = 3,
-                Nome = "Itinerante",
+                QuestaoId = 12,
+                Ordem = 1,
+                Nome = "Sim",
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
             
@@ -183,9 +188,49 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
             await InserirNaBase(new OpcaoResposta()
             {
+                QuestaoId = 2,
+                Ordem = 1,
+                Nome = "Colaborativo",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
                 QuestaoId = 4,
                 Ordem = 2,
                 Nome = "Em grupo",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 14,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 12,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 10,
+                Ordem = 2,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 8,
+                Ordem = 2,
+                Nome = "Não",
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
             
@@ -199,57 +244,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 8,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 8,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 10,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 10,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 12,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 12,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 14,
-                Ordem = 1,
-                Nome = "Sim",
+                QuestaoId = 2,
+                Ordem = 3,
+                Nome = "Itinerante",
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
             
@@ -258,6 +255,22 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 QuestaoId = 14,
                 Ordem = 2,
                 Nome = "Não",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 2,
+                Ordem = 2,
+                Nome = "Contraturno",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 8,
+                Ordem = 1,
+                Nome = "Sim",
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
         }
@@ -413,6 +426,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Tipo = TipoQuestao.Radio,
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
+            
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 1,
