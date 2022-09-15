@@ -21,11 +21,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada");
 
+            if (!turma.EhTurmaRegular())
+                throw new NegocioException("A turma informada deve ser turma do tipo regular");
+
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(planoAeeDto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException("O aluno informado não foi encontrado");
 
-            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.NumeroAlunoChamada));
+            var planoAeePersistidoDto = await mediator.Send(new SalvarPlanoAeeCommand(planoAeeDto, turma.Id, aluno.NomeAluno, aluno.CodigoAluno, aluno.ObterNumeroAlunoChamada()));
             
             return planoAeePersistidoDto;
         }     

@@ -251,7 +251,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<PeriodoEscolar>(query, new { modalidadeTipoCalendario, dataFechamento = dataFechamento.Date });
         }
 
-        public async Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre)
+        public async Task<long> ObterPeriodoEscolarIdPorTurmaBimestre(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, int anoLetivo, int semestre)
         {
             var query = new StringBuilder(@"select pe.id
                                               from periodo_escolar pe
@@ -259,9 +259,20 @@ namespace SME.SGP.Dados.Repositorios
                                               left join turma t on t.ano_letivo = tc.ano_letivo and turma_id = @turmaCodigo
                                               where tc.modalidade = @modalidade
                                               and pe.bimestre = @bimestre
-                                              and not tc.excluido ");
+                                              and not tc.excluido
+                                              and t.ano_letivo = @anoLetivo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre });
+            DateTime dataReferencia = DateTime.MinValue;
+            if (modalidadeTipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                var periodoReferencia = semestre == 1 ? "periodo_inicio < @dataReferencia" : "periodo_fim > @dataReferencia";
+                query.AppendLine($" and exists(select 0 from periodo_escolar p where tipo_calendario_id = tc.id and {periodoReferencia})");
+
+                // 1/6/ano ou 1/7/ano dependendo do semestre
+                dataReferencia = new DateTime(anoLetivo, semestre == 1 ? 6 : 8, 1);
+            }
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query.ToString(), new { turmaCodigo, modalidade = (int)modalidadeTipoCalendario, bimestre, anoLetivo, dataReferencia });
         }
 
         public async Task<PeriodoEscolarBimestreDto> ObterPeriodoEscolarPorTurmaBimestreAulaCj(string turmaCodigo, ModalidadeTipoCalendario modalidadeTipoCalendario, int bimestre, bool aulaCj)

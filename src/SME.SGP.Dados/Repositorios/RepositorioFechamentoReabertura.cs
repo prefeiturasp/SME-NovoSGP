@@ -342,7 +342,8 @@ namespace SME.SGP.Dados.Repositorios
                         @dataReferencia between symmetric fr.inicio::date and fr.fim ::date
                         and (fr.ue_id = @ueId or fr.ue_id is null)
                         and fr.tipo_calendario_id = @tipoCalendarioId
-                        and fr.status = 1";
+                        and fr.status = 1
+                        and not fr.excluido";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoReabertura>(query, new
             {

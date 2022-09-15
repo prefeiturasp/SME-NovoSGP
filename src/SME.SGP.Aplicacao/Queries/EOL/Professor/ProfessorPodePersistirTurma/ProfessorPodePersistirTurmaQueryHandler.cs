@@ -9,27 +9,24 @@ namespace SME.SGP.Aplicacao
 {
     public class ProfessorPodePersistirTurmaQueryHandler : IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>
     {
-        private readonly IHttpClientFactory httpClient;
+        private readonly IHttpClientFactory httpClientFactory;
 
-        public ProfessorPodePersistirTurmaQueryHandler(IHttpClientFactory httpClient)
+        public ProfessorPodePersistirTurmaQueryHandler(IHttpClientFactory httpClientFactory)
         {
-            this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<bool> Handle(ProfessorPodePersistirTurmaQuery request, CancellationToken cancellationToken)
         {
             var dataString = request.DataAula.ToString("s");
-            var http = httpClient.CreateClient("servicoEOL");
-            var resposta = await http.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<bool>(json);
-            }
-            else
-            {
+            var httpClient = httpClientFactory.CreateClient("servicoEOL");
+            var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}", cancellationToken);
+
+            if (!resposta.IsSuccessStatusCode)
                 throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
-            }
+            
+            var json = resposta.Content.ReadAsStringAsync(cancellationToken).Result;
+            return JsonConvert.DeserializeObject<bool>(json);
         }
     }
 }

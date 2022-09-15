@@ -17,15 +17,17 @@ namespace SME.SGP.TesteIntegracao.Frequencia
     {
         public Ao_realizar_lancamento_de_justificativa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            
         }
+
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
         }
+
         [Fact]
         public async Task Deve_Criar_justificativa_somente_com_motivo()
         {
@@ -209,7 +211,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Deve_Excluir_justificativa()
         {
-           (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
+            (await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(await Criar_Justificativa_Para_Exclusao_Alteracao_Motivo_Descricao())).ShouldBeTrue();
         }
 
         [Fact]
@@ -223,7 +225,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         public async Task Nao_Deve_Excluir_justificativa_Usuario_Possui_Atribuicao_Na_Turma_Na_Data()
         {
             var criarJustificativa = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Anotacao_Possui_Atribuicao_Na_Turma_Na_Data();
-
             await ExecutarExcluirAnotacaoFrequenciaAlunoUseCase(criarJustificativa).ShouldThrowAsync<NegocioException>();
         }
 
@@ -252,7 +253,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         }
 
         [Fact]
-        public async Task Deve_Alterar_justificativa_somente_com_motivo_sem_descricao() 
+        public async Task Deve_Alterar_justificativa_somente_com_motivo_sem_descricao()
         {
             await CriarMotivoAusencia(ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2.ToString());
             var parametrosFrontEnd = new AlterarAnotacaoFrequenciaAlunoDto
@@ -260,7 +261,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 Id = await Criar_Justificativa_Para_Exclusao_Alteracao_Somente_Com_Motivo(),
                 MotivoAusenciaId = ATESTADO_MEDICO_DE_PESSOA_DA_FAMILIA_2
             };
-           (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
+            (await ExecutarAlterarAnotacaoFrequenciaAlunoUseCase(parametrosFrontEnd)).ShouldBeTrue();
         }
 
         [Fact]

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -51,7 +52,10 @@ namespace SME.SGP.TesteIntegracao
         protected const int SEMESTRE_1 = 1;
         protected const long COMPONENTE_CURRICULAR_ARTES_ID_139 = 139;
         protected const string COMPONENTE_CURRICULAR_ARTES_NOME = "'Artes'";
+        protected const string COMPONENTE_CURRICULAR_INGLES_NOME = "'InglêsArtes'";
+        
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
+        protected const long COMPONENTE_CURRICULAR_INGLES_ID_9 = 9;
         protected const string COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME = "'Língua Portuguesa'";
         protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
@@ -73,6 +77,9 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_EOL = "'REG CLASSE SP INTEGRAL 1A5 ANOS'";
 
+        protected const long COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214 = 1214;
+        protected const string COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME = "'TERRIT SABER / EXP PEDAG 1'";
+
         protected const long COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_ID_1113 = 1113;
         protected const string COMPONENTE_REG_CLASSE_EJA_ETAPA_ALFAB_NOME = "'Regencia Classe EJA ALFAB'";
 
@@ -90,9 +97,12 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_1 = "'Área de conhecimento 1'";
         private const string AREA_DE_CONHECIMENTO_8 = "'Área de conhecimento 8'";
         private const string AREA_DE_CONHECIMENTO_2 = "'Área de conhecimento 2'";
+        private const string AREA_DE_CONHECIMENTO_3 = "'Área de conhecimento 3'";
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
+        private const string AREA_DE_CONHECIMENTO_5 = "'Área de conhecimento 5'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
+        protected const string COMPONENTE_EDUCACAO_FISICA_ID_6 = "6";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
         protected const string COMPONENTE_GEOGRAFIA_NOME = "'Geografia'";
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
@@ -104,7 +114,9 @@ namespace SME.SGP.TesteIntegracao
         
         private const string COMPONENTE_CURRICULAR_GRUPO_MATRIZ = "componente_curricular_grupo_matriz";
         private const string GRUPO_MATRIZ_1 = "'Grupo matriz 1'";
+        private const string GRUPO_MATRIZ_2 = "'Grupo matriz 2'";
         private const string GRUPO_MATRIZ_3 = "'Grupo matriz 3'";
+        private const string GRUPO_MATRIZ_4 = "'Grupo matriz 4'";
         private const string GRUPO_MATRIZ_8 = "'Grupo matriz 8'";
 
         protected const string CODIGO_1 = "1";
@@ -112,6 +124,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_3 = "3";
         protected const string CODIGO_8 = "8";
         protected const string CODIGO_4 = "4";
+        protected const string CODIGO_5 = "5";
         protected const string NULO = "null";
         
         protected const int NUMERO_0 = 0;
@@ -162,6 +175,10 @@ namespace SME.SGP.TesteIntegracao
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
+        protected const string USUARIO_LOGIN_CP999999 = "CP999999";
+        protected const string USUARIO_LOGIN_DIRETOR999998 = "DIR999998";
+        protected const string USUARIO_LOGIN_AD999997 = "AD999997";
+        
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
@@ -187,6 +204,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int BIMESTRE_2 = 2;
         protected const int BIMESTRE_3 = 3;
         protected const int BIMESTRE_4 = 4;
+        protected const int BIMESTRE_FINAL = 0;
 
         protected const string EVENTO_NAO_LETIVO = "Evento não letivo";
         protected const long TIPO_EVENTO_21 = 21;
@@ -210,6 +228,7 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         protected const long TIPO_CALENDARIO_1 = 1;
+        protected const long TIPO_CALENDARIO_2 = 2;
 
         protected string DATA_INICIO_SGP = "DataInicioSGP";
         protected string NUMERO_50 = "50";
@@ -359,9 +378,17 @@ namespace SME.SGP.TesteIntegracao
         protected const double NOTA_10 = 10;
 
         protected const string PLENAMENTE_SATISFATORIO = "P";
+        protected const int PLENAMENTE_SATISFATORIO_ID_1 = 1;
         protected const string SATISFATORIO = "S";
+        protected const int SATISFATORIO_ID_2 = 2;
         protected const string NAO_SATISFATORIO = "NS";
+        protected const int NAO_SATISFATORIO_ID_3 = 3;
+        
+        protected readonly string NOTA = "NOTA";
+        protected readonly string CONCEITO = "CONCEITO";
 
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
+        protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
 
         protected readonly CollectionFixture collectionFixture;
 
@@ -373,22 +400,43 @@ namespace SME.SGP.TesteIntegracao
         protected void CriarClaimUsuario(string perfil)
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = new Dictionary<string, object>
+            var variaveis = ObterVariaveisPorPerfil(perfil);
+            contextoAplicacao.AdicionarVariaveis(variaveis);
+        }
+
+        private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
+        {
+            var rfLoginPerfil = ObterRfLoginPerfil(perfil);
+            
+            return new Dictionary<string, object>
             {
-                { USUARIO_CHAVE, USUARIO_PROFESSOR_NOME_2222222 },
-                { USUARIO_LOGADO_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
-                { USUARIO_RF_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
-                { USUARIO_LOGIN_CHAVE, USUARIO_PROFESSOR_LOGIN_2222222 },
+                { USUARIO_CHAVE, rfLoginPerfil },
+                { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
+                { USUARIO_RF_CHAVE, rfLoginPerfil },
+                { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
 
                 {
-                   USUARIO_CLAIMS_CHAVE,
+                    USUARIO_CLAIMS_CHAVE,
                     new List<InternalClaim> {
-                        new InternalClaim { Value = USUARIO_PROFESSOR_LOGIN_2222222, Type = USUARIO_CLAIM_TIPO_RF },
+                        new InternalClaim { Value = rfLoginPerfil, Type = USUARIO_CLAIM_TIPO_RF },
                         new InternalClaim { Value = perfil, Type = USUARIO_CLAIM_TIPO_PERFIL }
                     }
                 }
             };
-            contextoAplicacao.AdicionarVariaveis(variaveis);
+        }
+
+        private string ObterRfLoginPerfil(string perfil)
+        {
+            if (perfil.Equals(ObterPerfilProfessor()) || perfil.Equals(ObterPerfilCJ()))
+                return USUARIO_PROFESSOR_LOGIN_2222222;
+
+            if (perfil.Equals(ObterPerfilDiretor()))
+                return USUARIO_LOGIN_DIRETOR999998;
+            
+            if (perfil.Equals(ObterPerfilAD()))
+                return USUARIO_LOGIN_AD999997;
+            
+            return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
         protected string ObterPerfilProfessor()
@@ -609,6 +657,39 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_CP999999,
+                Login = USUARIO_LOGIN_CP999999,
+                Nome = USUARIO_LOGIN_CP999999,
+                PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_DIRETOR999998,
+                Login = USUARIO_LOGIN_DIRETOR999998,
+                Nome = USUARIO_LOGIN_DIRETOR999998,
+                PerfilAtual = Guid.Parse(PerfilUsuario.DIRETOR.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+            
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_LOGIN_AD999997,
+                Login = USUARIO_LOGIN_AD999997,
+                Nome = USUARIO_LOGIN_AD999997,
+                PerfilAtual = Guid.Parse(PerfilUsuario.AD.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
         }
 
         protected async Task CriarTurma(Modalidade modalidade)
@@ -627,7 +708,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false)
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, TipoTurma tipoTurma = TipoTurma.Regular)
         {
             await InserirNaBase(new Turma
             {
@@ -638,7 +719,8 @@ namespace SME.SGP.TesteIntegracao
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
-                Nome = TURMA_NOME_1
+                Nome = TURMA_NOME_1,
+                TipoTurma = tipoTurma
             });
         }
 
@@ -779,6 +861,23 @@ namespace SME.SGP.TesteIntegracao
                 Excluido = false,
                 Migrado = false
             });
+
+            if (tipoCalendario == ModalidadeTipoCalendario.EJA)
+            {
+                await InserirNaBase(new TipoCalendario
+                {
+                    AnoLetivo = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                    Nome = considerarAnoAnterior ? ANO_LETIVO_ANO_ANTERIOR_NOME : ANO_LETIVO_Ano_Atual_NOME,
+                    Periodo = Periodo.Semestral,
+                    Modalidade = tipoCalendario,
+                    Situacao = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF,
+                    Excluido = false,
+                    Migrado = false
+                });                
+            }
         }
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
@@ -891,6 +990,24 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
+            
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 230,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "AD",
+                CodigoPerfil = Perfis.PERFIL_AD,
+                CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new PrioridadePerfil()
+            {
+                Ordem = 220,
+                Tipo = TipoPerfil.UE,
+                NomePerfil = "DIRETOR",
+                CodigoPerfil = Perfis.PERFIL_DIRETOR,
+                CriadoEm = DateTime.Now,CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task CriarPeriodoEscolar(DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1, bool considerarAnoAnterior = false)
@@ -910,42 +1027,34 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarComponenteCurricular()
         {
-            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
-
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_1, GRUPO_MATRIZ_1);
-            
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_2, GRUPO_MATRIZ_2);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_3, GRUPO_MATRIZ_3);
-
-            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
-
-            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
-            
-            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_4, AREA_DE_CONHECIMENTO_4);
-
+            await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_4, GRUPO_MATRIZ_4);
             await InserirNaBase(COMPONENTE_CURRICULAR_GRUPO_MATRIZ, CODIGO_8, GRUPO_MATRIZ_8);
             
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_1, AREA_DE_CONHECIMENTO_1);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_2, AREA_DE_CONHECIMENTO_2);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_3, AREA_DE_CONHECIMENTO_3);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_4, AREA_DE_CONHECIMENTO_4);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_5, AREA_DE_CONHECIMENTO_5);
+            await InserirNaBase(COMPONENTE_CURRICULAR_AREA_CONHECIMENTO, CODIGO_8, AREA_DE_CONHECIMENTO_8);
+
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_ARTES_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_ARTES_NOME, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_MATEMATICA_ID_2.ToString(), NULO, CODIGO_1, CODIGO_2, COMPONENTE_CURRICULAR_MATEMATICA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CURRICULAR_MATEMATICA_NOME, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_GEOGRAFIA_ID_8.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_GEOGRAFIA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_GEOGRAFIA_NOME, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_EOL, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString(), NULO, CODIGO_1, NULO, COMPONENTE_REG_CLASSE_CICLO_ALFAB_INTERD_5HRS_EOL_1105, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_NOME_1105, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_ID_1114.ToString(), NULO, CODIGO_1, CODIGO_8, COMPONENTE_REG_CLASSE_EJA_ETAPA_BASICA_EOL_1114, TRUE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_REGENCIA_CLASSE_EJA_BASICA_NOME_1114, NULO);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), COMPONENTE_CURRICULAR_AULA_COMPARTILHADA.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME, COMPONENTE_CURRICULAR_AULA_COMPARTILHADA_NOME);
-
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), COMPONENTE_CURRICULAR_AEE_COLABORATIVO.ToString(), CODIGO_1, CODIGO_1, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, FALSE, TRUE, FALSE, FALSE, FALSE, TRUE, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME, COMPONENTE_CURRICULAR_AEE_COLABORATIVO_NOME);
-            
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_HISTORIA_ID_7.ToString(), NULO, CODIGO_1, CODIGO_4, COMPONENTE_HISTORIA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_HISTORIA_NOME, NULO);
-            
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061.ToString(), NULO, CODIGO_3, CODIGO_8, COMPONENTE_LEITURA_OSL_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_LEITURA_OSL_NOME, NULO);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_INGLES_ID_9.ToString(), NULO, CODIGO_2, CODIGO_5, COMPONENTE_CURRICULAR_INGLES_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, COMPONENTE_CURRICULAR_INGLES_NOME, NULO);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
 
+            
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)

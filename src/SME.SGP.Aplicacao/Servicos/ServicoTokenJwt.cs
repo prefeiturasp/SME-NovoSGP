@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 claims.Add(new Claim("roles", permissao.ToString()));
             }
 
-            if (claimsAdicionais != null)
+            if (claimsAdicionais != null && claimsAdicionais.Any())
             {
                 claims.AddRange(claimsAdicionais);
             }

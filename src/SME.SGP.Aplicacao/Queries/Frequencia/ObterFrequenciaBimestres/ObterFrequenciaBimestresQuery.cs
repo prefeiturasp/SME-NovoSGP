@@ -16,6 +16,11 @@ namespace SME.SGP.Aplicacao
             TipoFrequencia = tipoFrequencia;
         }
 
+        public ObterFrequenciaBimestresQuery()
+        {
+
+        }
+
         public string CodigoAluno { get; set; }
         public int Bimestre { get; set; }
         public string CodigoTurma { get; set; }

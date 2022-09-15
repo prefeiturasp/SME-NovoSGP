@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 DisciplinaCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 EhRegencia = false,
                 TurmaCodigo = TURMA_CODIGO_1,
-                semestre = SEMESTRE_1
+                Semestre = SEMESTRE_1
             };
             var retorno = await consulta.ObterFechamentos(dto);
             retorno.ShouldNotBeNull();
@@ -72,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
                 DisciplinaCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 EhRegencia = false,
                 TurmaCodigo = TURMA_CODIGO_1,
-                semestre = SEMESTRE_1
+                Semestre = SEMESTRE_1
             };
 
             var retorno = await consulta.ObterFechamentos(dto);

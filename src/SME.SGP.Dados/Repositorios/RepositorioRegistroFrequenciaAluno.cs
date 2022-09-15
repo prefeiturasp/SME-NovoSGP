@@ -61,7 +61,8 @@ namespace SME.SGP.Dados
                                         registro_frequencia_id, 
                                         criado_em,
                                         criado_por,                                        
-                                        criado_rf)
+                                        criado_rf,
+                                        aula_id)
                             from
                             stdin (FORMAT binary)";
 
@@ -77,11 +78,19 @@ namespace SME.SGP.Dados
                     writer.Write(frequencia.CriadoEm);
                     writer.Write(log ? database.UsuarioLogadoNomeCompleto : frequencia.CriadoPor);
                     writer.Write(log ? database.UsuarioLogadoRF : frequencia.CriadoRF);
+                    writer.Write(frequencia.AulaId);
                 }
                 writer.Complete();
             }
 
             return true;
+        }
+
+        public async Task ExcluirVariosLogicamente(long[] idsParaExcluir)
+        {
+            var query = "update registro_frequencia_aluno set excluido = true where id = any(@idsParaExcluir)";
+
+            await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
     }
 }

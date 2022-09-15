@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -10,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -21,12 +21,13 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
         private const int BIMESTRE_4 = 4;
+        private const int BIMESTRE_2 = 2;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -34,11 +35,11 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioFechamentoNota repositorioFechamentoNota,
                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                       IRepositorioEvento repositorioEvento,
-                                      IServicoEol servicoEOL,
                                       IServicoUsuario servicoUsuario,
                                       IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                       IUnitOfWork unitOfWork,
-                                      IMediator mediator)
+                                      IMediator mediator,
+                                      IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -46,26 +47,26 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, Usuario usuarioLogado, IList<FechamentoFinalSalvarItemDto> notasDto, bool emAprovacao)
         {
             var notasEmAprovacao = new List<FechamentoNotaDto>();
             var mensagens = new List<string>();
-            
+
             if (!turma.EhTurmaEdFisicaOuItinerario() && !usuarioLogado.EhGestorEscolar() && !usuarioLogado.EhPerfilSME() && !usuarioLogado.EhPerfilDRE())
                 await VerificaSeProfessorPodePersistirTurma(turma.CodigoTurma, fechamentoFinal.DisciplinaId, usuarioLogado);
 
             var mesmoAnoLetivo = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
-            
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, BIMESTRE_4, mesmoAnoLetivo)); 
-            
-            if(!temPeriodoAberto)
+            var bimestre = turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, mesmoAnoLetivo));
+
+            if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
             var componenteCurricular = await ObterComponenteCurricular(fechamentoFinal.DisciplinaId);
@@ -80,6 +81,7 @@ namespace SME.SGP.Dominio.Servicos
                 fechamentoFinal.FechamentoTurmaId = fechamentoTurmaId;
 
                 var fechamentoTurmaDisciplinaId = await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoFinal);
+                var listaNotasFechamento = new List<FechamentoNota>();
 
                 foreach (var fechamentoAluno in fechamentoFinal.FechamentoAlunos)
                 {
@@ -123,6 +125,11 @@ namespace SME.SGP.Dominio.Servicos
 
                                     fechamentoNota.SinteseId = notaDto.SinteseId;
                                     fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
+
+                                    var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>($"fechamentoNotaFinais-{fechamentoFinal.DisciplinaId}-{turma.CodigoTurma}");
+
+                                    if (notasFechamentoFinaisNoCache != null)
+                                        await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota, fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma);
 
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
@@ -181,11 +188,11 @@ namespace SME.SGP.Dominio.Servicos
                 throw e;
             }
         }
-        
+
         private async Task VerificaSeProfessorPodePersistirTurma(string turmaCodigo, long disciplinaId, Usuario usuario)
         {
             var podePersistir = true;
-            
+
             if (!usuario.EhProfessorCj())
                 podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turmaCodigo, DateTimeExtension.HorarioBrasilia(), usuario));
 
@@ -198,7 +205,7 @@ namespace SME.SGP.Dominio.Servicos
             consolidacaoNotasAlunos.Add(new ConsolidacaoNotaAlunoDto()
             {
                 AlunoCodigo = AlunoCodigo,
-                TurmaId = turma.Id,                
+                TurmaId = turma.Id,
                 AnoLetivo = turma.AnoLetivo,
                 Nota = fechamentoNota.Nota,
                 ConceitoId = fechamentoNota.ConceitoId,
@@ -271,12 +278,26 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Não foi possível localizar um fechamento de período ou reabertura para esta turma.");
 
             var professorRf = servicoUsuario.ObterRf();
-            
+
             var professorPodePersistirTurma =
                 await mediator.Send(new ProfessorPodePersistirTurmaQuery(professorRf, turma.CodigoTurma, diaAtual));
 
             if (!professorPodePersistirTurma)
                 throw new NegocioException("Você não pode executar alterações nesta turma.");
+        }
+
+        private async Task PersistirNotasFinaisNoCache(IEnumerable<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota, string codigoAluno, string codigoDisciplina, string codigoTurma)
+        {
+            foreach (var notaFinal in notasFinais)
+            {
+                if (notaFinal.AlunoCodigo != codigoAluno) 
+                    continue;
+                
+                notaFinal.Nota = fechamentoNota.Nota;
+                notaFinal.ConceitoId = fechamentoNota.ConceitoId;
+            }
+            
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma), notasFinais));
         }
     }
 }

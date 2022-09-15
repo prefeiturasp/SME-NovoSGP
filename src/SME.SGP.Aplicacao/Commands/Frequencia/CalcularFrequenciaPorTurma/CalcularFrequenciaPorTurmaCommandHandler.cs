@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
             var excluirFrequenciaAlunoIds = new List<long>();
 
             var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
-
+            
             var periodosEscolaresParaFiltro = registroFreqAlunos.Select(a => a.PeriodoEscolarId).Distinct().ToList();
 
             List<FrequenciaAluno> frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
@@ -73,12 +73,15 @@ namespace SME.SGP.Aplicacao
             {
                 var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, request.TurmaId));
                 var totalAulasDaTurmaGeral = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, request.TurmaId));
+                var bimestre = registroFreqAlunos.Select(a => a.Bimestre).First();
 
                 if (totalAulasDaDisciplina == 0)
                     excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId)).Select(s => s.Id));
 
+                VerificaFrequenciasDuplicadas(frequenciaDosAlunos, request.DisciplinaId, excluirFrequenciaAlunoIds, bimestre);
+
                 var alunosComFrequencia = registroFreqAlunos.Select(a => a.AlunoCodigo).Distinct().ToList();
-                var bimestre = registroFreqAlunos.Select(a => a.Bimestre).First();
+                
                 var registroFrequenciaAgregado = ObterRegistroFrequenciaAgregado(registroFreqAlunos);
 
                 var totalCompensacoesDisciplinaAlunos = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(bimestre, alunosComFrequencia, request.TurmaId));
@@ -90,9 +93,37 @@ namespace SME.SGP.Aplicacao
                     TrataFrequenciaAlunoComponente(request, frequenciaDosAlunos, totalAulasDaDisciplina, totalCompensacoesDisciplinaAlunos, codigoAluno, registroFrequenciaAgregado);
                     TrataFrequenciaGlobalAluno(codigoAluno, totalAulasDaTurmaGeral, registroFrequenciaAgregado, frequenciaDosAlunos, totalCompensacoesDisciplinaAlunos, request.TurmaId);
                 }
+
+                VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(registroFreqAlunos, frequenciaDosAlunos, excluirFrequenciaAlunoIds);
             }
             await ExcluirFrequenciaAluno(excluirFrequenciaAlunoIds);
             await TrataPersistencia(frequenciaDosAlunos);
+        }
+
+        public void VerificaExclusaoFrequenciaConsolidadaMasNaoLancada(IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto> registrosLancados, IEnumerable<FrequenciaAluno> frequenciasConsolidadas, List<long> frequenciasParaExcluir)
+        {
+            if (frequenciasConsolidadas.Any() && registrosLancados.Any())
+            {
+                var frequenciasParaRealizarExclusao = frequenciasConsolidadas.Where(f => !registrosLancados.Any(r => r.AlunoCodigo == f.CodigoAluno
+                                                                                && r.Bimestre == f.Bimestre && r.PeriodoEscolarId == f.PeriodoEscolarId))
+                                                                             .Select(f => f.Id).ToList();
+                frequenciasParaExcluir.AddRange(frequenciasParaRealizarExclusao);
+            }  
+        }
+
+        private void VerificaFrequenciasDuplicadas(IEnumerable<FrequenciaAluno> frequenciasAlunos, string disciplinaId, List<long> frequenciaAlunosIdsParaExcluir, int bimestre)
+        {
+            var frequenciaAgrupada = frequenciasAlunos.GroupBy(f => f.CodigoAluno);
+
+            foreach(var frequencia in frequenciaAgrupada)
+            {
+                var frequenciasDuplicadas = frequencia.Where(f => f.DisciplinaId == disciplinaId && f.Bimestre == bimestre).Select(f => f.Id);
+                if (frequenciasDuplicadas.Count() > 1)
+                {
+                    frequenciaAlunosIdsParaExcluir.AddRange(frequenciasDuplicadas);
+                    frequenciaAlunosIdsParaExcluir.Remove(frequenciasDuplicadas.FirstOrDefault()); // mantém somente uma frequência na lista para fazer a alteração na base com os dados atualizados
+                }  
+            }
         }
 
         private async Task ExcluirFrequenciaAluno(List<long> excluirFrequenciaAlunoIds)

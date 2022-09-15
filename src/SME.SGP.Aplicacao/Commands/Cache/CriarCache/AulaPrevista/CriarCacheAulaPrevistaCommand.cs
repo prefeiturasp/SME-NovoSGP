@@ -13,9 +13,10 @@ namespace SME.SGP.Aplicacao
             CodigoUe = codigoUe;
         }
 
-        public long CodigoUe { get; set; }
-        public string NomeChave { get; set; }
+        public long CodigoUe { get; }
+        public string NomeChave { get; }
     }
+
     public class CriarCacheAulaPrevistaCommandValidator : AbstractValidator<CriarCacheAulaPrevistaCommand>
     {
         public CriarCacheAulaPrevistaCommandValidator()

@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
         {
-            var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(request.CodigoAluno, request.AnoLetivo, false))).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
+            var alunoPorTurmaResposta = (await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(request.CodigoAluno, request.AnoLetivo, false, request.TipoTurma))).OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
 
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
@@ -31,22 +31,23 @@ namespace SME.SGP.Aplicacao
             var alunoReduzido = new AlunoReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
-                NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
+                NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,
                 CodigoSituacaoMatricula = alunoPorTurmaResposta.CodigoSituacaoMatricula,
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
-                TurmaEscola = await OberterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma)
+                TurmaEscola = await ObterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
+                CodigoTurma = alunoPorTurmaResposta.CodigoTurma.ToString(),
             };
 
             return alunoReduzido;
         }
 
-        private async Task<string> OberterNomeTurmaFormatado(long turmaId)
+        private async Task<string> ObterNomeTurmaFormatado(string turmaCodigo)
         {
             var turmaNome = "";
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma != null)
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";

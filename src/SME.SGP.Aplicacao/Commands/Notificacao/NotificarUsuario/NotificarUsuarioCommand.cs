@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
             Codigo = codigo;
             CriadoEm = criadoEm;
             UsuarioId = usuarioId;
-            NomeUsuario = NomeUsuario;
+            NomeUsuario = nomeUsuario;
         }
 
         public string Titulo { get; set; }
@@ -53,6 +53,12 @@ namespace SME.SGP.Aplicacao
 
     public class NotificarUsuarioCommandValidator : AbstractValidator<NotificarUsuarioCommand>
     {
-
+        public NotificarUsuarioCommandValidator()
+        {
+            RuleFor(x => x.UsuarioId)
+                .NotEmpty()
+                .When(x => string.IsNullOrEmpty(x.UsuarioRf))
+                .WithMessage("Necessário informar o usuário da notificação");
+        }
     }
 }

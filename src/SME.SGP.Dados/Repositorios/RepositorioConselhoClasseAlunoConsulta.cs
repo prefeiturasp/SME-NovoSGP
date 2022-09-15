@@ -36,17 +36,6 @@ namespace SME.SGP.Dados.Repositorios
                 , new { conselhoClasseId, alunoCodigo })).FirstOrDefault();
         }
 
-        public async Task<ConselhoClasseAluno> ObterPorFechamentoAsync(long fechamentoTurmaId, string alunoCodigo)
-        {
-            var query = @"select cca.* 
-                          from conselho_classe cc
-                         inner join conselho_classe_aluno cca on cca.conselho_classe_id = cc.id
-                         where cc.fechamento_turma_id = @fechamentoTurmaId
-                           and cca.aluno_codigo = @alunoCodigo";
-
-            return await database.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { fechamentoTurmaId, alunoCodigo });
-        }
-
         public async Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal)
         {
             StringBuilder query = new StringBuilder();
@@ -98,6 +87,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseAluno>(query, new { alunoCodigo, turmaId, periodoEscolarId });
         }
 
+        public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasConselhoAlunoTurma(string alunoCodigo, string[] turmasCodigos, long? periodoEscolarId = null)
+        {
+            var condicaoPeriodoEscolar = periodoEscolarId.HasValue ? "ft.periodo_escolar_id = @periodoEscolarId" : "ft.periodo_escolar_id is null";
+            var query = $@"select ccn.componente_curricular_codigo as ComponenteCurricularCodigo, ccn.conceito_id as ConceitoId, ccn.nota as Nota
+                  from fechamento_turma ft
+                 inner join turma t on t.id = ft.turma_id
+                 inner join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                 inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
+                 inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
+                 where {condicaoPeriodoEscolar}                   
+                   and t.turma_id = ANY(@turmasCodigos)
+                   and cca.aluno_codigo = @alunoCodigo ";
+
+            return await database.Conexao.QueryAsync<NotaConceitoFechamentoConselhoFinalDto>(query, new { alunoCodigo, turmasCodigos, periodoEscolarId });
+        }
+        
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
             var query = $@"select distinct * from (SELECT 0                AS ConselhoClasseAlunoId,
@@ -233,7 +238,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        where cca.aluno_codigo = @alunoCodigo
 	                        and ft.turma_id  = @turmaId");
 
-            if (bimestre.HasValue)
+            if (bimestre.HasValue && bimestre.Value > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre ");
             else
                 query.AppendLine(" and ft.periodo_escolar_id is null ");

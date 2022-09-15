@@ -28,9 +28,10 @@ namespace SME.SGP.Dados
                                               where not excluido and turma_id = @turmaId 
                                                 and status = @situacaoConselhoClasse)");
 
-            return await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, situacaoConselhoClasse });
+            var retorno = await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, situacaoConselhoClasse });
+            return retorno;
         }
-        public Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
+        public async Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
                                    criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido           
@@ -39,7 +40,8 @@ namespace SME.SGP.Dados
                             and turma_id = @turmaId
                             and aluno_codigo = @alunoCodigo";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
+            return retorno;
         }
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterFechamentoNotaAlunoOuConselhoClasseAsync(long turmaId)
@@ -149,7 +151,7 @@ namespace SME.SGP.Dados
             
         }
 
-        public Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
+        public async Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = @"select id as ConsolidacaoId, 
                         turma_id as TurmaId,
@@ -159,7 +161,7 @@ namespace SME.SGP.Dados
                         and turma_id = @turmaId 
                         and aluno_codigo = @alunoCodigo";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
     }
 }

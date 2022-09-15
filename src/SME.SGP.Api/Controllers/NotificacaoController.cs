@@ -27,9 +27,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_E, Policy = "Bearer")]
-        public IActionResult Delete(long[] notificacoesId)
+        public async Task<IActionResult> Delete(long[] notificacoesId)
         {
-            return Ok(comandosNotificacao.Excluir(notificacoesId));
+            return Ok(await comandosNotificacao.Excluir(notificacoesId));
         }
 
         [HttpGet]
@@ -56,9 +56,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Route("status/lida")]
         [Permissao(Permissao.N_A, Policy = "Bearer")]
-        public IActionResult MarcarComoLida(IList<long> notificaoesId)
+        public async Task<IActionResult> MarcarComoLida(IList<long> notificaoesId)
         {
-            return Ok(comandosNotificacao.MarcarComoLida(notificaoesId));
+            return Ok(await comandosNotificacao.MarcarComoLida(notificaoesId));
         }
 
         [HttpGet]
@@ -106,9 +106,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.N_I, Policy = "Bearer")]
-        public IActionResult Post([FromBody]NotificacaoDto notificacaoDto)
+        public async Task<IActionResult> Post([FromBody]NotificacaoDto notificacaoDto)
         {
-            comandosNotificacao.Salvar(notificacaoDto);
+            await comandosNotificacao.Salvar(notificacaoDto);
             return Ok();
         }
 

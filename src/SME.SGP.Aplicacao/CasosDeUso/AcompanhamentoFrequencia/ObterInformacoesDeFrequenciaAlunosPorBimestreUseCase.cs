@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
                     Frequencia = percentualFrequencia,
                     MarcadorFrequencia = marcador,
                     Nome = aluno.NomeValido(),
-                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     PossuiJustificativas = ausencias > 0,
                     EhAtendidoAEE = alunoPossuiPlanoAEE,
                     Remotos = remotos,

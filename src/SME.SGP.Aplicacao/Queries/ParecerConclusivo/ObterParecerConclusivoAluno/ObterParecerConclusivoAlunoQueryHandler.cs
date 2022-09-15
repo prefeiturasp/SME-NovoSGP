@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
 
             string[] turmasCodigos;
 
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (!turma.Historica &&( turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
                 var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                 turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -73,6 +73,7 @@ namespace SME.SGP.Aplicacao
             var parecerFrequencia = ObterParecerValidacao(true);
 
             // Nota
+
             if (!Filtrar(request.PareceresDaTurma.Where(c => c.Nota), "Nota"))
                 return parecerFrequencia;
 
@@ -113,7 +114,7 @@ namespace SME.SGP.Aplicacao
             var frequenciasAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, turmasCodigos, tipoCalendarioId));
             var frequencias = frequenciasAluno.Where(a => componentesCurricularesCodigos.Contains(a.DisciplinaId));
 
-            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional)) 
+            if (FrequenciaAnualPorComponenteCritica(frequencias, parametroFrequenciaBaseNacional,turma.AnoLetivo)) 
                 return false;
 
             return true;
@@ -124,9 +125,18 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(
                     new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.PercentualFrequenciaCriticoBaseNacional, anoLetivo)));
 
-        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional)
-            => frequenciasComponentes
-            .Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+        private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional,int anoLetivo)
+        {
+            if (anoLetivo != 2020)
+            {
+                return frequenciasComponentes.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+            }
+            else
+            {
+                return false;
+            }
+        }
+            
 
         private async Task<bool> ValidarFrequenciaGeralAluno(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
@@ -144,6 +154,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ValidarParecerPorNota(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
             var notasFechamentoAluno = await mediator.Send(new ObterNotasFinaisPorAlunoTurmasQuery(alunoCodigo, turmasCodigos));
+
             if (notasFechamentoAluno == null || !notasFechamentoAluno.Any())
                 return true;
 
@@ -180,7 +191,7 @@ namespace SME.SGP.Aplicacao
         #region Conselho
         private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
+            var notasConselhoClasse = await mediator.Send(new ObterNotasConselhoClassePorAlunoTurmaQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
 
