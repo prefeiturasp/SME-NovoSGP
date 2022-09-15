@@ -194,7 +194,7 @@ namespace SME.SGP.Aplicacao.Workers
                     transacao?.CaptureException(ex);
  
                     var retryCount = GetRetryCount(ea.BasicProperties);
-                    if (retryCount > comandoRabbit.QuantidadeReprocessamentoDeadLetter)
+                    if (retryCount >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
                     {
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
 
