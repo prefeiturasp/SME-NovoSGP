@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
+using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -24,6 +26,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificarExistenciaPlanoAEEPorEstudanteQuery, PlanoAEEResumoDto>), typeof(VerificarExistenciaPlanoAEEPorEstudanteQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorCodigoEolNomeQuery, IEnumerable<AlunoSimplesDto>>), typeof(ObterAlunosPorCodigoEolNomeQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
 
@@ -35,17 +38,17 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year.ToString(),
                 CodigoUe = "1",
                 CodigoTurma = 1,
-                Codigo = int.Parse(ALUNO_CODIGO_10),
-                Nome = ALUNO_CODIGO_10
+                Codigo = int.Parse(ALUNO_CODIGO_1),
+                Nome = ALUNO_CODIGO_1
             };
             var obterAlunosServico = ObterAlunosPorCodigoEolNomeUseCase();
             var aluno = await obterAlunosServico.Executar(filtro);
-
+            
             aluno.ShouldNotBeNull();
             aluno.Items.Count().ShouldBeGreaterThanOrEqualTo(1);
 
-            var verificarExistenciaPlanoAEE = ObterServicoVerificarExistenciaPlanoAEEPorEstudanteUseCase();
-            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAEE.Executar(aluno.Items.FirstOrDefault().Codigo));
+            var verificarExistenciaPlanoAee = ObterServicoVerificarExistenciaPlanoAEEPorEstudanteUseCase();
+            var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(ALUNO_CODIGO_1));
             ex.Message.ShouldNotBeNullOrEmpty();
         }
         
