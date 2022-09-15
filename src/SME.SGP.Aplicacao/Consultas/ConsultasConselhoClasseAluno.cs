@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseUltimoBimestre == null)
                 return false;
 
-            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, periodoEscolar.Bimestre));
+            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, periodoEscolar.Bimestre,turma.Historica));
         }
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
@@ -211,7 +211,9 @@ namespace SME.SGP.Aplicacao
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
-                conselhosClassesIds = new long[1] { conselhoClasseId };
+                conselhosClassesIds = conselhoClasseId != 0 ?
+                    new long[1] { conselhoClasseId } :
+                    null;
             }
 
             var periodosLetivos = (await mediator
