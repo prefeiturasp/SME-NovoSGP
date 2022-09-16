@@ -77,6 +77,8 @@ namespace SME.SGP.Aplicacao.Queries
                 if (request.Turma.ModalidadeCodigo == Modalidade.EJA && request.Bimestre == 2)
                     if (todasAsNotas != null && todasAsNotas.Any())
                         notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
+                    else
+                        notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
                 else 
                     notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
             }
