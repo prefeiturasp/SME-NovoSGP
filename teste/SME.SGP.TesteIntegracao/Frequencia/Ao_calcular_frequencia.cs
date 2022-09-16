@@ -672,7 +672,9 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 Id = 1,
                 UeId = 1,
                 Ano = "1",
-                CodigoTurma = "1"
+                CodigoTurma = "1",
+                ModalidadeCodigo = Modalidade.Fundamental,
+                AnoLetivo = DateTime.Now.Year
             });
 
             await InserirNaBase(new TipoCalendario
@@ -680,7 +682,10 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 Id = 1,
                 Nome = "",
                 CriadoPor = "",
-                CriadoRF = ""
+                CriadoRF = "",
+                Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
+                AnoLetivo = DateTime.Now.Year,
+                Situacao = true                
             });
 
             await InserirNaBase(new PeriodoEscolar
@@ -691,7 +696,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01)
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 28)
             });
 
         }

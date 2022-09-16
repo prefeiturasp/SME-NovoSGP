@@ -293,9 +293,9 @@ namespace SME.SGP.Aplicacao
 
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var frequenciasAluno = (turmasComMatriculasValidas.Contains(codigoTurma) ?
+            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, bimestre) :
-                Enumerable.Empty<FrequenciaAluno>()).ToList();
+                Enumerable.Empty<FrequenciaAluno>();
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(codigoTurma) ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos,
