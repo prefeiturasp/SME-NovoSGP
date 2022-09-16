@@ -38,14 +38,14 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
             sqlQuery.AppendLine("  	from aula a");
             sqlQuery.AppendLine("  		inner join tipo_calendario tc");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = @anoLetivo and a.tipo_calendario_id = tc.id");
+            sqlQuery.AppendLine("  			on a.tipo_calendario_id = tc.id");
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
             {
                 sqlQuery.AppendLine("  		inner join componente_curricular cc");
                 sqlQuery.AppendLine("            on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id");
             }
             sqlQuery.AppendLine("  		inner join turma t");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = t.ano_letivo and t.modalidade_codigo = any(@modalidades) and a.turma_id = t.turma_id");
+            sqlQuery.AppendLine("  			on a.turma_id = t.turma_id");
             sqlQuery.AppendLine("  		inner join ue");
             sqlQuery.AppendLine("  			on t.ue_id = ue.id");
 
@@ -75,7 +75,6 @@ namespace SME.SGP.Dados.Repositorios
                 return aula;
             }, new
             {
-                anoLetivo,
                 hoje = DateTime.Today.Date,
                 tipo = tipoPendenciaAula,
                 modalidades,
