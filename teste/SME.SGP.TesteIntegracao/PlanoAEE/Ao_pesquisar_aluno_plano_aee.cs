@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var aluno = await obterAlunosServico.Executar(filtro);
             
             aluno.ShouldNotBeNull();
-            Assert.True(aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count() == 1);
+            aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count().ShouldBe(1);
         }
 
         [Fact(DisplayName = "Pesquisar por nome e código EOL com usuário CP (pesquisar sem informar a turma")]
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var aluno = await obterAlunosServico.Executar(filtro);
             
             aluno.ShouldNotBeNull();
-            Assert.True(aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count() == 1);
+            aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count().ShouldBe(1);
         }
     }
 }
