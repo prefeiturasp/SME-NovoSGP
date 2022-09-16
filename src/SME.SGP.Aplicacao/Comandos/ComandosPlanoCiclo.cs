@@ -96,37 +96,28 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto,out string descricaoAtual)
+        private PlanoCiclo MapearParaDominio(PlanoCicloDto planoCicloDto, out string descricaoAtual)
         {
             descricaoAtual = string.Empty;
             if (planoCicloDto == null)
-            {
                 throw new ArgumentNullException(nameof(planoCicloDto));
-            }
+
             if (planoCicloDto.Id == 0 && repositorioPlanoCiclo.ObterPlanoCicloPorAnoCicloEEscola(planoCicloDto.Ano, planoCicloDto.CicloId, planoCicloDto.EscolaId))
-            {
                 throw new NegocioException("Já existe um plano ciclo referente a este Ano/Ciclo/Escola.");
-            }
 
             var planoCiclo = repositorioPlanoCiclo.ObterPorId(planoCicloDto.Id);
             if (planoCiclo == null)
-            {
                 planoCiclo = new PlanoCiclo();
-            }
             else
-            {
                 descricaoAtual = planoCiclo.Descricao;
-            }
+
             if (!planoCiclo.Migrado)
             {
                 if (planoCicloDto.IdsMatrizesSaber == null || !planoCicloDto.IdsMatrizesSaber.Any())
-                {
                     throw new NegocioException("A matriz de saberes deve conter ao menos 1 elemento.");
-                }
+
                 if (planoCicloDto.IdsObjetivosDesenvolvimento == null || !planoCicloDto.IdsObjetivosDesenvolvimento.Any())
-                {
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
-                }
             }
             planoCiclo.Descricao = planoCicloDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             planoCiclo.CicloId = planoCicloDto.CicloId;
@@ -136,6 +127,8 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
         {
+            var caminho = string.Empty;
+
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));

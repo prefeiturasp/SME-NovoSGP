@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(ObterFrequenciaGeralAlunoPorTurmasQuery request, CancellationToken cancellationToken)
         {
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
+            
             frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
             var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
 
@@ -60,8 +61,13 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
+            var frequenciaAlunoObtidoIndividual = await ObterTotalSomadoIndividualmente(request.CodigosTurmas, request.TipoCalendarioId, request.CodigoAluno, frequenciaAluno, request.DataMatriculaTurmaFiltro);
+
+            if (frequenciaAluno.TotalAulas > frequenciaAlunoObtidoIndividual.TotalAulas)
+                frequenciaAluno = frequenciaAlunoObtidoIndividual;
+
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
-                return "0";
+                return "";
 
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequencia.ToString();
@@ -72,7 +78,27 @@ namespace SME.SGP.Aplicacao
             else if (aulasComponentesTurmas.Any())
                 return "100";
 
-            return "0";
+            return "";
+        }
+
+        private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, DateTime? dataMatriculaTurmaFiltro)
+        {
+            var frequenciasDoAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaComponentesAlunoPorTurmas(codigoAluno, turmasCodigo, tipoCalendarioId);
+
+            if (dataMatriculaTurmaFiltro.HasValue)
+                frequenciasDoAluno = frequenciasDoAluno.Where(f => f.PeriodoFim > dataMatriculaTurmaFiltro);
+
+            if (frequenciasDoAluno.Any())
+            {
+                return new FrequenciaAluno()
+                {
+                    TotalAulas = frequenciasDoAluno.Sum(f => f.TotalAulas),
+                    TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
+                    TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes)
+                };
+            }
+
+            return frequenciaGeralObtida;
         }
     }
 }

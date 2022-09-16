@@ -85,8 +85,8 @@ namespace SME.SGP.Aplicacao
                     disciplinas.Any(d => d.CdComponenteCurricularPai == long.Parse(aula.DisciplinaId)))
                     return true;
             }
-
-            var disciplina = componentesUsuario?.FirstOrDefault(x => x.Codigo.ToString().Equals(aula.DisciplinaId));
+            
+            var disciplina = componentesUsuario?.FirstOrDefault(x => (x.Codigo % (10000)).ToString().Equals(aula.DisciplinaId, StringComparison.Ordinal));
 
             return disciplina != null;
         }
@@ -119,7 +119,6 @@ namespace SME.SGP.Aplicacao
                 SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
-                          || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar()))
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()
                           || usuarioLogado.EhProfessorPosl()))
                           || (usuarioLogado.EhProfessorPap() && aula.EhPAP)
@@ -134,7 +133,7 @@ namespace SME.SGP.Aplicacao
                 .ObterComponentesCurricularesPorProfessorETurma(codigoTurma, false);
 
             return componentesCurricularesTurma
-                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ? 
+                .Any(cc => cc.CodigoComponenteCurricular.Equals(disciplinasInglesAtualizacao.codigoAntiga)) ?
                     disciplinasInglesAtualizacao.codigoAntiga : disciplinasInglesAtualizacao.codigoNova;
         }
     }

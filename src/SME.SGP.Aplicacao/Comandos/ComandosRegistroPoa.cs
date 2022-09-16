@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
         public async Task Cadastrar(RegistroPoaDto registroPoaDto)
         {
             await MoverRemoverExcluidos(registroPoaDto, new RegistroPoa() { Descricao = string.Empty });
-            repositorioRegistroPoa.Salvar(MapearParaEntidade(registroPoaDto));
+            repositorioRegistroPoa.Salvar(await MapearParaEntidade(registroPoaDto));
         }
 
         public async Task Excluir(long id)
@@ -45,14 +45,14 @@ namespace SME.SGP.Aplicacao
             if (id <= 0)
                 throw new NegocioException("O id informado para edição tem que ser maior que 0");
 
-            var entidadeBanco = repositorioRegistroPoa.ObterPorId(id);
+            var entidadeBanco = await repositorioRegistroPoa.ObterPorIdAsync(id);
 
             if (entidadeBanco == null || entidadeBanco.Excluido)
                 throw new NegocioException($"Não foi encontrado o registro de código {id}");
 
             entidadeBanco.Excluido = true;
 
-            repositorioRegistroPoa.Salvar(entidadeBanco);
+            await repositorioRegistroPoa.SalvarAsync(entidadeBanco);
             if (entidadeBanco?.Descricao != null)
             {
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(entidadeBanco.Descricao, TipoArquivo.RegistroPOA.Name()));
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                 var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(entidade.Descricao, registroPoaDto.Descricao, TipoArquivo.RegistroPOA.Name()));
             }
         }
-        private RegistroPoa MapearParaEntidade(RegistroPoaDto registroPoaDto)
+        private async Task<RegistroPoa> MapearParaEntidade(RegistroPoaDto registroPoaDto)
         {
             return new RegistroPoa
             {

@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
         private readonly IMediator mediator;
-        
+
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
                                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                        IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar,
@@ -55,14 +55,19 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre,turma.CodigoTurma));
-            
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre));
+
             if (fechamentoTurma == null && !turma.EhAnoAnterior())
-                throw new NegocioException("Fechamento da turma não localizado " + (!ehFinal && bimestre > 0 ? $"para o bimestre {bimestre}" : ""));
-            
+            {
+                if (!ehFinal && bimestre > 0)
+                    throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO_BIMESTRE, bimestre));
+                else
+                    throw new NegocioException(MensagemNegocioFechamentoTurma.FECHAMENTO_TURMA_NAO_LOCALIZADO);
+            }                      
+
             var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (turma.EhTurmaEdFisicaOuItinerario() || (turmasitinerarioEnsinoMedio != null && turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
                 var tipos = new List<int>();
                 tipos.AddRange(turma.ObterTiposRegularesDiferentes());
@@ -78,15 +83,15 @@ namespace SME.SGP.Aplicacao
                 if (bimestre == 0)
                     bimestre = 1;
             }
-            
+
             if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                
+
                 var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
                                                                                        retornoConselhoBimestre.bimestre));
                 if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
-                throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
+                    throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
             }
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
@@ -151,7 +156,7 @@ namespace SME.SGP.Aplicacao
 
                 turma = await ObterTurma(codigosTurmasRelacionadas.FirstOrDefault());
             }
-                        
+
             var fechamentoTurma = await consultasFechamentoTurma.ObterPorTurmaCodigoBimestreAsync(turma.CodigoTurma, bimestreFinal);
 
             var conselhoClasse = fechamentoTurma != null ? await repositorioConselhoClasseConsulta.ObterPorFechamentoId(fechamentoTurma.Id) : null;
@@ -182,7 +187,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoNota = await mediator.Send(new ObterNotaTipoPorAnoModalidadeDataReferenciaQuery(turma.Ano, turma.ModalidadeCodigo, dataReferencia));
             if (tipoNota == null)
-                throw new NegocioException("Não foi possível identificar o tipo de nota da turma");
+                throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_IDENTIFICAR_TIPO_NOTA_TURMA);
 
             return tipoNota.TipoNota;
         }
@@ -191,7 +196,7 @@ namespace SME.SGP.Aplicacao
         {
             var periodoEscolarUltimoBimestre = await consultasPeriodoEscolar.ObterUltimoPeriodoAsync(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (periodoEscolarUltimoBimestre == null)
-                throw new NegocioException("Não foi possível localizar o período escolar do ultimo bimestre da turma");
+                throw new NegocioException(MensagemNegocioPeriodo.NAO_FOi_ENCONTRADO_PERIODO_ULTIMO_BIMESTRE);
 
             return periodoEscolarUltimoBimestre;
         }
@@ -200,7 +205,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await consultasTurma.ObterComUeDrePorCodigo(turmaCodigo);
             if (turma == null)
-                throw new NegocioException("Turma não localizada");
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             return turma;
         }
