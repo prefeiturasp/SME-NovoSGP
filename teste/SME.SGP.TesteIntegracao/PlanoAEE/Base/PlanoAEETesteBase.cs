@@ -150,32 +150,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
         }
-        protected async Task CriarQuestoesPlanoAee()
-        {
-            await InserirNaBase(new Questionario()
-            {
-                Nome = "Questão Teste",
-                CriadoPor = SISTEMA_CODIGO_RF,
-                Excluido = false,
-                Tipo = TipoQuestionario.PlanoAEE,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
 
-            await InserirNaBase(new Questao()
-            {
-                Nome = "Questão Teste",
-                CriadoPor = SISTEMA_CODIGO_RF,
-                Tipo = TipoQuestao.Texto,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new PlanoAEEQuestao()
-            {
-                QuestaoId = 1,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                Excluido = false,
-                PlanoAEEVersaoId = 1,
-            });
-        }
     }
 }
