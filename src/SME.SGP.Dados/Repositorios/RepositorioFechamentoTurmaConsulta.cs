@@ -92,7 +92,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("	 		   where pe.id = ft.periodo_escolar_id and");
                 query.AppendLine("	 		  		 pe.bimestre = @bimestre and");
                 query.AppendLine("	 		 		 not tc.excluido");
-                if (semestre.HasValue)
+                if (semestre.HasValue && semestre.Value > 0)
                     query.AppendLine($"	 		 		and pe.periodo_inicio {(semestre.Value.Equals(1) ? "<" : ">=")} @dataReferenciaSemestre");
                 query.AppendLine(");");
             }
