@@ -33,6 +33,17 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ObjetivoAprendizagemComponenteDto>(query, new { planoAulaId });
         }
+        
+        public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosAprendizagemAulaPorPlanoAulaId(long planoAulaId)
+        {
+            var query = @"select id, plano_aula_id, criado_em, criado_por, alterado_em, alterado_por, criado_rf, 
+                            alterado_rf, excluido,objetivo_aprendizagem_id,componente_curricular_id 
+                          from objetivo_aprendizagem_aula 
+                          where not excluido
+                                and plano_aula_id  = @planoAulaId";
+
+            return await database.Conexao.QueryAsync<ObjetivoAprendizagemAula>(query, new { planoAulaId });
+        }
 
         public async Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosPlanoAula(long planoAulaId)
         {
