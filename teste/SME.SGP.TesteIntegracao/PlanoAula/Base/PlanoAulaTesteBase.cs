@@ -27,6 +27,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
         private const string OBJETIVO_APRENDIZAGEM_DESCRICAO_5 = "'OBJETIVO APRENDIZAGEM 5'";
         private const string OBJETIVO_APRENDIZAGEM_CODIGO_5 = "'CDGAPRE5'";
         private const string OBJETIVO_APRENDIZAGEM_TABELA = "objetivo_aprendizagem";
+        private const long USUARIO_CP_3333333_ID_3 = 3;
+        private const long USUARIO_CP_999999_ID_4 = 4;
+        private const long USUARIO_DIRETOR_999998_ID_5 = 5;
+        private const long USUARIO_AD_999997_ID_6 = 6;
         
         protected PlanoAulaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -93,6 +97,61 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             
             if(filtroPlanoAula.CriarPlanejamentoAnual)
                 await CriarPlanejamentoAnual(filtroPlanoAula.ComponenteCurricularCodigo);
+            
+            await CriarAbrangencia(filtroPlanoAula.Perfil);
+        }
+        
+        protected async Task CriarAbrangencia(string perfil)
+        {
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = new Guid(perfil),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_ID_1
+            });
+            
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = Guid.Parse(PerfilUsuario.CP.Name()),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_CP_3333333_ID_3
+            });
+            
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = Guid.Parse(PerfilUsuario.CP.Name()),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_CP_999999_ID_4
+            });
+            
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = Guid.Parse(PerfilUsuario.DIRETOR.Name()),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_DIRETOR_999998_ID_5
+            });
+            
+            await InserirNaBase(new Abrangencia()
+            {
+                DreId = DRE_ID_1,
+                Historico = false,
+                Perfil = Guid.Parse(PerfilUsuario.AD.Name()),
+                TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
+                UsuarioId = USUARIO_AD_999997_ID_6
+            });
         }
 
         private async Task CriarPlanejamentoAnual(string componenteCurricularCodigo)
