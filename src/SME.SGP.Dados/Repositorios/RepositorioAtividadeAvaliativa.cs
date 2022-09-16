@@ -602,7 +602,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
-            var query = @"SELECT aa.nome_avaliacao as Nome
+            var query = @"SELECT distinct aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
 	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
                           FROM atividade_avaliativa aa
@@ -610,8 +610,8 @@ namespace SME.SGP.Dados.Repositorios
                          INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
                          INNER JOIN atividade_avaliativa_disciplina aad ON aad.atividade_avaliativa_id = aa.id
                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
-                         inner join fechamento_aluno fa on fa.aluno_codigo = nc.aluno_id
-                         inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                         left join fechamento_aluno fa on fa.aluno_codigo = nc.aluno_id
+                         left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                           left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = fn.id
                         WHERE NOT aa.excluido
                            AND t.id = @turmaId
