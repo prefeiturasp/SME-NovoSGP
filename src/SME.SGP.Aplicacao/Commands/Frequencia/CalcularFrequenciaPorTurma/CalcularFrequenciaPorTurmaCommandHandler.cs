@@ -206,22 +206,26 @@ namespace SME.SGP.Aplicacao
                 if (totalCompensacoesDisciplinaAluno != null)
                     totalCompensacoes = totalCompensacoesDisciplinaAluno.Compensacoes;
 
+                var totalPresencas = registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina;
+                totalPresencas = totalPresencas > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalPresencas;
+
                 if (frequenciaParaTratar == null)
                 {
-                    var frequenciaFinal = new FrequenciaAluno(
+                    var frequenciaFinal = new FrequenciaAluno
+                             (
                                  alunoCodigo,
                                  turma.CodigoTurma,
                                  componenteCurricularId,
-                                 registroFrequenciaAluno?.PeriodoEscolarId ?? periodoEscolar.Id,
-                                 registroFrequenciaAluno?.PeriodoInicio ?? periodoEscolar.PeriodoInicio,
-                                 registroFrequenciaAluno?.PeriodoFim ?? periodoEscolar.PeriodoFim,
-                                 registroFrequenciaAluno?.Bimestre ?? periodoEscolar.Bimestre,
-                                 registroFrequenciaAluno?.TotalAusencias ?? 0,
+                                 registroFrequenciaAluno.PeriodoEscolarId,
+                                 registroFrequenciaAluno.PeriodoInicio,
+                                 registroFrequenciaAluno.PeriodoFim,
+                                 registroFrequenciaAluno.Bimestre,
+                                 registroFrequenciaAluno.TotalAusencias,
                                  totalAulasNaDisciplina,
                                  totalCompensacoes,
                                  TipoFrequenciaAluno.PorDisciplina,
                                  registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                 registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
+                                 totalPresencas);
 
                     frequenciaDosAlunos.Add(frequenciaFinal);
                 }
@@ -233,7 +237,7 @@ namespace SME.SGP.Aplicacao
                                            totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0,
                                            TipoFrequenciaAluno.PorDisciplina,
                                            registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                           registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
+                                           totalPresencas);
                 }
             }
         }
