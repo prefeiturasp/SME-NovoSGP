@@ -72,13 +72,13 @@ namespace SME.SGP.Dados
                             and turma_id = @turmaId
                             and (disciplina_id = @disciplinaId or tipo = @tipo)");
 
-            if (periodosEscolaresId != null && periodosEscolaresId.AsList().Count > 0)
+            if (periodosEscolaresId != null && periodosEscolaresId.Any())
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
                 alunosCodigo,
-                periodosEscolaresId,
+                periodosEscolaresId = periodosEscolaresId.ToArray(),
                 turmaId,
                 disciplinaId,
                 tipo = TipoFrequenciaAluno.Geral
