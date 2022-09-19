@@ -51,8 +51,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
             
             var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAula.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAula.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAula.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAula.Count(w=> w.Excluido).ShouldBe(0);
         }
         [Fact(DisplayName = "Cadastro do plano de aula pelo Diretor")]
         public async Task Deve_cadastrar_plano_aula_usuario_diretor()
@@ -75,8 +75,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             planoAlunaTodos.Count.ShouldBeGreaterThanOrEqualTo(1);
             
             var objetivoAprendizagemAula = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAula.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAula.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAula.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAula.Count(w=> w.Excluido).ShouldBe(0);
         }
         private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil)
         {
