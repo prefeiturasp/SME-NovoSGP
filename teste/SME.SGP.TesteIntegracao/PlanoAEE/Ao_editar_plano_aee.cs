@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -27,6 +28,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersoesPlanoAEEQuery, IEnumerable<PlanoAEEVersaoDto>>), typeof(ObterVersoesPlanoAEEQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersaoPlanoAEEPorIdQuery, PlanoAEEVersaoDto>), typeof(ObterVersaoPlanoAEEPorIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
         [Fact(DisplayName = "Alterar o responsável pelo plano")]
@@ -71,6 +74,53 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retornoObterPlanoAlterado.Responsavel.ResponsavelRF.ShouldContain(USUARIO_PROFESSOR_LOGIN_2222222);
 
         }
+
+        [Fact(DisplayName = "Quando o plano estiver na situação Expirado, realizar qualquer edição e o plano deverá ficar na situação Validado e deverá ser criada uma nova versão")]
+        public async Task Alterar_plano_expirado()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+            await CriarPlanoAeeExpirado();
+            var obterTodos = ObterTodos<Dominio.PlanoAEE>();
+            obterTodos.ShouldNotBeNull();
+            obterTodos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Expirado);
+            
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1,TURMA_CODIGO_1);
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Expirado);
+
+            
+            var planoAeeEditado = new PlanoAEEPersistenciaDto()
+            {
+                Questoes = ObterQuestoes(),
+                Id = retornoObter.Id,
+                TurmaCodigo = retornoObter.Turma.Codigo,
+                AlunoCodigo = retornoObter.Aluno.CodigoAluno,
+                Situacao = SituacaoPlanoAEE.Expirado,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333
+            };
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+            var salvarEditar = await salvarPlanoAeeUseCase.Executar(planoAeeEditado);
+
+            var planos = ObterTodos<Dominio.PlanoAEE>();
+            planos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+
+            var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
+            obterTodosPendenciasAee.ShouldNotBeNull();
+            obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
+            
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
+        }
+        
+        
+        
         
         private List<PlanoAEEQuestaoDto> ObterQuestoes()
         {
@@ -169,5 +219,39 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             };
 
         }
+
+        private async Task CriarPlanoAeeExpirado()
+        {
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = 0,
+                Questoes = ObterQuestoes(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333,
+            };
+            
+            //Inserindo
+            var salvar = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
+            //Atualizando
+            var plano = new Dominio.PlanoAEE()
+            {
+                Id = salvar.PlanoId,
+                TurmaId = planoAeePersistenciaDto.TurmaId,
+                Situacao = SituacaoPlanoAEE.Expirado,
+                AlunoCodigo = planoAeePersistenciaDto.AlunoCodigo,
+                AlunoNumero = 1,
+                AlunoNome = TURMA_CODIGO_1,
+                ResponsavelId = long.Parse(USUARIO_CP_LOGIN_3333333),
+                CriadoPor = "Sistema",
+                CriadoEm = DateTime.Now,
+                CriadoRF = "1"
+            };
+            await AtualizarNaBase(plano);;
+        }
+        
     }
 }
