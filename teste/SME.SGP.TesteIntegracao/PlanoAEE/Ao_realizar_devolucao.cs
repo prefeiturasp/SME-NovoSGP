@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         public async Task Editar_plano_que_esta_na_situacao_aguardando_parecer_da_coordenacao()
         {
             //Criando Plano
-            var salvarPlanoAEEUseCase = ObterServicoSalvarPlanoAEEUseCase();
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
 
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
             });
 
-            var planoAEEPersistenciaDto = new PlanoAEEPersistenciaDto()
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -52,14 +52,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 ResponsavelRF = USUARIO_CP_LOGIN_3333333,
             };
             
-            var retorno = await salvarPlanoAEEUseCase.Executar(planoAEEPersistenciaDto);
+            await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
             
             //Obter todos os planos
             var obterTodosPlanoAee = ObterTodos<Dominio.PlanoAEE>();
             obterTodosPlanoAee.ShouldNotBeNull();
             
             //Buscando Plano Criado
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault().Id,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
@@ -75,31 +75,144 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             //Obter Todas Pendencias
             var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
             obterTodosPendenciasAee.ShouldNotBeNull();
-            obterTodosPendenciasAee.FirstOrDefault().Tipo.ShouldBeEquivalentTo(TipoPendencia.AEE);
-            obterTodosPendenciasAee.FirstOrDefault().Situacao.ShouldBeEquivalentTo(SituacaoPendencia.Resolvida);
+            obterTodosPendenciasAee.FirstOrDefault()!.Tipo.ShouldBeEquivalentTo(TipoPendencia.AEE);
+            obterTodosPendenciasAee.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPendencia.Resolvida);
             
-            obterTodosPendenciasAee.LastOrDefault().Tipo.ShouldBeEquivalentTo(TipoPendencia.AEE);
-            obterTodosPendenciasAee.LastOrDefault().Situacao.ShouldBeEquivalentTo(SituacaoPendencia.Pendente);
+            obterTodosPendenciasAee.LastOrDefault()!.Tipo.ShouldBeEquivalentTo(TipoPendencia.AEE);
+            obterTodosPendenciasAee.LastOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPendencia.Pendente);
 
         }
 
         [Fact(DisplayName = "Com o Coordenador do CEFAI editar um plano que está na situação Aguardando atribuição de PAAI e clicar em Devolver, preenchendo o campo de motivo.")]
         public async Task Editar_um_plano_que_esta_na_situacao_aguardando_atribuicao_paai()
         {
-            //Arrange
+            //Criando Plano como CP
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Questoes = ObterQuestoes(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                ResponsavelRF = USUARIO_CEFAI_LOGIN_3333333,
+            };
+            await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
             
-            //Act
+            //Verificando se criou o plano no banco
+            var obterTodosPlanoAee = ObterTodos<Dominio.PlanoAEE>();
+            obterTodosPlanoAee.ShouldNotBeNull();
             
-            //Assert
+            //Buscando Plano Criado com Situacao Parecer do CP
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1);
+            
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+            
+            //Gerar Parece do CP
+            var cpPlanoAeeUseCase = ObterServicoCadastrarParecerCPPlanoAEEUseCase();
+            var retornoParecerCp = await cpPlanoAeeUseCase.Executar(retornoObter.Id, new PlanoAEECadastroParecerDto() {Parecer = "Parecer do CP"});
+            retornoParecerCp.ShouldBeTrue();
+            
+            //Buscando Plano Criado com Atribuição PAAI
+            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1);
+            var obterPlanoAeeUseCasePaai =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObterPaai = await obterPlanoAeeUseCasePaai.Executar(filtroObterPaai);
+            retornoObterPaai.ShouldNotBeNull();
+            retornoObterPaai.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.AtribuicaoPAAI);
+            
+            
+            // Devolvendo o Plano Com a Justificativa do CEFAI
+            var filtroDevolver = new DevolucaoPlanoAEEDto(){PlanoAEEId = retornoObter.Id,Motivo = "Motivo Teste"};
+            var devolverUseCase = ObterServicoDevolverPlanoAEEUseCase();
+            var retornoDevolver = await devolverUseCase.Executar(filtroDevolver);
+            retornoDevolver.ShouldBeTrue();
+            
+            //Obter Todas Pendencias
+            var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
+            obterTodosPendenciasAee.ShouldNotBeNull();
+            obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(3);
+            
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(2);
         }
         [Fact(DisplayName = "Com o PAAI editar um plano que está na situação Aguardando parecer do CEFAI e clicar em Devolver, preenchendo o campo de motivo")]
         public async Task Editar_um_plano_que_esta_na_situacao_aguardando_parecer_do_cefai()
         {
-            //Arrange
+            //Criando Plano
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilPaai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = 0,
+                Questoes = ObterQuestoes(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333,
+            };
             
-            //Act
+            await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
             
-            //Assert
+            //Verificando se salvou no banco
+            var obterTodosPlanoAee = ObterTodos<Dominio.PlanoAEE>();
+            obterTodosPlanoAee.ShouldNotBeNull();
+            
+            //Buscando Plano Criado
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()!.Id,TURMA_CODIGO_1);
+            
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+            
+            //Gerar Parece do CP
+            var cpPlanoAeeUseCase = ObterServicoCadastrarParecerCPPlanoAEEUseCase();
+            var retornoParecerCp = await cpPlanoAeeUseCase.Executar(retornoObter.Id, new PlanoAEECadastroParecerDto() {Parecer = "Parecer do CP"});
+            retornoParecerCp.ShouldBeTrue();
+            
+            //Buscando Plano Criado com Atribuição PAAI
+            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1);
+            var obterPlanoAeeUseCasePaai =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObterPaai = await obterPlanoAeeUseCasePaai.Executar(filtroObterPaai);
+            retornoObterPaai.ShouldNotBeNull();
+            retornoObterPaai.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.AtribuicaoPAAI);
+
+            
+            //Realizar Atribuição para um usuario PAAI pelo Coordenador do CEFAI
+            var servicoAtribuicaoResponsavel = ObterServicoAtribuirResponsavelPlanoAEEUseCase();
+            var retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_3333333);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+            
+            // Devolvendo o Plano Com a Justificativa do PAAI
+            var filtroDevolver = new DevolucaoPlanoAEEDto(){PlanoAEEId = retornoObter.Id,Motivo = "Motivo Teste PAAI"};
+            var devolverUseCase = ObterServicoDevolverPlanoAEEUseCase();
+            var retornoDevolver = await devolverUseCase.Executar(filtroDevolver);
+            retornoDevolver.ShouldBeTrue();
+            
+            //Obter Todas Pendencias
+            var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
+            obterTodosPendenciasAee.ShouldNotBeNull();
+            obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(4);
+            
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(3);
         }
         
         private List<PlanoAEEQuestaoDto> ObterQuestoes()

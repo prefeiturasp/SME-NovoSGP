@@ -13,6 +13,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
