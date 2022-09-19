@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,8 +45,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
         
         [Fact]
@@ -83,8 +82,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
         }
         
         [Fact]

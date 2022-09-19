@@ -56,8 +56,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             planosAula.Count.ShouldBeGreaterThanOrEqualTo(2);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(6);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(6);
 
         }
 
@@ -81,8 +81,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             planoAula.Count.ShouldBeGreaterThanOrEqualTo(1);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(3);
+
         }
 
         
@@ -116,8 +117,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             planosAula.LastOrDefault().AulaId.ShouldBeGreaterThanOrEqualTo(2);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(6);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.ShouldNotBeNull();
+            objetivoAprendizagemAulas.Count.ShouldBe(6);
 
         }
 

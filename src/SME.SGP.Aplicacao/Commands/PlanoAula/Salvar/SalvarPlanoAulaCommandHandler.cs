@@ -119,30 +119,13 @@ namespace SME.SGP.Aplicacao
 
                 await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
 
-                // Salvar Objetivos aprendizagem
-                var objetivosAtuais =  await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id));
-                var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
-                
-                if (objetivosPropostos != null && objetivosPropostos.Any())
-                {
-                    var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id)
-                        .Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
-                    
-                    var objetivosIdParaExcluir = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId)
-                        .Except(objetivosPropostos.Select(s => s.Id));
-
-                    foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.Id)))
-                        await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
-                        
-                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w=> objetivosIdParaIncluir.Contains(w.Id)))
+                // Salvar Objetivos
+                await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
+                if (planoAulaDto.ObjetivosAprendizagemComponente != null)
+                    foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemComponente)
+                    {
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
-                }
-                else
-                {
-                    foreach (var objetivoAtual in objetivosAtuais)
-                        await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
-                }
-                
+                    }
                 unitOfWork.PersistirTransacao();
 
                  var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
@@ -176,12 +159,6 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-
-        private async Task ExcluirObjetivoAprendizagemAulaLogicamente(ObjetivoAprendizagemAula objetivoAtual)
-        {
-            objetivoAtual.Excluido = true;
-            await repositorioObjetivosAula.SalvarAsync(objetivoAtual);
-        }
         private async Task ValidarAbrangenciaGestorEscolar(Usuario usuario, string turmaCodigo)
         {
             var ehAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilUE();
