@@ -84,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
             });
-            await CriarPlanoAeeExpirado();
+            await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Expirado);
             var obterTodos = ObterTodos<Dominio.PlanoAEE>();
             obterTodos.ShouldNotBeNull();
             obterTodos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Expirado);
@@ -118,10 +118,101 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
+
+        [Fact(DisplayName = "Quando o plano estiver na situação Devolvido, ao editar ele deve ir para a situação de Aguardando parecer da coordenação ")]
+        public async Task Alterar_plano_devolvido()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+            await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.Devolvido);
+            var obterTodos = ObterTodos<Dominio.PlanoAEE>();
+            obterTodos.ShouldNotBeNull();
+            obterTodos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Devolvido);
+            
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(1,TURMA_CODIGO_1);
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.Devolvido);
+            
+            var planoAeeEditado = new PlanoAEEPersistenciaDto()
+            {
+                Questoes = ObterQuestoes(),
+                Id = retornoObter.Id,
+                TurmaCodigo = retornoObter.Turma.Codigo,
+                AlunoCodigo = retornoObter.Aluno.CodigoAluno,
+                Situacao = SituacaoPlanoAEE.Expirado,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333
+            };
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+            var salvarEditar = await salvarPlanoAeeUseCase.Executar(planoAeeEditado);
+
+            var planos = ObterTodos<Dominio.PlanoAEE>();
+            planos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+
+            var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
+            obterTodosPendenciasAee.ShouldNotBeNull();
+            obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
+            
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
+        }
         
-        
-        
-        
+        [Fact(DisplayName = "Com usuário do CP alterar qualquer campo do plano e submeter a alteração.")]
+        public async Task Com_usuario_do_cp_alterar_qualquer_campo()
+        {
+            var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
+
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
+
+            var planoAeePersistenciaDto = new PlanoAEEPersistenciaDto()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = 0,
+                Questoes = ObterQuestoes(),
+                TurmaCodigo = TURMA_CODIGO_1,
+                ResponsavelRF = USUARIO_CP_LOGIN_3333333,
+            };
+            
+            var planoAeeDto = await salvarPlanoAeeUseCase.Executar(planoAeePersistenciaDto);
+            
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeDto.PlanoId,TURMA_CODIGO_1);
+            
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+            
+            var planoAeeEditado = new PlanoAEEPersistenciaDto()
+            {
+                Questoes = ObterQuestoes(),
+                Id = retornoObter.Id,
+                TurmaCodigo = retornoObter.Turma.Codigo,
+                AlunoCodigo = retornoObter.Aluno.CodigoAluno,
+                ResponsavelRF = USUARIO_LOGIN_CP999999
+            };
+            var salvarEditar = await salvarPlanoAeeUseCase.Executar(planoAeeEditado);
+
+            var planos = ObterTodos<Dominio.PlanoAEE>();
+            planos.FirstOrDefault()!.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerCP);
+            
+            var obterTodosPendenciasAee = ObterTodos<Dominio.Pendencia>();
+            obterTodosPendenciasAee.ShouldNotBeNull();
+            obterTodosPendenciasAee.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
+            
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
+            obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
+        }
         private List<PlanoAEEQuestaoDto> ObterQuestoes()
         {
             return new List<PlanoAEEQuestaoDto>()
@@ -220,7 +311,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
 
-        private async Task CriarPlanoAeeExpirado()
+        private async Task CriarPlanoAeePorSituacao(SituacaoPlanoAEE situacaoPlanoAee)
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
 
@@ -241,7 +332,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             {
                 Id = salvar.PlanoId,
                 TurmaId = planoAeePersistenciaDto.TurmaId,
-                Situacao = SituacaoPlanoAEE.Expirado,
+                Situacao = situacaoPlanoAee,
                 AlunoCodigo = planoAeePersistenciaDto.AlunoCodigo,
                 AlunoNumero = 1,
                 AlunoNome = TURMA_CODIGO_1,
