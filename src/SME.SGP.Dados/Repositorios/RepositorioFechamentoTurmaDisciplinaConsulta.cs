@@ -661,7 +661,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<TurmaFechamentoDisciplinaSituacaoDto>> ObterFechamentosTurmaPorTurmaId(long turmaId)
         {
-            var sqlQuery = @"select ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
+            var sqlQuery = @"select ftd.id Id, ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
                                 from fechamento_turma ft 
                                 join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id                                                                 
                                 where not ft.excluido 

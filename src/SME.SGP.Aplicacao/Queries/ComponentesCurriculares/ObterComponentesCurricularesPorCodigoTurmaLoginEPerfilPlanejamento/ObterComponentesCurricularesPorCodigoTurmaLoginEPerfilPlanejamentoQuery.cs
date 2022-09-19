@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
 using FluentValidation;
@@ -27,9 +26,9 @@ namespace SME.SGP.Aplicacao
     {
         public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQueryValidator()
         {
-
             RuleFor(c => c.CodigoTurma)
                 .NotEmpty()
+                .NotNull()
                 .WithMessage("O código da turma deve ser informado para obter componentes curriculares por turma, login e perfil.");
 
             RuleFor(c => c.Login)

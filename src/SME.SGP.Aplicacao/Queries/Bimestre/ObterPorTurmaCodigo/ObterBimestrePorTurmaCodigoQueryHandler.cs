@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<int> Handle(ObterBimestrePorTurmaCodigoQuery request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
+            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo), cancellationToken);
             return await consultasPeriodoEscolar.ObterBimestre(request.Data, turma.ModalidadeCodigo, turma.Semestre);
         }
     }

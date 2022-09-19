@@ -36,15 +36,15 @@ namespace SME.SGP.Aplicacao
 
             if (aluno.EstaInativo(aula.DataAula))
                 throw new NegocioException($"{(dto.EhInfantil ? "Criança não ativa na turma" : "Aluno não ativo na turma")}.");
-            MoverArquivos(dto);
+            await MoverArquivos(dto);
             return await mediator.Send(new SalvarAnotacaoFrequenciaAlunoCommand(dto));
         }
-        private void MoverArquivos(SalvarAnotacaoFrequenciaAlunoDto anotacaoAluno)
+        private async Task MoverArquivos(SalvarAnotacaoFrequenciaAlunoDto anotacaoAluno)
         {
             if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, string.Empty, anotacaoAluno.Anotacao));
-                anotacaoAluno.Anotacao = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, string.Empty, anotacaoAluno.Anotacao));
+                anotacaoAluno.Anotacao = moverArquivo;
             }
         }
     }

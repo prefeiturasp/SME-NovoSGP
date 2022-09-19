@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using System.Collections.Generic;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentosPorTurmaPeriodoCCQuery : IRequest<IEnumerable<FechamentoTurmaDisciplina>>
+    public class ObterFechamentosPorTurmaPeriodoCCQuery : IRequest<IEnumerable<FechamentoPorTurmaPeriodoCCDto>>
     {
         public ObterFechamentosPorTurmaPeriodoCCQuery(long periodoEscolarId, long turmaId, long componenteCurricularId)
         {
@@ -13,9 +13,8 @@ namespace SME.SGP.Aplicacao
             ComponenteCurricularId = componenteCurricularId;
         }
 
-        public long PeriodoEscolarId { get; internal set; }
-        public long TurmaId { get; set; }
-        public long ComponenteCurricularId { get; set; }
-
+        public long PeriodoEscolarId { get; }
+        public long TurmaId { get; }
+        public long ComponenteCurricularId { get; }
     }
 }

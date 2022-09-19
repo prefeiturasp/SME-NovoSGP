@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var alunoReduzido = new AlunoReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
-                NumeroAlunoChamada = alunoPorTurmaResposta.NumeroAlunoChamada,
+                NumeroAlunoChamada = alunoPorTurmaResposta.ObterNumeroAlunoChamada(),
                 DataNascimento = alunoPorTurmaResposta.DataNascimento,
                 DataSituacao = alunoPorTurmaResposta.DataSituacao,
                 CodigoAluno = alunoPorTurmaResposta.CodigoAluno,

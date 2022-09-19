@@ -92,8 +92,7 @@ namespace SME.SGP.Aplicacao
             var periodosAberto = await consultasPeriodoFechamento
                 .ObterPeriodosComFechamentoEmAberto(turma.UeId, turma.AnoLetivo);
 
-            var tipoCalendario = await repositorioTipoCalendario
-                .BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, semestre);
+            var tipoCalendario = await mediator.Send(new ObterTipoDeCalendarioDaTurmaQuery {Turma = turma});
 
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado calendário cadastrado para a turma");
@@ -127,8 +126,13 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
             var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
-
-            return dadosAlunosFiltrados;
+            
+            return dadosAlunosFiltrados.OrderBy(aluno => aluno.CodigoEOL)
+                                       .ThenByDescending(aluno => aluno.DataSituacao)
+                                       .GroupBy(aluno => aluno.CodigoEOL)
+                                       .Select(aluno => aluno.First())
+                                       .OrderBy(aluno => aluno.Nome)
+                                       .ToList();
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -179,7 +183,7 @@ namespace SME.SGP.Aplicacao
 
             var disciplina = await consultasDisciplina.ObterDisciplina(disciplinaId);
             IEnumerable<DisciplinaResposta> disciplinasRegenciaEOL = null;
-            
+
             if (disciplina.Regencia)
                 disciplinasRegenciaEOL = await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilPlanejamentoQuery(turmaId, servicoUsuario.ObterLoginAtual(), servicoUsuario.ObterPerfilAtual()));
             
@@ -199,6 +203,8 @@ namespace SME.SGP.Aplicacao
                 }
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
+
+                var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(turma));
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
@@ -234,7 +240,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = new NotaConceitoAlunoBimestreDto
                     {
                         CodigoAluno = aluno.CodigoAluno,
-                        NumeroChamada = aluno.NumeroAlunoChamada,
+                        NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                         Nome = aluno.NomeAluno,
                         Ativo = aluno.EstaAtivo(periodoAtual.PeriodoFim),
                         EhAtendidoAEE = planosAEE.Any(x => x.CodigoAluno == aluno.CodigoAluno)
@@ -320,7 +326,8 @@ namespace SME.SGP.Aplicacao
                                         ConceitoDescricao = notaConceitoBimestre.ConceitoId.HasValue ? ObterConceitoDescricao(notaConceitoBimestre.ConceitoId.Value) : string.Empty,
                                     };
 
-                                    await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
+                                    if (exigeAprovacao)
+                                        await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, fechamentoTurma.DisciplinaId, nota);
 
                                     ((List<FechamentoNotaRetornoDto>)alunoDto.Notas).Add(nota);
                                 }

@@ -1,11 +1,6 @@
-﻿using Newtonsoft.Json;
-using Polly;
-using Polly.Registry;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Interfaces;
 using System;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
