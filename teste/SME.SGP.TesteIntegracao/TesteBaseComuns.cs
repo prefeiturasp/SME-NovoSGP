@@ -748,6 +748,21 @@ namespace SME.SGP.TesteIntegracao
                 Nome = TURMA_NOME_1
             });
         }
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, bool turmaHistorica = false )
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = anoTurma,
+                CodigoTurma = codigoTurma,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1,
+                TipoTurma = tipoTurma
+            });
+        }
 
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
