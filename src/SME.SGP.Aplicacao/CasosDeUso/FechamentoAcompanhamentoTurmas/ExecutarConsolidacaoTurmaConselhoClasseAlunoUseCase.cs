@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (conselhoClasseId != null)
-                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.ComponenteCurricularId));
+                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.Bimestre ?? 0, filtro.ComponenteCurricularId));
             }
 
             if (!filtro.Inativo)
