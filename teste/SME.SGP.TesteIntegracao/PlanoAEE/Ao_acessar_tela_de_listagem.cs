@@ -47,12 +47,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planoAee.Id.ShouldBeGreaterThan(0);
         }
 
-        //[Fact]
-        //public async Task Deve_pesquisar_por_qualquer_dre_ue_com_usuario_adm_sme()
-        //{
-
-        //}
-
         [Fact]
         public async Task Deve_filtrar_por_turma_ano_anterior()
         {
@@ -131,6 +125,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retorno.ShouldNotBeNull();
             retorno.Items.Count().ShouldBeGreaterThan(0);
         }
+
         [Fact]
         public async Task Deve_filtrar_por_situacao()
         {
@@ -193,6 +188,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Questoes = ObterPlanoAeeQuestoes()
             };
         }
+
         private PlanoAEEPersistenciaDto ObterPlanoAEEDto()
         {
             return new PlanoAEEPersistenciaDto()
