@@ -21,8 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
-            try
-            {
+
                 var plano = new PlanoAEEDto();
 
                 PlanoAEEVersaoDto ultimaVersao = null;
@@ -157,12 +156,6 @@ namespace SME.SGP.Aplicacao
 
                 return plano;
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
 
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {
