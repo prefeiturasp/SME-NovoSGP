@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao
             
             var ehAbrangenciaUeOuDreOuSme = filtro.Usuario.EhPerfilUE() || filtro.Usuario.EhPerfilDRE() || filtro.Usuario.EhPerfilUE();
             
-            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaComUsuarioQuery(atividadeAvaliativa.TurmaId, ehAbrangenciaUeOuDreOuSme, true));
+            var abrangenciaTurma = await mediator.Send(new ObterAbrangenciaTurmaQuery(atividadeAvaliativa.TurmaId, filtro.Usuario.Login, filtro.Usuario.PerfilAtual, ehAbrangenciaUeOuDreOuSme, true));
                 
             var tipoNota = await TipoNotaPorAvaliacao(atividadeAvaliativa, filtro.Usuario, abrangenciaTurma, abrangenciaTurma != null);
             
