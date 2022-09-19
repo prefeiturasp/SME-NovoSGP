@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         private readonly IReadOnlyList<string> ComponentesDeAulaCompartilhada;
         private readonly IReadOnlyList<string> ComponentesDeRecuperacaoParalela;
         private readonly IReadOnlyList<string> ComponentesDeTecnologiaAprendizagem;
+        private readonly IReadOnlyList<string> ComponentesDeTecAprendizageELeitura;
         private readonly IReadOnlyList<string> ComponentesDeAulaPAP;
 
         public Aula()
@@ -45,6 +46,10 @@ namespace SME.SGP.Dominio
             ComponentesDeAulaPAP = new List<string> {
                 "1322",
             };
+            ComponentesDeTecAprendizageELeitura = new List<string> {
+                "1359",
+                "1347"
+            };
         }
 
         public bool AulaCJ { get; set; }
@@ -60,6 +65,7 @@ namespace SME.SGP.Dominio
         public bool EhAulaCompartilhada => ComponentesDeAulaCompartilhada.Any(c => c == DisciplinaId);
         public bool EhRecuperacaoParalela => ComponentesDeRecuperacaoParalela.Any(c => c == DisciplinaId);
         public bool EhTecnologiaAprendizagem => ComponentesDeTecnologiaAprendizagem.Any(c => c == DisciplinaId);
+        public bool EhTecAprendizagemELeitura => ComponentesDeTecAprendizageELeitura.Any(c => c == DisciplinaId);
         public bool EhDataSelecionadaFutura => DataAula.Date > DateTime.Now.Date;
         public bool EhPAP => ComponentesDeAulaPAP.Any(c => c == DisciplinaId);
 
@@ -164,7 +170,8 @@ namespace SME.SGP.Dominio
             if (turma == null)
                 throw new NegocioException("A turma deve ser informada.");
 
-            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA));
+            return !(EhAulaCompartilhada || (EhTecnologiaAprendizagem && turma.ModalidadeCodigo == Modalidade.EJA) 
+                || (EhTecAprendizagemELeitura && turma.ModalidadeCodigo == Modalidade.Medio && turma.TipoTurno == (int)TipoTurnoEOL.Noite));
         }
 
         public bool PermiteRegistroFrequencia()

@@ -132,7 +132,7 @@ namespace SME.SGP.Aplicacao
             }
 
             //Exceção para disciplinas 1060 e 1061 que são compartilhadas entre EF e EJA
-            if(turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
+            if (turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
             {
                 var idComponenteInformaticaOie = 1060;
                 
@@ -143,6 +143,18 @@ namespace SME.SGP.Aplicacao
                     disciplina.PossuiObjetivos = false;
                     if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
                         disciplina.RegistraFrequencia = false;                    
+                }
+            }
+
+            if (turma.ModalidadeCodigo == Modalidade.Medio && turma.TipoTurno == (int)TipoTurnoEOL.Noite && disciplinasDto.Any())
+            {
+                var idComponenteSalaLeituraEM = 1347;
+                var idComponenteTecAprendizagem = 1359;
+
+                foreach (var disciplina in disciplinasDto)
+                {
+                    if (disciplina.CodigoComponenteCurricular == idComponenteSalaLeituraEM || disciplina.CodigoComponenteCurricular == idComponenteTecAprendizagem)
+                        disciplina.RegistraFrequencia = false;
                 }
             }
 
