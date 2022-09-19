@@ -41,6 +41,11 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             Conexao.Insert(objeto);
         }
+        
+        public void Atualizar<T>(T objeto) where T : class, new()
+        {
+            Conexao.Update(objeto);
+        }
 
         public List<T> ObterTodos<T>() where T : class, new()
         {
