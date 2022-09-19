@@ -180,6 +180,8 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_LOGIN_AD999997 = "AD999997";
         
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
@@ -449,6 +451,14 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
         }
 
+        protected string ObterPerfilCoordenadorCefai()
+        {
+            return Guid.Parse(PerfilUsuario.CEFAI.Name()).ToString();
+        }
+        protected string ObterPerfilPaai()
+        {
+            return Guid.Parse(PerfilUsuario.PAAI.Name()).ToString();
+        }
         protected string ObterPerfilCJInfantil()
         {
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
