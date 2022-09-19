@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
 
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
+            await Assert.ThrowsAsync<NegocioException>(() => salvarPlanoAulaUseCase.Executar(planoAulaDto));
         }
 
         private FiltroPlanoAula ObterFiltroPlanoAula(string componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)

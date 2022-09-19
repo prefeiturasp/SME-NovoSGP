@@ -95,8 +95,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             listaPlanoAulaEditado.FirstOrDefault().Descricao.ShouldNotBe(planoAulaPersistido.Descricao);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
         }
 
         [Fact]
@@ -210,8 +210,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             listaPlanoAulaEditado.FirstOrDefault().Descricao.ShouldNotBe(planoAulaPersistido.Descricao);
             
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
         }
         
         [Fact]
@@ -279,8 +279,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.ShouldNotBeNull();
             objetivoAprendizagemAulas.Count.ShouldBe(3);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(2);
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(1);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(2);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(1);
         }
         
         [Fact]
@@ -347,8 +347,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
             objetivoAprendizagemAulas.ShouldNotBeNull();
             objetivoAprendizagemAulas.Count.ShouldBe(2);
-            objetivoAprendizagemAulas.Where(w=> w.Excluido).Count().ShouldBe(2);
-            objetivoAprendizagemAulas.Where(w=> !w.Excluido).Count().ShouldBe(0);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(2);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(0);
         }
 
         private PlanoAulaDto ObterPlanoAula()
