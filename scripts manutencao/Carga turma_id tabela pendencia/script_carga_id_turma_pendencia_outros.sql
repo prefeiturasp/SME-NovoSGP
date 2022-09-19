@@ -4,10 +4,9 @@ declare
 begin	
 	raise notice 'Inicio migração id turma pendência outros'; 
 	for pendencia_db in 
-		select distinct pf.pendencia_id, ft.turma_id  
-		from pendencia_fechamento pf
-		inner join fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-		inner join fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
+		select distinct ppa.pendencia_id, pa.turma_id  
+		from pendencia_plano_aee ppa 
+		inner join plano_aee pa on pa.id = ppa.plano_aee_id 
 		union all 
 		select distinct ppf.pendencia_id, ppf.turma_id 
 		from pendencia_professor ppf
