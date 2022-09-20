@@ -182,6 +182,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_PAAI_LOGIN_4444444 = "4444444";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
@@ -644,6 +645,15 @@ namespace SME.SGP.TesteIntegracao
                 Login = USUARIO_PROFESSOR_LOGIN_2222222,
                 CodigoRf = USUARIO_PROFESSOR_CODIGO_RF_2222222,
                 Nome = USUARIO_PROFESSOR_NOME_2222222,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Usuario
+            {
+                Login = USUARIO_PAAI_LOGIN_4444444,
+                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
+                Nome = USUARIO_PAAI_LOGIN_4444444,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
