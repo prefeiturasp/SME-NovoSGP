@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
 {
@@ -45,6 +47,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
+
+        protected IObterEncaminhamentosAEEUseCase ObterServicoListagemComFiltros()
+        {
+            return ServiceProvider.GetService<IObterEncaminhamentosAEEUseCase>();    
+        }
+        
 
         protected class FiltroAEEDto
         {
