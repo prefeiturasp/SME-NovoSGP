@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -80,8 +81,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.ShouldNotBeNull();
-            objetivoAprendizagemAulas.Count.ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
         }
         
         [Fact]
@@ -136,8 +137,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             retorno.Id.ShouldBe(1);
 
             var objetivoAprendizagemAulas = ObterTodos<Dominio.ObjetivoAprendizagemAula>();
-            objetivoAprendizagemAulas.ShouldNotBeNull();
-            objetivoAprendizagemAulas.Count.ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> !w.Excluido).ShouldBe(3);
+            objetivoAprendizagemAulas.Count(w=> w.Excluido).ShouldBe(0);
         }
 
         private FiltroPlanoAula ObterFiltroPlanoAula(string componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
