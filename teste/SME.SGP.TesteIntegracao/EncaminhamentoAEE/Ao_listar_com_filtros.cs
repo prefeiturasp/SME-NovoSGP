@@ -16,7 +16,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
+namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
     public class Ao_listar_com_filtros: EncaminhamentoAEETesteBase
     {

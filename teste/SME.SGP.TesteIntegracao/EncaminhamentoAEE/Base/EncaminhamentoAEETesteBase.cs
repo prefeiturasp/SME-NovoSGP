@@ -10,7 +10,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Entidades;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
+namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
     public class EncaminhamentoAEETesteBase : TesteBaseComuns
     {
@@ -31,6 +31,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
             if (filtro.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar(filtro.ConsiderarAnoAnterior);
 
+            await CriarQuestionario();
+
+            await CriarQuestoes();
+
+            await CriarRespostas();
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroAEEDto filtro)
