@@ -64,30 +64,46 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendencias.ShouldNotBeNull();
             pendencias.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(2);
             
-            pendencias.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
-            pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
-
+            pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && !x.Excluido).ShouldBeEquivalentTo(1);
+            pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && x.Excluido).ShouldBeEquivalentTo(1);
             
         }
         
         [Fact(DisplayName = "Alterar o PAAI atribuído - A pendência deverá ser transferida para o novo PAAI")]
         public async Task Alterar_o_paai_atribuído()
         {
-            //Criar Dados Basicos
-            //Criar Plano
-            //Obtero Plano
-            //Atribuir o PAAI
-            //Obtero Plano
-            //Altera o PAAI
-            //Valida se Alterou
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCoordenadorCefai(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+            });
             
+            var idPlano = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.ParecerPAAI);
+            
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano,TURMA_CODIGO_1);
+            
+            var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
+            var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
+            retornoObter.ShouldNotBeNull();
+            retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerPAAI);
+
+            var servicoAtribuicaoResponsavel = ObterServicoAtribuirResponsavelPlanoAEEUseCase();
+            var retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_3333333);
+            retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
+
             //Aterar o PAAI
-            // var retornoAtribuicaoUsuarioPaaiAlterar = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_4444444);
-            // retornoAtribuicaoUsuarioPaaiAlterar.ShouldBeTrue();
-            //
-            // var retornoObterPlanoModificado = ObterTodos<Dominio.PlanoAEE>();
-            // retornoObterPlanoModificado.ShouldNotBeNull();
-            // retornoObterPlanoModificado.FirstOrDefault()!.ResponsavelId.ShouldBeEquivalentTo(USUARIO_PAAI_LOGIN_4444444);
+            var retornoAtribuicaoUsuarioPaaiAlterar = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_4444444);
+            retornoAtribuicaoUsuarioPaaiAlterar.ShouldBeTrue();
+            
+
+            var pendencias = ObterTodos<Pendencia>();
+            pendencias.ShouldNotBeNull();
+            pendencias.Count(x => x.Tipo == TipoPendencia.AEE).ShouldBeEquivalentTo(3);
+            
+            pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && !x.Excluido).ShouldBeEquivalentTo(1);
+            pendencias.Count(x => x.Situacao == SituacaoPendencia.Pendente && x.Excluido).ShouldBeEquivalentTo(2);
+            
         }
         private List<PlanoAEEQuestaoDto> ObterQuestoes()
         {
