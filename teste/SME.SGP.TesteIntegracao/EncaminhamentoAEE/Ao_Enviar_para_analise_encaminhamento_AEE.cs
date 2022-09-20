@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
+namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
     public class Ao_enviar_para_analise_encaminhamento_AEE : EncaminhamentoAEETesteBase
     {

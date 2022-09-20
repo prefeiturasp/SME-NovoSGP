@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
@@ -23,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
 
-            await InserirNaBase(new EncaminhamentoAEE()
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = ALUNO_CODIGO_1,
@@ -166,7 +167,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilCP()));
 
-            await InserirNaBase(new EncaminhamentoAEE()
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = ALUNO_CODIGO_1,
@@ -292,7 +293,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var useCase = RetornarUseCaseRegistrarEncaminhamento();
             var dtoResumo = await useCase.Executar(dto);
-            var encaminhamento = ObterTodos<EncaminhamentoAEE>().FirstOrDefault();
+            var encaminhamento = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault();
             encaminhamento.ShouldNotBeNull();
             encaminhamento.Situacao.ShouldBe(SituacaoAEE.Encaminhado);
             var listaDeResposta = ObterTodos<RespostaEncaminhamentoAEE>();
@@ -313,7 +314,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilCP()));
 
-            await InserirNaBase(new EncaminhamentoAEE()
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
                 AlunoNome = ALUNO_CODIGO_1,
@@ -439,7 +440,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var useCase = RetornarUseCaseRegistrarEncaminhamento();
             var dtoResumo = await useCase.Executar(dto);
-            var encaminhamento = ObterTodos<EncaminhamentoAEE>().FirstOrDefault();
+            var encaminhamento = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault();
             encaminhamento.ShouldNotBeNull();
             encaminhamento.Situacao.ShouldBe(SituacaoAEE.Rascunho);
             var listaDeResposta = ObterTodos<RespostaEncaminhamentoAEE>();

@@ -1,13 +1,14 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
+﻿using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio.Entidades;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
@@ -35,8 +36,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await CriarQuestoes();
 
             await CriarRespostas();
-
-            //await CriarRespostasComplementares();
         }
 
         protected async Task CriarTurmaTipoCalendario(FiltroAEEDto filtro)
@@ -56,11 +55,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, considerarAnoAnterior);
         }
 
+        protected IObterEncaminhamentosAEEUseCase ObterServicoListagemComFiltros()
+        {
+            return ServiceProvider.GetService<IObterEncaminhamentosAEEUseCase>();    
+        }
+
         protected IRegistrarEncaminhamentoAEEUseCase RetornarUseCaseRegistrarEncaminhamento()
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoAEEUseCase>();
         }
-
+        
         private async Task CriarRespostasComplementares()
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
