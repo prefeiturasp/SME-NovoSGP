@@ -14,11 +14,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.EncaminhamentoAEE;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE
 {
-    public class Ao_enviar_para_analise_encaminhamento_AEE : TesteBase
+    public class Ao_enviar_para_analise_encaminhamento_AEE : EncaminhamentoAEETesteBase
     {
         private const string SISTEMA = "Sistema";
 
@@ -109,11 +110,11 @@ namespace SME.SGP.TesteIntegracao
 
             var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
 
-            var encaminhamentoAeeId = ObterTodos<EncaminhamentoAEE>().FirstOrDefault().Id;
+            var encaminhamentoAeeId = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault().Id;
 
             (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
 
-            var encaminhamentoAeeAtualizado = ObterTodos<EncaminhamentoAEE>();
+            var encaminhamentoAeeAtualizado = ObterTodos<Dominio.EncaminhamentoAEE>();
             encaminhamentoAeeAtualizado.Any().ShouldBeTrue();
             encaminhamentoAeeAtualizado.Any(c => c.Situacao == Dominio.Enumerados.SituacaoAEE.Analise).ShouldBeTrue();
 
@@ -150,11 +151,11 @@ namespace SME.SGP.TesteIntegracao
 
             var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
 
-            var encaminhamentoAeeId = ObterTodos<EncaminhamentoAEE>().FirstOrDefault().Id;
+            var encaminhamentoAeeId = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault().Id;
 
             (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
 
-            var encaminhamentoAeeAtualizado = ObterTodos<EncaminhamentoAEE>();
+            var encaminhamentoAeeAtualizado = ObterTodos<Dominio.EncaminhamentoAEE>();
             encaminhamentoAeeAtualizado.Any().ShouldBeTrue();
             encaminhamentoAeeAtualizado.Any(c => c.Situacao == Dominio.Enumerados.SituacaoAEE.Analise).ShouldBeTrue();
 
@@ -180,10 +181,10 @@ namespace SME.SGP.TesteIntegracao
 
             var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
 
-            var encaminhamentoAeeId = ObterTodos<EncaminhamentoAEE>().FirstOrDefault().Id;
+            var encaminhamentoAeeId = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault().Id;
             (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
 
-            var encaminhamentoAtualizado = ObterTodos<EncaminhamentoAEE>();
+            var encaminhamentoAtualizado = ObterTodos<Dominio.EncaminhamentoAEE>();
             encaminhamentoAtualizado.Any().ShouldBeTrue();
             encaminhamentoAtualizado.Any(a => a.Situacao == Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel).ShouldBeTrue();
 
@@ -213,10 +214,10 @@ namespace SME.SGP.TesteIntegracao
 
             var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
 
-            var encaminhamentoAeeId = ObterTodos<EncaminhamentoAEE>().FirstOrDefault().Id;
+            var encaminhamentoAeeId = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault().Id;
             (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
 
-            var encaminhamentoAtualizado = ObterTodos<EncaminhamentoAEE>();
+            var encaminhamentoAtualizado = ObterTodos<Dominio.EncaminhamentoAEE>();
             encaminhamentoAtualizado.Any().ShouldBeTrue();
             encaminhamentoAtualizado.Any(a => a.Situacao == Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel).ShouldBeTrue();
 
@@ -271,7 +272,7 @@ namespace SME.SGP.TesteIntegracao
 
         private async Task CriarEncaminhamentoEPendencia()
         {
-            await InserirNaBase(new EncaminhamentoAEE()
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
                 TurmaId = TURMA_ID,
                 AlunoCodigo = ALUNO_CODIGO_11,
