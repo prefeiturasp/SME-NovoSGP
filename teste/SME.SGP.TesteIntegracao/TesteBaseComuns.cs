@@ -438,7 +438,10 @@ namespace SME.SGP.TesteIntegracao
             
             if (perfil.Equals(ObterPerfilAD()))
                 return USUARIO_LOGIN_AD999997;
-            
+
+            if (perfil.Equals(ObterPerfilPaai()))
+                return USUARIO_PAAI_LOGIN_4444444;
+
             return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
@@ -706,6 +709,17 @@ namespace SME.SGP.TesteIntegracao
                 Login = USUARIO_LOGIN_AD999997,
                 Nome = USUARIO_LOGIN_AD999997,
                 PerfilAtual = Guid.Parse(PerfilUsuario.AD.ObterNome()),
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
+
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
+                Login = USUARIO_PAAI_LOGIN_4444444,
+                Nome = USUARIO_PAAI_LOGIN_4444444,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
