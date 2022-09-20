@@ -849,7 +849,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes.HasValue)
                 query.AppendLine("AND extract(month from a.data_aula) = @mes");
             if (data.HasValue)
-                query.AppendLine("AND DATE(a.data_aula) = @data");
+                query.AppendLine("AND DATE(a.data_aula) = @data::date");
             if (semanaAno.HasValue)
                 query.AppendLine("AND extract(week from a.data_aula) = @semanaAno");
             if (!string.IsNullOrEmpty(codigoRf))
