@@ -181,6 +181,15 @@ namespace SME.SGP.Dados.Repositorios
                     throw new NegocioException(ex.Message);
                 }
             }
+            
+            //-> Não havendo turma e nem grupos de pendência, porém, com filtro por título
+            if (!string.IsNullOrEmpty(tituloPendencia) && !tiposPendenciasGrupos.Any() &&
+                string.IsNullOrEmpty(turmaCodigo))
+            {
+                pendenciasRetorno =
+                    (await ObterPendenciasPorIds(pendenciasPerfilUsuario.Select(c => c.Id).Distinct().ToArray(),
+                        tituloPendencia)).ToList();
+            }
 
             //-> Retorno paginado
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
@@ -225,7 +234,7 @@ namespace SME.SGP.Dados.Repositorios
                 return null;
 
             var pendenciasIds = pendencias.Select(c => new { c.Id, c.PendenciaAssunto })
-                .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.Outros))
+                .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.Pendencia))
                 .Select(c => c.Id).Distinct().ToArray();
             
             var pendenciasIdsFechamento = pendencias.Select(c => new { c.Id, c.PendenciaAssunto })
@@ -307,7 +316,7 @@ namespace SME.SGP.Dados.Repositorios
                         
                         query.Append(@" WHERE p.id = any(@pendenciasIdsDevolutiva) ");
                         break;
-                    case TipoPendenciaAssunto.Outros:
+                    case TipoPendenciaAssunto.Pendencia:
                     default:
                         query.Append(@" WHERE p.id = any(@pendenciasIds) ");                        
                         break;

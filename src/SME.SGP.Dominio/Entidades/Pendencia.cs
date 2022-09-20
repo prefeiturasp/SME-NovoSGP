@@ -61,7 +61,7 @@ namespace SME.SGP.Dominio
                     case TipoPendencia.DiarioBordo:
                     case TipoPendencia.AEE:
                     default:
-                        return TipoPendenciaAssunto.Outros;
+                        return TipoPendenciaAssunto.Pendencia;
                 }
             }
         }

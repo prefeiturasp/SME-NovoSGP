@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Enumerados
         PendenciaProfessor = 4,
         PendenciaRegistroIndividual = 5,
         PendenciaDevolutiva = 6,
-        Outros = 7
+        Pendencia = 7
     }
 }
