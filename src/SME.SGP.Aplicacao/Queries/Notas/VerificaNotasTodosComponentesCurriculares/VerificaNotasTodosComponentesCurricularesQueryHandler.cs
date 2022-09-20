@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries
@@ -69,12 +70,20 @@ namespace SME.SGP.Aplicacao.Queries
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
             }
+            var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo));
 
             if ((request.Bimestre ?? 0) > 0)
-                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+            {
+                if (request.Turma.ModalidadeCodigo == Modalidade.EJA && request.Bimestre == 2)
+                    if (todasAsNotas != null && todasAsNotas.Any())
+                        notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
+                    else
+                        notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+                else 
+                    notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+            }
             else
             {
-                var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo));
 
                 if (todasAsNotas != null && todasAsNotas.Any())
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
@@ -103,7 +112,7 @@ namespace SME.SGP.Aplicacao.Queries
 	        var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
 	        if (componentesCurriculares != null && componentesCurriculares.Any())
 		        componentesTurma.AddRange(componentesCurriculares);
-	        else throw new NegocioException("Não localizado disciplinas para a turma no EOL!");
+	        else throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_DISCIPLINAS_TURMA_EOL);
 
 	        return componentesTurma;
         }

@@ -24,7 +24,8 @@ namespace SME.SGP.Dominio
              CodigoAluno = CodigoAluno,
              NumeroAula = NumeroAula,
              RegistroFrequenciaId = RegistroFrequenciaId,
-             AulaId = AulaId
+             AulaId = AulaId,
+             Valor = Valor
          };
     }
 }
