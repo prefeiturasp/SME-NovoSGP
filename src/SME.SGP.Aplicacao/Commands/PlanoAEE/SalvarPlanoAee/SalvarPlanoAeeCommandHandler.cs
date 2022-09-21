@@ -49,7 +49,6 @@ namespace SME.SGP.Aplicacao.Commands
                 {
                     // Salva Plano
                     if (plano?.Situacao == SituacaoPlanoAEE.Devolvido ||
-                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && plano?.CriadoEm.Date < new DateTime(2021, 9, 16)) ||  /* regra conforme bug 52143 */
                        ((plano?.Situacao == SituacaoPlanoAEE.Expirado || plano?.Situacao == SituacaoPlanoAEE.Validado) && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
                     {
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
