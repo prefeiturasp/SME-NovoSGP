@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using System;
 using System.Net.Http;
@@ -25,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var resposta = await httpClient.GetAsync(url);
 
             if (!resposta.IsSuccessStatusCode)
-                throw new NegocioException("Não foram encontrados dados de necessidades especiais para o aluno no EOL");
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.NAO_FORAM_ENCONTRADOS_DADOS_DE_NECESSIDADE_ESPECIAL);
 
             var json = await resposta.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<InformacoesEscolaresAlunoDto>(json);

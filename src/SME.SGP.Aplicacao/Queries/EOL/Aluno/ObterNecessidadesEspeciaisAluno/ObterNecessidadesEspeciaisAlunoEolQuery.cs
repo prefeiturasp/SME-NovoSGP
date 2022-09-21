@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(x => x.CodigoAluno)
                 .NotEmpty()
-                .WithMessage("O código do aluno deve ser informado.");
+                .WithMessage("O código do aluno deve ser informado para obter informações da necessidade especial.");
         }
     }
 }

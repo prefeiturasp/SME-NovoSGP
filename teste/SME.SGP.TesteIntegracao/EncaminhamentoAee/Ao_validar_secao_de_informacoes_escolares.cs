@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         }
 
         [Fact]
-        public async Task Valide_informacoes_do_objet_card()
+        public async Task Valide_informacoes_do_object_card()
         {
             var filtroAee = new FiltroAEEDto()
             {
