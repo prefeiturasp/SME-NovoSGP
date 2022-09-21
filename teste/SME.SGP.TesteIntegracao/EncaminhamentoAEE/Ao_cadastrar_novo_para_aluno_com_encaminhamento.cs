@@ -99,5 +99,39 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var retorno = await obterServicoPodeCadastrarEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
             retorno.ShouldBeTrue();
         }
+        
+        [Fact] 
+        public async Task Deve_permitir_cadastrar_novo_com_situacao_encerrado_automaticamente()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.EncerradoAutomaticamente,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            var obterServicoPodeCadastrarEncaminhamentoAee = ObterServicoPodeCadastrarEncaminhamentoAee();
+
+            var filtroEncaminhamentoAeeDto = new FiltroEncaminhamentoAeeDto()
+            {
+                EstudanteCodigo = ALUNO_CODIGO_1,
+                UeCodigo = UE_CODIGO_1
+            };
+
+            var retorno = await obterServicoPodeCadastrarEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
+            retorno.ShouldBeTrue();
+        }
     }
 }
