@@ -19,10 +19,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorEstudanteQuery(filtroEncaminhamentoAee.EstudanteCodigo,
                 filtroEncaminhamentoAee.UeCodigo));
 
-            if (encaminhamentoAEE != null && encaminhamentoAEE.SituacaoTipo != SituacaoAEE.Indeferido)
+            if (encaminhamentoAEE != null && SituacaoDiferenteIndeferidoOuEncerradoAutomaticamente(encaminhamentoAEE))
                 throw new NegocioException(MensagemNegocioEncaminhamentoAee.ESTUDANTE_JA_POSSUI_ENCAMINHAMENTO_AEE_EM_ABERTO);
 
             return true;
+        }
+
+        private static bool SituacaoDiferenteIndeferidoOuEncerradoAutomaticamente(EncaminhamentoAEEResumoDto encaminhamentoAEE)
+        {
+            return !(encaminhamentoAEE.SituacaoTipo == SituacaoAEE.Indeferido 
+                     || encaminhamentoAEE.SituacaoTipo == SituacaoAEE.EncerradoAutomaticamente);
         }
     }
 }

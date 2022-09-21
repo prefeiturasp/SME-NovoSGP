@@ -15,8 +15,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterTurmasAlunoPorFiltroQuery request, CancellationToken cancellationToken)
         {
             var dataRefencia = DateTimeExtension.HorarioBrasilia();
-              
-              return new List<AlunoPorTurmaResposta>()
+
+            return new List<AlunoPorTurmaResposta>()
               {
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -25,7 +25,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular = 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       SituacaoMatricula = "ATIVO",
-                      NomeAluno = "NOME ALUNO 1"
+                      NomeAluno = "NOME ALUNO 1",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -34,7 +35,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       SituacaoMatricula = "ATIVO",
-                      NomeAluno = "NOME ALUNO 2"
+                      NomeAluno = "NOME ALUNO 2",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -43,8 +45,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       SituacaoMatricula = "ATIVO",
-                      NomeAluno = "NOME ALUNO 3"
-                  },   
+                      NomeAluno = "NOME ALUNO 3",
+                      CodigoTurma = 1
+                  },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
                       DataSituacao = dataRefencia.AddDays(-20),
@@ -52,7 +55,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Ativo,
                       SituacaoMatricula = "ATIVO",
-                      NomeAluno = "NOME ALUNO 4"
+                      NomeAluno = "NOME ALUNO 4",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -62,7 +66,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.NaoCompareceu,
                       SituacaoMatricula = "NÃO COMPARECEU",
-                      NomeAluno = "NOME ALUNO 5"
+                      NomeAluno = "NOME ALUNO 5",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -72,7 +77,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                       SituacaoMatricula = "DESISTENTE",
-                      NomeAluno = "NOME ALUNO 6"
+                      NomeAluno = "NOME ALUNO 6",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -82,7 +88,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.VinculoIndevido,
                       SituacaoMatricula = "VINCULO INDEVIDO",
-                      NomeAluno = "NOME ALUNO 7"
+                      NomeAluno = "NOME ALUNO 7",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -92,7 +99,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Falecido,
                       SituacaoMatricula = "FALECIDO",
-                      NomeAluno = "NOME ALUNO 8"
+                      NomeAluno = "NOME ALUNO 8",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -102,8 +110,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Deslocamento,
                       SituacaoMatricula = "DESLOCAMENTO",
-                      NomeAluno = "NOME ALUNO 9"
-                  },  
+                      NomeAluno = "NOME ALUNO 9",
+                      CodigoTurma = 1
+                  },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
                       DataSituacao = dataRefencia.AddDays(10),
@@ -112,17 +121,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Cessado,
                       SituacaoMatricula = "CESSADO",
-                      NomeAluno = "NOME ALUNO 10"
+                      NomeAluno = "NOME ALUNO 10",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
                       DataSituacao = dataRefencia.AddDays(12),
                       DataMatricula = dataRefencia.AddDays(-10),
+                      DataNascimento = new DateTime(dataRefencia.AddYears(-10).Year, 1, 1),
                       CodigoAluno = "11",
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
                       SituacaoMatricula = "RECLASSIFICADO SAIDA",
-                      NomeAluno = "NOME ALUNO 11"
+                      NomeAluno = "NOME ALUNO 11",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -132,7 +144,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                       SituacaoMatricula = "DESISTENTE",
-                      NomeAluno = "NOME ALUNO 12"
+                      NomeAluno = "NOME ALUNO 12",
+                      CodigoTurma = 1
                   },
                   new AlunoPorTurmaResposta() {
                       Ano = DateTime.Now.Year ,
@@ -142,7 +155,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
                       CodigoComponenteCurricular= 138,
                       CodigoSituacaoMatricula= SituacaoMatriculaAluno.NaoCompareceu,
                       SituacaoMatricula = "NÃO COMPARECEU",
-                      NomeAluno = "NOME ALUNO 13"
+                      NomeAluno = "NOME ALUNO 13",
+                      CodigoTurma = 1
                   },  
               }; 
         }
