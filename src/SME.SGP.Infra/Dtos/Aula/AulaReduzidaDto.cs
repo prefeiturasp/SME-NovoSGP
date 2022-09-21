@@ -16,5 +16,6 @@ namespace SME.SGP.Infra.Dtos
         public string TurmaId { get; set; }
         public string DisciplinaId { get; set; }
         public string CodigoUe { get; set; }
+        public long IdTurma { get; set; }
     }
 }

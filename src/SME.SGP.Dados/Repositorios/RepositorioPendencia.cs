@@ -241,8 +241,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<int> ObterModalidadePorPendenciaETurmaId(long pendenciaId, long turmaId)
         {
             var query = @"select t.modalidade_codigo from pendencia p
-                            inner join ue ue on ue.id = p.ue_id 
-                            inner join turma t on t.ue_id = ue.id 
+                            inner join turma t on t.id = p.turma_id 
                             where p.id = @pendenciaId and t.id = @turmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
@@ -301,9 +300,8 @@ namespace SME.SGP.Dados.Repositorios
                             select distinct p.id
 							from pendencia p 
                             inner join pendencia_plano_aee ppa on ppa.pendencia_id = p.id
-                            {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.turma_id = pa.turma_id " : string.Empty)}
                             WHERE ppa.pendencia_id = any(@pendencias)
-                            {(!string.IsNullOrEmpty(turmaCodigo) ? " AND t.turma_id = @turmaCodigo" : string.Empty)}                            
+                            {(!string.IsNullOrEmpty(turmaCodigo) ? " AND p.turma_id = @turmaCodigo" : string.Empty)}                            
                             and situacao = 1
                             and p.tipo in (18)";
                     break;
@@ -318,11 +316,10 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaCodigo))
             {
                 query = $@" select distinct pf.pendencia_id  
-                            from pendencia_fechamento pf
-                            inner join fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-                            inner join fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                            inner join turma t ON t.id = ft.turma_id
-                            where pf.pendencia_id = any(@pendencias)
+                            from pendencia p 
+                            inner join pendencia_fechamento pf on pf.pendencia_id = p.id
+                            inner join turma t ON t.id = p.turma_id
+                            where pf.pendencia_id = = any(@pendencias)
                             and t.turma_id = '{turmaCodigo}'
 
                             union all 
@@ -335,17 +332,17 @@ namespace SME.SGP.Dados.Repositorios
 
                             union all 
                             select distinct pa.pendencia_id
-                            from pendencia_aula pa 
-                            inner join aula a on a.id = pa.aula_id 
-                            inner join turma t ON t.turma_id = a.turma_id 
+                            from pendencia p 
+                            inner join pendencia_aula pa on pa.pendencia_id = p.id 
+                            inner join turma t ON t.id = p.turma_id 
                             WHERE t.turma_id = '{turmaCodigo}'
-                            AND pa.pendencia_id = any(@pendencias)
+			                AND pa.pendencia_id = any(@pendencias)
 
                             union all 
                             select distinct pdb.pendencia_id
-                            from pendencia_diario_bordo pdb 
-                            inner join aula a on a.id = pdb.aula_id 
-                            inner join turma t ON t.turma_id = a.turma_id 
+                            from pendencia p  
+                            inner join pendencia_diario_bordo pdb on pdb.pendencia_id = p.id
+                            inner join turma t ON t.id = p.turma_id 
                             WHERE t.turma_id = '{turmaCodigo}'
                             AND pdb.pendencia_id = any(@pendencias)
 
@@ -384,16 +381,13 @@ namespace SME.SGP.Dados.Repositorios
                 case TipoPendencia.AulasSemFrequenciaNaDataDoFechamento:
                 case TipoPendencia.ResultadosFinaisAbaixoDaMedia:
                     query += @" LEFT JOIN pendencia_fechamento pf ON pf.pendencia_id = p.id
-	                            LEFT JOIN fechamento_turma_disciplina ftd ON ftd.id = pf.fechamento_turma_disciplina_id
-	                            LEFT JOIN fechamento_turma ft ON ft.id = ftd.fechamento_turma_id
-                                LEFT JOIN turma t ON t.id = ft.turma_id ";
+                                LEFT JOIN turma t ON t.id = p.turma_id ";
 
                     break;
 
                 case TipoPendencia.AulaNaoLetivo:
                     query += @" LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
-                                LEFT JOIN aula a ON a.id = pa.aula_id
-                                LEFT JOIN turma t ON t.turma_id = a.turma_id ";
+                                LEFT JOIN turma t ON t.id = p.turma_id ";
 
                     break;
 
@@ -428,8 +422,7 @@ namespace SME.SGP.Dados.Repositorios
                     else
                     {
                         query += @" LEFT JOIN pendencia_aula pa ON pa.pendencia_id = p.id
-                                LEFT JOIN aula a ON a.id = pa.aula_id
-                                LEFT JOIN turma t ON t.turma_id = a.turma_id ";
+                                LEFT JOIN turma t ON t.id = p.turma_id ";
                         break;
                     }
 
