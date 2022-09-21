@@ -9,9 +9,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler : IRequestHandler<ObterUltimasNotificacoesNaoLidasPorUsuarioQuery, IEnumerable<NotificacaoBasicaDto>>
     {
-        private readonly IRepositorioNotificacaoConsulta repositorioNotificacao;
+        private readonly IRepositorioNotificacao repositorioNotificacao;
 
-        public ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacaoConsulta repositorioNotificacao)
+        public ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
