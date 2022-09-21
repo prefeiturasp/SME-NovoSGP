@@ -194,6 +194,45 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         }
 
         [Fact]
+        public async Task Ao_vincular_um_paai_pelo_cefai_ao_encaminha_pendencia_deve_ser_resolvida_e_criar_uma_nova_para_paai()
+        {
+            collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
+            typeof(ObterFuncionariosPorDreEolQueryHandlerFake), ServiceLifetime.Scoped));
+
+            collectionFixture.BuildServiceProvider();
+
+            await CriarParametrosSistema();
+
+            await CriarUsuarioLogadoEPerfil();
+            CriarClaimFundamental();
+
+            await CriarTurmaRegularFundamental();
+            await CriarEncaminhamentoEPendencia();
+
+            var useCase = ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
+
+            var encaminhamentoAeeId = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault().Id;
+            (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
+
+            var encaminhamentoAtualizado = ObterTodos<Dominio.EncaminhamentoAEE>();
+            encaminhamentoAtualizado.Any().ShouldBeTrue();
+            encaminhamentoAtualizado.Any(a => a.Situacao == Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel).ShouldBeTrue();
+
+            var pendenciaPerfilCEFAI = ObterTodos<PendenciaPerfil>();
+            pendenciaPerfilCEFAI.Any().ShouldBeTrue();
+            pendenciaPerfilCEFAI.Any(a => a.PerfilCodigo == PerfilUsuario.CEFAI).ShouldBeTrue();
+
+            await CriarResponsavelPAAI();
+            (await useCase.Executar(encaminhamentoAeeId)).ShouldBeTrue();
+            var pendenciaEncaminhamento = ObterTodos<PendenciaEncaminhamentoAEE>().FirstOrDefault();
+            pendenciaEncaminhamento.ShouldNotBeNull();
+            pendenciaEncaminhamento.EncaminhamentoAEEId.ShouldBe(encaminhamentoAeeId);
+            var pendenciaUsuario = ObterTodos<Dominio.PendenciaUsuario>();
+            pendenciaUsuario.ShouldNotBeNull();
+            pendenciaUsuario.Exists(pendencia => pendencia.PendenciaId == pendenciaEncaminhamento.PendenciaId).ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task Deve_gerar_pendencia_cp()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
