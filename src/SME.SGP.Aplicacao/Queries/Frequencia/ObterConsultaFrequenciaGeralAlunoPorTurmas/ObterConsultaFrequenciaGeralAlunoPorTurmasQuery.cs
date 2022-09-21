@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             : this(alunoCodigo, turmaCodigo)
         {
             ComponenteCurricularCodigo = componenteCurricularCodigo;
-            turmaConsulta = TurmaConsulta;
+            TurmaConsulta = turmaConsulta;
         }
 
         public string AlunoCodigo { get; set; }
