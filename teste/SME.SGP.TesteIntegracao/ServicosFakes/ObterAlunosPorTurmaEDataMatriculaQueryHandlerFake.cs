@@ -4,8 +4,6 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,9 +23,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEDataMatriculaQuery request, CancellationToken cancellationToken)
         {
-            return new List<AlunoPorTurmaResposta>
+            return await Task.FromResult(new List<AlunoPorTurmaResposta>
             {
-                new AlunoPorTurmaResposta
+                new()
                 {
                     Ano = 0,
                     CodigoAluno = CODIGO_ALUNO_1,
@@ -35,8 +33,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
                     DataNascimento = new DateTime(1959, 01, 16),
-                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
                     NomeAluno = NOME_ALUNO_1,
                     NomeSocialAluno = null,
@@ -53,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CelularResponsavel = "11961861993",
                     DataAtualizacaoContato = new DateTime(2018, 06, 22),
                 },
-                new AlunoPorTurmaResposta
+                new()
                 {
                     Ano = 0,
                     CodigoAluno = CODIGO_ALUNO_2,
@@ -61,8 +59,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
                     DataNascimento = new DateTime(1959, 01, 16),
-                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
-                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
                     NomeAluno = NOME_ALUNO_2,
                     NomeSocialAluno = null,
@@ -77,9 +75,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new(DateTimeExtension.HorarioBrasilia().Year, 06, 22),
+                    DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 },
-                new AlunoPorTurmaResposta
+                new()
                 {
                     Ano = 0,
                     CodigoAluno = CODIGO_ALUNO_3,
@@ -87,8 +85,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
                     DataNascimento = new DateTime(1959, 01, 16),
-                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
-                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
                     NomeAluno = NOME_ALUNO_3,
                     NomeSocialAluno = null,
@@ -103,9 +101,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
+                    DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 },
-                new AlunoPorTurmaResposta
+                new()
                 {
                     Ano = 0,
                     CodigoAluno = CODIGO_ALUNO_4,
@@ -113,8 +111,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                     CodigoTurma = 1,
                     DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
-                    DataSituacao = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
-                    DataMatricula = new (DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 11, 09),
                     EscolaTransferencia = null,
                     NomeAluno = NOME_ALUNO_4,
                     NomeSocialAluno = null,
@@ -129,9 +127,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     NomeResponsavel = "João teste",
                     TipoResponsavel = "4",
                     CelularResponsavel = "11961861993",
-                    DataAtualizacaoContato = new (DateTimeExtension.HorarioBrasilia().Year, 06, 22),
+                    DataAtualizacaoContato = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 22),
                 }
-            };
+            });
         }
     }
 }
