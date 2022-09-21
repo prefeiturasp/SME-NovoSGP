@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -19,7 +20,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 filtroEncaminhamentoAee.UeCodigo));
 
             if (encaminhamentoAEE != null && encaminhamentoAEE.SituacaoTipo != SituacaoAEE.Indeferido)
-                throw new NegocioException("Estudante/Criança já possui encaminhamento AEE em aberto");
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.ESTUDANTE_JA_POSSUI_ENCAMINHAMENTO_AEE_EM_ABERTO);
 
             return true;
         }
