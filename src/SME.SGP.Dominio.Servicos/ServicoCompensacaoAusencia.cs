@@ -103,18 +103,6 @@ namespace SME.SGP.Dominio.Servicos
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
-                //if (!compensacaoDto.Alunos.Any())
-                //{
-                //    var alunosComCompensacoes = await mediator.Send(new ObterCompensacaoAusenciaAlunoPorCompensacaoQuery(compensacaoBanco.Id));
-
-                //    if (alunosComCompensacoes.Any())
-                //        compensacaoDto.Alunos = alunosComCompensacoes.Select(a => new CompensacaoAusenciaAlunoDto()
-                //        {
-                //            Id = a.CodigoAluno,
-                //            QtdFaltasCompensadas = a.QuantidadeFaltasCompensadas
-                //        });
-                //}
-
                 var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
                 
                 unitOfWork.PersistirTransacao();
