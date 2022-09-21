@@ -69,6 +69,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             return ServiceProvider.GetService<IVerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase>();
         }
+        
+        protected IDevolverEncaminhamentoUseCase ObterServicoDevolverEncaminhamentoAee()
+        {
+            return ServiceProvider.GetService<IDevolverEncaminhamentoUseCase>();
+        }
 
         private async Task CriarRespostasComplementares()
         {
