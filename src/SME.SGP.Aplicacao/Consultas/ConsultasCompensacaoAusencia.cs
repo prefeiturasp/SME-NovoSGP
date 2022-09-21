@@ -133,7 +133,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
 
-                    var frequenciaAluno = await mediator.Send(new ObterPorAlunoDisciplinaDataQuery(aluno.CodigoAluno, compensacao.DisciplinaId, DateTime.Now));
+                    var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre,TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, compensacao.DisciplinaId));
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltasTotais = int.Parse((frequenciaAluno.NumeroFaltasNaoCompensadas + alunoDto.QuantidadeFaltasCompensadas).ToString());
@@ -142,7 +142,10 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta;
                     }
                     else
+                    {
                         alunoDto.PercentualFrequencia = 100;
+                    }
+                       
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }
