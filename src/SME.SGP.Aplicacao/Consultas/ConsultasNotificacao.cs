@@ -82,12 +82,11 @@ namespace SME.SGP.Aplicacao
             if (notificacao == null)
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
-            var notificarLeitura = notificacao.Status == NotificacaoStatus.Pendente;
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
+            {
                 repositorioNotificacao.Salvar(notificacao);
-
-            if (notificarLeitura)
                 await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
+            }
 
             var retorno = await MapearEntidadeParaDetalheDto(notificacao);
 
