@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -66,6 +67,34 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sql = "update notificacao set excluida = true, alterado_por = @alteradoPor, alterado_em = @alteradoEm, alterado_rf = @alteradoRf where id = any(@ids)";
             await database.Conexao.ExecuteAsync(sql, new { ids, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
+        }
+
+        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
+        {
+            var sql = @"select
+	                        n.id,
+	                        n.categoria,
+	                        n.codigo ,
+	                        n.criado_em as Data,
+	                        n.mensagem as DescricaoStatus,
+	                        n.status,
+	                        n.tipo,
+	                        n.titulo
+                        from
+	                        notificacao n
+                        left join usuario u on
+	                        n.usuario_id = u.id
+                        where
+	                        u.rf_codigo = @usuarioRf
+	                        and extract(year
+                        from
+	                        n.criado_em) = @anoLetivo
+	                        and not excluida
+                        order by
+	                        n.status asc,
+	                        n.criado_em desc
+                        limit @limite";
+            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite });
         }
     }
 }
