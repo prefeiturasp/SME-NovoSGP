@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Aplicacao;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
@@ -68,6 +69,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         protected IVerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase ObterServicoPodeCadastrarEncaminhamentoAee()
         {
             return ServiceProvider.GetService<IVerificaPodeCadastrarEncaminhamentoAEEParaEstudanteUseCase>();
+        }
+
+
+        protected IObterEncaminhamentoPorIdUseCase ObterUseCaseObterEncaminhamentoPorId()
+        {
+            return ServiceProvider.GetService<IObterEncaminhamentoPorIdUseCase>();
         }
 
         private async Task CriarRespostasComplementares()
