@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo));
             var tipoCalendarioId = turma.ModalidadeCodigo == Modalidade.EJA ? await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma)) : 0;
 
-            var necessidadesEspeciaisAluno = await servicoEOL.ObterNecessidadesEspeciaisAluno(request.CodigoAluno);
+            var necessidadesEspeciaisAluno = await mediator.Send(new ObterNecessidadesEspeciaisAlunoEolQuery(request.CodigoAluno));
 
             if (necessidadesEspeciaisAluno != null)
                 informacoesEscolaresAluno = necessidadesEspeciaisAluno;
