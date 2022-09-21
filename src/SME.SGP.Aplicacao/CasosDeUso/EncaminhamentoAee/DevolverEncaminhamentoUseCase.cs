@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -20,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var encaminhamento = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(devolucaoDto.EncaminhamentoAEEId));
 
             if (encaminhamento.Situacao != SituacaoAEE.Encaminhado)
-                throw new NegocioException($"Encaminhamento só podem ser devolvidos na situação '{SituacaoAEE.Encaminhado.Name()}'");
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDOS_NA_SITUACAO_ENCAMINHADO);
 
             encaminhamento.Situacao = SituacaoAEE.Devolvido;
 

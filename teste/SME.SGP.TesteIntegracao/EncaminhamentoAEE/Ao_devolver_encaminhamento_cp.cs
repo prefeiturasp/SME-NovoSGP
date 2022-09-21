@@ -56,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
             {
-                EncaminhamentoAEEId = 1
+                EncaminhamentoAEEId = 1,
                 Motivo = "Devolvendo encaminhamento pelo CP"
             };
 
