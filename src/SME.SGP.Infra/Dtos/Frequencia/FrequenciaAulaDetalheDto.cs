@@ -17,7 +17,7 @@ namespace SME.SGP.Infra
 
             AulaId = aula.Id;
             Desabilitado = aluno.EstaInativo(aula.DataAula, PeriodoFim) || aula.EhDataSelecionadaFutura;
-            PermiteAnotacao = aluno.EstaAtivo(aula.DataAula, aula.DataAula);
+            PermiteAnotacao = aluno.EstaAtivo(aula.DataAula);
             PossuiAnotacao = anotacoesTurma.Any(a => a.AulaId == AulaId);
             EhReposicao = TipoAula.Reposicao == aula.TipoAula ? true : false;
 
