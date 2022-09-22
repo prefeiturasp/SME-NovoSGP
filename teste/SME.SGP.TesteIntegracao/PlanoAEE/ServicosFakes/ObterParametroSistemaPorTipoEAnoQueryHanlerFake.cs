@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Nome = "GerarPendenciasPlanoAEE",
                 Descricao = "Controle de geração de pendências para os processos do Plano AEE",
-                Valor = String.Empty,
+                Valor = string.Empty,
                 Ativo = true,
                 Tipo = TipoParametroSistema.GerarPendenciasPlanoAEE
             };
