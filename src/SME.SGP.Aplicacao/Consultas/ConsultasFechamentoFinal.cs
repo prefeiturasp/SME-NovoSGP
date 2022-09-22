@@ -82,7 +82,13 @@ namespace SME.SGP.Aplicacao
 
             retorno.EventoData = ultimoPeriodoEscolar.PeriodoInicio;
 
+            var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { filtros.DisciplinaCodigo }, ultimoPeriodoEscolar.Bimestre));
+
+            if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
+                throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoPeriodoEscolar.Bimestre}º  bimestre.");
+            
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
+            
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
