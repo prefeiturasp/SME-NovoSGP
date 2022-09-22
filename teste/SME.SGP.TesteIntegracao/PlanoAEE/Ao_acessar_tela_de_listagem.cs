@@ -16,13 +16,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         public Ao_acessar_tela_de_listagem(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
-
-        protected override void RegistrarFakes(IServiceCollection services)
-        {
-            base.RegistrarFakes(services);
-        }
-
-        [Fact]
+        
+        [Fact(DisplayName = "Plano AEE - Deve exibir o historico ao selecionar uma turma de 2021")]
         public async Task Deve_exibir_historico_ao_selecionar_turma_de_2021()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -47,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planoAee.Id.ShouldBeGreaterThan(0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve filtrar por uma turma de com anterior")]
         public async Task Deve_filtrar_por_turma_ano_anterior()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -74,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retorno.Items.Count().ShouldBeGreaterThan(0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve filtrar por uma turma com ano atual")]
         public async Task Deve_filtrar_por_turma_ano_atual()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -100,7 +95,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retorno.Items.Count().ShouldBeGreaterThan(0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve filtrar pelo nome do estudante")]
         public async Task Deve_filtrar_por_nome_do_estudante()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -126,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retorno.Items.Count().ShouldBeGreaterThan(0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve filtrar pela situacao")]
         public async Task Deve_filtrar_por_situacao()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()

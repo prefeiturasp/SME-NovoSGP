@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve criar uma pendência para o cp apos cadastrar o plano")]
         public async Task Deve_criar_pendencia_para_o_cp_apos_cadastro_do_plano()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CP);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve criar pendência para o cp após edição do plano")]
         public async Task Deve_criar_pendencia_para_o_cp_apos_edicao_do_plano()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CP);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve criar uma pendência para o CEFAI após coordenação salvar o parecer")]
         public async Task Deve_criar_pendencia_CEFAI_apos_coordenacao_salvar_parecer()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()

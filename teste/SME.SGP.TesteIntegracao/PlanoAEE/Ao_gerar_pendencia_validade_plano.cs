@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             _builder = new ItensBasicosBuilder(this);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve gerar uma pendencia com validade para o responsavel")]
         public async Task Deve_gerar_pendencia_validade_para_responsavel()
         {
             await CriaBase();

@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve Criar Um plano AEE Novo")]
         public async Task Ao_cadastrar_plano()
         {
             var salvarPlanoAEEUseCase = ObterServicoSalvarPlanoAEEUseCase();

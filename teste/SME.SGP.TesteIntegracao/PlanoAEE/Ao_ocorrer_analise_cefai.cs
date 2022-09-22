@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve alterar a pendência do paai para validado")]
         public async Task Deve_alterar_a_pendencia_do_paai_para_validado()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
