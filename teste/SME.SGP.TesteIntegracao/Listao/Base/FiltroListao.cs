@@ -14,5 +14,6 @@ namespace SME.SGP.TesteIntegracao.Listao
         public string AnoTurma { get; set; }
         public bool TurmaHistorica { get; set; }
         public TipoTurma TipoTurma { get; set; }
+        public int Bimestre { get; set; }
     }
 }
