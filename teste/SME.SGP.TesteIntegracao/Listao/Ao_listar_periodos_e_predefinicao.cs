@@ -40,6 +40,8 @@ namespace SME.SGP.TesteIntegracao.Listao
             };
             
             await CriarDadosBasicos(filtroListao);
+            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
+            
             var useCase = ObterPeriodosPorComponenteUseCase();
 
             var listaPeriodo = (await useCase.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, true,
@@ -71,6 +73,8 @@ namespace SME.SGP.TesteIntegracao.Listao
             };
             
             await CriarDadosBasicos(filtroListao);
+            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
+            
             var useCase = ObterPeriodosPorComponenteUseCase();
 
             var listaPeriodo = (await useCase.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
@@ -117,6 +121,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             };
             
             await CriarDadosBasicos(filtroListao);
+            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
             
             var useCasePeriodo = ObterPeriodosPorComponenteUseCase();
             var listaPeriodo = (await useCasePeriodo.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,

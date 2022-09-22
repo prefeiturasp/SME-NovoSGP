@@ -66,7 +66,6 @@ namespace SME.SGP.TesteIntegracao.Listao
             await InserirParametroSistema();
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
-            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
         }
 
         private async Task CriarAulas(long componenteCurricularId, int bimestre)
@@ -151,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             });
         }
 
-        private async Task CriarRegistroFrenquencia(int bimestre, long componenteCurricularId)
+        protected async Task CriarRegistroFrenquencia(int bimestre, long componenteCurricularId)
         {
             var aulaId = (ObterTodos<Dominio.Aula>().FirstOrDefault()?.Id).GetValueOrDefault();
             aulaId.ShouldBeGreaterThan(0);
