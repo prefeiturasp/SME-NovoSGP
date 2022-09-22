@@ -29,6 +29,10 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
         private const int Codigo_Regencia_Infantil_Emei_4h_512 = 512;
         private const int Codigo_Regencia_Infantil_Emei_2h_513 = 513;
 
+        private const string CODIGO_TURMA_7A = "1";
+        private const string CODIGO_TURMA_7B = "2";
+        private const string CODIGO_TURMA_7P = "3";
+
         private const string Modalidade_EI_7P = "EI-7P";
         private const string Modalidade_EI_7A = "EI-7A";
         private const string Modalidade_EI_7B = "EI-7B";
@@ -241,7 +245,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "2",
+                TurmaId = CODIGO_TURMA_7A,
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -259,7 +263,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "2",
+                TurmaId = CODIGO_TURMA_7B,
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -277,7 +281,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "2",
+                TurmaId = CODIGO_TURMA_7P,
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -412,7 +416,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             await InserirNaBase(new Turma()
             {
                 Nome = "7A",
-                CodigoTurma = "1",
+                CodigoTurma = CODIGO_TURMA_7A,
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -423,7 +427,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             await InserirNaBase(new Turma()
             {
                 Nome = "7B",
-                CodigoTurma = "2",
+                CodigoTurma = CODIGO_TURMA_7B,
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -434,7 +438,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             await InserirNaBase(new Turma()
             {
                 Nome = "7P",
-                CodigoTurma = "3",
+                CodigoTurma = CODIGO_TURMA_7P,
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -449,7 +453,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             {
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = "3",
+                    CodigoTurma = CODIGO_TURMA_7P,
                     TurmaComModalidade = Modalidade_EI_7P,
                     NomeEscola = Nome_Escola_Emei_Paraisopolis,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
@@ -539,7 +543,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 },
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = "1",
+                    CodigoTurma = CODIGO_TURMA_7A,
                     TurmaComModalidade = Modalidade_EI_7A,
                     NomeEscola = Nome_Escola_Emei_Paraisopolis,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
@@ -629,7 +633,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 },
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = "2",
+                    CodigoTurma = CODIGO_TURMA_7B,
                     TurmaComModalidade = Modalidade_EI_7B,
                     NomeEscola = Nome_Escola_Emei_Sao_Paulo,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
