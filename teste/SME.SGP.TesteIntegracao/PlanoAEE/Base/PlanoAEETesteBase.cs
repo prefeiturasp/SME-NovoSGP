@@ -33,7 +33,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(PlanoAEE.ServicosFakes.ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
         }
-
+        protected IGerarPendenciaValidadePlanoAEEUseCase ObterServicoGerarPendenciaValidadePlanoAEEUseCase()
+        {
+            return ServiceProvider.GetService<IGerarPendenciaValidadePlanoAEEUseCase>();
+        }
         protected ISalvarPlanoAEEUseCase ObterServicoSalvarPlanoAEEUseCase()
         {
             return ServiceProvider.GetService<ISalvarPlanoAEEUseCase>();
