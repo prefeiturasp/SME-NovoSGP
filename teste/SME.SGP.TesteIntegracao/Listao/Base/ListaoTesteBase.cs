@@ -74,13 +74,17 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         private async Task CriarAulas(long componenteCurricularId, int bimestre)
         {
+            var datasAulasIncluidas = Array.Empty<DateTime?>();
+            
             var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre);
+            var range = dataFim.Subtract(dataInicio).Days;
             
             for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
             {
-                var rand = new Random();
-                var range = (dataFim - dataInicio).Days;           
-                var dataAula = dataInicio.AddDays(rand.Next(range));
+                var dataAula = dataInicio.AddDays(new Random().Next(0, range));
+                
+                while (datasAulasIncluidas.Contains(dataAula) || dataAula > DateTimeExtension.HorarioBrasilia())
+                    dataAula = dataInicio.AddDays(new Random().Next(0, range));
                 
                 await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222,
                     TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);                
