@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             this.collectionFixture = collectionFixture ?? throw new ArgumentNullException(nameof(collectionFixture));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Deve retornar mensagem de exceção quando o encaminhamento não for encontrado")]
         public async Task Deve_retornar_excecao_de_negocio_encaminhamento_nao_encontrado()
         {
             await CriarUsuarioLogadoEPerfil();
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await useCase.Executar(ID_ENCAMINHAMENTO_AEE_NAO_EXISTENTE).ShouldThrowAsync<NegocioException>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Ao enviar para análise o encaminhamento deve gerar pendência PAAI")]
         public async Task Deve_gerar_pendencia_paai()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
@@ -122,7 +122,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             pendenciaEncaminhamentoAee.Any().ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Ao enviar para análise o encaminhamento deve gerar pendência PAEE")]
         public async Task Deve_gerar_pendencia_paee()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
@@ -163,7 +163,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             pendenciaEncaminhamentoAee.Any().ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Ao enviar para análise o encaminhamento deve gerar pendência CEFAI")]
         public async Task Deve_gerar_pendencia_cefai()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
@@ -193,7 +193,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             pendenciaPerfilCEFAI.Any(a => a.PerfilCodigo == PerfilUsuario.CEFAI).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Ao enviar para análise o encaminhamento quando CEFAI vincula PAAI deve resolver pendência e criar pendência PAAI")]
         public async Task Ao_vincular_um_paai_pelo_cefai_ao_encaminha_pendencia_deve_ser_resolvida_e_criar_uma_nova_para_paai()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
@@ -232,7 +232,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             pendenciaUsuario.Exists(pendencia => pendencia.PendenciaId == pendenciaEncaminhamento.PendenciaId).ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento AEE - Ao enviar para análise o encaminhamento deve gerar pendência CP")]
         public async Task Deve_gerar_pendencia_cp()
         {
             collectionFixture.Services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorDreEolQuery, IEnumerable<UsuarioEolRetornoDto>>),
