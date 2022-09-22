@@ -90,6 +90,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             return ServiceProvider.GetService<IObterInformacoesEscolaresDoAlunoUseCase>();
         }
+        protected IEnviarParaAnaliseEncaminhamentoAEEUseCase ObterServicoEnviarParaAnaliseEncaminhamentoAee()
+        {
+            return ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
+        }
 
         private async Task CriarRespostasComplementares()
         {
