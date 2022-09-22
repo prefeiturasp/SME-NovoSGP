@@ -378,10 +378,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<int> ObterModalidadePorPendenciaETurmaId(long pendenciaId, long turmaId)
         {
-            const string query = @"select t.modalidade_codigo from pendencia p
-                                        inner join ue ue on ue.id = p.ue_id 
-                                        inner join turma t on t.ue_id = ue.id 
-                                    where p.id = @pendenciaId and t.id = @turmaId";
+            var query = @"select t.modalidade_codigo from pendencia p
+                            inner join turma t on t.id = p.turma_id 
+                            where p.id = @pendenciaId and t.id = @turmaId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { pendenciaId, turmaId });
         }
