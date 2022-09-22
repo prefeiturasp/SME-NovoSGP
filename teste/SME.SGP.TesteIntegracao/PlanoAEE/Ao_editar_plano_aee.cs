@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersaoPlanoAEEPorIdQuery, PlanoAEEVersaoDto>), typeof(ObterVersaoPlanoAEEPorIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
         
-        [Fact(DisplayName = "Alterar o responsável pelo plano")]
+        [Fact(DisplayName = "Plano AEE - Alterar o responsável pelo plano")]
         public async Task Alterar_responsável_pelo_plano()
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
@@ -75,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
 
-        [Fact(DisplayName = "Quando o plano estiver na situação Expirado, realizar qualquer edição e o plano deverá ficar na situação Validado e deverá ser criada uma nova versão")]
+        [Fact(DisplayName = "Plano AEE - Quando o plano estiver na situação Expirado, realizar qualquer edição e o plano deverá ficar na situação Validado e deverá ser criada uma nova versão")]
         public async Task Alterar_plano_expirado()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
 
-        [Fact(DisplayName = "Quando o plano estiver na situação Devolvido, ao editar ele deve ir para a situação de Aguardando parecer da coordenação ")]
+        [Fact(DisplayName = "Plano AEE - Quando o plano estiver na situação Devolvido, ao editar ele deve ir para a situação de Aguardando parecer da coordenação ")]
         public async Task Alterar_plano_devolvido()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -162,7 +162,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(1);
         }
         
-        [Fact(DisplayName = "Com usuário do CP alterar qualquer campo do plano e submeter a alteração.")]
+        [Fact(DisplayName = "Plano AEE - Com usuário do CP alterar qualquer campo do plano e submeter a alteração.")]
         public async Task Com_usuario_do_cp_alterar_qualquer_campo()
         {
             var salvarPlanoAeeUseCase = ObterServicoSalvarPlanoAEEUseCase();
