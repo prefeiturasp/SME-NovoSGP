@@ -432,9 +432,12 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosProfessor, AtividadeAvaliativa dadosAvaliacao)
+        private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
-            return dadosProfessor.EhProfessorCj() && dadosAvaliacao.EhCj || dadosProfessor.EhProfessor() && !dadosAvaliacao.EhCj;
+            if(dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
+                return dadosUsuario.EhProfessorCj() && dadosAvaliacao.EhCj || dadosUsuario.EhProfessor() && !dadosAvaliacao.EhCj;
+
+            return true;
         }
 
         private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio)
