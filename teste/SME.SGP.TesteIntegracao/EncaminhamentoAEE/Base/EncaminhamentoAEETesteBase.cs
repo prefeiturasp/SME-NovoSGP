@@ -75,6 +75,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         {
             return ServiceProvider.GetService<IDevolverEncaminhamentoUseCase>();
         }
+        
+        protected IExcluirEncaminhamentoAEEUseCase ObterServicoExcluirEncaminhamentoAee()
+        {
+            return ServiceProvider.GetService<IExcluirEncaminhamentoAEEUseCase>();
+        }
 
         protected IObterEncaminhamentoPorIdUseCase ObterUseCaseObterEncaminhamentoPorId()
         {
