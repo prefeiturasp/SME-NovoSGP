@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         }
 
 
-        [Fact(DisplayName = "Selecionar aluno que já possua plano validado (deve apresentar mensagem de erro)")]
+        [Fact(DisplayName = "Plano AEE - Selecionar aluno que já possua plano validado (deve apresentar mensagem de erro)")]
         public async Task Selecionar_aluno_com_plano_validado()
         {
             var filtro = new FiltroBuscaEstudanteDto()
@@ -52,7 +52,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             ex.Message.ShouldNotBeNullOrEmpty();
         }
 
-        [Fact(DisplayName = "Pesquisar por nome e código EOL em uma turma com usuário de professor")]
+        [Fact(DisplayName = "Plano AEE - Pesquisar por nome e código EOL em uma turma com usuário de professor")]
         public async Task Pesquisar_por_nome_codigo_eol_em_uma_turma_com__professor()
         {
             var filtro = new FiltroBuscaEstudanteDto()
@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             aluno.Items.Where(x => x.Nome.Contains(filtro.Nome)).Count().ShouldBe(1);
         }
 
-        [Fact(DisplayName = "Pesquisar por nome e código EOL com usuário CP (pesquisar sem informar a turma")]
+        [Fact(DisplayName = "Plano AEE - Pesquisar por nome e código EOL com usuário CP (pesquisar sem informar a turma")]
         public async Task Pesquisar_por_nome_codigo_EOL_com_usuário_CP_sem_informar_turma()
         {
             var filtro = new FiltroBuscaEstudanteDto()

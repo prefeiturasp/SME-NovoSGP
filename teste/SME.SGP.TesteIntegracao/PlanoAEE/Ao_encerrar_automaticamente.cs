@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
 
-        [Fact(DisplayName = "Deve Encerrar automáticamente os planos de alunos que ficaram inativos ou foram transferidos")]
+        [Fact(DisplayName = "Plano AEE - Deve Encerrar automáticamente os planos de alunos que ficaram inativos ou foram transferidos")]
         public async Task Deve_Encerrar_automaticamente_aluno_inativo_ou_transferido()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(2);
         }
 
-        [Fact(DisplayName = "Não Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte na mesma UE")]
+        [Fact(DisplayName = "Plano AEE - Não Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte na mesma UE")]
         public async Task Nao_deve_encerrar_aluno_concluido_com_matricula_no_ano_seguinte_mesma_ue()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -73,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(0);
         }
         
-        [Fact(DisplayName = "Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte em outra UE")]
+        [Fact(DisplayName = "Plano AEE - Deve Encerrar automáticamente os planos de Alunos Concluidos, com matricula no Ano seguinte em outra UE")]
         public async Task Deve_encerrar_aluno_concluido_com_matricula_no_ano_seguinte_em_outra_ue()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
