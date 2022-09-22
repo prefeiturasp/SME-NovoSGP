@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -24,13 +25,16 @@ namespace SME.SGP.Aplicacao
 
             if (encaminhamentoAEE == null)
                 throw new NegocioException("O encaminhamento informado não foi encontrado");
-            
+
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (!usuarioLogado.EhGestorEscolar())
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.SOMENTE_GESTOR_ESCOLAR_PODE_REALIZAR_INDEFERIMENTO);
+
             encaminhamentoAEE.MotivoEncerramento = request.MotivoEncerramento;
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.Indeferido;
 
             var idEntidadeEncaminhamento = await repositorioEncaminhamentoAEE.SalvarAsync(encaminhamentoAEE);
-
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             await mediator.Send(new ExecutaNotificacaoEncerramentoEncaminhamentoAEECommand(encaminhamentoAEE.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
             
