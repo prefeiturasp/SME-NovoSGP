@@ -29,11 +29,15 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome, devolucaoDto.Motivo));
+            if (usuarioLogado.EhGestorEscolar())
+            {
+                await mediator.Send(new ExecutaNotificacaoDevolucaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome, devolucaoDto.Motivo));
 
-            await ExcluirPendenciasEncaminhamentoAEE(encaminhamento.Id);
+                await ExcluirPendenciasEncaminhamentoAEE(encaminhamento.Id);
 
-            return true;
+                return true;
+            }
+            throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDO_PELA_GESTAO);
         }
 
         private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)

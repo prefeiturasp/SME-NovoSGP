@@ -32,8 +32,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 typeof(ExecutaNotificacaoDevolucaoEncaminhamentoAEECommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
-        public async Task Ao_devolver_encaminhamento_em_situacao_aguardando_validacao_coordenacao_cp()
+        [Fact(DisplayName = "Encaminhamento AEE - Somente Gestor Escolar poderá devolver encaminhamentos em situação aguardando validação")]
+        public async Task Ao_devolver_encaminhamento_em_situacao_aguardando_validacao_coordenacao()
         {
             var filtroAee = new FiltroAEEDto()
             {
@@ -54,6 +54,153 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
             
+            await CriarEncaminhamentoSecaoPerguntasRespostas();
+
+            await CriarPendenciasEncaminhamentoAee();
+
+            var obterServicoDevolverEncaminhamentoAee = ObterServicoDevolverEncaminhamentoAee();
+
+            var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
+            {
+                EncaminhamentoAEEId = 1,
+                Motivo = "Devolvendo encaminhamento pelo CP"
+            };
+
+            var retorno = await obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
+            retorno.ShouldBeTrue();
+            
+            var encaminhamentoDevolvido = ObterTodos<Dominio.EncaminhamentoAEE>();
+            (encaminhamentoDevolvido.FirstOrDefault().Situacao == SituacaoAEE.Devolvido).ShouldBeTrue();
+
+            var notificacoes = ObterTodos<Notificacao>();
+            notificacoes.Any().ShouldBeTrue();
+
+            var pendenciaEncaminhamentoAee = ObterTodos<PendenciaEncaminhamentoAEE>();
+            pendenciaEncaminhamentoAee.Any().ShouldBeFalse();
+
+            var pendenciaPerfilUsuario = ObterTodos<PendenciaPerfilUsuario>();
+            pendenciaPerfilUsuario.Any().ShouldBeFalse();
+            
+            var pendenciaPerfil = ObterTodos<PendenciaPerfil>();
+            pendenciaPerfil.Any().ShouldBeFalse();
+            
+            var pendencia = ObterTodos<Pendencia>();
+            (pendencia.FirstOrDefault().Excluido).ShouldBeTrue();
+        }
+
+        [Fact(DisplayName = "Encaminhamento AEE - Gestor Escolar não poderá devolver encaminhamentos em situação diferente de aguardando validação coordenação")]
+        public async Task Ao_devolver_encaminhamento_em_situacao_diferente_aguardando_validacao_coordenacao()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+            
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await CriarEncaminhamentoSecaoPerguntasRespostas();
+
+            await CriarPendenciasEncaminhamentoAee();
+
+            var obterServicoDevolverEncaminhamentoAee = ObterServicoDevolverEncaminhamentoAee();
+
+            var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
+            {
+                EncaminhamentoAEEId = 1,
+                Motivo = "Devolvendo encaminhamento pelo CP"
+            };
+
+            await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Professor não poderá devolver encaminhamentos em situação aguardando validação")]
+        public async Task Ao_devolver_encaminhamento_em_situacao_aguardando_validacao_professor()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+            
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Encaminhado,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await CriarEncaminhamentoSecaoPerguntasRespostas();
+
+            await CriarPendenciasEncaminhamentoAee();
+
+            var obterServicoDevolverEncaminhamentoAee = ObterServicoDevolverEncaminhamentoAee();
+
+            var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
+            {
+                EncaminhamentoAEEId = 1,
+                Motivo = "Devolvendo encaminhamento pelo CP"
+            };
+
+            await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
+        }
+        
+        [Fact(DisplayName = "Encaminhamento AEE - Professor não poderá devolver encaminhamentos em situação diferente de aguardando validação coordenação")]
+        public async Task Ao_devolver_encaminhamento_em_situacao_diferente_aguardando_validacao_professor()
+        {
+            var filtroAee = new FiltroAEEDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8"
+            };
+
+            await CriarDadosBase(filtroAee);
+            
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                TurmaId = TURMA_ID_1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Rascunho,
+                AlunoNome = "Nome do aluno 1",
+                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await CriarEncaminhamentoSecaoPerguntasRespostas();
+
+            await CriarPendenciasEncaminhamentoAee();
+
+            var obterServicoDevolverEncaminhamentoAee = ObterServicoDevolverEncaminhamentoAee();
+
+            var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
+            {
+                EncaminhamentoAEEId = 1,
+                Motivo = "Devolvendo encaminhamento pelo CP"
+            };
+
+            await Assert.ThrowsAsync<NegocioException>(() => obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto));
+        }
+        
+        private async Task CriarEncaminhamentoSecaoPerguntasRespostas()
+        {
             await InserirNaBase(new SecaoEncaminhamentoAEE()
             {
                 QuestionarioId = 1,
@@ -101,7 +248,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new RespostaEncaminhamentoAEE() {
+            await InserirNaBase(new RespostaEncaminhamentoAEE()
+            {
                 QuestaoEncaminhamentoId = 1,
                 Texto = "Resposta",
                 CriadoEm = DateTime.Now,
@@ -126,18 +274,22 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+        }
+
+        private async Task CriarPendenciasEncaminhamentoAee()
+        {
             await InserirNaBase(new Pendencia()
             {
                 Titulo = "CP editando pendência",
-                Descricao = "Com o CP editar um encaminhamento que está na situação 'Aguardando validação da Coordenação' e clicar em 'Devolver', preenchendo o campo de motivo",
+                Descricao =
+                    "Com o CP editar um encaminhamento que está na situação 'Aguardando validação da Coordenação' e clicar em 'Devolver', preenchendo o campo de motivo",
                 Tipo = TipoPendencia.AEE,
                 Situacao = SituacaoPendencia.Pendente,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new PendenciaEncaminhamentoAEE()
             {
                 EncaminhamentoAEEId = 1,
@@ -146,7 +298,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new PendenciaPerfil()
             {
                 PerfilCodigo = PerfilUsuario.CP,
@@ -155,7 +307,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            
+
             await InserirNaBase(new PendenciaPerfilUsuario()
             {
                 PendenciaPerfilId = 1,
@@ -165,38 +317,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
-            var obterServicoDevolverEncaminhamentoAee = ObterServicoDevolverEncaminhamentoAee();
-
-            var filtroEncaminhamentoAeeDto = new DevolucaoEncaminhamentoAEEDto()
-            {
-                EncaminhamentoAEEId = 1,
-                Motivo = "Devolvendo encaminhamento pelo CP"
-            };
-
-            var retorno = await obterServicoDevolverEncaminhamentoAee.Executar(filtroEncaminhamentoAeeDto);
-            retorno.ShouldBeTrue();
-            
-            var encaminhamentoDevolvido = ObterTodos<Dominio.EncaminhamentoAEE>();
-            (encaminhamentoDevolvido.FirstOrDefault().Situacao == SituacaoAEE.Devolvido).ShouldBeTrue();
-
-            var notificacoes = ObterTodos<Notificacao>();
-            notificacoes.Any().ShouldBeTrue();
-
-            var pendenciaEncaminhamentoAee = ObterTodos<PendenciaEncaminhamentoAEE>();
-            pendenciaEncaminhamentoAee.Any().ShouldBeFalse();
-
-            var pendenciaPerfilUsuario = ObterTodos<PendenciaPerfilUsuario>();
-            pendenciaPerfilUsuario.Any().ShouldBeFalse();
-            
-            var pendenciaPerfil = ObterTodos<PendenciaPerfil>();
-            pendenciaPerfil.Any().ShouldBeFalse();
-            
-            var pendencia = ObterTodos<Pendencia>();
-            (pendencia.FirstOrDefault().Excluido).ShouldBeTrue();
         }
-        
-         [Fact]
+
+        [Fact]
         public async Task Ao_devolver_encaminhamento_em_situacao_diferente_de_aguardando_validacao_coordenacao_cp_deve_gerar_excecao()
         {
             var filtroAee = new FiltroAEEDto()
