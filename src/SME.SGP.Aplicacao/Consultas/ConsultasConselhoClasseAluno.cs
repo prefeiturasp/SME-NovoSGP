@@ -174,9 +174,10 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             var turmasCodigosEOL = await mediator
-                  .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), true));
+                  .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
 
-            var turmaEOL = await mediator.Send(new ObterTurmaPorCodigoQuery(turmasCodigosEOL[0]));
+            var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+            var turmaEOL  = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre );
 
             string[] turmasCodigos;
             long[] conselhosClassesIds;
@@ -300,14 +301,18 @@ namespace SME.SGP.Aplicacao
 
             if (turmaEOL != null)
             {
-                ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
+                if (turma.TipoTurma != turmaEOL.TipoTurma)
+                {
+                    if (notasFechamentoAluno.Any(x => x.Nota != null))
+                        ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
 
-                var disciplinasDaTurmaTipo =
-                (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigosEOL, usuarioAtual.PerfilAtual,
-                    usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
+                    var disciplinasDaTurmaTipo =
+                    (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigosEOL, usuarioAtual.PerfilAtual,
+                        usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
 
-                if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
-                    disciplinasDaTurmaEol.AddRange(disciplinasDaTurmaTipo.Where(x => x.CodigoComponenteCurricular == 6));
+                    if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
+                        disciplinasDaTurmaEol.AddRange(disciplinasDaTurmaTipo.Where(x => x.CodigoComponenteCurricular == 6));
+                }
                  
             }
 
