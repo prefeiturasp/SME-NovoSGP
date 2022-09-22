@@ -28,28 +28,14 @@ namespace SME.SGP.Aplicacao
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
             {
-                return await DownloadArquivo(enderecoArquivo, request.Tipo, cancellationToken);
-
-            }
-            throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
-        }
-
-        private async Task<byte[]> DownloadArquivo(string enderecoArquivo, TipoArquivo tipo, CancellationToken cancellationToken)
-        {
-            var response = await new HttpClient().GetAsync(enderecoArquivo);
-
-            if (response.StatusCode == System.Net.HttpStatusCode.OK)
-                return await response.Content.ReadAsByteArrayAsync(cancellationToken);
-            else if (tipo == TipoArquivo.FotoAluno)
-            {
-                var novaUrl = enderecoArquivo.Replace("/arquivos/", "/arquivos/foto/aluno/");
-                response = await new HttpClient().GetAsync(novaUrl);
+                var response = await new HttpClient().GetAsync(enderecoArquivo);
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     return await response.Content.ReadAsByteArrayAsync(cancellationToken);
-            }
 
-            return default;
+                return default;
+            }
+            throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
         }
     }
 }
