@@ -96,11 +96,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             planosAee.Count(x => x.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente).ShouldBeEquivalentTo(1);
         }
 
-        [Fact(DisplayName = "Deve Encerrar automáticamente os planos de Alunos Concluidos, que estão em mais de uma turma ou foram Transferidos ou forma Deslocados")]
-        public async Task Deve_encerrar_aluno_transferido_e_em_mais_de_uma_turma()
-        {
-            
-        }
 
         private async Task CriarDreUe(string codigoDre,string codigoUe)
         {
