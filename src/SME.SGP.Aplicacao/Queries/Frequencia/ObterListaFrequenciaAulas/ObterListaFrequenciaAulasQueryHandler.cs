@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                                     .OrderBy(c => c.NomeAluno))
             {
                 
-                var frequenciaPreDefinida = request.FrequenciasPreDefinidas.FirstOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
+                var frequenciaPreDefinida = request.FrequenciasPreDefinidas.LastOrDefault(a => a.CodigoAluno == aluno.CodigoAluno);
 
                 var alunoPossuiPlanoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, request.Turma.AnoLetivo));
 
