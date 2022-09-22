@@ -21,13 +21,13 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirQuestaoEncaminhamentoAEEPorSecaoIdCommand request, CancellationToken cancellationToken)
         {
-            await repositorioQuestaoEncaminhamentoAEE.RemoverLogico(request.EncaminhamentoAEESecaoId, "encaminhamento_aee_secao_id");
-
             var questoesIds = await repositorioQuestaoEncaminhamentoAEE.ObterQuestoesPorSecaoId(request.EncaminhamentoAEESecaoId);
 
             foreach (var questaoId in questoesIds)
                 await mediator.Send(new ExcluirRespostaEncaminhamentoAEEPorQuestaoIdCommand(questaoId));
 
+            await repositorioQuestaoEncaminhamentoAEE.RemoverLogico(request.EncaminhamentoAEESecaoId, "encaminhamento_aee_secao_id");
+            
             return true;
         }
     }
