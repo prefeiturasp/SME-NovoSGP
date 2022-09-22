@@ -108,32 +108,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return frequenciaGeralObtida;
-        }
-
-        private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)
-        {
-            var periodos = new long[] { };
-            var periodosEscolaresTipoCalendario = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
-            
-            if (periodosEscolaresTipoCalendario.Any())
-                periodos = periodosEscolaresTipoCalendario.Select(p => p.Id).ToArray();
-
-            var frequenciasDoAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoTurmasDisciplinasDataAsync(codigoAluno, TipoFrequenciaAluno.PorDisciplina, disciplinasAluno, turmasCodigo, new int[] { }, !periodos.Any()? null : periodos);
-
-            if (dataMatriculaTurmaFiltro.HasValue)
-                frequenciasDoAluno = frequenciasDoAluno.Where(f => f.PeriodoFim > dataMatriculaTurmaFiltro);
-
-            if (frequenciasDoAluno.Any())
-            {
-                return new FrequenciaAluno()
-                {
-                    TotalAulas = frequenciasDoAluno.Sum(f => f.TotalAulas),
-                    TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
-                    TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes)
-                };
-            }
-
-            return frequenciaGeralObtida;
-        }
+        }        
     }
 }
