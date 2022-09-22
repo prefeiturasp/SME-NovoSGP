@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
         {
             var tituloPendencia = ObterTituloPendencia(dadosTurma, descricaoComponente);
             var descricaoPendencia = ObterDescricaoPendencia(dadosTurma, descricaoComponente);
-            long pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.Devolutiva, ueId, descricao: descricaoPendencia, titulo: tituloPendencia, instrucao: ObterInstrucaoPendencia()));
+            long pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.Devolutiva, ueId, dadosTurma.Id, descricao: descricaoPendencia, titulo: tituloPendencia, instrucao: ObterInstrucaoPendencia()));
             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis()));
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ueId), Guid.NewGuid()));
 
