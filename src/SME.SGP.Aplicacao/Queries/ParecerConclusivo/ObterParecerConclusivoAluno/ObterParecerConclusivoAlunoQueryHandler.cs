@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
         #region Conselho
         private async Task<(bool ExisteNotaConselho, bool ValidacaoNotaConselho)> ValidarParecerPorConselho(string alunoCodigo, string[] turmasCodigos, int anoLetivo)
         {
-            var notasConselhoClasse = await mediator.Send(new ObterNotasConselhoClassePorAlunoTurmaQuery(turmasCodigos, alunoCodigo));
+            var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
 
