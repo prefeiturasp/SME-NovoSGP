@@ -9,7 +9,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -20,6 +19,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         private const string ATESTADO_MEDIDO_PESSOA_FAMILIA = "Atestado Médico de pessoa da Família";
         private const string ENCHENTE = "Enchente";
         private const string FALTA_TRANSPORTE = "Falta de transporte";
+        private const int QTDE_AULAS_A_SEREM_LANCADAS = 10;
         
         private readonly string[] listaDescricaoMotivoAusencia =
         {
@@ -29,7 +29,12 @@ namespace SME.SGP.TesteIntegracao.Listao
             FALTA_TRANSPORTE
         };
         
-        private readonly string[] codigosAlunos = { CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4 };
+        private readonly string[] codigosAlunos =
+        {
+            CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4, CODIGO_ALUNO_5, CODIGO_ALUNO_6,
+            CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11, CODIGO_ALUNO_12,
+            CODIGO_ALUNO_13
+        };
         private readonly TipoFrequencia[] tiposFrequencias = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
 
         protected ListaoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
@@ -39,9 +44,9 @@ namespace SME.SGP.TesteIntegracao.Listao
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEDataMatriculaQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFake), ServiceLifetime.Scoped));
+                typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFakeListao), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
@@ -56,16 +61,27 @@ namespace SME.SGP.TesteIntegracao.Listao
                 filtroListao.TipoTurma);
             
             await CriarTipoCalendario(filtroListao.TipoCalendario);
-            
-            await CriarAula(filtroListao.DataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
-                USUARIO_PROFESSOR_LOGIN_2222222, TURMA_CODIGO_1, UE_CODIGO_1,
-                filtroListao.ComponenteCurricularId.ToString(), TIPO_CALENDARIO_1);
-
+            await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre);
             await CriarPeriodoEscolarTodosBimestres();
             await InserirParametroSistema();
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
-            await CriarRegistroFrenquencia();
+            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
+        }
+
+        private async Task CriarAulas(long componenteCurricularId, int bimestre)
+        {
+            var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre);
+            
+            for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
+            {
+                var rand = new Random();
+                var range = (dataFim - dataInicio).Days;           
+                var dataAula = dataInicio.AddDays(rand.Next(range));
+                
+                await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222,
+                    TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);                
+            }
         }
         
         private async Task CriarPeriodoEscolarTodosBimestres()
@@ -74,6 +90,36 @@ namespace SME.SGP.TesteIntegracao.Listao
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+        }
+
+        private async Task<(DateTime dataInicio, DateTime dataFim)> DefinirDataInicioFimBimestre(int bimestre)
+        {
+            DateTime dataInicio = default;
+            DateTime dataFim = default;
+
+            switch (bimestre)
+            {
+                case BIMESTRE_1:
+                {
+                    dataInicio = DATA_01_02_INICIO_BIMESTRE_1;
+                    dataFim = DATA_25_04_FIM_BIMESTRE_1;
+                    break;
+                }
+                case BIMESTRE_2:
+                    dataInicio = DATA_02_05_INICIO_BIMESTRE_2;
+                    dataFim = DATA_08_07_FIM_BIMESTRE_2;
+                    break;
+                case BIMESTRE_3:
+                    dataInicio = DATA_25_07_INICIO_BIMESTRE_3;
+                    dataFim = DATA_30_09_FIM_BIMESTRE_3;
+                    break;
+                case BIMESTRE_4:
+                    dataInicio = DATA_03_10_INICIO_BIMESTRE_4;
+                    dataFim = DATA_22_12_FIM_BIMESTRE_4;
+                    break;
+            }   
+            
+            return await Task.FromResult(new ValueTuple<DateTime, DateTime>(dataInicio, dataFim));
         }
 
         private async Task InserirParametroSistema()
@@ -105,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             });
         }
 
-        private async Task CriarRegistroFrenquencia()
+        private async Task CriarRegistroFrenquencia(int bimestre, long componenteCurricularId)
         {
             var aulaId = (ObterTodos<Dominio.Aula>().FirstOrDefault()?.Id).GetValueOrDefault();
             aulaId.ShouldBeGreaterThan(0);
@@ -120,6 +166,9 @@ namespace SME.SGP.TesteIntegracao.Listao
             var registroFrequenciaId = (ObterTodos<RegistroFrequencia>().FirstOrDefault()?.Id).GetValueOrDefault();
             registroFrequenciaId.ShouldBeGreaterThan(0);
 
+            var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(c => c.Bimestre == bimestre);
+            periodoEscolar.ShouldNotBeNull();
+
             int[] quantidadesAulas = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
             string[] codigosAlunosAnotacaoFrequencia = { CODIGO_ALUNO_2, CODIGO_ALUNO_4 };
 
@@ -127,7 +176,9 @@ namespace SME.SGP.TesteIntegracao.Listao
             {
                 var rand = new Random();
                 var index = rand.Next(quantidadesAulas.Length);
+                
                 await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, quantidadesAulas[index], aulaId);
+                await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), quantidadesAulas[index]);
 
                 if (codigosAlunosAnotacaoFrequencia.Contains(codigoAluno))
                     await CriarAnotacaoFrequencia(aulaId, codigoAluno);
@@ -149,6 +200,29 @@ namespace SME.SGP.TesteIntegracao.Listao
                 Valor = (int)tiposFrequencias[index],
                 NumeroAula = numeroAula,
                 AulaId = aulaId
+            });
+        }
+
+        private async Task CriarFrequenciaAluno(PeriodoEscolar periodoEscolar, string codigoAluno, string disciplinaId, int totalAulas)
+        {
+            await InserirNaBase(new Dominio.FrequenciaAluno
+            {
+                Bimestre = periodoEscolar.Bimestre,
+                Tipo = TipoFrequenciaAluno.PorDisciplina,
+                CodigoAluno = codigoAluno,
+                DisciplinaId = disciplinaId,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                PeriodoFim = periodoEscolar.PeriodoFim,
+                PeriodoInicio = periodoEscolar.PeriodoInicio,
+                TotalAulas = totalAulas,
+                TotalAusencias = 0,
+                TotalCompensacoes = 0,
+                TotalPresencas = 0,
+                TotalRemotos = 0,
+                TurmaId = TURMA_CODIGO_1,
+                PeriodoEscolarId = periodoEscolar.Id,
+                CriadoRF = SISTEMA_CODIGO_RF
             });
         }
 
