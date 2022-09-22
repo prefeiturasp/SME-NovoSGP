@@ -29,10 +29,6 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
         private const int Codigo_Regencia_Infantil_Emei_4h_512 = 512;
         private const int Codigo_Regencia_Infantil_Emei_2h_513 = 513;
 
-        private const string Turma_Emei_7P = "7P";
-        private const string Turma_Emei_7A = "7A";
-        private const string Turma_Emei_7B = "7B";
-        
         private const string Modalidade_EI_7P = "EI-7P";
         private const string Modalidade_EI_7A = "EI-7A";
         private const string Modalidade_EI_7B = "EI-7B";
@@ -137,7 +133,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7P,
+                TurmaId = "3",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -155,7 +151,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7P,
+                TurmaId = "3",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -173,7 +169,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7P,
+                TurmaId = "3",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -191,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7A,
+                TurmaId = "1",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -209,7 +205,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7A,
+                TurmaId = "1",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -227,7 +223,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7A,
+                TurmaId = "1",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -245,7 +241,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7B,
+                TurmaId = "2",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -263,7 +259,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7B,
+                TurmaId = "2",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -281,7 +277,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = Turma_Emei_7B,
+                TurmaId = "2",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 05, 09),
@@ -415,19 +411,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
 
             await InserirNaBase(new Turma()
             {
-                Nome = "7P",
-                CodigoTurma = "EI - 7P",
-                Ano = "1",
-                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
-                ModalidadeCodigo = Modalidade.Fundamental,
-                UeId = 1
-            });
-
-            await InserirNaBase(new Turma()
-            {
                 Nome = "7A",
-                CodigoTurma = "EI - 7A",
+                CodigoTurma = "1",
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -438,7 +423,18 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             await InserirNaBase(new Turma()
             {
                 Nome = "7B",
-                CodigoTurma = "EI - 7B",
+                CodigoTurma = "2",
+                Ano = "1",
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                UeId = 1
+            });
+
+            await InserirNaBase(new Turma()
+            {
+                Nome = "7P",
+                CodigoTurma = "3",
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -453,7 +449,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             {
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = Turma_Emei_7P,
+                    CodigoTurma = "3",
                     TurmaComModalidade = Modalidade_EI_7P,
                     NomeEscola = Nome_Escola_Emei_Paraisopolis,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
@@ -543,7 +539,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 },
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = Turma_Emei_7A,
+                    CodigoTurma = "1",
                     TurmaComModalidade = Modalidade_EI_7A,
                     NomeEscola = Nome_Escola_Emei_Paraisopolis,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
@@ -633,7 +629,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 },
                 new FiltroPendenciaDiarioBordoTurmaAulaDto()
                 {
-                    CodigoTurma = Turma_Emei_7B,
+                    CodigoTurma = "2",
                     TurmaComModalidade = Modalidade_EI_7B,
                     NomeEscola = Nome_Escola_Emei_Sao_Paulo,
                     AulasProfessoresComponentesCurriculares = new List<AulaProfessorComponenteDto>()
