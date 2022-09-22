@@ -651,15 +651,6 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            await InserirNaBase(new Usuario
-            {
-                Login = USUARIO_PAAI_LOGIN_4444444,
-                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
-                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
-                Nome = USUARIO_PAAI_LOGIN_4444444,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
 
             await InserirNaBase(new Usuario
             {
