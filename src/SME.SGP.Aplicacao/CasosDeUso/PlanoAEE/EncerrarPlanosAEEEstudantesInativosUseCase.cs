@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -40,12 +41,12 @@ namespace SME.SGP.Aplicacao
                             .Send(new ObterMatriculasAlunoPorCodigoEAnoQuery(planoAEE.AlunoCodigo, anoLetivo, filtrarSituacao: false));
 
                         if (matriculas == null)
-                            throw new NegocioException($"Não foi localizada nenhuma Matricula para o Aluno {planoAEE.AlunoCodigo}.");
+                            throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Nao_foi_localizada_nenhuma_matricula, planoAEE.AlunoCodigo));
 
                         var turmaDoPlanoAee = await ObterTurma(planoAEE.TurmaId);
 
                         if (turmaDoPlanoAee == null)
-                            throw new NegocioException($"Não foi localizada a turma com id {planoAEE.TurmaId}.");
+                            throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Turma_nao_localizada, planoAEE.TurmaId));
 
                         var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao)?.FirstOrDefault();
 
@@ -77,7 +78,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Publish(new SalvarLogViaRabbitCommand($"Erro realizar o encerramento automático dos planos aee ", LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException.ToString()));
+                await mediator.Publish(new SalvarLogViaRabbitCommand(MensagemNegocioEncerramentoAutomaticoPlanoAee.Falha_ao_encerrar_planos, LogNivel.Critico, LogContexto.WorkerRabbit, observacao: ex.Message, rastreamento: ex.StackTrace, excecaoInterna: ex.ToString(), innerException: ex.InnerException.ToString()));
                 throw;
             }
         }
