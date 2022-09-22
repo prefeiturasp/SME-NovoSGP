@@ -9,6 +9,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -47,6 +48,9 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEDataMatriculaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFakeListao), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
