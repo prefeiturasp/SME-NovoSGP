@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         [Fact]
         public async Task Ao_editar_encaminhamento_rascunho_professor()
         {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
+            await CriarDadosBase(ObterFiltro(ObterPerfilProfessor()));
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         [Fact]
         public async Task Ao_editar_encaminhamento_rascunho_e_enviar_professor_cp()
         {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilCP()));
+            await CriarDadosBase(ObterFiltro(ObterPerfilCP()));
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -312,7 +312,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         [Fact]
         public async Task Ao_editar_encaminhamento_aguardando_validacao_e_salvar_rascunho_professor_cp()
         {
-            await CriarDadosBase(ObterFiltroNotas(ObterPerfilCP()));
+            await CriarDadosBase(ObterFiltro(ObterPerfilCP()));
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -456,7 +456,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             resposta3.Texto.ShouldBe("Resposta dto 7");
         }
 
-        private FiltroAEEDto ObterFiltroNotas(string perfil)
+        private FiltroAEEDto ObterFiltro(string perfil)
         {
             return new FiltroAEEDto()
             {

@@ -95,6 +95,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             return ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
         }
 
+        protected IEncerrarEncaminhamentoAEEUseCase ObterUseCaseEncerrarEncaminhamento()
+        {
+            return ServiceProvider.GetService<IEncerrarEncaminhamentoAEEUseCase>();
+        }
+
         private async Task CriarRespostasComplementares()
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
