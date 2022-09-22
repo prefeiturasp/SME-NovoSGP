@@ -713,17 +713,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
-
-            await InserirNaBase(new Usuario()
-            {
-                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
-                Login = USUARIO_PAAI_LOGIN_4444444,
-                Nome = USUARIO_PAAI_LOGIN_4444444,
-                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
-                CriadoPor = "",
-                CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-            });
+            
         }
 
         protected async Task CriarTurma(Modalidade modalidade)
