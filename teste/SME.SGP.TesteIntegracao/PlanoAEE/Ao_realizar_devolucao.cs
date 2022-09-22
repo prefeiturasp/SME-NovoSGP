@@ -27,9 +27,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(ObterUsuarioLogadoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Com o CP editar um plano que está na situação Aguardando parecer da Coordenação e clicar em Devolver, preenchendo o campo de motivo")]
+        [Fact(DisplayName = "Plano AEE - Com o CP editar um plano que está na situação Aguardando parecer da Coordenação e clicar em Devolver, preenchendo o campo de motivo")]
         public async Task Editar_plano_que_esta_na_situacao_aguardando_parecer_da_coordenacao()
         {
             //Criando Plano
@@ -83,7 +84,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
 
-        [Fact(DisplayName = "Com o Coordenador do CEFAI editar um plano que está na situação Aguardando atribuição de PAAI e clicar em Devolver, preenchendo o campo de motivo.")]
+        [Fact(DisplayName = "Plano AEE - Com o Coordenador do CEFAI editar um plano que está na situação Aguardando atribuição de PAAI e clicar em Devolver, preenchendo o campo de motivo.")]
         public async Task Editar_um_plano_que_esta_na_situacao_aguardando_atribuicao_paai()
         {
             //Criando Plano como CP
@@ -145,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Resolvida).ShouldBeEquivalentTo(1);
             obterTodosPendenciasAee.Count(x => x.Situacao == SituacaoPendencia.Pendente).ShouldBeEquivalentTo(2);
         }
-        [Fact(DisplayName = "Com o PAAI editar um plano que está na situação Aguardando parecer do CEFAI e clicar em Devolver, preenchendo o campo de motivo")]
+        [Fact(DisplayName = "Plano AEE - Com o PAAI editar um plano que está na situação Aguardando parecer do CEFAI e clicar em Devolver, preenchendo o campo de motivo")]
         public async Task Editar_um_plano_que_esta_na_situacao_aguardando_parecer_do_cefai()
         {
             //Criando Plano

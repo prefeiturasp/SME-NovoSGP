@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         }
 
 
-        [Fact(DisplayName = "Com o Coordenador do CEFAI realizar atribuição do PAAI.")]
+        [Fact(DisplayName = "Plano AEE - Com o Coordenador do CEFAI realizar atribuição do PAAI.")]
         public async Task Realizar_atribuicao_paai_com_usuario_cefai()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
         }
         
-        [Fact(DisplayName = "Alterar o PAAI atribuído - A pendência deverá ser transferida para o novo PAAI")]
+        [Fact(DisplayName = "Plano AEE - Alterar o PAAI atribuído - A pendência deverá ser transferida para o novo PAAI")]
         public async Task Alterar_o_paai_atribuído()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()

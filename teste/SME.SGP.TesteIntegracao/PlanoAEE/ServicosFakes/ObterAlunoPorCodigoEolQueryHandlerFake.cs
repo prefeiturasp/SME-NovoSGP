@@ -24,14 +24,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
             return new AlunoPorTurmaResposta
             {
                 Ano = 0,
-                CodigoAluno = ALUNO_CODIGO_1,
+                CodigoAluno = request.CodigoAluno,
                 CodigoComponenteCurricular = 0,
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                 CodigoTurma = 1,
                 DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
                 DataSituacao = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                NomeAluno = ALUNO_CODIGO_1,
+                NomeAluno = request.CodigoAluno,
                 NumeroAlunoChamada = 1,
                 SituacaoMatricula = ATIVO,
                 NomeResponsavel = RESPONSAVEL,
