@@ -34,14 +34,14 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
             {
                 if (!request.ComponenteSemNota)
                 {
-                    await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
-                    await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF, request.Bimestre);
-                    await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre);
+                    await servicoPendenciaFechamento.ValidarAvaliacoesSemNotasParaNenhumAluno(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
+                    await servicoPendenciaFechamento.ValidarPercentualAlunosAbaixoDaMedia(request.FechamentoTurmaDisciplinaId, request.Justificativa, request.CriadoRF, request.Bimestre, request.TurmaId);
+                    await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre, request.TurmaId);
                 }
-                await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+                await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
 
                 if (request.RegistraFrequencia)
-                    await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre);
+                    await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
 
                 var quantidadePendencias = servicoPendenciaFechamento.ObterQuantidadePendenciasGeradas();
                 if (quantidadePendencias > 0)
