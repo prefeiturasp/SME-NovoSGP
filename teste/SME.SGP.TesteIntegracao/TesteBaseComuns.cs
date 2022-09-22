@@ -183,6 +183,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_4444444 = "4444444";
+        protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
@@ -651,16 +652,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-            await InserirNaBase(new Usuario
-            {
-                Login = USUARIO_PAAI_LOGIN_4444444,
-                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
-                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
-                Nome = USUARIO_PAAI_LOGIN_4444444,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
+            
             await InserirNaBase(new Usuario
             {
                 Login = USUARIO_PROFESSOR_LOGIN_1111111,
@@ -713,7 +705,25 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
-            
+            await InserirNaBase(new Usuario
+            {
+                Login = USUARIO_PAAI_LOGIN_5555555,
+                CodigoRf = USUARIO_PAAI_LOGIN_5555555,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
+                Nome = USUARIO_PAAI_LOGIN_5555555,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
+                Login = USUARIO_PAAI_LOGIN_4444444,
+                Nome = USUARIO_PAAI_LOGIN_4444444,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+               CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
         }
 
         protected async Task CriarTurma(Modalidade modalidade)
