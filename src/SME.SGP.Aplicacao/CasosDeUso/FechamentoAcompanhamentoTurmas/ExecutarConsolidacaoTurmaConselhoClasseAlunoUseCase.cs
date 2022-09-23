@@ -150,7 +150,7 @@ namespace SME.SGP.Aplicacao
                         return true;
                     }
 
-                    var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
+                    var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(new string[] { turma.CodigoTurma }, false));
 
                     if (componentes != null && componentes.Any())
                     {
