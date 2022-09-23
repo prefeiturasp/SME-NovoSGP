@@ -228,17 +228,22 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             var questoes = encaminhamentoAEEDto.Secoes.Where(sessao => sessao.Questoes.Any())
                                                         .SelectMany(secao => secao.Questoes,
                                                                     (secao, questao) => new { secao.SecaoId, questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId });
+            if (!questoes.Any()) { return; } 
 
             var questoesNaoPreenchidas = questoes.Where(questao => String.IsNullOrEmpty(questao.Resposta) && (questao.RespostaEncaminhamentoId == 0));
-            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesObrigatoriasPorSecoesIdQuery(questoesNaoPreenchidas.Select(questao => questao.SecaoId).ToArray()));
-            var questoesObrigatoriasNaoPreenchidas = questoesNaoPreenchidas.Where(questaoNaoPreenchida =>
-                                                questoesObrigatorias
-                                                    .Contains(questaoNaoPreenchida.QuestaoId));
+            if (!questoesNaoPreenchidas.Any()) { return; }
 
+            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesObrigatoriasPorSecoesIdQuery(questoesNaoPreenchidas.Select(questao => questao.SecaoId).ToArray()));
+            if (!questoesObrigatorias.Any()) { return; }
+
+            var questoesObrigatoriasNaoPreenchidas = questoesObrigatorias.Where(questaoObrigatoria =>
+                                                        questoesNaoPreenchidas
+                                                            .Select(questaoNaoPreenchida => questaoNaoPreenchida.QuestaoId)
+                                                            .Contains(questaoObrigatoria.Id));
             if (questoesObrigatoriasNaoPreenchidas.Any())
             {
                 throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                           string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => questao.QuestaoId).ToArray())));
+                                                           string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => $"Seção {questao.SecaoOrdem} Questão {questao.Ordem}" ).ToArray())));
             }
 
         }

@@ -14,16 +14,16 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<QuestaoDto>> ObterQuestoesPorSecoesId(long[] secoesId, bool? obrigatorias)
+        public async Task<IEnumerable<QuestaoSecaoAeeDto>> ObterQuestoesPorSecoesId(long[] secoesId, bool? obrigatorias)
         {
-            var query = @"select q.* from secao_encaminhamento_aee sea
+            var query = @"select q.*, sea.ordem as secaoOrdem from secao_encaminhamento_aee sea
                                      inner join questao q on q.questionario_id = sea.questionario_id
                                      where sea.id = ANY(@secoesId) ";
 
             if (obrigatorias.HasValue)
                 query = query + " and q.obrigatorio = @obrigatorias ";
 
-            return await database.Conexao.QueryAsync<QuestaoDto>(query, new { secoesId, obrigatorias });
+            return await database.Conexao.QueryAsync<QuestaoSecaoAeeDto>(query, new { secoesId, obrigatorias });
         }
 
         public async Task<bool> VerificaObrigatoriedade(long questaoId)

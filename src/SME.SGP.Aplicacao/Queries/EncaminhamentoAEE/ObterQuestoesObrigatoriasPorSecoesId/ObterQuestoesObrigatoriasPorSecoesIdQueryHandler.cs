@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
 {
-    public class ObterQuestoesObrigatoriasPorSecoesIdQueryHandler : IRequestHandler<ObterQuestoesObrigatoriasPorSecoesIdQuery, long[]>
+    public class ObterQuestoesObrigatoriasPorSecoesIdQueryHandler : IRequestHandler<ObterQuestoesObrigatoriasPorSecoesIdQuery, IEnumerable<QuestaoSecaoAeeDto>>
     {
         private readonly IRepositorioQuestao repositorioQuestao;
 
@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
             this.repositorioQuestao = repositorioQuestao ?? throw new System.ArgumentNullException(nameof(repositorioQuestao));
         }
 
-        public async Task<long[]> Handle(ObterQuestoesObrigatoriasPorSecoesIdQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<QuestaoSecaoAeeDto>> Handle(ObterQuestoesObrigatoriasPorSecoesIdQuery request, CancellationToken cancellationToken)
         {
             var questoes = await repositorioQuestao.ObterQuestoesPorSecoesId(request.SecoesId, true);
 
-            return questoes.Select(q => q.Id).ToArray();
+            return questoes;
         }
     }
 }

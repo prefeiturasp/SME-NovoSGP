@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries
 {
-    public class ObterQuestoesObrigatoriasPorSecoesIdQuery : IRequest<long[]>
+    public class ObterQuestoesObrigatoriasPorSecoesIdQuery : IRequest<IEnumerable<QuestaoSecaoAeeDto>>
     {
         public ObterQuestoesObrigatoriasPorSecoesIdQuery(long[] secoesId)
         {
