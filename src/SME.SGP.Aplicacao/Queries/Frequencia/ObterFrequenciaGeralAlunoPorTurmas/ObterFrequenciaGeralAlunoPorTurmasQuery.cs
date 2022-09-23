@@ -1,21 +1,24 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaGeralAlunoPorTurmasQuery : IRequest<string>
     {
-        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0)
+        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0, DateTime? dataMatricula = null)
         {
             CodigoAluno = codigoAluno;
             CodigosTurmas = codigosTurmas;
             TipoCalendarioId = tipoCalendarioId;
+            DataMatriculaTurmaFiltro = dataMatricula;
         }
 
         public string CodigoAluno { get; }
         public string[] CodigosTurmas { get; }
         public long TipoCalendarioId { get; }
+        public DateTime? DataMatriculaTurmaFiltro { get; set; }
     }
 
     public class ObterFrequenciaGeralAlunoPorTurmasQueryValidator : AbstractValidator<ObterFrequenciaGeralAlunoPorTurmasQuery>

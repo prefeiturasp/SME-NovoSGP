@@ -25,7 +25,8 @@ namespace SME.SGP.Aplicacao.Commands.PendenciasGerais.SalvarPendencia
                 Descricao = ObterDescricao(request),
                 Instrucao = request.Instrucao,
                 DescricaoHtml = request.DescricaoHtml,
-                UeId = request.UeId
+                UeId = request.UeId,
+                TurmaId = request.TurmaId
             };
 
             return await repositorioPendencia.SalvarAsync(pendencia);

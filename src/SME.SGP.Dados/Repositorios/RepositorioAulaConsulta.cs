@@ -849,7 +849,7 @@ namespace SME.SGP.Dados.Repositorios
             if (mes.HasValue)
                 query.AppendLine("AND extract(month from a.data_aula) = @mes");
             if (data.HasValue)
-                query.AppendLine("AND DATE(a.data_aula) = @data");
+                query.AppendLine("AND DATE(a.data_aula) = @data::date");
             if (semanaAno.HasValue)
                 query.AppendLine("AND extract(week from a.data_aula) = @semanaAno");
             if (!string.IsNullOrEmpty(codigoRf))
@@ -954,7 +954,8 @@ namespace SME.SGP.Dados.Repositorios
                                a.criado_rf as ProfessorRf,
                                a.turma_id as TurmaId,
                                a.disciplina_id as DisciplinaId,
-                               ue.ue_id as CodigoUe
+                               ue.ue_id as CodigoUe,
+                               t.id as IdTurma
                           from aula a 
                         inner join turma t on t.turma_id = a.turma_id
                         inner join ue on ue.id = t.ue_id

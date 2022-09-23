@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var pendenciaExiste = await mediator.Send(new ObterPendenciaEncaminhamentoAEEPorIdQuery(encaminhamentoAEE.Id));
-                        var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, null, null, turma.UeId);
+                        var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, null, null, turma.UeId, turma.Id);
                         if (pendenciaExiste == null)
                         {
                             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);

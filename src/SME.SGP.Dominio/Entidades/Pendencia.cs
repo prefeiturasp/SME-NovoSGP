@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "", string descricaoHtml = "", long? ueId = null)
+        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "", string descricaoHtml = "", long? ueId = null, long? turmaId = null)
         {
             Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
@@ -14,6 +14,15 @@ namespace SME.SGP.Dominio
             Instrucao = instrucao;
             DescricaoHtml = descricaoHtml;
             UeId = ueId;
+            TurmaId = turmaId;
+        }
+
+        public Pendencia(TipoPendencia tipo, string titulo, string descricao, long? turmaId = null)
+        {
+            Tipo = tipo;
+            Titulo = titulo;
+            Descricao = descricao;
+            TurmaId = turmaId;
         }
 
         public Pendencia()
@@ -28,6 +37,7 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public string DescricaoHtml { get; set; }
         public long? UeId { get; set; }
+        public long? TurmaId { get; set; }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {

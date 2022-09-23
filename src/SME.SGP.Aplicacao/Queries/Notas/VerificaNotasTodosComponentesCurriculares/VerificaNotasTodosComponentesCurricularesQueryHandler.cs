@@ -30,11 +30,28 @@ namespace SME.SGP.Aplicacao.Queries
                 var turmasCodigosParaConsulta = new List<int>();
                 turmasCodigosParaConsulta.AddRange(request.Turma.ObterTiposRegularesDiferentes());
                 turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
-                turmasCodigos = await mediator
+                var turmasCodigosEOL = await mediator
                     .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta, request.Historico));
 
-                turmasCodigos = turmasCodigos
-                    .Concat(new string[] { request.Turma.CodigoTurma }).ToArray();
+                if (request.Historico == true)
+                {
+                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+
+                    if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
+                    {
+                        turmasCodigos = turmasCodigosEOL;
+                        turmasCodigos = turmasCodigos
+                        .Concat(new string[] { request.Turma.CodigoTurma }).ToArray();
+                    }
+                    else
+                    {
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                    }
+                }
+                else
+                    turmasCodigos = turmasCodigosEOL
+                        .Concat(new string[] { request.Turma.CodigoTurma }).ToArray();
+
             }
             else turmasCodigos = new string[] { request.Turma.CodigoTurma };
 
@@ -53,12 +70,20 @@ namespace SME.SGP.Aplicacao.Queries
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
             }
+            var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo));
 
             if ((request.Bimestre ?? 0) > 0)
-                notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+            {
+                if (request.Turma.ModalidadeCodigo == Modalidade.EJA && request.Bimestre == 2)
+                    if (todasAsNotas != null && todasAsNotas.Any())
+                        notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
+                    else
+                        notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+                else 
+                    notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, (request.Bimestre ?? 0))));
+            }
             else
             {
-                var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo));
 
                 if (todasAsNotas != null && todasAsNotas.Any())
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));

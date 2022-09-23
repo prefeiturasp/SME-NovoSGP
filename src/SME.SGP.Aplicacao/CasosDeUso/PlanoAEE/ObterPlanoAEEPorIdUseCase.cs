@@ -32,11 +32,16 @@ namespace SME.SGP.Aplicacao
                     var entidadePlano = await mediator
                         .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
-                    var alunoTurma = await mediator
-                        .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
+                var alunoTurma = await mediator
+                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, DateTime.Today.Year, true));
 
-                    if (alunoTurma == null)
-                        throw new NegocioException("Aluno não encontrado.");
+                if (alunoTurma == null)
+                {
+                    alunoTurma = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
+                }
+
+                if (alunoTurma == null)
+                    throw new NegocioException("Aluno não encontrado.");
 
                     var anoLetivo = entidadePlano.Turma.AnoLetivo;
 
@@ -58,18 +63,18 @@ namespace SME.SGP.Aplicacao
                     if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && SituacaoAtivaPlanoAEE(entidadePlano))
                         anoLetivo = entidadePlano.Turma.AnoLetivo;
 
-                    var alunoPorTurmaResposta = await mediator
-                        .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, false, entidadePlano.Turma?.CodigoTurma));
+                var alunoPorTurmaResposta = await mediator
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo == DateTime.Today.Year ? false : entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
 
 
-                    if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
-                    {
-                        alunoPorTurmaResposta = await mediator
-                            .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
-                    }
-                    else
-                    if(alunoPorTurmaResposta == null && !SituacaoAtivaPlanoAEE(entidadePlano) && entidadePlano.Turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
-                        alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo);
+                if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
+                {
+                    alunoPorTurmaResposta = await mediator
+                        .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
+                }
+                else
+                    if((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) || !SituacaoAtivaPlanoAEE(entidadePlano))
+                    alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, anoLetivo);
 
                     if (alunoPorTurmaResposta == null)
                         throw new NegocioException("Aluno não localizado");               
@@ -162,7 +167,7 @@ namespace SME.SGP.Aplicacao
             var turmasAluno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, false, true));
             if(turmasAluno.Any())
             {
-                if(turmasAluno.Count() > 1)
+                if(turmasAluno.Count() > 0)
                 {
                     var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
 
