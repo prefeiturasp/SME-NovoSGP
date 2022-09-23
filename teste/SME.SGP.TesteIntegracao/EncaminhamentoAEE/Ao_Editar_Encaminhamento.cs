@@ -146,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 }
             };
 
-            var useCase = RetornarUseCaseRegistrarEncaminhamento();
+            var useCase = ObterRegistrarEncaminhamentoAee();
             var dtoResumo = await useCase.Executar(dto);
 
             var listaDeResposta = ObterTodos<RespostaEncaminhamentoAEE>();
@@ -291,7 +291,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 }
             };
 
-            var useCase = RetornarUseCaseRegistrarEncaminhamento();
+            var useCase = ObterRegistrarEncaminhamentoAee();
             var dtoResumo = await useCase.Executar(dto);
             var encaminhamento = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault();
             encaminhamento.ShouldNotBeNull();
@@ -438,7 +438,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 }
             };
 
-            var useCase = RetornarUseCaseRegistrarEncaminhamento();
+            var useCase = ObterRegistrarEncaminhamentoAee();
             var dtoResumo = await useCase.Executar(dto);
             var encaminhamento = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault();
             encaminhamento.ShouldNotBeNull();
