@@ -225,25 +225,24 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)
         {
+            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesIdObrigatoriasPorEtapaQuery(1));
+            if (!questoesObrigatorias.Any()) { return; }
+
             var questoes = encaminhamentoAEEDto.Secoes.Where(sessao => sessao.Questoes.Any())
                                                         .SelectMany(secao => secao.Questoes,
                                                                     (secao, questao) => new { secao.SecaoId, questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId });
-            if (!questoes.Any()) { return; } 
+            
+            var questoesRespondidas = questoes.Where(questao => !String.IsNullOrEmpty(questao.Resposta) || (questao.RespostaEncaminhamentoId != 0));
 
-            var questoesNaoPreenchidas = questoes.Where(questao => String.IsNullOrEmpty(questao.Resposta) && (questao.RespostaEncaminhamentoId == 0));
-            if (!questoesNaoPreenchidas.Any()) { return; }
-
-            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesObrigatoriasPorSecoesIdQuery(questoesNaoPreenchidas.Select(questao => questao.SecaoId).ToArray()));
-            if (!questoesObrigatorias.Any()) { return; }
-
-            var questoesObrigatoriasNaoPreenchidas = questoesObrigatorias.Where(questaoObrigatoria =>
-                                                        questoesNaoPreenchidas
-                                                            .Select(questaoNaoPreenchida => questaoNaoPreenchida.QuestaoId)
-                                                            .Contains(questaoObrigatoria.Id));
-            if (questoesObrigatoriasNaoPreenchidas.Any())
+            var questoesObrigatoriasNaoRespondidas = questoesObrigatorias.Where(questaoObrigatoria =>
+                                                        !questoesRespondidas
+                                                            .Any(questao => questao.QuestaoId == questaoObrigatoria.Id)
+                                                            );
+            
+            if (questoesObrigatoriasNaoRespondidas.Any())
             {
                 throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                           string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => $"Seção {questao.SecaoOrdem} Questão {questao.Ordem}" ).ToArray())));
+                                                           string.Join(",", questoesObrigatoriasNaoRespondidas.Select(questao => $"Seção {questao.SecaoOrdem} Questão {questao.Ordem}" ).Distinct().ToArray())));
             }
 
         }

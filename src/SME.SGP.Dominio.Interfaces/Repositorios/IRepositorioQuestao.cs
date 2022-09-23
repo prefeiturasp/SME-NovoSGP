@@ -10,6 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<bool> VerificaObrigatoriedade(long questaoId);
 
-        Task<IEnumerable<QuestaoSecaoAeeDto>> ObterQuestoesPorSecoesId(long[] secoesId, bool? obrigatorias);
+        Task<IEnumerable<QuestaoIdSecaoAeeDto>> ObterQuestoesIdPorEtapa(int etapa, bool? obrigatorias);
     }
 }

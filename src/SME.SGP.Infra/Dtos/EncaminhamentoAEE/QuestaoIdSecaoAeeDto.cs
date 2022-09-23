@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class QuestaoSecaoAeeDto
+    public class QuestaoIdSecaoAeeDto
     {
         public long Id { get; set; }
         public int Ordem { get; set; }
