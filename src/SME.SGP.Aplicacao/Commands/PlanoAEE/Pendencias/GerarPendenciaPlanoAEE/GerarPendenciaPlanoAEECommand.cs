@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
             Descricao = descricao;
             UeId = ueId;
             Perfil = perfil;
+            TurmaId = turmaId;
         }
 
         public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao, long ueId, long turmaId, PerfilUsuario? perfil = null)

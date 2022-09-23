@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.Plano_AEE
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_atribuir_responsavel_geral_do_plano : TesteBase
     {
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             _builder = new ItensBasicosBuilder(this);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve atribuir um responsavel geral para o plano")]
         public async Task Deve_atribuir_responsavel_geral_do_plano()
         {
             await _builder.CriaItensComunsEja();
@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.Plano_AEE
             lista.FirstOrDefault().ResponsavelId.ShouldBe(2);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve atribuir um responsavel e criando usuario")]
         public async Task Deve_atribuir_responsavel_criando_usuario()
         {
             await _builder.CriaItensComunsEja();
