@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,10 +20,13 @@ namespace SME.SGP.Aplicacao
 
             encaminhamento.Situacao = VerificaEstudanteNecessitaAEE(encaminhamento) ? SituacaoAEE.Deferido : SituacaoAEE.Indeferido;
 
-            await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
 
+            if (!(usuarioLogado.EhProfessorPaee() || usuarioLogado.EhPerfilPaai()))
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.SOMENTE_USUARIO_PAAE_OU_PAEE_PODE_CONCLUIR_O_ENCAMINHAMENTO);
+
+            await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamento));
+            await mediator.Send(new ExecutaNotificacaoConclusaoEncaminhamentoAEECommand(encaminhamento.Id, usuarioLogado.CodigoRf, usuarioLogado.Nome));
             await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoId);
 
             return true;

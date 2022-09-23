@@ -95,6 +95,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             return ServiceProvider.GetService<IEnviarParaAnaliseEncaminhamentoAEEUseCase>();
         }
 
+        protected IEncerrarEncaminhamentoAEEUseCase ObterUseCaseEncerrarEncaminhamento()
+        {
+            return ServiceProvider.GetService<IEncerrarEncaminhamentoAEEUseCase>();
+        }
+
+        protected IConcluirEncaminhamentoAEEUseCase ObterUseCaseConcluirEncaminhamento()
+        {
+            return ServiceProvider.GetService<IConcluirEncaminhamentoAEEUseCase>();
+        } 
+
         private async Task CriarRespostasComplementares()
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
@@ -364,6 +374,56 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+            //22
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 21,
+                Ordem = 1,
+                Nome = "Barreiras arquitetônicas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //23
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 21,
+                Ordem = 2,
+                Nome = "Barreiras nas comunicações e na informação",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //24
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 21,
+                Ordem = 3,
+                Nome = "Barreiras atitudinais",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //25
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 25,
+                Ordem = 1,
+                Nome = "Sim",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //26
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = 25,
+                Ordem = 1,
+                Nome = "Não",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
         private async Task CriarQuestionario()
@@ -371,6 +431,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await InserirNaBase(new Questionario()
             {
                 Nome = "Questionário Encaminhamento AEE Etapa 1 Seção 2",
+                Tipo = TipoQuestionario.EncaminhamentoAEE,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new Questionario()
+            {
+                Nome = "Questionário Encaminhamento AEE Etapa 3",
                 Tipo = TipoQuestionario.EncaminhamentoAEE,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -614,6 +683,104 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 QuestionarioId = 1,
                 Ordem = 2,
                 Nome = "Detalhe as atividades",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //Questionario Etapa 3
+            //21
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Quais barreiras foram identificadas no contexto escolar que justificam a necessidade da oferta do AEE?",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Checkbox,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //22
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Barreiras arquitetônicas (Exemplifique)",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //23
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 2,
+                Nome = "Barreiras nas comunicações e na informação (Exemplifique)",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //24
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 2,
+                Nome = "Barreiras atitudinais(Exemplifique)",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //25
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 2,
+                Nome = "O estudante/ criança necessita do Atendimento Educacional Especializado?",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Radio,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //26
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Justifique a partir do estudo de caso quais critérios são elegíveis para o atendimento educacional especializado para este estudante.",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //27
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Uma vez que não foram identificadas barreiras no contexto escolar do estudante, quais sugestões podem contribuir para a prática pedagógica?",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            //28
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 2,
+                Nome = "Que sugestões podem ser dadas à unidade educacional para orientar a família?",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Texto,
                 CriadoPor = SISTEMA_NOME,
