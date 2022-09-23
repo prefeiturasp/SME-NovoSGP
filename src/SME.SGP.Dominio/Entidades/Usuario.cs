@@ -94,6 +94,9 @@ namespace SME.SGP.Dominio
         public bool EhCoordenadorCEFAI()
          => PerfilAtual == Dominio.Perfis.PERFIL_CEFAI;
 
+        public bool EhPerfilPaai()
+            => PerfilAtual == Dominio.Perfis.PERFIL_PAAI;
+
         public bool EhPerfilProfessor()
          => EhProfessor()
          || EhProfessorCj()
