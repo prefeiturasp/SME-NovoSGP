@@ -112,7 +112,7 @@ namespace SME.SGP.Aplicacao
                                                                                                              aluno.Inativo,
                                                                                                              componenteCurricularId: codigoComponenteCurricular);
 
-                var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
+                    var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
 
                 var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, CodigoCorrelacao, null));
                 if (!publicarFilaConsolidacaoConselhoClasseAluno)
