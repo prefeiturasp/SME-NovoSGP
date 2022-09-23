@@ -1,5 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio
 {
@@ -38,6 +38,43 @@ namespace SME.SGP.Dominio
         public string DescricaoHtml { get; set; }
         public long? UeId { get; set; }
         public long? TurmaId { get; set; }
+
+        public TipoPendenciaAssunto PendenciaAssunto
+        {
+            get
+            {
+                switch (Tipo)
+                {
+                    case TipoPendencia.AvaliacaoSemNotaParaNenhumAluno:
+                    case TipoPendencia.AulasReposicaoPendenteAprovacao:
+                    case TipoPendencia.AulasSemFrequenciaNaDataDoFechamento:
+                    case TipoPendencia.ResultadosFinaisAbaixoDaMedia:
+                        return TipoPendenciaAssunto.PendenciaFechamento;
+                    case TipoPendencia.AulaNaoLetivo:
+                    case TipoPendencia.Avaliacao:
+                        return TipoPendenciaAssunto.PendenciaAula;
+                    case TipoPendencia.CalendarioLetivoInsuficiente:
+                    case TipoPendencia.CadastroEventoPendente:
+                        return TipoPendenciaAssunto.PendenciaCalendario;
+                    case TipoPendencia.AusenciaDeAvaliacaoProfessor:
+                    case TipoPendencia.AusenciaDeAvaliacaoCP:
+                    case TipoPendencia.AusenciaFechamento:
+                        return TipoPendenciaAssunto.PendenciaProfessor;
+                    case TipoPendencia.AusenciaDeRegistroIndividual:
+                        return TipoPendenciaAssunto.PendenciaRegistroIndividual;
+                    case TipoPendencia.Devolutiva:
+                        return TipoPendenciaAssunto.PendenciaDevolutiva;
+                    case TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento:
+                    case TipoPendencia.AlteracaoNotaFechamento:
+                    case TipoPendencia.Frequencia:
+                    case TipoPendencia.PlanoAula:
+                    case TipoPendencia.DiarioBordo:
+                    case TipoPendencia.AEE:
+                    default:
+                        return TipoPendenciaAssunto.Pendencia;
+                }
+            }
+        }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {
