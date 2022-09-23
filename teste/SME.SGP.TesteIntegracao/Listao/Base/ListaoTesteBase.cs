@@ -30,13 +30,20 @@ namespace SME.SGP.TesteIntegracao.Listao
             FALTA_TRANSPORTE
         };
         
-        private readonly string[] codigosAlunos =
+        protected readonly string[] CODIGOS_ALUNOS =
         {
             CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4, CODIGO_ALUNO_5, CODIGO_ALUNO_6,
             CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11, CODIGO_ALUNO_12,
             CODIGO_ALUNO_13
         };
-        private readonly TipoFrequencia[] tiposFrequencias = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
+
+        protected readonly TipoFrequencia[] TIPOS_FREQUENCIAS = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
+        protected readonly int[] QUANTIDADES_AULAS = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
+
+        protected readonly string[] TIPOS_FREQUENCIAS_SIGLA =
+        {
+            TipoFrequencia.C.ObterNomeCurto(), TipoFrequencia.F.ObterNomeCurto(), TipoFrequencia.R.ObterNomeCurto()
+        };
 
         protected ListaoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -50,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFakeListao), ServiceLifetime.Scoped));
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
+                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeListao), ServiceLifetime.Scoped));            
         }
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
@@ -74,13 +81,17 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         private async Task CriarAulas(long componenteCurricularId, int bimestre)
         {
+            var datasAulasIncluidas = Array.Empty<DateTime?>();
+            
             var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre);
+            var range = dataFim.Subtract(dataInicio).Days;
             
             for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
             {
-                var rand = new Random();
-                var range = (dataFim - dataInicio).Days;           
-                var dataAula = dataInicio.AddDays(rand.Next(range));
+                var dataAula = dataInicio.AddDays(new Random().Next(0, range));
+                
+                while (datasAulasIncluidas.Contains(dataAula) || dataAula > DateTimeExtension.HorarioBrasilia())
+                    dataAula = dataInicio.AddDays(new Random().Next(0, range));
                 
                 await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222,
                     TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);                
@@ -171,17 +182,16 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(c => c.Bimestre == bimestre);
             periodoEscolar.ShouldNotBeNull();
-
-            int[] quantidadesAulas = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
+            
             string[] codigosAlunosAnotacaoFrequencia = { CODIGO_ALUNO_2, CODIGO_ALUNO_4 };
 
-            foreach (var codigoAluno in codigosAlunos)
+            foreach (var codigoAluno in CODIGOS_ALUNOS)
             {
                 var rand = new Random();
-                var index = rand.Next(quantidadesAulas.Length);
+                var index = rand.Next(QUANTIDADES_AULAS.Length);
                 
-                await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, quantidadesAulas[index], aulaId);
-                await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), quantidadesAulas[index]);
+                await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, QUANTIDADES_AULAS[index], aulaId);
+                await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), QUANTIDADES_AULAS[index]);
 
                 if (codigosAlunosAnotacaoFrequencia.Contains(codigoAluno))
                     await CriarAnotacaoFrequencia(aulaId, codigoAluno);
@@ -192,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             long aulaId)
         {
             var rand = new Random();
-            var index = rand.Next(tiposFrequencias.Length);
+            var index = rand.Next(TIPOS_FREQUENCIAS.Length);
             
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -200,7 +210,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 RegistroFrequenciaId = registroFrequenciaId,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                Valor = (int)tiposFrequencias[index],
+                Valor = (int)TIPOS_FREQUENCIAS[index],
                 NumeroAula = numeroAula,
                 AulaId = aulaId
             });
@@ -266,15 +276,15 @@ namespace SME.SGP.TesteIntegracao.Listao
         {
             var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
 
-            foreach (var codigoAluno in codigosAlunos)
+            foreach (var codigoAluno in CODIGOS_ALUNOS)
             {
                 var rand = new Random();
-                var index = rand.Next(tiposFrequencias.Length);
+                var index = rand.Next(TIPOS_FREQUENCIAS.Length);
                 
                 await InserirNaBase(new FrequenciaPreDefinida()
                 {
                     CodigoAluno = codigoAluno,
-                    TipoFrequencia = tiposFrequencias[index],
+                    TipoFrequencia = TIPOS_FREQUENCIAS[index],
                     ComponenteCurricularId = componenteCurricularId,
                     TurmaId = turmaId
                 });                

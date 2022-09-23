@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,7 +33,6 @@ namespace SME.SGP.TesteIntegracao.Listao
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
-                DataAula = DateTimeExtension.HorarioBrasilia(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
@@ -65,7 +65,6 @@ namespace SME.SGP.TesteIntegracao.Listao
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
-                DataAula = DateTimeExtension.HorarioBrasilia(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
@@ -90,18 +89,20 @@ namespace SME.SGP.TesteIntegracao.Listao
             foreach (var periodo in listaPeriodo)
             {
                 var posicaoInicial = (contador - 1) * qtdeLimiteDeAulas;
-                var itens = aulas.Skip(posicaoInicial).Take(qtdeLimiteDeAulas).ToList();
+
+                var itens = aulas.Skip(posicaoInicial)
+                    .Take(qtdeLimiteDeAulas).ToList();
                 
                 var dataInicioValidar = itens.FirstOrDefault()?.DataAula.Date;
                 var dataFimValidar = itens.LastOrDefault()?.DataAula.Date;
                 
-                (periodo.DataInicio == dataInicioValidar).ShouldBeTrue();
-                (periodo.DataFim == dataFimValidar).ShouldBeTrue();
+                (dataInicioValidar >= periodo.DataInicio).ShouldBeTrue();
+                (dataFimValidar <= periodo.DataFim).ShouldBeTrue();
 
                 contador++;
             }
             
-            (aulas.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
+            Math.Ceiling((decimal)aulas.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
         }
 
         [Fact]
@@ -113,7 +114,6 @@ namespace SME.SGP.TesteIntegracao.Listao
                 Modalidade = Modalidade.Fundamental,
                 Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
-                DataAula = DateTimeExtension.HorarioBrasilia(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
