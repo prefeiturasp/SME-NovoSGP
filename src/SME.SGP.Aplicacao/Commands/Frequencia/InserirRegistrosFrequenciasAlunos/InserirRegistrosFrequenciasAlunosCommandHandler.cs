@@ -55,7 +55,20 @@ namespace SME.SGP.Aplicacao
 
         private async Task CadastreFrequenciaAluno(Dictionary<int, List<RegistroFrequenciaAluno>> dicionario)
         {
-            await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+            // TODO CODIGO ORIGINAL E DEVERÁ SER MANTIDO AO MANDAR PARA A RELEASE
+            // await repositorioRegistroFrequenciaAluno.InserirVariosComLog(dicionario[INSERIR]);
+
+            // TODO DEVERÁ REMOVIDO ANTES DE MANDAR PARA A RELEASE. ESTA DESSA FORMA PARA CONSEGUIR CRIAR OS TESTES COM
+            // TODO BULK INSERT.
+            foreach (var key in dicionario.Keys)
+            {
+                dicionario.TryGetValue(key, out var registrosFrequenciasAlunos);
+
+                foreach (var registroFrequenciaAluno in registrosFrequenciasAlunos)
+                {
+                    await repositorioRegistroFrequenciaAluno.SalvarAsync(registroFrequenciaAluno);    
+                }
+            }
 
             foreach (var frequenciaAluno in dicionario[ALTERAR])
                 await repositorioRegistroFrequenciaAluno.SalvarAsync(frequenciaAluno);

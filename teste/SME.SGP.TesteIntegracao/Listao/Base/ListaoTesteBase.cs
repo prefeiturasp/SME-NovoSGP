@@ -40,6 +40,11 @@ namespace SME.SGP.TesteIntegracao.Listao
         protected readonly TipoFrequencia[] TIPOS_FREQUENCIAS = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
         protected readonly int[] QUANTIDADES_AULAS = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
 
+        protected readonly string[] TIPOS_FREQUENCIAS_SIGLA =
+        {
+            TipoFrequencia.C.ObterNomeCurto(), TipoFrequencia.F.ObterNomeCurto(), TipoFrequencia.R.ObterNomeCurto()
+        };
+
         protected ListaoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -52,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFakeListao), ServiceLifetime.Scoped));
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
+                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeListao), ServiceLifetime.Scoped));            
         }
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
