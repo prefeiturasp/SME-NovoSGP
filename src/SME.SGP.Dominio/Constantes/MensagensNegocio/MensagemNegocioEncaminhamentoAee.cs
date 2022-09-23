@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO = "Encaminhamento só podem ser excluídos nas situações: 'Rascunho' ou 'Encaminhado'";
         public const string ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_PELO_USUARIO_LOGADO = "Encaminhamento só podem ser excluídos pelos gestores da ue ou pelo professor criador do encaminhamento";
         public const string ENCAMINHAMENTO_SO_PODEM_SER_DEVOLVIDO_PELA_GESTAO = "Encaminhamento só podem ser devolvidos por gestores da escola";
+        public const string EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS = "Existem questões obrigatórias não preenchidas no Encaminhamento AEE: [{0}]";
         public const string SOMENTE_GESTOR_ESCOLAR_PODE_REALIZAR_INDEFERIMENTO = "Somente gestor escolar pode realizar indeferimento";
         public const string SOMENTE_USUARIO_PAAE_OU_PAEE_PODE_CONCLUIR_O_ENCAMINHAMENTO = "Somente usuário paai ou paee pode concluir o encaminhamento";
     }

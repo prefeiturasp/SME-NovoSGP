@@ -1,6 +1,10 @@
-﻿using MediatR;
+﻿using Dapper;
+using MediatR;
+using Org.BouncyCastle.Ocsp;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -38,6 +42,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
+
+            await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoAEEDto);
+
 
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
@@ -214,6 +221,26 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     await RegistrarRespostaEncaminhamento(questoes, resultadoEncaminhamentoQuestao);
                 }
             }
+        }
+
+        private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)
+        {
+            var questoes = encaminhamentoAEEDto.Secoes.Where(sessao => sessao.Questoes.Any())
+                                                        .SelectMany(secao => secao.Questoes,
+                                                                    (secao, questao) => new { secao.SecaoId, questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId });
+
+            var questoesNaoPreenchidas = questoes.Where(questao => String.IsNullOrEmpty(questao.Resposta) && (questao.RespostaEncaminhamentoId == 0));
+            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesObrigatoriasPorSecoesIdQuery(questoesNaoPreenchidas.Select(questao => questao.SecaoId).ToArray()));
+            var questoesObrigatoriasNaoPreenchidas = questoesNaoPreenchidas.Where(questaoNaoPreenchida =>
+                                                questoesObrigatorias
+                                                    .Contains(questaoNaoPreenchida.QuestaoId));
+
+            if (questoesObrigatoriasNaoPreenchidas.Any())
+            {
+                throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
+                                                           string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => questao.QuestaoId).ToArray())));
+            }
+
         }
     }
 }
