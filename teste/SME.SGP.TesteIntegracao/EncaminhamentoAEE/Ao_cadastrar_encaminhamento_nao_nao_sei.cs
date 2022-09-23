@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -11,7 +10,7 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_cadastrar_encaminhamento_sim : EncaminhamentoAEETesteBase
+    public class Ao_cadastrar_encaminhamento_nao_nao_sei : EncaminhamentoAEETesteBase
     {
         private const string RESPOSTA_TEXTO = "RESPOSTA TEXTO";
         private const string RESPOSTA_COMBO_LEITURA = "7";
@@ -19,11 +18,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         private const string RESPOSTA_COMBO_PAP = "17";
         private const string RESPOSTA_COMBO_SRM = "18";
             
-        public Ao_cadastrar_encaminhamento_sim(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_cadastrar_encaminhamento_nao_nao_sei(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
-        [Fact(DisplayName = "Encaminhamento AEE - (Sim) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios")]
+        [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios")]
         public async Task Deve_cadastrar_com_campos_obrigatorios_preenchidos()
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
@@ -48,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             respostaEncaminhamentoAee.Count.ShouldBe(22);
         }
         
-        [Fact(DisplayName = "Encaminhamento AEE - (Sim) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios e omissão de campos não obrigatórios")]
+        [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor deve cadastrar encaminhamento com preenchimento correto dos campos obrigatórios e omissão de campos não obrigatórios")]
         public async Task Deve_cadastrar_com_campos_obrigatorios_preenchidos_campos_nao_obrigatorios()
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
@@ -78,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             respostaEncaminhamentoAee.Count.ShouldBe(20);
         }
         
-        [Fact(DisplayName = "Encaminhamento AEE - (Sim) - Professor não deve cadastrar encaminhamento quando não preencher campos obrigatórios")]
+        [Fact(DisplayName = "Encaminhamento AEE - (Não e Não sei) - Professor não deve cadastrar encaminhamento quando não preencher campos obrigatórios")]
         public async Task Nao_deve_cadastrar_com_campos_obrigatorios_nao_preenchidos()
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
@@ -125,8 +124,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             },
                             new ()
                             {
-                                QuestaoId = 4, 
-                                Resposta = $"{RESPOSTA_TEXTO} - SIM na anterior - Questão 4",
+                                QuestaoId = 5, 
+                                Resposta = $"{RESPOSTA_TEXTO} - Não na anterior - Questão 5",
                                 TipoQuestao = TipoQuestao.Texto,
                             }
                         }
@@ -146,7 +145,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             new ()
                             {
                                 QuestaoId = 7,
-                                Resposta = "4",
+                                Resposta = "5",
                                 TipoQuestao = TipoQuestao.Radio,
                             },
                             new ()
@@ -188,7 +187,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             new ()
                             {
                                 QuestaoId = 15,
-                                Resposta = "11",
+                                Resposta = "13",
                                 TipoQuestao = TipoQuestao.Radio,
                             },
                             new ()
@@ -200,7 +199,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             new ()
                             {
                                 QuestaoId = 17,
-                                Resposta = "14",
+                                Resposta = "15",
                                 TipoQuestao = TipoQuestao.Radio,
                             },
                             new ()
