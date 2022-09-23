@@ -4,6 +4,7 @@ using Org.BouncyCastle.Ocsp;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -236,7 +237,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if (questoesObrigatoriasNaoPreenchidas.Any())
             {
-                throw new NegocioException(String.Format("Existem questões obrigatórias não preenchidas no Encaminhamento AEE: [{0}]",
+                throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
                                                            string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => questao.QuestaoId).ToArray())));
             }
 
