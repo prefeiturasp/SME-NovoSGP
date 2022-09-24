@@ -288,8 +288,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             if (questoesObrigatoriasNaorespondidas.Any())
             {
+                var mensagem = new List<string>();
+                foreach (var secao in questoesObrigatoriasNaorespondidas.GroupBy(questao => questao.Secao))
+                {
+                    mensagem.Add($"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]");
+                }
                 throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                           string.Join(", ", questoesObrigatoriasNaorespondidas.Select(questao => $"Seção {questao.Secao} Questão {questao.Ordem}").Distinct().ToArray())));
+                                                String.Join(", ", mensagem)));
             }
         }
     }
