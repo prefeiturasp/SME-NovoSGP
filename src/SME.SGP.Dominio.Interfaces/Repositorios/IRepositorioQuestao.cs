@@ -9,7 +9,5 @@ namespace SME.SGP.Dominio.Interfaces
     public interface IRepositorioQuestao : IRepositorioBase<Questao>
     {
         Task<bool> VerificaObrigatoriedade(long questaoId);
-
-        Task<IEnumerable<QuestaoIdSecaoAeeDto>> ObterQuestoesIdPorEtapa(int etapa, bool? obrigatorias);
     }
 }
