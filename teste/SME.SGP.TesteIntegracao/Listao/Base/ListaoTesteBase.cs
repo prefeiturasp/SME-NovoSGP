@@ -214,7 +214,50 @@ namespace SME.SGP.TesteIntegracao.Listao
                 if (codigosAlunosAnotacaoFrequencia.Contains(codigoAluno))
                     await CriarAnotacaoFrequencia(aulaId, codigoAluno);
             }
-        }        
+        }
+        
+        protected async Task CriarRegistroFrenquenciaTodasAulas(int bimestre, long componenteCurricularId)
+        {
+            var aulas = ObterTodos<Dominio.Aula>();
+
+            foreach (var aula in aulas)
+            {
+                await InserirNaBase(new RegistroFrequencia
+                {
+                    AulaId = aula.Id,
+                    CriadoPor = SISTEMA_NOME,
+                    CriadoRF = SISTEMA_CODIGO_RF
+                });
+            }
+
+            var registroFrequenciaId = (ObterTodos<RegistroFrequencia>().FirstOrDefault()?.Id).GetValueOrDefault();
+            registroFrequenciaId.ShouldBeGreaterThan(0);
+
+            var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(c => c.Bimestre == bimestre);
+            periodoEscolar.ShouldNotBeNull();
+            
+            string[] codigosAlunosAnotacaoFrequencia = { CODIGO_ALUNO_2, CODIGO_ALUNO_4 };
+            var codigoAlunos = new List<string>();
+            foreach (var aula in aulas)
+            {
+                foreach (var codigoAluno in CODIGOS_ALUNOS)
+                {
+                    var rand = new Random();
+                    var index = rand.Next(QUANTIDADES_AULAS.Length);
+                
+                    await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, QUANTIDADES_AULAS[index], aula.Id);
+
+                    if (!codigoAlunos.Contains(codigoAluno))
+                    {
+                        await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), QUANTIDADES_AULAS[index]);
+                        codigoAlunos.Add(codigoAluno); 
+                    }
+
+                    if (codigosAlunosAnotacaoFrequencia.Contains(codigoAluno))
+                        await CriarAnotacaoFrequencia(aula.Id, codigoAluno);
+                }
+            }
+        }
         
         private async Task CriarRegistroFrequenciaAluno(long registroFrequenciaId, string codigoAluno, int numeroAula,
             long aulaId)
@@ -308,5 +351,10 @@ namespace SME.SGP.TesteIntegracao.Listao
                 });                
             }
         }        
+        
+        protected IInserirFrequenciaListaoUseCase InserirFrequenciaListaoUseCase()
+        {
+            return ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
+        }
     }
 }
