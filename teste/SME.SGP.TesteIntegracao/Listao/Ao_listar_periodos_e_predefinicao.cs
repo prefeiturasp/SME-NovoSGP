@@ -57,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         }
 
         [Fact]
-        public async Task Deve_lista_periodos_5_dias_com_aula()
+        public async Task Deve_listar_periodos_5_dias_com_aula()
         {
             var filtroListao = new FiltroListao
             {

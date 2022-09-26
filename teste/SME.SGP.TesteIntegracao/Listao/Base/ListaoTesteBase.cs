@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         protected async Task CriarDadosBasicos(FiltroListao filtroListao)
         {
-            await CriarPadrao();
+            await CriarDreUePerfil();
             await CriarComponenteCurricular();
             
             await CriarUsuarios();
