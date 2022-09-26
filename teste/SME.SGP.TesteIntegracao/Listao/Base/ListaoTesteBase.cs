@@ -106,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula(codigoAluno) }).ToList();
         }
 
-        private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula(string codigoAluno)
+        protected IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula(string codigoAluno)
         {
             string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_3 };
             string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
