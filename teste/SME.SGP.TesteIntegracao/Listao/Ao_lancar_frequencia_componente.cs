@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -15,54 +14,29 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
 {
-    public class Ao_lancar_frequencia_cj : ListaoTesteBase
+    public class Ao_lancar_frequencia_componente : ListaoTesteBase
     {
-        public Ao_lancar_frequencia_cj(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_frequencia_componente(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-        }
-
-        protected override void RegistrarFakes(IServiceCollection services)
-        {
-            base.RegistrarFakes(services);
-            
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
-                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
 
         [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_ensino_fundamental()
+        public async Task Nao_deve_lancar_frequencia_para_componente_que_nao_lanca_frequencia()
         {
             var filtroListao = new FiltroListao
             {
                 Bimestre = 3,
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCJ(),
+                Modalidade = Modalidade.Medio,
+                Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_APRENDIZAGEM_E_LEITURA_ID_1359,
+                TipoTurno = (int)TipoTurnoEOL.Noite
             };
 
-            await ExecutarTeste(filtroListao);            
-        }
-
-        [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_infantil()
-        {
-            var filtroListao = new FiltroListao
-            {
-                Bimestre = 3,
-                Modalidade = Modalidade.EducacaoInfantil,
-                Perfil = ObterPerfilCJ(),
-                AnoTurma = ANO_3,
-                TipoCalendario = ModalidadeTipoCalendario.Infantil,
-                TipoTurma = TipoTurma.Regular,
-                TurmaHistorica = false,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            await ExecutarTeste(filtroListao);            
+            await ExecutarTeste(filtroListao);
         }
         
         private async Task ExecutarTeste(FiltroListao filtroListao)
@@ -78,9 +52,9 @@ namespace SME.SGP.TesteIntegracao.Listao
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
             useCaseSalvar.ShouldNotBeNull();
-            var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBeGreaterThan(0);
+            
+            await useCaseSalvar.Executar(frequenciasSalvar)
+                .ShouldThrowAsync<NegocioException>(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
         }        
         
         private IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
@@ -96,6 +70,6 @@ namespace SME.SGP.TesteIntegracao.Listao
                 NumeroAula = numeroAula,
                 TipoFrequencia = TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
             }).ToList();
-        }        
+        }                
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 
@@ -14,5 +13,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         public bool TurmaHistorica { get; set; }
         public TipoTurma TipoTurma { get; set; }
         public int Bimestre { get; set; }
+        public bool CriarPeriodoReaberturaTodosBimestres { get; set; } = true;
+        public int TipoTurno { get; set; }
     }
 }

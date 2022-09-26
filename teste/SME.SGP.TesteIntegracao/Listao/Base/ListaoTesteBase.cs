@@ -9,7 +9,6 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 
 namespace SME.SGP.TesteIntegracao.Listao
@@ -69,21 +68,25 @@ namespace SME.SGP.TesteIntegracao.Listao
             CriarClaimUsuario(filtroListao.Perfil);
 
             await CriarTurma(filtroListao.Modalidade, filtroListao.AnoTurma, filtroListao.TurmaHistorica,
-                filtroListao.TipoTurma);
+                filtroListao.TipoTurma, filtroListao.TipoTurno);
             
-            await CriarTipoCalendario(filtroListao.TipoCalendario);
-            await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre);
-            await CriarPeriodoEscolarTodosBimestres();
+            await CriarTipoCalendario(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
+            await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre, filtroListao.TurmaHistorica);
+            await CriarPeriodoEscolarTodosBimestres(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
+            
+            if (filtroListao.CriarPeriodoReaberturaTodosBimestres)
+                await CriarPeriodoReaberturaTodosBimestres(filtroListao.TipoCalendario, filtroListao.TurmaHistorica);
+            
             await InserirParametroSistema();
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
         }
 
-        private async Task CriarAulas(long componenteCurricularId, int bimestre)
+        private async Task CriarAulas(long componenteCurricularId, int bimestre, bool turmaHistorica)
         {
             var datasAulasIncluidas = Array.Empty<DateTime?>();
             
-            var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre);
+            var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre, turmaHistorica);
             var range = dataFim.Subtract(dataInicio).Days;
             
             for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
@@ -98,15 +101,80 @@ namespace SME.SGP.TesteIntegracao.Listao
             }
         }
         
-        private async Task CriarPeriodoEscolarTodosBimestres()
+        private async Task CriarPeriodoEscolarTodosBimestres(ModalidadeTipoCalendario modalidadeTipoCalendario, bool turmaHistorica)
         {
-            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+            var tipoCalendarioId = (ObterTodos<TipoCalendario>()
+                .FirstOrDefault(c => c.Modalidade == modalidadeTipoCalendario)?.Id).GetValueOrDefault();
+            
+            tipoCalendarioId.ShouldBeGreaterThan(0);
+            
+            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1, tipoCalendarioId, turmaHistorica);
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, tipoCalendarioId, turmaHistorica);
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, tipoCalendarioId, turmaHistorica);
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, tipoCalendarioId, turmaHistorica);
         }
 
-        private async Task<(DateTime dataInicio, DateTime dataFim)> DefinirDataInicioFimBimestre(int bimestre)
+        private async Task CriarPeriodoReaberturaTodosBimestres(ModalidadeTipoCalendario modalidadeTipoCalendario, bool turmaHistoria)
+        {
+            var tipoCalendarioId = (ObterTodos<TipoCalendario>()
+                .FirstOrDefault(c => c.Modalidade == modalidadeTipoCalendario)?.Id).GetValueOrDefault();
+            
+            tipoCalendarioId.ShouldBeGreaterThan(0);
+            
+            await InserirNaBase(new FechamentoReabertura
+            {
+                Descricao = REABERTURA_GERAL,
+                Inicio = turmaHistoria ? DATA_01_01_ANO_ANTERIOR : DATA_01_01,
+                Fim = turmaHistoria ? DATA_31_12_ANO_ANTERIOR : DATA_31_12,
+                TipoCalendarioId = tipoCalendarioId,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            var fechamentoAberturaId = (ObterTodos<FechamentoReabertura>()
+                .FirstOrDefault(c => c.TipoCalendarioId == tipoCalendarioId)?.Id).GetValueOrDefault();
+            
+            fechamentoAberturaId.ShouldBeGreaterThan(0);
+
+            await InserirNaBase(new FechamentoReaberturaBimestre
+            {
+                FechamentoAberturaId = fechamentoAberturaId,
+                Bimestre = BIMESTRE_1,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre
+            {
+                FechamentoAberturaId = fechamentoAberturaId,
+                Bimestre = BIMESTRE_2,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre
+            {
+                FechamentoAberturaId = fechamentoAberturaId,
+                Bimestre = BIMESTRE_3,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+
+            await InserirNaBase(new FechamentoReaberturaBimestre
+            {
+                FechamentoAberturaId = fechamentoAberturaId,
+                Bimestre = BIMESTRE_4,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+            });
+        }
+
+        private async Task<(DateTime dataInicio, DateTime dataFim)> DefinirDataInicioFimBimestre(int bimestre, bool turmaHistorica)
         {
             DateTime dataInicio = default;
             DateTime dataFim = default;
@@ -115,22 +183,28 @@ namespace SME.SGP.TesteIntegracao.Listao
             {
                 case BIMESTRE_1:
                 {
-                    dataInicio = DATA_01_02_INICIO_BIMESTRE_1;
-                    dataFim = DATA_25_04_FIM_BIMESTRE_1;
+                    dataInicio = turmaHistorica ? DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR : DATA_03_01_INICIO_BIMESTRE_1;
+                    dataFim = turmaHistorica ? DATA_29_04_FIM_BIMESTRE_1_ANO_ANTERIOR : DATA_29_04_FIM_BIMESTRE_1;
                     break;
                 }
                 case BIMESTRE_2:
-                    dataInicio = DATA_02_05_INICIO_BIMESTRE_2;
-                    dataFim = DATA_08_07_FIM_BIMESTRE_2;
+                {
+                    dataInicio = turmaHistorica ? DATA_02_05_INICIO_BIMESTRE_2_ANO_ANTERIOR : DATA_02_05_INICIO_BIMESTRE_2;
+                    dataFim = turmaHistorica ? DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR : DATA_08_07_FIM_BIMESTRE_2;
                     break;
+                }
                 case BIMESTRE_3:
-                    dataInicio = DATA_25_07_INICIO_BIMESTRE_3;
-                    dataFim = DATA_30_09_FIM_BIMESTRE_3;
+                {
+                    dataInicio = turmaHistorica ? DATA_25_07_INICIO_BIMESTRE_3_ANO_ANTERIOR : DATA_25_07_INICIO_BIMESTRE_3;
+                    dataFim = turmaHistorica ? DATA_30_09_FIM_BIMESTRE_3_ANO_ANTERIOR : DATA_30_09_FIM_BIMESTRE_3;
                     break;
+                }
                 case BIMESTRE_4:
-                    dataInicio = DATA_03_10_INICIO_BIMESTRE_4;
-                    dataFim = DATA_22_12_FIM_BIMESTRE_4;
+                {
+                    dataInicio = turmaHistorica ? DATA_03_10_INICIO_BIMESTRE_4_ANO_ANTERIOR : DATA_03_10_INICIO_BIMESTRE_4;
+                    dataFim = turmaHistorica ? DATA_22_12_FIM_BIMESTRE_4_ANO_ANTERIOR : DATA_22_12_FIM_BIMESTRE_4;
                     break;
+                }
             }   
             
             return await Task.FromResult(new ValueTuple<DateTime, DateTime>(dataInicio, dataFim));
@@ -138,7 +212,7 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         private async Task InserirParametroSistema()
         {
-            await InserirNaBase(new ParametrosSistema()
+            await InserirNaBase(new ParametrosSistema
             {
                 Nome = "PercentualFrequenciaCritico",
                 Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
@@ -151,7 +225,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            await InserirNaBase(new ParametrosSistema()
+            await InserirNaBase(new ParametrosSistema
             {
                 Nome = "PercentualFrequenciaAlerta",
                 Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
