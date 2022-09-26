@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId)
         {
-            var query = new StringBuilder(@"select fpd.codigo_aluno as CodigoAluno,
+            var query = new StringBuilder(@"select distinct fpd.codigo_aluno as CodigoAluno,
                                                    fpd.tipo_frequencia as Tipo
                                               from frequencia_pre_definida fpd
                                              where fpd.turma_id = @turmaId

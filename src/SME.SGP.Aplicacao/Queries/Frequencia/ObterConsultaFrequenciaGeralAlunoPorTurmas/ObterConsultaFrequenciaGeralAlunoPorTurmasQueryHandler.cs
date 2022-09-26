@@ -30,8 +30,10 @@ namespace SME.SGP.Aplicacao
                 return await CalculoFrequenciaGlobal2020(request.AlunoCodigo, turma);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
 
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId));
+            var dataMatriculaAluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == request.AlunoCodigo)?.DataMatricula;
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, dataMatriculaAluno));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)
