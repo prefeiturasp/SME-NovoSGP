@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             _builder = new ItensBasicosBuilder(this);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve transferir pendência para uma novo responsável")]
         public async Task Deve_transferir_pendencia_para_novo_responsavel()
         {
             await CriaBase();

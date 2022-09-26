@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             _builder = new ItensBasicosBuilder(this);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve gerar um plano aee com responsavel")]
         public async Task Deve_gerar_plano_com_responsavel()
         {
             await _builder.CriaItensComuns();
