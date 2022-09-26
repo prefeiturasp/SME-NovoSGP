@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.PlanoAEEPendenciaUsuario
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_gerar_pendencia_validade_plano : TesteBase
     {
@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEEPendenciaUsuario
             _builder = new ItensBasicosBuilder(this);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve gerar uma pendencia com validade para o responsavel")]
         public async Task Deve_gerar_pendencia_validade_para_responsavel()
         {
             await CriaBase();

@@ -25,12 +25,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<Turma> Handle(ObterTurmaComUeEDrePorCodigoQuery request, CancellationToken cancellationToken)
         {
-            var id = await repositorioTurma.ObterTurmaIdPorCodigo(request.TurmaCodigo);
-
-            if (id == 0)
-                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
-            
-            return await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(id)); 
+            return await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
         }
     }
 }

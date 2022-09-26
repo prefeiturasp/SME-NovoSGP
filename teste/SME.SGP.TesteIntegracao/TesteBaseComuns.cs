@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -180,6 +180,10 @@ namespace SME.SGP.TesteIntegracao
         protected const string USUARIO_LOGIN_AD999997 = "AD999997";
         
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
+        protected const string USUARIO_PAAI_LOGIN_4444444 = "4444444";
+        protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
         private const string USUARIO_CP_NOME_3333333 = "Nome do usuario 3333333";
 
@@ -435,7 +439,10 @@ namespace SME.SGP.TesteIntegracao
             
             if (perfil.Equals(ObterPerfilAD()))
                 return USUARIO_LOGIN_AD999997;
-            
+
+            if (perfil.Equals(ObterPerfilPaai()))
+                return USUARIO_PAAI_LOGIN_4444444;
+
             return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
@@ -449,6 +456,14 @@ namespace SME.SGP.TesteIntegracao
             return Guid.Parse(PerfilUsuario.CJ.Name()).ToString();
         }
 
+        protected string ObterPerfilCoordenadorCefai()
+        {
+            return Guid.Parse(PerfilUsuario.CEFAI.Name()).ToString();
+        }
+        protected string ObterPerfilPaai()
+        {
+            return Guid.Parse(PerfilUsuario.PAAI.Name()).ToString();
+        }
         protected string ObterPerfilCJInfantil()
         {
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
@@ -637,7 +652,7 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
             });
-
+            
             await InserirNaBase(new Usuario
             {
                 Login = USUARIO_PROFESSOR_LOGIN_1111111,
@@ -690,6 +705,25 @@ namespace SME.SGP.TesteIntegracao
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
             });
+            await InserirNaBase(new Usuario
+            {
+                Login = USUARIO_PAAI_LOGIN_5555555,
+                CodigoRf = USUARIO_PAAI_LOGIN_5555555,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
+                Nome = USUARIO_PAAI_LOGIN_5555555,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            await InserirNaBase(new Usuario()
+            {
+                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
+                Login = USUARIO_PAAI_LOGIN_4444444,
+                Nome = USUARIO_PAAI_LOGIN_4444444,
+                PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+               CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
+            });
         }
 
         protected async Task CriarTurma(Modalidade modalidade)
@@ -738,7 +772,53 @@ namespace SME.SGP.TesteIntegracao
                 Nome = TURMA_NOME_1
             });
         }
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, bool turmaHistorica = false )
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = anoTurma,
+                CodigoTurma = codigoTurma,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1,
+                TipoTurma = tipoTurma
+            });
+        }
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, string codigoTurma, TipoTurma tipoTurma, long ueId,int anoLetivo,bool turmaHistorica = false )
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = ueId,
+                Ano = anoTurma,
+                CodigoTurma = codigoTurma,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = anoLetivo,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1,
+                TipoTurma = tipoTurma
+            });
+        }
 
+        protected async Task CriarDreUe(string codigoDre,string codigoUe)
+        {
+            await InserirNaBase(new Dre
+            {
+                CodigoDre = codigoDre,
+                Abreviacao = DRE_NOME_1,
+                Nome = DRE_NOME_1
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = codigoUe,
+                DreId = 2,
+                Nome = UE_NOME_1,
+            });
+        }
         protected async Task CriarAtividadeAvaliativaFundamental(DateTime dataAvaliacao)
         {
             await CrieTipoAtividade();
@@ -882,14 +962,14 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarItensComuns(bool criarPeriodo, DateTime dataInicio, DateTime dataFim, int bimestre, long tipoCalendarioId = 1)
         {
-            await CriarPadrao();
+            await CriarDreUePerfil();
             if (criarPeriodo) await CriarPeriodoEscolar(dataInicio, dataFim, bimestre, tipoCalendarioId);
             await CriarComponenteCurricular();
         }
 
         protected async Task CriarDreUePerfilComponenteCurricular()
         {
-            await CriarPadrao();
+            await CriarDreUePerfil();
             await CriarComponenteCurricular();
         }
 
@@ -944,7 +1024,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarPadrao()
+        protected async Task CriarDreUePerfil()
         {
             await InserirNaBase(new Dre
             {
