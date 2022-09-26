@@ -223,28 +223,28 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         }
 
 
-        private bool IsAny(IEnumerable<dynamic> data)
+        private bool NaoNuloEContemRegistros(IEnumerable<dynamic> data)
         {
             return data != null && data.Any();
         }
 
 
-        private bool IsQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
+        private bool EhQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
         {
             return questao.Obrigatorio &&
-                    !IsAny(questao.Resposta);
+                    !NaoNuloEContemRegistros(questao.Resposta);
         }
         private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
             foreach (var questao in questoes)
             {
-                if (IsQuestaoObrigatoriaNaoRespondida(questao)) {
+                if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
                     var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.":"") + questao.Ordem;
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
                 }
                 else
-                if (IsAny(questao.OpcaoResposta) 
-                    && IsAny(questao.Resposta))
+                if (NaoNuloEContemRegistros(questao.OpcaoResposta) 
+                    && NaoNuloEContemRegistros(questao.Resposta))
                 {
                     foreach (var resposta in questao.Resposta)
                     {
