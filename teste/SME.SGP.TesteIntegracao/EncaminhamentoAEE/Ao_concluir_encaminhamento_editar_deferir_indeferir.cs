@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         [Theory]
         [InlineData(PerfilUsuario.PAAI)]
         [InlineData(PerfilUsuario.PAEE)]
-        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_para_defirir(PerfilUsuario perfil)
+        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_para_deferir(PerfilUsuario perfil)
         {
             await CriarDadosBase(ObterFiltro(perfil.Name()));
 
