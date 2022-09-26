@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -8,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -15,9 +14,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
 {
-    public class Ao_lancar_frequencia_cj : ListaoTesteBase
+    public class Ao_lancar_frequencia_bimestre_encerrado : ListaoTesteBase
     {
-        public Ao_lancar_frequencia_cj(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_frequencia_bimestre_encerrado(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -30,33 +29,34 @@ namespace SME.SGP.TesteIntegracao.Listao
         }
 
         [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_ensino_fundamental()
+        public async Task Nao_deve_lancar_frequencia_bimestre_encerrado_sem_reabertura()
         {
             var filtroListao = new FiltroListao
             {
                 Bimestre = 3,
                 Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCJ(),
+                Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
-                TurmaHistorica = false,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
+                TurmaHistorica = true,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                CriarPeriodoReaberturaTodosBimestres = false
             };
 
-            await ExecutarTeste(filtroListao);            
+            await ExecutarTesteComExcecao(filtroListao);
         }
-
+        
         [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_infantil()
+        public async Task Deve_lancar_frequencia_bimestre_encerrado_com_reabertura()
         {
             var filtroListao = new FiltroListao
             {
                 Bimestre = 3,
-                Modalidade = Modalidade.EducacaoInfantil,
-                Perfil = ObterPerfilCJ(),
-                AnoTurma = ANO_3,
-                TipoCalendario = ModalidadeTipoCalendario.Infantil,
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilProfessor(),
+                AnoTurma = ANO_8,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
@@ -81,6 +81,24 @@ namespace SME.SGP.TesteIntegracao.Listao
             var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
-        }
+        }              
+        
+        private async Task ExecutarTesteComExcecao(FiltroListao filtroListao)
+        {
+            await CriarDadosBasicos(filtroListao);
+
+            var listaAulaId = ObterTodos<Dominio.Aula>().Select(c => c.Id).Distinct().ToList();
+            listaAulaId.ShouldNotBeNull();
+
+            var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
+                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+
+            //-> Salvar a frequencia
+            var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
+            useCaseSalvar.ShouldNotBeNull();
+            
+            await useCaseSalvar.Executar(frequenciasSalvar)
+                .ShouldThrowAsync<NegocioException>(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+        }            
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -15,9 +13,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Listao
 {
-    public class Ao_lancar_frequencia_cj : ListaoTesteBase
+    public class Ao_lancar_frequencia_professor_com_atribuicao : ListaoTesteBase
     {
-        public Ao_lancar_frequencia_cj(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_lancar_frequencia_professor_com_atribuicao(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -26,37 +24,22 @@ namespace SME.SGP.TesteIntegracao.Listao
             base.RegistrarFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
-                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
+                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>),
+                typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_ensino_fundamental()
+        public async Task Deve_lancar_frquencia_professor_antes_encerramento_atribuicao()
         {
             var filtroListao = new FiltroListao
             {
                 Bimestre = 3,
                 Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCJ(),
+                Perfil = ObterPerfilProfessor(),
                 AnoTurma = ANO_8,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                TipoTurma = TipoTurma.Regular,
-                TurmaHistorica = false,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-            };
-
-            await ExecutarTeste(filtroListao);            
-        }
-
-        [Fact]
-        public async Task Deve_lancar_frequencia_professor_cj_infantil()
-        {
-            var filtroListao = new FiltroListao
-            {
-                Bimestre = 3,
-                Modalidade = Modalidade.EducacaoInfantil,
-                Perfil = ObterPerfilCJ(),
-                AnoTurma = ANO_3,
-                TipoCalendario = ModalidadeTipoCalendario.Infantil,
                 TipoTurma = TipoTurma.Regular,
                 TurmaHistorica = false,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138

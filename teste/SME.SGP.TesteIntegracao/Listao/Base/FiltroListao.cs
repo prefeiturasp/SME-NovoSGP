@@ -10,6 +10,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         {
             CriarAula = true;
         }
+
         public string Perfil { get; set; }
         public Modalidade Modalidade { get; set; }
         public long ComponenteCurricularId { get; set; }
@@ -19,5 +20,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         public TipoTurma TipoTurma { get; set; }
         public int Bimestre { get; set; }
         public bool CriarAula {  get; set; }
+        public bool CriarPeriodoReaberturaTodosBimestres { get; set; } = true;
+        public int TipoTurno { get; set; }
     }
 }

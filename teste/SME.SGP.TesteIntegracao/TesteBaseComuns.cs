@@ -62,6 +62,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
         protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
+        protected const long COMPONENTE_CURRICULAR_APRENDIZAGEM_E_LEITURA_ID_1359 = 1359;
         
         protected const string COMPONENTE_CURRICULAR_MATEMATICA_NOME = "'MATEMATICA'";
 
@@ -231,6 +232,16 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_30_09_FIM_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 30);
         protected DateTime DATA_03_10_INICIO_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 10, 03);
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
+        
+        protected DateTime DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 03);
+        protected DateTime DATA_29_04_FIM_BIMESTRE_1_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 04, 29);
+        protected DateTime DATA_02_05_INICIO_BIMESTRE_2_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 05, 02);
+        protected DateTime DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 07, 08);
+        protected DateTime DATA_25_07_INICIO_BIMESTRE_3_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 07, 25);
+        protected DateTime DATA_30_09_FIM_BIMESTRE_3_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 09, 30);
+        protected DateTime DATA_03_10_INICIO_BIMESTRE_4_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 10, 03);
+        protected DateTime DATA_22_12_FIM_BIMESTRE_4_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 12, 22);        
+
         protected const long TIPO_CALENDARIO_1 = 1;
         protected const long TIPO_CALENDARIO_2 = 2;
 
@@ -287,6 +298,7 @@ namespace SME.SGP.TesteIntegracao
         protected readonly DateTime DATA_01_01_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01);
 
         protected readonly DateTime DATA_31_12 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
+        protected readonly DateTime DATA_31_12_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 12, 31);
 
         protected readonly DateTime DATA_10_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 10);
         
@@ -743,7 +755,8 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, TipoTurma tipoTurma = TipoTurma.Regular)
+        protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, 
+            TipoTurma tipoTurma = TipoTurma.Regular, int tipoTurno = 0)
         {
             await InserirNaBase(new Turma
             {
@@ -755,7 +768,8 @@ namespace SME.SGP.TesteIntegracao
                 AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
-                TipoTurma = tipoTurma
+                TipoTurma = tipoTurma,
+                TipoTurno = tipoTurno
             });
         }
 
