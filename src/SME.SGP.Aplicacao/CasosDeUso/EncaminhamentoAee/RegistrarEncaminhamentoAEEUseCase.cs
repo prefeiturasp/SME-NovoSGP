@@ -236,10 +236,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         }
         private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
-            foreach (var questao in questoes)
+            foreach (var questaoIndex in questoes.Select((value, index) => new { value, index }))
             {
+                var questao = questaoIndex.value;
+                var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{(questaoIndex.index+1).ToString()}" : questao.Ordem.ToString());
+
                 if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
-                    var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.":"") + questao.Ordem;
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
                 }
                 else
@@ -251,7 +253,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                         var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
                         if (opcao != null && opcao.QuestoesComplementares.Any())
                         {
-                            ValidaRecursivo(secao, questao.Ordem.ToString(), opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
                         }
                     }
                 }

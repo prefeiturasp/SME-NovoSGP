@@ -17,7 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"SELECT sea.id
 	                            , sea.nome
-	                            , sea.questionario_id
+	                            , sea.questionario_id as questionarioId
 	                            , eas.concluido
 	                            , sea.etapa
                          FROM secao_encaminhamento_aee sea
