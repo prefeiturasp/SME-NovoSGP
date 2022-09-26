@@ -226,12 +226,12 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Pendencia>> FiltrarListaPendenciasUsuario(string turmaCodigo, List<Pendencia> pendencias)
         {
             if (!pendencias.Any())
-                return null;
+                return pendencias.ToList();
 
             var tiposPendencias = pendencias.Select(c => c.Tipo).Distinct().ToList();
 
             if (!tiposPendencias.Any())
-                return null;
+                return pendencias.ToList();
 
             var pendenciasIds = pendencias.Select(c => new { c.Id, c.PendenciaAssunto })
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.Pendencia))
