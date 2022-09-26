@@ -45,7 +45,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoAEEDto);
 
-
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
                 var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAEEDto.Id.GetValueOrDefault()));
@@ -223,24 +222,80 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
         }
 
+
+        private bool NaoNuloEContemRegistros(IEnumerable<dynamic> data)
+        {
+            return data != null && data.Any();
+        }
+
+
+        private bool EhQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
+        {
+            return questao.Obrigatorio &&
+                    !NaoNuloEContemRegistros(questao.Resposta);
+        }
+        private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
+        {
+            foreach (var questao in questoes)
+            {
+                if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
+                    var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.":"") + questao.Ordem;
+                    questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
+                }
+                else
+                if (NaoNuloEContemRegistros(questao.OpcaoResposta) 
+                    && NaoNuloEContemRegistros(questao.Resposta))
+                {
+                    foreach (var resposta in questao.Resposta)
+                    {
+                        var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
+                        if (opcao != null && opcao.QuestoesComplementares.Any())
+                        {
+                            ValidaRecursivo(secao, questao.Ordem.ToString(), opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                        }
+                    }
+                }
+            }
+        }
+
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoAeeDto encaminhamentoAEEDto)
         {
-            var questoes = encaminhamentoAEEDto.Secoes.Where(sessao => sessao.Questoes.Any())
+            var secoesEtapa = await this.mediator.Send(new ObterSecoesEncaminhamentoDtoPorEtapaQuery(1));
+            var respostasEncaminhamento = encaminhamentoAEEDto.Secoes.Where(sessao => sessao.Questoes.Any())
                                                         .SelectMany(secao => secao.Questoes,
-                                                                    (secao, questao) => new { secao.SecaoId, questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId });
+                                                                    (secao, questao) => new { questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId })
+                                                        .Where(questao => !string.IsNullOrEmpty(questao.Resposta));
 
-            var questoesNaoPreenchidas = questoes.Where(questao => String.IsNullOrEmpty(questao.Resposta) && (questao.RespostaEncaminhamentoId == 0));
-            var questoesObrigatorias = await this.mediator.Send(new ObterQuestoesObrigatoriasPorSecoesIdQuery(questoesNaoPreenchidas.Select(questao => questao.SecaoId).ToArray()));
-            var questoesObrigatoriasNaoPreenchidas = questoesNaoPreenchidas.Where(questaoNaoPreenchida =>
-                                                questoesObrigatorias
-                                                    .Contains(questaoNaoPreenchida.QuestaoId));
-
-            if (questoesObrigatoriasNaoPreenchidas.Any())
+            var questoesObrigatoriasNaorespondidas = new List<dynamic>();
+            foreach (var secao in secoesEtapa)
             {
-                throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                                                           string.Join(",", questoesObrigatoriasNaoPreenchidas.Select(questao => questao.QuestaoId).ToArray())));
+                var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId, questaoId =>
+                    respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
+                    .Select(respostaEncaminhamento =>
+                    {
+                        return new RespostaQuestaoDto()
+                        {
+                            Id = GetHashCode(),
+                            OpcaoRespostaId = 0,
+                            Texto = respostaEncaminhamento.Resposta,
+                            Arquivo = null
+                        };
+                    })));
+
+                if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
+                ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);
             }
 
+            if (questoesObrigatoriasNaorespondidas.Any())
+            {
+                var mensagem = new List<string>();
+                foreach (var secao in questoesObrigatoriasNaorespondidas.GroupBy(questao => questao.Secao))
+                {
+                    mensagem.Add($"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]");
+                }
+                throw new NegocioException(String.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
+                                                String.Join(", ", mensagem)));
+            }
         }
     }
 }
