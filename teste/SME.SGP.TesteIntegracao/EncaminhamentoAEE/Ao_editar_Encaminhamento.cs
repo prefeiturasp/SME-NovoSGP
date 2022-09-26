@@ -13,9 +13,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_Editar_Encaminhamento : EncaminhamentoAEETesteBase
+    public class Ao_editar_Encaminhamento : EncaminhamentoAEETesteBase
     {
-        public Ao_Editar_Encaminhamento(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_editar_Encaminhamento(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
