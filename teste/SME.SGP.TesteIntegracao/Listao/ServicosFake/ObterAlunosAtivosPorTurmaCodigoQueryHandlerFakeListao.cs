@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                     SituacaoMatricula = "RECLASSIFICADO SAIDA",
                     NomeAluno = "NOME ALUNO 14",
                     NomeResponsavel = "Responsavel 14"
-                },
+                }
             }); 
         }
     }
