@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -66,21 +64,6 @@ namespace SME.SGP.TesteIntegracao.Listao
             var retorno = await useCaseSalvar.Executar(frequenciasSalvar);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBeGreaterThan(0);
-        }        
-        
-        private IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
-        {
-            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
-                { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula() }).ToList();
-        }        
-        
-        private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula()
-        {
-            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
-            {
-                NumeroAula = numeroAula,
-                TipoFrequencia = TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
-            }).ToList();
-        }         
+        }
     }
 }

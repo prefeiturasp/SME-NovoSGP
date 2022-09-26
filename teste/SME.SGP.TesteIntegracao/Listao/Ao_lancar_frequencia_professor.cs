@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,7 +72,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             listaAulaId.ShouldNotBeNull();
 
             var frequenciasSalvar = listaAulaId.Select(aulaId => new FrequenciaSalvarAulaAlunosDto
-                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAluno() }).ToList();
+                { AulaId = aulaId, Alunos = ObterListaFrequenciaSalvarAlunoComAusencia() }).ToList();
 
             //-> Salvar a frequencia
             var useCaseSalvar = ServiceProvider.GetService<IInserirFrequenciaListaoUseCase>();
@@ -123,28 +122,6 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             listaTipoFrequenciaLancada.Distinct().Intersect(TIPOS_FREQUENCIAS_SIGLA).Count()
                 .ShouldBe(TIPOS_FREQUENCIAS_SIGLA.Length);
-        }
-
-        private IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
-        {
-            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
-                { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula(codigoAluno) }).ToList();
-        }
-
-        private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula(string codigoAluno)
-        {
-            string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_3 };
-            string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
-            string[] codigosAlunosRemotos = { CODIGO_ALUNO_5 };
-
-            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
-            {
-                NumeroAula = numeroAula,
-                TipoFrequencia = codigosAlunosAusencia.Contains(codigoAluno) ? TipoFrequencia.F.ObterNomeCurto() :
-                    codigosAlunosPresenca.Contains(codigoAluno) ? TipoFrequencia.C.ObterNomeCurto() :
-                    codigosAlunosRemotos.Contains(codigoAluno) ? TipoFrequencia.R.ObterNomeCurto() :
-                    TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
-            }).ToList();
         }
     }
 }

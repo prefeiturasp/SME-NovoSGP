@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
@@ -101,21 +99,6 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             await useCaseSalvar.Executar(frequenciasSalvar)
                 .ShouldThrowAsync<NegocioException>(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
-        }        
-        
-        private IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
-        {
-            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
-                { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula() }).ToList();
-        }        
-        
-        private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula()
-        {
-            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
-            {
-                NumeroAula = numeroAula,
-                TipoFrequencia = TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
-            }).ToList();
-        }                     
+        }            
     }
 }
