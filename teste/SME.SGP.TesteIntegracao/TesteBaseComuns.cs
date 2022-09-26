@@ -310,6 +310,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_11 = "11";
         protected const string CODIGO_ALUNO_12 = "12";
         protected const string CODIGO_ALUNO_13 = "13";
+        protected const string CODIGO_ALUNO_14 = "14";
         protected const int TOTAL_AUSENCIAS_1 = 1;
         protected const int TOTAL_AUSENCIAS_3 = 3;
         protected const int TOTAL_AUSENCIAS_7 = 7;

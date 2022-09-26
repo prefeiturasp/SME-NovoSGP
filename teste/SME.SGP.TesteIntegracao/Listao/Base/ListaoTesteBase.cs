@@ -154,7 +154,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             return await Task.FromResult(new ValueTuple<DateTime, DateTime>(dataInicio, dataFim));
         }
 
-        private async Task InserirParametroSistema()
+        protected async Task InserirParametroSistema()
         {
             await InserirNaBase(new ParametrosSistema()
             {
@@ -257,7 +257,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             });
         }
 
-        private async Task CriarMotivoAusencia()
+        protected async Task CriarMotivoAusencia()
         {
             foreach (var descricaoMotivoAusencia in listaDescricaoMotivoAusencia)
             {
@@ -290,7 +290,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             });
         }
 
-        private async Task CriarFrequenciaPreDefinida(long componenteCurricularId)
+        protected async Task CriarFrequenciaPreDefinida(long componenteCurricularId)
         {
             var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
 
