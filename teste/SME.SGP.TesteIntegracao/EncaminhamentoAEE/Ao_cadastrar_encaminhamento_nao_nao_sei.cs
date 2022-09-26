@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
@@ -83,16 +85,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor()));
 
             var encaminhamentoAeeDto = ObterPreenchimentoQuestionarioEncaminhamento();
-            var questaoObrigatoria3Secao1 = encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 3);
+            var questaoNaoObrigatoria3_1Secao1 = encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 5);
             var questaoObrigatoria7Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 7);
             var questaoObrigatoria9Secao2 = encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.FirstOrDefault(w => w.QuestaoId == 9);
 
-            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoObrigatoria3Secao1); 
-            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoObrigatoria7Secao2); 
-            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoObrigatoria9Secao2); 
+            encaminhamentoAeeDto.Secoes.FirstOrDefault().Questoes.Remove(questaoNaoObrigatoria3_1Secao1); 
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria7Secao2); 
+            encaminhamentoAeeDto.Secoes.LastOrDefault().Questoes.Remove(questaoObrigatoria9Secao2); 
                 
             var useCase = ObterRegistrarEncaminhamentoAee();
-            await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(encaminhamentoAeeDto));
+            var exceptionAEE = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(encaminhamentoAeeDto));
+            Assert.Equal(string.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS, "Seção: Descrição do encaminhamento Questões: [2, 3]")
+                         , exceptionAEE.Message);
         }
 
         private EncaminhamentoAeeDto ObterPreenchimentoQuestionarioEncaminhamento()
@@ -119,7 +123,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                             new ()
                             {
                                 QuestaoId = 3,
-                                Resposta = "1",
+                                Resposta = "2",
                                 TipoQuestao = TipoQuestao.Radio,
                             },
                             new ()
