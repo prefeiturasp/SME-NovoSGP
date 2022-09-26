@@ -249,7 +249,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     foreach (var resposta in questao.Resposta)
                     {
                         var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
-                        if (opcao.QuestoesComplementares.Any())
+                        if (opcao != null && opcao.QuestoesComplementares.Any())
                         {
                             ValidaRecursivo(secao, questao.Ordem.ToString(), opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
                         }
