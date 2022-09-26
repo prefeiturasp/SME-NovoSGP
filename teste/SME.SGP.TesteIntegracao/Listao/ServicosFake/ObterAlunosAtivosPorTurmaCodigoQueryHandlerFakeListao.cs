@@ -154,7 +154,18 @@ namespace SME.SGP.TesteIntegracao.Listao
                     SituacaoMatricula = "NÃO COMPARECEU",
                     NomeAluno = "NOME ALUNO 13",
                     NomeResponsavel = "Responsavel 13"
-                } 
+                },
+                new() {
+                    Ano = DateTimeExtension.HorarioBrasilia().Year,
+                    DataSituacao = dataRefencia.AddYears(-1),
+                    DataMatricula = dataRefencia.AddDays(-10),
+                    CodigoAluno = "14",
+                    CodigoComponenteCurricular= 138,
+                    CodigoSituacaoMatricula= SituacaoMatriculaAluno.ReclassificadoSaida,
+                    SituacaoMatricula = "RECLASSIFICADO SAIDA",
+                    NomeAluno = "NOME ALUNO 14",
+                    NomeResponsavel = "Responsavel 14"
+                },
             }); 
         }
     }
