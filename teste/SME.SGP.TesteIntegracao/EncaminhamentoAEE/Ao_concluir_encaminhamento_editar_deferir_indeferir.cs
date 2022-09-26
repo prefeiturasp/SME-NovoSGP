@@ -20,9 +20,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_editar_encaminhamento_concluindo_parecer : EncaminhamentoAEETesteBase
+    public class Ao_concluir_encaminhamento_editar_deferir_indeferir : EncaminhamentoAEETesteBase
     {
-        public Ao_editar_encaminhamento_concluindo_parecer(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_concluir_encaminhamento_editar_deferir_indeferir(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
         [Theory]
         [InlineData(PerfilUsuario.PAAI)]
         [InlineData(PerfilUsuario.PAEE)]
-        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee(PerfilUsuario perfil)
+        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_para_deferir(PerfilUsuario perfil)
         {
             await CriarDadosBase(ObterFiltro(perfil.Name()));
 
@@ -119,6 +119,126 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PROFESSOR_CODIGO_RF_2222222);
             
         }
+        
+        [Theory]
+        [InlineData(PerfilUsuario.PAAI)]
+        [InlineData(PerfilUsuario.PAEE)]
+        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_resposta_nao_para_indefirir(PerfilUsuario perfil)
+        {
+            await CriarDadosBase(ObterFiltro(perfil.Name()));
+
+            await InserirNaBase(new Dominio.EncaminhamentoAEE()
+            {
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = ALUNO_CODIGO_1,
+                Situacao = SituacaoAEE.Analise,
+                TurmaId = TURMA_ID_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new SecaoEncaminhamentoAEE()
+            {
+                QuestionarioId = 2,
+                Nome = "Concluir encaminhamento",
+                Ordem = 1,
+                Etapa = 3,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new EncaminhamentoAEESecao()
+            {
+                EncaminhamentoAEEId = 1,
+                SecaoEncaminhamentoAEEId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new QuestaoEncaminhamentoAEE()
+            {
+                EncaminhamentoAEESecaoId = 1,
+                QuestaoId = 21,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new QuestaoEncaminhamentoAEE()
+            {
+                EncaminhamentoAEESecaoId = 1,
+                QuestaoId = 25,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RespostaEncaminhamentoAEE()
+            {
+                QuestaoEncaminhamentoId = 1,
+                RespostaId = 22,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new RespostaEncaminhamentoAEE()
+            {
+                QuestaoEncaminhamentoId = 2,
+                RespostaId = 26,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            CriarPendenciasEncaminhamento(perfil);
+
+            var pendenciasPaee = ObterTodos<Pendencia>();
+            pendenciasPaee.ShouldNotBeNull();
+            (pendenciasPaee.FirstOrDefault().Tipo == TipoPendencia.AEE).ShouldBeTrue();
+            
+            var pendenciasEncaminhamentosPaee = ObterTodos<PendenciaEncaminhamentoAEE>();
+            pendenciasEncaminhamentosPaee.ShouldNotBeNull();
+            pendenciasEncaminhamentosPaee.Count.ShouldBe(1);
+            
+            var pendenciaPerfils = ObterTodos<PendenciaPerfil>();
+            pendenciaPerfils.ShouldNotBeNull();
+            pendenciaPerfils.Count.ShouldBe(1);
+            
+            var pendenciaPerfilUsuarios = ObterTodos<PendenciaPerfilUsuario>();
+            pendenciaPerfilUsuarios.ShouldNotBeNull();
+            pendenciaPerfilUsuarios.Count.ShouldBe(1);
+            
+            var useCase = ObterUseCaseConcluirEncaminhamento();
+            await useCase.Executar(1);
+
+            var encaminhamento = ObterTodos<Dominio.EncaminhamentoAEE>().FirstOrDefault();
+            encaminhamento.ShouldNotBeNull();
+            encaminhamento.Situacao.ShouldBe(SituacaoAEE.Indeferido);
+            var notificacao = ObterTodos<Notificacao>();
+            notificacao.ShouldNotBeNull();
+            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PROFESSOR_CODIGO_RF_2222222);
+            
+            pendenciasPaee = ObterTodos<Pendencia>();
+            pendenciasPaee.ShouldNotBeNull();
+            (pendenciasPaee.FirstOrDefault().Tipo == TipoPendencia.AEE).ShouldBeTrue();
+            pendenciasPaee.FirstOrDefault().Excluido.ShouldBeTrue();
+            
+            pendenciasEncaminhamentosPaee = ObterTodos<PendenciaEncaminhamentoAEE>();
+            pendenciasEncaminhamentosPaee.ShouldNotBeNull();
+            pendenciasEncaminhamentosPaee.Count.ShouldBe(0);
+            
+            pendenciaPerfils = ObterTodos<PendenciaPerfil>();
+            pendenciaPerfils.ShouldNotBeNull();
+            pendenciaPerfils.Count.ShouldBe(0);
+            
+            pendenciaPerfilUsuarios = ObterTodos<PendenciaPerfilUsuario>();
+            pendenciaPerfilUsuarios.ShouldNotBeNull();
+            pendenciaPerfilUsuarios.Count.ShouldBe(0);
+        }
 
         [Fact(DisplayName = "Encaminhamento AEE - Validar apenas usuário paai ou paee pode concluir o encaminhamento")]
         public async Task Validar_apenas_usuario_paae_ou_paee_pode_concluir_o_encaminhamento()
@@ -198,7 +318,48 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             excecao.Message.ShouldBe(MensagemNegocioEncaminhamentoAee.SOMENTE_USUARIO_PAAE_OU_PAEE_PODE_CONCLUIR_O_ENCAMINHAMENTO);
         }
 
+        private async Task CriarPendenciasEncaminhamento(PerfilUsuario perfilusuario)
+        {
+            await InserirNaBase(new Pendencia()
+            {
+                Titulo = "Encaminhamento AEE para análise",
+                Descricao = "O encaminhamento do estudante NOME DO ESTUDANTE 01 da turma TURMA_001 da ESCOLA ABC está disponível para atribuição de um PAEE. <br/><a href='https://novosgp.sme.prefeitura.sp.gov.br/aee/encaminhamento/editar/0001'>Clique aqui para acessar o encaminhamento.</a> <br/><br/>Esta pendência será resolvida automaticamente quando o PAEE for atribuído no encaminhamento.",
+                Tipo = TipoPendencia.AEE,
+                Situacao = SituacaoPendencia.Pendente,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
 
+            await InserirNaBase(new PendenciaEncaminhamentoAEE()
+            {
+                EncaminhamentoAEEId = 1,
+                PendenciaId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new PendenciaPerfil()
+            {
+                PerfilCodigo = perfilusuario,
+                PendenciaId = 1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new PendenciaPerfilUsuario()
+            {
+                PendenciaPerfilId = 1,
+                UsuarioId = 1,
+                PerfilCodigo = perfilusuario,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+        }
+        
         private FiltroAEEDto ObterFiltro(string perfil)
         {
             return new FiltroAEEDto()

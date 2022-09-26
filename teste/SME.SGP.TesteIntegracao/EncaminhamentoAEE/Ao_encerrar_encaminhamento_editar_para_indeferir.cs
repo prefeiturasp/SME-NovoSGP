@@ -17,9 +17,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_editar_encaminhamento_para_indeferir : EncaminhamentoAEETesteBase
+    public class Ao_encerrar_encaminhamento_editar_para_indeferir : EncaminhamentoAEETesteBase
     {
-        public Ao_editar_encaminhamento_para_indeferir(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_encerrar_encaminhamento_editar_para_indeferir(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
