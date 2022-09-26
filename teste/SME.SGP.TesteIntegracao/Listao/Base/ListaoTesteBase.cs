@@ -72,11 +72,29 @@ namespace SME.SGP.TesteIntegracao.Listao
                 filtroListao.TipoTurma);
             
             await CriarTipoCalendario(filtroListao.TipoCalendario);
-            await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre);
+
+            if (filtroListao.CriarAula)
+                await CriarAulas(filtroListao.ComponenteCurricularId, filtroListao.Bimestre);
+
             await CriarPeriodoEscolarTodosBimestres();
             await InserirParametroSistema();
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(filtroListao.ComponenteCurricularId);
+        }
+
+        protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
+        {
+            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
+            { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula(codigoAluno) }).ToList();
+        }
+
+        protected IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula(string codigoAluno)
+        {
+            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
+            {
+                NumeroAula = numeroAula,
+                TipoFrequencia = TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
+            }).ToList();
         }
 
         private async Task CriarAulas(long componenteCurricularId, int bimestre)
