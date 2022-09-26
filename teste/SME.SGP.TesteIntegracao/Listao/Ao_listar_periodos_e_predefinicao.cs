@@ -46,13 +46,13 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             var listaPeriodo = (await useCase.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, true,
                 filtroListao.Bimestre)).ToList();
+            
+            listaPeriodo.ShouldNotBeNull();
 
             var periodoEscolar = ObterTodos<PeriodoEscolar>().FirstOrDefault(c => c.Bimestre == filtroListao.Bimestre);
             periodoEscolar.ShouldNotBeNull();
 
-            var qtdeSemanas = DateAndTime.DateDiff(DateInterval.WeekOfYear, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim);
-
-            listaPeriodo.ShouldNotBeNull();
+            var qtdeSemanas = DateAndTime.DateDiff(DateInterval.WeekOfYear, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) + 1;
             qtdeSemanas.ShouldBe(listaPeriodo.Count);            
         }
 
@@ -81,7 +81,9 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             listaPeriodo.ShouldNotBeNull();
             
-            var aulas = ObterTodos<Dominio.Aula>().OrderBy(c => c.DataAula).ToList();
+            var aulas = ObterTodos<Dominio.Aula>().OrderBy(c => c.DataAula)
+                .Where(c => c.DataAula <= DateTimeExtension.HorarioBrasilia())
+                .ToList();
 
             const int qtdeLimiteDeAulas = 5;
             var contador = 1;
