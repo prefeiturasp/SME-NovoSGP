@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualBasic;
 using Shouldly;
@@ -24,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             return ServiceProvider.GetService<IObterPeriodosPorComponenteUseCase>();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Validar se os períodos estão sendo listados corretamente - semanal")]
         public async Task Deve_listar_periodos_semanal_regencia_classe()
         {
             var filtroListao = new FiltroListao
@@ -56,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             qtdeSemanas.ShouldBe(listaPeriodo.Count);            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Validar se os períodos estão sendo listados corretamente - 5 dias com aula")]
         public async Task Deve_listar_periodos_5_dias_com_aula()
         {
             var filtroListao = new FiltroListao
@@ -81,9 +82,11 @@ namespace SME.SGP.TesteIntegracao.Listao
 
             listaPeriodo.ShouldNotBeNull();
             
-            var aulas = ObterTodos<Dominio.Aula>().OrderBy(c => c.DataAula)
-                .Where(c => c.DataAula <= DateTimeExtension.HorarioBrasilia())
-                .ToList();
+            var mediator = ServiceProvider.GetService<IMediator>();
+            mediator.ShouldNotBeNull();
+            
+            var periodosEscolares = (await mediator.Send(new ObterPeriodosEscolaresPorComponenteBimestreTurmaQuery(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId,
+                filtroListao.Bimestre, false))).Where(c => c.DataAula <= DateTimeExtension.HorarioBrasilia()).ToList();
 
             const int qtdeLimiteDeAulas = 5;
             var contador = 1;
@@ -92,22 +95,22 @@ namespace SME.SGP.TesteIntegracao.Listao
             {
                 var posicaoInicial = (contador - 1) * qtdeLimiteDeAulas;
 
-                var itens = aulas.Skip(posicaoInicial)
+                var itens = periodosEscolares.Skip(posicaoInicial)
                     .Take(qtdeLimiteDeAulas).ToList();
                 
                 var dataInicioValidar = itens.FirstOrDefault()?.DataAula.Date;
                 var dataFimValidar = itens.LastOrDefault()?.DataAula.Date;
                 
-                (dataInicioValidar >= periodo.DataInicio).ShouldBeTrue();
-                (dataFimValidar <= periodo.DataFim).ShouldBeTrue();
+                (dataInicioValidar == periodo.DataInicio).ShouldBeTrue();
+                (dataFimValidar == periodo.DataFim).ShouldBeTrue();
 
                 contador++;
             }
             
-            Math.Ceiling((decimal)aulas.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
+            Math.Ceiling((decimal)periodosEscolares.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Verificar se a frequência predefina na outra tela é sugerida no listão")]
         public async Task Deve_sugerir_frequencia_pre_definida()
         {
             var filtroListao = new FiltroListao

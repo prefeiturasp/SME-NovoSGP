@@ -28,16 +28,16 @@ namespace SME.SGP.TesteIntegracao.Listao
             ENCHENTE,
             FALTA_TRANSPORTE
         };
-        
-        protected readonly string[] CODIGOS_ALUNOS =
+
+        private readonly string[] codigosAlunos =
         {
             CODIGO_ALUNO_1, CODIGO_ALUNO_2, CODIGO_ALUNO_3, CODIGO_ALUNO_4, CODIGO_ALUNO_5, CODIGO_ALUNO_6,
             CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11, CODIGO_ALUNO_12,
-            CODIGO_ALUNO_13
+            CODIGO_ALUNO_13, CODIGO_ALUNO_14
         };
 
-        protected readonly TipoFrequencia[] TIPOS_FREQUENCIAS = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
-        protected readonly int[] QUANTIDADES_AULAS = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
+        private readonly TipoFrequencia[] tiposFrequencias = { TipoFrequencia.C, TipoFrequencia.F, TipoFrequencia.R };
+        private readonly int[] quantidadesAulas = { QUANTIDADE_AULA, QUANTIDADE_AULA_2, QUANTIDADE_AULA_3, QUANTIDADE_AULA_4 };
 
         protected readonly string[] TIPOS_FREQUENCIAS_SIGLA =
         {
@@ -87,22 +87,22 @@ namespace SME.SGP.TesteIntegracao.Listao
         
         protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAluno()
         {
-            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
+            return codigosAlunos.Select(codigoAluno => new FrequenciaSalvarAlunoDto
                 { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula() }).ToList();
         }
 
         private IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula()
         {
-            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
+            return quantidadesAulas.Select(numeroAula => new FrequenciaAulaDto
             {
                 NumeroAula = numeroAula,
-                TipoFrequencia = TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
+                TipoFrequencia = tiposFrequencias[new Random().Next(tiposFrequencias.Length)].ObterNomeCurto()
             }).ToList();
         } 
         
         protected IEnumerable<FrequenciaSalvarAlunoDto> ObterListaFrequenciaSalvarAlunoComAusencia()
         {
-            return CODIGOS_ALUNOS.Select(codigoAluno => new FrequenciaSalvarAlunoDto
+            return codigosAlunos.Select(codigoAluno => new FrequenciaSalvarAlunoDto
                 { CodigoAluno = codigoAluno, Frequencias = ObterFrequenciaAula(codigoAluno) }).ToList();
         }
 
@@ -112,13 +112,13 @@ namespace SME.SGP.TesteIntegracao.Listao
             string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
             string[] codigosAlunosRemotos = { CODIGO_ALUNO_5 };
 
-            return QUANTIDADES_AULAS.Select(numeroAula => new FrequenciaAulaDto
+            return quantidadesAulas.Select(numeroAula => new FrequenciaAulaDto
             {
                 NumeroAula = numeroAula,
                 TipoFrequencia = codigosAlunosAusencia.Contains(codigoAluno) ? TipoFrequencia.F.ObterNomeCurto() :
                     codigosAlunosPresenca.Contains(codigoAluno) ? TipoFrequencia.C.ObterNomeCurto() :
                     codigosAlunosRemotos.Contains(codigoAluno) ? TipoFrequencia.R.ObterNomeCurto() :
-                    TIPOS_FREQUENCIAS[new Random().Next(TIPOS_FREQUENCIAS.Length)].ObterNomeCurto()
+                    tiposFrequencias[new Random().Next(tiposFrequencias.Length)].ObterNomeCurto()
             }).ToList();
         }
 
@@ -299,13 +299,13 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             string[] codigosAlunosAnotacaoFrequencia = { CODIGO_ALUNO_2, CODIGO_ALUNO_4 };
 
-            foreach (var codigoAluno in CODIGOS_ALUNOS)
+            foreach (var codigoAluno in codigosAlunos)
             {
                 var rand = new Random();
-                var index = rand.Next(QUANTIDADES_AULAS.Length);
+                var index = rand.Next(quantidadesAulas.Length);
                 
-                await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, QUANTIDADES_AULAS[index], aulaId);
-                await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), QUANTIDADES_AULAS[index]);
+                await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, quantidadesAulas[index], aulaId);
+                await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), quantidadesAulas[index]);
 
                 if (codigosAlunosAnotacaoFrequencia.Contains(codigoAluno))
                     await CriarAnotacaoFrequencia(aulaId, codigoAluno);
@@ -336,16 +336,16 @@ namespace SME.SGP.TesteIntegracao.Listao
             var codigoAlunos = new List<string>();
             foreach (var aula in aulas)
             {
-                foreach (var codigoAluno in CODIGOS_ALUNOS)
+                foreach (var codigoAluno in codigosAlunos)
                 {
                     var rand = new Random();
-                    var index = rand.Next(QUANTIDADES_AULAS.Length);
+                    var index = rand.Next(quantidadesAulas.Length);
                 
-                    await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, QUANTIDADES_AULAS[index], aula.Id);
+                    await CriarRegistroFrequenciaAluno(registroFrequenciaId, codigoAluno, quantidadesAulas[index], aula.Id);
 
                     if (!codigoAlunos.Contains(codigoAluno))
                     {
-                        await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), QUANTIDADES_AULAS[index]);
+                        await CriarFrequenciaAluno(periodoEscolar, codigoAluno, componenteCurricularId.ToString(), quantidadesAulas[index]);
                         codigoAlunos.Add(codigoAluno); 
                     }
 
@@ -359,7 +359,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             long aulaId)
         {
             var rand = new Random();
-            var index = rand.Next(TIPOS_FREQUENCIAS.Length);
+            var index = rand.Next(tiposFrequencias.Length);
             
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -367,7 +367,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 RegistroFrequenciaId = registroFrequenciaId,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                Valor = (int)TIPOS_FREQUENCIAS[index],
+                Valor = (int)tiposFrequencias[index],
                 NumeroAula = numeroAula,
                 AulaId = aulaId
             });
@@ -433,15 +433,15 @@ namespace SME.SGP.TesteIntegracao.Listao
         {
             var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
 
-            foreach (var codigoAluno in CODIGOS_ALUNOS)
+            foreach (var codigoAluno in codigosAlunos)
             {
                 var rand = new Random();
-                var index = rand.Next(TIPOS_FREQUENCIAS.Length);
+                var index = rand.Next(tiposFrequencias.Length);
                 
                 await InserirNaBase(new FrequenciaPreDefinida()
                 {
                     CodigoAluno = codigoAluno,
-                    TipoFrequencia = TIPOS_FREQUENCIAS[index],
+                    TipoFrequencia = tiposFrequencias[index],
                     ComponenteCurricularId = componenteCurricularId,
                     TurmaId = turmaId
                 });                

@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.Listao
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Não deve Lançar frequência para componente que não lança frequencia")]
         public async Task Nao_deve_lancar_frequencia_para_componente_que_nao_lanca_frequencia()
         {
             var filtroListao = new FiltroListao

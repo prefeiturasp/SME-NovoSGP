@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerSemPermissaoFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Não deve Lançar frequência após a data de encerramento da atribuição")]
         public async Task Nao_deve_lancar_frequencia_professor_apos_encerramento_atribuicao()
         {
             var filtroListao = new FiltroListao

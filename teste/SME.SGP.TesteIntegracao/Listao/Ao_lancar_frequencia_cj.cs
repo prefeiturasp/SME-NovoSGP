@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Lançamento de frequência por professor CJ para ensino fundamental")]
         public async Task Deve_lancar_frequencia_professor_cj_ensino_fundamental()
         {
             var filtroListao = new FiltroListao
@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTeste(filtroListao);            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Lançamento de frequência por professor CJ para infantil.")]
         public async Task Deve_lancar_frequencia_professor_cj_infantil()
         {
             var filtroListao = new FiltroListao
