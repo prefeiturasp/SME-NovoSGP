@@ -6,7 +6,6 @@ using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -230,7 +229,8 @@ namespace SME.SGP.Dados.Repositorios
                  and not ft.excluido
                    {condicaoBimestre}
                    {condicaoDataMatricula}
-                   {condicaoDataSituacao}) x ";
+                   {condicaoDataSituacao}
+            ) x ";
             
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao });
         }
