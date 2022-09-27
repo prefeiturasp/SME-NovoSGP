@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
             var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken); 
             
             return (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(new[] { turmaCodigo }, request.Bimestre), cancellationToken))
-                .Where(c => c.AlunoCodigo == request.AlunoCodigo && c.ConselhoClasseId == request.ConselhoClasseId);
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo && c.ConselhoClasseId == request.ConselhoClasseId && c.ComponenteCurricularCodigo.Equals(request.ComponenteCurricularId));
         }
     }
 }
