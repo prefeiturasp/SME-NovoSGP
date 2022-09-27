@@ -57,9 +57,9 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_PORTUGUES_ID_138 = 138;
         protected const long COMPONENTE_CURRICULAR_INGLES_ID_9 = 9;
         protected const string COMPONENTE_CURRICULAR_LINGUA_PORTUGUESA_NOME = "'Língua Portuguesa'";
-        protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "'Língua Portuguesa'";
+        protected const string COMPONENTE_CURRICULAR_PORTUGUES_NOME = "Língua Portuguesa";
         protected const long COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999 = 999999;
-        protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "'Desconhecido'";
+        protected const string COMPONENTE_CURRICULAR_DESCONHECIDO_NOME = "Desconhecido";
 
         protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
 
