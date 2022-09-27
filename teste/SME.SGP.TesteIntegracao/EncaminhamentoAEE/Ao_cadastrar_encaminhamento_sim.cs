@@ -96,7 +96,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var useCase = ObterRegistrarEncaminhamentoAee();
             var exceptionAEE = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(encaminhamentoAeeDto));
             Assert.Equal(string.Format(MensagemNegocioEncaminhamentoAee.EXISTEM_QUESTOES_OBRIGATORIAS_NAO_PREENCHIDAS,
-                        "Seção: Informações escolares Questões: [2.1], Seção: Descrição do encaminhamento Questões: [2, 3]")
+                        "Seção: Informações escolares Questões: [2.3], Seção: Descrição do encaminhamento Questões: [2, 3]")
                          , exceptionAEE.Message);
         }
 

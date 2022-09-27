@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.EncaminhamentoAee.ServicosFake;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
@@ -30,6 +31,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterNecessidadesEspeciaisAlunoEolQuery, InformacoesEscolaresAlunoDto>), typeof(ObterNecessidadesEspeciaisAlunoEolQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -60,11 +62,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var useCase = ObterUseCaseObterEncaminhamentoPorId();
             var informacoes = await useCase.Executar(1);
             informacoes.ShouldNotBeNull();
-            informacoes.Aluno.Nome.ShouldBe("NOME ALUNO 11");
+            informacoes.Aluno.Nome.ShouldBe("NOME ALUNO 1");
             informacoes.Aluno.DataNascimento.Date.ShouldBe(new DateTime(DateTime.Now.AddYears(-10).Year, 1, 1).Date);
-            informacoes.Aluno.CodigoAluno.ShouldBe("11");
+            informacoes.Aluno.CodigoAluno.ShouldBe("1");
             informacoes.Aluno.Situacao.ShouldBe("RECLASSIFICADO SAIDA");
-            informacoes.Aluno.DataSituacao.Date.ShouldBe(new DateTime(DateTime.Now.Year, 10, 3).Date);
+            informacoes.Aluno.DataSituacao.Date.ShouldBe(DateTime.Now.AddDays(-10).Date);
             informacoes.Aluno.CodigoTurma.ShouldBe("1");
             informacoes.responsavelEncaminhamentoAEE.Id.ShouldBe(2);
         }

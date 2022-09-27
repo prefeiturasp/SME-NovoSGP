@@ -236,10 +236,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         }
         private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
-            foreach (var questaoIndex in questoes.Select((value, index) => new { value, index }))
+            foreach (var questao in questoes)
             {
-                var questao = questaoIndex.value;
-                var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{(questaoIndex.index+1).ToString()}" : questao.Ordem.ToString());
+                var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
                     questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
