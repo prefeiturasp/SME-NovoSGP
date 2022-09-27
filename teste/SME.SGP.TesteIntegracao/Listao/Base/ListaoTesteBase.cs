@@ -431,17 +431,21 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         protected async Task CriarFrequenciaPreDefinida(long componenteCurricularId)
         {
+            string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_3 };
+            string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
+            string[] codigosAlunosRemotos = { CODIGO_ALUNO_5 };            
+            
             var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
 
             foreach (var codigoAluno in codigosAlunos)
             {
-                var rand = new Random();
-                var index = rand.Next(tiposFrequencias.Length);
-                
                 await InserirNaBase(new FrequenciaPreDefinida()
                 {
                     CodigoAluno = codigoAluno,
-                    TipoFrequencia = tiposFrequencias[index],
+                    TipoFrequencia = codigosAlunosAusencia.Contains(codigoAluno) ? TipoFrequencia.F :
+                        codigosAlunosPresenca.Contains(codigoAluno) ? TipoFrequencia.C :
+                        codigosAlunosRemotos.Contains(codigoAluno) ? TipoFrequencia.R :
+                        tiposFrequencias[new Random().Next(tiposFrequencias.Length)],
                     ComponenteCurricularId = componenteCurricularId,
                     TurmaId = turmaId
                 });                
