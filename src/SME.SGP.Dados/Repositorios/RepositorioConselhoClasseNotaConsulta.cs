@@ -232,7 +232,6 @@ namespace SME.SGP.Dados.Repositorios
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
             ) x ";
-
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao });
         }
 
