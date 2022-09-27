@@ -140,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
                 select pe.bimestre, 
                        fn.disciplina_id as ComponenteCurricularCodigo, 
                        fn.conceito_id as ConceitoId, 
-                       coalesce(ccn.nota, fn.nota) as Nota,
+                       fn.nota as Nota,
                        fa.aluno_codigo as AlunoCodigo
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
@@ -148,11 +148,6 @@ namespace SME.SGP.Dados.Repositorios
                  inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
-                                    left join conselho_classe cc on cc.fechamento_turma_id = ft.id
-                  left join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
-		                                        and cca.aluno_codigo = fa.aluno_codigo 
-                  left join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id 
-		                                        and ccn.componente_curricular_codigo = fn.disciplina_id 
                  where t.turma_id = @turmaCodigo
                  and not ft.excluido
                    {condicaoBimestre}
@@ -222,9 +217,9 @@ namespace SME.SGP.Dados.Repositorios
                     ccn.componente_curricular_codigo as ComponenteCurricularCodigo,
                     cc.id as ConselhoClasseId,
                     ccn.id as ConselhoClasseNotaId,
-                    coalesce(ccn.conceito_id, fn.conceito_id) as ConceitoId, 
-                    coalesce(ccn.nota, fn.nota) as Nota,
-                    coalesce(cca.aluno_codigo, fa.aluno_codigo) as AlunoCodigo
+                    ccn.conceito_id as ConceitoId,
+                    ccn.nota as Nota,
+                    cca.aluno_codigo as AlunoCodigo
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
