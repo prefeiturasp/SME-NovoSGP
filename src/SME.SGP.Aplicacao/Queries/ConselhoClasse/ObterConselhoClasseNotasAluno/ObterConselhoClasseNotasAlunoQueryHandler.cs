@@ -19,10 +19,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterConselhoClasseNotasAlunoQuery request, CancellationToken cancellationToken)
         {
-            var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken); 
-            
+            var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken);
+
             return (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(new[] { turmaCodigo }, request.Bimestre), cancellationToken))
-                .Where(c => c.AlunoCodigo == request.AlunoCodigo && c.ConselhoClasseId == request.ConselhoClasseId && c.ComponenteCurricularCodigo.Equals(request.ComponenteCurricularId));
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo && c.ConselhoClasseId == request.ConselhoClasseId && (!request.ComponenteCurricularId.HasValue || (request.ComponenteCurricularId.HasValue && c.ComponenteCurricularCodigo.Equals(request.ComponenteCurricularId.Value))));
         }
     }
 }
