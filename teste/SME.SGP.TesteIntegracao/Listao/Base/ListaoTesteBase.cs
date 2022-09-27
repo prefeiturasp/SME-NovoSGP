@@ -108,9 +108,9 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         protected IEnumerable<FrequenciaAulaDto> ObterFrequenciaAula(string codigoAluno)
         {
-            string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_3 };
+            string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_5 };
             string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
-            string[] codigosAlunosRemotos = { CODIGO_ALUNO_5 };
+            string[] codigosAlunosRemotos = { CODIGO_ALUNO_3, CODIGO_ALUNO_7 };
 
             return quantidadesAulas.Select(numeroAula => new FrequenciaAulaDto
             {
@@ -431,10 +431,6 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         protected async Task CriarFrequenciaPreDefinida(long componenteCurricularId)
         {
-            string[] codigosAlunosAusencia = { CODIGO_ALUNO_1, CODIGO_ALUNO_3 };
-            string[] codigosAlunosPresenca = { CODIGO_ALUNO_2, CODIGO_ALUNO_4, CODIGO_ALUNO_6 };
-            string[] codigosAlunosRemotos = { CODIGO_ALUNO_5 };            
-            
             var turmaId = ObterTodos<Turma>().Select(c => c.Id).FirstOrDefault();
 
             foreach (var codigoAluno in codigosAlunos)
@@ -442,10 +438,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 await InserirNaBase(new FrequenciaPreDefinida()
                 {
                     CodigoAluno = codigoAluno,
-                    TipoFrequencia = codigosAlunosAusencia.Contains(codigoAluno) ? TipoFrequencia.F :
-                        codigosAlunosPresenca.Contains(codigoAluno) ? TipoFrequencia.C :
-                        codigosAlunosRemotos.Contains(codigoAluno) ? TipoFrequencia.R :
-                        tiposFrequencias[new Random().Next(tiposFrequencias.Length)],
+                    TipoFrequencia = tiposFrequencias[new Random().Next(tiposFrequencias.Length)],
                     ComponenteCurricularId = componenteCurricularId,
                     TurmaId = turmaId
                 });                
