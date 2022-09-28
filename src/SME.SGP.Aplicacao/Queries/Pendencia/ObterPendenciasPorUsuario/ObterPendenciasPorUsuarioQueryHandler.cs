@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             PaginacaoResultadoDto<Pendencia> pendenciaPaginada;
             var itensDaLista = new List<Pendencia>();
             
-            List<Pendencia> listaPendenciasUsuario;
+            List<long> listaPendenciasUsuario;
 
             //-> Retorno quando houver algum filtro
             if (!string.IsNullOrEmpty(request.TurmaCodigo) || !string.IsNullOrEmpty(request.TituloPendencia) ||
@@ -54,9 +54,7 @@ namespace SME.SGP.Aplicacao
                     
                     foreach (var pendencia in pendenciaPaginada.Items)
                     {
-                        var pendenciaFiltrada = listaPendenciasUsuario.FirstOrDefault(c => c.Id == pendencia.Id);
-
-                        if (pendenciaFiltrada == null)
+                        if (!listaPendenciasUsuario.Any(c => c == pendencia.Id))
                             itensDaLista.Remove(pendencia);
                     }
                 }
@@ -76,9 +74,7 @@ namespace SME.SGP.Aplicacao
             
             foreach (var pendencia in pendenciaPaginada.Items)
             {
-                var pendenciaFiltrada = listaPendenciasUsuario.FirstOrDefault(c => c.Id == pendencia.Id);
-
-                if (pendenciaFiltrada == null)
+                if (!listaPendenciasUsuario.Any(c => c == pendencia.Id))
                     itensDaLista.Remove(pendencia);
             }
             
