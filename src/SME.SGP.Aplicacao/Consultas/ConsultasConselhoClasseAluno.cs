@@ -29,6 +29,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private const int PRIMEIRO_BIMESTRE = 1;
+        private const string PRIMEIRO_ANO_EM = "1";
 
         public ConsultasConselhoClasseAluno(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
                                             IConsultasDisciplina consultasDisciplina,
@@ -252,10 +253,14 @@ namespace SME.SGP.Aplicacao
 
             if (turmasCodigos.Length > 0)
             {
+                int quantidadeTurmas = turmasCodigos.Length;
                 var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigos));
 
-                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1)
+                if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && turma.ModalidadeCodigo != Modalidade.Medio)
+                    turmasCodigos = new string[1] { turma.CodigoTurma };               
+                else if(ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
                     turmasCodigos = new string[1] { turma.CodigoTurma };
+                
             }
 
             //Verificar as notas finais
@@ -443,6 +448,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
+        private bool ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(IEnumerable<Turma> turmasAluno, Turma turmaFiltro)
+            => turmasAluno.Select(t => t.TipoTurma).Distinct().Count() == 1 && turmaFiltro.ModalidadeCodigo == Modalidade.Medio && (turmaFiltro.AnoLetivo < 2021 || turmaFiltro.Ano == PRIMEIRO_ANO_EM);
+        
         private async Task<bool> ValidaTurmaRegularJuntoAEdFisica(List<string> turmasCodigos, string turmaPrincipal)
         {
             if(turmasCodigos.Count() == 2)
