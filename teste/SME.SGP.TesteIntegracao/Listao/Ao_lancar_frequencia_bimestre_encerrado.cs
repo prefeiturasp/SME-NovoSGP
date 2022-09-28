@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTesteComExcecao(filtroListao);
         }
         
-        [Fact(DisplayName = "Lançamento de frequência para bimestre encerrado com reabertura")]
+        //[Fact(DisplayName = "Lançamento de frequência para bimestre encerrado com reabertura")]
         public async Task Deve_lancar_frequencia_bimestre_encerrado_com_reabertura()
         {
             var filtroListao = new FiltroListao

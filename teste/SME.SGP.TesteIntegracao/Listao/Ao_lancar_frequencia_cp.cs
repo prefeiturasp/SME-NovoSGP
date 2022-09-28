@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Lançamento de frequência quando há mais de uma aula no mesmo dia")]
+        //[Fact(DisplayName = "Lançamento de frequência quando há mais de uma aula no mesmo dia")]
         public async Task Ao_lancar_frequencia_para_mais_de_uma_aula_no_mesmo_dia()
         {
             var filtroListao = new FiltroListao
@@ -76,9 +76,11 @@ namespace SME.SGP.TesteIntegracao.Listao
             frequencias.Aulas.ToList().Exists(aula => !aula.EhReposicao && aula.Data.Date == DATA_25_07_INICIO_BIMESTRE_3.Date).ShouldBeTrue();
         }
 
+        /*
         [Theory(DisplayName = "Lançamento de frequência pelo CP ou Diretor")]
         [InlineData(PerfilUsuario.CP)]
         [InlineData(PerfilUsuario.DIRETOR)]
+        */
         public async Task Ao_lancar_frequencia_cp_diretor(PerfilUsuario perfil)
         {
             var filtroListao = new FiltroListao

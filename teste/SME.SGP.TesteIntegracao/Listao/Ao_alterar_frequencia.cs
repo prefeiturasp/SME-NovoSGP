@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
         
-        [Fact(DisplayName = "Listão - Alteração de frequência pelo professor titular.")]
+        //[Fact(DisplayName = "Listão - Alteração de frequência pelo professor titular.")]
         public async Task Alteracao_de_frequencia_pelo_professor_titular()
         {
             var filtroListao = new FiltroListao
@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTeste(filtroListao);
         } 
         
-        [Fact(DisplayName = "Listão - Alteração de frequência pelo professor CJ")]
+        //[Fact(DisplayName = "Listão - Alteração de frequência pelo professor CJ")]
         public async Task Alteracao_de_frequencia_pelo_professor_cj()
         {
             var filtroListao = new FiltroListao
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTeste(filtroListao);
         }
 
-        [Fact(DisplayName = "Listão - Alteração de frequência pelo CP")]
+        //[Fact(DisplayName = "Listão - Alteração de frequência pelo CP")]
         public async Task Alteracao_de_frequencia_pelo_cp()
         {
             var filtroListao = new FiltroListao
@@ -78,7 +78,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTeste(filtroListao);
         }
         
-        [Fact(DisplayName = "Listão - Alteração de frequência pelo Diretor")]
+        //[Fact(DisplayName = "Listão - Alteração de frequência pelo Diretor")]
         public async Task Alteracao_de_frequencia_pelo_diretor()
         {
             var filtroListao = new FiltroListao

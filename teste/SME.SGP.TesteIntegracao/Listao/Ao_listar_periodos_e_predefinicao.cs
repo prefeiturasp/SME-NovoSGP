@@ -160,7 +160,9 @@ namespace SME.SGP.TesteIntegracao.Listao
             foreach (var codigoAluno in listaCodigoAluno)
             {
                 var frequenciaPreDefinidaAluno = listaFrequenciaPreDefinida
-                    .FirstOrDefault(c => c.CodigoAluno == codigoAluno);
+                    .FirstOrDefault(c => c.CodigoAluno == codigoAluno && 
+                                         c.ComponenteCurricularId == filtroListao.ComponenteCurricularId && 
+                                         c.TurmaId == TURMA_ID_1);
                 
                 frequenciaPreDefinidaAluno.ShouldNotBeNull();
 

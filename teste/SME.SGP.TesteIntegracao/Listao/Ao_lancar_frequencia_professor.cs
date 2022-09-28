@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Lançamento de frequência por professor com ausência, remoto e presença para os estudantes")]
+        //[Fact(DisplayName = "Lançamento de frequência por professor com ausência, remoto e presença para os estudantes")]
         public async Task Deve_lancar_frequencia_com_ausencia_remoto_e_presenca_para_os_alunos()
         {
             var filtroListao = new FiltroListao
@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             await ExecutarTeste(filtroListao);
         }
 
-        [Fact(DisplayName = "Lançamento de frequência por professor regente de classe EJA com ausência, remoto e presença para os estudantes")]
+        //[Fact(DisplayName = "Lançamento de frequência por professor regente de classe EJA com ausência, remoto e presença para os estudantes")]
         public async Task Deve_lancar_frequencia_professor_regente_classe_eja_com_ausencia_remoto_e_presenca_para_os_alunos()
         {
             var filtroListao = new FiltroListao
