@@ -23,7 +23,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterNotasFinaisBimestresAlunoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseNota.ObterNotasFinaisBimestresAlunoAsync(request.AlunoCodigo,request.TurmasCodigos,request.Bimestre,request.DataMatricula,request.DataSituacao,request.ValidaMatricula);
+            var notasConceitosFechamento = (await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo).ToList();
+
+
+            var notasConceitosConselhoClasse = (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo).ToList();
+
+                
+            var notasFinais = new List<NotaConceitoBimestreComponenteDto>();
+            
+            notasFinais.AddRange(notasConceitosConselhoClasse);
+            notasFinais.AddRange(notasConceitosFechamento.Where(fechamento => 
+                !notasConceitosConselhoClasse.Exists(conselho => conselho.ComponenteCurricularCodigo == fechamento.ComponenteCurricularCodigo && conselho.Bimestre == fechamento.Bimestre)));
+            return notasFinais;
         }
     }
 }

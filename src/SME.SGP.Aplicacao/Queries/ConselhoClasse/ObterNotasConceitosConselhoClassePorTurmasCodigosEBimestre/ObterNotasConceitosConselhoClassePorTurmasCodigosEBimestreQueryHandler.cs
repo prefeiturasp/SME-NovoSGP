@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                             request.Bimestre),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(turmaCodigo,
-                                request.Bimestre),
+                                request.Bimestre == 0 ? null : request.Bimestre),
                         "Obter notas ou conceitos do conselho de classe"))
                     .ToList();
 
