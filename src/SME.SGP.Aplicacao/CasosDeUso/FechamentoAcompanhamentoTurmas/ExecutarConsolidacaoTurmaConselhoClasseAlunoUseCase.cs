@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
             if (fechamentoTurma != null)
             {
-                var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
+                var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
                 var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
 
                 if (componenteCurricularRegencia > 0)
