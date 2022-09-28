@@ -111,67 +111,67 @@ namespace SME.SGP.TesteIntegracao.Listao
         }
 
         // [Fact(DisplayName = "Verificar se a frequência predefina na outra tela é sugerida no listão")]
-        // public async Task Deve_sugerir_frequencia_pre_definida()
-        // {
-        //     var filtroListao = new FiltroListao
-        //     {
-        //         Bimestre = 3,
-        //         Modalidade = Modalidade.Fundamental,
-        //         Perfil = ObterPerfilProfessor(),
-        //         AnoTurma = ANO_8,
-        //         TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-        //         TipoTurma = TipoTurma.Regular,
-        //         TurmaHistorica = false,
-        //         ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
-        //     };
-        //     
-        //     await CriarDadosBasicos(filtroListao);
-        //     await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
-        //     
-        //     var useCasePeriodo = ObterPeriodosPorComponenteUseCase();
-        //     var listaPeriodo = (await useCasePeriodo.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
-        //         filtroListao.Bimestre)).ToList();
-        //     
-        //     listaPeriodo.ShouldNotBeNull();
-        //     
-        //     var periodoSelecionado = listaPeriodo.FirstOrDefault();
-        //     periodoSelecionado.ShouldNotBeNull();
-        //
-        //     var useCase = ServiceProvider.GetService<IObterFrequenciasPorPeriodoUseCase>();
-        //     useCase.ShouldNotBeNull();
-        //
-        //     var frequencia = await useCase.Executar(new FiltroFrequenciaPorPeriodoDto
-        //     {
-        //         DataInicio = periodoSelecionado.DataInicio,
-        //         DataFim = periodoSelecionado.DataFim,
-        //         DisciplinaId = filtroListao.ComponenteCurricularId.ToString(),
-        //         ComponenteCurricularId = filtroListao.ComponenteCurricularId.ToString(),
-        //         TurmaId = TURMA_CODIGO_1
-        //     });
-        //     
-        //     frequencia.ShouldNotBeNull();
-        //     
-        //     var listaCodigoAluno = frequencia.Alunos.Select(c => c.CodigoAluno).Distinct().ToList();
-        //     listaCodigoAluno.ShouldNotBeNull();
-        //     
-        //     var listaFrequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
-        //     listaFrequenciaPreDefinida.ShouldNotBeNull();
-        //
-        //     foreach (var codigoAluno in listaCodigoAluno)
-        //     {
-        //         var frequenciaPreDefinidaAluno = listaFrequenciaPreDefinida
-        //             .FirstOrDefault(c => c.CodigoAluno == codigoAluno && 
-        //                                  c.ComponenteCurricularId == filtroListao.ComponenteCurricularId && 
-        //                                  c.TurmaId == TURMA_ID_1);
-        //         
-        //         frequenciaPreDefinidaAluno.ShouldNotBeNull();
-        //
-        //         var aulasAluno = frequencia.Alunos.FirstOrDefault(c => c.CodigoAluno == codigoAluno)?.Aulas;
-        //         aulasAluno.ShouldNotBeNull();
-        //         
-        //         foreach (var aula in aulasAluno)
-        //             aula.TipoFrequencia.ShouldBe(frequenciaPreDefinidaAluno.TipoFrequencia.ObterNomeCurto());
-        //     }
-        // }
+        public async Task Deve_sugerir_frequencia_pre_definida()
+        {
+            var filtroListao = new FiltroListao
+            {
+                Bimestre = 3,
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilProfessor(),
+                AnoTurma = ANO_8,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                TipoTurma = TipoTurma.Regular,
+                TurmaHistorica = false,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138
+            };
+            
+            await CriarDadosBasicos(filtroListao);
+            await CriarRegistroFrenquencia(filtroListao.Bimestre, filtroListao.ComponenteCurricularId);
+            
+            var useCasePeriodo = ObterPeriodosPorComponenteUseCase();
+            var listaPeriodo = (await useCasePeriodo.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, false,
+                filtroListao.Bimestre)).ToList();
+            
+            listaPeriodo.ShouldNotBeNull();
+            
+            var periodoSelecionado = listaPeriodo.FirstOrDefault();
+            periodoSelecionado.ShouldNotBeNull();
+        
+            var useCase = ServiceProvider.GetService<IObterFrequenciasPorPeriodoUseCase>();
+            useCase.ShouldNotBeNull();
+        
+            var frequencia = await useCase.Executar(new FiltroFrequenciaPorPeriodoDto
+            {
+                DataInicio = periodoSelecionado.DataInicio,
+                DataFim = periodoSelecionado.DataFim,
+                DisciplinaId = filtroListao.ComponenteCurricularId.ToString(),
+                ComponenteCurricularId = filtroListao.ComponenteCurricularId.ToString(),
+                TurmaId = TURMA_CODIGO_1
+            });
+            
+            frequencia.ShouldNotBeNull();
+            
+            var listaCodigoAluno = frequencia.Alunos.Select(c => c.CodigoAluno).Distinct().ToList();
+            listaCodigoAluno.ShouldNotBeNull();
+            
+            var listaFrequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
+            listaFrequenciaPreDefinida.ShouldNotBeNull();
+        
+            foreach (var codigoAluno in listaCodigoAluno)
+            {
+                var frequenciaPreDefinidaAluno = listaFrequenciaPreDefinida
+                    .FirstOrDefault(c => c.CodigoAluno == codigoAluno && 
+                                         c.ComponenteCurricularId == filtroListao.ComponenteCurricularId && 
+                                         c.TurmaId == TURMA_ID_1);
+                
+                frequenciaPreDefinidaAluno.ShouldNotBeNull();
+        
+                var aulasAluno = frequencia.Alunos.FirstOrDefault(c => c.CodigoAluno == codigoAluno)?.Aulas;
+                aulasAluno.ShouldNotBeNull();
+                
+                foreach (var aula in aulasAluno)
+                    aula.TipoFrequencia.ShouldBe(frequenciaPreDefinidaAluno.TipoFrequencia.ObterNomeCurto());
+            }
+        }
     }
 }
