@@ -14,6 +14,9 @@ namespace SME.SGP.Dominio
             Instrucao = instrucao;
             DescricaoHtml = descricaoHtml;
             UeId = ueId;
+            CriadoPor = "Sistema";
+            CriadoEm = DateTime.Now;
+            CriadoRF = "0";
         }
 
         public Pendencia()

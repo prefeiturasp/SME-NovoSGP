@@ -117,9 +117,14 @@ namespace SME.SGP.Aplicacao
 
                 disciplinasDto.ForEach(d =>
                 {
-                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
+                    var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ?
+                                                                                        a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular ?
+                                                                                            a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular
+                                                                                            : a.Codigo % (10000) == d.CodigoComponenteCurricular 
+                                                                                        : a.Codigo % (10000) == d.CodigoComponenteCurricular);
+                    
                     d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
-                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo;
+                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo % (10000);
                     d.Regencia = componenteEOL.Regencia;
 
                     if (d.TerritorioSaber)

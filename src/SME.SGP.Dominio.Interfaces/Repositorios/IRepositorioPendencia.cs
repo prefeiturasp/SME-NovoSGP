@@ -8,7 +8,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia);
 
-        void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia);
+        Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia);
         void ExclusaoLogicaPendencia(long pendenciaId);
 
         Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioComFiltro(long usuarioId, int[] tiposPendencias, string tituloPendencia, string turmaCodigo, Paginacao paginacao, int? tipoGrupo);
