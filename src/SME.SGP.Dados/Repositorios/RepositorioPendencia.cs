@@ -429,10 +429,10 @@ namespace SME.SGP.Dados.Repositorios
                             select distinct p.id
 							from pendencia p 
                                 inner join pendencia_plano_aee ppa on ppa.pendencia_id = p.id
-                                {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.turma_id = pa.turma_id " : string.Empty)}
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.id = pa.turma_id " : string.Empty)}
                             WHERE ppa.pendencia_id = any(@pendencias)
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " AND t.turma_id = @turmaCodigo" : string.Empty)}
-                            and situacao = 1
+                            and p.situacao = 1
                             and p.tipo in (18)
                             and not p.excluido",
                 _ => string.Empty
