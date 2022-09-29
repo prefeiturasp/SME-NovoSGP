@@ -64,6 +64,10 @@ namespace SME.SGP.TesteIntegracao
         protected const long COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061 = 1061;
         protected const long COMPONENTE_CURRICULAR_APRENDIZAGEM_E_LEITURA_ID_1359 = 1359;
         
+
+        protected const long COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060 = 1060;
+        protected const string COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME = "'INFORMATICA - OIE'";
+
         protected const string COMPONENTE_CURRICULAR_MATEMATICA_NOME = "'MATEMATICA'";
 
         protected const long COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105 = 1105;
@@ -103,7 +107,10 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_5 = "'Área de conhecimento 5'";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
+        protected const string COMPONENTE_CIENCIAS_NOME = "'CIENCIA'";
+
         protected const string COMPONENTE_EDUCACAO_FISICA_ID_6 = "6";
+        protected const string COMPONENTE_EDUCACAO_FISICA_NOME = "'ED. FISICA'";
         protected const string COMPONENTE_GEOGRAFIA_ID_8 = "8";
         protected const string COMPONENTE_GEOGRAFIA_NOME = "'Geografia'";
         protected const string COMPONENTE_HISTORIA_ID_7 = "7";
@@ -1150,6 +1157,10 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
 
             
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_EDUCACAO_FISICA_ID_6.ToString(), NULO, CODIGO_1, CODIGO_1, COMPONENTE_EDUCACAO_FISICA_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_EDUCACAO_FISICA_NOME, NULO);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CIENCIAS_ID_89.ToString(), NULO, CODIGO_1, CODIGO_3, COMPONENTE_CIENCIAS_NOME, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, COMPONENTE_CIENCIAS_NOME, NULO);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060.ToString(), NULO, CODIGO_3, NULO, COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME, NULO);
+
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)
