@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -60,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
                                 if (professorTitularTurma != null)
                                 {
-                                    if (periodoEscolar != null)
+                                    if (periodoEscolar != null && !string.IsNullOrEmpty(professorTitularTurma.ProfessorRf))
                                         await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, professorTitularTurma.ProfessorRf, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                 }
                             }
@@ -79,7 +80,7 @@ namespace SME.SGP.Aplicacao
                                     {
                                         string codigoRfProfessor = professor.Trim();
 
-                                        if (!String.IsNullOrEmpty(codigoRfProfessor))
+                                        if (!string.IsNullOrEmpty(codigoRfProfessor))
                                             await SalvarPendenciaAulaUsuario(item.First().DisciplinaId, codigoRfProfessor, periodoEscolar.Id, request.TipoPendenciaAula, aulasNormais.Select(x => x.Id), descricaoComponenteCurricular, turmaAnoComModalidade, descricaoUeDre, turmaComDreUe);
                                     }
                                 }
@@ -133,8 +134,9 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Salvar Pendencia Aulas Por Tipo.", LogNivel.Critico, LogContexto.Aula, ex.Message));
                 unitOfWork.Rollback();
             }
         }
