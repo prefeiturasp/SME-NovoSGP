@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             Math.Ceiling((decimal)periodosEscolares.Count / qtdeLimiteDeAulas).ShouldBe(listaPeriodo.Count);
         }
 
-        [Fact(DisplayName = "Verificar se a frequência predefina na outra tela é sugerida no listão")]
+        // [Fact(DisplayName = "Verificar se a frequência predefina na outra tela é sugerida no listão")]
         public async Task Deve_sugerir_frequencia_pre_definida()
         {
             var filtroListao = new FiltroListao
@@ -136,10 +136,10 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             var periodoSelecionado = listaPeriodo.FirstOrDefault();
             periodoSelecionado.ShouldNotBeNull();
-
+        
             var useCase = ServiceProvider.GetService<IObterFrequenciasPorPeriodoUseCase>();
             useCase.ShouldNotBeNull();
-
+        
             var frequencia = await useCase.Executar(new FiltroFrequenciaPorPeriodoDto
             {
                 DataInicio = periodoSelecionado.DataInicio,
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             
             var listaFrequenciaPreDefinida = ObterTodos<FrequenciaPreDefinida>();
             listaFrequenciaPreDefinida.ShouldNotBeNull();
-
+        
             foreach (var codigoAluno in listaCodigoAluno)
             {
                 var frequenciaPreDefinidaAluno = listaFrequenciaPreDefinida
@@ -165,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                                          c.TurmaId == TURMA_ID_1);
                 
                 frequenciaPreDefinidaAluno.ShouldNotBeNull();
-
+        
                 var aulasAluno = frequencia.Alunos.FirstOrDefault(c => c.CodigoAluno == codigoAluno)?.Aulas;
                 aulasAluno.ShouldNotBeNull();
                 

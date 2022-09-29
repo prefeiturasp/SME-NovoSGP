@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -14,15 +14,14 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 {
-    public class Ao_concluir_encaminhamento_editar_deferir_indeferir : EncaminhamentoAEETesteBase
+    public class Ao_concluir_encaminhamento_editar_deferir_indeferir_paee : EncaminhamentoAEETesteBase
     {
-        public Ao_concluir_encaminhamento_editar_deferir_indeferir(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_concluir_encaminhamento_editar_deferir_indeferir_paee(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -32,14 +31,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeECargoQuery, IEnumerable<FuncionarioDTO>>), typeof(ObterFuncionariosPorUeECargoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ExecutaNotificacaoConclusaoEncaminhamentoAEECommand, bool>), typeof(ExecutaNotificacaoConclusaoEncaminhamentoAEECommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(EncaminhamentoAEE.ServicosFake.ObterUsuarioLogadoPaee5555555QueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Theory]
-        [InlineData(PerfilUsuario.PAAI)]
-        [InlineData(PerfilUsuario.PAEE)]
-        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_para_deferir(PerfilUsuario perfil)
+        [Fact]
+        public async Task Ao_editar_encaminhamento_concluindo_parecer_paee_para_deferir()
         {
-            await CriarDadosBase(ObterFiltro(perfil.Name()));
+            await CriarDadosBase(ObterFiltro(PerfilUsuario.PAEE.Name()));
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -116,16 +114,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             encaminhamento.Situacao.ShouldBe(SituacaoAEE.Deferido);
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
-            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PROFESSOR_CODIGO_RF_2222222);
-            
+
+            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAEE_LOGIN_5555555);
         }
         
-        [Theory]
-        [InlineData(PerfilUsuario.PAAI)]
-        [InlineData(PerfilUsuario.PAEE)]
-        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_resposta_nao_para_indefirir(PerfilUsuario perfil)
+        [Fact]
+        public async Task Ao_editar_encaminhamento_concluindo_parecer_paai_paee_resposta_nao_para_indefirir()
         {
-            await CriarDadosBase(ObterFiltro(perfil.Name()));
+            await CriarDadosBase(ObterFiltro(PerfilUsuario.PAEE.Name()));
 
             await InserirNaBase(new Dominio.EncaminhamentoAEE()
             {
@@ -194,7 +190,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                 CriadoRF = SISTEMA_CODIGO_RF
             });
 
-            CriarPendenciasEncaminhamento(perfil);
+            CriarPendenciasEncaminhamento(PerfilUsuario.PAEE);
 
             var pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();
@@ -220,7 +216,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             encaminhamento.Situacao.ShouldBe(SituacaoAEE.Indeferido);
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
-            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PROFESSOR_CODIGO_RF_2222222);
+            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAEE_LOGIN_5555555);
             
             pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();
@@ -238,84 +234,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             pendenciaPerfilUsuarios = ObterTodos<PendenciaPerfilUsuario>();
             pendenciaPerfilUsuarios.ShouldNotBeNull();
             pendenciaPerfilUsuarios.Count.ShouldBe(0);
-        }
-
-        [Fact(DisplayName = "Encaminhamento AEE - Validar apenas usuário paai ou paee pode concluir o encaminhamento")]
-        public async Task Validar_apenas_usuario_paae_ou_paee_pode_concluir_o_encaminhamento()
-        {
-            await CriarDadosBase(ObterFiltro(ObterPerfilProfessor()));
-
-            await InserirNaBase(new Dominio.EncaminhamentoAEE()
-            {
-                AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNome = ALUNO_CODIGO_1,
-                Situacao = SituacaoAEE.Analise,
-                TurmaId = TURMA_ID_1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new SecaoEncaminhamentoAEE()
-            {
-                QuestionarioId = 2,
-                Nome = "Concluir encaminhamento",
-                Ordem = 1,
-                Etapa = 3,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new EncaminhamentoAEESecao()
-            {
-                EncaminhamentoAEEId = 1,
-                SecaoEncaminhamentoAEEId = 1,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new QuestaoEncaminhamentoAEE()
-            {
-                EncaminhamentoAEESecaoId = 1,
-                QuestaoId = 21,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new QuestaoEncaminhamentoAEE()
-            {
-                EncaminhamentoAEESecaoId = 1,
-                QuestaoId = 25,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoAEE()
-            {
-                QuestaoEncaminhamentoId = 1,
-                RespostaId = 22,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            await InserirNaBase(new RespostaEncaminhamentoAEE()
-            {
-                QuestaoEncaminhamentoId = 2,
-                RespostaId = 25,
-                CriadoEm = DateTime.Now,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
-            });
-
-            var useCase = ObterUseCaseConcluirEncaminhamento();
-            var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(1));
-
-            excecao.Message.ShouldBe(MensagemNegocioEncaminhamentoAee.SOMENTE_USUARIO_PAAE_OU_PAEE_PODE_CONCLUIR_O_ENCAMINHAMENTO);
         }
 
         private async Task CriarPendenciasEncaminhamento(PerfilUsuario perfilusuario)
