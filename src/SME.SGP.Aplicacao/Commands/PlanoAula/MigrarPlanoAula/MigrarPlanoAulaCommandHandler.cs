@@ -119,7 +119,12 @@ namespace SME.SGP.Aplicacao
             if (turmaAula.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
                 if(turmasAtribuidasAoProfessorPorAno.Any())      
-                    turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(new ProfessorTurmaDto);
+                    turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(turmasAtribuidasAoProfessorPorAno.Select( a=> new ProfessorTurmaDto()
+                    {
+                        CodTurma = Convert.ToInt32(a.Codigo),
+                        Ano = a.Ano.ToString(),
+                        NomeTurma = a.Nome
+                    }));
                 
 
                 await ValidaTurmasProfessor(ehProfessorCj, ueId,
