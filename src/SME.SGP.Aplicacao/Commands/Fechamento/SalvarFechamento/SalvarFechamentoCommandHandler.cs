@@ -301,7 +301,7 @@ namespace SME.SGP.Aplicacao
                 {
                     retornoCacheMapeado.Add(new FechamentoNotaAlunoAprovacaoDto
                     {
-                        Bimestre = 0,
+                        Bimestre = fechamentoFinalTurmaDisciplina.Bimestre,
                         Nota = notaConceitoAluno.Nota,
                         AlunoCodigo = notaConceitoAluno.CodigoAluno,
                         ConceitoId = notaConceitoAluno.ConceitoId,
