@@ -221,7 +221,7 @@ namespace SME.SGP.Aplicacao
                     TipoResponsavel = ObterTipoResponsavelDescricao(supervisor[i].TipoAtribuicao),
                     TipoResponsavelId = supervisor[i].TipoAtribuicao,
                     UeNome = supervisor[i].Nome,
-                    UeId = supervisor[i].UeId,
+                    UeId = !string.IsNullOrEmpty(supervisor[i].UeId) ? supervisor[i].UeId : supervisor[i].EscolaId,
                     DreId = supervisor[i].DreId,
                     DreNome = supervisor[i].DreNome,
                     AlteradoEm = supervisor[i].AlteradoEm,
