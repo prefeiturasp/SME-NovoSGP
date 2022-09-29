@@ -92,39 +92,39 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                                                        SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento)
         {
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
-            
+
             await comando.Executar(filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto);
-            
+
             var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
-            
-            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(filtroConselhoClasseDto.AlunoCodigo, 
-                TURMA_ID_1, 
-                filtroConselhoClasseDto.BimestreConselhoClasse == 0 ? null : filtroConselhoClasseDto.BimestreConselhoClasse, 
+
+            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(filtroConselhoClasseDto.AlunoCodigo,
+                TURMA_ID_1,
+                filtroConselhoClasseDto.BimestreConselhoClasse == 0 ? null : filtroConselhoClasseDto.BimestreConselhoClasse,
                 false,
-                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota, 
+                filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota,
                 filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 filtroConselhoClasseDto.SalvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
-            
+
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
-        
+
         protected async Task ExecutarTesteSemValidacao(SalvarConselhoClasseAlunoNotaDto salvarConselhoClasseAlunoNotaDto)
         {
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             comando.ShouldNotBeNull();
-            
+
             await comando.Executar(salvarConselhoClasseAlunoNotaDto);
-            
+
             var consolidacaoAluno = ServiceProvider.GetService<IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase>();
-            
-            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(salvarConselhoClasseAlunoNotaDto.CodigoAluno, 
-                TURMA_ID_1, 
-                salvarConselhoClasseAlunoNotaDto.Bimestre == 0 ? null : salvarConselhoClasseAlunoNotaDto.Bimestre, 
+
+            var mensagem = new MensagemConsolidacaoConselhoClasseAlunoDto(salvarConselhoClasseAlunoNotaDto.CodigoAluno,
+                TURMA_ID_1,
+                salvarConselhoClasseAlunoNotaDto.Bimestre == 0 ? null : salvarConselhoClasseAlunoNotaDto.Bimestre,
                 false,
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota, 
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota,
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito,
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular);
-            
+
             await consolidacaoAluno.Executar(new MensagemRabbit(JsonConvert.SerializeObject(mensagem)));
         }
 
@@ -138,7 +138,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                                     bool anoAnterior,
                                     TipoNota tipoNota,
                                     SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.EmAndamento,
-                                    bool ehPerfilGestor = false)
+                                    bool ehPerfilGestor = false,
+                                    params long[] componentesRegencia)
         {
             var ehBimestreFinal = salvarConselhoClasseAlunoNotaDto.Bimestre == 0;
 
@@ -160,10 +161,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             conselhosDeClasseAlunos.ShouldNotBeNull();
 
             if (ehBimestreFinal)
-                conselhosDeClasseAlunos.Count(a=> a.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBe(5);
+                conselhosDeClasseAlunos.Count(a => a.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBe(5);
             else
                 conselhosDeClasseAlunos.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
-            
+
             var conselhoClasseAlunoInserido = conselhosDeClasseAlunos.Where(f => f.ConselhoClasseId == situacaoConselhoClasseInserida.Id);
             conselhoClasseAlunoInserido.Any(s => !s.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno)).ShouldBeFalse();
 
@@ -171,27 +172,27 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             conselhosClasseNotas.ShouldNotBeNull();
 
             var classeNota = conselhosClasseNotas.LastOrDefault(nota => nota.ConselhoClasseAlunoId == conselhoClasseAlunoInserido.FirstOrDefault().Id);
-            
+
             classeNota.ShouldNotBeNull();
-            classeNota.Justificativa.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Justificativa);                
+            classeNota.Justificativa.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Justificativa);
 
             if (anoAnterior && !ehPerfilGestor)
             {
                 classeNota.Nota.ShouldBeNull();
                 classeNota.ConceitoId.ShouldBeNull();
-                
+
                 var aprovacoesNotasConselho = ObterTodos<WFAprovacaoNotaConselho>();
-               
+
                 aprovacoesNotasConselho.ShouldNotBeNull();
-            
+
                 var aprovacaoNotaConselho = aprovacoesNotasConselho.FirstOrDefault(aprovacao => aprovacao.ConselhoClasseNotaId == classeNota.Id);
                 aprovacaoNotaConselho.ShouldNotBeNull();
-            
+
                 if (tipoNota == TipoNota.Nota)
                     aprovacaoNotaConselho.Nota.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Nota);
                 else
-                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);                   
-               
+                    aprovacaoNotaConselho.ConceitoId.ShouldBe(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.Conceito);
+
             }
             else
             {
@@ -215,17 +216,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             var alunosConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
             alunosConsolidacao.ShouldNotBeNull();
-            
+
             var alunoConsolidado = alunosConsolidacao.LastOrDefault(nota =>
                     nota.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno));
 
             alunoConsolidado.ShouldNotBeNull();
             (alunoConsolidado.Status == situacaoConselhoClasse).ShouldBeTrue();
-            
+
             var notasConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
             notasConsolidacao.ShouldNotBeNull();
-            
-            var notaConsolidacao = notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id);
+
+            var notaConsolidacao = componentesRegencia != null && componentesRegencia.Any() ? notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && componentesRegencia.Contains(s.ComponenteCurricularId.Value)) : notasConsolidacao.LastOrDefault(s => s.ConselhoClasseConsolidadoTurmaAlunoId == alunoConsolidado.Id && s.ComponenteCurricularId.Equals(salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular));
             notaConsolidacao.ShouldNotBeNull();
 
             if (tipoNota == TipoNota.Nota)
@@ -248,15 +249,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
             else
                 await CriarFechamentoTurma(filtroConselhoClasse.Bimestre);
-            
+
             if (filtroConselhoClasse.CriarPeriodoAbertura)
                 await CriarPeriodoAberturaCustomizadoQuartoBimestre();
-            
+
             if (filtroConselhoClasse.CriarPeriodoReabertura)
                 await CriarPeriodoReabertura(filtroConselhoClasse.TipoCalendarioId, filtroConselhoClasse.ConsiderarAnoAnterior);
 
         }
-        
+
         protected async Task CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(FiltroConselhoClasseDto filtroConselhoClasse)
         {
             await CriarDreUePerfilComponenteCurricular();
@@ -269,7 +270,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             if (filtroConselhoClasse.CriarPeriodoEscolar)
                 await CriarPeriodoEscolar(filtroConselhoClasse);
-            
+
             await CriarAula(filtroConselhoClasse.ComponenteCurricular, filtroConselhoClasse.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 
             await CriarParametrosNotas();
@@ -285,7 +286,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseRecomendacao();
 
             await CriaConceito();
-            
+
             await CriarConselhoClasseParecerAno();
         }
 
@@ -318,7 +319,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarFechamentoTurmaAlunoNota(filtroConselhoClasseDto);
         }
-        
+
         protected async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
         {
             var fechamentoTurmas = ObterTodos<FechamentoTurma>();
@@ -460,7 +461,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                     DisciplinaId = long.Parse(filtroConselhoClasseDto.ComponenteCurricular),
                     FechamentoAlunoId = fechamentoAluno.Id,
                     Nota = filtroConselhoClasseDto.TipoNota == TipoNota.Nota ? filtroConselhoClasseDto.NotaFixa.HasValue ? filtroConselhoClasseDto.NotaFixa : new Random().Next(1, 10) : null,
-                    ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ?filtroConselhoClasseDto.ConceitoFixo.HasValue ? filtroConselhoClasseDto.ConceitoFixo : new Random().Next(1, 3) : null,
+                    ConceitoId = filtroConselhoClasseDto.TipoNota == TipoNota.Conceito ? filtroConselhoClasseDto.ConceitoFixo.HasValue ? filtroConselhoClasseDto.ConceitoFixo : new Random().Next(1, 3) : null,
                     CriadoEm = DateTime.Now,
                     CriadoPor = SISTEMA_NOME,
                     CriadoRF = SISTEMA_CODIGO_RF
@@ -919,7 +920,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
-            
+
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = "AprovacaoAlteracaoNotaConselho",
@@ -932,7 +933,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
-            
+
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = "PercentualFrequenciaCritico",
@@ -945,7 +946,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
-            
+
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = "PercentualFrequenciaCritico",
@@ -984,17 +985,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
                 return;
             }
-            
+
             await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4, TIPO_CALENDARIO_1, filtroConselhoClasseDto.ConsiderarAnoAnterior);
         }
-        
+
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
+
             await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
@@ -1003,53 +1004,53 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
-        
+
         protected async Task CriarPeriodoAberturaCustomizadoQuartoBimestre(bool periodoEscolarValido = true)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new PeriodoFechamento()
-                { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_1,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-209),
-                FinalDoFechamento =  dataReferencia.AddDays(-205)
+                FinalDoFechamento = dataReferencia.AddDays(-205)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_2,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-120),
-                FinalDoFechamento =  dataReferencia.AddDays(-116)
+                FinalDoFechamento = dataReferencia.AddDays(-116)
             });
-            
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_3,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = dataReferencia.AddDays(-38),
-                FinalDoFechamento =  dataReferencia.AddDays(-34)
-            });  
-            
+                FinalDoFechamento = dataReferencia.AddDays(-34)
+            });
+
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
-                PeriodoFechamentoId = 1, 
+                PeriodoFechamentoId = 1,
                 InicioDoFechamento = periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5),
-                FinalDoFechamento =  periodoEscolarValido ? dataReferencia.AddDays(4) : dataReferencia.AddDays(-2)
-            });  
+                FinalDoFechamento = periodoEscolarValido ? dataReferencia.AddDays(4) : dataReferencia.AddDays(-2)
+            });
         }
 
         private ComponenteCurricularDto ObterComponenteCurricular(long componenteCurricularId)
@@ -1230,18 +1231,18 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         protected async Task CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                               TipoNota tipoNota = TipoNota.Nota, 
+                                                               TipoNota tipoNota = TipoNota.Nota,
                                                                bool gerarConselhoBimestreFinal = false)
         {
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
-                
+
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota));
-            
+
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
-            
+
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
 
@@ -1251,15 +1252,15 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                     tipoNota, FECHAMENTO_TURMA_ID_5, BIMESTRE_FINAL));
             }
         }
-        
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular, 
+
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular,
             TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
         {
             return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
         }
-        
-        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo, 
+
+        protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long conselhoClasseId, string alunoCodigo,
             long componenteCurricular, TipoNota tipoNota, long fechamentoTurma, int bimestre)
         {
             return new SalvarConselhoClasseAlunoNotaDto
@@ -1271,385 +1272,710 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 CodigoTurma = TURMA_CODIGO_1,
                 Bimestre = bimestre
             };
-        }        
-        
+        }
+
         private async Task CriarConselhoClasseParecerAno()
         {
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Promovido", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                Nome = "Promovido",
+                Aprovado = true,
+                Frequencia = true,
+                Conselho = false,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                Nota = true,
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Promovido pelo conselho", Aprovado = true, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                Nome = "Promovido pelo conselho",
+                Aprovado = true,
+                Frequencia = false,
+                Conselho = true,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Continuidade dos estudos", Aprovado = true, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                Nome = "Continuidade dos estudos",
+                Aprovado = true,
+                Frequencia = true,
+                Conselho = false,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Retido", Aprovado = false, Frequencia = false, Conselho = true, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = true,
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                Nome = "Retido",
+                Aprovado = false,
+                Frequencia = false,
+                Conselho = true,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                Nota = true,
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecer()
             {
-                Nome = "Retido por frequência", Aprovado = false, Frequencia = true, Conselho = false, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1), Nota = false,
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                Nome = "Retido por frequência",
+                Aprovado = false,
+                Frequencia = true,
+                Conselho = false,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                Nota = false,
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
 
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 3, AnoTurma = 1, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 3,
+                AnoTurma = 1,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 3, AnoTurma = 1, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 3,
+                AnoTurma = 1,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 3, AnoTurma = 2, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 3,
+                AnoTurma = 2,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 3, AnoTurma = 4, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 3,
+                AnoTurma = 4,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 3, AnoTurma = 5, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 3,
+                AnoTurma = 5,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 1, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 1,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 1, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 1,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 2, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 2,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 4, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 4,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 5, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 5,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 2, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 2,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 3, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 3,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 4, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 4,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 3, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 3,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 6, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 6,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 7, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 7,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 8, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 8,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 9, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 9,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 1, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 1,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 2, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 2,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 2, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 2,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-               ParecerId = 2, AnoTurma = 3, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-               CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 3,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 4, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 4,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 3, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 3,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 6, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 6,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 7, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 7,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 8, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 8,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 9, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 9,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 1, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 1,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 2, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 2,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 3, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 3,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 2, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 2,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 3, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 3,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 4, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 4,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 3, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 3,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 6, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 6,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 7, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 7,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 8, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 8,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 9, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 9,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 1, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 1,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 2, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 2,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 3, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 3,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 2, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 2,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 3, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 3,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 4, Modalidade = 3, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 4,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 3, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 3,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 6, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 6,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 7, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 7,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 8, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 8,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 9, Modalidade = 5, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 9,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 1, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 1,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 2, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 2,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 3, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 3,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 3, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 3,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 2, AnoTurma = 4, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 2,
+                AnoTurma = 4,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 4, AnoTurma = 4, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 4,
+                AnoTurma = 4,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 5, AnoTurma = 4, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 5,
+                AnoTurma = 4,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
-            
+
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
-                ParecerId = 1, AnoTurma = 4, Modalidade = 6, InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTimeExtension.HorarioBrasilia()
+                ParecerId = 1,
+                AnoTurma = 4,
+                Modalidade = 6,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
             });
         }
 
@@ -1659,11 +1985,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 CodigoComponenteCurricular = componenteCurricular,
                 Justificativa = JUSTIFICATIVA,
-                Conceito = tipoNota == TipoNota.Conceito ? new Random().Next(1,3) : null,
-                Nota = tipoNota == TipoNota.Nota ? new Random().Next(1,10) : null
+                Conceito = tipoNota == TipoNota.Conceito ? new Random().Next(1, 3) : null,
+                Nota = tipoNota == TipoNota.Nota ? new Random().Next(1, 10) : null
             };
         }
-        
+
         protected IConsolidarConselhoClasseUseCase RetornarConsolidarConselhoClasseUseCase()
         {
             return ServiceProvider.GetService<IConsolidarConselhoClasseUseCase>();
