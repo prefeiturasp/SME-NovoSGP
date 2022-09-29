@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using k8s.Models;
 using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
@@ -105,6 +106,14 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
             DescricaoEol = "LEITURA - OSL",
             TerritorioSaber = false
           },
+          new ComponenteCurricularDto()
+          {
+              Codigo = "1105",
+              Descricao = "Regência de Classe Fund I - 5H",
+              LancaNota = true,
+              Regencia = true,
+              DescricaoEol = "REG CLASSE CICLO ALFAB / INTERD 5HRS"              
+          }
         };
       }
     }
