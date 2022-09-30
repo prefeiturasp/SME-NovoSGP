@@ -26,6 +26,7 @@ namespace SME.SGP.Aplicacao
 
             if (usuario != null && String.IsNullOrEmpty(usuario.Email))
             {
+                await servicoEOL.ReiniciarSenha(request.CodigoRf);
                 retorno.DeveAtualizarEmail = true;
                 retorno.Mensagem = $"Usuário {request.CodigoRf} - {usuario.Nome} não possui email cadastrado!";
             }
