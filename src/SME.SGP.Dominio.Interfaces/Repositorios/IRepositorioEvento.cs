@@ -52,7 +52,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<Evento>> ObterEventosCalendarioProfessorPorMesDia(string dreCodigo, string ueCodigo, DateTime dataEvento, long tipoCalendario, bool VisualizarEventosSME = false, bool podeVisualizarEventosLibExcepRepoRecessoGestoresUeDreSme = false);
 
         Task<bool> DataPossuiEventoLiberacaoExcepcionalAsync(long tipoCalendarioId, DateTime dataAula, string ueId);
-        Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, params EventoLetivo[] tiposLetivosConsiderados);
+        Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, string ueCodigo = "", params EventoLetivo[] tiposLetivosConsiderados);
         Task<IEnumerable<EventoCalendarioRetornoDto>> ObterEventosPorTipoDeCalendarioDreUeModalidadeAsync(long tipoCalendario, int anoLetivo, string codigoDre, string codigoUe, int? modalidade);
         Task<IEnumerable<Evento>> ObterEventosPorTipoCalendarioIdEPeriodoInicioEFim(long tipoCalendarioId, DateTime periodoInicio, DateTime periodoFim, long? turmaId = null);
         Task<Evento> ObterEventoAtivoPorId(long eventoId);

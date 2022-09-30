@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao
 
                 if (response.StatusCode == System.Net.HttpStatusCode.OK)
                     return await response.Content.ReadAsByteArrayAsync(cancellationToken);
-                return default;
 
+                return default;
             }
             throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
         }

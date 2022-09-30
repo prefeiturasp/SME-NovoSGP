@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new Exception("Períodos escolares não encontrados");
 
-            var eventos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, false));
+            var eventos = await mediator.Send(new ObterDiasPorPeriodosEscolaresComEventosLetivosENaoLetivosQuery(periodosEscolares, tipoCalendarioId, param.UeCodigo, false));
 
             for (var data = param.DataInicio.Date; data <= param.DataFim.Date; data = data.AddDays(1))
             {
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                     diasLetivos.Add(new DiaLetivoSimplesDto()
                     {
                         Data = data,
-                        EhLetivo = !eventos.Any(e => e.Data.Date == data.Date && e.EhNaoLetivo)
+                        EhLetivo = eventos.Any(e => e.Data.Date == data.Date && e.EhLetivo)
                     });
             }
             return diasLetivos;
