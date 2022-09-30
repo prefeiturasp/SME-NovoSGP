@@ -22,11 +22,10 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurma repositorioFechamentoTurma;
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
-        private readonly IRepositorioCache repositorioCache;
 
         public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota, 
             IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno,
-            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina, IRepositorioCache repositorioCache)
+            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -34,7 +33,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
             this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
-            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
         
         public async Task<AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto> Handle(SalvarFechamentoCommand request, CancellationToken cancellationToken)
