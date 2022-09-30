@@ -23,5 +23,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<PlanoAEEReduzidoDto>> ObterPlanosAEEAtivosComTurmaEVigencia();
         Task<PlanoAEE> ObterPorReestruturacaoId(long reestruturacaoId);
         Task<PlanoAEE> ObterPlanoComTurmaUeDrePorId(long planoId);
+        Task<IEnumerable<PlanoAEE>> ObterPlanosEncerradosAutomaticamente(int pagina, int quantidadeRegistrosPagina);
+        Task<Pendencia> ObterUltimaPendenciaPlano(long planoId);
     }
 }

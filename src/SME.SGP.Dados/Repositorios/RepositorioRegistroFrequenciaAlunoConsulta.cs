@@ -41,6 +41,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
+        public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosFrequenciaPorAulaId(long aulaId)
+        {
+            var query = @"SELECT *
+                            FROM registro_frequencia_aluno rfa
+                            WHERE NOT rfa.excluido
+                              AND rfa.aula_id = @aulaId";
+
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId});
+        }
+
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
         {
             var query = @"           
@@ -229,6 +239,21 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { turmaCodigo, mes };
 
             return await database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorTurmaEMesDto>(query, parametros);
+        }
+
+        public async Task<IEnumerable<FrequenciaAlunoTurmaDto>> ObterRegistroFrequenciaAlunosNaTurma(string turmaCodigo, string alunoCodigo)
+        {
+            const string query = @"select  a.id as AulaId, rfa.id as RegistroFrequenciaAlunoId, a.data_aula as DataAula, a.disciplina_id as DisciplinaCodigo
+                                            from registro_frequencia_aluno rfa 
+                                            inner join registro_frequencia rf on rf.id  = rfa.registro_frequencia_id 
+                                            inner join aula a on a.id = rf.aula_id 
+                                            where a.turma_id = @turmaCodigo and rfa.codigo_aluno = @alunoCodigo
+                                            and not rfa.excluido and not a.excluido 
+                                            order by a.data_aula";
+
+            var parametros = new { turmaCodigo, alunoCodigo};
+
+            return await database.Conexao.QueryAsync<FrequenciaAlunoTurmaDto>(query, parametros);
         }
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorIdRegistro(long registroFrequenciaId)

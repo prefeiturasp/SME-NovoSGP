@@ -11,10 +11,12 @@ namespace SME.SGP.Aplicacao
     public class ExcluirOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaCommand, RetornoBaseDto>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
+        private readonly IMediator mediator;
 
-        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia)
+        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator)
         {
             this.repositorioOcorrencia = repositorioOcorrencia;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -34,6 +36,10 @@ namespace SME.SGP.Aplicacao
 
                 ocorrencia.Excluir();
                 await repositorioOcorrencia.SalvarAsync(ocorrencia);
+                if (!String.IsNullOrEmpty(ocorrencia?.Descricao))
+                {
+                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia.Name()));
+                }
             }
             catch(Exception ex)
             {

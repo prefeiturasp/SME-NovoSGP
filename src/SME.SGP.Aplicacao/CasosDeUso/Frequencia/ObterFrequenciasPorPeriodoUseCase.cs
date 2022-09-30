@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao
             var componenteCurricularId = long.Parse(param.DisciplinaId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
-            var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataFim);
-            
+            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
+
             alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
 
             var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
@@ -84,16 +84,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
             return periodoEscolar;
-        }
-
-        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(string turmaId, DateTime dataInicio)
-        {
-            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, dataInicio));
-
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a turma informada.");
-
-            return alunosDaTurma;
         }
 
         private async Task<Turma> ObterTurma(string turmaId)

@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.data_atualizacao,
                             t.tipo_turma,
                             t.data_inicio,
+	                        t.historica,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -112,6 +113,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.qt_duracao_aula,
 	                        t.tipo_turno,
 	                        t.data_atualizacao,
+                            t.tipo_turma,
+                            t.historica,
+                            t.data_inicio,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,

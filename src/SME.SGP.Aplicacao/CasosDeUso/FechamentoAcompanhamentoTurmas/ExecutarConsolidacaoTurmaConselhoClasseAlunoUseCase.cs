@@ -45,6 +45,8 @@ namespace SME.SGP.Aplicacao
                 };
             }
 
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(filtro.TurmaId));
+
             if (!filtro.Inativo)
             {
                 var componentesDoAluno = await mediator
@@ -52,7 +54,6 @@ namespace SME.SGP.Aplicacao
 
                 if (componentesDoAluno != null && componentesDoAluno.Any())
                 {
-                    var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
                     if (!filtro.Bimestre.HasValue || filtro.Bimestre == 0)
                     {
@@ -81,6 +82,10 @@ namespace SME.SGP.Aplicacao
 
                     var componentesDaTurmaEol = await mediator
                         .Send(new ObterComponentesCurricularesEOLPorTurmasCodigoQuery(turmasCodigos));
+
+                    //Excessão de disciplina ED. Fisica para modalidade EJA
+                    if (turma.EhEJA())
+                        componentesDaTurmaEol = componentesDaTurmaEol.Where(a => a.Codigo != "6");
 
                     var possuiComponentesSemNotaConceito = componentesDaTurmaEol
                         .Where(ct => ct.LancaNota && !ct.TerritorioSaber)
@@ -114,18 +119,41 @@ namespace SME.SGP.Aplicacao
                     { 
                         ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
                         Bimestre = filtro.Bimestre,
+                        ComponenteCurricularId = filtro.ComponenteCurricularId
                     };
 
                 //Quando parecer conclusivo, não altera a nota, atualiza somente o parecerId
-                if (filtro.ComponenteCurricularId.HasValue)
+                if (!filtro.EhParecer)
                 {
-                    consolidadoNota.ComponenteCurricularId = filtro.ComponenteCurricularId;
-                    consolidadoNota.Nota = filtro.Nota;
-                    consolidadoNota.ConceitoId = filtro.ConceitoId;
+                    if (filtro.ComponenteCurricularId.HasValue)
+                    {
+                        await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, (long)filtro.ComponenteCurricularId,
+                                                                   filtro.AlunoCodigo, filtro.Nota, filtro.ConceitoId, consolidadoTurmaAlunoId);
+                        return true;
+                    }
+
+                    var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
+
+                    if (componentes != null && componentes.Any())
+                    {
+                        foreach (var componenteCurricular in componentes)
+                        {
+                            if (componenteCurricular.Regencia)
+                            {
+                                var componentesRegencia = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaQuery(turma, long.Parse(componenteCurricular.Codigo)));
+                                foreach (var regencia in componentesRegencia)
+                                {
+                                   await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, regencia.Codigo,
+                                                                                                   filtro.AlunoCodigo, filtro.Nota, filtro.ConceitoId, consolidadoTurmaAlunoId);
+                                }
+                                continue;
+                            }
+                            await SalvarConsolidacaoConselhoClasseNota(turma, filtro.Bimestre, long.Parse(componenteCurricular.Codigo),
+                                                                   filtro.AlunoCodigo, filtro.Nota, filtro.ConceitoId, consolidadoTurmaAlunoId);
+                        }
+                    } 
                 }
-
-                await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
-
+            
                 return true;
             }
             catch (Exception ex)
@@ -134,5 +162,54 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
         }
+
+        private async Task<bool> SalvarConsolidacaoConselhoClasseNota(Turma turma,int? bimestre,long componenteCurricularId,string alunoCodigo, double? notaFiltro,long? conceitoFiltro, long consolidadoTurmaAlunoId)
+        {
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(turma.Id, bimestre));
+            IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasAluno = null;
+            IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
+            if (fechamentoTurma != null)
+            {
+                var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
+                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, componenteCurricularId, bimestre));
+
+                if (fechamentoTurmaDisciplina != null)
+                {
+                    var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
+                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, alunoCodigo));
+                }
+
+                if (conselhoClasseId != null)
+                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, alunoCodigo, bimestre ?? 0, componenteCurricularId));
+            }
+
+            double? nota = null;
+            double? conceito = null;
+            if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any())
+            {
+                nota = conselhoClasseNotasAluno.First().Nota;
+                conceito = conselhoClasseNotasAluno.First().ConceitoId;
+            }
+            else if (fechamentoNotasAluno != null && fechamentoNotasAluno.Any())
+            {
+                nota = fechamentoNotasAluno.First().Nota;
+                conceito = fechamentoNotasAluno.First().ConceitoId;
+            }
+
+            var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, bimestre, componenteCurricularId);
+            if (consolidadoNota == null)
+                consolidadoNota = new ConselhoClasseConsolidadoTurmaAlunoNota()
+                {
+                    ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
+                    Bimestre = bimestre,
+                };
+
+            consolidadoNota.ComponenteCurricularId = componenteCurricularId;
+            consolidadoNota.Nota = (notaFiltro != null ? notaFiltro : nota);
+            consolidadoNota.ConceitoId = (long?)(conceitoFiltro != null ? conceitoFiltro : conceito);
+
+            await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+            return true;
+        } 
     }
 }

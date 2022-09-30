@@ -9,7 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class GerarPendenciaPlanoAEECommand : IRequest<bool>
     {
-        public GerarPendenciaPlanoAEECommand(long planoAEEId, IEnumerable<long> usuariosIds, string titulo, string descricao, long ueId, PerfilUsuario? perfil = null)
+        public GerarPendenciaPlanoAEECommand(long planoAEEId, IEnumerable<long> usuariosIds, string titulo, string descricao, long ueId, long turmaId, PerfilUsuario? perfil = null)
         {
             PlanoAEEId = planoAEEId;
             UsuariosIds = usuariosIds;
@@ -17,9 +17,10 @@ namespace SME.SGP.Aplicacao
             Descricao = descricao;
             UeId = ueId;
             Perfil = perfil;
+            TurmaId = turmaId;
         }
 
-        public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao, long ueId, PerfilUsuario? perfil = null)
+        public GerarPendenciaPlanoAEECommand(long planoAEEId, long usuarioId, string titulo, string descricao, long ueId, long turmaId, PerfilUsuario? perfil = null)
         {
             PlanoAEEId = planoAEEId;
             UsuariosIds = new List<long>() { usuarioId };
@@ -27,6 +28,7 @@ namespace SME.SGP.Aplicacao
             Descricao = descricao;
             UeId = ueId;
             Perfil = perfil;
+            TurmaId = turmaId;
         }
 
         public long PlanoAEEId { get; }
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
         public string Titulo { get; }
         public string Descricao { get; }
         public long UeId { get; }
+        public long TurmaId { get; }
         public PerfilUsuario? Perfil { get; set; }
     }
 

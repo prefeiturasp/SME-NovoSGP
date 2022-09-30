@@ -8,8 +8,11 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
+using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
+using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 {
@@ -25,6 +28,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
         
         [Fact]
@@ -35,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(ObterPerfilProfessor(), 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
                 TipoNota.Conceito, 
-                ANO_4, 
+                ANO_3, 
                 Modalidade.Fundamental, 
                 ModalidadeTipoCalendario.FundamentalMedio, 
                 false, 
@@ -52,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(ObterPerfilProfessor(),
                             COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                             TipoNota.Conceito,
-                            ANO_7,
+                            ANO_1,
                             Modalidade.Fundamental,
                             ModalidadeTipoCalendario.FundamentalMedio,
                             false, 
@@ -75,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(ObterPerfilProfessor(), 
                 salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
                 TipoNota.Conceito, 
-                ANO_4, 
+                ANO_3, 
                 Modalidade.Fundamental, 
                 ModalidadeTipoCalendario.FundamentalMedio, 
                 false, 
@@ -98,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarDados(ObterPerfilProfessor(),
             COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
             TipoNota.Conceito,
-            ANO_7,
+            ANO_1,
             Modalidade.Fundamental,
             ModalidadeTipoCalendario.FundamentalMedio,
             false, 
@@ -120,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
-            var filtroNota = new FiltroNotasDto()
+            var filtroNota = new FiltroConselhoClasseDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,

@@ -1,7 +1,5 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -23,12 +21,13 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioFechamentoAluno repositorioFechamentoAluno;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
         private const int BIMESTRE_4 = 4;
+        private const int BIMESTRE_2 = 2;
 
         public ServicoFechamentoFinal(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                       IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -36,11 +35,11 @@ namespace SME.SGP.Dominio.Servicos
                                       IRepositorioFechamentoNota repositorioFechamentoNota,
                                       IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                                       IRepositorioEvento repositorioEvento,
-                                      IServicoEol servicoEOL,
                                       IServicoUsuario servicoUsuario,
                                       IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                       IUnitOfWork unitOfWork,
-                                      IMediator mediator)
+                                      IMediator mediator,
+                                      IRepositorioCache repositorioCache)
         {
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -48,11 +47,11 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioEvento = repositorioEvento ?? throw new ArgumentNullException(nameof(repositorioEvento));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, Usuario usuarioLogado, IList<FechamentoFinalSalvarItemDto> notasDto, bool emAprovacao)
@@ -64,8 +63,8 @@ namespace SME.SGP.Dominio.Servicos
                 await VerificaSeProfessorPodePersistirTurma(turma.CodigoTurma, fechamentoFinal.DisciplinaId, usuarioLogado);
 
             var mesmoAnoLetivo = turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year;
-
-            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, BIMESTRE_4, mesmoAnoLetivo));
+            var bimestre = turma.EhEJA() ? BIMESTRE_2 : BIMESTRE_4;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, mesmoAnoLetivo));
 
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
@@ -127,9 +126,7 @@ namespace SME.SGP.Dominio.Servicos
                                     fechamentoNota.SinteseId = notaDto.SinteseId;
                                     fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
 
-                                    var retornoNotasFechamentoFinaisNoCache = await mediator.Send(new ObterCacheQuery($"fechamentoNotaFinais-{fechamentoFinal.DisciplinaId}-{turma.CodigoTurma}"));
-
-                                    var notasFechamentoFinaisNoCache = await MapearRetornoParaDto(retornoNotasFechamentoFinaisNoCache);
+                                    var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>($"fechamentoNotaFinais-{fechamentoFinal.DisciplinaId}-{turma.CodigoTurma}");
 
                                     if (notasFechamentoFinaisNoCache != null)
                                         await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota, fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma);
@@ -301,11 +298,6 @@ namespace SME.SGP.Dominio.Servicos
             }
             
             await mediator.Send(new SalvarCachePorValorObjetoCommand(string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma), notasFinais));
-        }
-
-        private static async Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> MapearRetornoParaDto(string dadosCache)
-        {
-            return await Task.FromResult(JsonConvert.DeserializeObject<IEnumerable<FechamentoNotaAlunoAprovacaoDto>>(dadosCache));
         }
     }
 }

@@ -46,16 +46,23 @@
 
         public void Remover()
         {
-            if (PodeRemover)
-                Excluida = true;
-            else
+            Excluida = true;
+        }
+
+        public bool ValidaExclusao()
+        {
+            if (!PodeRemover)
             {
                 if (Categoria != NotificacaoCategoria.Aviso)
                     throw new NegocioException($"Somente notificações de categoria Aviso, podem ser removidas.");
 
                 if (Excluida)
                     throw new NegocioException($"Esta notificação ja está excluída.");
+
+                return false;
             }
+
+            return true;
         }
     }
 }

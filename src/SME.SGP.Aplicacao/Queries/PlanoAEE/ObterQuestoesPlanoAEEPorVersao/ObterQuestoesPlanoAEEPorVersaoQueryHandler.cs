@@ -39,13 +39,20 @@ namespace SME.SGP.Aplicacao
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-                if (turma.AnoLetivo.Equals(DateTime.Today.Year))
+                var dataUltimaAtualizacaoPlano = versaoPlano.AlteradoEm ?? versaoPlano.CriadoEm;
+
+                dataUltimaAtualizacaoPlano = dataUltimaAtualizacaoPlano.Year < DateTime.Today.Year
+                    ? new DateTime(DateTime.Today.Year, dataUltimaAtualizacaoPlano.Month, dataUltimaAtualizacaoPlano.Day)
+                    : dataUltimaAtualizacaoPlano;
+
+                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoPorModalidade(turma.ModalidadeCodigo, dataUltimaAtualizacaoPlano);
+
+                if (periodoEscolar == null)
+                    periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+
+                if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())
                 {
-                    var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                    if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())
-                    {
-                        listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.SingleOrDefault().Texto = periodoEscolar.Id.ToString();
-                    }                    
+                    listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.SingleOrDefault().Texto = periodoEscolar.Id.ToString();
                 }
             }
             return listaQuestoes;

@@ -21,8 +21,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Handle(AlterarAulaFrequenciaTratarCommand request, CancellationToken cancellationToken)
         {
-            //Obter as ausencias pela aula id
-            var ausencias = await mediator.Send(new ObterRegistrosAusenciaPorAulaQuery(request.Aula.Id));
+            var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistroFrequenciaAlunoPorAulaIdQuery(request.Aula.Id));
 
             var quantidadeAtual = request.Aula.Quantidade;
             var quantidadeOriginal = request.QuantidadeAulasOriginal;
@@ -32,12 +31,12 @@ namespace SME.SGP.Aplicacao
                 var ausenciasParaAdicionar = new List<RegistroFrequenciaAluno>();
 
                 // Replicar o ultimo registro de frequencia
-                ausencias.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
-                    .ForEach(ausencia =>
+                registrosFrequenciaAlunos.Where(a => a.NumeroAula == quantidadeOriginal).ToList()
+                    .ForEach(frequencia =>
                     {
                         for (var n = quantidadeOriginal + 1; n <= quantidadeAtual; n++)
                         {
-                            var clone = (RegistroFrequenciaAluno)ausencia.Clone();
+                            var clone = (RegistroFrequenciaAluno)frequencia.Clone();
                             clone.NumeroAula = n;
                             ausenciasParaAdicionar.Add(clone);
                         }
@@ -50,7 +49,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 // Excluir os registros de aula maior que o atual
-                var idsParaExcluir = ausencias.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
+                var idsParaExcluir = registrosFrequenciaAlunos.Where(a => a.NumeroAula > quantidadeAtual).Select(a => a.Id).ToList();
 
                 //TODO: Criar método genérico com Auditoria
                 if (idsParaExcluir.Count > 0)

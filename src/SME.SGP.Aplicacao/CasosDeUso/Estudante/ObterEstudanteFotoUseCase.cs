@@ -33,7 +33,7 @@ namespace SME.SGP.Aplicacao
         {
             var arquivoFisico = await mediator.Send(new DownloadArquivoCommand(miniatura.Codigo, miniatura.Nome, miniatura.Tipo));
 
-            if(arquivoFisico.Length <= 0)
+            if(arquivoFisico?.Length <= 0)
                 return null;          
 
             return new ArquivoDto()

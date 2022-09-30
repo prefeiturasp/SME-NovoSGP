@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         [Fact]
         public async Task Deve_ser_carregado_em_ordem_alfabetica()
         {
-            await CriarDadosBase(new FiltroNotasDto
+            await CriarDadosBase(new FiltroConselhoClasseDto
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.Medio,

@@ -148,7 +148,9 @@ namespace SME.SGP.Aplicacao
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
 
             alunosAtivos = from a in alunos
-                           where a.EstaAtivo(periodoInicio, periodoFim) || !a.EstaAtivo(periodoInicio, periodoFim) && !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && a.DataSituacao >= periodoInicio
+                           where a.EstaAtivo(periodoInicio, periodoFim) 
+                           || !a.EstaAtivo(periodoInicio, periodoFim) 
+                           && VerificaSeEsteveAtivoUmDiaNaTurma(a, periodoInicio)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
 
@@ -425,6 +427,12 @@ namespace SME.SGP.Aplicacao
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
+        }
+
+        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio)
+        {
+            return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
+                   && aluno.DataMatricula <= periodoInicio;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)

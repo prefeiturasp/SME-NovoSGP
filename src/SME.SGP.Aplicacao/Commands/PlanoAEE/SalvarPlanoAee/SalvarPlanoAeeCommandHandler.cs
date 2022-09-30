@@ -87,8 +87,9 @@ namespace SME.SGP.Aplicacao.Commands
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível salvar o Plano AEE {planoId}", LogNivel.Negocio, LogContexto.Geral,ex.Message,rastreamento:ex.StackTrace,innerException:ex.InnerException.ToString()));
                     unitOfWork.Rollback();
                     throw;
                 }

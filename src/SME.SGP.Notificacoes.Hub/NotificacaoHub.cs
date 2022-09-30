@@ -52,7 +52,6 @@ namespace SME.SGP.Notificacoes.Hub
         }
 
         private Task ArmazenaConexaoUsuario(string usuarioRf, string connectionId)
-            // Redis : HubNotificacoes_6769195:123123
             => repositorioUsuario.Salvar(usuarioRf, connectionId);
 
         public async Task SendMessage(string user, string message)

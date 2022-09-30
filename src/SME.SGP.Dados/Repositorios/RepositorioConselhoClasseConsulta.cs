@@ -52,6 +52,23 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<long>(query.ToString(), new { turmasCodigos, periodoEscolarId });
         }
 
+        public async Task<IEnumerable<long>> ObterConselhoClasseIdsPorTurmaEBimestreAsync(string[] turmasCodigos, long? bimestre = null)
+        {
+            var query = new StringBuilder(@"select c.id 
+                            from conselho_classe c 
+                            inner join fechamento_turma ft on ft.id = c.fechamento_turma_id
+                            inner join turma t on t.id = ft.turma_id
+                            left join periodo_escolar pe on pe.id = ft.periodo_escolar_id
+                            where t.turma_id = ANY(@turmasCodigos) ");
+
+            if ((bimestre?? 0) > 0)
+                query.AppendLine("and pe.bimestre = @bimestre");
+            else
+                query.AppendLine("and ft.periodo_escolar_id is null");
+
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { turmasCodigos, bimestre });
+        }
+
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 
@@ -148,7 +165,7 @@ namespace SME.SGP.Dados.Repositorios
                                                        x.AnoTurma
                                                   from (
                                                         select  cccat.status as Situacao,
-                                                                count(cccat.id) as Quantidade, ");
+                                                                count(distinct cccat.id) as Quantidade, ");
             if (ueId > 0)
                 sqlQuery.AppendLine(" t.nome as AnoTurma ");
             else
@@ -207,36 +224,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoConselhoClasseNotaFinalDto>> ObterNotasFechamentoOuConselhoAlunos(long ueId, int anoLetivo, long dreId, int modalidade, int semestre, int bimestre)
         {
-            var query = new StringBuilder(@"CREATE TEMPORARY TABLE temp_dados
-                                            (
-                                                turmaanonome varchar(200),
-                                                bimestre int8,
-                                                componentecurricularcodigo int8,
-                                                conselhoclassenotaid varchar(10),
-                                                conceitoid int8,
-                                                nota int8,
-                                                alunocodigo varchar(10),
-                                                conceito varchar(10),
-                                                prioridade int8
-                                            ); ");
-
-            query.AppendLine(MontarQueryNotasFinasFechamentoQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-            query.AppendLine(MontarQueryNotasFinasConselhoClasseQuantidade(ueId, anoLetivo, dreId, modalidade, semestre, bimestre));
-
-            query.AppendLine(@" select
-                                x.TurmaAnoNome,
-                                x.Bimestre,
-                                x.ComponenteCurricularCodigo,
-                                x.ConselhoClasseNotaId,
-                                x.ConceitoId,
-                                x.Nota,
-                                x.AlunoCodigo,
-                                x.Conceito,
-                                row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
-                                order by x.Prioridade) as linha
-                                from temp_dados x; ");
-
-            query.AppendLine(@" drop table temp_dados; ");
+            var query = new StringBuilder(@"select
+                                            x.TurmaAnoNome,
+                                            x.Bimestre,
+                                            x.ComponenteCurricularCodigo,
+                                            x.ConselhoClasseNotaId,
+                                            x.ConceitoId,
+                                            x.Nota,
+                                            x.AlunoCodigo,
+                                            x.Conceito,
+                                            row_number() over(partition by x.TurmaAnoNome, x.ComponenteCurricularCodigo, x.AlunoCodigo
+                                            order by x.Prioridade) as linha ");
+            query.AppendLine("from f_obternotasfechamentoouconselhoalunos(@anoLetivo, @dreId, @ueId, @modalidade, @semestre, @bimestre) x");
 
             var parametros = new
             {
@@ -264,7 +263,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     2 as prioridade
                                                 from
                                                     fechamento_turma ft
-                                                left join periodo_escolar pe on
+                                                inner join periodo_escolar pe on
                                                     pe.id = ft.periodo_escolar_id
                                                 inner join turma t on
                                                     t.id = ft.turma_id
@@ -316,7 +315,7 @@ namespace SME.SGP.Dados.Repositorios
 		                                            1 as prioridade
 	                                            from
 		                                            fechamento_turma ft
-	                                            left join periodo_escolar pe on
+	                                            inner join periodo_escolar pe on
 		                                            pe.id = ft.periodo_escolar_id
 	                                            inner join turma t on
 		                                            t.id = ft.turma_id

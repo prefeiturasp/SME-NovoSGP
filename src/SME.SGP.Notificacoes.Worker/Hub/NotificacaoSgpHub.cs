@@ -13,7 +13,7 @@ namespace SME.SGP.Notificacoes.Worker
         public NotificacaoSgpHub(IOptions<HubOptions> hubOptions)
         {
             conexao = new HubConnectionBuilder()
-                .WithUrl(hubOptions.Value.Endpoint, options =>
+                .WithUrl($"{hubOptions.Value.Endpoint}/notificacao", options =>
                 {
                     options.AccessTokenProvider = () => Task.FromResult(hubOptions.Value.HubNotificacoesToken);
                 })

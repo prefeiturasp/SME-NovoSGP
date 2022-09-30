@@ -38,7 +38,8 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
-                    await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
+                    if (notificacao.ValidaExclusao())
+                        await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                     resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' excluída com sucesso.", true));
                 }
                 catch (NegocioException nex)

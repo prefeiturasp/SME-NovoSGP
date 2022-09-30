@@ -27,7 +27,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FechamentoAlunoAnotacaoConselhoDto>> ObterAnotacoesTurmaAlunoBimestreAsync(string alunoCodigo, string[] turmasCodigos, long periodoId)
         {
-            var query = @"select coalesce(afa.anotacao, fa.anotacao) as Anotacao, ftd.disciplina_id,
+            var query = @"select coalesce(afa.anotacao, fa.anotacao) as Anotacao, ftd.disciplina_id as DisciplinaId,
                           case
                             when afa.alterado_por is null then afa.criado_por
                             when afa.alterado_por is not null then afa.alterado_por

@@ -62,11 +62,8 @@ namespace SME.SGP.IoC
             RegistrarMapeamentos.Registrar();
         }
 
-        private void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
+        protected virtual void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-                return;
-
             services.ConfigurarArmazenamento(configuration);
         }
 
@@ -757,6 +754,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
             services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020UseCase, GerarFechamentoTurmaEdFisica2020UseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase, GerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase>();
 
             // Fechamento Aluno
             services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();
@@ -856,6 +855,7 @@ namespace SME.SGP.IoC
             // Frequência
             services.TryAddScoped<IExecutaConsolidacaoFrequenciaPorAnoUseCase, ExecutaConsolidacaoFrequenciaPorAnoUseCase>();
             services.TryAddScoped<IInserirFrequenciaListaoUseCase, InserirFrequenciaListaoUseCase>();
+            services.TryAddScoped<IVerificaFrequenciaRegistradaAlunosInativosUseCase, VerificaFrequenciaRegistradaAlunosInativosUseCase>();
 
             //Objetivo Curricular
             services.TryAddScoped<IListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase, ListarObjetivoAprendizagemPorAnoEComponenteCurricularUseCase>();
@@ -1200,8 +1200,6 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-                return;
 
             services.ConfigurarRabbit(configuration);
             services.ConfigurarRabbitParaLogs(configuration);

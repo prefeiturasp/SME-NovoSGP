@@ -1381,7 +1381,7 @@ namespace SME.SGP.Dados.Repositorios
                             AND ((e.dre_id is null and e.ue_id is null) OR (e.ue_id = @ueId))
                             AND e.data_inicio <= @dataAula
 	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
-                            HAVING Count(liberacao.id) >= 1 AND Count(outros.id) >= 1";
+                            HAVING Count(liberacao.id) >= 1 OR Count(outros.id) >= 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
             {

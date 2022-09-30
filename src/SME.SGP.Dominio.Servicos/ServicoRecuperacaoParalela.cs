@@ -26,9 +26,9 @@ namespace SME.SGP.Dominio.Servicos
         {
             var retorno = new List<KeyValuePair<string, int>>();            
             var parametrosFrequencia = await mediator.Send(new ObterChaveEValorPorTipoEAnoQuery(TipoParametroSistema.RecuperacaoParalelaFrequencia, DateTime.Today.Year));
-            var frequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaFrequente).Value);
-            var poucoFrequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaPoucoFrequente).Value);
-            var naoComparece = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Key == RecuperacaoParalelaNaoComparece).Value);
+            var frequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Nome == RecuperacaoParalelaFrequente).Valor);
+            var poucoFrequente = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Nome == RecuperacaoParalelaPoucoFrequente).Valor);
+            var naoComparece = double.Parse(parametrosFrequencia.FirstOrDefault(w => w.Nome == RecuperacaoParalelaNaoComparece).Valor);
 
             var frequencias = await repositorioFrequencia.ObterFrequenciaAusencias(CodigoAlunos, CodigoDisciplina, Ano, Periodo);
 
