@@ -109,16 +109,16 @@ namespace SME.SGP.Aplicacao.Workers
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
 
-                    var queueLimbu = $"{fila}.limbu";
+                    var queueLimbo = $"{fila}.limbo";
                     canalRabbit.QueueDeclare(
-                        queue: queueLimbu,
+                        queue: queueLimbo,
                         durable: true,
                         exclusive: false,
                         autoDelete: false,
                         arguments: null
                     );
 
-                    canalRabbit.QueueBind(queueLimbu, exchangeDeadLetter, queueLimbu, null);
+                    canalRabbit.QueueBind(queueLimbo, exchangeDeadLetter, queueLimbo, null);
                 }
             }
         }
@@ -198,8 +198,8 @@ namespace SME.SGP.Aplicacao.Workers
                     {
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
 
-                        var queueLimbu = $"{ea.RoutingKey}.limbu";
-                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbu, null, ea.Body.ToArray());
+                        var queueLimbo = $"{ea.RoutingKey}.limbo";
+                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbo, null, ea.Body.ToArray());
 
                     }
                     else canalRabbit.BasicReject(ea.DeliveryTag, false);
