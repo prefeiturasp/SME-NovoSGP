@@ -24,7 +24,8 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina;
 
         public SalvarFechamentoCommandHandler(IUnitOfWork unitOfWork, IMediator mediator, IRepositorioFechamentoNota repositorioFechamentoNota, 
-            IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno, IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
+            IRepositorioFechamentoTurma repositorioFechamentoTurma, IRepositorioFechamentoAluno repositorioFechamentoAluno,
+            IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -268,6 +269,8 @@ namespace SME.SGP.Aplicacao
                 auditoriaFechamentoNotaConceitoTurma.SituacaoNome = fechamentoTurmaDisciplina.Situacao.Name();
                 auditoriaFechamentoNotaConceitoTurma.DataFechamento = fechamentoTurmaDisciplina.AlteradoEm ?? fechamentoTurmaDisciplina.CriadoEm;
 
+                await InserirOuAtualizarCache(fechamentoTurma, emAprovacao);
+
                 return auditoriaFechamentoNotaConceitoTurma;
             }
             catch (Exception e)
@@ -278,6 +281,23 @@ namespace SME.SGP.Aplicacao
                 throw e;
             }
         }
+        
+        private async Task InserirOuAtualizarCache(FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina, bool emAprovacao)
+        {
+            var disciplinaId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
+                fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.First().DisciplinaId;
+
+            var fechamentosNotasConceitos = fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.Select(notaConceitoAluno => new FechamentoNotaConceitoDto
+            {
+                CodigoAluno = notaConceitoAluno.CodigoAluno, 
+                Nota = notaConceitoAluno.Nota, 
+                ConceitoId = notaConceitoAluno.ConceitoId
+            }).ToList();
+
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+                fechamentoFinalTurmaDisciplina.TurmaId,
+                fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
+        }        
 
         private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
         {
