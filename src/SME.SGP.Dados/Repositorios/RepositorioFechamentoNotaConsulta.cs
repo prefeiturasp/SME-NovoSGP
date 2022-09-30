@@ -202,7 +202,9 @@ namespace SME.SGP.Dados.Repositorios
                              or @dataSituacao > pe.periodo_fim)";
             }
 
-            query += " and ftd.excluido != true";
+            query += @" and not ftd.excluido
+                        and not fa.excluido
+                        and not fn.excluido;";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre,
                 dataMatricula, dataSituacao });
