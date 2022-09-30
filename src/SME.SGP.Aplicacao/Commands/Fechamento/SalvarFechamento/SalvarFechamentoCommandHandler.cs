@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Constantes;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
 namespace SME.SGP.Aplicacao
@@ -281,43 +280,18 @@ namespace SME.SGP.Aplicacao
         private async Task InserirOuAtualizarCache(FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina, bool emAprovacao)
         {
             var disciplinaId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
-                fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.First().DisciplinaId;            
-            
-            var nomeChaveCache = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA,
-                disciplinaId, fechamentoFinalTurmaDisciplina.TurmaId);
+                fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.First().DisciplinaId;
 
-            var retornoCacheMapeado = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache, "Obter fechamento nota final");
-
-            if (retornoCacheMapeado == null)
-                return;
-
-            foreach (var notaConceitoAluno in fechamentoFinalTurmaDisciplina.NotaConceitoAlunos)
+            var fechamentosNotasConceitos = fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.Select(notaConceitoAluno => new FechamentoNotaConceitoDto
             {
-                var cacheAluno = retornoCacheMapeado.FirstOrDefault(c => c.AlunoCodigo == notaConceitoAluno.CodigoAluno && 
-                                                                         c.ComponenteCurricularId == notaConceitoAluno.DisciplinaId &&
-                                                                         c.Bimestre == fechamentoFinalTurmaDisciplina.Bimestre);
+                CodigoAluno = notaConceitoAluno.CodigoAluno, 
+                Nota = notaConceitoAluno.Nota, 
+                ConceitoId = notaConceitoAluno.ConceitoId
+            }).ToList();
 
-                if (cacheAluno == null)
-                {
-                    retornoCacheMapeado.Add(new FechamentoNotaAlunoAprovacaoDto
-                    {
-                        Bimestre = fechamentoFinalTurmaDisciplina.Bimestre,
-                        Nota = notaConceitoAluno.Nota,
-                        AlunoCodigo = notaConceitoAluno.CodigoAluno,
-                        ConceitoId = notaConceitoAluno.ConceitoId,
-                        EmAprovacao = emAprovacao,
-                        ComponenteCurricularId = disciplinaId
-                    });
-
-                    continue;
-                }
-
-                cacheAluno.Nota = notaConceitoAluno.Nota;
-                cacheAluno.ConceitoId = notaConceitoAluno.ConceitoId;
-                cacheAluno.EmAprovacao = emAprovacao;
-            }
-
-            await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado);
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+                fechamentoFinalTurmaDisciplina.TurmaId,
+                fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
         }        
 
         private void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
