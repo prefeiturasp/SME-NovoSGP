@@ -90,8 +90,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         public async Task Copiar_plano_para_outra_turma_com_o_mesmo_componente_curricular()
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
+
+            var periodo = ObterTodos<PeriodoEscolar>();
             
-            var dataAula = DateTimeExtension.HorarioBrasilia().AddDays(1);
+            var dataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 3);
             await CriarTurma(Modalidade.Medio);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
