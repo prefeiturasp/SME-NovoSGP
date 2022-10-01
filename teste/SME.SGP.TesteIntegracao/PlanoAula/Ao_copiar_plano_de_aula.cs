@@ -91,8 +91,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
 
-            var periodo = ObterTodos<PeriodoEscolar>();
-            
             var dataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 3);
             await CriarTurma(Modalidade.Medio);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
