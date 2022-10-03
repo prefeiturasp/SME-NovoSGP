@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     unitOfWork.PersistirTransacao();
-                    MoverArquivos(request);
+                    await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
                 catch
@@ -70,11 +70,11 @@ namespace SME.SGP.Aplicacao
                 }
             }
         }
-        private void MoverArquivos(InserirOcorrenciaCommand novo)
+        private async Task MoverArquivos(InserirOcorrenciaCommand novo)
         {
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
             }
         }
     }

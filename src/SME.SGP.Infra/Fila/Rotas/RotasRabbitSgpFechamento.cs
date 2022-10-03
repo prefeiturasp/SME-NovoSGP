@@ -27,6 +27,8 @@
         public const string RotaNotificacaoInicioPeriodoFechamentoUE = "sgp.fechamento.abertura.inicio.periodo.notificar.ue";
         public const string RotaNotificacaoFimPeriodoFechamentoUE = "sgp.fechamento.abertura.fim.periodo.notificar.ue";
         public const string RotaGeracaoPendenciasFechamento = "sgp.fechamento.pendencias.gerar";
+        public const string RotaGeracaoFechamentoEdFisica2020 = "sgp.fechamento.turmas.edfisica.2020";
+        public const string RotaGeracaoFechamentoEdFisica2020AlunosTurma = "sgp.fechamento.turmas.edfisica.2020.alunos.turma";
         public const string RotaNotificacaoUeFechamentosInsuficientes = "sgp.fechamento.insuficiente.notificar";
         public const string RotaNotificacaoPeriodoFechamento = "sgp.periodo.fechamento.notificar"; // TODO [Fernando Groeler] Não localizei referência dessa fila
         public const string ConsolidarTurmaSync = "sgp.consolidacao.turma.sync";

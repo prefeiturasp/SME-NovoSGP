@@ -49,7 +49,6 @@ namespace SME.SGP.Aplicacao.Commands
                 {
                     // Salva Plano
                     if (plano?.Situacao == SituacaoPlanoAEE.Devolvido ||
-                       (plano?.Situacao == SituacaoPlanoAEE.Expirado && plano?.CriadoEm.Date < new DateTime(2021, 9, 16)) ||  /* regra conforme bug 52143 */
                        ((plano?.Situacao == SituacaoPlanoAEE.Expirado || plano?.Situacao == SituacaoPlanoAEE.Validado) && string.IsNullOrWhiteSpace(plano.ParecerCoordenacao)))
                     {
                         plano.Situacao = SituacaoPlanoAEE.ParecerCP;
@@ -87,8 +86,9 @@ namespace SME.SGP.Aplicacao.Commands
 
                     return new RetornoPlanoAEEDto(planoId, planoAEEVersaoId);
                 }
-                catch
+                catch(Exception ex)
                 {
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível salvar o Plano AEE {planoId}", LogNivel.Negocio, LogContexto.Geral,ex.Message,rastreamento:ex.StackTrace,innerException:ex.InnerException.ToString()));
                     unitOfWork.Rollback();
                     throw;
                 }

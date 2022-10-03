@@ -1,9 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +25,8 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioRf = await repositorioNotificacaoconsulta.ObterUsuarioNotificacaoPorId(request.Notificacao.Id);
 
-            await repositorioNotificacao.RemoverAsync(request.Notificacao);
+            request.Notificacao.Remover();
+            await repositorioNotificacao.SalvarAsync(request.Notificacao);
             await mediator.Send(new NotificarExclusaoNotificacaoCommand(request.Notificacao.Codigo, request.Notificacao.Status, usuarioRf));
         }
     }

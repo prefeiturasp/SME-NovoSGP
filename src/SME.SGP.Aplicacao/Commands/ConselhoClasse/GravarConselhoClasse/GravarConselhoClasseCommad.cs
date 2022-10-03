@@ -12,19 +12,22 @@ namespace SME.SGP.Aplicacao
         public string CodigoAluno { get; set; }
         public ConselhoClasseNotaDto ConselhoClasseNotaDto { get; set; }
         public int? Bimestre { get; set; }
+        public Usuario Usuario { get; set; }
 
         public GravarConselhoClasseCommad(
                     FechamentoTurma fechamentoTurma, 
                     long conselhoClasseId, 
                     string codigoAluno, 
                     ConselhoClasseNotaDto conselhoClasseNotaDto, 
-                    int? bimestre)
+                    int? bimestre,
+                    Usuario usuario)
         {
             FechamentoTurma = fechamentoTurma;
             ConselhoClasseId = conselhoClasseId;
             CodigoAluno = codigoAluno;
             ConselhoClasseNotaDto = conselhoClasseNotaDto;
             Bimestre = bimestre;
+            Usuario = usuario;
         }
     }
 

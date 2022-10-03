@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return await contexto.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
@@ -66,6 +66,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.data_atualizacao,
                             t.tipo_turma,
                             t.data_inicio,
+	                        t.historica,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -112,6 +113,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.qt_duracao_aula,
 	                        t.tipo_turno,
 	                        t.data_atualizacao,
+                            t.tipo_turma,
+                            t.historica,
+                            t.data_inicio,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
@@ -674,6 +678,23 @@ namespace SME.SGP.Dados.Repositorios
                 query += " and t.turma_id = @turmaCodigo";
 
             return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, new { turmaCodigo });
+        }
+
+        public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola)
+        {
+            var query = @"select distinct t.id as turmaId, t.modalidade_codigo as modalidade 
+                            from turma t 
+                                inner join ue
+                                    on t.ue_id = ue.id
+                           where t.tipo_turma in  (1,2,7) 
+                             and t.modalidade_codigo  in (3,5,6) 
+                             and t.ano_letivo = @anoLetivo
+                             and ue.tipo_escola = any(@tiposEscola)
+                         limit @quantidadeRegistrosPorPagina
+                         offset (@pagina - 1) * @quantidadeRegistrosPorPagina";            
+
+            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, 
+                new { anoLetivo, pagina, quantidadeRegistrosPorPagina, tiposEscola = tiposEscola.Select(tp => (int)tp).ToArray() });
         }
 
         public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")

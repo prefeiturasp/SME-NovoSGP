@@ -1,4 +1,5 @@
 using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -208,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
         {
-            var query = @"select * from plano_aee where not excluido and situacao not in (3,7)";
+            var query = @"select * from plano_aee where not excluido and situacao not in (3,7);";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
@@ -216,7 +217,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<PlanoAEE>> ObterPorDataFinalVigencia(DateTime dataFim, bool desconsiderarPendencias = true, bool desconsiderarNotificados = false, NotificacaoPlanoAEETipo tipoNotificacao = NotificacaoPlanoAEETipo.PlanoCriado)
         {
             var joinPendecias = desconsiderarPendencias ? @"left join pendencia_plano_aee ppa on ppa.plano_aee_id = pa.id
-                                                            left join pendencia p on ppa.pendencia_id = p.id and not p.excluido": string.Empty;
+                                                            left join pendencia p on ppa.pendencia_id = p.id and not p.excluido" : string.Empty;
             var joinNotificacoes = desconsiderarNotificados ? "left join notificacao_plano_aee npa on npa.plano_aee_id = pa.id and npa.tipo = @tipoNotificacao" : string.Empty;
 
             var condicaoPendencias = desconsiderarPendencias ? $"and (ppa.id is null or p.id is null or p.situacao = {(int)SituacaoPendencia.Resolvida})" : string.Empty;
@@ -405,6 +406,31 @@ namespace SME.SGP.Dados.Repositorios
             sql.Append(" group by or2.nome, q.ordem ");
 
             return await database.Conexao.QueryAsync<AEEAcessibilidateDto>(sql.ToString(), new { ano, dreId, ueId });
+        }
+
+        public async Task<IEnumerable<PlanoAEE>> ObterPlanosEncerradosAutomaticamente(int pagina, int quantidadeRegistrosPagina)
+        {
+            var query = @"select * from plano_aee 
+                          where not excluido and 
+                                situacao = @situacao
+                          limit @quantidadeRegistrosPagina
+                          offset(@pagina - 1) * @quantidadeRegistrosPagina;";
+
+            return await database.Conexao.QueryAsync<PlanoAEE>(query, new { situacao = (int)SituacaoPlanoAEE.EncerradoAutomaticamente, pagina, quantidadeRegistrosPagina });
+        }
+
+        public async Task<Pendencia> ObterUltimaPendenciaPlano(long planoId)
+        {
+            var query = @"select p.*
+	                        from pendencia_plano_aee ppa
+		                        inner join pendencia p 
+			                        on ppa.pendencia_id = p.id
+                          where ppa.plano_aee_id = @planoId and
+	                        not p.excluido
+                          order by ppa.id desc
+                          limit 1;";
+
+            return (await database.Conexao.QueryAsync<Pendencia>(query, new { planoId })).SingleOrDefault();
         }
     }
 }

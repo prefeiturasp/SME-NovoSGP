@@ -314,15 +314,20 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolar(string codigoTurma, string componenteCurricularId, TipoFrequenciaAluno tipoFrequencia, IEnumerable<long> periodosEscolaresIds)
         {
-            const string sql = @"select 
-	                                fa.*
-                                from 
-	                                frequencia_aluno fa 
-                                where
-	                                turma_id = @codigoTurma and 
-	                                disciplina_id = @componenteCurricularId and 
-	                                tipo = @tipoFrequencia and
-	                                periodo_escolar_id = any(@periodosEscolaresIds)";
+            const string sql = @"select *
+	                                from (     
+		                                select 
+			                                    fa.*,
+			                                    row_number() over (partition by fa.codigo_aluno,fa.bimestre, fa.disciplina_id) sequencia
+			                                from 
+			                                    frequencia_aluno fa 
+		                                    where
+                                                turma_id = @codigoTurma and 
+                                                disciplina_id = @componenteCurricularId and 
+                                                tipo = @tipoFrequencia and
+                                                periodo_escolar_id = any(@periodosEscolaresIds)
+		                                )rf
+	                                where rf.sequencia = 1";
 
             var parametros = new { codigoTurma, componenteCurricularId, tipoFrequencia = (short)tipoFrequencia, periodosEscolaresIds = periodosEscolaresIds.ToList() };
             return await database.Conexao.QueryAsync<FrequenciaAluno>(sql, parametros);
@@ -468,7 +473,7 @@ namespace SME.SGP.Dados
                 turmasCodigo
             });
         }
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres, long[] periodosEscolaresId = null)
         {
             var query = new StringBuilder(@"select * 
 	                                        from (select fa.*,
@@ -480,9 +485,12 @@ namespace SME.SGP.Dados
                                                     and codigo_aluno = @codigoAluno
 	       	                                        and tipo = @tipoFrequencia
 	                                                and turma_id = ANY(@turmasCodigo)
-	                                                and disciplina_id = ANY(@disciplinasId)) rf ");
+	                                                and disciplina_id = ANY(@disciplinasId)");
 
-            query.AppendLine("where rf.sequencia = 1");
+            if (periodosEscolaresId != null)
+                query.AppendLine(" and fa.periodo_escolar_id = ANY(@periodosEscolaresId)");
+
+            query.AppendLine(") rf where rf.sequencia = 1");
 
             if (bimestres.Length > 0)
                 query.AppendLine(" and rf.bimestre = ANY(@bimestres)");
@@ -493,7 +501,8 @@ namespace SME.SGP.Dados
                 tipoFrequencia,
                 disciplinasId,
                 turmasCodigo,
-                bimestres
+                bimestres,
+                periodosEscolaresId
             });
         }
 
@@ -501,10 +510,13 @@ namespace SME.SGP.Dados
         {
             const string sql = @"select distinct(1)
                                   from registro_frequencia_aluno rfa
-                                  inner join aula a on a.id = rfa.aula_id 
+                                  inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id     
+                                  inner join aula a on a.id = rf.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = @periodoEscolarId
+                                    and not rf.excluido
+                                    and not rfa.excluido
                                     and a.turma_id = @codigoTurma
                                     and a.disciplina_id = @componenteCurricularId
                                     and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
@@ -515,7 +527,8 @@ namespace SME.SGP.Dados
         {
             const string sql = @"select distinct(1)
                                    from registro_frequencia_aluno rfa
-                                  inner join aula a on a.id = rfa.aula_id 
+                                  inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                                  inner join aula a on a.id = rf.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where pe.id = ANY(@periodosEscolaresIds)
@@ -586,7 +599,8 @@ namespace SME.SGP.Dados
                                                 a.disciplina_id CodigoComponenteCurricular, 
                                                 rfa.codigo_aluno CodigoAluno
                                   from registro_frequencia_aluno rfa
-                                  inner join aula a on a.id = rfa.aula_id 
+                                  inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
+                                  inner join aula a on a.id = rf.aula_id 
                                   inner join tipo_calendario tc on tc.id = a.tipo_calendario_id
                                   inner join periodo_escolar pe on pe.tipo_calendario_id = tc.id
                                   where rfa.codigo_aluno = @codigoAluno 

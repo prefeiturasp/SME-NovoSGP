@@ -68,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
             
             return stringCache;
         }
-        
+
         public async Task<string> ObterAsync(string nomeChave, bool utilizarGZip = false)
         {
             return await ObterAsync(nomeChave, $"Obter async<string>", utilizarGZip);
@@ -101,7 +101,32 @@ namespace SME.SGP.Dados.Repositorios
 
             return dados;            
         }
-        
+
+        public async Task<T> ObterObjetoAsync<T>(string nomeChave, bool utilizarGZip = false) where T : new()
+        {
+            return await ObterObjetoAsync<T>(nomeChave, $"{NomeServicoCache} Obter objeto async<string>", utilizarGZip);
+        }
+
+        public async Task<T> ObterObjetoAsync<T>(string nomeChave, string telemetriaNome, bool utilizarGZip = false) where T : new() 
+        {
+            var param = new
+            {
+                NomeChave = nomeChave,
+                UtilizarGZip = utilizarGZip
+            };
+                
+            var stringCache = servicoTelemetria.RegistrarComRetorno<string>(() => ObterValor(nomeChave),
+                NomeServicoCache, $"{NomeServicoCache}: {telemetriaNome}", "", param.ToString());
+
+            if (string.IsNullOrWhiteSpace(stringCache)) 
+                return default;
+            
+            if (utilizarGZip)
+                stringCache = UtilGZip.Descomprimir(Convert.FromBase64String(stringCache));
+            
+            return await Task.FromResult(JsonConvert.DeserializeObject<T>(stringCache));
+        }
+
         public async Task<T> ObterAsync<T>(string nomeChave, Func<Task<T>> buscarDados, int minutosParaExpirar = 720,
             bool utilizarGZip = false)
         {

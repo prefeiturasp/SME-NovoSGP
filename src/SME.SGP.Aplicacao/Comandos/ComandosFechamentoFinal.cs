@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina;
         private readonly IServicoFechamentoFinal servicoFechamentoFinal;
         private readonly IMediator mediator;
+        private readonly IRepositorioCache repositorioCache;
 
         public ComandosFechamentoFinal(
             IServicoFechamentoFinal servicoFechamentoFinal,
@@ -23,14 +24,16 @@ namespace SME.SGP.Aplicacao
             IRepositorioFechamentoAlunoConsulta repositorioFechamentoAluno,
             IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurma,            
             IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
-            IMediator mediator)
+            IMediator mediator,
+            IRepositorioCache repositorioCache)
         {
-            this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new System.ArgumentNullException(nameof(servicoFechamentoFinal));
-            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
-            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoTurma));
-            this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new System.ArgumentNullException(nameof(repositorioFechamentoAluno));
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.servicoFechamentoFinal = servicoFechamentoFinal ?? throw new ArgumentNullException(nameof(servicoFechamentoFinal));
+            this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
+            this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
+            this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
+            this.repositorioFechamentoAluno = repositorioFechamentoAluno ?? throw new ArgumentNullException(nameof(repositorioFechamentoAluno));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<AuditoriaPersistenciaDto> SalvarAsync(FechamentoFinalSalvarDto fechamentoFinalSalvarDto)
@@ -44,23 +47,45 @@ namespace SME.SGP.Aplicacao
             var auditoria = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma, usuarioLogado,
                 fechamentoFinalSalvarDto.Itens, emAprovacao);
 
+            await InserirOuAtualizarCache(fechamentoFinalSalvarDto, emAprovacao);
+
             if (!auditoria.EmAprovacao)
+            {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
-                                                               new ConsolidacaoTurmaDto(turma.Id, 0),
-                                                               Guid.NewGuid(),
-                                                               null));
+                    new ConsolidacaoTurmaDto(turma.Id, 0),
+                    Guid.NewGuid()));
+            }
 
             return auditoria;
         }
 
+        private async Task InserirOuAtualizarCache(FechamentoFinalSalvarDto fechamentoFinalSalvar, bool emAprovacao)
+        {
+            var disciplinaId = fechamentoFinalSalvar.EhRegencia ? long.Parse(fechamentoFinalSalvar.DisciplinaId) :
+                fechamentoFinalSalvar.Itens.First().ComponenteCurricularCodigo;
+
+            var fechamentosNotasConceitos = fechamentoFinalSalvar.Itens.Select(fechamentoFinal => new FechamentoNotaConceitoDto
+            {
+                CodigoAluno = fechamentoFinal.AlunoRf, 
+                Nota = fechamentoFinal.Nota, 
+                ConceitoId = fechamentoFinal.ConceitoId
+            }).ToList();
+            
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+                fechamentoFinalSalvar.TurmaCodigo,
+                fechamentosNotasConceitos, emAprovacao, 0));
+        }
+        
         private Task<Usuario> ObterUsuarioLogado()
             => mediator.Send(new ObterUsuarioLogadoQuery());
 
         private async Task<Turma> ObterTurma(string turmaCodigo)
         {
             var turma = await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+            
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
+            
             return turma;
         }
 
@@ -74,6 +99,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
         {
             var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaConselho, anoLetivo));
+            
             if (parametro == null)
                 throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotaConselho' para o ano {anoLetivo}");
 
@@ -82,7 +108,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<FechamentoTurmaDisciplina> TransformarDtoSalvarEmEntidade(FechamentoFinalSalvarDto fechamentoFinalSalvarDto, Turma turma)
         {
-            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? long.Parse(fechamentoFinalSalvarDto.DisciplinaId) : fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
+            var disciplinaId = fechamentoFinalSalvarDto.EhRegencia ? long.Parse(fechamentoFinalSalvarDto.DisciplinaId) :
+                fechamentoFinalSalvarDto.Itens.First().ComponenteCurricularCodigo;
 
             FechamentoTurmaDisciplina fechamentoTurmaDisciplina = null;
 
@@ -93,17 +120,18 @@ namespace SME.SGP.Aplicacao
             else
                 fechamentoTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplina(fechamentoFinalSalvarDto.TurmaCodigo, disciplinaId);
 
-            if (fechamentoTurmaDisciplina == null)
-                fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina() { DisciplinaId = disciplinaId, Situacao = SituacaoFechamento.ProcessadoComSucesso };
+            fechamentoTurmaDisciplina ??= new FechamentoTurmaDisciplina
+            {
+                DisciplinaId = disciplinaId,
+                Situacao = SituacaoFechamento.ProcessadoComSucesso
+            };
 
             fechamentoTurmaDisciplina.FechamentoTurma = fechamentoFinalTurma;
 
             foreach (var agrupamentoAluno in fechamentoFinalSalvarDto.Itens.GroupBy(a => a.AlunoRf))
             {
-                var fechamentoAluno = await repositorioFechamentoAluno.ObterFechamentoAlunoENotas(fechamentoTurmaDisciplina.Id, agrupamentoAluno.Key);
-
-                if (fechamentoAluno == null)
-                    fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoAluno.Key };
+                var fechamentoAluno = await repositorioFechamentoAluno.ObterFechamentoAlunoENotas(fechamentoTurmaDisciplina.Id, agrupamentoAluno.Key) ??
+                    new FechamentoAluno { AlunoCodigo = agrupamentoAluno.Key };
 
                 fechamentoTurmaDisciplina.FechamentoAlunos.Add(fechamentoAluno);
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     CodigoTurma = int.Parse(request.CodigoTurma),
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-12),
                     DataSituacao = dataRefencia.AddDays(-20),
-                    DataMatricula = dataRefencia.AddDays(-120),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     NomeAluno = ALUNO_CODIGO_1,
                     NumeroAlunoChamada = 0,
                     SituacaoMatricula = ATIVO,
@@ -60,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     CodigoTurma = int.Parse(request.CodigoTurma),
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-11),
                     DataSituacao = dataRefencia.AddDays(-20),
-                    DataMatricula = dataRefencia.AddDays(-120),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     NomeAluno = ALUNO_CODIGO_1,
                     NumeroAlunoChamada = 0,
                     SituacaoMatricula = ATIVO,
@@ -78,7 +79,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     CodigoTurma = int.Parse(request.CodigoTurma),
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-15),
                     DataSituacao = dataRefencia.AddDays(-20),
-                    DataMatricula = dataRefencia.AddDays(-120),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     NomeAluno = ALUNO_CODIGO_1,
                     NumeroAlunoChamada = 0,
                     SituacaoMatricula = ATIVO,
@@ -96,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
                     CodigoTurma = int.Parse(request.CodigoTurma),
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-14),
                     DataSituacao = dataRefencia.AddDays(-20),
-                    DataMatricula = dataRefencia.AddDays(-120),
+                    DataMatricula = new DateTime(DateTimeExtension.HorarioBrasilia().Year,01,01),
                     NomeAluno = ALUNO_CODIGO_1,
                     NumeroAlunoChamada = 0,
                     SituacaoMatricula = ATIVO,

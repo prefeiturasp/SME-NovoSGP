@@ -55,18 +55,7 @@ namespace SME.SGP.Aplicacao
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
-        public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurmaComUsuario(string turma, Usuario usuario, bool consideraHistorico = false)
-        {
-            var login = usuario.Login;
-            var perfil = usuario.PerfilAtual;
-            AbrangenciaCompactaVigenteRetornoEOLDTO abrangencia = await servicoEOL.ObterAbrangenciaCompactaVigente(login.ToString(), Guid.Parse(perfil.ToString()));
-            bool abrangenciaPermitida = abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.UE
-                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.Dre
-                                        || abrangencia.Abrangencia.Abrangencia == Infra.Enumerados.Abrangencia.SME;
-
-            return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
-        }
-
+        
         public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
         {
             var login = servicoUsuario.ObterLoginAtual();

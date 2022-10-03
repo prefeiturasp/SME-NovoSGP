@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ObjetivoAprendizagemComponenteDto>> ObterObjetivosComComponentePlanoAula(long planoAulaId);
 
         Task LimparObjetivosAula(long planoAulaId);
+        Task<IEnumerable<ObjetivoAprendizagemAula>> ObterObjetivosAprendizagemAulaPorPlanoAulaId(long planoAulaId);
     }
 }

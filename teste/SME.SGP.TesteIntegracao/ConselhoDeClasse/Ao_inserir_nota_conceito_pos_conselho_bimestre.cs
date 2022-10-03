@@ -10,6 +10,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 using ObterTurmaItinerarioEnsinoMedioQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterTurmaItinerarioEnsinoMedioQueryHandlerFake;
 
 namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
@@ -26,74 +27,77 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesRegenciaPorTurmaQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesRegenciaPorTurmaQueryFake), ServiceLifetime.Scoped));            
         }
 
         [Theory]
         [InlineData(false)]
-        [InlineData(true)]
+        //[InlineData(true)]
         public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre(bool anoAnterior)
         {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
-            
-            await CriarDados(ObterPerfilProfessor(), 
-                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
-                            TipoNota.Conceito, 
-                            ANO_4, 
-                            Modalidade.Fundamental, 
-                            ModalidadeTipoCalendario.FundamentalMedio, 
-                            anoAnterior, 
-                            SituacaoConselhoClasse.EmAndamento, 
-                            true);
-            
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);
-        }
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
-        {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105,TipoNota.Conceito);
-            
-            await CriarDados(ObterPerfilProfessor(), 
-                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular, 
-                            TipoNota.Conceito, 
-                            ANO_4, 
-                            Modalidade.Fundamental, 
-                            ModalidadeTipoCalendario.FundamentalMedio, 
-                            anoAnterior, 
-                            SituacaoConselhoClasse.EmAndamento, 
+            await CriarDados(ObterPerfilProfessor(),
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                            TipoNota.Conceito,
+                            ANO_3,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior,
+                            SituacaoConselhoClasse.EmAndamento,
                             true);
 
-            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior,TipoNota.Conceito);;
-        }
-
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
-        {
-            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,TipoNota.Conceito);
-            
-            await CriarDados(ObterPerfilProfessor(), 
-                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
-                TipoNota.Conceito, 
-                ANO_4, 
-                Modalidade.EJA, 
-                ModalidadeTipoCalendario.EJA, 
-                anoAnterior, 
-                SituacaoConselhoClasse.EmAndamento, 
-                true);
-            
             await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
         }
 
-        
+        [Theory]
+        [InlineData(false)]
+        //[InlineData(true)]
+        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_fundamental(bool anoAnterior)
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105, TipoNota.Conceito);
+
+            await CriarDados(ObterPerfilProfessor(),
+                            salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                            TipoNota.Conceito,
+                            ANO_3,
+                            Modalidade.Fundamental,
+                            ModalidadeTipoCalendario.FundamentalMedio,
+                            anoAnterior,
+                            SituacaoConselhoClasse.EmAndamento,
+                            true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito, componentesRegencia: 2);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        //[InlineData(true)]
+        public async Task Deve_lancar_nota_conceito_pos_conselho_bimestre_regencia_EJA(bool anoAnterior)
+        {
+            var salvarConselhoClasseAlunoNotaDto = ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, TipoNota.Conceito);
+
+            await CriarDados(ObterPerfilProfessor(),
+                salvarConselhoClasseAlunoNotaDto.ConselhoClasseNotaDto.CodigoComponenteCurricular,
+                TipoNota.Conceito,
+                ANO_1,
+                Modalidade.EJA,
+                ModalidadeTipoCalendario.EJA,
+                anoAnterior,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await ExecutarTeste(salvarConselhoClasseAlunoNotaDto, anoAnterior, TipoNota.Conceito);
+        }
+
+
         private async Task CriarDados(string perfil, long componente, TipoNota tipo, string anoTurma, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool anoAnterior, SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, bool criarFechamentoDisciplinaAlunoNota = false)
         {
             var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DATA_02_05_INICIO_BIMESTRE_2;
 
-            var filtroNota = new FiltroNotasDto()
+            var filtroNota = new FiltroConselhoClasseDto()
             {
                 Perfil = perfil,
                 Modalidade = modalidade,

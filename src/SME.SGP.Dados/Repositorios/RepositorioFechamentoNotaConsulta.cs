@@ -77,6 +77,30 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
+        {
+            var query = $@"{queryNotasFechamento}
+                           and t.turma_id = ANY(@turmasCodigos)
+                           and fa.aluno_codigo = @alunoCodigo";
+
+            if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+                query += " and @dataMatricula <= pe.periodo_fim";
+
+            if (dataSituacao.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
+                query += $@" and ((@dataSituacao <= pe.periodo_fim and @dataSituacao >= pe.periodo_inicio)
+                             or @dataSituacao > pe.periodo_fim)";
+
+            if (bimestre == 0)
+                query += $@" and pe.bimestre is null";
+            else
+                query += $@" and pe.bimestre = @bimestre";
+
+            query += " and ftd.excluido != true";
+
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
+        }
+
+
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacaoPorFechamento(long fechamentoTurmaDisciplinaId)
         {
             const string query = @"select w.*
@@ -183,5 +207,12 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre,
                 dataMatricula, dataSituacao });
         }
+
+        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo)
+        {
+            string query = queryPorFechamento;
+            query += @" and fa.aluno_codigo = @alunoCodigo";
+            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId, alunoCodigo });
+        }        
     }
 }
