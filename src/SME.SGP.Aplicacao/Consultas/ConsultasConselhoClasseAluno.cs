@@ -176,10 +176,10 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             var turmasCodigosEOL = await mediator
-                  .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
+            .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
 
             var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
-            var turmaEOL  = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre );
+            var turmaEOL = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre);
 
             string[] turmasCodigos;
             long[] conselhosClassesIds;
@@ -276,6 +276,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
+            bool validaMatricula = false;
 
             var turmasParaNotasFinais = new string[3];
             bool validaMatricula = false;
@@ -316,7 +317,6 @@ namespace SME.SGP.Aplicacao
                     if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                         disciplinasDaTurmaEol.AddRange(disciplinasDaTurmaTipo.Where(x => x.CodigoComponenteCurricular == 6));
                 }
-                 
             }
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
@@ -440,6 +440,24 @@ namespace SME.SGP.Aplicacao
                         notaFechamento.ConceitoId = 1;
                     }
                     else if(notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7 )
+                    {
+                        notaFechamento.ConceitoId = 2;
+                    }
+                    else
+                        notaFechamento.ConceitoId = 3;
+            }
+        }
+
+        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        {
+            foreach (var notaFechamento in notasFechamentoAluno)
+            {
+                if (notaFechamento.Nota != null)
+                    if (notaFechamento.Nota >= 7)
+                    {
+                        notaFechamento.ConceitoId = 1;
+                    }
+                    else if (notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7)
                     {
                         notaFechamento.ConceitoId = 2;
                     }
