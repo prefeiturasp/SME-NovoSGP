@@ -29,23 +29,32 @@ namespace SME.SGP.Aplicacao
                     .OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();
             }
 
-            return await ObterAluno(request.CodigoAluno, request.AnoLetivo, request.ConsideraHistorico,
-                request.FiltrarSituacao, request.CodigoTurma);
+            var alunos = await ObterAluno(request.CodigoAluno,
+                                          request.AnoLetivo,
+                                          request.ConsideraHistorico,
+                                          request.FiltrarSituacao,
+                                          request.CodigoTurma);
+
+            return alunos ?? await ObterAluno(request.CodigoAluno,
+                                          request.AnoLetivo,
+                                          !request.ConsideraHistorico,
+                                          request.FiltrarSituacao,
+                                          request.CodigoTurma);
         }
 
 
-        public async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,
+        private async Task<AlunoPorTurmaResposta> ObterAluno(string codigoAluno, int anoLetivo,
             bool historica, bool filtrarSituacao, string codigoTurma)
         {
             var response =
-                (servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao).Result)
-                .OrderByDescending(a => a.DataSituacao);
+                (await servicoEol.ObterDadosAluno(codigoAluno, anoLetivo, historica, filtrarSituacao))
+                            .OrderByDescending(a => a.DataSituacao);
 
             var retorno = response
                 .Where(da => da.CodigoTurma.ToString().Equals(codigoTurma));
 
-            if (!retorno.Any())
-                return await ObterAluno(codigoAluno, anoLetivo, !historica, filtrarSituacao, codigoTurma);
+            if (retorno == null)
+                return null;
 
             return retorno.FirstOrDefault(a => a.EstaAtivo(DateTime.Today.Date));
         }

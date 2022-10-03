@@ -15,6 +15,7 @@ namespace SME.SGP.Infra.Dtos
         public SituacaoMatriculaAluno CodigoSituacaoMatricula { get; set; }
         public string Situacao { get; set; }
         public string TurmaEscola { get; set; }
+        public string CodigoTurma { get; set; }
         public string NomeResponsavel { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }

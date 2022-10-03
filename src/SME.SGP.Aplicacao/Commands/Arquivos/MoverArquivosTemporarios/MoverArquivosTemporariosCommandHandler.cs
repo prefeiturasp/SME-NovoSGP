@@ -6,6 +6,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -22,8 +23,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
-            var expressao = @"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
-            var regex = new Regex(expressao);
+            var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
             var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
             var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual)?request.TextoEditorAtual:string.Empty).Cast<Match>().Select(c => c.Value).ToList();
             var diferenca = novo.Any() ? novo.Except(atual) : new  List<string>();

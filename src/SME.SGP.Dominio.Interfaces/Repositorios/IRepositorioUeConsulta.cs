@@ -16,8 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterPorCodigo(string ueId);
 
         Task<Ue> ObterUeComDrePorCodigo(string ueCodigo);
-        Task<Ue> ObterUePorCodigo(string ueCodigo);
-
         Ue ObterPorId(long id);
         Task<long> ObterIdPorCodigoUe(string codigoUe);
         Task<IEnumerable<Ue>> ObterPorDre(long dreId);

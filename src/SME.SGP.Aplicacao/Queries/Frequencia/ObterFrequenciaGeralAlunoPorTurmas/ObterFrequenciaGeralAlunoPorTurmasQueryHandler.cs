@@ -12,7 +12,6 @@ namespace SME.SGP.Aplicacao
     public class ObterFrequenciaGeralAlunoPorTurmasQueryHandler : IRequestHandler<ObterFrequenciaGeralAlunoPorTurmasQuery, string>
     {
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
-        private readonly IRepositorioRegistroFrequenciaAluno repositorioRegistroFrequencia;
         private readonly IMediator mediator;
 
         public ObterFrequenciaGeralAlunoPorTurmasQueryHandler(IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo,
@@ -25,6 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(ObterFrequenciaGeralAlunoPorTurmasQuery request, CancellationToken cancellationToken)
         {
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
+            var disciplinasAluno = new string[] { };
+
             frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
             var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
 
@@ -60,6 +61,14 @@ namespace SME.SGP.Aplicacao
                 TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
             };
 
+            if(aulasComponentesTurmas.Any())
+                disciplinasAluno = aulasComponentesTurmas.Select(a => a.ComponenteCurricularCodigo).Distinct().ToArray();
+
+            var frequenciaAlunoObtidoIndividual = await ObterTotalSomadoIndividualmente(request.CodigosTurmas, request.TipoCalendarioId, request.CodigoAluno, frequenciaAluno, disciplinasAluno, request.DataMatriculaTurmaFiltro);
+
+            if (frequenciaAluno.TotalAulas > frequenciaAlunoObtidoIndividual.TotalAulas)
+                frequenciaAluno = frequenciaAlunoObtidoIndividual;
+
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
                 return "0";
 
@@ -73,6 +82,32 @@ namespace SME.SGP.Aplicacao
                 return "100";
 
             return "0";
+        }
+
+        private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)
+        {
+            var periodos = new long[] { };
+            var periodosEscolaresTipoCalendario = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+            
+            if (periodosEscolaresTipoCalendario.Any())
+                periodos = periodosEscolaresTipoCalendario.Select(p => p.Id).ToArray();
+
+            var frequenciasDoAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoTurmasDisciplinasDataAsync(codigoAluno, TipoFrequenciaAluno.PorDisciplina, disciplinasAluno, turmasCodigo, new int[] { }, !periodos.Any()? null : periodos);
+
+            if (dataMatriculaTurmaFiltro.HasValue)
+                frequenciasDoAluno = frequenciasDoAluno.Where(f => f.PeriodoFim > dataMatriculaTurmaFiltro);
+
+            if (frequenciasDoAluno.Any())
+            {
+                return new FrequenciaAluno()
+                {
+                    TotalAulas = frequenciasDoAluno.Sum(f => f.TotalAulas),
+                    TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
+                    TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes)
+                };
+            }
+
+            return frequenciaGeralObtida;
         }
     }
 }

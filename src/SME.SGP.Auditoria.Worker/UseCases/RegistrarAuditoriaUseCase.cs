@@ -1,5 +1,7 @@
-﻿using SME.SGP.Auditoria.Worker.Interfaces;
+﻿using System;
+using SME.SGP.Auditoria.Worker.Interfaces;
 using System.Threading.Tasks;
+using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
 
 namespace SME.SGP.Auditoria.Worker
 {

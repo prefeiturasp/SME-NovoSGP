@@ -22,10 +22,6 @@ namespace SME.SGP.Aplicacao.Commands
     {
         public GerarParecerConclusivoPorConselhoFechamentoAlunoCommandValidator()
         {
-            RuleFor(a => a.ConselhoClasseId)
-                .NotEmpty()
-                .WithMessage("O código do conselho de classe do aluno deve ser informado para gerar seu parecer conclusivo");
-
             RuleFor(a => a.FechamentoTurmaId)
                 .NotEmpty()
                 .WithMessage("O código do fechamento deve ser informado para gerar seu parecer conclusivo");

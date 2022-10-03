@@ -1,15 +1,13 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
@@ -32,9 +30,7 @@ namespace SME.SGP.Aplicacao.Commands.DeletarArquivo
         {
             var arquivoAtual = request.ArquivoAtual.Replace(@"\", @"/");
 
-            var expressao = @"\/[0-9]{4}\/[0-9]{2}\/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}.[A-Za-z0-4]+";
-
-            var regex = new Regex(expressao);
+            var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
 
             var atual = regex.Matches(arquivoAtual).Cast<Match>().Select(c => c.Value).ToList();
 

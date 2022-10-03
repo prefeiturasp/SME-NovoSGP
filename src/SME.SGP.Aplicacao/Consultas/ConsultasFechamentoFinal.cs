@@ -1,16 +1,14 @@
 ﻿using MediatR;
-using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
-using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -67,7 +65,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi possível localizar a turma.");
 
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.semestre);
+            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ObterModalidadeTipoCalendario(), filtros.Semestre);
             if (tipoCalendario == null)
                 throw new NegocioException("Não foi encontrado tipo de calendário escolar, para a modalidade informada.");
 
@@ -82,7 +80,13 @@ namespace SME.SGP.Aplicacao
 
             retorno.EventoData = ultimoPeriodoEscolar.PeriodoInicio;
 
+            var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { filtros.DisciplinaCodigo }, ultimoPeriodoEscolar.Bimestre));
+
+            if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
+                throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoPeriodoEscolar.Bimestre}º  bimestre.");
+            
             var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turma.CodigoTurma, turma.AnoLetivo));
+            
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException("Não foram encontrandos alunos para a turma informada.");
 
@@ -198,32 +202,14 @@ namespace SME.SGP.Aplicacao
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
 
-            retorno.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.FirstOrDefault() : null, retorno.EhNota);
-            retorno.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurmaDisciplina.Any() ? fechamentosTurmaDisciplina.FirstOrDefault() : null, retorno.EhNota);
+            retorno.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
+            retorno.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentosTurmaDisciplina.FirstOrDefault(), retorno.EhNota);
 
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
             retorno.FrequenciaMedia = await mediator.Send(new ObterFrequenciaMediaQuery(disciplinaEOL, turma.AnoLetivo));
-            retorno.PeriodoAberto = mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year)).Result;
+            retorno.PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
 
             return retorno;
-        }
-
-        private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
-        {
-            if (fechamentoTurmaDisciplina != null && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.AlteradoPor))
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("HH:mm")}.";
-            else return string.Empty;
-        }
-
-        private string MontaTextoAuditoriaInclusao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
-        {
-            var criadorRf = fechamentoTurmaDisciplina != null && fechamentoTurmaDisciplina.CriadoRF != "0" && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.CriadoRF) ?
-                $"({fechamentoTurmaDisciplina.CriadoRF})" : "";
-
-            if (fechamentoTurmaDisciplina != null)
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")},às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
-
-            else return string.Empty;
         }
 
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)

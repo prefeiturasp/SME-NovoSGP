@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -31,6 +32,18 @@ namespace SME.SGP.TesteIntegracao.Setup
                 CodigoUe = "1",
                 DreId = 1,
                 Nome = "Nome da UE",
+            });
+
+            await _teste.InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = "5",
+                CodigoTurma = "1",
+                Historica = false,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                TipoTurma = TipoTurma.Regular,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Turma Teste 1"
             });
 
             await _teste.InserirNaBase(new PrioridadePerfil

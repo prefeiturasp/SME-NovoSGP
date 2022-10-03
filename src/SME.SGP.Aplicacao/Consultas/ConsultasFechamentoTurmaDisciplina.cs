@@ -126,8 +126,13 @@ namespace SME.SGP.Aplicacao
             var dadosAlunos = await consultasTurma.ObterDadosAlunos(turmaCodigo, anoLetivo, periodoEscolar, turma.EhTurmaInfantil);
 
             var dadosAlunosFiltrados = dadosAlunos.Where(d => !d.EstaInativo() || d.EstaInativo() && d.DataSituacao >= primeiroPeriodoDoCalendario).OrderBy(d => d.Nome);
-
-            return dadosAlunosFiltrados;
+            
+            return dadosAlunosFiltrados.OrderBy(aluno => aluno.CodigoEOL)
+                                       .ThenByDescending(aluno => aluno.DataSituacao)
+                                       .GroupBy(aluno => aluno.CodigoEOL)
+                                       .Select(aluno => aluno.First())
+                                       .OrderBy(aluno => aluno.Nome)
+                                       .ToList();
         }
 
         public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplina(string turmaId, long disciplinaId, int bimestre)
@@ -199,7 +204,7 @@ namespace SME.SGP.Aplicacao
 
                 fechamentoBimestre.Alunos = new List<NotaConceitoAlunoBimestreDto>();
 
-                var exigeAprovacao = await ExigeAprovacao(turma);
+                var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(turma));
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
@@ -362,22 +367,6 @@ namespace SME.SGP.Aplicacao
             {
                 notasConceito.EmAprovacao = false;
             }
-        }
-
-        private async Task<bool> ExigeAprovacao(Turma turma)
-        {
-            return turma.AnoLetivo < DateTime.Today.Year
-                && !(await mediator.Send(new ObterUsuarioLogadoQuery())).EhGestorEscolar()
-                && await ParametroAprovacaoAtivo(turma.AnoLetivo);
-        }
-
-        private async Task<bool> ParametroAprovacaoAtivo(int anoLetivo)
-        {
-            var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.AprovacaoAlteracaoNotaFechamento, anoLetivo));
-            if (parametro == null)
-                throw new NegocioException($"Não foi possível localizar o parametro 'AprovacaoAlteracaoNotafechamento' para o ano {anoLetivo}");
-
-            return parametro.Ativo;
         }
 
         private ModalidadeTipoCalendario ModalidadeParaModalidadeTipoCalendario(Modalidade modalidade)

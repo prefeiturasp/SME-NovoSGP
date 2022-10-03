@@ -34,16 +34,16 @@ namespace SME.SGP.Aplicacao
             RuleFor(a => a.TurmasCodigos)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("Necessário informar os códigos de turmas para obter as notas de fechmamento");
+                .WithMessage("Necessário informar os códigos de turmas para obter as notas de fechamento");
 
             RuleFor(a => a.AlunoCodigo)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("Necessário informar o código do aluno para obter as notas de fechmamento");
+                .WithMessage("Necessário informar o código do aluno para obter as notas de fechamento");
 
             RuleFor(a => a.Bimestre)
                 .GreaterThanOrEqualTo(0)
-                .WithMessage("Necessário informar o bimestre para obter as notas de fechmamento");
+                .WithMessage("Necessário informar o bimestre para obter as notas de fechamento");
         }
     }    
 }

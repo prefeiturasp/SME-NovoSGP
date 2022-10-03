@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao
             var turmaCompleta = await mediator
                 .Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaCodigo));
 
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
             if (turmaCompleta == null)
                 throw new NegocioException("Não foi possível obter a turma.");
 
@@ -53,6 +55,12 @@ namespace SME.SGP.Aplicacao
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
+
+            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
+            if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
+                throw new NegocioException("Componente curricular informado não encontrado no EOL");
+
+            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
 
             var retorno = new NotasConceitosRetornoDto();
             var tipoAvaliacaoBimestral = await mediator.Send(new ObterTipoAvaliacaoBimestralQuery());
@@ -87,6 +95,9 @@ namespace SME.SGP.Aplicacao
                 .OrderBy(a => a.DataAvaliacao)
                 .ToList();
 
+            if (componenteReferencia.Regencia)
+                atividadesAvaliativasdoBimestre = atividadesAvaliativasdoBimestre.Where(a => a.EhRegencia).ToList();
+
             var alunosIds = alunos.Select(a => a.CodigoAluno).Distinct().ToArray();
 
             IEnumerable<NotaConceito> notas = null;
@@ -99,18 +110,10 @@ namespace SME.SGP.Aplicacao
             
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
-            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
-            if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
-                throw new NegocioException("Componente curricular informado não encontrado no EOL");
-
-            var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == filtro.DisciplinaCodigo);
-
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
 
             if (componenteReferencia.Regencia)
             {
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
                 if (usuario.EhProfessorCj())
                 {
                     var disciplinasRegenciaCJ = await consultasDisciplina.ObterComponentesCurricularesPorProfessorETurmaParaPlanejamento(filtro.DisciplinaCodigo, filtro.TurmaCodigo, false, componenteReferencia.Regencia);
@@ -148,7 +151,9 @@ namespace SME.SGP.Aplicacao
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
 
             alunosAtivos = from a in alunos
-                           where a.EstaAtivo(periodoInicio, periodoFim) || !a.EstaAtivo(periodoInicio, periodoFim) && !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && a.DataSituacao >= periodoInicio
+                           where a.EstaAtivo(periodoInicio, periodoFim) 
+                           || !a.EstaAtivo(periodoInicio, periodoFim) 
+                           && VerificaSeEsteveAtivoUmDiaNaTurma(a, periodoInicio)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
 
@@ -210,8 +215,8 @@ namespace SME.SGP.Aplicacao
                         AtividadeAvaliativaId = atividadeAvaliativa.Id,
                         NotaConceito = notaParaVisualizar,
                         Ausente = ausente,
-                        PodeEditar = aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
-                                     (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao),
+                        PodeEditar = (aluno.EstaAtivo(atividadeAvaliativa.DataAvaliacao) ||
+                                     (aluno.Inativo && aluno.DataSituacao.Date >= atividadeAvaliativa.DataAvaliacao)) && ChecarSeProfessorCJTitularPodeEditarNota(usuario, atividadeAvaliativa),
                         StatusGsa = notaDoAluno?.StatusGsa
                     };
 
@@ -425,6 +430,20 @@ namespace SME.SGP.Aplicacao
             retorno.Bimestres.Add(bimestreParaAdicionar);
 
             return retorno;
+        }
+
+        private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
+        {
+            if(dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
+                return dadosUsuario.EhProfessorCj() && dadosAvaliacao.EhCj || dadosUsuario.EhProfessor() && !dadosAvaliacao.EhCj;
+
+            return true;
+        }
+
+        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio)
+        {
+            return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
+                   && aluno.DataMatricula <= periodoInicio;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)

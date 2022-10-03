@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
+using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -19,15 +20,21 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<byte[]> Handle(DownloadArquivoCommand request, CancellationToken cancellationToken)
         {
-            var extensao = Path.GetExtension(request.Nome); 
-                
+            var extensao = Path.GetExtension(request.Nome);
+
             var nomeArquivoComExtensao = $"{request.Codigo}{extensao}";
-            
-            var enderecoArquivo = await servicoArmazenamento.Obter(nomeArquivoComExtensao,request.Tipo == TipoArquivo.temp);
+
+            var enderecoArquivo = await servicoArmazenamento.Obter(nomeArquivoComExtensao, request.Tipo == TipoArquivo.temp);
 
             if (!string.IsNullOrEmpty(enderecoArquivo))
-                return await new HttpClient().GetByteArrayAsync(enderecoArquivo);
-            
+            {
+                var response = await new HttpClient().GetAsync(enderecoArquivo);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+
+                return default;
+            }
             throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
         }
     }

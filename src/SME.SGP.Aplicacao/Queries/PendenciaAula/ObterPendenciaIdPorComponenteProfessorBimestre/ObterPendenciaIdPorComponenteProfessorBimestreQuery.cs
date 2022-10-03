@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                .NotEmpty()
                .WithMessage("É necessário informar o RF para verificar se já existe pendência.");
 
-            RuleFor(a => a.CodigoRf)
+            RuleFor(a => a.PeriodoEscolarId)
                .NotEmpty()
                .WithMessage("É necessário informar o id do período escolar para verificar se já existe pendência.");
 

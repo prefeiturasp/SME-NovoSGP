@@ -20,16 +20,13 @@ namespace SME.SGP.Aplicacao
         {
             var dataString = request.DataAula.ToString("s");
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}");
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = resposta.Content.ReadAsStringAsync().Result;
-                return JsonConvert.DeserializeObject<bool>(json);
-            }
-            else
-            {
+            var resposta = await httpClient.GetAsync($"professores/{request.ProfessorRf}/turmas/{request.CodigoTurma}/atribuicao/verificar/data?dataConsulta={dataString}", cancellationToken);
+
+            if (!resposta.IsSuccessStatusCode)
                 throw new Exception("Não foi possível validar a atribuição do professor no EOL.");
-            }
+            
+            var json = resposta.Content.ReadAsStringAsync(cancellationToken).Result;
+            return JsonConvert.DeserializeObject<bool>(json);
         }
     }
 }

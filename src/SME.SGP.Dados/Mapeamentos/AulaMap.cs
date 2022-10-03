@@ -32,6 +32,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.EhAulaCompartilhada).Ignore();
             Map(c => c.EhRecuperacaoParalela).Ignore();
             Map(c => c.EhTecnologiaAprendizagem).Ignore();
+            Map(c => c.EhTecAprendizagemELeitura).Ignore();
             Map(c => c.EhDataSelecionadaFutura).Ignore();
             Map(c => c.PermiteSubstituicaoFrequencia).Ignore();
             Map(c => c.DadosComplementares).Ignore();

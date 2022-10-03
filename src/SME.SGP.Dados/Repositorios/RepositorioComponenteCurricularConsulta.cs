@@ -261,11 +261,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids)
+        public async Task<IEnumerable<ComponenteCurricularDescricaoDto>> ObterDescricaoPorIds(long[] ids)
         {
             var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
 
-            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
+            return await database.Conexao.QueryAsync<ComponenteCurricularDescricaoDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
@@ -273,6 +273,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select coalesce(componente_curricular_pai_id,id) from componente_curricular where id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterComponentesSimplesPorIds(long[] ids)
+        {
+            var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil, permite_lancamento_nota as permiteLanctoNota from componente_curricular where id = Any(@ids)";
+
+            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterComponentesSimplesPorIds");
         }
     }
 }

@@ -84,7 +84,8 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         public bool EstaAtivo(DateTime dataBase) => TratarExcepcionalmenteSituacaoAtivo(dataBase) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
                                                     (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataMatricula.Date <= dataBase.Date) ||
-                                                    (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date);
+                                                    (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date) ||
+                                                    ChecarSituacaoConcluidoEMatriculaNaMesmaData(dataBase);
 
         /// <summary>
         /// Verifica se o aluno está ativo para Notas e Frequencia
@@ -122,7 +123,8 @@ namespace SME.SGP.Infra
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade &&
-                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido)
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido &&
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Transferido)
                 return false;
 
             return true;
@@ -142,6 +144,15 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         private bool TratarExcepcionalmenteSituacaoAtivo(DateTime dataReferencia)
             => DataMatricula.Year.Equals(DataSituacao.Year) && DataMatricula.Year > dataReferencia.Year;
-        
+
+
+        /// <summary>
+        /// Verifica se o aluno esteve na turma mas por algum motivo a sua matrícula foi alterada pela mesma data da conclusão de seus estudos na turma.
+        /// </summary>
+        /// <param name="dataReferencia">Data de referência utilzada para verificar a posterioridade da situação com o período bimestral </param>
+        /// <returns></returns>
+        private bool ChecarSituacaoConcluidoEMatriculaNaMesmaData(DateTime dataReferencia)
+            => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
+
     }
 }

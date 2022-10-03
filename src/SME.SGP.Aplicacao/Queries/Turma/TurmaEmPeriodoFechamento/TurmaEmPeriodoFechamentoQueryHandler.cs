@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoCalendarioId = request.TipoCalendarioId > 0 ?
                 request.TipoCalendarioId :
-                await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre));
+                await mediator.Send(new ObterTipoCalendarioIdPorAnoLetivoEModalidadeQuery(turma.ModalidadeTipoCalendario, turma.AnoLetivo, turma.Semestre), cancellationToken);
 
             return await UeEmFechamento(turma, tipoCalendarioId, request.Bimestre, request.DataReferencia)
              || await UeEmReaberturaDeFechamento(tipoCalendarioId, turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre, request.Bimestre, request.DataReferencia);

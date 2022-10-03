@@ -35,8 +35,8 @@ namespace SME.SGP.Notificacoes.Worker
 
             canalRabbit.BasicQos(0, 10, false);
 
-            canalRabbit.ExchangeDeclare(RotasRabbitNotificacao.ExchangeSgp, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(RotasRabbitNotificacao.ExchangeSgpDeadLetter, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
+            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
 
             DeclararFilas();
             RegistrarComandos();
@@ -53,7 +53,7 @@ namespace SME.SGP.Notificacoes.Worker
         {
             var args = new Dictionary<string, object>();
 
-            args.Add("x-dead-letter-exchange", RotasRabbitNotificacao.ExchangeSgpDeadLetter);
+            args.Add("x-dead-letter-exchange", ExchangeSgpRabbit.SgpDeadLetter);
 
             DeclararFila(RotasRabbitNotificacao.Criacao, args);
             DeclararFila(RotasRabbitNotificacao.Leitura, args);
@@ -63,12 +63,12 @@ namespace SME.SGP.Notificacoes.Worker
         private void DeclararFila(string fila, Dictionary<string, object> args)
         {
             canalRabbit.QueueDeclare(fila, true, false, false, args);
-            canalRabbit.QueueBind(fila, RotasRabbitNotificacao.ExchangeSgp, fila, null);
+            canalRabbit.QueueBind(fila, ExchangeSgpRabbit.Sgp, fila, null);
 
             var filaDeadLetter = $"{fila}.deadletter";
 
             canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-            canalRabbit.QueueBind(filaDeadLetter, RotasRabbitNotificacao.ExchangeSgpDeadLetter, fila, null);
+            canalRabbit.QueueBind(filaDeadLetter, ExchangeSgpRabbit.SgpDeadLetter, fila, null);
         }
 
         public Task StartAsync(CancellationToken stoppingToken)
@@ -85,6 +85,7 @@ namespace SME.SGP.Notificacoes.Worker
                 catch (Exception ex)
                 {
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    Console.WriteLine($"*** ERRO: {ex.Message}");
                 }
             };
 
@@ -98,15 +99,15 @@ namespace SME.SGP.Notificacoes.Worker
             var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
             var rota = ea.RoutingKey;
 
-            using var scope = serviceScopeFactory.CreateScope();
-            var tipoHub = typeof(INotificacaoSgpHub);
-            var hubNotificacoes = scope.ServiceProvider.GetService(tipoHub);
-
-            var transacao = servicoTelemetria.Iniciar(rota, "WorkerRabbitNotificacao");
             if (Comandos.ContainsKey(rota))
             {
+                var transacao = servicoTelemetria.Iniciar(rota, "WorkerRabbitNotificacao");
                 try
                 {
+                    using var scope = serviceScopeFactory.CreateScope();
+                    var tipoHub = typeof(INotificacaoSgpHub);
+                    var hubNotificacoes = scope.ServiceProvider.GetService(tipoHub);
+
                     var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
                     var comando = Comandos[rota];
                     var metodo = UtilMethod.ObterMetodo(tipoHub, comando);
@@ -124,7 +125,7 @@ namespace SME.SGP.Notificacoes.Worker
                 {
                     transacao?.CaptureException(ex);
 
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
+                    throw;
                 }
                 finally
                 {

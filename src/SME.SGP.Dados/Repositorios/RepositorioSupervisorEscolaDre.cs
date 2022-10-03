@@ -70,17 +70,21 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<UnidadeEscolarSemAtribuicaolDto>> ObterListaUEsParaNovaAtribuicaoPorCodigoDre(string dreCodigo)
         {
             StringBuilder query = new(@"SELECT
-                                            sed.escola_id AS Codigo,
+                                            u.ue_id AS Codigo,
                                             u.nome AS UeNome,
                                             u.tipo_escola AS TipoEscola,
                                             tipo AS TipoAtribuicao,
-                                            excluido AS AtribuicaoExcluida
+                                            CASE
+                                            WHEN sed.excluido IS NOT NULL
+                                            THEN sed.excluido 
+                                            ELSE false 
+                                            END AS AtribuicaoExcluida
                                         FROM
-	                                        supervisor_escola_dre sed
-	                                        INNER JOIN dre d ON sed.dre_id = d.dre_id
-                                            INNER JOIN ue u ON u.ue_id  = sed.escola_id 
-                                        WHERE sed.dre_id = @dreCodigo
-                                        GROUP BY sed.escola_id,u.nome,u.tipo_escola,tipo,excluido  
+	                                        ue u
+	                                        INNER JOIN dre d ON u.dre_id = d.id
+                                            LEFT JOIN supervisor_escola_dre sed ON u.ue_id = sed.escola_id 
+                                        WHERE d.dre_id = :dreCodigo
+                                        GROUP BY u.ue_id,u.nome,u.tipo_escola,tipo,excluido  
                                         ORDER BY u.nome ");
             return await database.Conexao.QueryAsync<UnidadeEscolarSemAtribuicaolDto>(query.ToString(), new { dreCodigo });
         }
@@ -259,7 +263,10 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("where sed.supervisor_id = @rfSupervisor and");
             sqlQuery.AppendLine("	 not sed.excluido and");
             sqlQuery.AppendLine("    vact.turma_historica = @consideraHistorico and");
-            sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo and");
+            
+            if(anoLetivo > 0)
+                sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo and");
+
             sqlQuery.AppendLine("    sed.Tipo = @tipoResponsavelAtribuicao");
 
             var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;
@@ -284,7 +291,7 @@ namespace SME.SGP.Dados.Repositorios
 	                           u.tipo_escola AS TipoEscola 
                            FROM ue u
                            INNER JOIN dre d ON u.dre_id =d.id
-                           INNER JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id 
+                           LEFT JOIN supervisor_escola_dre sed ON u.ue_id  = sed.escola_id 
                            WHERE d.dre_id  = @dreCodigo
                            GROUP BY u.id 
                            ORDER BY u.tipo_escola,u.nome ");
