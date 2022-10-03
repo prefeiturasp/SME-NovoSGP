@@ -76,7 +76,7 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
-                planoAula = await MapearParaDominio(planoAulaDto, planoAula);
+                planoAula = MapearParaDominio(planoAulaDto, planoAula);
 
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<PlanoAula> MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
+        private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
         {
             if (planoAula == null)
                 planoAula = new PlanoAula();

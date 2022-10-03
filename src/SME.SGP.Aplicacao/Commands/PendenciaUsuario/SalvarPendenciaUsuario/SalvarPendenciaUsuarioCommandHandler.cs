@@ -1,5 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Dominio.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,10 +10,12 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarPendenciaUsuarioCommandHandler : IRequestHandler<SalvarPendenciaUsuarioCommand, bool>
     {
+        private readonly IMediator mediator;
         private readonly IRepositorioPendenciaUsuario repositorioPendenciaUsuario;
 
-        public SalvarPendenciaUsuarioCommandHandler(IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
+        public SalvarPendenciaUsuarioCommandHandler(IMediator mediator, IRepositorioPendenciaUsuario repositorioPendenciaUsuario)
         {
+            this.mediator = mediator;
             this.repositorioPendenciaUsuario = repositorioPendenciaUsuario;
         }
 

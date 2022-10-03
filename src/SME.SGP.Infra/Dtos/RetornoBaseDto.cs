@@ -16,14 +16,12 @@ namespace SME.SGP.Infra
             Mensagens = new List<string>();
         }
 
-        public RetornoBaseDto(string mensagem, bool ehInformativo = false)
+        public RetornoBaseDto(string mensagem)
         {
             Mensagens = new List<string>() { mensagem };
-            EhInformativo = ehInformativo;
         }
 
         public List<string> Mensagens { get; set; }
         public bool ExistemErros => Mensagens?.Any() ?? false;
-        public bool EhInformativo { get; set; }
     }
 }

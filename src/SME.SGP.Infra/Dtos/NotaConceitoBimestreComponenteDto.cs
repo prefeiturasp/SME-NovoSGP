@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra
+﻿namespace SME.SGP.Infra
 {
     public class NotaConceitoBimestreComponenteDto
     {
@@ -12,7 +10,5 @@ namespace SME.SGP.Infra
         public int? Bimestre { get; set; }
         public string AlunoCodigo { get; set; }
         public double? NotaConceito => ConceitoId ?? Nota;
-        public string Conceito { get; set; }
-        public string NotaConceitoFormatado { get => ConceitoId.HasValue ? Conceito : String.Format("{0:0.0}", Nota); }
     }
 }

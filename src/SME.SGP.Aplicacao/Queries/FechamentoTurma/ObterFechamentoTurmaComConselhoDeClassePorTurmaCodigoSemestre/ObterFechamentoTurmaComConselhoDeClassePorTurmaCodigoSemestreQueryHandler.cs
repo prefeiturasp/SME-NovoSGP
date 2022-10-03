@@ -7,19 +7,18 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQueryHandler : IRequestHandler<ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery, FechamentoTurma>
+    public class ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQueryHandler : IRequestHandler<ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery,FechamentoTurma>
     {
-        private readonly IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta;
+        private IRepositorioFechamentoTurmaConsulta _consulta;
 
-        public ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQueryHandler(IRepositorioFechamentoTurmaConsulta repositorioFechamentoTurmaConsulta)
+        public ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQueryHandler(IRepositorioFechamentoTurmaConsulta consulta)
         {
-            this.repositorioFechamentoTurmaConsulta = repositorioFechamentoTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaConsulta));
+            _consulta = consulta ?? throw new ArgumentNullException(nameof(consulta));
         }
 
         public async Task<FechamentoTurma> Handle(ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioFechamentoTurmaConsulta
-                .ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(request.CodigoTurma, request.Bimestre, request.AnoLetivoTurma, request.Semestre);
+            return await _consulta.ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(request.CodigoTurma,request.Bimestre);
         }
     }
 }

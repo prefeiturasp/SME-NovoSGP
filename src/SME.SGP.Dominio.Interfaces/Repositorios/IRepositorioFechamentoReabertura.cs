@@ -29,6 +29,5 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<FechamentoReabertura> ObterReaberturaFechamentoBimestrePorDataReferencia(int bimestre, DateTime dataReferencia, long tipoCalendarioId, string dreCodigo, string ueCodigo);
         Task<IEnumerable<FechamentoReabertura>> ObterPorIds(long[] ids);
-        Task<long> ObterNotificacaoParaExcluirPorFechamentoReaberturaId(long fechamentoReaberturaId);
     }
 }

@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task ExecuteTeste(CompensacaoDeAusenciaDBDto dtoDadoBase, List<string> listaDisciplinaRegente = null)

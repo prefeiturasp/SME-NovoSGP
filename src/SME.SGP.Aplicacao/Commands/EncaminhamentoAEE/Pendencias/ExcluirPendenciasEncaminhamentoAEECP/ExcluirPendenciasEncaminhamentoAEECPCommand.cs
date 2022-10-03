@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
             TurmaId = turmaId;
         }
 
-        public long TurmaId { get; }
-        public long EncaminhamentoId { get; }
+        public long TurmaId { get; set; }
+        public long EncaminhamentoId { get; set; }
     }
 }

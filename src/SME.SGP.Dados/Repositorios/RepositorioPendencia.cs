@@ -36,30 +36,18 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute(query, new { fechamentoId, situacaoPendencia, tipoPendencia });
         }
 
-        public async Task ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
+        public void ExcluirPendenciasFechamento(long fechamentoId, TipoPendencia tipoPendencia)
         {
-            var idsEntidade = await ObterIdPendenciasParaExclusao(fechamentoId,tipoPendencia);
-            if (idsEntidade != null && idsEntidade.Any())
-            {
-                var queryUpdate = @"update pendencia p
-	                     	                set excluido = TRUE
-	                                     WHERE p.id = any(@ids) ";
+            var query = @"update pendencia p
+                             set excluido = true
+                         from pendencia_fechamento f
+                        where not p.excluido
+                          and p.situacao = 1
+                          and p.id = f.pendencia_id
+                          and p.tipo = @tipoPendencia
+	                      and f.fechamento_turma_disciplina_id = @fechamentoId";
 
-                await database.Conexao.ExecuteAsync(queryUpdate, new { ids= idsEntidade.ToArray() });
-            }
-        }
-
-        private async Task<IEnumerable<long>> ObterIdPendenciasParaExclusao(long fechamentoId, TipoPendencia tipoPendencia)
-        {
-            var query = @"SELECT p.id    
-                                 from pendencia_fechamento f
-                                 JOIN pendencia p ON f.pendencia_id =p.id 
-                            where not p.excluido
-                              and p.situacao = 1
-                              and p.id = f.pendencia_id
-                              and p.tipo = @tipoPendencia
-	                          and f.fechamento_turma_disciplina_id = @fechamentoId ";
-            return await database.Conexao.QueryAsync<long>(query, new { fechamentoId, tipoPendencia });
+            database.Conexao.Execute(query, new { fechamentoId, tipoPendencia });
         }
 
         public async Task<PaginacaoResultadoDto<Pendencia>> ListarPendenciasUsuarioSemFiltro(long usuarioId, Paginacao paginacao)

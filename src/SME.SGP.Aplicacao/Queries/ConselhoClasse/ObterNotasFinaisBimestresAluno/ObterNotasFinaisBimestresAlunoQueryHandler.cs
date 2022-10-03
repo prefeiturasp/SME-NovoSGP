@@ -24,18 +24,15 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterNotasFinaisBimestresAlunoQuery request, CancellationToken cancellationToken)
         {
             var notasConceitosFechamento = (await mediator.Send(new ObterNotasConceitosFechamentoPorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
-                .Where(c => c.AlunoCodigo == request.AlunoCodigo).ToList();
-
-
-            var notasConceitosConselhoClasse = (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
-                .Where(c => c.AlunoCodigo == request.AlunoCodigo).ToList();
-
-                
-            var notasFinais = new List<NotaConceitoBimestreComponenteDto>();
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo);
             
+            var notasConceitosConselhoClasse = (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(request.TurmasCodigos, request.Bimestre), cancellationToken))
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo);
+
+            var notasFinais = new List<NotaConceitoBimestreComponenteDto>();
+            notasFinais.AddRange(notasConceitosFechamento);
             notasFinais.AddRange(notasConceitosConselhoClasse);
-            notasFinais.AddRange(notasConceitosFechamento.Where(fechamento => 
-                !notasConceitosConselhoClasse.Exists(conselho => conselho.ComponenteCurricularCodigo == fechamento.ComponenteCurricularCodigo && conselho.Bimestre == fechamento.Bimestre)));
+
             return notasFinais;
         }
     }

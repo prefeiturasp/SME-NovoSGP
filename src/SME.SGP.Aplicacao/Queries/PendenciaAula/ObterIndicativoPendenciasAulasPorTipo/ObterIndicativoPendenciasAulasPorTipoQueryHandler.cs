@@ -12,18 +12,18 @@ namespace SME.SGP.Aplicacao
     public class ObterIndicativoPendenciasAulasPorTipoQueryHandler : IRequestHandler<ObterIndicativoPendenciasAulasPorTipoQuery, PendenciaPaginaInicialListao>
     {
         private readonly IRepositorioPendenciaAulaConsulta repositorioPendenciaAula;
-        private readonly IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordo;
 
-        public ObterIndicativoPendenciasAulasPorTipoQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula, IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordo)
+        public ObterIndicativoPendenciasAulasPorTipoQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula)
         {
             this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
-            this.repositorioPendenciaDiarioBordo = repositorioPendenciaDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioPendenciaDiarioBordo));
         }
 
         public async Task<PendenciaPaginaInicialListao> Handle(ObterIndicativoPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
         {
-            var aulasComPendenciaDiario = await repositorioPendenciaDiarioBordo.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf, request.EhGestor, request.TurmaId);
-            var pendenciasDiarioBordo = await repositorioPendenciaDiarioBordo.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);
+            
+
+            var aulasComPendenciaDiario = await repositorioPendenciaAula.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf, request.EhGestor, request.TurmaId);
+            var pendenciasDiarioBordo = await repositorioPendenciaAula.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);
             if (request.ProfessorNaoCj)
                 pendenciasDiarioBordo = pendenciasDiarioBordo.Where(p => !p.AulaCJ);
 

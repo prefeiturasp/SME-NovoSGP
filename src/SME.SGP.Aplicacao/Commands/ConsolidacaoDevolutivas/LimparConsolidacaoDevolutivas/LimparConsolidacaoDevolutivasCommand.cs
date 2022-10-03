@@ -5,21 +5,21 @@ namespace SME.SGP.Aplicacao
 {
     public class LimparConsolidacaoDevolutivasCommand : IRequest<bool>
     {
-        public LimparConsolidacaoDevolutivasCommand(long[] turmasIds)
+        public LimparConsolidacaoDevolutivasCommand(int anoLetivo)
         {
-            TurmasIds = turmasIds;
+            AnoLetivo = anoLetivo;
         }
 
-        public long[] TurmasIds { get; }
+        public int AnoLetivo { get; }
     }
 
     public class LimparConsolidacaoDevolutivasCommandValidator : AbstractValidator<LimparConsolidacaoDevolutivasCommand>
     {
         public LimparConsolidacaoDevolutivasCommandValidator()
         {
-            RuleFor(a => a.TurmasIds)
+            RuleFor(a => a.AnoLetivo)
                 .NotEmpty()
-                .WithMessage("A turma deve ser informada para limpar a consolidação de devolutivas");
+                .WithMessage("O ano deve ser informado para limpar a consolidação de devolutivas das turmas");
         }
     }
 }

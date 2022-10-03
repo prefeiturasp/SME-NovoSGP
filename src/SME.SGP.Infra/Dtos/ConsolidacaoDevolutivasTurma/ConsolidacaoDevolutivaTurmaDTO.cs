@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Infra.Dtos
+﻿namespace SME.SGP.Infra.Dtos
 {
     public class ConsolidacaoDevolutivaTurmaDTO
     {
@@ -23,26 +21,17 @@ namespace SME.SGP.Infra.Dtos
     {
         public string TurmaId { get; set; }
         public int AnoLetivo { get; set; }
-        public long UeId { get; set; }
-        public long Id { get; set; }
-        public int AnoAtual { get; set; }
-        public DevolutivaTurmaDTO()
-        {
-            AnoAtual = DateTime.Now.Year;
-        }
     }
 
     public class FiltroDevolutivaTurmaDTO
     {
         public string TurmaId { get; set; }
         public int AnoLetivo { get; set; }
-        public long UeId { get; set; }
 
-        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo, long ueId)
+        public FiltroDevolutivaTurmaDTO(string turmaId, int anoLetivo)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;
-            UeId = ueId;
         }
     }
 }

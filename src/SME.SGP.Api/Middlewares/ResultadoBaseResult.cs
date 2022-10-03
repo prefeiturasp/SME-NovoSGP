@@ -15,15 +15,15 @@ namespace SME.SGP.Api.Middlewares
         {
             StatusCode = 601;
         }
-        public ResultadoBaseResult(string mensagem, int statusCode, bool ehInformativo = false)
-            : base(RetornaBaseModel(mensagem, ehInformativo))
+        public ResultadoBaseResult(string mensagem, int statusCode)
+            : base(RetornaBaseModel(mensagem))
         {
             StatusCode = statusCode;
         }
 
-        public static RetornoBaseDto RetornaBaseModel(string mensagem, bool ehInformativo = false)
+        public static RetornoBaseDto RetornaBaseModel(string mensagem)
         {
-            return new RetornoBaseDto(mensagem, ehInformativo);
+            return new RetornoBaseDto(mensagem);
         }
     }
 }

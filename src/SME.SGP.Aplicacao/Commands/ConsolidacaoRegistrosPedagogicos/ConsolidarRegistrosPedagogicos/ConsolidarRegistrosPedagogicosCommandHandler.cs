@@ -19,14 +19,13 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ConsolidarRegistrosPedagogicosCommand request, CancellationToken cancellationToken)
         {
-            var idEntidade = await repositorio.ObterIdConsolidacaoRegistrosPedagogicos(request.ConsolidacaoRegistrosPedagogicos.TurmaId, request.ConsolidacaoRegistrosPedagogicos.ComponenteCurricularId, 
-                                                                                 request.ConsolidacaoRegistrosPedagogicos.PeriodoEscolarId, request.ConsolidacaoRegistrosPedagogicos.AnoLetivo, 
-                                                                                 request.ConsolidacaoRegistrosPedagogicos.RFProfessor);
+            unitOfWork.IniciarTransacao();
 
-            if (idEntidade > 0)
-                await repositorio.AtualizarConsolidacaoRegistrosPedagogicos(idEntidade, request.ConsolidacaoRegistrosPedagogicos);
-            else
-                await repositorio.Inserir(request.ConsolidacaoRegistrosPedagogicos);
+            await repositorio.Excluir(request.ConsolidacaoRegistrosPedagogicos);
+
+            await repositorio.Inserir(request.ConsolidacaoRegistrosPedagogicos);
+
+            unitOfWork.PersistirTransacao();
         }
     }
 }

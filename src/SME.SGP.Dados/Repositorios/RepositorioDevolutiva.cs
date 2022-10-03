@@ -125,28 +125,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
         {
-            var query = @" SELECT DISTINCT t.turma_id AS turmaId ,
-                               t.ano_letivo as anoLetivo,
-                               t.ue_id AS UeId,
-                               t.id
-                               FROM turma t 
-                               inner join ue ue on ue.id = t.ue_id 
-                               WHERE t.ano_letivo = @anoLetivo
-                               AND t.modalidade_codigo in (1,2);";
+            var query = @" select 
+	                        distinct
+                            t.turma_id as turmaId,
+                            t.ano_letivo as anoLetivo
+                        from diario_bordo db 
+                            inner join aula a on a.id = db.aula_id
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue ue on ue.id = t.ue_id 
+                        where not db.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo in (1,2)
+                            and a.data_aula < current_date ";
 
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo });
-        }
-
-        public async Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId)
-        {
-            var query = @" SELECT  a.turma_id::int8  
-                           FROM diario_bordo db 
-                           inner join aula a on a.id = db.aula_id
-                           WHERE not db.excluido 
-                           AND NOT a.excluido 
-                           and a.turma_id = @turmaId ";
-
-            return await database.Conexao.QueryAsync<long>(query, new { turmaId });
         }
 
         public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)

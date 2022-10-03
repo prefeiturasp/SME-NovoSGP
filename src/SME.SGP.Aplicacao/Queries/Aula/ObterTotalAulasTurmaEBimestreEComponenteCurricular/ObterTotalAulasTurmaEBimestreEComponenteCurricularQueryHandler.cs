@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> Handle(ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery request, CancellationToken cancellationToken)
-            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaEBimestre(request.TurmasCodigo, request.ComponentesCurricularesId, request.TipoCalendarioId, request.Bimestres, request.DataMatriculaAluno, request.DataSituacaoAluno);
+            => await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterTotalAulasPorDisciplinaETurmaEBimestre(request.TurmasCodigo, request.ComponentesCurricularesId, request.TipoCalendarioId, request.Bimestres);
     }
 }

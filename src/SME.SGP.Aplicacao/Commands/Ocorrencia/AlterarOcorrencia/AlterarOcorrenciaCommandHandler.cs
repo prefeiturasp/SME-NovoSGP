@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
 
                     var descricaoAtual = ocorrencia.Descricao;
-                    await MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
+                    MapearAlteracoes(ocorrencia, request, ocorrenciaTipo);
                     await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
@@ -75,8 +75,6 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
-            var caminho = string.Empty;
-
             if (!string.IsNullOrEmpty(novo))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, atual, novo));
@@ -86,7 +84,7 @@ namespace SME.SGP.Aplicacao
                 var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.Ocorrencia.Name()));
             }
         }
-        private async Task MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
+        private void MapearAlteracoes(Ocorrencia entidade, AlterarOcorrenciaCommand request, OcorrenciaTipo ocorrenciaTipo)
         {
             entidade.DataOcorrencia = request.DataOcorrencia;
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);

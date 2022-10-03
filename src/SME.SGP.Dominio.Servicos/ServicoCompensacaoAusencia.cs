@@ -124,8 +124,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task MoverRemoverExcluidos(string novo, string atual)
         {
-            var caminho = string.Empty;
-
             if (!string.IsNullOrEmpty(novo))
                 await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.CompensacaoAusencia, atual, novo));
 

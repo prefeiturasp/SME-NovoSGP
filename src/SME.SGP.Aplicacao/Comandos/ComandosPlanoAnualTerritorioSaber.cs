@@ -53,28 +53,35 @@ namespace SME.SGP.Aplicacao
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
                         throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
                 }
-                
-                planoAnualTerritorioSaber = await MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
+                listaDescricao.Add(new PlanoAnualTerritorioSaberResumidoDto() { DesenvolvimentoNovo = bimestrePlanoAnual.Desenvolvimento,
+                                                                                DesenvolvimentoAtual = planoAnualTerritorioSaber!= null ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty,
+                                                                                ReflexaoAtual = planoAnualTerritorioSaber != null ? planoAnualTerritorioSaber.Reflexao : string.Empty,
+                                                                                ReflexaoNovo = bimestrePlanoAnual.Reflexao});
+
+                planoAnualTerritorioSaber = MapearParaDominio(planoAnualTerritorioSaberDto, planoAnualTerritorioSaber, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Desenvolvimento, bimestrePlanoAnual.Reflexao);
                 repositorioPlanoAnualTerritorioSaber.Salvar(planoAnualTerritorioSaber);
 
                 listaAuditoria.Add(planoAnualTerritorioSaber);
             }
 
             unitOfWork.PersistirTransacao();
-
+            foreach (var item in listaDescricao)
+            {
+                await MoverRemoverExcluidos(item.DesenvolvimentoNovo, item.DesenvolvimentoAtual);
+                await MoverRemoverExcluidos(item.ReflexaoNovo, item.ReflexaoAtual);
+            }
             return listaAuditoria;
         }
-        private async Task<string> MoverRemoverExcluidos(string novo, string atual)
+        private async Task MoverRemoverExcluidos(string novo, string atual)
         {
-            var caminho = string.Empty;
-
             if (!string.IsNullOrEmpty(novo))
-                caminho = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.TerritorioSaber, atual, novo));
-
+            {
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.TerritorioSaber, atual, novo));
+            }
             if (!string.IsNullOrEmpty(atual))
+            {
                 await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo, TipoArquivo.TerritorioSaber.Name()));
-
-            return caminho;
+            }
         }
         private void Validar(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto)
         {
@@ -94,11 +101,12 @@ namespace SME.SGP.Aplicacao
                                                                                                       bimestre,
                                                                                                       planoAnualTerritorioSaberDto.TerritorioExperienciaId);
         }
-        private async Task<PlanoAnualTerritorioSaber> MapearParaDominio(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, PlanoAnualTerritorioSaber planoAnualTerritorioSaber, int bimestre, string desenvolvimento, string reflexao)
+        private PlanoAnualTerritorioSaber MapearParaDominio(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, PlanoAnualTerritorioSaber planoAnualTerritorioSaber, int bimestre, string desenvolvimento, string reflexao)
         {
             if (planoAnualTerritorioSaber == null)
+            {
                 planoAnualTerritorioSaber = new PlanoAnualTerritorioSaber();
-
+            }
             planoAnualTerritorioSaber.Ano = planoAnualTerritorioSaberDto.AnoLetivo.Value;
             planoAnualTerritorioSaber.Bimestre = bimestre;
             planoAnualTerritorioSaber.Reflexao = reflexao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos) ?? string.Empty;
@@ -106,12 +114,6 @@ namespace SME.SGP.Aplicacao
             planoAnualTerritorioSaber.EscolaId = planoAnualTerritorioSaberDto.EscolaId;
             planoAnualTerritorioSaber.TurmaId = planoAnualTerritorioSaberDto.TurmaId.Value;
             planoAnualTerritorioSaber.TerritorioExperienciaId = planoAnualTerritorioSaberDto.TerritorioExperienciaId;
-
-            var desenvolvimentoAtual = planoAnualTerritorioSaber != null ? planoAnualTerritorioSaber.Desenvolvimento : string.Empty;
-            var reflexaoAtual = planoAnualTerritorioSaber != null ? planoAnualTerritorioSaber.Reflexao : string.Empty;
-            planoAnualTerritorioSaber.Reflexao = await MoverRemoverExcluidos(reflexao, reflexaoAtual);
-            planoAnualTerritorioSaber.Desenvolvimento = await MoverRemoverExcluidos(desenvolvimento, desenvolvimentoAtual);
-
             return planoAnualTerritorioSaber;
         }
     }

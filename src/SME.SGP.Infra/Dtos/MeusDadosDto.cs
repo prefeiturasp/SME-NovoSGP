@@ -11,6 +11,5 @@ namespace SME.SGP.Infra
         public string CodigoRf { get; set; }
         public string Empresa { get; set; }
         public string Email { get; set; }
-        public IEnumerable<long> DreCodigos { get; set; }
     }
 }

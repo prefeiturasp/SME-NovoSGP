@@ -150,6 +150,7 @@ namespace SME.SGP.Dominio
         CJInfantilPodeEditarAulaTitular = 84,
 
         SepararDiarioBordoPorComponente = 85,       
+
         //PendenciasAula
         ExecutaPendenciaAulaDiarioBordo = 87,
         ExecutaPendenciaAulaAvaliacao = 88,

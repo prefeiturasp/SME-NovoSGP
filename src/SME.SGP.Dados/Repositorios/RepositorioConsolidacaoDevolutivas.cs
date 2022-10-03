@@ -76,12 +76,23 @@ namespace SME.SGP.Dados.Repositorios
             return (long)(await database.Conexao.InsertAsync(consolidacao));
         }
 
-        public async Task LimparConsolidacaoDevolutivasPorAno(long[] turmasIds)
+        public async Task LimparConsolidacaoDevolutivasPorAno(int anoLetivo)
         {
             var query = @" delete from consolidacao_devolutivas
-                           where turma_id = any (@turmasIds)";
+                           where turma_id in (
+                                               select 
+	                                                distinct
+                                                    t.id
+                                                from diario_bordo db 
+                                                    inner join aula a on a.id = db.aula_id
+                                                    inner join turma t on t.turma_id = a.turma_id 
+                                                    inner join ue ue on ue.id = t.ue_id 
+                                                where not db.excluido 
+                                                    and t.ano_letivo = @anoLetivo
+                                                    and t.modalidade_codigo in (1,2)
+                                                    and a.data_aula < current_date )  ";
 
-            await database.Conexao.ExecuteScalarAsync(query, new { turmasIds });
+            await database.Conexao.ExecuteScalarAsync(query, new { anoLetivo });
 
         }
 

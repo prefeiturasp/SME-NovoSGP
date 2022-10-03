@@ -1,19 +1,16 @@
 ﻿using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Dominio.Interfaces
+namespace SME.SGP.Dominio
 {
     public interface IRepositorioPendenciaDiarioBordoConsulta
     {
         Task<long> ExisteIdPendenciaDiarioBordo(long aulaId, long componenteCurricularId);
         Task<IEnumerable<PendenciaUsuarioDto>> ObterIdPendenciaDiarioBordoPorAulaId(long aulaId);
         Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf);
-        Task<bool> VerificarSeExistePendenciaDiarioComPendenciaId(long pendenciaId);
-        Task<IEnumerable<AulaComComponenteDto>> ListarPendenciasDiario(string turmaId, long[] componentesCurricularesId);
-        Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(long componenteCurricularId, string codigoRf, long periodoEscolarId);
-        Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string turma);
-        Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre);
-        Task<Turma> ObterTurmaPorPendenciaDiario(long pendenciaId);
     }
 }

@@ -186,7 +186,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 2,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 10, 1),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
                 PeriodoFim = DateTime.Now.AddYears(1),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",

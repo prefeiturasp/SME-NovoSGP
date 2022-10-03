@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professoresTitulares.Any(p => p.ProfessorRf.Contains(usuarioLogado.CodigoRf)) || professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ 
                                       || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)

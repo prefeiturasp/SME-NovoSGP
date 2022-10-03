@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -88,9 +89,9 @@ namespace SME.SGP.Aplicacao
                 {
                     var diasLetivos = DeterminaDiasLetivos(diasParaCriarAula, request.UeCodigo);
                     var diasSemAula = diasLetivos
-                        .Where(c => !aulas.Any(a => a.DataAula == c.Data) &&
-                                    (dadoTurma.DataInicioTurma != null && c.Data.Date >= dadoTurma.DataInicioTurma))
-                        .Where(dto => !EhFinalDeSemana(dto.Data))
+                        .Where(c => !aulas.Any(a => a.DataAula == c.Data) && (dadoTurma.DataInicioTurma != null &&
+                                                                              c.Data.Date >= dadoTurma.DataInicioTurma))
+                        ?
                         .OrderBy(a => a.Data)?
                         .Distinct()
                         .ToList();
@@ -98,7 +99,7 @@ namespace SME.SGP.Aplicacao
                     var aulasParaCriacao = ObterAulasParaCriacao(tipoCalendarioId, diasSemAula, dadoTurma, ueCodigo,
                         modalidade, professorRf, datasDesconsideradas)?.ToList();
 
-                    if (aulasParaCriacao != null && aulasParaCriacao.Any())
+                    if (aulasParaCriacao != null)
                     {
                         for (int a = 0; a < aulasParaCriacao.Count; a++)
                             aulasACriar.Add(aulasParaCriacao[a]);
@@ -173,6 +174,7 @@ namespace SME.SGP.Aplicacao
                         frequencia.AulaId = aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id;
                         await repositorioFrequencia.SalvarAsync(frequencia);
                     }
+
                     var planoAulaCriadaPeloUsuario = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaCriadaPorUsuario.Id));
                     var planoAulaSistema = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(aulaComAjusteFrequencia.aulaComFrequenciaEquivalente.id));
 
@@ -272,10 +274,8 @@ namespace SME.SGP.Aplicacao
         {
             return diasDoPeriodo.Where(c => (c.ExcluirAulaUe(ueCodigo) && c.EhNaoLetivo) ||
                                             (!c.DreIds.Any() && !c.UesIds.Any() && c.EhNaoLetivo) ||
-                                            c.ExcluirAulaSME ||
-                                            (c.UesIds.Any() && c.UesIds.Contains(ueCodigo) && c.EhNaoLetivo) ||
-                                            EhFinalDeSemana(c.Data))?.ToList();
-                
+                                            c.ExcluirAulaSME || (c.UesIds.Any() && c.UesIds.Contains(ueCodigo) && c.EhNaoLetivo) ||
+                                            (c.Data.DayOfWeek == DayOfWeek.Sunday || c.Data.DayOfWeek == DayOfWeek.Saturday))?.ToList();
         }
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, string ueCodigo)
@@ -314,11 +314,5 @@ namespace SME.SGP.Aplicacao
 
             return lista;
         }
-
-        private bool EhFinalDeSemana(DateTime data)
-        {
-            return data.DayOfWeek == DayOfWeek.Saturday || data.DayOfWeek == DayOfWeek.Sunday;
-        }
-
     }
 }

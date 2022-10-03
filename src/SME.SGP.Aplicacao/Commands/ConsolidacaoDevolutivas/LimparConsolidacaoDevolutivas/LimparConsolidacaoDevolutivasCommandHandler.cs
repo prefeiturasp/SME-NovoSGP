@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                await repositorio.LimparConsolidacaoDevolutivasPorAno(request.TurmasIds);
+                await repositorio.LimparConsolidacaoDevolutivasPorAno(request.AnoLetivo);
             }
             catch (Exception ex)
             {

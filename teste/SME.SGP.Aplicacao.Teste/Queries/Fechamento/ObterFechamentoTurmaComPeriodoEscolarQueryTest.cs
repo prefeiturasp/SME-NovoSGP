@@ -21,7 +21,6 @@ namespace SME.SGP.Aplicacao.Teste
             query = new ObterFechamentoTurmaComPeriodoEscolarQueryHandler(repositorioFechamentoTurma.Object, mediator.Object);
         }
 
-        // TODO: Revisar esse teste
         [Fact]
         public async Task Turma_Sem_Fechamento()
         {
@@ -30,15 +29,12 @@ namespace SME.SGP.Aplicacao.Teste
             repositorioFechamentoTurma.Setup(a => a.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>())).ReturnsAsync(fechamento);
 
             //Act
-            var retorno = await query.Handle(new ObterFechamentoTurmaComPeriodoEscolarQuery(123, 0), new System.Threading.CancellationToken());
+            var retorno = await query.Handle(new ObterFechamentoTurmaComPeriodoEscolarQuery(123, 1), new System.Threading.CancellationToken());
 
             //Assert
             repositorioFechamentoTurma.Verify(c => c.ObterIdEPeriodoPorTurmaBimestre(It.IsAny<long>(), It.IsAny<int?>()), Times.Once);
 
-            Assert.NotNull(retorno);
-            Assert.Equal(0, retorno.FechamentoTurmaId);
-            Assert.Equal(0, retorno.PeriodoEscolarId);
-            Assert.False(retorno.PossuiAvaliacao);
+            Assert.True(retorno.PeriodoEscolarId is null, "Turma sem fechamento deve retornar null");
         }
 
         [Fact]
