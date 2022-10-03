@@ -304,7 +304,6 @@ namespace SME.SGP.Aplicacao
                     if (notasFechamentoAluno.Any(x => x.Nota != null))
                         ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
 
-
                     var disciplinasDaTurmaTipo =
                     (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigosEOL, usuarioAtual.PerfilAtual,
                         usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
