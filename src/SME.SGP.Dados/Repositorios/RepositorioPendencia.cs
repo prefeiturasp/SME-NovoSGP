@@ -223,15 +223,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<Pendencia>(query, new { pendenciasFiltradas }, commandTimeout: 120);
         }
 
-        public async Task<IEnumerable<Pendencia>> FiltrarListaPendenciasUsuario(string turmaCodigo, List<Pendencia> pendencias)
+        public async Task<IEnumerable<long>> FiltrarListaPendenciasUsuario(string turmaCodigo, List<Pendencia> pendencias)
         {
             if (!pendencias.Any())
-                return pendencias.ToList();
+                return pendencias.Select(s=> s.Id).ToList();
 
             var tiposPendencias = pendencias.Select(c => c.Tipo).Distinct().ToList();
 
             if (!tiposPendencias.Any())
-                return pendencias.ToList();
+                return pendencias.Select(s=> s.Id).ToList();
 
             var pendenciasIds = pendencias.Select(c => new { c.Id, c.PendenciaAssunto })
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.Pendencia))
@@ -261,7 +261,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.PendenciaDevolutiva))
                 .Select(c => c.Id).Distinct().ToArray();
             
-            const string selectBase = "select p.* from pendencia p";
+            const string selectBase = "select p.id from pendencia p";
             
             var query = new StringBuilder();
 
@@ -326,7 +326,7 @@ namespace SME.SGP.Dados.Repositorios
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
             
-            return await database.Conexao.QueryAsync<Pendencia>(query.ToString(), new { pendenciasIdsFechamento,
+            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
                 pendenciasIdsAula,
                 pendenciasIdsCalendario,
                 pendenciasIdsProfessor,
@@ -429,10 +429,10 @@ namespace SME.SGP.Dados.Repositorios
                             select distinct p.id
 							from pendencia p 
                                 inner join pendencia_plano_aee ppa on ppa.pendencia_id = p.id
-                                {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.turma_id = pa.turma_id " : string.Empty)}
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? " inner join plano_aee pa on pa.id = ppa.plano_aee_id inner join turma t on t.id = pa.turma_id " : string.Empty)}
                             WHERE ppa.pendencia_id = any(@pendencias)
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " AND t.turma_id = @turmaCodigo" : string.Empty)}
-                            and situacao = 1
+                            and p.situacao = 1
                             and p.tipo in (18)
                             and not p.excluido",
                 _ => string.Empty
