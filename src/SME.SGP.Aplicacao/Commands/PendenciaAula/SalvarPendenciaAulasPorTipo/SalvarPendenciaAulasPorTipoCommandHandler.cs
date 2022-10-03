@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
 
                         var componente = componentesCurriculares.FirstOrDefault(f => f.Id == long.Parse(item.Key.DisciplinaId));
 
-                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente.DescricaoInfantil) ? componente.DescricaoInfantil : componente.Descricao;
+                        var descricaoComponenteCurricular = !string.IsNullOrEmpty(componente?.DescricaoInfantil) ? componente?.DescricaoInfantil : componente?.Descricao;
 
                         var turmaAnoComModalidade = turmaComDreUe.NomeComModalidade();
 
