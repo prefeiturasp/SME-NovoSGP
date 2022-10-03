@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -172,6 +173,12 @@ namespace SME.SGP.Aplicacao
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
             if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
+            var turmasCodigosEOL = await mediator
+            .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
+
+            var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
+            var turmaEOL = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre);
+
             string[] turmasCodigos;
             long[] conselhosClassesIds;
 
@@ -266,6 +273,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
+            bool validaMatricula = false;
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
@@ -273,10 +281,13 @@ namespace SME.SGP.Aplicacao
                     ? turmasCodigos 
                     : new string[] { codigoTurma };
 
-                bool validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
+                validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
+
+                var turmasCodigosFiltro = turmasCodigos;
+                turmasCodigosFiltro = turmasCodigosFiltro.Concat(turmasCodigosEOL).ToArray();
 
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
-                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
+                    await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigosFiltro, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
                     await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasParaNotasFinais, alunoCodigo, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, bimestre, validaMatricula));
             }
 
@@ -285,6 +296,23 @@ namespace SME.SGP.Aplicacao
             var disciplinasDaTurmaEol =
                 (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual,
                     usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
+
+            if (turmaEOL != null)
+            {
+                if (turma.TipoTurma != turmaEOL.TipoTurma)
+                {
+                    if (notasFechamentoAluno.Any(x => x.Nota != null))
+                        ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
+
+
+                    var disciplinasDaTurmaTipo =
+                    (await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigosEOL, usuarioAtual.PerfilAtual,
+                        usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares, false))).ToList();
+
+                    if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
+                        disciplinasDaTurmaEol.AddRange(disciplinasDaTurmaTipo.Where(x => x.CodigoComponenteCurricular == 6));
+                }
+            }
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
 
@@ -395,6 +423,24 @@ namespace SME.SGP.Aplicacao
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
+        }
+
+        private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
+        {
+            foreach (var notaFechamento in notasFechamentoAluno)
+            {
+                if (notaFechamento.Nota != null)
+                    if (notaFechamento.Nota >= 7)
+                    {
+                        notaFechamento.ConceitoId = 1;
+                    }
+                    else if (notaFechamento.Nota >= 5 && notaFechamento.Nota <= 7)
+                    {
+                        notaFechamento.ConceitoId = 2;
+                    }
+                    else
+                        notaFechamento.ConceitoId = 3;
+            }
         }
 
         private bool ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(IEnumerable<Turma> turmasAluno, Turma turmaFiltro)
