@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,17 +28,17 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
             if (turma == null)
-                throw new NegocioException("A turma informada não foi encontrada!");
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
-                throw new NegocioException("O componente curricular não foi encontrado");
+                throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
 
             var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(turma.Id, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
             if (registroExistente != null)
-                throw new NegocioException("Já existe um registro para o aluno da turma nessa data!");
+                throw new NegocioException(MensagemNegocioRegistroIndividual.JA_EXISTE_REGISTRO_PARA_ALUNO_DA_TURMA_NESTA_DATA);
 
             await MoverArquivos(request);
             var registroIndividual = MapearParaEntidade(request);
