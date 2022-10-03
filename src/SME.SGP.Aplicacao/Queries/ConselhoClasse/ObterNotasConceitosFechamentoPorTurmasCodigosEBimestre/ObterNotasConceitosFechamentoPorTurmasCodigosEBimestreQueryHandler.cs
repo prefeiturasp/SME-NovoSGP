@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<NotaConceitoBimestreComponenteDto>();
 
             foreach (var turmaCodigo in request.TurmasCodigos)
-            {
+            {   
                 var notasConceitosFechamento = (await repositorioCache.ObterAsync(
                         string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, turmaCodigo,
                             request.Bimestre),
