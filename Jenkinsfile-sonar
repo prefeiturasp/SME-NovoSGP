@@ -15,13 +15,6 @@ pipeline {
         stage('CheckOut') {            
             steps { checkout scm }            
         }
-
-        stage('BuildProjeto') {
-          steps {
-            sh "echo executando build"
-            sh 'dotnet build'
-          }
-        }
       
         stage('Sonar') {
           steps {
