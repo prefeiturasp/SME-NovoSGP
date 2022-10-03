@@ -275,12 +275,11 @@ namespace SME.SGP.Aplicacao
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
 
-            var turmasParaNotasFinais = new string[3];
             bool validaMatricula = false;
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
-                turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
+                var turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
                     ? turmasCodigos 
                     : new string[] { codigoTurma };
 
