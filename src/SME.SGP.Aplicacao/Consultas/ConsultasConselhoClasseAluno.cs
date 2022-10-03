@@ -176,10 +176,10 @@ namespace SME.SGP.Aplicacao
             if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             var turmasCodigosEOL = await mediator
-                  .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
+            .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), turma.EhTurmaHistorica));
 
             var turmasEOL = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
-            var turmaEOL  = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre );
+            var turmaEOL = turmasEOL.FirstOrDefault(x => x.TipoTurma == TipoTurma.EdFisica && x.Semestre == turma.Semestre);
 
             string[] turmasCodigos;
             long[] conselhosClassesIds;
@@ -276,13 +276,11 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
-
-            var turmasParaNotasFinais = new string[3];
             bool validaMatricula = false;
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
-                turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
+              var  turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
                     ? turmasCodigos 
                     : new string[] { codigoTurma };
 
@@ -316,7 +314,6 @@ namespace SME.SGP.Aplicacao
                     if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
                         disciplinasDaTurmaEol.AddRange(disciplinasDaTurmaTipo.Where(x => x.CodigoComponenteCurricular == 6));
                 }
-                 
             }
 
             var disciplinasCodigo = disciplinasDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
