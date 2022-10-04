@@ -55,7 +55,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 
             await CriarDreUePerfil();
 
-            await CriarPeriodoEscolarTodosBimestres();
+            if(filtroPlanoAee.BimestreEncerrado) 
+                await CriarPeriodoEscolarTodosBimestresEncerrados(); 
+            else await CriarPeriodoEscolarTodosBimestres();
 
             await CriarComponenteCurricular();
 
@@ -75,6 +77,21 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+        }
+        protected async Task CriarPeriodoEscolarTodosBimestresEncerrados()
+        {
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR, DATA_29_04_FIM_BIMESTRE_1_ANO_ANTERIOR, BIMESTRE_1);
+
+            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2_ANO_ANTERIOR, DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR, BIMESTRE_2);
+
+            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3_ANO_ANTERIOR, DATA_30_09_FIM_BIMESTRE_3_ANO_ANTERIOR, BIMESTRE_3);
+
+            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4_ANO_ANTERIOR, DATA_22_12_FIM_BIMESTRE_4_ANO_ANTERIOR, BIMESTRE_4);
+        }
+
+        protected IInserirRegistroIndividualUseCase InserirRegistroIndividualUseCase()
+        {
+            return ServiceProvider.GetService<IInserirRegistroIndividualUseCase>();
         }
 
     }
