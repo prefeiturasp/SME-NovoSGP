@@ -51,14 +51,15 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId,
             long[] disciplinasId, int bimestre = 0)
         {
-            var query = new StringBuilder(@"select f.*, fa.*, ft.*, p.*
+            var query = new StringBuilder(@"with lista as (
+                        select f.*, fa.*, ft.*, p.*,
+                            row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        where not f.excluido and not fa.excluido
-                            and t.id = @turmaId ");
+                        where t.id = @turmaId ");
 
             if (disciplinasId != null && disciplinasId.Length > 0)
                 query.AppendLine("and f.disciplina_id = ANY(@disciplinasId)");
@@ -68,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
             else if (bimestre == 0)
                 query.AppendLine("and ft.periodo_escolar_id is null");
 
-            query.AppendLine("order by fa.fechamento_turma_disciplina_id desc");
+            query.AppendLine(") select * from lista where sequencia = 1;");
 
             IList<FechamentoTurmaDisciplina> fechammentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
 
