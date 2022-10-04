@@ -49,6 +49,11 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             return ServiceProvider.GetService<IObterRegistroIndividualPorAlunoDataUseCase>();
         }
 
+        protected IObterSugestaoTopicoRegistroIndividualPorMesUseCase ObterServicoSugestaoRegistroIndividualUseCase()
+        {
+            return ServiceProvider.GetService<IObterSugestaoTopicoRegistroIndividualPorMesUseCase>();
+        }
+
         protected async Task CriarDadosBasicos(FiltroRegistroIndividualDto filtroPlanoAee)
         {
             await CriarTipoCalendario(filtroPlanoAee.TipoCalendario);
