@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
     {
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
-            return string.Empty;
+            return request.TextoEditorNovo;
         }
     }
 }
