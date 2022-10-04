@@ -67,5 +67,10 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
         }
 
+        protected IInserirRegistroIndividualUseCase InserirRegistroIndividualUseCase()
+        {
+            return ServiceProvider.GetService<IInserirRegistroIndividualUseCase>();
+        }
+
     }
 }
