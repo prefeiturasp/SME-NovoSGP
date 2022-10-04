@@ -148,7 +148,6 @@ namespace SME.SGP.Dados.Repositorios
                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
                  where t.turma_id = @turmaCodigo
-                 and not ft.excluido
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
@@ -226,7 +225,6 @@ namespace SME.SGP.Dados.Repositorios
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
                  inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
                  where t.turma_id = @turmaCodigo
-                 and not ft.excluido
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}

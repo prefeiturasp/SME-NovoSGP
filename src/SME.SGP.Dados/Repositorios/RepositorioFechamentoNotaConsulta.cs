@@ -25,16 +25,16 @@ namespace SME.SGP.Dados.Repositorios
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
 
                                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id
-                                        where not fa.excluido 
-                                          and not n.excluido 
-                                          and fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
+                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
 
-        const string queryNotasFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, 
-                                    fn.conceito_id as ConceitoId, 
-                                    fn.nota, 
-                                    pe.bimestre, 
-                                    t.turma_id as TurmaCodigo,
-                                    fa.aluno_codigo as AlunoCodigo
+        const string queryNotasFechamento = @"with lista as (
+                        select  fn.disciplina_id as ComponenteCurricularCodigo, 
+                                fn.conceito_id as ConceitoId, 
+                                fn.nota, 
+                                pe.bimestre, 
+                                t.turma_id as TurmaCodigo,
+                                fa.aluno_codigo as AlunoCodigo,
+                                row_number() over (partition by t.id, fa.aluno_codigo, pe.id, fn.disciplina_id order by fn.id desc) sequencia    
                           from fechamento_turma ft
                          inner join turma t on t.id = ft.turma_id 
                           left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
@@ -42,8 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                          inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                          inner join componente_curricular cc on cc.id = fn.disciplina_id
-                         where not ft.excluido
-                           and cc.permite_lancamento_nota ";
+                         where cc.permite_lancamento_nota ";
 
         const string queryNotasConceitoFechamento = @"select fn.disciplina_id as ComponenteCurricularCodigo, fn.conceito_id as ConceitoId, fn.nota, pe.bimestre, cv.valor as conceito
                                                         from fechamento_turma ft
@@ -63,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisAlunoAsync(string[] turmasCodigos, string alunoCodigo)
         {
-            var query = $@"{ queryNotasFechamento}
+            var query = $@"{queryNotasFechamento}
                             and t.turma_id = ANY(@turmasCodigos) 
                             and fa.aluno_codigo = @alunoCodigo
                             and pe.id is null";
@@ -146,10 +145,10 @@ namespace SME.SGP.Dados.Repositorios
                      fechamentoTurmaDisciplina.FechamentoTurma = fechamentoTurma;
                      fechamentoNota.FechamentoAluno = fechamentoAluno;
 
-                    return wfAprovacaoDto;
-            }, new { wfAprovacaoId });
+                     return wfAprovacaoDto;
+                 }, new { wfAprovacaoId });
         }
-        
+
         public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId)
         {
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(queryPorFechamento, new { fechamentosTurmaDisciplinaId });
@@ -186,9 +185,7 @@ namespace SME.SGP.Dados.Repositorios
                             left join conceito_valores cv on fn.conceito_id = cv.id 
                             inner join periodo_escolar pe on periodo_escolar_id = pe.id 
                             inner join turma t on ft.turma_id = t.id
-                            where 
-                            not ftd.excluido
-                            and cc.permite_lancamento_nota = true
+                            where cc.permite_lancamento_nota
                             and periodo_escolar_id = @periodoEscolarId and 
                             t.ue_id = @ueId";
 
@@ -219,12 +216,17 @@ namespace SME.SGP.Dados.Repositorios
                              or @dataSituacao > pe.periodo_fim)";
             }
 
-            query += @" and not ftd.excluido
-                        and not fa.excluido
-                        and not fn.excluido;";
+            query += @") select *
+                         from lista
+                         where sequencia = 1;";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre,
-                dataMatricula, dataSituacao });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new
+            {
+                turmaCodigo,
+                bimestre,
+                dataMatricula,
+                dataSituacao
+            });
         }        
     }
 }

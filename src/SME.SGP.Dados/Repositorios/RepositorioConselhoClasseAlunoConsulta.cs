@@ -119,10 +119,9 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN fechamento_aluno fa
                                            ON fa.fechamento_turma_disciplina_id = ftd.id
                                    INNER JOIN fechamento_nota fn
-                                           ON fn.fechamento_aluno_id = fa.id and not fn.excluido
+                                           ON fn.fechamento_aluno_id = fa.id 
                                    inner join componente_curricular ccr on fn.disciplina_id = ccr.id
-                            WHERE  not ft.excluido 
-                                   AND t.turma_id = ANY(@turmasCodigos)
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND fa.aluno_codigo = @alunoCodigo
                                    AND pe.bimestre IS NULL
                                    and ccr.permite_lancamento_nota
@@ -141,7 +140,7 @@ namespace SME.SGP.Dados.Repositorios
                                    INNER JOIN conselho_classe_aluno cca
                                            ON cca.conselho_classe_id = cc.id
                                    INNER JOIN conselho_classe_nota ccn
-                                           ON ccn.conselho_classe_aluno_id = cca.id and not ccn.excluido
+                                           ON ccn.conselho_classe_aluno_id = cca.id 
                                    inner join componente_curricular ccr on ccn.componente_curricular_codigo  = ccr.id 
                                    LEFT JOIN fechamento_turma_disciplina ftd
                                           ON ftd.fechamento_turma_id = ft.id
@@ -151,8 +150,7 @@ namespace SME.SGP.Dados.Repositorios
                                    LEFT JOIN fechamento_nota fn
                                           ON fn.fechamento_aluno_id = fa.id
                                              AND ccn.componente_curricular_codigo = fn.disciplina_id
-                            WHERE  not ft.excluido 
-                                   AND t.turma_id = ANY(@turmasCodigos)
+                            WHERE  t.turma_id = ANY(@turmasCodigos)
                                    AND cca.aluno_codigo = @alunoCodigo
                                    AND bimestre IS NULL 
                                    and ccr.permite_lancamento_nota)  x";
@@ -210,8 +208,7 @@ namespace SME.SGP.Dados.Repositorios
 			                        on ft.turma_id = t.id
 		                        inner join ue
 			                        on t.ue_id = ue.id
-                                where not cca.excluido
-                                  and t.turma_id = @turmaCodigo)
+                                where t.turma_id = @turmaCodigo)
 
                             select conselho_classe_id as ConselhoClasseId,
                                 fechamento_turma_id as FechamentoTurmaId,
