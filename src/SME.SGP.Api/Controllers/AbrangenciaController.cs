@@ -173,6 +173,36 @@ namespace SME.SGP.Api.Controllers
         }
 
 
+        [HttpGet("dres/ues/{codigoUe}/turmas/disciplina/{codigoDisciplina}")]
+        [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        public async Task<IActionResult> ObterTurmasMesmoComponenteCurricular(string codigoUe, string codigoDisciplina, bool turmasRegulares, [FromQuery] Modalidade modalidade, int periodo = 0, [FromQuery] int anoLetivo = 0, [FromQuery] int[] tipos = null, [FromQuery] bool consideraNovosAnosInfantil = false)
+        {
+            IEnumerable<AbrangenciaTurmaRetorno> turmas;
+
+            if (!turmasRegulares)
+            {
+                turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil);
+
+                if ((turmas == null || !turmas.Any()) && !ConsideraHistorico)
+                    turmas = await consultasAbrangencia.ObterTurmas(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil);
+            }
+            else
+            {
+                turmas = await consultasAbrangencia.ObterTurmasRegulares(codigoUe, modalidade, periodo, ConsideraHistorico, anoLetivo);
+            }
+
+            if (!turmas.Any())
+                return NoContent();
+            else
+                turmas = await consultasAbrangencia.ObterTurmasAbrangenciaMesmoComponente(turmas, codigoDisciplina);
+
+            return Ok(turmas);
+        }
+
+
         [HttpGet("dres/ues/{codigoUe}/turmas-regulares")]
         [ProducesResponseType(typeof(IEnumerable<AbrangenciaTurmaRetorno>), 200)]
         [ProducesResponseType(401)]
