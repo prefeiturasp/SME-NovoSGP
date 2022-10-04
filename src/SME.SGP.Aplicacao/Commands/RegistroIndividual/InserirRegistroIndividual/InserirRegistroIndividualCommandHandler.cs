@@ -25,23 +25,20 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RegistroIndividual> Handle(InserirRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-
-            if (turma == null)
-                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
-
             var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
-
-            var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(turma.Id, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
+            
+            var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
             if (registroExistente != null)
                 throw new NegocioException(MensagemNegocioRegistroIndividual.JA_EXISTE_REGISTRO_PARA_ALUNO_DA_TURMA_NESTA_DATA);
-
+            
             await MoverArquivos(request);
+            
             var registroIndividual = MapearParaEntidade(request);
+            
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return registroIndividual;

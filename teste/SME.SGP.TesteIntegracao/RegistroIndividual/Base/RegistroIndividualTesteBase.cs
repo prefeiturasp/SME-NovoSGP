@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
@@ -29,6 +30,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<PublicarAtualizacaoPendenciaRegistroIndividualCommand>),
                 typeof(PublicarAtualizacaoPendenciaRegistroIndividualCommandHandlerFake), ServiceLifetime.Scoped));
+            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery,AlunoPorTurmaResposta>),
+                typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
         protected IInserirRegistroIndividualUseCase ObterServicoInserirRegistroIndividualUseCase()
         {
@@ -39,32 +43,53 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             return ServiceProvider.GetService<IAlterarRegistroIndividualUseCase>();
         }
 
-        protected async Task CriarDadosBasicos(FiltroRegistroIndividualDto filtroPlanoAee)
+        protected async Task CriarDadosBasicos(FiltroRegistroIndividualDto filtroRegistroIndividualDto)
         {
-            await CriarTipoCalendario(filtroPlanoAee.TipoCalendario);
+            await CriarTipoCalendario(filtroRegistroIndividualDto.TipoCalendario);
 
             await CriarDreUePerfil();
-
-            await CriarPeriodoEscolarTodosBimestres();
+            
+            await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
 
             await CriarComponenteCurricular();
 
-            CriarClaimUsuario(filtroPlanoAee.Perfil);
+            CriarClaimUsuario(filtroRegistroIndividualDto.Perfil);
 
             await CriarUsuarios();
 
-            await CriarTurma(filtroPlanoAee.Modalidade);
+            await CriarTurma(filtroRegistroIndividualDto.Modalidade, filtroRegistroIndividualDto.EhAnoAnterior);
+
+            if (filtroRegistroIndividualDto.CriarPeriodoReabertura)
+                await CriarPeriodoReabertura(filtroRegistroIndividualDto.TipoCalendarioId);
+        }
+        
+        private async Task CriarTurma(Modalidade modalidade, bool ehAnoAnterior = false)
+        {
+            await InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = TURMA_ANO_2,
+                CodigoTurma = TURMA_CODIGO_1,
+                Historica = ehAnoAnterior,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = ehAnoAnterior ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Year : DateTimeExtension.HorarioBrasilia().Year,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_1,
+                TipoTurma = TipoTurma.Regular
+            });
         }
 
-        protected async Task CriarPeriodoEscolarTodosBimestres()
+        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
-            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
 
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
 
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia.AddDays(5) : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
 
     }
