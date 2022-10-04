@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
@@ -16,22 +15,16 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
         }
 
-
         [Fact(DisplayName = "Registro Individual - Cadastrar registro individual na data atual")]
         public async Task Cadastrar_registro_individual_na_data_atual()
         {
-            var useCase = InserirRegistroIndividualUseCase();
-            
-            var obterResgistros = ObterTodos<Dominio.RegistroIndividual>();
-            obterResgistros.Count.ShouldBeEquivalentTo(0);
-            
             var filtro = new FiltroRegistroIndividualDto
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.EducacaoInfantil,
-                TipoCalendario = ModalidadeTipoCalendario.Infantil
+                TipoCalendario = ModalidadeTipoCalendario.Infantil,
+                BimestreEncerrado = false
             };
-            await CriarDadosBasicos(filtro);
             
             var registroParaSalvar = new InserirRegistroIndividualDto
             {
@@ -41,8 +34,86 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 Registro = "<pre><span>Registro de teste</span></pre>",
                 Data = DateTime.Now
             };
+            await ExecutarTeste(filtro, registroParaSalvar);
+        }
+
+
+        [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em data anterior do bimestre atual")]
+        public async Task Cadastrar_registro_individual_em_data_anterior_do_bimestre_atual()
+        {
+            var filtro = new FiltroRegistroIndividualDto
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                BimestreEncerrado = false
+            };
             
-            var inserirRegistro = await useCase.Executar(registroParaSalvar);
+            var registroParaSalvar = new InserirRegistroIndividualDto
+            {
+                TurmaId = TURMA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                AlunoCodigo = NUMERO_LONGO_2,
+                Registro = "<pre><span>Registro de teste</span></pre>",
+                Data = DateTime.Now.AddDays(-1)
+            };
+            await ExecutarTeste(filtro, registroParaSalvar);
+        }
+        
+        [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em data anterior em bimestre encerrado com reabertura")]
+        public async Task Cadastrar_registro_individual_em_data_anterior_em_bimestre_encerrado_com_reabertura()
+        {
+            var filtro = new FiltroRegistroIndividualDto
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                BimestreEncerrado = true
+            };
+            
+            var registroParaSalvar = new InserirRegistroIndividualDto
+            {
+                TurmaId = TURMA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                AlunoCodigo = NUMERO_LONGO_2,
+                Registro = "<pre><span>Registro de teste</span></pre>",
+                Data = DateTime.Now.AddDays(-1)
+            };
+            await ExecutarTeste(filtro, registroParaSalvar);
+        }
+        
+        [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em dia não letivo (domingo, por exemplo)")]
+        public async Task Cadastrar_registro_individual_em_dia_nao_letivo()
+        {
+            var filtro = new FiltroRegistroIndividualDto
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.Fundamental,
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                BimestreEncerrado = true
+            };
+            
+            var registroParaSalvar = new InserirRegistroIndividualDto
+            {
+                TurmaId = TURMA_ID_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                AlunoCodigo = NUMERO_LONGO_2,
+                Registro = "<pre><span>Registro de teste</span></pre>",
+                Data = new DateTime(year:2022,month:10,day:02) //Domingo
+            };
+            await ExecutarTeste(filtro, registroParaSalvar);
+        }
+
+        private async Task ExecutarTeste(FiltroRegistroIndividualDto filtroDadosBasicos,InserirRegistroIndividualDto inserirRegistroIndividualDto)
+        {
+            var useCase = InserirRegistroIndividualUseCase();
+            
+            var obterResgistros = ObterTodos<Dominio.RegistroIndividual>();
+            obterResgistros.Count.ShouldBeEquivalentTo(0);
+
+            await CriarDadosBasicos(filtroDadosBasicos);
+            
+            var inserirRegistro = await useCase.Executar(inserirRegistroIndividualDto);
             inserirRegistro.ShouldNotBeNull();
             
             var totalResgistros = ObterTodos<Dominio.RegistroIndividual>();
@@ -50,10 +121,10 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             totalResgistros.Count.ShouldBeEquivalentTo(1);
             
             totalResgistros.FirstOrDefault()?.Id.ShouldBeGreaterThan(0);
-            totalResgistros.FirstOrDefault()?.AlunoCodigo.ShouldBeEquivalentTo(registroParaSalvar.AlunoCodigo);
-            totalResgistros.FirstOrDefault()?.Registro.ShouldBeEquivalentTo(registroParaSalvar.Registro);
-            totalResgistros.FirstOrDefault()?.DataRegistro.Date.ShouldBeEquivalentTo(registroParaSalvar.Data.Date);
+            totalResgistros.FirstOrDefault()?.AlunoCodigo.ShouldBeEquivalentTo(inserirRegistroIndividualDto.AlunoCodigo);
+            totalResgistros.FirstOrDefault()?.Registro.ShouldBeEquivalentTo(inserirRegistroIndividualDto.Registro);
+            totalResgistros.FirstOrDefault()?.DataRegistro.Date.ShouldBeEquivalentTo(inserirRegistroIndividualDto.Data.Date);
         }
-        
+
     }
 }
