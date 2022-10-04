@@ -53,7 +53,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $@"{queryNotasFechamento}
                             and t.turma_id = ANY(@turmasCodigos) 
                             and fa.aluno_codigo = @alunoCodigo
-                            and pe.id is null";
+                            and pe.id is null) select * from lista where sequencia = 1;";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo });
         }
@@ -62,7 +62,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"{queryNotasFechamento}
                            and t.turma_id = @turmaCodigo
-                           and fa.aluno_codigo = @alunoCodigo";
+                           and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, alunoCodigo });
         }
@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"{queryNotasFechamento}
                            and ftd.fechamento_turma_id = @fechamentoTurmaId
-                           and fa.aluno_codigo = @alunoCodigo";
+                           and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
@@ -93,6 +93,8 @@ namespace SME.SGP.Dados.Repositorios
                 query += $@" and pe.bimestre is null";
             else
                 query += $@" and pe.bimestre = @bimestre";
+
+            query += ") select * from lista where sequencia = 1;";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
