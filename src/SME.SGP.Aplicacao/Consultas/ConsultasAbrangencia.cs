@@ -228,5 +228,21 @@ namespace SME.SGP.Aplicacao
 
             return turmasOrdenadas;
         }
+
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasAbrangenciaMesmoComponente(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoComponente)
+        {
+            List<AbrangenciaTurmaRetorno> turmasMesmoComponente = new List<AbrangenciaTurmaRetorno>();
+
+            foreach(var turma in turmas)
+            {
+                var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.Codigo));
+                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente);
+
+                if (possuiMesmoComponente)
+                    turmasMesmoComponente.Add(turma);
+            }
+
+            return turmasMesmoComponente;
+        }
     }
 }
