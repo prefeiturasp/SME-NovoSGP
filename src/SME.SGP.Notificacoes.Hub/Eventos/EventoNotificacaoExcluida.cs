@@ -13,6 +13,6 @@ namespace SME.SGP.Notificacoes.Hub
         }
 
         protected override Task Disparar(IHubCallerClients clients, MensagemExclusaoNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoExcluida", mensagem.Codigo, mensagem.Status);
+            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoExcluida", mensagem.Codigo, mensagem.Status, mensagem.AnoAnterior);
     }
 }
