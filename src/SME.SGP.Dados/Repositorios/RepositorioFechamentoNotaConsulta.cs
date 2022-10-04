@@ -104,9 +104,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre == 0)
                 query += $@" and pe.bimestre is null";
             else
-                query += $@" and pe.bimestre = @bimestre";
-
-            query += ") select * from lista where sequencia = 1;";
+                query += $@" and pe.bimestre = @bimestre";            
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
