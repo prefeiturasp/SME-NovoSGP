@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             {
                 var cacheAluno = retornoCacheMapeado.FirstOrDefault(c =>
                     c.AlunoCodigo == fechamentoNotaConceito.CodigoAluno &&
-                    c.ComponenteCurricularId == request.ComponenteCurricularId &&
+                    c.ComponenteCurricularId == fechamentoNotaConceito.DiscplinaId &&
                     c.Bimestre == request.Bimestre);
 
                 if (cacheAluno == null)
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                         AlunoCodigo = fechamentoNotaConceito.CodigoAluno,
                         ConceitoId = fechamentoNotaConceito.ConceitoId,
                         EmAprovacao = request.EmAprovacao,
-                        ComponenteCurricularId = request.ComponenteCurricularId
+                        ComponenteCurricularId = fechamentoNotaConceito.DiscplinaId
                     });
 
                     continue;
