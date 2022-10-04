@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         private Dictionary<int, string> sugestaoDeTopicosDic;
         public Ao_validar_sugestao_de_topicos(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            CarregueDicionarioDeSugestao();
+            CarregarDicionarioDeSugestao();
         }
 
         [Fact(DisplayName = "Registro Individual - validar sugestão de tópicos por mês")]
@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             }
         }
 
-        private void CarregueDicionarioDeSugestao()
+        private void CarregarDicionarioDeSugestao()
         {
             sugestaoDeTopicosDic = new Dictionary<int, string>();
             sugestaoDeTopicosDic.Add(2, "Momento de adaptação e acolhimento. Como foi ou está sendo este processo para a criança e a família?");
