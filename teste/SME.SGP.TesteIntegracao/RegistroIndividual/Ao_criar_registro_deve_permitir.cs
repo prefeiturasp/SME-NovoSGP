@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var registroParaSalvar = new InserirRegistroIndividualDto
             {
                 TurmaId = TURMA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_CODIGO_512,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
                 Data = DateTimeExtension.HorarioBrasilia().Date

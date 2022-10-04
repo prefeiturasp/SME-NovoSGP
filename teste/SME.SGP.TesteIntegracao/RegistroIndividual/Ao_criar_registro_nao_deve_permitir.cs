@@ -11,9 +11,6 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 {
     public class Ao_criar_registro_nao_deve_permitir : RegistroIndividualTesteBase
     {
-        private const string DESCRICAO_REGISTRO_INDIVIDUAL = "Descrição do registro individual";
-        private const long COMPONENTE_CURRICULAR_CODIGO_512 = 512;
-        
         public Ao_criar_registro_nao_deve_permitir(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
         

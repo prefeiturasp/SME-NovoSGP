@@ -18,6 +18,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
     public abstract class RegistroIndividualTesteBase : TesteBaseComuns
     {
         private const string NOME_TABELA_SUGESTAO = "registro_individual_sugestao (mes, descricao)";
+        protected const string DESCRICAO_REGISTRO_INDIVIDUAL = "Descrição do registro individual";
+        protected const long COMPONENTE_CURRICULAR_CODIGO_512 = 512;
         
         public RegistroIndividualTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
