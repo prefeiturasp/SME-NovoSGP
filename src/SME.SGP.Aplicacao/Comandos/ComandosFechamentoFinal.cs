@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task InserirOuAtualizarCache(FechamentoFinalSalvarDto fechamentoFinalSalvar, bool emAprovacao)
         {
-            var disciplinaId = fechamentoFinalSalvar.EhRegencia ? long.Parse(fechamentoFinalSalvar.DisciplinaId) :
+            var componenteCurricularId = fechamentoFinalSalvar.EhRegencia ? long.Parse(fechamentoFinalSalvar.DisciplinaId) :
                 fechamentoFinalSalvar.Itens.First().ComponenteCurricularCodigo;
 
             var fechamentosNotasConceitos = fechamentoFinalSalvar.Itens.Select(fechamentoFinal => new FechamentoNotaConceitoDto
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                 ConceitoId = fechamentoFinal.ConceitoId
             }).ToList();
             
-            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
                 fechamentoFinalSalvar.TurmaCodigo,
                 fechamentosNotasConceitos, emAprovacao, 0));
         }
