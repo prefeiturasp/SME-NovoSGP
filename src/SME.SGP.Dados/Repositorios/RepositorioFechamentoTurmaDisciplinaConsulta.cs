@@ -117,8 +117,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
-                        where not f.excluido
-                          and t.turma_id = @turmaCodigo
+                        where t.turma_id = @turmaCodigo
                           and f.disciplina_id = @disciplinaId ");
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre ");
@@ -136,8 +135,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
-                        where not f.excluido
-                          and t.turma_id = @turmaCodigo
+                        where t.turma_id = @turmaCodigo
                           and f.disciplina_id = @disciplinaId 
                           and f.situacao != 0 ");
             if (bimestre > 0)
@@ -164,9 +162,8 @@ namespace SME.SGP.Dados.Repositorios
                                  n.alterado_por AlteradoPor
                          from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                        where not n.excluido and not fa.excluido 
-                            and fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
-                            and fa.aluno_codigo = @codigoAluno ";
+                        where fa.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
+                          and fa.aluno_codigo = @codigoAluno ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
                 new { codigoAluno, fechamentoTurmaDisciplinaId });
@@ -187,9 +184,8 @@ namespace SME.SGP.Dados.Repositorios
                                  fa.fechamento_turma_disciplina_id as FechamentoId
                         from fechamento_nota n
                         inner join fechamento_aluno fa on fa.id = n.fechamento_aluno_id
-                        where not n.excluido and not fa.excluido 
-                        and fa.fechamento_turma_disciplina_id = any(@fechamentoTurmaDisciplinaId)
-                        and fa.aluno_codigo = any(@codigoAluno) ";
+                        where fa.fechamento_turma_disciplina_id = any(@fechamentoTurmaDisciplinaId)
+                          and fa.aluno_codigo = any(@codigoAluno) ";
 
             return await database.Conexao.QueryAsync<FechamentoNotaDto>(query,
                 new { codigoAluno, fechamentoTurmaDisciplinaId });
@@ -237,9 +233,7 @@ namespace SME.SGP.Dados.Repositorios
 		                        inner join turma t
 			                        on ft.turma_id = t.id
                              where t.ano_letivo = @anoLetivo and
-	                              ftd.situacao = @situacao and
-	                              not ftd.excluido and
-	                              not ft.excluido;";
+	                              ftd.situacao = @situacao";
 
             return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(sqlQuery,
                 new { anoLetivo, situacao = SituacaoFechamento.EmProcessamento });
@@ -589,9 +583,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("			on ft.turma_id = tmp_fdd.turma_id and");
             sqlQuery.AppendLine("			   ft.periodo_escolar_id = tmp_fdd.periodo_escolar_id and");
             sqlQuery.AppendLine("			   ftd.disciplina_id = tmp_fdd.disciplina_id");
-            sqlQuery.AppendLine("where not ftd.excluido and");
-            sqlQuery.AppendLine("	   not ft.excluido and");
-            sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date)");
+            sqlQuery.AppendLine("where ftd.criado_em::date >= @dataInicio::date)");
             sqlQuery.AppendLine("select fechamento_turma_disciplina_id");
             sqlQuery.AppendLine("  from tmp_fechamento_disciplinas_duplicados_sequenciados");
             sqlQuery.AppendLine("where sequencia > 1;");
@@ -614,8 +606,6 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("where ftd.situacao = @situacaoFechamentoTurmaDisciplina and");
             sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date and");
             sqlQuery.AppendLine($"	   coalesce(ftd.alterado_em, ftd.criado_em)::timestamp < (current_timestamp - interval '{tempoConsideradoExpiracaoMinutos} minutes') and");
-            sqlQuery.AppendLine("	   not ftd.excluido and");
-            sqlQuery.AppendLine("	   not ft.excluido and");
             sqlQuery.AppendLine("	   not exists (select 1");
             sqlQuery.AppendLine("	  		      	 from tmp_fechamento_disciplinas_duplicados tmp_fdd");
             sqlQuery.AppendLine("	  		       where tmp_fdd.turma_id = ft.turma_id and");
@@ -651,9 +641,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	from fechamento_turma_disciplina ftd");
             sqlQuery.AppendLine("		inner join fechamento_turma ft");
             sqlQuery.AppendLine("			on ftd.fechamento_turma_id = ft.id");
-            sqlQuery.AppendLine("where not ftd.excluido and");
-            sqlQuery.AppendLine("	   not ft.excluido and");
-            sqlQuery.AppendLine("	   ftd.criado_em::date >= @dataInicio::date");
+            sqlQuery.AppendLine("where ftd.criado_em::date >= @dataInicio::date");
             sqlQuery.AppendLine("group by ft.turma_id,");
             sqlQuery.AppendLine("		  ft.periodo_escolar_id,");
             sqlQuery.AppendLine("		  ftd.disciplina_id");
@@ -665,9 +653,7 @@ namespace SME.SGP.Dados.Repositorios
             var sqlQuery = @"select ftd.id Id, ft.turma_id TurmaId, ft.periodo_escolar_id PeriodoEscolarId, ftd.disciplina_id DisciplinaId, ftd.situacao Situacao
                                 from fechamento_turma ft 
                                 join fechamento_turma_disciplina ftd on ft.id = ftd.fechamento_turma_id                                                                 
-                                where not ft.excluido 
-                                      and not ftd.excluido 
-                                      and ft.turma_id = @turmaId 
+                                where ft.turma_id = @turmaId 
                                       and ft.periodo_escolar_id is not null ";
 
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaSituacaoDto>(sqlQuery, new { turmaId });

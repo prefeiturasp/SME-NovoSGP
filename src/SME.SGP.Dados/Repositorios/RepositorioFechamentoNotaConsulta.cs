@@ -25,9 +25,7 @@ namespace SME.SGP.Dados.Repositorios
                                          left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
 
                                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = n.id
-                                        where not fa.excluido 
-                                          and not n.excluido 
-                                          and fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
+                                        where fa.fechamento_turma_disciplina_id = ANY(@fechamentosTurmaDisciplinaId)";
 
         const string queryNotasFechamento = @"with lista as (
                         select  fn.disciplina_id as ComponenteCurricularCodigo, 
@@ -44,8 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                          inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
                          inner join componente_curricular cc on cc.id = fn.disciplina_id
-                         where not ft.excluido
-                           and cc.permite_lancamento_nota ";
+                         where cc.permite_lancamento_nota ";
 
         public RepositorioFechamentoNotaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -96,8 +93,6 @@ namespace SME.SGP.Dados.Repositorios
                 query += $@" and pe.bimestre is null";
             else
                 query += $@" and pe.bimestre = @bimestre";
-
-            query += " and ftd.excluido != true";
 
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmasCodigos, alunoCodigo, bimestre, dataMatricula, dataSituacao });
         }
@@ -171,9 +166,7 @@ namespace SME.SGP.Dados.Repositorios
                             left join conceito_valores cv on fn.conceito_id = cv.id 
                             inner join periodo_escolar pe on periodo_escolar_id = pe.id 
                             inner join turma t on ft.turma_id = t.id
-                            where 
-                            not ftd.excluido
-                            and cc.permite_lancamento_nota = true
+                            where cc.permite_lancamento_nota
                             and periodo_escolar_id = @periodoEscolarId and 
                             t.ue_id = @ueId";
 
