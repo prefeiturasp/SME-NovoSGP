@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_512,
                 AlunoCodigo = NUMERO_LONGO_1,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = DateTime.Now
+                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01)
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = DateTime.Now.AddDays(-1)
+                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10)
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = DateTime.Now.AddDays(-1)
+                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 11)
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = new DateTime(year:2022,month:10,day:02) //Domingo
+                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05) //Domingo
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
