@@ -16,6 +16,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 {
     public abstract class RegistroIndividualTesteBase : TesteBaseComuns
     {
+        private const string NOME_TABELA_SUGESTAO = "registro_individual_sugestao (mes, descricao)";
+       
         public RegistroIndividualTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -80,6 +82,32 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
 
             await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
+        }
+
+        protected Dictionary<int, string> ObterDicionarioDeSugestao()
+        {
+            var sugestaoDeTopicosDic = new Dictionary<int, string>();
+            sugestaoDeTopicosDic.Add(2, "Momento de adaptação e acolhimento. Como foi ou está sendo este processo para a criança e a família?");
+            sugestaoDeTopicosDic.Add(3, "Como a criança brinca e interage no parque, área externa e outros espaços da unidade?");
+            sugestaoDeTopicosDic.Add(4, "Como as crianças se relacionam consigo mesmas e com o grupo?");
+            sugestaoDeTopicosDic.Add(5, "Como a criança responde às intervenções do professor(a)?");
+            sugestaoDeTopicosDic.Add(6, "Quais os maiores interesses da criança? Como está a relação da família com a escola?");
+            sugestaoDeTopicosDic.Add(7, "Evidências de oferta e evidências de aprendizagem.");
+            sugestaoDeTopicosDic.Add(8, "Evidências de oferta e evidências de aprendizagem.");
+            sugestaoDeTopicosDic.Add(9, "Evidências de oferta e evidências de aprendizagem.");
+            sugestaoDeTopicosDic.Add(10, "Evidências de oferta e evidências de aprendizagem.");
+            sugestaoDeTopicosDic.Add(11, "Evidências de oferta e evidências de aprendizagem.");
+            sugestaoDeTopicosDic.Add(12, "Evidências de oferta e evidências de aprendizagem.");
+
+            return sugestaoDeTopicosDic;
+        }
+
+        protected async Task CriarSugestaoDeTopicos(Dictionary<int, string> sugestaoDeTopicosDic)
+        {
+            foreach (var chave in sugestaoDeTopicosDic.Keys)
+            {
+                await InserirNaBase(NOME_TABELA_SUGESTAO, chave.ToString(), "'" + sugestaoDeTopicosDic[chave] + "'");
+            }
         }
 
     }
