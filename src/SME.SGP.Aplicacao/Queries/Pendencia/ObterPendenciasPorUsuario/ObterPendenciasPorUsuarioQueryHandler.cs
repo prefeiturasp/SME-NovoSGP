@@ -93,13 +93,12 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PaginacaoResultadoDto<PendenciaDto>> MapearParaDtoPaginado(PaginacaoResultadoDto<Pendencia> pendenciasPaginadas)
         {
-            var retorno = new PaginacaoResultadoDto<PendenciaDto>()
+            return new PaginacaoResultadoDto<PendenciaDto>()
             {
                 Items = await MapearParaDto(pendenciasPaginadas.Items),
                 TotalPaginas = pendenciasPaginadas.TotalPaginas,
                 TotalRegistros = pendenciasPaginadas.TotalRegistros
             };
-            return retorno;
         }
 
         private async Task<IEnumerable<PendenciaDto>> MapearParaDto(IEnumerable<Pendencia> pendencias)
