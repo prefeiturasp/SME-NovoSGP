@@ -101,7 +101,13 @@ namespace SME.SGP.Aplicacao
             if (turmasAbrangencia != null)
             {
                 var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
-                turmasPaginadas.Items = turmasItems;
+                var teste = turmasItems.GroupBy(x => x.TurmaCodigo);
+                var turmasItemsFiltrados = new List<RetornoConsultaListagemTurmaComponenteDto>();
+                foreach (var items in teste)
+                {
+                    turmasItemsFiltrados.AddRange(items);
+                }
+                turmasPaginadas.Items = turmasItemsFiltrados;
             }
 
             var componentesRetorno = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(retornoComponentesTurma.ToArray()));
