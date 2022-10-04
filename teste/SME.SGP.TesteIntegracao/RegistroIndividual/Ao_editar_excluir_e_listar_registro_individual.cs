@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
         }
 
-        [Fact]
+        [Fact(DisplayName = "Registro Individual - Editar registro individual")]
         public async Task Ao_editar_registro_individual()
         {
             var dto = new FiltroRegistroIndividualDto()
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 AlunoCodigo = long.Parse(ALUNO_CODIGO_1),
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TurmaId = TURMA_ID_1,
-                Data = DateTimeExtension.HorarioBrasilia(),
+                Data = DATA_01_02_INICIO_BIMESTRE_1,
                 Id = 1,
                 Registro = REGISTRO_EDITADO
             };
@@ -51,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 
         }
 
-        [Fact]
+        [Fact(DisplayName = "Registro Individual - Excluir registro individual")]
         public async Task Ao_excluir_registro_individual()
         {
             var dto = new FiltroRegistroIndividualDto()
@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             registro.Excluido.ShouldBeTrue();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Registro Individual - Listar registro individual")]
         public async Task Ao_listar_registro_individual()
         {
             var dto = new FiltroRegistroIndividualDto()
@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 TURMA_ID_1,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 long.Parse(ALUNO_CODIGO_1),
-                DateTimeExtension.HorarioBrasilia().Date);
+                DATA_01_02_INICIO_BIMESTRE_1.Date);
             var useCase = ObterServicoListarRegistroIndividualUseCase();
             var registro = await useCase.Executar(filtro);
             registro.ShouldNotBeNull();
@@ -104,7 +104,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             {
                 AlunoCodigo = long.Parse(ALUNO_CODIGO_1),
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                DataRegistro = DateTimeExtension.HorarioBrasilia(),
+                DataRegistro = DATA_01_02_INICIO_BIMESTRE_1,
                 Registro = "Teste",
                 TurmaId = TURMA_ID_1,
                 CriadoPor = SISTEMA_NOME,
