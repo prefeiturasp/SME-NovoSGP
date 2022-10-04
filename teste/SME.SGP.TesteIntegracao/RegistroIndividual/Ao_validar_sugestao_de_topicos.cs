@@ -36,9 +36,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 
             foreach (var chave in sugestaoDeTopicosDic.Keys)
             {
-                var sujestao = await useCase.Executar(chave);
-                sujestao.ShouldNotBeNull();
-                sujestao.Descricao.ShouldBe(sugestaoDeTopicosDic[chave]);
+                var sugestao = await useCase.Executar(chave);
+                sugestao.ShouldNotBeNull();
+                sugestao.Descricao.ShouldBe(sugestaoDeTopicosDic[chave]);
             }
         }
 
