@@ -19,7 +19,7 @@ pipeline {
         stage('Sonar') {
           steps {
               withSonarQubeEnv('sonarqube-local'){
-                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/teste/*.*, src/SME.SGP.Dados.*/*.*, src/SME.SGP.Dominio.Interfaces/*.*, src/SME.SGP.Api/*.*, src/SME.SGP.Infra*/*.*, src/SME.SGP.IoC/*.*, src/*Worker*/*, src/*Hub*/*"'
+                sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/teste/*, src/SME.SGP.Dados.*/**/*, src/SME.SGP.Dominio.Interfaces/**/*, src/SME.SGP.Api/**/*, src/SME.SGP.Infra*/**/*, src/SME.SGP.IoC/**/*, src/*Worker*/**/*, src/*Hub*/**/*"'
                 sh 'dotnet build SME.SGP.sln'
                 sh 'dotnet test teste/SME.SGP.TesteIntegracao --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
                 sh 'dotnet-sonarscanner'
