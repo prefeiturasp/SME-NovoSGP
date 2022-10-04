@@ -9,12 +9,12 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RegistroIndividual
 {
-    public class Ao_cadastrar_registro_individual : RegistroIndividualTesteBase
+    public class Ao_criar_registro_nao_deve_permitir : RegistroIndividualTesteBase
     {
         private const string DESCRICAO_REGISTRO_INDIVIDUAL = "Descrição do registro individual";
         private const long COMPONENTE_CURRICULAR_CODIGO_512 = 512;
         
-        public Ao_cadastrar_registro_individual(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_criar_registro_nao_deve_permitir(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
         
         [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em data futura (não deve permitir)")]
@@ -22,13 +22,10 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                CriarPeriodoReabertura = false
-            });
+            var filtro = ObterFiltroRegistroIndividualDto();
+            filtro.CriarPeriodoReabertura = false;
+            
+            await CriarDadosBasicos(filtro);
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
@@ -41,19 +38,17 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             
             await Should.ThrowAsync<NegocioException>(() => inserirRegistroIndividualUseCase.Executar(planoAeePersistenciaDto));
         }
+
         
         [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em data anterior em bimestre encerrado sem reabertura (não deve permitir)")]
         public async Task Ao_cadastrar_registro_individual_em_data_anterior_bimestre_encerrado_sem_reabertura_nao_deve_permitir()
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                CriarPeriodoReabertura = false
-            });
+            var filtro = ObterFiltroRegistroIndividualDto();
+            filtro.CriarPeriodoReabertura = false;
+            
+            await CriarDadosBasicos(filtro);
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
@@ -72,12 +67,10 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
-            });
+            var filtro = ObterFiltroRegistroIndividualDto();
+            filtro.CriarPeriodoReabertura = false;
+            
+            await CriarDadosBasicos(filtro);
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
@@ -102,15 +95,12 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                EhAnoAnterior = true,
-                CriarPeriodoReabertura = false
-            });
-
+            var filtro = ObterFiltroRegistroIndividualDto();
+            filtro.CriarPeriodoReabertura = false;
+            filtro.EhAnoAnterior = true;
+            
+            await CriarDadosBasicos(filtro);
+            
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
                 TurmaId = TURMA_ID_1,
@@ -128,14 +118,11 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                EhAnoAnterior = true,
-            });
-
+            var filtro = ObterFiltroRegistroIndividualDto();
+            filtro.EhAnoAnterior = true;
+            
+            await CriarDadosBasicos(filtro);
+            
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
                 TurmaId = TURMA_ID_1,
@@ -153,12 +140,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(new FiltroRegistroIndividualDto()
-            {
-                Modalidade = Modalidade.Fundamental,
-                Perfil = ObterPerfilCP(),
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-            });
+            await CriarDadosBasicos(ObterFiltroRegistroIndividualDto());
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
@@ -172,5 +154,15 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var retorno = await inserirRegistroIndividualUseCase.Executar(planoAeePersistenciaDto);
             retorno.ShouldBeNull();
         }
+        private FiltroRegistroIndividualDto ObterFiltroRegistroIndividualDto()
+        {
+            return new FiltroRegistroIndividualDto()
+            {
+                Perfil = ObterPerfilProfessor(),
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil
+            };
+        }
+
     }
 }

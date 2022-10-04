@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turma.Id, DateTimeExtension.HorarioBrasilia().Date));
+            var periodoEscolar = await mediator.Send(new ObterUltimoPeriodoEscolarPorDataQuery(turma.AnoLetivo,turma.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date));
             if (periodoEscolar == null)
                 throw new NegocioException(MensagemNegocioPeriodo.PERIODO_ESCOLAR_NAO_ENCONTRADO);
             

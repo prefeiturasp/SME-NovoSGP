@@ -10,5 +10,6 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         public bool EhAnoAnterior { get; set; }
         public bool CriarPeriodoReabertura { get; set; } = true;
         public long TipoCalendarioId { get; set; } = 1;
+        public bool BimestreEncerrado { get; set; }
     }
 } 
