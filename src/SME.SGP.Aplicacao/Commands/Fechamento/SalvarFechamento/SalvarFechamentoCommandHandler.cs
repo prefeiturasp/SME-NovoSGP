@@ -277,17 +277,18 @@ namespace SME.SGP.Aplicacao
         
         private async Task InserirOuAtualizarCache(FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina, bool emAprovacao)
         {
-            var disciplinaId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
+            var componenteCurricularId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
                 fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.First().DisciplinaId;
 
             var fechamentosNotasConceitos = fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.Select(notaConceitoAluno => new FechamentoNotaConceitoDto
             {
+                DiscplinaId = notaConceitoAluno.DisciplinaId,
                 CodigoAluno = notaConceitoAluno.CodigoAluno, 
                 Nota = notaConceitoAluno.Nota, 
                 ConceitoId = notaConceitoAluno.ConceitoId
             }).ToList();
 
-            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
                 fechamentoFinalTurmaDisciplina.TurmaId,
                 fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
         }        
