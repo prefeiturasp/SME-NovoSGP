@@ -114,7 +114,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             encaminhamentoAEE.Situacao = encaminhamentoAEEDto.Situacao;
             await mediator.Send(new SalvarEncaminhamentoAEECommand(encaminhamentoAEE));
 
-            if (encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado)
+            if (encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado &&
+                encaminhamentoAEEDto.Situacao != SituacaoAEE.Analise &&
+                encaminhamentoAEEDto.Situacao != SituacaoAEE.Rascunho)
             {
                 await mediator.Send(new ExcluirPendenciasEncaminhamentoAEECPCommand(encaminhamentoAEE.TurmaId, encaminhamentoAEE.Id));
             }

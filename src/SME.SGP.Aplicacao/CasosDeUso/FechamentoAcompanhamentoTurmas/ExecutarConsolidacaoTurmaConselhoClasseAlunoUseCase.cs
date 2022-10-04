@@ -41,7 +41,25 @@ namespace SME.SGP.Aplicacao
                 Status = statusNovo
             };
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(filtro.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdTurmaQuery(filtro.TurmaId, filtro.Bimestre));
+            IEnumerable<FechamentoNotaAlunoAprovacaoDto> fechamentoNotasAluno = null;
+            IEnumerable<NotaConceitoBimestreComponenteDto> conselhoClasseNotasAluno = null;
+
+            if (fechamentoTurma != null)
+            {
+                var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
+                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
+
+                if (fechamentoTurmaDisciplina != null)
+                {
+                    var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
+                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, filtro.AlunoCodigo));
+                }
+
+                if (conselhoClasseId != null)
+                    conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.Bimestre ?? 0, filtro.ComponenteCurricularId));
+            }
 
             if (!filtro.Inativo)
             {
@@ -124,6 +142,9 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var componenteCurricular in componentes)
                         {
+                            if (!await mediator.Send(new ObterComponenteLancaNotaQuery(long.Parse(componenteCurricular.Codigo))))
+                                continue;
+
                             var nota = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.Nota : null;
                             var conceitoId = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.ConceitoId : null;
 

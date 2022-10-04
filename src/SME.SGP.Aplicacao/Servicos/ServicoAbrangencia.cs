@@ -348,13 +348,8 @@ namespace SME.SGP.Aplicacao.Servicos
             var listaEscolasDresSupervior = await consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
             if (listaEscolasDresSupervior.Any())
-            {
-                var escolas = from a in listaEscolasDresSupervior
-                    from b in a.Escolas
-                    select b.Codigo;
-                return escolas.ToArray();
-            }
-
+                return listaEscolasDresSupervior.Select(escola => escola.UeId).ToArray();
+           
             return Array.Empty<string>();
         }
 
