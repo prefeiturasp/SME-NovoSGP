@@ -32,11 +32,10 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_512,
                 AlunoCodigo = NUMERO_LONGO_1,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01)
+                Data = DateTimeExtension.HorarioBrasilia().Date
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
-
 
         [Fact(DisplayName = "Registro Individual - Cadastrar registro individual em data anterior do bimestre atual")]
         public async Task Cadastrar_registro_individual_em_data_anterior_do_bimestre_atual()
@@ -44,18 +43,18 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var filtro = new FiltroRegistroIndividualDto
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil,
                 BimestreEncerrado = false
             };
             
             var registroParaSalvar = new InserirRegistroIndividualDto
             {
                 TurmaId = TURMA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_CODIGO_512,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10)
+                Data = DateTimeExtension.HorarioBrasilia().Date
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
@@ -66,8 +65,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var filtro = new FiltroRegistroIndividualDto
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil,
                 BimestreEncerrado = true
             };
             
@@ -77,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 11)
+                Data = DateTimeExtension.HorarioBrasilia().Date
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
@@ -88,10 +87,13 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var filtro = new FiltroRegistroIndividualDto
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil,
                 BimestreEncerrado = true
             };
+            
+            var dataReferencia = DateTimeExtension.HorarioBrasilia().AddDays(-20);
+            var dataDeDomingo = dataReferencia.AddDays(7 - (int) dataReferencia.DayOfWeek);   
             
             var registroParaSalvar = new InserirRegistroIndividualDto
             {
@@ -99,14 +101,14 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 AlunoCodigo = NUMERO_LONGO_2,
                 Registro = "<pre><span>Registro de teste</span></pre>",
-                Data = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 05) //Domingo
+                Data = dataDeDomingo.Date
             };
             await ExecutarTeste(filtro, registroParaSalvar);
         }
 
         private async Task ExecutarTeste(FiltroRegistroIndividualDto filtroDadosBasicos,InserirRegistroIndividualDto inserirRegistroIndividualDto)
         {
-            var useCase = InserirRegistroIndividualUseCase();
+            var useCase = ObterServicoInserirRegistroIndividualUseCase();
             
             var obterResgistros = ObterTodos<Dominio.RegistroIndividual>();
             obterResgistros.Count.ShouldBeEquivalentTo(0);

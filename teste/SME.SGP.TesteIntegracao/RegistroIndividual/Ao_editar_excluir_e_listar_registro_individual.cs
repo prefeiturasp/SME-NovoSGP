@@ -24,8 +24,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var dto = new FiltroRegistroIndividualDto()
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil
             };
 
             await CriarDadosBasicos(dto);
@@ -35,9 +35,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var dtoAlterar = new AlterarRegistroIndividualDto()
             {
                 AlunoCodigo = long.Parse(ALUNO_CODIGO_1),
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_CODIGO_512,
                 TurmaId = TURMA_ID_1,
-                Data = DATA_01_02_INICIO_BIMESTRE_1,
+                Data = DateTimeExtension.HorarioBrasilia().Date,
                 Id = 1,
                 Registro = REGISTRO_EDITADO
             };
@@ -57,8 +57,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var dto = new FiltroRegistroIndividualDto()
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil
             };
 
             await CriarDadosBasicos(dto);
@@ -80,8 +80,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var dto = new FiltroRegistroIndividualDto()
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil
             };
 
             await CriarDadosBasicos(dto);
@@ -89,9 +89,9 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
 
             var filtro = new FiltroRegistroIndividualAlunoData(
                 TURMA_ID_1,
-                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                COMPONENTE_CURRICULAR_CODIGO_512,
                 long.Parse(ALUNO_CODIGO_1),
-                DATA_01_02_INICIO_BIMESTRE_1.Date);
+                DateTimeExtension.HorarioBrasilia().Date);
             var useCase = ObterServicoListarRegistroIndividualUseCase();
             var registro = await useCase.Executar(filtro);
             registro.ShouldNotBeNull();
@@ -103,8 +103,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             await InserirNaBase(new Dominio.RegistroIndividual
             {
                 AlunoCodigo = long.Parse(ALUNO_CODIGO_1),
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                DataRegistro = DATA_01_02_INICIO_BIMESTRE_1,
+                ComponenteCurricularId = COMPONENTE_CURRICULAR_CODIGO_512,
+                DataRegistro = DateTimeExtension.HorarioBrasilia().Date,
                 Registro = "Teste",
                 TurmaId = TURMA_ID_1,
                 CriadoPor = SISTEMA_NOME,

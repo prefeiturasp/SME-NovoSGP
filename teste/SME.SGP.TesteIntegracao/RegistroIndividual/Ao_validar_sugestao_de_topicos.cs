@@ -21,8 +21,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var dto = new FiltroRegistroIndividualDto()
             {
                 Perfil = ObterPerfilProfessor(),
-                Modalidade = Modalidade.Fundamental,
-                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+                Modalidade = Modalidade.EducacaoInfantil,
+                TipoCalendario = ModalidadeTipoCalendario.Infantil
             };
 
             await CriarDadosBasicos(dto);
