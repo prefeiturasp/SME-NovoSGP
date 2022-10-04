@@ -26,17 +26,11 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-                var listaFechamentoTurmaDisciplinaEmDuplicidade = await mediator
-                    .Send(new ObterFechamentosTurmaDisciplinasDuplicadosQuery(null));
-
                 var listaFechamentoTurmaDisciplinaExpiradosReprocessar = await mediator
                     .Send(new ObterFechamentosTurmaDisciplinaEmProcessamentoTempoExpiradoQuery(null, null));
 
                 unitOfWork
                     .IniciarTransacao();
-
-                await mediator
-                    .Send(new ExcluirLogicamenteFechamentosTurmaDisciplinaCommand(listaFechamentoTurmaDisciplinaEmDuplicidade.ToArray()));
 
                 foreach (var fechamentoAtual in listaFechamentoTurmaDisciplinaExpiradosReprocessar)
                 {

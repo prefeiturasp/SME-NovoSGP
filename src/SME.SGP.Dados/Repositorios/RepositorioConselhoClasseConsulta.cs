@@ -126,8 +126,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select distinct cca.aluno_codigo
                           from conselho_classe_aluno cca
                           inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
-                         where not cca.excluido
-                           and cca.conselho_classe_id = @conselhoClasseId";
+                         where cca.conselho_classe_id = @conselhoClasseId";
 
             return await database.Conexao.QueryAsync<string>(query, new { conselhoClasseId });
         }
@@ -272,13 +271,10 @@ namespace SME.SGP.Dados.Repositorios
                                                     ue.id = t.ue_id
                                                 inner join fechamento_turma_disciplina ftd on
                                                     ftd.fechamento_turma_id = ft.id
-                                                    and not ftd.excluido
                                                 inner join fechamento_aluno fa on
                                                     fa.fechamento_turma_disciplina_id = ftd.id
-                                                    and not fa.excluido
                                                 inner join fechamento_nota fn on
                                                     fn.fechamento_aluno_id = fa.id
-                                                    and not fn.excluido
 				                                inner join conceito_valores cv on fn.conceito_id = cv.id
                                                 where t.ano_letivo = @anoLetivo ");
 
