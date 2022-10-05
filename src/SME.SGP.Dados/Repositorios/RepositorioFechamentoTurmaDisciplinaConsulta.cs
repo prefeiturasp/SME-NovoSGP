@@ -128,7 +128,7 @@ namespace SME.SGP.Dados.Repositorios
                 new { turmaCodigo, disciplinaId, bimestre });
         }
 
-        public async Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId, int? bimestre = 0)
+        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId, int? bimestre = 0)
         {
             var query = new StringBuilder(@"select f.*
                          from fechamento_turma_disciplina f
@@ -141,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre ");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplina>(query.ToString(),
+            return await database.Conexao.QueryAsync<FechamentoTurmaDisciplina>(query.ToString(),
                 new { turmaCodigo, disciplinaId , bimestre});
         }
 
