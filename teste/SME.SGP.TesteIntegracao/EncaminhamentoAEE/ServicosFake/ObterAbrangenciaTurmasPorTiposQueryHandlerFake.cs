@@ -3,6 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
@@ -15,10 +17,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
             {
                 new AbrangenciaTurmaRetorno
                 {
+                    Id = 1,
+                    Semestre = 1,
+                    TipoTurma = (int)TipoTurma.ItinerarioEnsMedio,
+                    EnsinoEspecial = false,
                     Nome = "Nome teste",
                     Ano = "8",
                     AnoLetivo = request.AnoLetivo,
-                    CodigoModalidade = (int)request.Modalidade,
+                    CodigoModalidade = (int)Modalidade.Medio,
                     Codigo = "1",
                 }
             };

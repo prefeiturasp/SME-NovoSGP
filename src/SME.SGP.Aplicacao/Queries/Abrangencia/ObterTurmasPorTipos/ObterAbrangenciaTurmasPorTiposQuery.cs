@@ -40,8 +40,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.CodigoUe).NotEmpty().WithMessage("Informe o Codigo UE para consultar a turma");
             RuleFor(x => x.Perfil).NotEmpty().WithMessage("Informe o Perfil para consultar a turma");
             RuleFor(x => x.Login).NotEmpty().WithMessage("Informe o Login para consultar a turma");
-            RuleFor(x => x.Modalidade).NotEmpty().WithMessage("Informe a Modalidade para consultar a turma");
-            RuleFor(x => x.Tipos).NotEmpty().WithMessage("Informe o Tipo para consultar a turma");
         }
     }
 }
