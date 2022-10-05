@@ -133,12 +133,12 @@ namespace SME.SGP.Aplicacao
 
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
-            var alunosValidosOrdenados = alunosDaTurma
+            var alunosValidos = alunosDaTurma
                 .Where(a => a.NumeroAlunoChamada > 0 ||
                             a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Ativo) ||
-                            a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido))
-                .OrderBy(a => a.NumeroAlunoChamada)
-                .ThenBy(a => a.NomeValido());
+                            a.CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido));
+
+            var alunosValidosOrdenados = alunosValidos.Where(a => a.EstaAtivo(ultimoPeriodoEscolar.PeriodoInicio, ultimoPeriodoEscolar.PeriodoFim)).OrderBy(a => a.NomeAluno).ThenBy(a => a.NomeValido());
 
             foreach (var aluno in alunosValidosOrdenados)
             {
