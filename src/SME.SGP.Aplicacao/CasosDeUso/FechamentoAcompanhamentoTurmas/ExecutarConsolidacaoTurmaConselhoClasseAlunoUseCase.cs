@@ -142,6 +142,9 @@ namespace SME.SGP.Aplicacao
                     {
                         foreach (var componenteCurricular in componentes)
                         {
+                            if (!await mediator.Send(new ObterComponenteLancaNotaQuery(long.Parse(componenteCurricular.Codigo))))
+                                continue;
+
                             var nota = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.Nota : null;
                             var conceitoId = !filtro.ComponenteCurricularId.HasValue || (filtro.ComponenteCurricularId.HasValue && componenteCurricular.Codigo.Equals(filtro.ComponenteCurricularId.Value.ToString())) ? filtro.ConceitoId : null;
 
