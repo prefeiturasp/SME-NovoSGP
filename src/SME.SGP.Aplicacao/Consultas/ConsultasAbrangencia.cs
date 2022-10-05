@@ -175,8 +175,8 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
-           
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+
+            var result = await mediator.Send(new ObterAbrangenciaTurmasPorTiposQuery(codigoUe, login, perfil, modalidade, tipos, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar));
 
             result = modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, codigoUe) : result;
 
@@ -199,7 +199,7 @@ namespace SME.SGP.Aplicacao
             var perfil = servicoUsuario.ObterPerfilAtual();
             var anosInfantilDesconsiderar = !desconsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
 
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
+            var result = await  mediator.Send(new ObterAbrangenciaTurmasPorTiposQuery(codigoUe, login, perfil, modalidade, tipos, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar));
             var ordernarTurmasItinerario = OrdernarTurmasItinerario(result);
             return ordernarTurmasItinerario.Select(x => long.Parse(x.Codigo)).ToArray();
         }

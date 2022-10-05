@@ -9,6 +9,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake;
@@ -29,6 +30,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             base.RegistrarFakes(services);
         
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterAbrangenciaTurmasPorTiposQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
