@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
@@ -25,6 +26,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery, IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>>), typeof(ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
