@@ -154,8 +154,7 @@ namespace SME.SGP.Aplicacao
             {
                 var aulasComponentesTurmas = await mediator
                             .Send(new ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(frequenciasConsolidadas.Select(f => f.TurmaId).ToArray()
-                            , periodosEscolaresFrequentadosPeloEstudante.FirstOrDefault().TipoCalendarioId, componentesCurriculares, periodosEscolaresFrequentadosPeloEstudante.Select(p => p.Bimestre).ToArray()
-                            , informacoesAluno.DataMatricula, informacoesAluno.Inativo ? informacoesAluno.DataSituacao : null));
+                            , periodosEscolaresFrequentadosPeloEstudante.FirstOrDefault().TipoCalendarioId, componentesCurriculares, periodosEscolaresFrequentadosPeloEstudante.Select(p => p.Bimestre).ToArray()));
 
                 foreach(var aula in aulasComponentesTurmas)
                 {
