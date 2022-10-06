@@ -137,6 +137,7 @@ namespace SME.SGP.Dados.Repositorios
                              INNER JOIN dre d ON sed.dre_id = d.dre_id
                              INNER JOIN ue u ON u.ue_id  = sed.escola_id 
                             WHERE sed.dre_id = @dreCodigo 
+                                and not sed.excluido
                             ORDER BY u.tipo_escola ,u.nome ");
 
             var consulta = await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { dreCodigo });
