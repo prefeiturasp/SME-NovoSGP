@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     if (existePendencia != null)
                         await mediator.Send(new ExcluirPendenciaEncaminhamentoAEECommand(existePendencia.PendenciaId));
 
-                    var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId);
+                    var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId, turma.Id);
                     pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
                     await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CP }));
@@ -102,7 +102,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"O encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} está disponível para atribuição de um PAAI. <br/><a href='{hostAplicacao}aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a> " +
                 $"<br/><br/>Esta pendência será resolvida automaticamente quando o PAAI for atribuído no encaminhamento.";
 
-            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId);
+            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, string.Empty, string.Empty, turma.UeId, turma.Id);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
             await mediator.Send(new SalvarPendenciaPerfilCommand(pendencia.Id, new List<PerfilUsuario> { PerfilUsuario.CEFAI }));

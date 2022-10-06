@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio
 {
     public class PlanejamentoAnualPeriodoEscolar : EntidadeBase
     {
-        protected PlanejamentoAnualPeriodoEscolar()
+        public PlanejamentoAnualPeriodoEscolar()
         {
             ComponentesCurriculares = new List<PlanejamentoAnualComponente>();
         }

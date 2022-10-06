@@ -133,7 +133,7 @@ namespace SME.SGP.TesteIntegracao
         {
             await CriarTipoCalendario(tipoCalendario);
 
-            await CriarPadrao();
+            await CriarDreUePerfil();
 
             await CriarComponenteCurricular();
 

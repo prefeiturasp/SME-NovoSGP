@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
 
             turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).Distinct().ToArray(), turmasPaginadas);
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
-            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
+            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Bimestre, usuario);
 
             return retorno;
         }
@@ -182,9 +182,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int anoLetivo, int bimestre, Usuario usuario)
         {
-            List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
+            var itensComPendencias = new List<TurmaComComponenteDto>();
 
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
@@ -196,9 +196,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmaComponente in turmaCodigo)
                 {
-
                     var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                         turma.CodigoTurma,
+                                                                                                        anoLetivo,
                                                                                                         bimestre,
                                                                                                         verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
                                                                                                         verificaAvaliacao: !ehTurmaInfantil,

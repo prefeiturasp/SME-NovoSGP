@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -27,12 +28,12 @@ namespace SME.SGP.Aplicacao
             var encaminhamentoAEE = await mediator.Send(new ObterEncaminhamentoAEEComTurmaPorIdQuery(request.EncaminhamentoId), cancellationToken);
 
             if (encaminhamentoAEE == null)
-                throw new NegocioException("O encaminhamento informado não foi encontrado");
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_ENCONTRADO);
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoAEE.TurmaId), cancellationToken);
 
             if (turma == null)
-                throw new NegocioException("turma não encontrada");
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             encaminhamentoAEE.Situacao = Dominio.Enumerados.SituacaoAEE.AtribuicaoResponsavel;           
 

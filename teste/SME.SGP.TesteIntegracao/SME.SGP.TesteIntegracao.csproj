@@ -10,6 +10,7 @@
       <Compile Remove="NotaFechamentoBimestre\ServicosFake\**" />
       <EmbeddedResource Remove="NotaFechamentoBimestre\ServicosFake\**" />
       <None Remove="NotaFechamentoBimestre\ServicosFake\**" />
+      <Compile Remove="PlanoAula\ServicosFakes\ObterPlanoAulaPorAulaIdQueryHandlerFake.cs" />
     </ItemGroup>
 
     <ItemGroup>

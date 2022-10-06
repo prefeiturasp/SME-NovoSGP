@@ -180,30 +180,46 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarConceitoOuNota(SalvarConselhoClasseAlunoNotaDto dto, FechamentoTurma fechamentoTurma,
             AlunoPorTurmaResposta alunoConselho, PeriodoEscolar periodoEscolar)
         {
-            var turmasCodigos = new[] { dto.CodigoTurma };
-                
+            if (fechamentoTurma.Turma == null)
+                return;
+            
+            var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId,
+                fechamentoTurma.Turma.TipoTurma));
+
+            if (notaTipoValor == null)
+                return;
+            
+            var turmasCodigos = new[] { dto.CodigoTurma };            
+            
             var notasFechamentoAluno = (fechamentoTurma is { PeriodoEscolarId: { } } ?
                 await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, dto.CodigoAluno,
                     dto.Bimestre, alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
                         ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, fechamentoTurma.Turma.AnoLetivo)) :
                 await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, dto.CodigoAluno, 
                     alunoConselho.DataMatricula, alunoConselho.PossuiSituacaoAtiva() 
-                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();
-
-            if (notasFechamentoAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular) == null)
-                return;
+                        ? periodoEscolar?.PeriodoFim : alunoConselho.DataSituacao, dto.Bimestre))).ToList();            
             
-            var notaTipoValor = await mediator.Send(new ObterTipoNotaPorTurmaIdQuery(fechamentoTurma.TurmaId, fechamentoTurma.Turma.TipoTurma));
+            var notaFechamentoAluno = notasFechamentoAluno.FirstOrDefault(c =>
+                c.ComponenteCurricularCodigo == dto.ConselhoClasseNotaDto.CodigoComponenteCurricular &&
+                c.AlunoCodigo == dto.CodigoAluno &&
+                c.Bimestre == dto.Bimestre);
 
-            if (notaTipoValor == null)
-                return;
-            
             switch (notaTipoValor.TipoNota)
             {
                 case TipoNota.Conceito when dto.ConselhoClasseNotaDto.Conceito == null:
-                    throw new NegocioException("O conceito pós-conselho deve ser informado no conselho de classe do aluno.");
+                {
+                    if (notaFechamentoAluno?.ConceitoId == null)
+                        return;
+
+                    throw new NegocioException(MensagemNegocioConselhoClasse.CONCEITO_POS_CONSELHO_DEVE_SER_INFORMADO);
+                }
                 case TipoNota.Nota when dto.ConselhoClasseNotaDto.Nota == null:
-                    throw new NegocioException("A nota pós-conselho deve ser informada no conselho de classe do aluno.");
+                {
+                    if (notaFechamentoAluno?.Nota == null)
+                        return;
+
+                    throw new NegocioException(MensagemNegocioConselhoClasse.NOTA_POS_CONSELHO_DEVE_SER_INFORMADA);
+                }
             }
         }
     }
