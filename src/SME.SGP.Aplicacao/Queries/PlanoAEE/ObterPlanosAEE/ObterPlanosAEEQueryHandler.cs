@@ -30,17 +30,17 @@ namespace SME.SGP.Aplicacao
             int[] tipos = new int[0];
             List<string> turmasCodigos = new List<string>();
 
-            var ueCodigo = mediator.Send(new ObterUePorIdQuery(request.UeId)).Result;
+            var ueCodigo = await mediator.Send(new ObterUePorIdQuery(request.UeId));
 
-            IEnumerable<AbrangenciaTurmaRetorno> turmas;
-            turmas = await consultasAbrangencia.ObterTurmas(ueCodigo.CodigoUe, 0, periodo, false, DateTime.Now.Year, tipos, true);
+            var turmas =
+                await mediator.Send(
+                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
+                        periodo, false, DateTime.Now.Year, tipos, true)); 
 
             if (turmas != null || turmas.Any())
             {               
                 foreach (var item in turmas)
-                {
                     turmasCodigos.Add(item.Codigo);
-                }
             }
 
             return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,

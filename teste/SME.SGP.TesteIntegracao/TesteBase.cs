@@ -50,6 +50,7 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTotalAulasPorDisciplinaETurmaQuery, int>), typeof(ObterTotalAulasPorDisciplinaETurmaQueryFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRepositorioCache), typeof(RepositorioCacheFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IServicoArmazenamento),typeof(ServicoArmazenamentoFake), ServiceLifetime.Scoped));
         }
 
         protected virtual void RegistrarQueryFakes(IServiceCollection services)
@@ -67,6 +68,12 @@ namespace SME.SGP.TesteIntegracao
         public Task InserirNaBase<T>(T objeto) where T : class, new()
         {
             _collectionFixture.Database.Inserir(objeto);
+            return Task.CompletedTask;
+        }
+        
+        public Task AtualizarNaBase<T>(T objeto) where T : class, new()
+        {
+            _collectionFixture.Database.Atualizar(objeto);
             return Task.CompletedTask;
         }
 

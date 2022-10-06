@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                            oa.id, oa.descricao, oa.codigo, oa.ano_turma as Ano, oa.componente_curricular_id as IdComponenteCurricular
                       from aula a
                       inner join plano_aula pa on a.id = pa.aula_id
-                      left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id
+                      left join objetivo_aprendizagem_aula oaa on pa.id = oaa.plano_aula_id AND NOT oaa.excluido 
                       left join objetivo_aprendizagem oa on oaa.objetivo_aprendizagem_id = oa.id ";
         }
 

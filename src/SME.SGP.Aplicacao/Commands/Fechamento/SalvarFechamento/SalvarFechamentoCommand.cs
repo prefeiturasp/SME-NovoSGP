@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFechamentoCommand : IRequest<AuditoriaPersistenciaDto>
+    public class SalvarFechamentoCommand : IRequest<AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto>
     {
         public SalvarFechamentoCommand (FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina)
         {
