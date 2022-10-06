@@ -77,7 +77,6 @@ namespace SME.SGP.Aplicacao
                                                                                              filtroTurmaDto.Modalidade.Value,
                                                                                              filtroTurmaDto.Semestre,
                                                                                              usuario.EhPerfilProfessor(),
-                                                                                             usuario.EhGestorEscolar(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
                                                                                              filtroTurmaDto.Bimestre > 0 ?
@@ -110,6 +109,9 @@ namespace SME.SGP.Aplicacao
                 turmasPaginadas.Items = turmasItemsFiltrados;
             }
 
+            if (filtroTurmaDto.Modalidade == Modalidade.EducacaoInfantil)
+                turmasPaginadas = await VerificarAgrupamentoRegencia(turmasPaginadas);
+
             var componentesRetorno = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(retornoComponentesTurma.ToArray()));
                                                                      
             turmasPaginadas.TotalRegistros = turmasPaginadas.Items != null && turmasPaginadas.Items.Any() ? turmasPaginadas.Items.Count() : 0;
@@ -121,6 +123,35 @@ namespace SME.SGP.Aplicacao
             var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Bimestre, usuario);
 
             return retorno;
+        }
+
+        private async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> VerificarAgrupamentoRegencia(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
+        {
+            var turmasAgrupadasPorAnoNome = turmasPaginadas.Items.GroupBy(t => t.NomeTurma).ToList();
+
+            var listaComAgrupamento = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            var listaTurmasMesmaSerie = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            foreach (var turmas in turmasAgrupadasPorAnoNome)
+            {
+                foreach(var turmaAno in turmas)
+                {
+                    var componenteCurricularPai = await mediator.Send(new ObterCodigoComponentePaiQuery(turmaAno.ComponenteCurricularCodigo));
+                    if (!string.IsNullOrEmpty(componenteCurricularPai))
+                        turmaAno.ComponenteCurricularPaiCodigo = Convert.ToInt64(componenteCurricularPai);
+                    else
+                        turmaAno.ComponenteCurricularPaiCodigo = turmaAno.ComponenteCurricularCodigo;
+
+                    listaTurmasMesmaSerie.Add(turmaAno);
+                }
+
+                listaComAgrupamento.AddRange(listaTurmasMesmaSerie.DistinctBy(t => t.ComponenteCurricularPaiCodigo).Where(t => t.NomeTurma == turmas.Key));
+
+                listaTurmasMesmaSerie = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            }
+
+            turmasPaginadas.Items = listaComAgrupamento;
+
+            return turmasPaginadas;
         }
 
         private async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> MapearNomeFiltroTurmas(string[] turmasCodigos, PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
