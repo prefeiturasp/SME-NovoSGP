@@ -223,7 +223,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("       t.ue_nome as nomeUe,");
             query.AppendLine("       t.turma_semestre as semestre,");
             query.AppendLine("       t.qt_duracao_aula as qtDuracaoAula,");
-            query.AppendLine("       t.tipo_turno as tipoTurno");
+            query.AppendLine("       t.tipo_turno as tipoTurno,");
+            query.AppendLine("       t.tipo_turma as tipoTurma");
             query.AppendLine("from abrangencia a");
             query.AppendLine("  join usuario u");
             query.AppendLine("      on a.usuario_id = u.id");

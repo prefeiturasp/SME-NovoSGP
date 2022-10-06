@@ -22,13 +22,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PendenciaPaginaInicialListao> Handle(ObterIndicativoPendenciasAulasPorTipoQuery request, CancellationToken cancellationToken)
         {
-            var aulasComPendenciaDiario = await repositorioPendenciaDiarioBordo.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf, request.EhGestor, request.TurmaId);
-            var pendenciasDiarioBordo = await repositorioPendenciaDiarioBordo.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);
+            var aulasComPendenciaDiario = await repositorioPendenciaAula.TrazerAulasComPendenciasDiarioBordo(request.DisciplinaId, request.ProfessorRf,
+                request.EhGestor, request.TurmaId, request.AnoLetivo);
+            
+            var pendenciasDiarioBordo = await repositorioPendenciaAula.TurmasPendenciaDiarioBordo(aulasComPendenciaDiario, request.TurmaId, request.Bimestre);
+            
             if (request.ProfessorNaoCj)
                 pendenciasDiarioBordo = pendenciasDiarioBordo.Where(p => !p.AulaCJ);
 
-
-            bool validaSeTemPendenciaParaTurma = pendenciasDiarioBordo.Any(p => p.TurmaId == request.TurmaId);
+            var validaSeTemPendenciaParaTurma = pendenciasDiarioBordo.Any(p => p.TurmaId == request.TurmaId);
 
             var temPendenciaDiarioBordo = request.VerificaDiarioBordo && validaSeTemPendenciaParaTurma;
 
@@ -41,7 +43,6 @@ namespace SME.SGP.Aplicacao
             var temPendenciaPlanoAula = request.VerificaPlanoAula &&
                 await repositorioPendenciaAula.PossuiPendenciasPorTipo(request.DisciplinaId, request.TurmaId, TipoPendencia.PlanoAula, request.Bimestre, request.ProfessorCj, request.ProfessorNaoCj, request.ProfessorRf);
 
-
             return new PendenciaPaginaInicialListao
             {
                 PendenciaDiarioBordo = temPendenciaDiarioBordo,
@@ -49,8 +50,6 @@ namespace SME.SGP.Aplicacao
                 PendenciaFrequencia = temPendenciaFrequencia,
                 PendenciaPlanoAula = temPendenciaPlanoAula
             };
-
-
         }
     }
 }

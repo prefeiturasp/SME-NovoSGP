@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(turmaCodigo, request.Bimestre),
                         "Obter notas ou conceitos do fechamento."))
-                    .ToList();
+                    .ToList();                 
 
                 if (notasConceitosFechamento.Any())
                     retorno.AddRange(notasConceitosFechamento);

@@ -13,16 +13,16 @@ namespace SME.SGP.Aplicacao.Teste.Queries
     {
 
         private readonly ObterIndicativoPendenciasAulasPorTipoQueryHandler query;
-        private readonly Mock<IRepositorioPendenciaAulaConsulta> repositorioPendenciaAulaConsulta;
+        private readonly Mock<IRepositorioPendenciaAulaConsulta> repositorioPendenciaAula;
         private readonly Mock<IRepositorioPendenciaDiarioBordoConsulta> repositorioPendenciaDiarioBordoConsulta;
         private readonly Mock<IMediator> mediator;
 
         public ObterIndicativoPendenciasAulasPorTipoQueryHandlerTeste()
         {
-            repositorioPendenciaAulaConsulta = new Mock<IRepositorioPendenciaAulaConsulta>();
+            repositorioPendenciaAula = new Mock<IRepositorioPendenciaAulaConsulta>();
             repositorioPendenciaDiarioBordoConsulta = new Mock<IRepositorioPendenciaDiarioBordoConsulta>();
             mediator = new Mock<IMediator>();
-            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAulaConsulta.Object,repositorioPendenciaDiarioBordoConsulta.Object);
+            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAula.Object,repositorioPendenciaDiarioBordoConsulta.Object);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var aulas = new List<long>();
             aulas.Add(123);
 
-            repositorioPendenciaDiarioBordoConsulta.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706", false, ""))
+            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706", false, "", 2022))
                 .ReturnsAsync(aulas);
 
             repositorioPendenciaDiarioBordoConsulta.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                .ReturnsAsync(new Infra.PendenciaPaginaInicialListao() { PendenciaDiarioBordo = false });
 
             // Act
-            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery("512", "2386241", 1, true), new CancellationToken());
+            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery("512", "2386241", 2022, 1, true), new CancellationToken());
 
             // Assert
             Assert.NotNull(retornoConsulta);

@@ -49,13 +49,10 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma != null)
             {
                 var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
+                var fechamentosTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
 
-                if (fechamentoTurmaDisciplina != null)
-                {
-                    var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
-                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, filtro.AlunoCodigo));
-                }
+                if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
+                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), filtro.AlunoCodigo));
 
                 if (conselhoClasseId != null)
                     conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasseId.Id, filtro.AlunoCodigo, filtro.Bimestre ?? 0, filtro.ComponenteCurricularId));
@@ -183,18 +180,15 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma != null)
             {
                 var conselhoClasse = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentoTurmaDisciplina = new FechamentoTurmaDisciplina();
+                var fechamentosTurmaDisciplina = Enumerable.Empty<FechamentoTurmaDisciplina>();
 
                 if (componenteCurricularRegencia > 0)
-                    fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)componenteCurricularRegencia, bimestre));
+                    fechamentosTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)componenteCurricularRegencia, bimestre));
                 else
-                    fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, componenteCurricularId, bimestre));
+                    fechamentosTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, componenteCurricularId, bimestre));
 
-                if (fechamentoTurmaDisciplina != null)
-                {
-                    var arrayfechamentoTurmaDisciplinaId = new long[] { fechamentoTurmaDisciplina.Id };
-                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(arrayfechamentoTurmaDisciplinaId, alunoCodigo));
-                }
+                if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
+                    fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), alunoCodigo));
 
                 if (conselhoClasse != null)
                     conselhoClasseNotasAluno = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhoClasse.Id, alunoCodigo, bimestre ?? 0, componenteCurricularId));

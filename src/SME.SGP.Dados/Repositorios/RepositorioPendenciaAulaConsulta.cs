@@ -122,6 +122,41 @@ namespace SME.SGP.Dados.Repositorios
             }, commandTimeout: 60);
         }
 
+        public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre)
+        {
+            var sqlQuery = new StringBuilder(@"select DISTINCT a.turma_id as TurmaId, a.aula_cj as AulaCJ
+                                                  from aula a
+                                                  inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
+
+            sqlQuery.AppendLine(@" where a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                                    and a.turma_id = @turmaId and pe.bimestre = @bimestre and a.id = ANY(@aulas) ");
+
+            return await database.Conexao.QueryAsync<PossuiPendenciaDiarioBordoDto>(sqlQuery.ToString(),
+               new
+               {
+                   turmaId,
+                   aulas = aulasId.ToArray(),
+               }, commandTimeout: 60);
+        }
+
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, 
+            bool ehGestor, string codigoTurma, int anoLetivo)
+        {
+            var disciplinaId = Convert.ToInt32(componenteCurricularId);
+
+            var sqlQuery = new StringBuilder(@"select distinct aula_id
+                                                from pendencia_diario_bordo pdb
+                                                    inner join aula a on a.id = pdb.aula_id
+                                                    inner join tipo_calendario tc on tc.id = a.tipo_calendario_id");
+
+            sqlQuery.AppendLine(ehGestor
+                ? " where a.turma_id = @codigoTurma and tc.ano_letivo = @anoLetivo"
+                : " where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf and tc.ano_letivo = @anoLetivo");
+            
+            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(), new { codigoTurma, anoLetivo, disciplinaId, professorRf },
+                commandTimeout: 60);
+        }
+
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
         {
             var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf,
@@ -435,24 +470,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { descricao, tipoPendencia }));
         }
-
-        public async Task<IEnumerable<PossuiPendenciaDiarioBordoDto>> TurmasPendenciaDiarioBordo(IEnumerable<long> aulasId, string turmaId, int bimestre)
-        {
-            var sqlQuery = new StringBuilder(@"select DISTINCT a.turma_id as TurmaId, a.aula_cj as AulaCJ
-                                                  from aula a
-                                                  inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id ");
-
-            sqlQuery.AppendLine(@" where a.data_aula between pe.periodo_inicio and pe.periodo_fim
-                                    and a.turma_id = @turmaId and pe.bimestre = @bimestre and a.id = ANY(@aulas) ");
-
-            return await database.Conexao.QueryAsync<PossuiPendenciaDiarioBordoDto>(sqlQuery.ToString(),
-               new
-               {
-                   turmaId,
-                   aulas = aulasId.ToArray(),
-               }, commandTimeout: 60);
-        }
-
+        
         public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string codigoTurma)
         {
             var disciplinaId = Convert.ToInt32(componenteCurricularId);

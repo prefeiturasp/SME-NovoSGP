@@ -9,11 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarFechamentoCommandHandler : IRequestHandler<SalvarFechamentoCommand, AuditoriaPersistenciaDto>
+    public class SalvarFechamentoCommandHandler : IRequestHandler<SalvarFechamentoCommand, AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto>
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
         }
         
-        public async Task<AuditoriaPersistenciaDto> Handle(SalvarFechamentoCommand request, CancellationToken cancellationToken)
+        public async Task<AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto> Handle(SalvarFechamentoCommand request, CancellationToken cancellationToken)
         {
             var fechamentoTurma = request.FechamentoFinalTurmaDisciplina;
             var notasEmAprovacao = new List<FechamentoNotaDto>();
@@ -254,17 +255,23 @@ namespace SME.SGP.Aplicacao
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoTurmaDisciplina.DisciplinaId, fechamentoTurmaDisciplina.FechamentoTurma.TurmaId, periodoEscolar, usuarioLogado, fechamentoTurma.EhFinal);
 
-                var auditoria = (AuditoriaPersistenciaDto)fechamentoTurmaDisciplina;
-                auditoria.EmAprovacao = notasEmAprovacao.Any();
+                var auditoriaFechamentoNotaConceitoTurma = (AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto)fechamentoTurmaDisciplina;
+                auditoriaFechamentoNotaConceitoTurma.EmAprovacao = notasEmAprovacao.Any();
 
                 if (parametroAlteracaoNotaFechamento.Ativo && turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
-                    auditoria.MensagemConsistencia = $"{tipoNota.TipoNota.Name()} registrados com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";         
+                    auditoriaFechamentoNotaConceitoTurma.MensagemConsistencia = $"{tipoNota.TipoNota.Name()} registrados com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";         
                 else
-                    auditoria.MensagemConsistencia = $" {tipoNota.TipoNota.Name()} registrados com sucesso.";
+                    auditoriaFechamentoNotaConceitoTurma.MensagemConsistencia = $" {tipoNota.TipoNota.Name()} registrados com sucesso.";
                 
+                auditoriaFechamentoNotaConceitoTurma.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentoTurmaDisciplina, tipoNota.EhNota());
+                auditoriaFechamentoNotaConceitoTurma.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentoTurmaDisciplina, tipoNota.EhNota());
+                auditoriaFechamentoNotaConceitoTurma.Situacao = fechamentoTurmaDisciplina.Situacao;
+                auditoriaFechamentoNotaConceitoTurma.SituacaoNome = fechamentoTurmaDisciplina.Situacao.Name();
+                auditoriaFechamentoNotaConceitoTurma.DataFechamento = fechamentoTurmaDisciplina.AlteradoEm ?? fechamentoTurmaDisciplina.CriadoEm;
+
                 await InserirOuAtualizarCache(fechamentoTurma, emAprovacao);
 
-                return auditoria;
+                return auditoriaFechamentoNotaConceitoTurma;
             }
             catch (Exception e)
             {
