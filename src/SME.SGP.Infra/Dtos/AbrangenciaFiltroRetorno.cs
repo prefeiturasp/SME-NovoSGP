@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System.ComponentModel.DataAnnotations;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dto
 {
@@ -32,6 +33,7 @@ namespace SME.SGP.Dto
         public TipoEscola TipoEscola { get; set; }
         public string NomeTipoEscola { get { return TipoEscola.GetAttribute<DisplayAttribute>().ShortName; } }
         public int TipoTurno { get; set; }
+        public TipoTurma TipoTurma { get; set; }
         public long TurmaId { get; set; }
         public bool EnsinoEspecial { get; set; }
     }

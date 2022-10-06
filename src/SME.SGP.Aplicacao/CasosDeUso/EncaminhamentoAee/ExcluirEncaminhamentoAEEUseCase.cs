@@ -2,6 +2,9 @@
 using SME.SGP.Aplicacao.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -13,11 +16,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(long encaminhamentoAeeId)
         {
-            await mediator.Send(new ExcluirEncaminhamentoAEECommand(encaminhamentoAeeId));
+            var encaminhamentoAee = await mediator.Send(new ObterEncaminhamentoAEEPorIdQuery(encaminhamentoAeeId));
 
-            await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAeeId);
+            if (encaminhamentoAee == null )
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_ENCONTRADO);
+            
+            if (!(encaminhamentoAee.Situacao == SituacaoAEE.Rascunho || encaminhamentoAee.Situacao == SituacaoAEE.Encaminhado))
+                throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
+            
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            
+            if (usuarioLogado.EhGestorEscolar() || encaminhamentoAee.CriadoRF.Equals(usuarioLogado.CodigoRf))
+            {
+                await mediator.Send(new ExcluirEncaminhamentoAEECommand(encaminhamentoAeeId));
 
-            return true;
+                await ExcluirPendenciasEncaminhamentoAEE(encaminhamentoAeeId);
+                
+                return true;
+            }
+            
+            throw new NegocioException(MensagemNegocioEncaminhamentoAee.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_PELO_USUARIO_LOGADO);
         }
 
         private async Task ExcluirPendenciasEncaminhamentoAEE(long encaminhamentoId)
