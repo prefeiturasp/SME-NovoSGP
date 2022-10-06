@@ -16,5 +16,6 @@
         public const string EM = "em";
         public const string CRIANCA_REMANEJADA = "Criança Remanejada";
         public const string ESTUDANTE_REMANEJADO = "Estudante Remanejado";
+        public const string ESTUDANTE_NAO_ENCONTRADO = "O aluno informado não foi encontrado";
     }
 }

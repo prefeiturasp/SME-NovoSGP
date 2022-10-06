@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"O encaminhamento {estudanteOuCrianca} {encaminhamentoAEE.AlunoNome} ({encaminhamentoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} está disponível para análise. <br/><a href='{hostAplicacao}aee/encaminhamento/editar/{encaminhamentoAEE.Id}'>Clique aqui para acessar o encaminhamento.</a> " +
                 $"<br/><br/>Esta pendência será resolvida automaticamente quando o parecer do AEE for registrado no sistema";
 
-            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao);
+            var pendencia = new Pendencia(TipoPendencia.AEE, titulo, descricao, turma.Id);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
             var pendenciaUsuario = new PendenciaUsuario { PendenciaId = pendencia.Id, UsuarioId = encaminhamentoAEE.ResponsavelId.GetValueOrDefault() };

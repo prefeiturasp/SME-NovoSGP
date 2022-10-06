@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroValidarMediaAlunosDto>();
 
-            var dataAtual = DateTime.Now;
             var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(filtro.AtividadesAvaliativasIds.ToArray(), filtro.AlunosIds.ToArray(), filtro.DisciplinaId, filtro.CodigoTurma));
 
             var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ListarPorIds(filtro.AtividadesAvaliativasIds);
@@ -40,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
         private FiltroValidarMediaAlunosAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(FiltroValidarMediaAlunosDto filtroValidarMedia, System.Collections.Generic.IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, long notaChaveAvaliativa, IEnumerable<NotaConceito> notasPorAvaliacao)
         {
-            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notaChaveAvaliativa, notasPorAvaliacao, filtroValidarMedia.Usuario, filtroValidarMedia.DisciplinaId, filtroValidarMedia.HostAplicacao);
+            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notaChaveAvaliativa, notasPorAvaliacao, filtroValidarMedia.Usuario, filtroValidarMedia.DisciplinaId, filtroValidarMedia.HostAplicacao, filtroValidarMedia.TemAbrangenciaUeOuDreOuSme);
         }
     }
 }
