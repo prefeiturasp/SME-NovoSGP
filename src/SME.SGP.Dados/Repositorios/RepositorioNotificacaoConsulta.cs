@@ -239,34 +239,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
         }
 
-        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
-        {
-            var sql = @"select
-	                        n.id,
-	                        n.categoria,
-	                        n.codigo ,
-	                        n.criado_em as Data,
-	                        n.mensagem as DescricaoStatus,
-	                        n.status,
-	                        n.tipo,
-	                        n.titulo
-                        from
-	                        notificacao n
-                        left join usuario u on
-	                        n.usuario_id = u.id
-                        where
-	                        u.rf_codigo = @usuarioRf
-	                        and extract(year
-                        from
-	                        n.criado_em) = @anoLetivo
-	                        and not excluida
-                        order by
-	                        n.status asc,
-	                        n.criado_em desc
-                        limit @limite";
-            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite });
-        }
-
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
         {
             var query = @"select 
@@ -304,6 +276,30 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
 
             return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { ano });
+        }
+
+        public Task<IEnumerable<NotificacaoUsuarioDto>> ObterUsuariosNotificacoesPorIds(long[] notificacoesIds)
+        {
+            var query = @"select 
+                            n.id as Id,
+                            n.codigo as Codigo,
+                            n.status as Status,
+                            u.rf_codigo as UsuarioRf
+                         from notificacao n 
+                         left join usuario u on u.id = n.usuario_id
+	                    where n.id = any(@notificacoesIds)";
+
+            return database.Conexao.QueryAsync<NotificacaoUsuarioDto>(query, new { notificacoesIds });
+        }
+
+        public Task<string> ObterUsuarioNotificacaoPorId(long id)
+        {
+            var query = @"select u.rf_codigo
+                         from notificacao n 
+                         left join usuario u on u.id = n.usuario_id
+	                    where n.id = @id";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
     }
 }

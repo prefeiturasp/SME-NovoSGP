@@ -107,6 +107,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioSemestralAlunoSecaoMap());
                config.AddMap(new SecaoRelatorioSemestralPAPMap());
                config.AddMap(new ConselhoClasseParecerAnoMap());
+               config.AddMap(new ConselhoClasseParecerMap());
                config.AddMap(new ConselhoClasseParecerConclusivoMap());
                config.AddMap(new ObjetivoAprendizagemMap());
                config.AddMap(new PlanoAnualTerritorioSaberMap());
@@ -142,6 +143,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new QuestionarioMap());
                config.AddMap(new QuestaoMap());
                config.AddMap(new OpcaoRespostaMap());
+               config.AddMap(new OpcaoQuestaoComplementarMap());
                config.AddMap(new SecaoEncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEESecaoMap());

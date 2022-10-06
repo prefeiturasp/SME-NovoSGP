@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.PlanoAEE
 {
     public class Ao_acessar_controller_obter_paai : TesteBase
     {
@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao
         const string CRIADO_POR = "TESTE";
         public Ao_acessar_controller_obter_paai(CollectionFixture collectionFixture) : base(collectionFixture) { }
 
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve retornar verdadeiro quando houver registros na lista de paai")]
         public async Task Deve_retornar_true_quando_houver_registros_na_lista_de_paai()
         {
             await InserirDre(DRE_CODIGO_1);
@@ -34,7 +34,7 @@ namespace SME.SGP.TesteIntegracao
 
             Assert.True(retorno.Count() > 0);
         }
-        [Fact]
+        [Fact(DisplayName = "Plano AEE - Deve retornar verdadeiro quando não houver registros na lista de paai")]
         public async Task Deve_retornar_true_quando_nao_houver_registros_na_lista_de_paai()
         {
             await InserirDre(DRE_CODIGO_1);

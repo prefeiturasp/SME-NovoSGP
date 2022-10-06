@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using System.Linq;
+using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Dominio.Interfaces;
@@ -1105,7 +1107,7 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, params EventoLetivo[] tiposLetivosConsiderados)
+        public async Task<IEnumerable<Evento>> ObterEventosPorTipoDeCalendarioAsync(long tipoCalendarioId, string ueCodigo = "", params EventoLetivo[] tiposLetivosConsiderados)
         {
             var query = @"select
 	                        data_inicio,
@@ -1123,12 +1125,17 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             e.tipo_calendario_id = @tipoCalendarioId
                         and extract(year from e.data_inicio) = tc.ano_letivo     
-                        and e.letivo = any(@tiposLetivos)
+                        and e.letivo = any(@tiposLetivos)                         
                         and not e.excluido";
-            return await database.Conexao.QueryAsync<Evento>(query.ToString(),
+
+            if (!string.IsNullOrEmpty(ueCodigo))
+                query += " and e.ue_id = @ueCodigo ";
+            
+            return await database.Conexao.QueryAsync<Evento>(query,
                 new
                 {
                     tipoCalendarioId,
+                    ueCodigo,
                     tiposLetivos = tiposLetivosConsiderados.Select(tlc => (int)tlc).ToArray()
                 });
         }
@@ -1381,7 +1388,7 @@ namespace SME.SGP.Dados.Repositorios
                             AND ((e.dre_id is null and e.ue_id is null) OR (e.ue_id = @ueId))
                             AND e.data_inicio <= @dataAula
 	                        AND (e.data_fim  IS NULL OR e.data_fim >= @dataAula)
-                            HAVING Count(liberacao.id) >= 1 AND Count(outros.id) >= 1";
+                            HAVING Count(liberacao.id) >= 1 OR Count(outros.id) >= 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new
             {

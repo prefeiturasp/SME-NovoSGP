@@ -10,8 +10,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -23,11 +25,11 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
-        private readonly IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia;
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IUnitOfWork unitOfWork;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IMediator mediator;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public ServicoCompensacaoAusencia(IRepositorioCompensacaoAusencia repositorioCompensacaoAusencia,
             IRepositorioCompensacaoAusenciaAluno repositorioCompensacaoAusenciaAluno,
@@ -36,10 +38,10 @@ namespace SME.SGP.Dominio.Servicos
             IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
             IRepositorioTurmaConsulta repositorioTurmaConsulta,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IRepositorioNotificacaoCompensacaoAusencia repositorioNotificacaoCompensacaoAusencia,
             IConsultasDisciplina consultasDisciplina,
             IUnitOfWork unitOfWork,
-            IMediator mediator)
+            IMediator mediator,
+            IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.repositorioCompensacaoAusenciaAluno = repositorioCompensacaoAusenciaAluno ?? throw new System.ArgumentNullException(nameof(repositorioCompensacaoAusenciaAluno));
@@ -47,17 +49,17 @@ namespace SME.SGP.Dominio.Servicos
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new System.ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new System.ArgumentNullException(nameof(repositorioTipoCalendario));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioTurmaConsulta));
-            this.repositorioNotificacaoCompensacaoAusencia = repositorioNotificacaoCompensacaoAusencia ?? throw new System.ArgumentNullException(nameof(repositorioNotificacaoCompensacaoAusencia));
             this.consultasDisciplina = consultasDisciplina ?? throw new ArgumentNullException(nameof(consultasDisciplina));
             this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
         {
             try
-            {
+            {               
                 // Busca dados da turma
                 var turma = await BuscaTurma(compensacaoDto.TurmaId);
 
@@ -100,7 +102,7 @@ namespace SME.SGP.Dominio.Servicos
                 
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
-                
+
                 var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
                 
                 unitOfWork.PersistirTransacao();
@@ -239,71 +241,74 @@ namespace SME.SGP.Dominio.Servicos
                 alunoRemovido.Excluir();
                 listaPersistencia.Add(alunoRemovido);
             }
-            
-            var obterFrequenciaPorListaDeAlunosDisciplinaData = await mediator.Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(alunosDto?.Select(x => x.Id).ToArray(), disciplinaId, periodo.PeriodoFim, turmaId));
 
-            // altera as faltas compensadas
-            var alunosAlterarFaltasCompensada = alunos.Where(a => !a.Excluido);
-
-            if (alunosAlterarFaltasCompensada.Any())
+            if (alunosDto.Any())
             {
-                var alunosCodigos = alunosAlterarFaltasCompensada?.Select(x => x.CodigoAluno);
-                var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && o.DisciplinaId == disciplinaId && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
-                foreach (var aluno in alunosAlterarFaltasCompensada)
+                var obterFrequenciaPorListaDeAlunosDisciplinaData = await mediator.Send(new ObterFrequenciaPorListaDeAlunosDisciplinaDataQuery(alunosDto?.Select(x => x.Id).ToArray(), disciplinaId, periodo.PeriodoFim, turmaId));
+
+                // altera as faltas compensadas
+                var alunosAlterarFaltasCompensada = alunos.Where(a => !a.Excluido);
+
+                if (alunosAlterarFaltasCompensada.Any())
                 {
-                    var frequenciaAluno = consultaAlunosAlterarFaltasCompensada.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DisciplinaId == disciplinaId && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
-                    if (frequenciaAluno == null)
+                    var alunosCodigos = alunosAlterarFaltasCompensada?.Select(x => x.CodigoAluno);
+                    var consultaAlunosAlterarFaltasCompensada = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(o => alunosCodigos.Contains(o.CodigoAluno) && o.DisciplinaId == disciplinaId && o.PeriodoFim == periodo.PeriodoFim && o.TurmaId == turmaId);
+                    foreach (var aluno in alunosAlterarFaltasCompensada)
                     {
-                        mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
-                        continue;
-                    }
-                    
-                    var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0
-                        ? frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas
-                        : aluno.QuantidadeFaltasCompensadas;
+                        var frequenciaAluno = consultaAlunosAlterarFaltasCompensada.FirstOrDefault(x => x.CodigoAluno == aluno.CodigoAluno && x.DisciplinaId == disciplinaId && x.PeriodoFim == periodo.PeriodoFim && x.TurmaId == turmaId);
+                        if (frequenciaAluno == null)
+                        {
+                            mensagensExcessao.Append($"O aluno(a) [{aluno.CodigoAluno}] não possui ausência para compensar. ");
+                            continue;
+                        }
 
-                    var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
-                    if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
-                    {
-                        mensagensExcessao.Append(
-                            $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
-                        continue;
-                    }
+                        var faltasNaoCompensadas = frequenciaAluno.NumeroFaltasNaoCompensadas > 0
+                            ? frequenciaAluno.NumeroFaltasNaoCompensadas + aluno.QuantidadeFaltasCompensadas
+                            : aluno.QuantidadeFaltasCompensadas;
 
-                    aluno.QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas;
-                    listaPersistencia.Add(aluno);
+                        var alunoDto = alunosDto.FirstOrDefault(a => a.Id == aluno.CodigoAluno);
+                        if (alunoDto.QtdFaltasCompensadas > faltasNaoCompensadas)
+                        {
+                            mensagensExcessao.Append(
+                                $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+                            continue;
+                        }
+
+                        aluno.QuantidadeFaltasCompensadas = alunoDto.QtdFaltasCompensadas;
+                        listaPersistencia.Add(aluno);
+                    }
                 }
-            }
 
-            // adiciona os alunos novos
-            var listaAlunosDto = alunosDto?.Where(d => !alunos.Any(a => a.CodigoAluno == d.Id));
-            if (listaAlunosDto.Any())
-            {
-                var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
-                var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && c.DisciplinaId == disciplinaId && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
-                foreach (var alunoDto in listaAlunosDto)
+                // adiciona os alunos novos
+                var listaAlunosDto = alunosDto?.Where(d => !alunos.Any(a => a.CodigoAluno == d.Id && !a.Excluido));
+                if (listaAlunosDto.Any())
                 {
-                    var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && x.DisciplinaId == disciplinaId && x.TurmaId == turmaId);
-                    if (frequenciaAluno == null)
+                    var listaIdsAluno = listaAlunosDto.Select(x => x.Id);
+                    var consultaAlunosFrequencia = obterFrequenciaPorListaDeAlunosDisciplinaData.Where(c => listaIdsAluno.Contains(c.CodigoAluno) && c.DisciplinaId == disciplinaId && c.PeriodoFim == periodo.PeriodoFim && c.TurmaId == turmaId);
+                    foreach (var alunoDto in listaAlunosDto)
                     {
-                        mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
-                        continue;
+                        var frequenciaAluno = consultaAlunosFrequencia?.FirstOrDefault(x => x.CodigoAluno == alunoDto.Id && x.DisciplinaId == disciplinaId && x.TurmaId == turmaId);
+                        if (frequenciaAluno == null)
+                        {
+                            mensagensExcessao.Append($"O aluno(a) [{alunoDto.Id}] não possui ausência para compensar. ");
+                            continue;
+                        }
+
+                        if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
+                        {
+                            mensagensExcessao.Append(
+                                $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
+
+                            continue;
+                        }
+
+                        listaPersistencia.Add(MapearCompensacaoAlunoEntidade(compensacaoId, alunoDto));
                     }
-
-                    if (alunoDto.QtdFaltasCompensadas > frequenciaAluno.NumeroFaltasNaoCompensadas && frequenciaAluno.NumeroFaltasNaoCompensadas > 0)
-                    {
-                        mensagensExcessao.Append(
-                            $"O aluno(a) [{alunoDto.Id}] possui apenas {frequenciaAluno.NumeroFaltasNaoCompensadas} faltas não compensadas. ");
-
-                        continue;
-                    }
-
-                    listaPersistencia.Add(MapearCompensacaoAlunoEntidade(compensacaoId, alunoDto));
                 }
-            }
 
-            if (!string.IsNullOrEmpty(mensagensExcessao.ToString()))
-                throw new NegocioException(mensagensExcessao.ToString());
+                if (!string.IsNullOrEmpty(mensagensExcessao.ToString()))
+                    throw new NegocioException(mensagensExcessao.ToString());
+            }
 
             await SalvarCompensacaoAlunos(alteracao, usuarioLogado, listaPersistencia);
 
@@ -336,8 +341,7 @@ namespace SME.SGP.Dominio.Servicos
             compensacao.DisciplinaId = compensacaoDto.DisciplinaId;
             compensacao.Bimestre = compensacaoDto.Bimestre;
             compensacao.Nome = compensacaoDto.Atividade;
-            compensacao.Descricao = compensacaoDto.Descricao.Replace(ArquivoConstants.PastaTemporaria,
-                $"/{Path.Combine(TipoArquivo.CompensacaoAusencia.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            compensacao.Descricao = compensacaoDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
 
             return compensacao;
         }
@@ -395,7 +399,7 @@ namespace SME.SGP.Dominio.Servicos
                     // Exclui compensação
                     await repositorioCompensacaoAusencia.SalvarAsync(compensacaoExcluir);
                     // Excluir notificações
-                    repositorioNotificacaoCompensacaoAusencia.Excluir(compensacaoExcluir.Id);
+                    await mediator.Send(new ExcluirNotificacaoCompensacaoAusenciaCommand(compensacaoExcluir.Id));
 
                     unitOfWork.PersistirTransacao();
 

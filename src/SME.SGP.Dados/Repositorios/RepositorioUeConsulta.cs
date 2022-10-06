@@ -69,10 +69,15 @@ namespace SME.SGP.Dados.Repositorios
             return contexto.QueryFirstOrDefault<Ue>("select * from ue where ue_id = @ueId", new { ueId });
         }
 
+        public async Task<long> ObterIdPorCodigoUe(string codigoUe)
+        {
+            return await contexto.QueryFirstOrDefaultAsync<long>("select id from ue where ue_id = @codigoUe", new { codigoUe });
+        }
+
         public async Task<Ue> ObterUeComDrePorCodigo(string ueCodigo)
         {
-            var query = @"select ue.*, dre.* 
-                            from ue 
+            var query = @"select ue.*, dre.*
+                            from ue
                            inner join dre on dre.id = ue.dre_id
                            where ue_id = @ueCodigo";
 
@@ -86,8 +91,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Ue> ObterUeComDrePorId(long ueId)
         {
-            var query = @"select ue.*, dre.* 
-                            from ue 
+            var query = @"select ue.*, dre.*
+                            from ue
                            inner join dre on dre.id = ue.dre_id
                            where ue.id = @ueId";
 
@@ -152,13 +157,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.QueryAsync<Turma>(query.ToString(), new { ueCodigo, modalidade, ano, ehHistorico });
         }
+
         public async Task<IEnumerable<Turma>> ObterTurmasPorCodigoUe(string ueCodigo, int anoLetivo)
         {
             var query = @"select distinct t.* from turma t
                             join ue u on t.ue_id = u.id
-                            join fechamento_turma ft on t.id = ft.turma_id 
-                            join conselho_classe cc on cc.fechamento_turma_id = ft.id 
-                            where u.ue_id = @ueCodigo 
+                            join fechamento_turma ft on t.id = ft.turma_id
+                            join conselho_classe cc on cc.fechamento_turma_id = ft.id
+                            where u.ue_id = @ueCodigo
                                   and ano_letivo = @anoLetivo";
 
             return await contexto.QueryAsync<Turma>(query, new { ueCodigo, anoLetivo });
@@ -194,7 +200,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> ValidarUeEducacaoInfantil(long ueId)
         {
-            var query = @"select 1 
+            var query = @"select 1
                           from ue
                          where ue.Id = @ueId
                            and ue.tipo_escola in (2, 17, 28, 30, 31)";
@@ -219,13 +225,12 @@ namespace SME.SGP.Dados.Repositorios
 
                 return ue;
             }, new { modalidades, anoLetivo });
-
         }
 
         public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
         {
-            var query = @"select ue.*, dre.* 
-                            from ue 
+            var query = @"select ue.*, dre.*
+                            from ue
                            inner join dre on dre.id = ue.dre_id
                            where dre_id = @dreCodigo
                              and exists (select 1 from turma where modalidade_codigo = @modalidade)";
@@ -241,7 +246,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Ue>> ObterUEsSemPeriodoFechamento(long periodoEscolarId, int ano, int[] modalidades, DateTime dataReferencia)
         {
             var query = @" select distinct ue.*, dre.*
-                               from ue 
+                               from ue
                               inner join dre on dre.id = ue.dre_id
                               inner join turma t on t.ue_id = ue.id
                               where t.modalidade_codigo = any(@modalidades)
@@ -279,8 +284,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<Ue>> ObterUEsComDREsPorIds(long[] ids)
         {
-            var query = @"select ue.*, dre.* 
-                            from ue 
+            var query = @"select ue.*, dre.*
+                            from ue
                            inner join dre on dre.id = ue.dre_id
                            where ue.id = ANY(@ids)";
 
@@ -294,8 +299,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Ue> ObterUePorId(long id)
         {
-            var query = @"select ue.* 
-                        from ue 
+            var query = @"select ue.*
+                        from ue
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @id";
 
@@ -323,9 +328,9 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<string>> ObterUesCodigosPorModalidadeEAnoLetivo(Modalidade modalidade, int anoLetivo, int pagina = 1)
         {
-            var query = @"select distinct(ue.ue_id) 
+            var query = @"select distinct(ue.ue_id)
                             from turma t
-                           inner join ue on ue.id = t.ue_id 
+                           inner join ue on ue.id = t.ue_id
                            where modalidade_codigo = @modalidadeInt
                              and t.ano_letivo = @anoLetivo
                           offset (@pagina * 10) rows fetch next 10 rows only;";
@@ -337,7 +342,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ue.ue_id as UeCodigo
                                 , dre.dre_id as DreCodigo
-                          from ue 
+                          from ue
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @ueId";
 
@@ -380,6 +385,11 @@ namespace SME.SGP.Dados.Repositorios
         public Task<string> ObterCodigoPorId(long ueId)
         {
             return contexto.Conexao.QueryFirstOrDefaultAsync<string>("select ue_id from UE where id = @ueId", new { ueId });
+        }
+
+        public Task<string> ObterNomePorCodigo(string ueCodigo)
+        {
+            return contexto.Conexao.QueryFirstOrDefaultAsync<string>("select nome from UE where ue_id = @ueCodigo", new { ueCodigo });
         }
     }
 }

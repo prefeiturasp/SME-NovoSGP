@@ -41,6 +41,16 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId, tipoFrequencia = (int)TipoFrequencia.F });
         }
 
+        public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosFrequenciaPorAulaId(long aulaId)
+        {
+            var query = @"SELECT *
+                            FROM registro_frequencia_aluno rfa
+                            WHERE NOT rfa.excluido
+                              AND rfa.aula_id = @aulaId";
+
+            return database.Conexao.QueryAsync<RegistroFrequenciaAluno>(query, new { aulaId});
+        }
+
         public async Task<IEnumerable<AusenciaPorDisciplinaAlunoDto>> ObterAusenciasAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, IEnumerable<string> codigoAlunos, params string[] turmasId)
         {
             var query = @"           

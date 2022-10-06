@@ -83,7 +83,10 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
 
             if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
+            {
                 repositorioNotificacao.Salvar(notificacao);
+                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
+            }
 
             var retorno = await MapearEntidadeParaDetalheDto(notificacao);
 

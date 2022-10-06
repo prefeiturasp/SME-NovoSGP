@@ -11,16 +11,19 @@ namespace SME.SGP.Aplicacao
     public class ExcluirNotificacaoDiarioBordoCommandHandler : IRequestHandler<ExcluirNotificacaoDiarioBordoCommand, bool>
     {
         private readonly IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao;
-        private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
+
         public ExcluirNotificacaoDiarioBordoCommandHandler(IRepositorioDiarioBordoObservacaoNotificacao repositorioDiarioBordoObservacaoNotificacao,
                                                            IRepositorioNotificacao repositorioNotificacao,
-                                                           IUnitOfWork unitOfWork)
+                                                           IUnitOfWork unitOfWork,
+                                                           IMediator mediator)
         {
             this.repositorioDiarioBordoObservacaoNotificacao = repositorioDiarioBordoObservacaoNotificacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacaoNotificacao));
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
         // observacao <- notificacao_observacao -> notificacao
         public async Task<bool> Handle(ExcluirNotificacaoDiarioBordoCommand request, CancellationToken cancellationToken)
         {
@@ -34,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var notificacaoObservacaoDominio = MapearParaDominio(notificacaoObservacao);
                     await repositorioDiarioBordoObservacaoNotificacao.Excluir(notificacaoObservacaoDominio);
-                    await repositorioNotificacao.RemoverLogico(notificacaoObservacao.IdNotificacao);
+                    await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacaoObservacao.IdNotificacao));
                 }
 
                 unitOfWork.PersistirTransacao();

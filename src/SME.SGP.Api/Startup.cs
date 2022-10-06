@@ -76,12 +76,6 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos")),
-                RequestPath = "/Arquivos"
-            });
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

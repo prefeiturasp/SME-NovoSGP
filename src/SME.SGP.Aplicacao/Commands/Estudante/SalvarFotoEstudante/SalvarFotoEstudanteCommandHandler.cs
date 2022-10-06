@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
 using System;
 using System.Drawing;
 using System.IO;
@@ -41,7 +39,7 @@ namespace SME.SGP.Aplicacao
         {
             var imagem = await ObterImagem(file);
             var miniatura = imagem.GetThumbnailImage(88, 88, () => false, IntPtr.Zero);
-
+            
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
@@ -82,12 +80,11 @@ namespace SME.SGP.Aplicacao
 
         private async Task<Image> ObterImagem(IFormFile file)
         {
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                var img = Image.FromStream(memoryStream);
-                return img;
-            }
+            var stream = file.OpenReadStream();
+            
+            var image = Image.FromStream(stream);
+            
+            return image;
         }
     }
 }

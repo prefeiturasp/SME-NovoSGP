@@ -1,8 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -11,17 +13,20 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IServicoNotificacao servicoNotificacao;
         private readonly IServicoUsuario servicoUsuario;
+        private readonly IMediator mediator;
 
         public ComandosNotificacao(IRepositorioNotificacao repositorioNotificacao,
                                    IServicoNotificacao servicoNotificacao,
-                                   IServicoUsuario servicoUsuario)
+                                   IServicoUsuario servicoUsuario,
+                                   IMediator mediator)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId)
+        public async Task<List<AlteracaoStatusNotificacaoDto>> Excluir(IList<long> notificacoesId)
         {
             if (notificacoesId == null)
             {
@@ -33,8 +38,8 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     Notificacao notificacao = ObterPorIdENotificarCasoNaoExista(notificacaoId);
-                    notificacao.Remover();
-                    repositorioNotificacao.Salvar(notificacao);
+                    if (notificacao.ValidaExclusao())
+                        await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                     resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' excluída com sucesso.", true));
                 }
                 catch (NegocioException nex)
@@ -49,12 +54,13 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
-        public List<AlteracaoStatusNotificacaoDto> MarcarComoLida(IList<long> notificacoesId)
+        public async Task<List<AlteracaoStatusNotificacaoDto>> MarcarComoLida(IList<long> notificacoesId)
         {
             if (notificacoesId == null)
             {
                 throw new NegocioException("A lista de notificações deve ser informada.");
             }
+
             var resultado = new List<AlteracaoStatusNotificacaoDto>();
             foreach (var notificacaoId in notificacoesId)
             {
@@ -64,6 +70,8 @@ namespace SME.SGP.Aplicacao
 
                     notificacao.MarcarComoLida();
                     repositorioNotificacao.Salvar(notificacao);
+                    await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
+
                     resultado.Add(new AlteracaoStatusNotificacaoDto($"Notificação com Código: '{notificacao.Codigo}' alterada com sucesso.", true));
                 }
                 catch (NegocioException nex)
@@ -78,10 +86,10 @@ namespace SME.SGP.Aplicacao
             return resultado;
         }
 
-        public void Salvar(NotificacaoDto notificacaoDto)
+        public Task Salvar(NotificacaoDto notificacaoDto)
         {
             var notificacao = MapearParaDominio(notificacaoDto);
-            servicoNotificacao.Salvar(notificacao);
+            return servicoNotificacao.Salvar(notificacao);
         }
 
         private Notificacao MapearParaDominio(NotificacaoDto notificacaoDto)

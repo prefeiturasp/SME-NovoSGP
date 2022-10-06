@@ -69,14 +69,14 @@ namespace SME.SGP.Aplicacao.Servicos
             var abrangenciasHistorica = ObterAbrangenciaHistorica(login).Result;
             long[] idsRemover = abrangenciasHistorica
                 .Where(a => a.perfil != Perfis.PERFIL_PAEE
-                         && a.perfil != Perfis.PERFIL_PAP
-                         && a.perfil != Perfis.PERFIL_PROFESSOR
-                         && a.perfil != Perfis.PERFIL_CJ
-                         && a.perfil != Perfis.PERFIL_POED
-                         && a.perfil != Perfis.PERFIL_POSL
-                         && a.perfil != Perfis.PERFIL_PROFESSOR_INFANTIL
-                         && a.perfil != Perfis.PERFIL_CJ_INFANTIL
-                         && !perfis.Contains(a.perfil)
+                            && a.perfil != Perfis.PERFIL_PAP
+                            && a.perfil != Perfis.PERFIL_PROFESSOR
+                            && a.perfil != Perfis.PERFIL_CJ
+                            && a.perfil != Perfis.PERFIL_POED
+                            && a.perfil != Perfis.PERFIL_POSL
+                            && a.perfil != Perfis.PERFIL_PROFESSOR_INFANTIL
+                            && a.perfil != Perfis.PERFIL_CJ_INFANTIL
+                            && !perfis.Contains(a.perfil)
                 ).Select(a => a.Id).ToArray();
 
             if (idsRemover.Any())
@@ -135,6 +135,7 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 throw new NegocioException(erro);
             }
+
             var ciclos = servicoEOL.BuscarCiclos();
             if (ciclos.Any())
             {
@@ -147,7 +148,6 @@ namespace SME.SGP.Aplicacao.Servicos
 
                 throw new NegocioException(erro);
             }
-
         }
 
         public bool UeEstaNaAbrangecia(string login, Guid perfilId, string codigoDre, string codigoUE)
@@ -190,8 +190,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         abrangencia.UeId = turmaSGP.Ue.Id;
                         abrangencia.UsuarioId = usuario.Id;
                         abrangencia.TurmaId = turmaSGP.Id;
-                        abrangencia.Perfil = ((Modalidade)int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ?
-                            Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
+                        abrangencia.Perfil = ((Modalidade) int.Parse(turma.CodigoModalidade) == Modalidade.EducacaoInfantil) ? Perfis.PERFIL_PROFESSOR_INFANTIL : Perfis.PERFIL_PROFESSOR;
 
                         abrangenciaTurmasHistoricasEOL.Add(abrangencia);
                     }
@@ -222,7 +221,7 @@ namespace SME.SGP.Aplicacao.Servicos
                         }
 
                         repositorioAbrangencia.AtualizaAbrangenciaHistoricaAnosAnteriores(paraAtualizarAbrangencia.Select(x => x.Id), anoLetivo);
-                    }                  
+                    }
                 }
 
 
@@ -250,7 +249,6 @@ namespace SME.SGP.Aplicacao.Servicos
 
         private async Task BuscaAbrangenciaEPersiste(string login, Guid perfil)
         {
-
             Task<AbrangenciaCompactaVigenteRetornoEOLDTO> consultaEol = null;
             AbrangenciaCompactaVigenteRetornoEOLDTO abrangenciaEol = null;
 
@@ -304,7 +302,6 @@ namespace SME.SGP.Aplicacao.Servicos
                     unitOfWork.PersistirTransacao();
                 }
             }
-
         }
 
         private async Task<IEnumerable<Turma>> ImportarTurmasNaoEncontradas(string[] codigosNaoEncontrados)
@@ -329,7 +326,7 @@ namespace SME.SGP.Aplicacao.Servicos
                 dres = retorno.Item1;
                 codigosNaoEncontrados = retorno.Item2;
             }
-                
+
             if (abrangenciaEol.IdUes != null && abrangenciaEol.IdUes.Length > 0)
             {
                 var retorno = await mediator.Send(new ObterUeMaterializarCodigosQuery(abrangenciaEol.IdUes));
@@ -351,19 +348,29 @@ namespace SME.SGP.Aplicacao.Servicos
             var listaEscolasDresSupervior = await consultasSupervisor.ObterPorDreESupervisor(login, string.Empty);
 
             if (listaEscolasDresSupervior.Any())
-            {
-                var escolas = from a in listaEscolasDresSupervior
-                              from b in a.Escolas
-                              select b.Codigo;
-                return escolas.ToArray();
+                return listaEscolasDresSupervior.Select(escola => escola.UeId).ToArray();
+           
+            return Array.Empty<string>();
+        }
+
+
+        private IEnumerable<AbrangenciaSinteticaDto> RemoverAbrangenciaSinteticaDuplicada(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica)
+        {
+            var retorno = new List<AbrangenciaSinteticaDto>();
+            var abrangencia = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
+            foreach (var item in abrangencia)
+            { 
+                retorno.Add(item.FirstOrDefault());
             }
 
-            return Array.Empty<string>();
+            return retorno;
         }
 
         private void SincronizarAbragenciaPorTurmas(IEnumerable<AbrangenciaSinteticaDto> abrangenciaSintetica, IEnumerable<Turma> turmas, string login, Guid perfil)
         {
-            List<long> idsParaAtualizar = new List<long>();
+            abrangenciaSintetica = RemoverAbrangenciaSinteticaDuplicada(abrangenciaSintetica);
+            var abr = abrangenciaSintetica.GroupBy(x => x.CodigoTurma).Select(y => y.OrderBy(a => a.CodigoTurma));
+            var idsParaAtualizar = new List<long>();
 
             if (!turmas.Any() && abrangenciaSintetica.Any())
                 idsParaAtualizar = abrangenciaSintetica.Select(x => x.Id).ToList();
@@ -386,10 +393,9 @@ namespace SME.SGP.Aplicacao.Servicos
                 if(abrangenciaSintetica.Count() != turmas.Count())
                     idsParaAtualizar.AddRange(VerificaTurmasAbrangenciaAtualParaHistorica(abrangenciaSintetica, turmas));
 
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, TurmaId = x.Id }), login);
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, TurmaId = x.Id}), login);
 
             repositorioAbrangencia.AtualizaAbrangenciaHistorica(idsParaAtualizar);
-
         }
 
         public IEnumerable<long> VerificaTurmasAbrangenciaAtualParaHistorica(IEnumerable<AbrangenciaSinteticaDto> abrangenciaAtual, IEnumerable<Turma> turmasAbrangenciaEol)
@@ -433,7 +439,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var novas = ues.Where(x => !abrangenciaSintetica.Select(y => y.UeId).Contains(x.Id));
 
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, UeId = x.Id }), login);
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, UeId = x.Id}), login);
 
             var paraAtualizar = abrangenciaSintetica.Where(x => !ues.Select(y => y.Id).Contains(x.UeId));
 
@@ -450,7 +456,7 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var novas = dres.Where(x => !abrangenciaSintetica.Select(y => y.DreId).Contains(x.Id));
 
-            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() { Perfil = perfil, DreId = x.Id }), login);
+            repositorioAbrangencia.InserirAbrangencias(novas.Select(x => new Abrangencia() {Perfil = perfil, DreId = x.Id}), login);
 
             var paraAtualizar = abrangenciaSintetica.Where(x => !dres.Select(y => y.Id).Contains(x.DreId));
 
@@ -466,43 +472,43 @@ namespace SME.SGP.Aplicacao.Servicos
         private void SincronizarCiclos(IEnumerable<CicloRetornoDto> ciclos)
         {
             IEnumerable<CicloEnsino> ciclosEnsino = ciclos.Select(x =>
-            new CicloEnsino
-            {
-                Descricao = x.Descricao,
-                DtAtualizacao = x.DtAtualizacao,
-                CodEol = x.Codigo,
-                CodigoEtapaEnsino = x.CodigoEtapaEnsino,
-                CodigoModalidadeEnsino = x.CodigoModalidadeEnsino
-            });
+                new CicloEnsino
+                {
+                    Descricao = x.Descricao,
+                    DtAtualizacao = x.DtAtualizacao,
+                    CodEol = x.Codigo,
+                    CodigoEtapaEnsino = x.CodigoEtapaEnsino,
+                    CodigoModalidadeEnsino = x.CodigoModalidadeEnsino
+                });
 
             repositorioCicloEnsino.Sincronizar(ciclosEnsino);
         }
 
         private async Task SincronizarEstruturaInstitucional(EstruturaInstitucionalRetornoEolDTO estrutura)
         {
-            var dres = estrutura.Dres.Select(x => new Dre() { Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome });
-            var ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue { CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() { CodigoDre = x.Codigo } }));
+            var dres = estrutura.Dres.Select(x => new Dre() {Abreviacao = x.Abreviacao, CodigoDre = x.Codigo, Nome = x.Nome});
+            var ues = estrutura.Dres.SelectMany(x => x.Ues.Select(y => new Ue {CodigoUe = y.Codigo, TipoEscola = y.CodTipoEscola, Nome = y.Nome, Dre = new Dre() {CodigoDre = x.Codigo}}));
             var turmas = estrutura.Dres.SelectMany(x => x.Ues.SelectMany(y => y.Turmas.Select(z =>
-             new Turma
-             {
-                 Ano = z.Ano,
-                 AnoLetivo = z.AnoLetivo,
-                 CodigoTurma = z.Codigo,
-                 //Para turma do tipo 7 (Itinerarios 2A Ano) a modalidade é definida como Médio
-                 ModalidadeCodigo = z.TipoTurma == Dominio.Enumerados.TipoTurma.Itinerarios2AAno ? Modalidade.Medio : (Modalidade)Convert.ToInt32(z.CodigoModalidade),
-                 QuantidadeDuracaoAula = z.DuracaoTurno,
-                 Nome = z.NomeTurma,
-                 Semestre = z.Semestre,
-                 TipoTurno = z.TipoTurno,
-                 Ue = new Ue() { CodigoUe = y.Codigo },
-                 EnsinoEspecial = z.EnsinoEspecial,
-                 EtapaEJA = z.EtapaEJA,
-                 DataInicio = z.DataInicioTurma,
-                 SerieEnsino = z.SerieEnsino,
-                 DataFim = z.DataFim,
-                 Extinta = z.Extinta,
-                 TipoTurma = z.TipoTurma
-             })));
+                new Turma
+                {
+                    Ano = z.Ano,
+                    AnoLetivo = z.AnoLetivo,
+                    CodigoTurma = z.Codigo,
+                    //Para turma do tipo 7 (Itinerarios 2A Ano) a modalidade é definida como Médio
+                    ModalidadeCodigo = z.TipoTurma == Dominio.Enumerados.TipoTurma.Itinerarios2AAno ? Modalidade.Medio : (Modalidade) Convert.ToInt32(z.CodigoModalidade),
+                    QuantidadeDuracaoAula = z.DuracaoTurno,
+                    Nome = z.NomeTurma,
+                    Semestre = z.Semestre,
+                    TipoTurno = z.TipoTurno,
+                    Ue = new Ue() {CodigoUe = y.Codigo},
+                    EnsinoEspecial = z.EnsinoEspecial,
+                    EtapaEJA = z.EtapaEJA,
+                    DataInicio = z.DataInicioTurma,
+                    SerieEnsino = z.SerieEnsino,
+                    DataFim = z.DataFim,
+                    Extinta = z.Extinta,
+                    TipoTurma = z.TipoTurma
+                })));
 
             dres = await repositorioDre.SincronizarAsync(dres);
             ues = await repositorioUe.SincronizarAsync(ues, dres);
@@ -512,12 +518,12 @@ namespace SME.SGP.Aplicacao.Servicos
         private void SincronizarTiposEscola(IEnumerable<TipoEscolaRetornoDto> tiposEscolasDto)
         {
             IEnumerable<TipoEscolaEol> tiposEscolas = tiposEscolasDto.Select(x =>
-            new TipoEscolaEol
-            {
-                Descricao = x.DescricaoSigla,
-                DtAtualizacao = x.DtAtualizacao,
-                CodEol = x.Codigo
-            });
+                new TipoEscolaEol
+                {
+                    Descricao = x.DescricaoSigla,
+                    DtAtualizacao = x.DtAtualizacao,
+                    CodEol = x.Codigo
+                });
 
             repositorioTipoEscola.Sincronizar(tiposEscolas);
         }

@@ -42,6 +42,7 @@ namespace SME.SGP.Dados.Repositorios
 	                    a2.id = af2.arquivo_id
                     where
 	                    not af.excluido and
+	                    not af2.excluido and
 	                    af.aluno_codigo = @alunoCodigo
                     order by af.id desc";
 

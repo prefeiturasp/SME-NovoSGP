@@ -19,7 +19,7 @@ namespace SME.SGP.Infra.Dtos
         public string NomeResponsavel { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
-        public DateTime DataAtualizacaoContato { get; set; }
+        public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
     }
 }

@@ -3,43 +3,39 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
+using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
     public class DownloadArquivoCommandHandler : IRequestHandler<DownloadArquivoCommand, byte[]>
     {
-
-        public Task<byte[]> Handle(DownloadArquivoCommand request, CancellationToken cancellationToken)
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        public DownloadArquivoCommandHandler(IServicoArmazenamento servicoArmazenamento)
         {
-            var caminhoBase = ObterCaminhoArquivos(request.Tipo);
-            var extencao = Path.GetExtension(request.Nome);
-            var nomeArquivo = $"{request.Codigo}{extencao}";
-            var caminhoArquivo = Path.Combine($"{caminhoBase}", nomeArquivo);
-            
-            try
-            {
-                if (!File.Exists(caminhoArquivo))
-                {
-                   var arq = Array.Empty<byte>();
-                    return Task.FromResult(arq);
-                }
-                var arquivo = File.ReadAllBytes(caminhoArquivo);
-            
-                if (arquivo == null)
-                     arquivo = Array.Empty<byte>();
-                
-                return Task.FromResult(arquivo);
-            }
-            catch (Exception)
-            {
-                throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
-            }
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         }
+        public async Task<byte[]> Handle(DownloadArquivoCommand request, CancellationToken cancellationToken)
+        {
+            var extensao = Path.GetExtension(request.Nome);
 
-        private string ObterCaminhoArquivos(TipoArquivo tipo)
-            => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ArquivoConstants.PastaAquivos, tipo.Name());
+            var nomeArquivoComExtensao = $"{request.Codigo}{extensao}";
 
+            var enderecoArquivo = await servicoArmazenamento.Obter(nomeArquivoComExtensao, request.Tipo == TipoArquivo.temp);
+
+            if (!string.IsNullOrEmpty(enderecoArquivo))
+            {
+                var response = await new HttpClient().GetAsync(enderecoArquivo);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+
+                return default;
+            }
+            throw new NegocioException("A imagem da criança/aluno não foi encontrada.");
+        }
     }
 }

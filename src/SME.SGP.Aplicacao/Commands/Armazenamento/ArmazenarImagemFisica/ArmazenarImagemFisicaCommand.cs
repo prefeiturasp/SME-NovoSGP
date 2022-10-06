@@ -4,24 +4,25 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class ArmazenarImagemFisicaCommand : IRequest<bool>
     {
-        public ArmazenarImagemFisicaCommand(Image imagem, string nomeFisico, string nomeArquivo, string caminho, string formato)
+        public ArmazenarImagemFisicaCommand(Image imagem, string nomeFisico, string nomeArquivo, TipoArquivo tipoArquivo, string formato)
         {
             Imagem = imagem;
             NomeFisico = nomeFisico;
             NomeArquivo = nomeArquivo;
-            Caminho = caminho;
+            TipoArquivo = tipoArquivo;
             Formato = formato;
         }
 
         public Image Imagem { get; }
         public string NomeFisico { get; }
         public string NomeArquivo { get; }
-        public string Caminho { get; }
+        public TipoArquivo TipoArquivo { get; }
         public string Formato { get; }
     }
 
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O nome da imagem deve ser informado para armazenamento no servidor");
 
-            RuleFor(a => a.Caminho)
+            RuleFor(a => a.TipoArquivo)
                 .NotEmpty()
                 .WithMessage("O caminho da imagem deve ser informado para armazenamento no servidor");
 

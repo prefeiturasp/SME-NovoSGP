@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,16 +10,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseNotasAlunoQueryHandler : IRequestHandler<ObterConselhoClasseNotasAlunoQuery, IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
+        private readonly IMediator mediator;
 
-        public ObterConselhoClasseNotasAlunoQueryHandler(IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota)
+        public ObterConselhoClasseNotasAlunoQueryHandler(IMediator mediator)
         {
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterConselhoClasseNotasAlunoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseNota.ObterNotasAlunoAsync(request.ConselhoClasseId, request.AlunoCodigo, request?.ComponenteCurricularId);
+            var turmaCodigo = await mediator.Send(new ObterTurmaPorConselhoClasseIdQuery(request.ConselhoClasseId), cancellationToken);
+
+            return (await mediator.Send(new ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery(new[] { turmaCodigo }, request.Bimestre), cancellationToken))
+                .Where(c => c.AlunoCodigo == request.AlunoCodigo && c.ConselhoClasseId == request.ConselhoClasseId && (!request.ComponenteCurricularId.HasValue || (request.ComponenteCurricularId.HasValue && c.ComponenteCurricularCodigo.Equals(request.ComponenteCurricularId.Value))));
         }
     }
 }

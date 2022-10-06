@@ -136,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
                     UeId = turma.UeId.ToString(),
                 };
 
-                await servicoNotificacao.SalvarAsync(notificacao);
+                await servicoNotificacao.Salvar(notificacao);
             }
         }
 

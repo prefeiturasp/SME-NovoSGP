@@ -263,7 +263,10 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("where sed.supervisor_id = @rfSupervisor and");
             sqlQuery.AppendLine("	 not sed.excluido and");
             sqlQuery.AppendLine("    vact.turma_historica = @consideraHistorico and");
-            sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo and");
+            
+            if(anoLetivo > 0)
+                sqlQuery.AppendLine("    vact.turma_ano_letivo = @anoLetivo and");
+
             sqlQuery.AppendLine("    sed.Tipo = @tipoResponsavelAtribuicao");
 
             var tipoResponsavelAtribuicao = (int)TipoResponsavelAtribuicao.SupervisorEscolar;

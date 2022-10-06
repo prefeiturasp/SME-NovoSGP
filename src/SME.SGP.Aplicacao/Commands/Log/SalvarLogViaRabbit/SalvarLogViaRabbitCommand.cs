@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using SME.SGP.Dominio.Enumerados;
@@ -7,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarLogViaRabbitCommand : IRequest<bool>
     {
-        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP", string rastreamento = "", string excecaoInterna = "")
+        public SalvarLogViaRabbitCommand(string mensagem, LogNivel nivel, LogContexto contexto, string observacao = "", string projeto = "SGP", string rastreamento = "", string excecaoInterna = "",string innerException ="")
         {
             Mensagem = mensagem;
             Nivel = nivel;
@@ -16,6 +17,7 @@ namespace SME.SGP.Aplicacao
             Projeto = projeto;
             Rastreamento = rastreamento;
             ExcecaoInterna = excecaoInterna;
+            InnerException = innerException;
         }
 
         public string Mensagem { get; set; }
@@ -27,6 +29,7 @@ namespace SME.SGP.Aplicacao
         public string Projeto { get; set; }
         public string Rastreamento { get; set; }
         public string ExcecaoInterna { get; }
+        public string InnerException { get; set; }
     }
 
 }

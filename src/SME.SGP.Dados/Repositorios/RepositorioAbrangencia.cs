@@ -223,7 +223,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("       t.ue_nome as nomeUe,");
             query.AppendLine("       t.turma_semestre as semestre,");
             query.AppendLine("       t.qt_duracao_aula as qtDuracaoAula,");
-            query.AppendLine("       t.tipo_turno as tipoTurno");
+            query.AppendLine("       t.tipo_turno as tipoTurno,");
+            query.AppendLine("       t.tipo_turma as tipoTurma");
             query.AppendLine("from abrangencia a");
             query.AppendLine("  join usuario u");
             query.AppendLine("      on a.usuario_id = u.id");
@@ -629,7 +630,7 @@ namespace SME.SGP.Dados.Repositorios
                             and vau.ue_codigo = @codigoUe
                             and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
             }
-            
+
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
 
             return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });
@@ -903,13 +904,17 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, Modalidade modalidade, int semestre, string dre, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno)
         {
+            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();   
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+
+            if(retorno.Any())
+                retornoUesSupervisor.AddRange(retorno);
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
-                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId});
+                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
 
                 if (modalidade > 0)
                 {
@@ -930,35 +935,36 @@ namespace SME.SGP.Dados.Repositorios
                 else
                 {
                     uesComplementares = (from da in dadosAbrangenciaSupervisor
-                                             where da.CodigoDre == dre &&
-                                                   !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
-                                                   (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                                                   !ues.Contains(da.UeId)
-                                             select new
-                                             {
-                                                 da.CodigoUe,
-                                                 da.UeNome,
-                                                 da.TipoEscola,
-                                                 da.UeId
-                                             }).Distinct();
+                                         where da.CodigoDre == dre &&
+                                               !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                               !ues.Contains(da.UeId)
+                                         select new
+                                         {
+                                             da.CodigoUe,
+                                             da.UeNome,
+                                             da.TipoEscola,
+                                             da.UeId
+                                         }).Distinct();
                 }
-                
 
-                var listaDistinta = uesComplementares
-                   .Select(u => new AbrangenciaUeRetorno()
-                   {
-                       Codigo = u.CodigoUe,
-                       NomeSimples = u.UeNome,
-                       TipoEscola = u.TipoEscola,
-                       Id = u.UeId
-                   });
+                if (uesComplementares.Any())
+                {
+                    var listaDistinta = uesComplementares
+                                                      .Select(u => new AbrangenciaUeRetorno()
+                                                      {
+                                                          Codigo = u.CodigoUe,
+                                                          NomeSimples = u.UeNome,
+                                                          TipoEscola = u.TipoEscola,
+                                                          Id = u.UeId
+                                                      });
 
-                retorno = retorno
-                    .Concat(listaDistinta)
-                    .OrderBy(d => d.Nome);
+                    retornoUesSupervisor.AddRange(listaDistinta);
+                }
+
             }
 
-            return retorno;
+            return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
         }
 
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)

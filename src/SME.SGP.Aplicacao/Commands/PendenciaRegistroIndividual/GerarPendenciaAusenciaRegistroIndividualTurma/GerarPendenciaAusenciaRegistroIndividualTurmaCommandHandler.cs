@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Não foram encontrados professores para a turma {turma.CodigoTurma}.");
 
             var titulo = DefinirTituloDaPendenciaPorAusenciaDeRegistroIndividual(turma);
-            var pendencia = new Pendencia(TipoPendencia.AusenciaDeRegistroIndividual, titulo, DescricaoBase);
+            var pendencia = new Pendencia(TipoPendencia.AusenciaDeRegistroIndividual, titulo, DescricaoBase, turma.Id);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
 

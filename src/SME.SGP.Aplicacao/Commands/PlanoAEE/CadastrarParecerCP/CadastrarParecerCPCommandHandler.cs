@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao.Commands
 
                 <br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, null, titulo, descricao, turma.UeId, PerfilUsuario.CEFAI));
+            await mediator.Send(new GerarPendenciaPlanoAEECommand(plano.Id, null, titulo, descricao, turma.UeId, turma.Id, PerfilUsuario.CEFAI));
         }
 
         private async Task<bool> ParametroGeracaoPendenciaAtivo()

@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />
   </ItemGroup>

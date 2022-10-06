@@ -7,7 +7,8 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFinaisBimestresAlunoQuery : IRequest<IEnumerable<NotaConceitoBimestreComponenteDto>>
     {
-        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int bimestre = 0, bool validaMatricula = true)
+        public ObterNotasFinaisBimestresAlunoQuery(string[] turmasCodigos, string alunoCodigo,
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, int bimestre = 0, bool validaMatricula = true)
         {
             TurmasCodigos = turmasCodigos;
             AlunoCodigo = alunoCodigo;

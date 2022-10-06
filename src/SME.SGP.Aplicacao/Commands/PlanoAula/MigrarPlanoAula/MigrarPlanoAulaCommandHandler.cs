@@ -36,44 +36,52 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(MigrarPlanoAulaCommand request, CancellationToken cancellationToken)
         {
-            var usuario = request.Usuario;
-            var planoAulaDto = repositorioPlanoAula.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
-            var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
-
-            await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId, aula.TurmaId);
-
-            unitOfWork.IniciarTransacao();
-
-            foreach (var planoTurma in request.PlanoAulaMigrar.IdsPlanoTurmasDestino)
+            try
             {
-                AulaConsultaDto aulaConsultaDto = await
-                     mediator.Send(new ObterAulaDataTurmaDisciplinaQuery(
-                         planoTurma.Data,
-                         planoTurma.TurmaId,
-                         request.PlanoAulaMigrar.DisciplinaId
-                     ));
+                var usuario = request.Usuario;
+                var planoAulaDto = repositorioPlanoAula.ObterPorId(request.PlanoAulaMigrar.PlanoAulaId);
+                var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
 
-                if (aulaConsultaDto == null)
-                    throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} neste componente curricular!");
+                await ValidarMigracao(request.PlanoAulaMigrar, usuario.CodigoRf, usuario.EhProfessorCj(), aula.UeId, aula.TurmaId);
 
-                var planoCopia = new PlanoAulaDto()
+                unitOfWork.IniciarTransacao();
+
+                foreach (var planoTurma in request.PlanoAulaMigrar.IdsPlanoTurmasDestino)
                 {
-                    Id = planoTurma.Sobreescrever ? request.PlanoAulaMigrar.PlanoAulaId : 0,
-                    AulaId = aulaConsultaDto.Id,
-                    Descricao = planoAulaDto.Descricao,
-                    LicaoCasa = request.PlanoAulaMigrar.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
-                    ObjetivosAprendizagemComponente = !usuario.EhProfessorCj() ||
-                                                   request.PlanoAulaMigrar.MigrarObjetivos ?
-                                                   (await mediator.Send(new ObterObjetivosComComponentePorPlanoAulaIdQuery(request.PlanoAulaMigrar.PlanoAulaId)))?.ToList() : null,
-                    RecuperacaoAula = request.PlanoAulaMigrar.MigrarRecuperacaoAula ?
-                                        planoAulaDto.RecuperacaoAula : string.Empty
-                };
+                    AulaConsultaDto aulaConsultaDto = await
+                        mediator.Send(new ObterAulaDataTurmaDisciplinaQuery(
+                            planoTurma.Data,
+                            planoTurma.TurmaId,
+                            request.PlanoAulaMigrar.DisciplinaId
+                        ));
 
-                await mediator.Send(new SalvarPlanoAulaCommand(planoCopia));
+                    if (aulaConsultaDto == null)
+                        throw new NegocioException($"Não há aula cadastrada para a turma {planoTurma.TurmaId} para a data {planoTurma.Data.ToString("dd/MM/yyyy")} neste componente curricular!");
+
+                    var planoCopia = new PlanoAulaDto()
+                    {
+                        Id = planoTurma.Sobreescrever ? request.PlanoAulaMigrar.PlanoAulaId : 0,
+                        AulaId = aulaConsultaDto.Id,
+                        Descricao = planoAulaDto.Descricao,
+                        LicaoCasa = request.PlanoAulaMigrar.MigrarLicaoCasa ? planoAulaDto.LicaoCasa : string.Empty,
+                        ObjetivosAprendizagemComponente = !usuario.EhProfessorCj() ||
+                                                          request.PlanoAulaMigrar.MigrarObjetivos ?
+                            (await mediator.Send(new ObterObjetivosComComponentePorPlanoAulaIdQuery(request.PlanoAulaMigrar.PlanoAulaId)))?.ToList() : null,
+                        RecuperacaoAula = request.PlanoAulaMigrar.MigrarRecuperacaoAula ?
+                            planoAulaDto.RecuperacaoAula : string.Empty
+                    };
+
+                    await mediator.Send(new SalvarPlanoAulaCommand(planoCopia));
+                }
+
+                unitOfWork.PersistirTransacao();
+                return true;
             }
-
-            unitOfWork.PersistirTransacao();
-            return true;
+            catch (Exception e)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
         private async Task ValidarMigracao(MigrarPlanoAulaDto migrarPlanoAulaDto, string codigoRf, bool ehProfessorCj, string ueId, string turmaCodigo)
         {
@@ -82,7 +90,7 @@ namespace SME.SGP.Aplicacao
             Ue ue = repositorioUe.ObterPorId(turmaAula.UeId);
             turmaAula.AdicionarUe(ue);
 
-            var turmasAbrangencia = await consultasAbrangencia.ObterTurmasRegulares(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo);
+            var turmasAbrangencia = await mediator.Send(new ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery(turmaAula.Ue.CodigoUe, turmaAula.ModalidadeCodigo));
 
             var idsTurmasSelecionadas = migrarPlanoAulaDto.IdsPlanoTurmasDestino.Select(x => x.TurmaId).ToList();
 
@@ -118,6 +126,15 @@ namespace SME.SGP.Aplicacao
 
             if (turmaAula.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
+                if(turmasAtribuidasAoProfessorPorAno.Any())      
+                    turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(turmasAtribuidasAoProfessorPorAno.Select( a=> new ProfessorTurmaDto()
+                    {
+                        CodTurma = Convert.ToInt32(a.Codigo),
+                        Ano = a.Ano.ToString(),
+                        NomeTurma = a.Nome
+                    }));
+                
+
                 await ValidaTurmasProfessor(ehProfessorCj, ueId,
                                       migrarPlanoAulaDto.DisciplinaId,
                                       codigoRf,

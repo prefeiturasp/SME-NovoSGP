@@ -27,13 +27,11 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Não foi encontrada uma turma com o id informado. Verifique se você possui abrangência para essa turma.");
                         
-            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
+            var alunosDaTurmaFiltrados = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(aula.TurmaId, aula.DataAula));
 
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
+            if (alunosDaTurmaFiltrados == null || !alunosDaTurmaFiltrados.Any())
                 throw new NegocioException("Não foram encontrados alunos para a aula/turma informada.");
 
-            var alunosDaTurmaFiltrados = alunosDaTurma.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderBy(a => a.SituacaoMatricula).Take(1));            
-                        
             FrequenciaDto registroFrequenciaDto = await ObterRegistroFrequencia(aula, turma);
 
             var frequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciasAlunosSimplificadoPorAulaIdQuery(aula.Id));
@@ -83,6 +81,7 @@ namespace SME.SGP.Aplicacao
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
 
             var alunosCondicaoFrequencia = Enumerable.Empty<AlunoPorTurmaResposta>();
+
             if (turma.ModalidadeCodigo == Modalidade.EJA)
             {
                 alunosCondicaoFrequencia = alunosDaTurmaFiltrados.Where(a => !a.Inativo || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
@@ -109,7 +108,7 @@ namespace SME.SGP.Aplicacao
                 {
                     CodigoAluno = aluno.CodigoAluno,
                     NomeAluno = aluno.NomeAluno,
-                    NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                    NumeroAlunoChamada = aluno.ObterNumeroAlunoChamada(),
                     CodigoSituacaoMatricula = aluno.CodigoSituacaoMatricula,
                     SituacaoMatricula = aluno.SituacaoMatricula,
                     DataSituacao = aluno.DataSituacao,

@@ -814,6 +814,30 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "CP999999",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.CP.Name())
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "DIR999998",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.DIRETOR.Name())
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "AD999997",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.AD.Name())
+                    }
+                },
             };
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }

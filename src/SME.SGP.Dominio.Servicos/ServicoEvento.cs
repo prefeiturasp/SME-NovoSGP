@@ -333,7 +333,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             var usuarioLogado = servicoUsuario.ObterUsuarioLogado().Result;
-            EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
+            await EnviarNotificacaoRegistroDeRecorrencia(evento, notificacoesSucesso, notificacoesFalha, usuarioLogado.Id);
         }
 
         private async Task<bool> ValidaCadastroEvento(DateTime dataInicio, long tipoCalendarioId, bool ehLetivo, long tipoEventoId)
@@ -401,7 +401,7 @@ namespace SME.SGP.Dominio.Servicos
             return await comandosWorkflowAprovacao.Salvar(wfAprovacaoEvento);
         }
 
-        private void EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
+        private async Task EnviarNotificacaoRegistroDeRecorrencia(Evento evento, List<DateTime> notificacoesSucesso, List<string> notificacoesFalha, long usuarioId)
         {
             var tipoCalendario = repositorioTipoCalendario.ObterPorId(evento.TipoCalendarioId);
 
@@ -425,7 +425,8 @@ namespace SME.SGP.Dominio.Servicos
                 Tipo = NotificacaoTipo.Calendario,
                 Categoria = NotificacaoCategoria.Aviso
             };
-            servicoNotificacao.Salvar(notificacao);
+
+            await servicoNotificacao.Salvar(notificacao);
         }
 
         private Evento MapearEntidade(TipoCalendario tipoCalendario, FeriadoCalendario x, EventoTipo tipoEventoFeriado)

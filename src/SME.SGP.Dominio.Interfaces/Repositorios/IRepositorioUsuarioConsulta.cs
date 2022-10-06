@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterUsuariosIdPorCodigoRf(IList<string> codigoRf);
         Task<IEnumerable<Usuario>> ObterUsuariosPorCodigoRf(IList<string> codigoRf);
         Task<Usuario> ObterPorTokenRecuperacaoSenha(Guid token);
+        Task<string> ObterRfPorId(long id);
     }
 }

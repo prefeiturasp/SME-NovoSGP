@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioNotificacaoCompensacaoAusencia
     {
         void Inserir(long notificacaoId, long compensacaoAusenciaId);
-        void Excluir(long compensacaoAusenciaId);
+
+        Task<IEnumerable<NotificacaoCompensacaoAusencia>> ObterPorCompensacao(long compensacaoAusenciaId);
+        Task Excluir(NotificacaoCompensacaoAusencia notificacaoCompensacao);
     }
 }

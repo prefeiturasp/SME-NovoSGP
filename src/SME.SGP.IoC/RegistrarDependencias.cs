@@ -1,6 +1,8 @@
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.CasosDeUso;
 using SME.SGP.Aplicacao.CasosDeUso.Abrangencia;
@@ -33,6 +35,7 @@ using SME.SGP.Dominio.Servicos;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Utilitarios;
 using System;
 
 namespace SME.SGP.IoC
@@ -54,8 +57,14 @@ namespace SME.SGP.IoC
             RegistrarTelemetria(services, configuration);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services, configuration);
 
             RegistrarMapeamentos.Registrar();
+        }
+
+        protected virtual void RegistrarServicoArmazenamento(IServiceCollection services, IConfiguration configuration)
+        {
+            services.ConfigurarArmazenamento(configuration);
         }
 
         private void RegistrarAuditoria(IServiceCollection services)
@@ -89,6 +98,7 @@ namespace SME.SGP.IoC
             RegistrarTelemetria(services, configuration);
             RegistrarCache(services, configuration);
             RegistrarAuditoria(services);
+            RegistrarServicoArmazenamento(services,configuration);
 
             RegistrarMapeamentos.Registrar();
         }
@@ -139,14 +149,12 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IComandosPeriodoFechamento, ComandosPeriodoFechamento>();
             services.TryAddScoped<IComandosFechamentoTurmaDisciplina, ComandosFechamentoTurmaDisciplina>();
             services.TryAddScoped<IComandosFechamentoNota, ComandosFechamentoNota>();
-            services.TryAddScoped<IComandosNotificacaoAula, ComandosNotificacaoAula>();
             services.TryAddScoped<IComandosFechamentoFinal, ComandosFechamentoFinal>();
             services.TryAddScoped<IComandosRecuperacaoParalela, ComandosRecuperacaoParalela>();
             services.TryAddScoped<IComandosPendenciaFechamento, ComandosPendenciaFechamento>();
             services.TryAddScoped<IComandosFechamentoTurma, ComandosFechamentoTurma>();
             services.TryAddScoped<IComandosConselhoClasse, ComandosConselhoClasse>();
             services.TryAddScoped<IComandosConselhoClasseAluno, ComandosConselhoClasseAluno>();
-            services.TryAddScoped<IComandosConselhoClasseNota, ComandosConselhoClasseNota>();
             services.TryAddScoped<IComandoComunicado, ComandoComunicado>();
             services.TryAddScoped<IComandosRelatorioSemestralTurmaPAP, ComandosRelatorioSemestralTurmaPAP>();
             services.TryAddScoped<IComandosRelatorioSemestralPAPAluno, ComandosRelatorioSemestralPAPAluno>();
@@ -551,7 +559,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoRecuperacaoParalela, ServicoRecuperacaoParalela>();
             services.TryAddScoped<IServicoPendenciaFechamento, ServicoPendenciaFechamento>();
             services.TryAddScoped<IServicoFechamentoFinal, ServicoFechamentoFinal>();
-            services.TryAddScoped<IServicoConselhoClasse, ServicoConselhoClasse>();
             services.TryAddScoped<IServicoObjetivosAprendizagem, ServicoObjetivosAprendizagem>();
         }
 
@@ -739,11 +746,16 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterTotalCompensacoesComponenteNaoLancaNotaUseCase, ObterTotalCompensacoesComponenteNaoLancaNotaUseCase>();
             services.TryAddScoped<IObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase, ObterTotalAlunosSemFrequenciaPorTurmaBimestreUseCase>();
             services.TryAddScoped<IObterRecomendacoesAlunoFamiliaUseCase, ObterRecomendacoesAlunoFamiliaUseCase>();
+            services.TryAddScoped<IConsolidarConselhoClasseUseCase, ConsolidarConselhoClasseUseCase>();
+            services.TryAddScoped<IGerarParecerConclusivoUseCase, GerarParecerConclusivoUseCase>();
+            services.TryAddScoped<ISalvarConselhoClasseAlunoNotaUseCase, SalvarConselhoClasseAlunoNotaUseCase>();
 
             // Fechamento
             services.TryAddScoped<IExecutarVarreduraFechamentosEmProcessamentoPendentes, ExecutarVarreduraFechamentosEmProcessamentoPendentes>();
             services.TryAddScoped<IInserirFechamentoTurmaDisciplinaUseCase, InserirFechamentoTurmaDisciplinaUseCase>();
             services.TryAddScoped<IObterFechamentoIdPorTurmaBimestreUseCase, ObterFechamentoIdPorTurmaBimestreUseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020UseCase, GerarFechamentoTurmaEdFisica2020UseCase>();
+            services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase, GerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase>();
 
             // Fechamento Aluno
             services.TryAddScoped<ISalvarAnotacaoFechamentoAlunoUseCase, SalvarAnotacaoFechamentoAlunoUseCase>();
@@ -1173,6 +1185,12 @@ namespace SME.SGP.IoC
         public virtual void RegistrarTelemetria(IServiceCollection services, IConfiguration configuration)
         {
             services.ConfigurarTelemetria(configuration);
+
+            var serviceProvider = services.BuildServiceProvider();
+            var options = serviceProvider.GetService<IOptions<TelemetriaOptions>>();
+            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
+            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, options);
+            DapperExtensionMethods.Init(servicoTelemetria);
         }
 
         public virtual void RegistrarPolicies(IServiceCollection services)
@@ -1182,8 +1200,6 @@ namespace SME.SGP.IoC
 
         public virtual void RegistrarRabbit(IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-                return;
 
             services.ConfigurarRabbit(configuration);
             services.ConfigurarRabbitParaLogs(configuration);

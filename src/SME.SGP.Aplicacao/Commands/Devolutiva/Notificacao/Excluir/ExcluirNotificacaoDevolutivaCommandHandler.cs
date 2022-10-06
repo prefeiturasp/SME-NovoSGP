@@ -10,21 +10,20 @@ namespace SME.SGP.Aplicacao
     public class ExcluirNotificacaoDevolutivaCommandHandler : IRequestHandler<ExcluirNotificacaoDevolutivaCommand, bool>
     {
         private readonly IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva;
-        private readonly IRepositorioNotificacao repositorioNotificacao;
+        private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
-        public ExcluirNotificacaoDevolutivaCommandHandler(IRepositorioNotificacao repositorioNotificacao,
-            IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva,
-            IMediator mediator, IUnitOfWork unitOfWork)
+        public ExcluirNotificacaoDevolutivaCommandHandler(IRepositorioNotificacaoDevolutiva repositorioNotificacaoDevolutiva,
+                                                          IMediator mediator,
+                                                          IUnitOfWork unitOfWork)
         {
             this.repositorioNotificacaoDevolutiva = repositorioNotificacaoDevolutiva ?? throw new ArgumentNullException(nameof(repositorioNotificacaoDevolutiva));
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(ExcluirNotificacaoDevolutivaCommand request, CancellationToken cancellationToken)
         {
-
             var notificacoes = await repositorioNotificacaoDevolutiva.ObterPorDevolutivaId(request.DevolutivaId);
 
             unitOfWork.IniciarTransacao();
@@ -33,7 +32,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var notificacao in notificacoes)
                 {
                     await repositorioNotificacaoDevolutiva.Excluir(notificacao);
-                    repositorioNotificacao.Remover(notificacao.NotificacaoId);                    
+                    await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacao.NotificacaoId));
                 }
 
                 unitOfWork.PersistirTransacao();

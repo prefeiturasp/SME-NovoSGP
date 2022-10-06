@@ -131,7 +131,7 @@ namespace SME.SGP.Dominio.Servicos
 
             foreach (var usuario in usuariosNotificacao)
             {
-                NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
+                await NotificaAlteracaoFrequencia(usuario.Item2, registroFrequencia, professor.Nome);
             }
 
         }
@@ -213,13 +213,13 @@ namespace SME.SGP.Dominio.Servicos
             var functionariosEolAD = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.AD);
             var functionariosEolDiretor = servicoNotificacao.ObterFuncionariosPorNivel(ueCodigo, Cargo.Diretor);
 
-            NotficarFuncionariosAlunosFaltososBimestre(funcionariosEol, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
-            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolCP, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
-            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolAD, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
-            NotficarFuncionariosAlunosFaltososBimestre(functionariosEolDiretor, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            await NotficarFuncionariosAlunosFaltososBimestre(funcionariosEol, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            await NotficarFuncionariosAlunosFaltososBimestre(functionariosEolCP, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            await NotficarFuncionariosAlunosFaltososBimestre(functionariosEolAD, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
+            await NotficarFuncionariosAlunosFaltososBimestre(functionariosEolDiretor, titulo, mensagem.ToString(), ueCodigo, dreCodigo);
         }
 
-        private void NotficarFuncionariosAlunosFaltososBimestre(IEnumerable<(Cargo? Cargo, string Id)> funcionariosEol, string titulo, string mensagem, string ueCodigo, string dreCodigo)
+        private async Task NotficarFuncionariosAlunosFaltososBimestre(IEnumerable<(Cargo? Cargo, string Id)> funcionariosEol, string titulo, string mensagem, string ueCodigo, string dreCodigo)
         {
             foreach (var funcionario in funcionariosEol)
             {
@@ -236,7 +236,7 @@ namespace SME.SGP.Dominio.Servicos
                     UeId = ueCodigo,
                     DreId = dreCodigo,
                 };
-                servicoNotificacao.Salvar(notificacao);
+                await servicoNotificacao.Salvar(notificacao);
             }
         }
 
@@ -267,7 +267,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (funcionariosEol != null)
                     foreach (var funcionarioEol in funcionariosEol)
-                        NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
+                        await NotificacaoAlunosFaltososTurma(funcionarioEol.Id, alunosFaltososEOL, turma, quantidadeDias);
             }
         }
 
@@ -280,7 +280,7 @@ namespace SME.SGP.Dominio.Servicos
                             || c.ModalidadeCodigo == Modalidade.EducacaoInfantil));
         }
 
-        private void NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
+        private async Task NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
         {
             var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
 
@@ -314,7 +314,8 @@ namespace SME.SGP.Dominio.Servicos
                 UeId = turma.Ue.CodigoUe,
                 DreId = turma.Ue.Dre.CodigoDre,
             };
-            servicoNotificacao.Salvar(notificacao);
+
+            await servicoNotificacao.Salvar(notificacao);
         }
 
         /// <summary>
@@ -428,7 +429,7 @@ namespace SME.SGP.Dominio.Servicos
             return usuarios;
         }
 
-        private void NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequenciaAulaDto registroFrequencia, string usuarioAlteracao)
+        private async Task NotificaAlteracaoFrequencia(Usuario usuario, RegistroFrequenciaAulaDto registroFrequencia, string usuarioAlteracao)
         {
             // carregar nomes da turma, escola, disciplina e professor para notificacao
             var disciplina = ObterNomeDisciplina(registroFrequencia.CodigoDisciplina);
@@ -452,7 +453,8 @@ namespace SME.SGP.Dominio.Servicos
                 UeId = registroFrequencia.CodigoUe,
                 DreId = registroFrequencia.CodigoDre,
             };
-            servicoNotificacao.Salvar(notificacao);
+
+            await servicoNotificacao.Salvar(notificacao);
         }
 
         private async Task<List<(string, Cargo?)>> NotificarAusenciaFrequencia(TipoNotificacaoFrequencia tipo, List<(string, Cargo?)> cargosNotificados)
@@ -543,7 +545,9 @@ namespace SME.SGP.Dominio.Servicos
                         UeId = turmaSemRegistro.CodigoUe,
                         DreId = turmaSemRegistro.CodigoDre,
                     };
-                    servicoNotificacao.Salvar(notificacao);
+
+                    await servicoNotificacao.Salvar(notificacao);
+
                     foreach (var aula in turmaSemRegistro.Aulas)
                     {
                         repositorioNotificacaoFrequencia.Salvar(new NotificacaoFrequencia()

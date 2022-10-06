@@ -18,9 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioObjetivo repositorioObjetivo;
         private readonly IRepositorioRecuperacaoParalela repositorioRecuperacaoParalela;
         private readonly IRepositorioResposta repositorioResposta;
-        private readonly IServicoEol servicoEOL;
         private readonly IServicoRecuperacaoParalela servicoRecuperacaoParalela;
-        private readonly IServicoUsuario servicoUsuario;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo;
         private readonly IMediator mediator;
@@ -30,10 +28,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioEixo repositorioEixo,
             IRepositorioObjetivo repositorioObjetivo,
             IRepositorioResposta repositorioResposta,
-            IServicoEol servicoEOL,
             IServicoRecuperacaoParalela servicoRecuperacaoParalela,
             IContextoAplicacao contextoAplicacao,
-            IServicoUsuario servicoUsuario,
             IConsultasPeriodoEscolar consultasPeriodoEscolar,
             IRepositorioRecuperacaoParalelaPeriodo repositorioRecuperacaoParalelaPeriodo,
             IMediator mediator) : base(contextoAplicacao)
@@ -43,17 +39,14 @@ namespace SME.SGP.Aplicacao
             this.repositorioObjetivo = repositorioObjetivo ?? throw new ArgumentNullException(nameof(repositorioObjetivo));
             this.repositorioResposta = repositorioResposta ?? throw new ArgumentNullException(nameof(repositorioResposta));
             this.servicoRecuperacaoParalela = servicoRecuperacaoParalela ?? throw new ArgumentNullException(nameof(servicoRecuperacaoParalela));
-            this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar;
             this.repositorioRecuperacaoParalelaPeriodo = repositorioRecuperacaoParalelaPeriodo ?? throw new ArgumentNullException(nameof(repositorioRecuperacaoParalelaPeriodo));
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<RecuperacaoParalelaListagemDto> Listar(FiltroRecuperacaoParalelaDto filtro)
         {
-            var alunosEol = await servicoEOL.ObterAlunosAtivosPorTurma(filtro.TurmaCodigo, DateTimeExtension.HorarioBrasilia());
+            var alunosEol = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(filtro.TurmaCodigo, DateTimeExtension.HorarioBrasilia())); 
 
             if (!alunosEol.Any())
                 return null;
@@ -242,7 +235,7 @@ namespace SME.SGP.Aplicacao
                      objetivos.Count()),
                     ParecerConclusivo = aluno.ParecerConclusivo,
                     Nome = aluno.NomeAluno,
-                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     CodAluno = a.AlunoId,
                     Turma = aluno.TurmaEscola,
                     TurmaId = aluno.CodigoTurma.Equals(0) ? Convert.ToInt64(turma.CodigoTurma) : aluno.CodigoTurma,

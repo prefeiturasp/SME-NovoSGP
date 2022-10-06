@@ -1,29 +1,40 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
     public class ArmazenarImagemFisicaCommandHandler : IRequestHandler<ArmazenarImagemFisicaCommand, bool>
     {
-        public Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
+        private readonly IServicoArmazenamento servicoArmazenamento;
+        private readonly IMediator mediator;
+        
+        public ArmazenarImagemFisicaCommandHandler(IServicoArmazenamento servicoArmazenamento, IMediator mediator)
         {
-            var nomeArquivo = request.NomeFisico + Path.GetExtension(request.NomeArquivo);
-            var caminho = Path.Combine(request.Caminho, nomeArquivo);
-
-            var bitmap = new Bitmap(request.Imagem);
-            bitmap.Save(caminho, ObterFormato(request.Formato));
-      
-            return Task.FromResult(true);
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+        public async Task<bool> Handle(ArmazenarImagemFisicaCommand request, CancellationToken cancellationToken)
+        {
+            var msImagem = new MemoryStream();
+            
+            request.Imagem.Save(msImagem, ObterFormato(request.Formato));
 
+            msImagem.Seek(0, SeekOrigin.Begin);
+            
+            if (request.TipoArquivo == TipoArquivo.temp || request.TipoArquivo == TipoArquivo.Editor)
+                await servicoArmazenamento.ArmazenarTemporaria(request.NomeFisico,msImagem,request.Formato);
+            else
+                await servicoArmazenamento.Armazenar(request.NomeFisico,msImagem, request.Formato);
+            
+            return true;
+        }
+        
         private ImageFormat ObterFormato(string formato)
         {
             switch (formato)

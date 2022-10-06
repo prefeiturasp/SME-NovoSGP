@@ -12,23 +12,20 @@ namespace SME.SGP.Aplicacao
     public class ExcluirNotificacaoCartaIntencoesObservacaoCommandHandler : IRequestHandler<ExcluirNotificacaoCartaIntencoesObservacaoCommand, bool>
     {
         private readonly IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao;
-        private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
 
-        public ExcluirNotificacaoCartaIntencoesObservacaoCommandHandler(IRepositorioNotificacao repositorioNotificacao,
-            IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao,
-            IMediator mediator, IUnitOfWork unitOfWork)
+        public ExcluirNotificacaoCartaIntencoesObservacaoCommandHandler(IRepositorioNotificacaoCartaIntencoesObservacao repositorioNotificacaoCartaIntencoesObservacao,
+                                                                        IMediator mediator,
+                                                                        IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacaoCartaIntencoesObservacao = repositorioNotificacaoCartaIntencoesObservacao ?? throw new ArgumentNullException(nameof(repositorioNotificacaoCartaIntencoesObservacao));
-            this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(ExcluirNotificacaoCartaIntencoesObservacaoCommand request, CancellationToken cancellationToken)
         {
-
             var notificacoes = await repositorioNotificacaoCartaIntencoesObservacao.ObterPorCartaIntencoesObservacaoId(request.CartaIntencoesObservacaoId);
 
             unitOfWork.IniciarTransacao();
@@ -37,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var notificacao in notificacoes)
                 {
                     await repositorioNotificacaoCartaIntencoesObservacao.Excluir(notificacao);
-                    repositorioNotificacao.Remover(notificacao.NotificacaoId);                    
+                    await mediator.Send(new ExcluirNotificacaoPorIdCommand(notificacao.NotificacaoId));
                 }
 
                 unitOfWork.PersistirTransacao();

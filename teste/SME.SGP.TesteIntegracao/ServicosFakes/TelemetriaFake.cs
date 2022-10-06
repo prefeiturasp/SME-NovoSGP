@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Elastic.Apm.Api;
 using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.ServicosFakes
@@ -24,6 +25,13 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         public Task<dynamic> RegistrarComRetornoAsync<T>(Func<Task<object>> acao, string acaoNome, string telemetriaNome, string telemetriaValor, string parametros = "")
         {
             return acao();
+        }
+
+        public ITransaction Iniciar(string nome, string tipo)
+            => null;
+
+        public void Finalizar(ITransaction transacao)
+        { 
         }
     }
 }

@@ -215,7 +215,7 @@ namespace SME.SGP.Aplicacao
                         {
                             Id = aluno.CodigoAluno,
                             Nome = aluno.NomeValido(),
-                            NumeroChamada = aluno.NumeroAlunoChamada,
+                            NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                             EhAtendidoAEE = alunoPossuiPlanoAEE
                         };
                         var notasAvaliacoes = new List<NotasConceitosNotaAvaliacaoRetornoDto>();

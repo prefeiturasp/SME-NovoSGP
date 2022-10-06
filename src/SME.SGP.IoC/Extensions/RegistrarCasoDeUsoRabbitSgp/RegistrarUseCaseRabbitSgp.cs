@@ -69,6 +69,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisSupervisorPorDreUseCase, RemoverAtribuicaoResponsaveisSupervisorPorDreUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase, RemoverAtribuicaoResponsaveisPAAIPorDreUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoResponsaveisASPPPorDreUseCase, RemoverAtribuicaoResponsaveisASPPPorDreUseCase>();
+            services.TryAddScoped<IExcluirArmazenamentoPorAquivoUseCase, ExcluirArmazenamentoPorAquivoUseCase>();
         }
     }
 }

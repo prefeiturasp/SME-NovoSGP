@@ -38,14 +38,14 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("                t.modalidade_codigo ModalidadeCodigo");
             sqlQuery.AppendLine("  	from aula a");
             sqlQuery.AppendLine("  		inner join tipo_calendario tc");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = @anoLetivo and a.tipo_calendario_id = tc.id");
+            sqlQuery.AppendLine("  			on a.tipo_calendario_id = tc.id");
             if (tipoPendenciaAula == TipoPendencia.Frequencia)
             {
                 sqlQuery.AppendLine("  		inner join componente_curricular cc");
                 sqlQuery.AppendLine("            on cc.permite_registro_frequencia and a.disciplina_id::int8 = cc.id");
             }
             sqlQuery.AppendLine("  		inner join turma t");
-            sqlQuery.AppendLine("  			on tc.ano_letivo = t.ano_letivo and t.modalidade_codigo = any(@modalidades) and a.turma_id = t.turma_id");
+            sqlQuery.AppendLine("  			on a.turma_id = t.turma_id");
             sqlQuery.AppendLine("  		inner join ue");
             sqlQuery.AppendLine("  			on t.ue_id = ue.id");
 
@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
 
             sqlQuery.AppendLine("	and p.id is null");
-            sqlQuery.AppendLine("	and tf.id is null and a.turma_id='2364474'");
+            sqlQuery.AppendLine("	and tf.id is null");
 
             if (ueId > 0)
                 sqlQuery.AppendLine("    and ue.id = @ueId ");
@@ -75,7 +75,6 @@ namespace SME.SGP.Dados.Repositorios
                 return aula;
             }, new
             {
-                anoLetivo,
                 hoje = DateTime.Today.Date,
                 tipo = tipoPendenciaAula,
                 modalidades,
@@ -140,21 +139,22 @@ namespace SME.SGP.Dados.Repositorios
                }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string codigoTurma)
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, 
+            bool ehGestor, string codigoTurma, int anoLetivo)
         {
             var disciplinaId = Convert.ToInt32(componenteCurricularId);
-            var sqlQuery = string.Empty;
-            if (ehGestor)
-            {
-                sqlQuery = @"select aula_id from pendencia_diario_bordo pdb join aula a on a.id = pdb.aula_id where a.turma_id = @codigoTurma";
-                return await database.Conexao.QueryAsync<long>(sqlQuery, new { codigoTurma }, commandTimeout: 60);
-            }
-            else
-            {
-                sqlQuery = @"select distinct pdb.aula_id from pendencia_diario_bordo pdb where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf";
-                return await database.Conexao.QueryAsync<long>(sqlQuery, new { professorRf, disciplinaId }, commandTimeout: 60);
-            }
 
+            var sqlQuery = new StringBuilder(@"select distinct aula_id
+                                                from pendencia_diario_bordo pdb
+                                                    inner join aula a on a.id = pdb.aula_id
+                                                    inner join tipo_calendario tc on tc.id = a.tipo_calendario_id");
+
+            sqlQuery.AppendLine(ehGestor
+                ? " where a.turma_id = @codigoTurma and tc.ano_letivo = @anoLetivo"
+                : " where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf and tc.ano_letivo = @anoLetivo");
+            
+            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(), new { codigoTurma, anoLetivo, disciplinaId, professorRf },
+                commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)

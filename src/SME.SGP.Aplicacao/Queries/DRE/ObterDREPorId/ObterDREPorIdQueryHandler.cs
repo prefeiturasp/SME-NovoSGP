@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -10,20 +12,23 @@ namespace SME.SGP.Aplicacao
     public class ObterDREPorIdQueryHandler : IRequestHandler<ObterDREPorIdQuery, Dre>
     {
         private readonly IRepositorioDreConsulta repositorioDre;
+        private readonly IRepositorioCache repositorioCache;
 
-        public ObterDREPorIdQueryHandler(IRepositorioDreConsulta repositorioDre)
+        public ObterDREPorIdQueryHandler(IRepositorioDreConsulta repositorioDre, IRepositorioCache repositorioCache)
         {
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
-        }
-
-        public async Task<long> Handle(ObterDREIdPorCodigoQuery request, CancellationToken cancellationToken)
-        { 
-            return await repositorioDre.ObterIdDrePorCodigo(request.CodigoDre);
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<Dre> Handle(ObterDREPorIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioDre.ObterPorIdAsync(request.DreId);
+            return await repositorioCache.ObterAsync(ObterChave(request.DreId),
+                async () => await repositorioDre.ObterPorIdAsync(request.DreId),
+                "Obter DRE");
+        }
+        private string ObterChave(long id)
+        {
+            return string.Format(NomeChaveCache.CHAVE_DRE_ID, id);
         }
     }
 }
