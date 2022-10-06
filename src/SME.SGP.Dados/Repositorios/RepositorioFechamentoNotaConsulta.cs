@@ -141,7 +141,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurma(long[] fechamentosTurmaDisciplinaId)
         {
-            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(queryPorFechamento, new { fechamentosTurmaDisciplinaId });
+            var query = string.Concat(queryPorFechamento, ") select * from lista where sequencia = 1;");
+            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId });
         }
 
         public async Task<IEnumerable<AlunosFechamentoNotaDto>> ObterComNotaLancadaPorPeriodoEscolarUE(long ueId, long periodoEscolarId)
