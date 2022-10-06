@@ -77,7 +77,6 @@ namespace SME.SGP.Aplicacao
                                                                                              filtroTurmaDto.Modalidade.Value,
                                                                                              filtroTurmaDto.Semestre,
                                                                                              usuario.EhPerfilProfessor(),
-                                                                                             usuario.EhGestorEscolar(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
                                                                                              filtroTurmaDto.Bimestre > 0 ?
