@@ -130,7 +130,7 @@ namespace SME.SGP.Aplicacao
                     turmasAtribuidasAoProfessor = turmasAtribuidasAoProfessor.Concat(turmasAtribuidasAoProfessorPorAno.Select( a=> new ProfessorTurmaDto()
                     {
                         CodTurma = Convert.ToInt32(a.Codigo),
-                        Ano = a.Ano.ToString(),
+                        Ano = a.AnoTurma.ToString(),
                         NomeTurma = a.Nome
                     }));
                 
@@ -195,8 +195,8 @@ namespace SME.SGP.Aplicacao
                 if (turmasAtribuidasAoProfessor.Any())
                 {
                     var turmasAtribuidasSelecionadas = turmasAtribuidasAoProfessor.Where(t => idsTurmasSelecionadas.Contains(t.Codigo.ToString()));
-                    var anoTurma = turmasAtribuidasSelecionadas.First().Ano;
-                    if (!turmasAtribuidasSelecionadas.All(x => x.Ano == anoTurma))
+                    var anoTurma = turmasAtribuidasSelecionadas.First().AnoTurma;
+                    if (!turmasAtribuidasSelecionadas.All(x => x.AnoTurma == anoTurma))
                         throw new NegocioException("Somente é possível migrar o plano de aula para turmas dentro do mesmo ano");
                 }
                 else
