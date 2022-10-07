@@ -84,7 +84,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ResponsavelEscolasDto>> ListaDeAtribuicaoResponsavel(FiltroObterSupervisorEscolasDto filtro)
         {
             var responsavelEscolaDreDto = await repositorioSupervisorEscolaDre
-                .ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo); ;
+                .ObterTodosAtribuicaoResponsavelPorDreCodigo(filtro.DreCodigo);
 
             if (responsavelEscolaDreDto == null)
                 responsavelEscolaDreDto = new List<SupervisorEscolasDreDto>() { new SupervisorEscolasDreDto() { EscolaId = filtro.UeCodigo } };
