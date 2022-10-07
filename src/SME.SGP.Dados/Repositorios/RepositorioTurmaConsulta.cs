@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -142,7 +142,7 @@ namespace SME.SGP.Dados.Repositorios
                 ue.AdicionarDre(dre);
                 turma.AdicionarUe(ue);
                 return turma;
-            }, new { turmaId }, splitOn: "UeId, DreId")).FirstOrDefault();
+            }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
@@ -727,7 +727,7 @@ namespace SME.SGP.Dados.Repositorios
                                 inner join tipo_calendario tc on a.tipo_calendario_id = tc.id 
                                 inner join periodo_escolar pe on pe.tipo_calendario_id  = tc.id 
                                     where t.ano_letivo  = @anoLetivo   
-                                    and pe.periodo_inicio::data <= @dataReferencia
+                                    and pe.periodo_inicio < @dataReferencia
                                 group by a.turma_id, a.disciplina_id, a.tipo_calendario_id, pe.periodo_fim ";
 
 
@@ -838,7 +838,9 @@ namespace SME.SGP.Dados.Repositorios
             if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro, t.ano as Ano
+                            t.nome as Nome, t.nome_filtro as nomeFiltro,
+                                	t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
@@ -847,7 +849,9 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro, t.ano_letivo as Ano
+                            t.nome as Nome, t.nome_filtro as nomeFiltro,
+                                	t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia_historica a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
