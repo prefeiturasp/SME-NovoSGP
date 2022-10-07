@@ -76,11 +76,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             fechamentoDto.Id = retorno.FirstOrDefault().Id;
 
-            foreach (var fechamentoAluno in fechamentoDto.NotaConceitoAlunos)
-            {
-                fechamentoAluno.Nota = null;
-            }
-
             await ExecutarTesteComValidacaoNota(dto, TipoNota.Nota);
         }
 

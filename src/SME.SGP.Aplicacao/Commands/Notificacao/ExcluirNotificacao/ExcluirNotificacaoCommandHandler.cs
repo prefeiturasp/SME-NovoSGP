@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             request.Notificacao.Remover();
             await repositorioNotificacao.SalvarAsync(request.Notificacao);
-            await mediator.Send(new NotificarExclusaoNotificacaoCommand(request.Notificacao.Codigo, request.Notificacao.Status, usuarioRf));
+            await mediator.Send(new NotificarExclusaoNotificacaoCommand(request.Notificacao.Codigo, request.Notificacao.Status, usuarioRf, request.Notificacao.AnoAnterior));
         }
     }
 }

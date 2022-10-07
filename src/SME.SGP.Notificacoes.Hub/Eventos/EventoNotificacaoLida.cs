@@ -13,6 +13,6 @@ namespace SME.SGP.Notificacoes.Hub
         }
 
         protected override Task Disparar(IHubCallerClients clients, MensagemLeituraNotificacaoDto mensagem)
-            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoLida", mensagem.Codigo);
+            => clients.Usuario(mensagem.UsuarioRf).SendAsync("NotificacaoLida", mensagem.Codigo, mensagem.AnoAnterior);
     }
 }
