@@ -40,13 +40,13 @@ namespace SME.SGP.Aplicacao
             
             foreach(var componente in componentes)
             {
-                var descricao = componentesCurricularesEOL.Where(c => c.Codigo == componente.Id || c.CodigoComponenteTerritorioSaber == componente.Id).Select(x => x.Descricao);
+                var descricao = componentesCurricularesEOL.SingleOrDefault(c => c.Codigo == componente.Id || c.CodigoComponenteTerritorioSaber == componente.Id)?.Descricao;
 
                 componentesCurricularesPorTurma.Add(new ComponenteCurricularPorTurma
                 {
                     GrupoMatriz = new ComponenteCurricularGrupoMatriz{ Id = componente.GrupoMatrizId},
                     AreaDoConhecimento = new AreaDoConhecimento { Id = componente.AreaConnhecimentoId},
-                    Disciplina = descricao != null && descricao.Any() ? descricao.First() : componente.Descricao,
+                    Disciplina = descricao != null && descricao.Any() ? descricao : componente.Descricao,
                     CodDisciplina = componente.Id
                 }); ;
             }
