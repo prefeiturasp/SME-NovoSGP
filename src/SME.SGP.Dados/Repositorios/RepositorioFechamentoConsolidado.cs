@@ -57,7 +57,7 @@ namespace SME.SGP.Dados
                                                     cfct.status as SituacaoFechamentoCodigo, 
                                                     cc.grupo_matriz_id as GrupoMatrizId,
                                                     cc.area_conhecimento_id as AreaConnhecimentoId,
-                                                    row_number() over (partition by cfct.professor_rf) sequencia
+                                                    row_number() over (partition by cc.id) sequencia
                                                from consolidado_fechamento_componente_turma cfct   
                                                inner join componente_curricular cc on cc.id = cfct.componente_curricular_id           
                                                where cfct.turma_id = @turmaId
