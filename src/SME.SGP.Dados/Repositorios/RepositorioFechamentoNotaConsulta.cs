@@ -158,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
         public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo)
         {
             string query = queryPorFechamento;
-            query += @" and fa.aluno_codigo = @alunoCodigo";
+            query += @" and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
             return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId, alunoCodigo });
         }
 
@@ -228,13 +228,6 @@ namespace SME.SGP.Dados.Repositorios
                 dataMatricula,
                 dataSituacao
             });
-        }
-
-        public Task<IEnumerable<FechamentoNotaAlunoAprovacaoDto>> ObterPorFechamentosTurmaAlunoCodigo(long[] fechamentosTurmaDisciplinaId, string alunoCodigo)
-        {
-            string query = queryPorFechamento;
-            query += @" and fa.aluno_codigo = @alunoCodigo) select * from lista where sequencia = 1;";
-            return database.Conexao.QueryAsync<FechamentoNotaAlunoAprovacaoDto>(query, new { fechamentosTurmaDisciplinaId, alunoCodigo });
-        }
+        }        
     }
 }
