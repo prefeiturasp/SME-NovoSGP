@@ -141,7 +141,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
             const string query = @"with lista as (select f.*, fa.*, fn.*, 
-                                                         row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
+                                                         row_number() over (partition by t.id, fa.aluno_codigo, p.id, fn.disciplina_id order by fn.id desc) sequencia
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
