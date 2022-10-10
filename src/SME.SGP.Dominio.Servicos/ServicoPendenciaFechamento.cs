@@ -395,7 +395,7 @@ namespace SME.SGP.Dominio.Servicos
             return auditoriaDto;
         }
 
-        public bool VerificaPendenciasEmAbertoPorFechamento(long fechamentoId)
+        public bool VerificarPendenciasEmAbertoPorFechamento(long fechamentoId)
             => repositorioPendenciaFechamento.VerificaPendenciasAbertoPorFechamento(fechamentoId);
 
         public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)

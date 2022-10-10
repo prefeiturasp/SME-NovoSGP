@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(VerificaPendenciasFechamentoCommand request, CancellationToken cancellationToken)
         {
             // Verifica existencia de pendencia em aberto
-            if (!servicoPendenciaFechamento.VerificaPendenciasEmAbertoPorFechamento(request.FechamentoId))
+            if (!servicoPendenciaFechamento.VerificarPendenciasEmAbertoPorFechamento(request.FechamentoId))
             {
                 var fechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina.ObterPorId(request.FechamentoId);
                 // Atualiza situação do fechamento

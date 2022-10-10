@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var data = param.ObterObjetoMensagem<PendenciaFechamentoCompletoDto>();
-            servicoFechamentoTurmaDisciplina.VerificaPendenciasEmAbertoPorFechamento(data.FechamentoId);
+            servicoFechamentoTurmaDisciplina.VerificarPendenciasEmAbertoPorFechamento(data.FechamentoId);
             return true;
         }
     }
