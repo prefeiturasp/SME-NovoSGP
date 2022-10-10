@@ -388,14 +388,14 @@ namespace SME.SGP.Dominio.Servicos
                 throw new NegocioException("Pendência de fechamento não localizada com o identificador consultado");
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.VerificaPendenciasFechamentoTurma,
-                                                           new VerificaPendenciasFechamentoCommand(pendenciaFechamento.FechamentoId),
+                                                           new VerificaPendenciasFechamentoCommand(pendenciaFechamento.FechamentoId, pendenciaFechamento.Bimestre, pendenciaFechamento.TurmaId),
                                                            Guid.NewGuid(),
                                                            null, 
                                                            false));
             return auditoriaDto;
         }
 
-        public bool VerificaPendenciasFechamento(long fechamentoId)
+        public bool VerificaPendenciasEmAbertoPorFechamento(long fechamentoId)
             => repositorioPendenciaFechamento.VerificaPendenciasAbertoPorFechamento(fechamentoId);
 
         public async Task<AuditoriaPersistenciaDto> AtualizarPendencia(long pendenciaId, SituacaoPendencia situacaoPendencia)
