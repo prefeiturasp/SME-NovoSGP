@@ -795,13 +795,15 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             return disciplinas.Select(x => new DisciplinaDto
             {
-                CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CodigoComponenteCurricular = !x.Territorio? x.CdComponenteCurricular : long.Parse(x.CdComponenteCurricular.ToString().Substring(x.CdComponenteCurricular.ToString().Length - 4)),
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
                 TerritorioSaber = x.Territorio,
                 LancaNota = x.LancaNota,
+                GrupoMatrizId = x.GrupoMatriz.Id,
+                GrupoMatrizNome = x.GrupoMatriz.Nome
             });
         }
 
