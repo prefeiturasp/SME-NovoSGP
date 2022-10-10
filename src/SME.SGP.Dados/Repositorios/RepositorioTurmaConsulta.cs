@@ -838,7 +838,9 @@ namespace SME.SGP.Dados.Repositorios
             if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro, t.ano as Ano
+                            t.nome as Nome, t.nome_filtro as nomeFiltro,
+                                    t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
@@ -847,7 +849,9 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro, t.ano_letivo as Ano
+                            t.nome as Nome, t.nome_filtro as nomeFiltro, 
+                                    t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia_historica a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
