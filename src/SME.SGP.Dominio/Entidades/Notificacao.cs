@@ -12,6 +12,7 @@
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
         public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao && Status == NotificacaoStatus.Pendente; } }
+        public bool AnoAnterior { get => DateTimeExtension.HorarioBrasilia().Year > CriadoEm.Year; }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
         public bool Excluida { get; set; }

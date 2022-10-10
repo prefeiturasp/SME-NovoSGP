@@ -162,6 +162,17 @@ namespace SME.SGP.Aplicacao
             };
         }
 
+        private string ObterEscola(Turma turmaDreUe)
+        {
+            var ueTipo = turmaDreUe.Ue.TipoEscola;
+
+            var dreAbreviacao = turmaDreUe.Ue.Dre.Abreviacao.Replace("-", "");
+
+            var ueNome = turmaDreUe.Ue.Nome;
+
+            return ueTipo != TipoEscola.Nenhum ? $"{ueTipo.ShortName()} {ueNome} ({dreAbreviacao})" : $"{ueNome} ({dreAbreviacao})";
+        }
+
         private async Task SalvarPendenciaUsuario(long pendenciaId, string professorRf)
         {
             var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professorRf));

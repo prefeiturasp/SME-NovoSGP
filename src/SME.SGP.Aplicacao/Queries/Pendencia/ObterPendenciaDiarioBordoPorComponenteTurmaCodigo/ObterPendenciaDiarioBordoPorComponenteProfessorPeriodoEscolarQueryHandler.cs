@@ -9,14 +9,14 @@ namespace SME.SGP.Aplicacao
     public class ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQueryHandler : IRequestHandler<ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery, long>
     {
 
-        private readonly IRepositorioPendenciaAulaConsulta repositorioPendenciaAula;
+        private readonly IRepositorioPendenciaDiarioBordoConsulta repositorioPendenciaDiarioBordo;
 
-        public ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQueryHandler(IRepositorioPendenciaAulaConsulta repositorioPendenciaAula)
+        public ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQueryHandler(IRepositorioPendenciaDiarioBordoConsulta repositorio)
         {
-            this.repositorioPendenciaAula = repositorioPendenciaAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaAula));
+            this.repositorioPendenciaDiarioBordo = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
 
         public async Task<long> Handle(ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery request, CancellationToken cancellationToken)
-        => await repositorioPendenciaAula.ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(request.ComponenteCurricularId, request.CodigoRf, request.PeriodoEscolarId);
+        => await repositorioPendenciaDiarioBordo.ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(request.ComponenteCurricularId, request.CodigoRf, request.PeriodoEscolarId);
     }
 }
