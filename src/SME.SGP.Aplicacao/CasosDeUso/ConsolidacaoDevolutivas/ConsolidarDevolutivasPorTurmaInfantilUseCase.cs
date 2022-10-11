@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             try
             {
                 var anoAtual = DateTime.Now.Year;
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(anoAtual), Guid.NewGuid(), null));
+                // TODO: Essa rota não possuem o registro
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(anoAtual), Guid.NewGuid(), null));
             }
             catch (Exception ex)
             {
@@ -45,7 +46,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             try
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(ano), Guid.NewGuid(), null));
+                // TODO: Essa rota não possuem o registro
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(ano), Guid.NewGuid(), null));
             }
             catch (Exception ex)
             {
