@@ -59,11 +59,13 @@ namespace SME.SGP.Dados.Repositorios
                           inner join turma t on t.id = f.turma_id
                            left join periodo_escolar p on p.id = f.periodo_escolar_id
                            left join tipo_calendario tp on tp.id = p.tipo_calendario_id and not tp.excluido
-                          where t.turma_id = @turmaCodigo ");
+                          where t.turma_id = @turmaCodigo");
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre ");
             else
                 query.AppendLine(" and f.periodo_escolar_id is null");
+
+            query.AppendLine(" order by f.excluido");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
@@ -107,7 +109,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterPorTurmaPeriodoCCAsync(long turmaId, long periodoEscolarId, long componenteCurricularId)
         {
             const string query = @"with lista as (select f.*, fa.*, fn.*, 
-                                                         row_number() over (partition by t.id, fa.aluno_codigo, p.id, f.disciplina_id order by f.id desc) sequencia
+                                                         row_number() over (partition by t.id, fa.aluno_codigo, p.id, fn.disciplina_id order by fn.id desc) sequencia
                          from fechamento_turma_disciplina f
                         inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
