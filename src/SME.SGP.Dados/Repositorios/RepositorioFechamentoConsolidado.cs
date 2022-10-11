@@ -31,10 +31,8 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FechamentoConsolidadoComponenteTurma>> ObterFechamentosConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento)
         {
-            var query = new StringBuilder(@" select * from (
-                                                select id, dt_atualizacao, status, componente_curricular_id, professor_nome, professor_rf, turma_id, bimestre, 
-                                                     criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido,
-                                                row_number() over (partition by professor_rf) sequencia
+            var query = new StringBuilder(@" select id, dt_atualizacao, status, componente_curricular_id, professor_nome, professor_rf, turma_id, bimestre, 
+                                                     criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
                                                 from consolidado_fechamento_componente_turma 
                                                where not excluido 
                                                  and turma_id = @turmaId
@@ -43,21 +41,17 @@ namespace SME.SGP.Dados
                 query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento))");
 
-            query.AppendLine(") x where x.sequencia = 1");
-            
             return await database.Conexao.QueryAsync<FechamentoConsolidadoComponenteTurma>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
         public async Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento)
         {
-            var query = new StringBuilder(@" select * from (
-                                               select cc.id,
+            var query = new StringBuilder(@" select distinct cc.id,
                                                     coalesce(cc.descricao_sgp, cc.descricao) as descricao,
                                                     cfct.professor_nome as professorNome,
                                                     cfct.professor_rf as professorRf,
                                                     cfct.status as SituacaoFechamentoCodigo, 
                                                     cc.grupo_matriz_id as GrupoMatrizId,
-                                                    cc.area_conhecimento_id as AreaConnhecimentoId,
-                                                    row_number() over (partition by cfct.professor_rf) sequencia
+                                                    cc.area_conhecimento_id as AreaConnhecimentoId
                                                from consolidado_fechamento_componente_turma cfct   
                                                inner join componente_curricular cc on cc.id = cfct.componente_curricular_id           
                                                where cfct.turma_id = @turmaId
@@ -67,8 +61,6 @@ namespace SME.SGP.Dados
                 query.AppendLine(@"and EXISTS(select 1 from consolidado_fechamento_componente_turma 
                                               where turma_id = @turmaId and bimestre = @bimestre and status = ANY(@situacoesFechamento)) ");
             
-            query.AppendLine(") x where x.sequencia = 1");
-
             return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
 
