@@ -175,8 +175,12 @@ namespace SME.SGP.Dados.Repositorios
                             left join periodo_escolar p
                             on p.id = ft.periodo_escolar_id
                            where ft.turma_id = @turmaId");
+
             if (bimestre > 0)
                 query.AppendLine(@" and p.bimestre = @bimestre");
+            else
+                query.AppendLine(@" and ft.periodo_escolar_id is null");
+
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, bimestre });
         }
     }
