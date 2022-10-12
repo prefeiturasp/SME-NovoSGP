@@ -30,7 +30,7 @@ namespace SME.SGP.Dominio
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
-            string disciplinaId)
+            string disciplinaId, bool consideraHistorico = false)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace SME.SGP.Dominio
                     .ToList();
 
                 var temAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilUE();
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao,temAbrangenciaUeOuDreOuSme), Guid.NewGuid(), usuario));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, temAbrangenciaUeOuDreOuSme, consideraHistorico), Guid.NewGuid(), usuario));
 
             }
             catch (Exception ex)
