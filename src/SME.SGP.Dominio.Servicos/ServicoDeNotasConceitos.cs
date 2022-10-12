@@ -90,8 +90,7 @@ namespace SME.SGP.Dominio
                     .Select(a => a.CodigoAluno)
                     .ToList();
 
-                var temAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilUE();
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, temAbrangenciaUeOuDreOuSme, consideraHistorico), Guid.NewGuid(), usuario));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, false, consideraHistorico), Guid.NewGuid(), usuario));
 
             }
             catch (Exception ex)
