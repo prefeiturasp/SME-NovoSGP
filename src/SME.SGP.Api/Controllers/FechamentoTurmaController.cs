@@ -102,9 +102,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("consolidar")]
         [ProducesResponseType(200)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
+        public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromQuery] int? anoLetivo, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
         {
-            await useCase.Executar(turmaCodigo, bimestre);
+            await useCase.Executar(turmaCodigo, bimestre, anoLetivo);
             return Ok();
         }
 

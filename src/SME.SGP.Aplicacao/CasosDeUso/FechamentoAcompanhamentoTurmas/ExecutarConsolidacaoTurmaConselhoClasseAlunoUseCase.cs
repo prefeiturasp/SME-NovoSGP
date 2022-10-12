@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma != null)
             {
                 var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentosTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
+                var fechamentosTurmaDisciplina = filtro.ComponenteCurricularId.HasValue ? await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre)) : null;
 
                 if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
                     fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), filtro.AlunoCodigo));
