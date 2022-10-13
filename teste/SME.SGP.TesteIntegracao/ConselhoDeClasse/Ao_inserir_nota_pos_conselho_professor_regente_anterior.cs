@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var comando = ServiceProvider.GetService<ISalvarConselhoClasseAlunoNotaUseCase>();
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Executar(salvarConselhoClasseAlunoNotaDto));
 
-            excecao.Message.ShouldBe(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
+            excecao.Message.ShouldBe(MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
         private async Task CriarDados(

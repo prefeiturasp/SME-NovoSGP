@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -147,10 +148,13 @@ namespace SME.SGP.Aplicacao
 
             var disciplinaId = long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId);
 
-            var regenteAtual = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId), turma.CodigoTurma, DateTime.Now.Date, usuario));
+            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turma.CodigoTurma, atividadeAvaliativa.DataAvaliacao.Date, usuario));
+            
+            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, usuarioPossuiAtribuicaoNaTurmaNaData ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
 
-            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
-
+            if (!usuarioPossuiAtribuicaoNaTurmaNaData && !aula.Any())
+                throw new NegocioException(MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
+            
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
 
             var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
