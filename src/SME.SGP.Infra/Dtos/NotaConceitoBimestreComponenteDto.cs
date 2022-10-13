@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class NotaConceitoBimestreComponenteDto
     {
@@ -10,5 +12,6 @@
         public int? Bimestre { get; set; }
         public string AlunoCodigo { get; set; }
         public double? NotaConceito => ConceitoId ?? Nota;
+        public string Turma_id { get; set; }
     }
 }
