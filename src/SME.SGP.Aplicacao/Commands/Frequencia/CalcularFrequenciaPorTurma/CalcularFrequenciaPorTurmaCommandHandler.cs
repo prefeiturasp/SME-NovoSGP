@@ -207,10 +207,10 @@ namespace SME.SGP.Aplicacao
             List<FrequenciaAluno> frequenciaDosAlunos, IEnumerable<CompensacaoAusenciaAlunoCalculoFrequenciaDto> compensacoesDisciplinasAlunos,
             string turmaId, string componenteCurricularId)
         {
-            if (registroFrequenciaAlunos.Any(a => a.ComponenteCurricularId == componenteCurricularId))
-            {
-                var registroFrequenciaAluno = registroFrequenciaAlunos.FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
+            var registroFrequenciaAluno = registroFrequenciaAlunos.FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
 
+            if (registroFrequenciaAluno != null)
+            {  
                 var frequenciaParaTratar = frequenciaDosAlunos.FirstOrDefault(a => a.CodigoAluno == alunoCodigo && a.DisciplinaId == componenteCurricularId);
                 var totalCompensacoes = 0;
 
@@ -221,20 +221,20 @@ namespace SME.SGP.Aplicacao
                 if (frequenciaParaTratar == null)
                 {
                     var frequenciaFinal = new FrequenciaAluno
-                             (
-                                 alunoCodigo,
-                                 turmaId,
-                                 componenteCurricularId,
-                                 registroFrequenciaAluno.PeriodoEscolarId,
-                                 registroFrequenciaAluno.PeriodoInicio,
-                                 registroFrequenciaAluno.PeriodoFim,
-                                 registroFrequenciaAluno.Bimestre,
-                                 registroFrequenciaAluno.TotalAusencias,
-                                 totalAulasNaDisciplina,
-                                 totalCompensacoes,
-                                 TipoFrequenciaAluno.PorDisciplina,
-                                 registroFrequenciaAluno.TotalRemotos,
-                                 registroFrequenciaAluno.TotalPresencas);
+                                (
+                                    alunoCodigo,
+                                    turmaId,
+                                    componenteCurricularId,
+                                    registroFrequenciaAluno.PeriodoEscolarId,
+                                    registroFrequenciaAluno.PeriodoInicio,
+                                    registroFrequenciaAluno.PeriodoFim,
+                                    registroFrequenciaAluno.Bimestre,
+                                    registroFrequenciaAluno.TotalAusencias,
+                                    totalAulasNaDisciplina,
+                                    totalCompensacoes,
+                                    TipoFrequenciaAluno.PorDisciplina,
+                                    registroFrequenciaAluno.TotalRemotos,
+                                    registroFrequenciaAluno.TotalPresencas);
 
                     frequenciaDosAlunos.Add(frequenciaFinal);
                 }
