@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
+        private async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(long fechamentoTurmaId, Turma turma, string alunoCodigo)
         {
             var periodoEscolar = await ObterPeriodoUltimoBimestre(turma);
 
@@ -58,7 +58,8 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseUltimoBimestre == null)
                 return false;
 
-            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, periodoEscolar.Bimestre,turma.Historica));
+            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
+                periodoEscolar.Bimestre, fechamentoTurmaId, turma.Historica));
         }
 
         private static long ObterCodigoComponenteCurricular(DisciplinaResposta componenteCurricular)
@@ -81,7 +82,7 @@ namespace SME.SGP.Aplicacao
 
             var retorno = new List<ConselhoDeClasseGrupoMatrizDto>();
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
-            
+
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
@@ -95,7 +96,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioFechamentoTurma.NAO_EXISTE_FECHAMENTO_TURMA);
             }
 
-            if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
+            if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE);
 
             var disciplinas = (await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma)).ToList();
@@ -118,7 +119,7 @@ namespace SME.SGP.Aplicacao
             
             foreach (var grupoDisiplinasMatriz in gruposMatrizes.OrderBy(k => k.Key.Nome))
             {
-                var grupoMatriz = new ConselhoDeClasseGrupoMatrizDto()
+                var grupoMatriz = new ConselhoDeClasseGrupoMatrizDto
                 {
                     Id = grupoDisiplinasMatriz.Key.Id ?? 0,
                     Titulo = grupoDisiplinasMatriz.Key.Nome ?? "",
@@ -184,7 +185,9 @@ namespace SME.SGP.Aplicacao
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
 
             var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
-            if (tipoCalendario == null) throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
+            
+            if (tipoCalendario == null) 
+                throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
 
             string[] turmasCodigosEOL = new string[1];
             string[] turmasCodigos;
@@ -237,6 +240,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 turmasCodigos = new string[1] { turma.CodigoTurma };
+                
                 conselhosClassesIds = conselhoClasseId != 0 ?
                     new long[1] { conselhoClasseId } :
                     null;
@@ -251,7 +255,8 @@ namespace SME.SGP.Aplicacao
             var periodoInicio = periodoEscolar?.PeriodoInicio ?? periodosLetivos.OrderBy(pl => pl.Bimestre).First().PeriodoInicio;
             var periodoFim = periodoEscolar?.PeriodoFim ?? periodosLetivos.OrderBy(pl => pl.Bimestre).Last().PeriodoFim;
 
-            var turmasComMatriculasValidas = await ObterTurmasComMatriculasValidas(alunoCodigo, turmasCodigos, periodoInicio, periodoFim);
+            var turmasComMatriculasValidas = await mediator.Send(
+                new ObterTurmasComMatriculasValidasQuery(alunoCodigo, turmasCodigos, periodoInicio, periodoFim));
 
             if (turmasComMatriculasValidas.Any())
                 turmasCodigos = turmasComMatriculasValidas.ToArray();
@@ -273,9 +278,8 @@ namespace SME.SGP.Aplicacao
 
                 if (turmas.Select(t => t.TipoTurma).Distinct().Count() == 1 && turma.ModalidadeCodigo != Modalidade.Medio)
                     turmasCodigos = new string[1] { turma.CodigoTurma };               
-                else if(ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
+                else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
                     turmasCodigos = new string[1] { turma.CodigoTurma };
-                
             }
 
             //Verificar as notas finais
@@ -297,7 +301,7 @@ namespace SME.SGP.Aplicacao
             {
               var  turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma) 
                     ? turmasCodigos 
-                    : new string[] { codigoTurma };
+                    : new[] { codigoTurma };
 
                 validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
@@ -378,13 +382,15 @@ namespace SME.SGP.Aplicacao
                                                          && (alunoNaTurma.DataMatricula <= dataFim 
                                                          || MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma)));
 
-                        frequenciasAlunoParaTratar = (periodoMatricula != null ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre) : frequenciasAlunoParaTratar).ToList();
+                        frequenciasAlunoParaTratar = (periodoMatricula != null
+                            ? frequenciasAlunoParaTratar.Where(f => periodoMatricula.Bimestre <= f.Bimestre)
+                            : frequenciasAlunoParaTratar).ToList();
 
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
 
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
-                            frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
+                            frequenciaAluno = new FrequenciaAluno { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
                         else
@@ -433,7 +439,7 @@ namespace SME.SGP.Aplicacao
             }
 
             retorno.TemConselhoClasseAluno = conselhoClasseId > 0 && await VerificaSePossuiConselhoClasseAlunoAsync(conselhoClasseId, alunoCodigo);
-            retorno.PodeEditarNota = permiteEdicao && await this.mediator.Send(new VerificaSePodeEditarNotaQuery(alunoCodigo, turma, periodoEscolar));
+            retorno.PodeEditarNota = permiteEdicao && await mediator.Send(new VerificaSePodeEditarNotaQuery(alunoCodigo, turma, periodoEscolar));
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
@@ -476,21 +482,6 @@ namespace SME.SGP.Aplicacao
         private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
         {
             return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;
-        }
-
-        public async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
-        {
-            var turmasCodigosComMatriculasValidas = new List<string>();
-            foreach (string codTurma in turmasCodigos)
-            {
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, alunoCodigo));
-                if (matriculasAluno != null || matriculasAluno.Any())
-                {
-                    if ((matriculasAluno != null || matriculasAluno.Any()) && matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= periodoInicio && m.DataSituacao <= periodoFim) || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= periodoFim && m.DataSituacao > periodoFim)))
-                        turmasCodigosComMatriculasValidas.Add(codTurma);
-                }
-            }
-            return turmasCodigosComMatriculasValidas;
         }
 
         private async Task<bool> VerificaSePossuiConselhoClasseAlunoAsync(long conselhoClasseId, string alunoCodigo)
@@ -552,16 +543,16 @@ namespace SME.SGP.Aplicacao
                 turma = fechamentoTurma.Turma;
             }
 
-            if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
-                return new ParecerConclusivoDto() { EmAprovacao = false };
+            if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
+                return new ParecerConclusivoDto { EmAprovacao = false };
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
             if (!turma.EhAnoAnterior() && (conselhoClasseAluno == null || !conselhoClasseAluno.ConselhoClasseParecerId.HasValue) && fechamentoTurma.PeriodoEscolarId == null)
                 return await mediator.Send(new GerarParecerConclusivoPorConselhoFechamentoAlunoCommand(conselhoClasseId, fechamentoTurmaId, alunoCodigo));
 
-            var parecerConclusivoDto = new ParecerConclusivoDto()
+            var parecerConclusivoDto = new ParecerConclusivoDto
             {
-                Id = conselhoClasseAluno?.ConselhoClasseParecerId != null ? conselhoClasseAluno.ConselhoClasseParecerId.Value : 0,
+                Id = conselhoClasseAluno?.ConselhoClasseParecerId ?? 0,
                 Nome = conselhoClasseAluno?.ConselhoClasseParecer?.Nome,
                 EmAprovacao = false
             };
@@ -573,7 +564,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaEmAprovacaoParecerConclusivo(long? conselhoClasseAlunoId, ParecerConclusivoDto parecerConclusivoDto)
         {
-            if (conselhoClasseAlunoId != null && conselhoClasseAlunoId > 0)
+            if (conselhoClasseAlunoId is > 0)
             {
                 var wfAprovacaoParecerConclusivo = await mediator.Send(new ObterSePossuiParecerEmAprovacaoQuery(conselhoClasseAlunoId));
 
