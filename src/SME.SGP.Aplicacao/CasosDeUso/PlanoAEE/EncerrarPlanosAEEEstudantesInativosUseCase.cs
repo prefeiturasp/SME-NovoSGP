@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                         if (turmaDoPlanoAee == null)
                             throw new NegocioException(string.Format(MensagemNegocioEncerramentoAutomaticoPlanoAee.Turma_nao_localizada, planoAEE.TurmaId));
 
-                        var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao)?.FirstOrDefault();
+                        var ultimaSituacao = matriculas!.Where(m => m.CodigoTurma.ToString() == turmaDoPlanoAee.CodigoTurma)
+                            .OrderByDescending(c => c.DataSituacao)?.FirstOrDefault();
 
                         if (ultimaSituacao!.Inativo)
                             encerrarPlanoAee = true;
