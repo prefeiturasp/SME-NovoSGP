@@ -139,21 +139,22 @@ namespace SME.SGP.Dados.Repositorios
                }, commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, bool ehGestor, string codigoTurma)
+        public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf, 
+            bool ehGestor, string codigoTurma, int anoLetivo)
         {
             var disciplinaId = Convert.ToInt32(componenteCurricularId);
-            var sqlQuery = string.Empty;
-            if (ehGestor)
-            {
-                sqlQuery = @"select aula_id from pendencia_diario_bordo pdb join aula a on a.id = pdb.aula_id where a.turma_id = @codigoTurma";
-                return await database.Conexao.QueryAsync<long>(sqlQuery, new { codigoTurma }, commandTimeout: 60);
-            }
-            else
-            {
-                sqlQuery = @"select distinct pdb.aula_id from pendencia_diario_bordo pdb where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf";
-                return await database.Conexao.QueryAsync<long>(sqlQuery, new { professorRf, disciplinaId }, commandTimeout: 60);
-            }
 
+            var sqlQuery = new StringBuilder(@"select distinct aula_id
+                                                from pendencia_diario_bordo pdb
+                                                    inner join aula a on a.id = pdb.aula_id
+                                                    inner join tipo_calendario tc on tc.id = a.tipo_calendario_id");
+
+            sqlQuery.AppendLine(ehGestor
+                ? " where a.turma_id = @codigoTurma and tc.ano_letivo = @anoLetivo"
+                : " where pdb.componente_curricular_id = @disciplinaId and pdb.professor_rf = @professorRf and tc.ano_letivo = @anoLetivo");
+            
+            return await database.Conexao.QueryAsync<long>(sqlQuery.ToString(), new { codigoTurma, anoLetivo, disciplinaId, professorRf },
+                commandTimeout: 60);
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)

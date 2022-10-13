@@ -23,17 +23,5 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(query, new { fechamentoTurmaDisciplinaId, situacaoFechamento });
             return true;
         }
-
-        public async Task<bool> ExcluirLogicamenteFechamentosTurmaDisciplina(long[] idsFechamentoTurmaDisciplina)
-        {
-            var sqlQuery = @"update fechamento_turma_disciplina
-                             set excluido = true
-                             where id = any(@idsFechamentoTurmaDisciplina);";
-
-            await database.Conexao
-                .ExecuteAsync(sqlQuery, new { idsFechamentoTurmaDisciplina });
-
-            return true;
-        }
     }
 }

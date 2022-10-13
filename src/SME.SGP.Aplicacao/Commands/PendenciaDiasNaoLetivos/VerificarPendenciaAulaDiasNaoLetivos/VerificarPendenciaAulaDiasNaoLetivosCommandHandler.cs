@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             {
                 var listaAgrupada = aulas
                     .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data && d.UesIds.Contains(a.CodigoUe)))
-                    .GroupBy(x => new { x.TurmaId, x.DisciplinaId, x.ProfessorRf }).ToList();
+                    .GroupBy(x => new { x.TurmaId, x.IdTurma, x.DisciplinaId, x.ProfessorRf }).ToList();
 
                 var motivos = diasComEventosNaoLetivos
                     .Where(d => aulas.Any(a => a.Data == d.Data && d.UesIds.Contains(a.CodigoUe)))
@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
 
                         if (!pendenciaExistente)
                         {
-                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, turmas.Key.IdTurma, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 

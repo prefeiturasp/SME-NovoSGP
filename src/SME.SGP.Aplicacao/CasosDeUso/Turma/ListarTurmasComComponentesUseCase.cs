@@ -77,7 +77,6 @@ namespace SME.SGP.Aplicacao
                                                                                              filtroTurmaDto.Modalidade.Value,
                                                                                              filtroTurmaDto.Semestre,
                                                                                              usuario.EhPerfilProfessor(),
-                                                                                             usuario.EhGestorEscolar(),
                                                                                              usuario.CodigoRf,
                                                                                              filtroTurmaDto.ConsideraHistorico,
                                                                                              filtroTurmaDto.Bimestre > 0 ?
@@ -101,8 +100,17 @@ namespace SME.SGP.Aplicacao
             if (turmasAbrangencia != null)
             {
                 var turmasItems = turmasPaginadas.Items.Where(o => turmasAbrangencia.Contains(o.TurmaCodigo));
-                turmasPaginadas.Items = turmasItems;
+                var turmasAgrupadas = turmasItems.GroupBy(x => x.TurmaCodigo);
+                var turmasItemsFiltrados = new List<RetornoConsultaListagemTurmaComponenteDto>();
+                foreach (var turmas in turmasAgrupadas)
+                {
+                    turmasItemsFiltrados.AddRange(turmas);
+                }
+                turmasPaginadas.Items = turmasItemsFiltrados;
             }
+
+            if (filtroTurmaDto.Modalidade == Modalidade.EducacaoInfantil)
+                turmasPaginadas = await VerificarAgrupamentoRegencia(turmasPaginadas);
 
             var componentesRetorno = await mediator.Send(new ObterComponentesCurricularesSimplesPorIdsQuery(retornoComponentesTurma.ToArray()));
                                                                      
@@ -112,9 +120,38 @@ namespace SME.SGP.Aplicacao
 
             turmasPaginadas = await MapearNomeFiltroTurmas(turmasPaginadas.Items.Select(c => c.TurmaCodigo.ToString()).Distinct().ToArray(), turmasPaginadas);
             var componentes = MapearParaDtoComPaginacao(turmasPaginadas, componentesRetorno);
-            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.Bimestre, usuario);
+            var retorno = await MapearParaDtoComPendenciaPaginacao(componentes, filtroTurmaDto.AnoLetivo, filtroTurmaDto.Bimestre, usuario);
 
             return retorno;
+        }
+
+        private async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> VerificarAgrupamentoRegencia(PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
+        {
+            var turmasAgrupadasPorAnoNome = turmasPaginadas.Items.GroupBy(t => t.NomeTurma).ToList();
+
+            var listaComAgrupamento = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            var listaTurmasMesmaSerie = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            foreach (var turmas in turmasAgrupadasPorAnoNome)
+            {
+                foreach(var turmaAno in turmas)
+                {
+                    var componenteCurricularPai = await mediator.Send(new ObterCodigoComponentePaiQuery(turmaAno.ComponenteCurricularCodigo));
+                    if (!string.IsNullOrEmpty(componenteCurricularPai))
+                        turmaAno.ComponenteCurricularPaiCodigo = Convert.ToInt64(componenteCurricularPai);
+                    else
+                        turmaAno.ComponenteCurricularPaiCodigo = turmaAno.ComponenteCurricularCodigo;
+
+                    listaTurmasMesmaSerie.Add(turmaAno);
+                }
+
+                listaComAgrupamento.AddRange(listaTurmasMesmaSerie.DistinctBy(t => t.ComponenteCurricularPaiCodigo).Where(t => t.NomeTurma == turmas.Key));
+
+                listaTurmasMesmaSerie = new List<RetornoConsultaListagemTurmaComponenteDto>();
+            }
+
+            turmasPaginadas.Items = listaComAgrupamento;
+
+            return turmasPaginadas;
         }
 
         private async Task<PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>> MapearNomeFiltroTurmas(string[] turmasCodigos, PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto> turmasPaginadas)
@@ -176,9 +213,9 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int bimestre, Usuario usuario)
+        private async Task<PaginacaoResultadoDto<TurmaComComponenteDto>> MapearParaDtoComPendenciaPaginacao(PaginacaoResultadoDto<TurmaComComponenteDto> turmasComponentes, int anoLetivo, int bimestre, Usuario usuario)
         {
-            List<TurmaComComponenteDto> itensComPendencias = new List<TurmaComComponenteDto>();
+            var itensComPendencias = new List<TurmaComComponenteDto>();
 
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
@@ -190,9 +227,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var turmaComponente in turmaCodigo)
                 {
-
                     var pendencias = bimestre > 0 ? await mediator.Send(new ObterIndicativoPendenciasAulasPorTipoQuery(turmaComponente.ComponenteCurricularCodigo.ToString(),
                                                                                                         turma.CodigoTurma,
+                                                                                                        anoLetivo,
                                                                                                         bimestre,
                                                                                                         verificaDiarioBordo: ehTurmaInfantil && !usuario.EhProfessorCjInfantil(),
                                                                                                         verificaAvaliacao: !ehTurmaInfantil,

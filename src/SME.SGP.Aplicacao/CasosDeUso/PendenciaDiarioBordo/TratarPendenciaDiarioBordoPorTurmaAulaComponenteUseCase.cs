@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var filtro = param.ObterObjetoMensagem<FiltroPendenciaDiarioBordoTurmaAulaDto>();
 
             var pendenciaProfessorDisciplinaCache = new List<PendenciaProfessorComponenteCurricularDto>();
-
+            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.CodigoTurma));
             long pendenciaId = 0;
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
                     if (pendenciaId == 0)
                     {
-                        pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola));
+                        pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola, turmaId));
                         pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto()
                         {
                             ComponenteCurricularId = item.ComponenteCurricularId,
@@ -53,7 +53,12 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private SalvarPendenciaCommand MapearPendencia(TipoPendencia tipoPendencia, string descricaoComponenteCurricular, string turmaAnoComModalidade, string descricaoUeDre)
+        private SalvarPendenciaCommand MapearPendencia(
+                                            TipoPendencia tipoPendencia, 
+                                            string descricaoComponenteCurricular, 
+                                            string turmaAnoComModalidade, 
+                                            string descricaoUeDre,
+                                            long turmaId)
         {
             return new SalvarPendenciaCommand
             {
@@ -61,6 +66,7 @@ namespace SME.SGP.Aplicacao
                 DescricaoComponenteCurricular = descricaoComponenteCurricular,
                 TurmaAnoComModalidade = turmaAnoComModalidade,
                 DescricaoUeDre = descricaoUeDre,
+                TurmaId = turmaId
             };
         }
     }

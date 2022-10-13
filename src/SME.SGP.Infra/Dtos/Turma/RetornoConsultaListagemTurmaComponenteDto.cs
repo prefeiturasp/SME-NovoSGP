@@ -11,6 +11,7 @@ namespace SME.SGP.Infra
         public string Ano { get; set; }
         public string NomeComponenteCurricular { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
+        public long ComponenteCurricularPaiCodigo { get; set; }
         public long ComponenteCurricularTerritorioSaberCodigo { get; set; }
         public TipoTurnoEOL Turno { get; set; }
         public bool TerritorioSaber { get; set; }
