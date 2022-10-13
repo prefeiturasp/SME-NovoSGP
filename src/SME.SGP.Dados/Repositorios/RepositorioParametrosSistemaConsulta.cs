@@ -36,9 +36,13 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where ativo and tipo = @tipo");
 
             var resultado = await database.Conexao
-                .QueryFirstAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo = (int)tipo });
+                .QueryFirstAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo });
 
-            return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
+            if (resultado != null)
+                return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
+
+            return null;
+            
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)
