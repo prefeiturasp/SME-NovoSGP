@@ -78,7 +78,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Post([FromQuery] ListaNotasConceitosDto consultaListaNotasConceitosDto, [FromBody] NotaConceitoListaDto notaConceitoListaDto, [FromServices] IComandosNotasConceitos comandosNotasConceitos)
         {
             // TODO: Ajustar o front para não enviar os parametros não utilizados e descomentar o teste
-            await comandosNotasConceitos.Salvar(notaConceitoListaDto);
+            await comandosNotasConceitos.Salvar(notaConceitoListaDto, consultaListaNotasConceitosDto.TurmaHistorico);
             return Ok();
         }
         [HttpGet("conceitos")]
