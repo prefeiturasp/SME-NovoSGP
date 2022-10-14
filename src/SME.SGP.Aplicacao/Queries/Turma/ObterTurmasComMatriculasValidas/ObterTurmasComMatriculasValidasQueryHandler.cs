@@ -5,37 +5,43 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterTurmasComMatriculasValidasQueryHandler : IRequestHandler<ObterTurmasComMatriculasValidasQuery, IEnumerable<string>>
+namespace SME.SGP.Aplicacao
 {
-    private readonly IMediator mediator;
-
-    public ObterTurmasComMatriculasValidasQueryHandler(IMediator mediator)
+    public class
+        ObterTurmasComMatriculasValidasQueryHandler : IRequestHandler<ObterTurmasComMatriculasValidasQuery,
+            IEnumerable<string>>
     {
-        this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
+        private readonly IMediator mediator;
 
-    public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasQuery request, CancellationToken cancellationToken)
-    {
-        var turmasCodigosComMatriculasValidas = new List<string>();
-            
-        foreach (var codTurma in request.TurmasCodigos)
+        public ObterTurmasComMatriculasValidasQueryHandler(IMediator mediator)
         {
-            var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo), cancellationToken);
-                
-            if (matriculasAluno == null && !matriculasAluno.Any()) 
-                continue;
-
-            if ((matriculasAluno != null || matriculasAluno.Any()) &&
-                matriculasAluno.Any(m => m.PossuiSituacaoAtiva() ||
-                                         (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio &&
-                                          m.DataSituacao <= request.PeriodoFim)))
-            {
-                turmasCodigosComMatriculasValidas.Add(codTurma);
-            }
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-            
-        return turmasCodigosComMatriculasValidas;
+
+        public async Task<IEnumerable<string>> Handle(ObterTurmasComMatriculasValidasQuery request,
+            CancellationToken cancellationToken)
+        {
+            var turmasCodigosComMatriculasValidas = new List<string>();
+
+            foreach (var codTurma in request.TurmasCodigos)
+            {
+                var matriculasAluno =
+                    await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, request.AlunoCodigo),
+                        cancellationToken);
+
+                if (matriculasAluno == null && !matriculasAluno.Any())
+                    continue;
+
+                if ((matriculasAluno != null || matriculasAluno.Any()) &&
+                    matriculasAluno.Any(m => m.PossuiSituacaoAtiva() ||
+                                             (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio &&
+                                              m.DataSituacao <= request.PeriodoFim)))
+                {
+                    turmasCodigosComMatriculasValidas.Add(codTurma);
+                }
+            }
+
+            return turmasCodigosComMatriculasValidas;
+        }
     }
 }
