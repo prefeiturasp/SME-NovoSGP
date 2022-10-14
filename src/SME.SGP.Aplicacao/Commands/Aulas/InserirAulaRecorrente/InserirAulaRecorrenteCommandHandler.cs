@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,12 +23,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioAula repositorioAula;
         private readonly IRepositorioNotificacaoAula repositorioNotificacaoAula;
         private readonly IUnitOfWork unitOfWork;
-
-        private const String MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA = "Você não pode criar aulas para essa Turma.";
-
-        private const String MSG_NAO_PODE_ALTERAR_NESTA_TURMA =
-            "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
-
         public InserirAulaRecorrenteCommandHandler(IMediator mediator,
                                                    IRepositorioAula repositorioAula,
                                                    IRepositorioNotificacaoAula repositorioNotificacaoAula,
@@ -64,7 +59,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var verificaAtribuicao = atribuicoesEsporadica.FirstOrDefault(a => a.DataInicio <= aulaRecorrente.DataAula.Date && a.DataFim >= aulaRecorrente.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe);
                     if (verificaAtribuicao == null)
-                        throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
                     atribuicao = verificaAtribuicao;
                 }
@@ -82,7 +77,7 @@ namespace SME.SGP.Aplicacao
 
             if (!podeCriarAulaTurma)
             {
-                throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
 
             var obterUsuarioQuery = new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(
@@ -90,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
             if (!usuarioPodePersistirTurmaNaData)
-                throw new NegocioException(MSG_NAO_PODE_ALTERAR_NESTA_TURMA);
+                throw new NegocioException(MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
 
             return atribuicao;
         }
@@ -124,7 +119,7 @@ namespace SME.SGP.Aplicacao
 
             if (componentes == null || !componentes.Any(FilterComponentesCompativeis))
             {
-                throw new NegocioException(MSG_NAO_PODE_CRIAR_AULAS_PARA_A_TURMA);
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
         }
 

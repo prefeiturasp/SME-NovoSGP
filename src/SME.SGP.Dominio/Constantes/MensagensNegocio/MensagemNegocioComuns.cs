@@ -2,6 +2,8 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 {
     public class MensagemNegocioComuns
     {
+        public const string Voce_nao_pode_criar_aulas_para_essa_turma = "Você não pode criar aulas para essa Turma.";
+
         public const string APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO = 
             "Apenas é possível consultar este registro pois o período não está em aberto.";
 
