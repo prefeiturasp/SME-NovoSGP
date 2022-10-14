@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
                         var ultimaSituacao = matriculas!.OrderByDescending(c => c.DataSituacao).ThenByDescending(c => c.NumeroAlunoChamada)?.FirstOrDefault();
 
-                        if (ultimaSituacao!.Inativo && ultimaSituacao.CodigoTurma.ToString() == turmaDoPlanoAee.CodigoTurma)
+                        if (ultimaSituacao!.Inativo)
                             encerrarPlanoAee = true;
                         else if (ultimaSituacao!.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido)
                         {
