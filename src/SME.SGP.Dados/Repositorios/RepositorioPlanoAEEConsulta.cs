@@ -213,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<PlanoAEE>> ObterPlanosAtivos()
         {
-            var query = @"select * from plano_aee where not excluido and situacao not in (3,7);";
+            var query = @"select * from plano_aee where not excluido and situacao not in (3,7)";
 
             return await database.Conexao.QueryAsync<PlanoAEE>(query);
         }
