@@ -219,7 +219,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, bool ehProfessorCj)
         {
             if (!ehProfessorCj && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }
