@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                              request.Usuario));
                 
                     if (!usuarioPodePersistirTurmaNaData)
-                        return (false, MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+                        return (false, MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
             }
 

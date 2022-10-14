@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
             var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, usuarioPossuiAtribuicaoNaTurmaNaData ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
 
             if (!usuarioPossuiAtribuicaoNaTurmaNaData && !aula.Any())
-                throw new NegocioException(MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
             
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
 
@@ -503,7 +503,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
             if (!usuario.EhProfessorCj() && !await mediator.Send(new PodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula.Ticks)))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 aulaRecorrente.CodigoTurma, aulaRecorrente.DataAula, usuarioLogado);
             var usuarioPodePersistirTurmaNaData = await mediator.Send(obterUsuarioQuery);
             if (!usuarioPodePersistirTurmaNaData)
-                throw new NegocioException(MensagemNegocioComuns.Nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
 
             return atribuicao;
         }
