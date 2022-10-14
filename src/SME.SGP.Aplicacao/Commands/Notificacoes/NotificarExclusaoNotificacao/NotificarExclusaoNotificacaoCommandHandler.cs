@@ -21,7 +21,8 @@ namespace SME.SGP.Aplicacao
                                                            new MensagemExclusaoNotificacaoDto(
                                                                request.Codigo,
                                                                (int)request.Status,
-                                                               request.UsuarioRf)));
+                                                               request.UsuarioRf,
+                                                               request.AnoAnterior)));
         }
     }
 }

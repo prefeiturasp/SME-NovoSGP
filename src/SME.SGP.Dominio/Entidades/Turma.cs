@@ -11,6 +11,7 @@ namespace SME.SGP.Dominio
         public string Ano { get; set; }
         public int AnoLetivo { get; set; }
         public string CodigoTurma { get; set; }
+        public string TurmaRegularCodigo { get; set; }
         public TipoTurma TipoTurma { get; set; }
         public DateTime DataAtualizacao { get; set; }
         public long Id { get; set; }

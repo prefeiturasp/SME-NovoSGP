@@ -27,7 +27,9 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            acompanhamentoAlunoTurmaSemestre.PodeEditar = await PodeEditarTurma(turma, filtro.Semestre);
+            int bimestre = filtro.Semestre == 1 ? 2 : 4;
+
+            acompanhamentoAlunoTurmaSemestre.PodeEditar = await PodeEditarTurma(turma, bimestre);
 
             TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
             await TratamentoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, filtro.TurmaId, filtro.AlunoId, filtro.ComponenteCurricularId);
@@ -49,10 +51,10 @@ namespace SME.SGP.Aplicacao
                 if (periodosFechamento == null || !periodosFechamento.Any())
                     throw new NegocioException($"Não foi possível obter os periodos de fechamento do bimestre : {bimestre}");
 
-                if (dataReferencia >= periodosFechamento.FirstOrDefault().InicioDoFechamento.Date && dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date ||
+                if (dataReferencia >= periodosFechamento.FirstOrDefault().InicioDoFechamento.Date && dataReferencia <= periodosFechamento.LastOrDefault().FinalDoFechamento.Date || 
                     await consultaPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, dataReferencia, bimestre))
                     return true;
-                else
+                else 
                     return false;
             }
             else

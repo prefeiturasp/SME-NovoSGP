@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -909,5 +909,29 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos },queryName: "ObterTurmasNomeFiltro");
         }
+
+        public async Task<IEnumerable<Turma>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
+        {
+            var query = @"select distinct 
+    	                    t.*
+                        from conselho_classe_aluno cca
+                        inner join 
+                            conselho_classe_aluno_turma_complementar ccat on cca.id = ccat.conselho_classe_aluno_id
+                        inner join 
+                            conselho_classe cc on cc.id = cca.conselho_classe_id
+                        inner join
+                            fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                        inner join 
+                            turma tr on tr.id = ft.turma_id
+                        inner join 
+                            turma t on t.id = ccat.turma_id
+                        inner join 
+                            tipo_ciclo_ano tca on tca.modalidade = t.modalidade_codigo and tca.ano = t.ano
+                        inner join tipo_ciclo tc on tc.id = tca.tipo_ciclo_id
+                    where cca.aluno_codigo = any(@alunosCodigos);";
+            return await contexto.Conexao.QueryAsync<Turma>(query, new { alunosCodigos });
+        }
+
+
     }
 }

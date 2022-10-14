@@ -838,6 +838,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid(PerfilUsuario.AD.Name())
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "4444444",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.PAAI.Name())
+                    }
+                },
             };
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }
