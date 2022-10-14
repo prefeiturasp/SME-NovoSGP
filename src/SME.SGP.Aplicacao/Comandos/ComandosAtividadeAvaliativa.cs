@@ -148,11 +148,13 @@ namespace SME.SGP.Aplicacao
 
             var disciplinaId = long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId);
 
-            var usuarioPossuiAtribuicaoNaTurmaNaData = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turma.CodigoTurma, atividadeAvaliativa.DataAvaliacao.Date, usuario));
+            var regenteAtual  = !usuario.EhProfessorCj() && !usuario.EhGestorEscolar()
+                ? await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turma.CodigoTurma, DateTime.Now.Date, usuario))
+                : true;
             
-            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, usuarioPossuiAtribuicaoNaTurmaNaData ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
+            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual  ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
 
-            if (!usuarioPossuiAtribuicaoNaTurmaNaData && !aula.Any())
+            if (!aula.Any())
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
             
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
