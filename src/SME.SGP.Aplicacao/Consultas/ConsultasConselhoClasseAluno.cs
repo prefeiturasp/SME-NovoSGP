@@ -206,7 +206,7 @@ namespace SME.SGP.Aplicacao
             if (turmasComplementares != null && turmasComplementares.Any())
             {
                 turmasComplementaresFiltradas = turmasComplementares.FirstOrDefault(t => t.TurmaRegularCodigo == turma.CodigoTurma && t.Semestre == turma.Semestre);
-                turmasCodigosEOL = new string[] { turmasComplementaresFiltradas.CodigoTurma };
+                turmasCodigosEOL = new string[] { turmasComplementaresFiltradas?.CodigoTurma ?? turma.CodigoTurma };
             }
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
