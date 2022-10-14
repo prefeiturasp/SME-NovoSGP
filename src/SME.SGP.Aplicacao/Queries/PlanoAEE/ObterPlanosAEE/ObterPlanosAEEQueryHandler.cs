@@ -31,16 +31,22 @@ namespace SME.SGP.Aplicacao
             List<string> turmasCodigos = new List<string>();
 
             var ueCodigo = await mediator.Send(new ObterUePorIdQuery(request.UeId));
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var turmas =
-                await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
-                        periodo, false, DateTime.Now.Year, tipos, true)); 
+            bool ehAdmin = usuario.EhAdmGestao();
 
-            if (turmas != null || turmas.Any())
-            {               
-                foreach (var item in turmas)
-                    turmasCodigos.Add(item.Codigo);
+            
+            if (!ehAdmin){
+                var turmas =
+                    await mediator.Send(
+                        new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
+                            periodo, false, DateTime.Now.Year, tipos, true));
+
+                if (turmas != null || turmas.Any())
+                {
+                    foreach (var item in turmas)
+                        turmasCodigos.Add(item.Codigo);
+                }
             }
 
             return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
@@ -49,6 +55,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.AlunoCodigo,
                                                                           (int?)request.Situacao,
                                                                           turmasCodigos.ToArray(),
+                                                                          ehAdmin,
                                                                           Paginacao));
         }
 
