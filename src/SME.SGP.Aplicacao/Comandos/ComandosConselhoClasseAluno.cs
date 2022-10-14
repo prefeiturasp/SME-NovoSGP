@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
                                     (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoFim);
                 
                 if (!permiteEdicao)
-                    throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
+                    throw new NegocioException(MensagemNegocioAluno.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
 
             var existeConselhoClasseBimestre = await mediator.Send(
