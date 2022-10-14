@@ -204,7 +204,7 @@ namespace SME.SGP.Aplicacao
 
             return turmas == null ? null : new TurmaComComponenteDto
             {
-                Id = turmas.Id,
+                Id = turmas.Id.GetValueOrDefault(),
                 NomeTurma = (turmas.Ano == null && turmas.SerieEnsino == null && turmas.NomeFiltro == null) ? turmas.NomeTurmaFormatado(nomeComponente) : turmas.NomeTurmaFiltroFormatado(nomeComponente),
                 TurmaCodigo = turmas.TurmaCodigo,
                 ComponenteCurricularCodigo = turmas.TerritorioSaber ? turmas.ComponenteCurricularTerritorioSaberCodigo : turmas.ComponenteCurricularCodigo,

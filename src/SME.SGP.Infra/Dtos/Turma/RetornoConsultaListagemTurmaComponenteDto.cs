@@ -4,7 +4,7 @@ namespace SME.SGP.Infra
 {
     public class RetornoConsultaListagemTurmaComponenteDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public long TurmaCodigo { get; set; }
         public Modalidade Modalidade { get; set; }
         public string NomeTurma { get; set; }
