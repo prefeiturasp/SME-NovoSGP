@@ -913,9 +913,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Turma>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
         {
             var query = @"select distinct 
-    	                    t.*,    
-                            tr.turma_id as TurmaRegularCodigo,
-                            tc.descricao Ciclo
+    	                    t.*
                         from conselho_classe_aluno cca
                         inner join 
                             conselho_classe_aluno_turma_complementar ccat on cca.id = ccat.conselho_classe_aluno_id
