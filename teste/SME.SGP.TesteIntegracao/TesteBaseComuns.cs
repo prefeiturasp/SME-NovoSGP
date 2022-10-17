@@ -764,7 +764,7 @@ namespace SME.SGP.TesteIntegracao
                 CodigoTurma = TURMA_CODIGO_1,
                 Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
-                AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
                 Nome = TURMA_NOME_1,
                 TipoTurma = TipoTurma.Regular
