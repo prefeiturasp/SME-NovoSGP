@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL"); 
             
-            var url = $"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/agrupaComponenteCurricular/{request.RealizarAgrupamentoComponente}";
+            var url = $"v1/componentes-curriculares/turmas/{request.CodigoTurma}/funcionarios/{request.Login}/perfis/{request.Perfil}/agrupaComponenteCurricular/{request.RealizarAgrupamentoComponente}?checaMotivoDisponibilizacao={request.ChecaMotivoDisponibilizacao}";
             
             try
             {
