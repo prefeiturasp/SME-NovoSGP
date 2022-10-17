@@ -755,14 +755,14 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected async Task CriarTurma(Modalidade modalidade)
+        protected async Task CriarTurma(Modalidade modalidade, bool turmaHistorica = false)
         {
             await InserirNaBase(new Turma
             {
                 UeId = 1,
                 Ano = TURMA_ANO_2,
                 CodigoTurma = TURMA_CODIGO_1,
-                Historica = true,
+                Historica = turmaHistorica,
                 ModalidadeCodigo = modalidade,
                 AnoLetivo = ANO_LETIVO_Ano_Atual_NUMERO,
                 Semestre = SEMESTRE_1,
