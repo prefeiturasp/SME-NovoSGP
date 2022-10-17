@@ -906,10 +906,23 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos },queryName: "ObterTurmasNomeFiltro");
         }
 
-        public async Task<IEnumerable<Turma>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
+        public async Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
         {
             var query = @"select distinct 
-    	                    t.*,    
+    	                    t.id,
+    	                    t.turma_id as CodigoTurma,
+    	                    t.nome,
+    	                    t.nome_filtro,
+    	                    t.ano,
+    	                    t.ano_letivo,
+    	                    t.modalidade_codigo,
+    	                    t.semestre,
+    	                    t.tipo_turno,
+    	                    t.tipo_turma,
+    	                    t.historica,
+    	                    t.data_inicio,
+    	                    t.dt_fim_eol,
+    	                    t.data_atualizacao,    
                             tr.turma_id as TurmaRegularCodigo,
                             tc.descricao Ciclo
                         from conselho_classe_aluno cca
@@ -927,7 +940,7 @@ namespace SME.SGP.Dados.Repositorios
                             tipo_ciclo_ano tca on tca.modalidade = t.modalidade_codigo and tca.ano = t.ano
                         inner join tipo_ciclo tc on tc.id = tca.tipo_ciclo_id
                     where cca.aluno_codigo = any(@alunosCodigos);";
-            return await contexto.Conexao.QueryAsync<Turma>(query, new { alunosCodigos });
+            return await contexto.Conexao.QueryAsync<TurmaComplementarDto>(query, new { alunosCodigos });
         }
 
 
