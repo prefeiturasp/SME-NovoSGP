@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTurmasComplementaresPorAlunoQueryHandler : IRequestHandler<ObterTurmasComplementaresPorAlunoQuery, IEnumerable<Turma>>
+    public class ObterTurmasComplementaresPorAlunoQueryHandler : IRequestHandler<ObterTurmasComplementaresPorAlunoQuery, IEnumerable<TurmaComplementarDto>>
     {
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
         public ObterTurmasComplementaresPorAlunoQueryHandler(IRepositorioTurmaConsulta repositorioTurmaConsulta)
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta)); 
         }
 
-        public async Task<IEnumerable<Turma>> Handle(ObterTurmasComplementaresPorAlunoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<TurmaComplementarDto>> Handle(ObterTurmasComplementaresPorAlunoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioTurmaConsulta.ObterTurmasComplementaresPorAlunos(request.AlunosCodigos);
         }
