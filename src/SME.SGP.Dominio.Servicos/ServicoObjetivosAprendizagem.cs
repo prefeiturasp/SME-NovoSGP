@@ -57,9 +57,8 @@ namespace SME.SGP.Dominio.Servicos
                     if (objetivosAAtualizar != null && objetivosAAtualizar.Any())
                     {
                         foreach (var objetivo in objetivosAAtualizar)
-                        {
                             await AtualizarObjetivoBase(objetivo);
-                        }
+
                         atualizarUltimaDataAtualizacao = true;
                         houveAlteracaoNosDados = true;
                     }
@@ -67,18 +66,16 @@ namespace SME.SGP.Dominio.Servicos
                     if (objetivosAIncluir != null && objetivosAIncluir.Any())
                     {
                         foreach (var objetivo in objetivosAIncluir)
-                        {
                             await repositorioObjetivoAprendizagem.SalvarAsync(MapearObjetivoRespostaParaDominio(objetivo));
-                        }
+
                         houveAlteracaoNosDados = true;
                     }
 
                     if (objetivosAReativar != null && objetivosAReativar.Any())
                     {
                         foreach (var objetivo in objetivosAReativar)
-                        {
                             await repositorioObjetivoAprendizagem.ReativarAsync(objetivo.Id);
-                        }
+
                         houveAlteracaoNosDados = true;
                     }
 
@@ -103,10 +100,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
             }
             else
-            {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Parâmetro 'DataUltimaAtualizacaoObjetivosJurema' não encontrado na base de dados, os objetivos de aprendizagem não serão atualizados.", LogNivel.Negocio, LogContexto.ObjetivosAprendizagem));
-            }
-                
         }
 
         private static void MapearParaObjetivoDominio(ObjetivoAprendizagemResposta objetivo, ObjetivoAprendizagem objetivoBase)

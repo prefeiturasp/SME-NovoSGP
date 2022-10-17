@@ -111,7 +111,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task SalvarAsync(ObjetivoAprendizagem objetivoAprendizagem)
         {
-            var query = @"INSERT
+            var query = string.Empty;
+
+            using (var conexao = new NpgsqlConnection(connectionString))
+            {
+                await conexao.OpenAsync();
+
+                if (objetivoAprendizagem.Id > 0)
+                {
+                    query = @"update objetivo_aprendizagem
+                              set ano_turma = @anoTurma,
+                                  atualizado_em = @atualizadoEm,
+                                  codigo = @codigo,
+                                  componente_curricular_id = @componenteCurricularId,
+                                  descricao = @descricao
+                              where id = @id;";
+                }
+                else
+                {
+                    query = @"INSERT
 	                        INTO
 	                        objetivo_aprendizagem (ano_turma,
 	                        atualizado_em,
@@ -127,12 +145,9 @@ namespace SME.SGP.Dados.Repositorios
                         @criadoEm,
                         @descricao,
                         @id)";
+                }
 
-            using (var conexao = new NpgsqlConnection(connectionString))
-            {
-                await conexao.OpenAsync();
-                await conexao.ExecuteAsync(
-                    query,
+                await conexao.ExecuteAsync(query,
                     new
                     {
                         anoTurma = objetivoAprendizagem.AnoTurma,
@@ -143,7 +158,6 @@ namespace SME.SGP.Dados.Repositorios
                         descricao = objetivoAprendizagem.Descricao,
                         id = objetivoAprendizagem.Id
                     });
-                conexao.Close();
             }
         }
     }

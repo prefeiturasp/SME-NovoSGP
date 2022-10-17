@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciaAlunoObtidoIndividual = await ObterTotalSomadoIndividualmente(request.CodigosTurmas, request.TipoCalendarioId, request.CodigoAluno, frequenciaAluno, disciplinasAluno, request.DataMatriculaTurmaFiltro);
 
-            if (frequenciaAluno.TotalAulas > frequenciaAlunoObtidoIndividual.TotalAulas)
+            if (frequenciaAluno.TotalAulas >= frequenciaAlunoObtidoIndividual.TotalAulas)
                 frequenciaAluno = frequenciaAlunoObtidoIndividual;
 
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
             {
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = frequenciasDoAluno.Sum(f => f.TotalAulas),
+                    TotalAulas = frequenciaGeralObtida.TotalAulas,
                     TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
                     TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes)
                 };
