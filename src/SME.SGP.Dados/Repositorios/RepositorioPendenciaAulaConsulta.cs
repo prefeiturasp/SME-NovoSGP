@@ -62,6 +62,7 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("  where not a.excluido");
             sqlQuery.AppendLine("	and a.data_aula < @hoje");
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
+            sqlQuery.AppendLine("   and t.modalidade_codigo = ANY(@modalidades)");
 
             sqlQuery.AppendLine("	and p.id is null");
             sqlQuery.AppendLine("	and tf.id is null");
@@ -510,6 +511,20 @@ namespace SME.SGP.Dados.Repositorios
             {
                 throw ex;
             }
+        }
+
+        public async Task<IEnumerable<long>> ObterPendenciasAulaPorDreUeTipoModalidade(long dreId, long ueId, TipoPendencia tipoPendencia, Modalidade modalidade)
+        {
+            var sql = $@" select p.id from pendencia p 
+                                inner join pendencia_aula pa on pa.pendencia_id = p.id
+                                inner join aula a on a.id = pa.aula_id 
+                                inner join turma t on a.turma_id = t.turma_id 
+                                inner join ue u on u.id = t.ue_id 
+                                inner join dre d on d.id = u.dre_id 
+                                where p.tipo = @tipoPendencia and u.id = @ueId and d.id = @dreId
+                                and t.modalidade_codigo = @modalidade and not p.excluido";
+
+            return (await database.Conexao.QueryAsync<long>(sql, new { dreId, ueId, tipoPendencia, modalidade }));
         }
     }
 }

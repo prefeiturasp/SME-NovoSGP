@@ -30,12 +30,24 @@ namespace SME.SGP.Aplicacao
                 if (aulas != null && aulas.Any())
                     await RegistraPendencia(aulas, TipoPendencia.PlanoAula);
 
+                await VerificaPendenciaAulaGeradaParaInfantil(filtro.DreId, filtro.UeId);
+
                 return true;
             }
             catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Registrar Pendencia Aula do Plano Aula.",  LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace));
                 throw;
+            }
+        }
+
+        private async Task VerificaPendenciaAulaGeradaParaInfantil(long dreId, long ueId)
+        {
+            var pendenciasId = await mediator.Send(new ObterPendenciaPlanoAulaPorDreIdUeIdModalidadeQuery(dreId, ueId, TipoPendencia.PlanoAula, Modalidade.EducacaoInfantil));
+
+            if (pendenciasId.Any())
+            {
+                await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasId.ToArray()});
             }
         }
 
