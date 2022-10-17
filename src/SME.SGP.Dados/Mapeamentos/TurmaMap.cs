@@ -36,7 +36,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.EhTurmaHistorica).Ignore();
             Map(c => c.TurnoParaComponentesCurriculares).Ignore();
             Map(c => c.AnoTurmaInteiro).Ignore();
-            Map(c => c.TurmaRegularCodigo).Ignore();
         }
     }
 }
