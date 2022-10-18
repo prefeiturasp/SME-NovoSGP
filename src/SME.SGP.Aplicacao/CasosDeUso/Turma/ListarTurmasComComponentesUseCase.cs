@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -46,24 +47,53 @@ namespace SME.SGP.Aplicacao
             var anosInfantilDesconsiderar = filtroTurmaDto.Modalidade.Value == Modalidade.EducacaoInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(filtroTurmaDto.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
 
             var turmasPaginadas = new PaginacaoResultadoDto<RetornoConsultaListagemTurmaComponenteDto>();
+            var listRetorno = new List<RetornoConsultaListagemTurmaComponenteDto>();
 
             if (usuario.EhProfessorCj())
             {
                 var disciplinas = await consultasDisciplina.ObterDisciplinasPerfilCJ(filtroTurmaDto.TurmaCodigo, usuario.CodigoRf);
 
-                var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtroTurmaDto.TurmaCodigo));
-
-                turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                if (filtroTurmaDto.TurmaCodigo != null)
                 {
-                    TurmaCodigo = long.Parse(filtroTurmaDto.TurmaCodigo),
-                    Modalidade = filtroTurmaDto.Modalidade.Value,
-                    NomeTurma = turma.Nome,
-                    Ano = turma.Ano,
-                    ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
-                    NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
-                    ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
-                    Turno = (TipoTurnoEOL)turma.TipoTurno,
-                });
+                    var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtroTurmaDto.TurmaCodigo));
+
+                    turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                    {
+                        TurmaCodigo = long.Parse(filtroTurmaDto.TurmaCodigo),
+                        Modalidade = filtroTurmaDto.Modalidade.Value,
+                        NomeTurma = turma.Nome,
+                        NomeFiltro = turma.NomeFiltro,
+                        Ano = turma.Ano,
+                        ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
+                        NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
+                        ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                        Turno = (TipoTurnoEOL)turma.TipoTurno,
+                    });
+                }
+                else
+                {
+                    if(turmasAbrangencia.Any() || turmasAbrangencia != null) 
+                        foreach(var turmaAbrangencia in turmasAbrangencia)
+                        {
+                            var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaAbrangencia.ToString()));
+
+                            turmasPaginadas.Items = disciplinas.ToList().Select(d => new RetornoConsultaListagemTurmaComponenteDto()
+                            {
+                                TurmaCodigo = long.Parse(turmaAbrangencia.ToString()),
+                                Modalidade = filtroTurmaDto.Modalidade.Value,
+                                NomeTurma = turma.Nome,
+                                NomeFiltro = turma.NomeFiltro,
+                                Ano = turma.Ano,
+                                ComplementoTurmaEJA = turma.EhEJA() ? turma.SerieEnsino : string.Empty,
+                                NomeComponenteCurricular = string.IsNullOrEmpty(d.NomeComponenteInfantil) ? d.Nome : d.NomeComponenteInfantil,
+                                ComponenteCurricularCodigo = d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.Value : d.CodigoComponenteCurricular,
+                                Turno = (TipoTurnoEOL)turma.TipoTurno,
+                            });
+
+                            listRetorno.AddRange(turmasPaginadas.Items);
+                        }
+                        turmasPaginadas.Items = listRetorno;
+                }
             }
             else
             {
