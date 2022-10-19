@@ -510,7 +510,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             HttpResponseMessage resposta;
             
             if (administradorSuporte != null)
-                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}?loginAdmin={administradorSuporte.Login}&nomeAdm={administradorSuporte.Nome}");
+                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}?loginAdm={administradorSuporte.Login}&nomeAdm={administradorSuporte.Nome}");
             else
                 resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}");                
             
