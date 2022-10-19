@@ -613,12 +613,12 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
         {
             if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))
                 throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
 
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}");
+            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}&buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
