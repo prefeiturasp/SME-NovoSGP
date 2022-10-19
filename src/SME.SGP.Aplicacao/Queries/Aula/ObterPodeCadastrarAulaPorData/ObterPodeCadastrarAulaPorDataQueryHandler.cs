@@ -33,14 +33,7 @@ namespace SME.SGP.Aplicacao
 
             if (periodoEscolar == null)
             {
-                var eventoReposicaoAulaNoDia = await repositorioEvento
-                    .EventosNosDiasETipo(request.DataAula, request.DataAula, TipoEvento.ReposicaoDoDia, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
-
-                var eventoReposicaoDeAula = await repositorioEvento
-                    .EventosNosDiasETipo(request.DataAula, request.DataAula, TipoEvento.ReposicaoDeAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
-
-                if (!eventoReposicaoAulaNoDia.Any() && !eventoReposicaoDeAula.Any())
-                    return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
+                 await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
             }
 
             // Domingo
@@ -48,7 +41,9 @@ namespace SME.SGP.Aplicacao
             {
                 var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
 
-                if (!temEventoLetivoDeLiberacao)
+                var eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+
+                if (!temEventoLetivoDeLiberacao && (eventoReposicao != null))
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
             }
 
@@ -69,5 +64,17 @@ namespace SME.SGP.Aplicacao
                 : new PodeCadastrarAulaPorDataRetornoDto(false, "Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
         }
 
+        private async Task<PodeCadastrarAulaPorDataRetornoDto> EventoReposicao(DateTime dataAula, long tipoCalendarioId, string codigoUe, string vazio)
+        {
+            var eventoReposicaoAulaNoDia = await repositorioEvento
+                    .EventosNosDiasETipo(dataAula, dataAula, TipoEvento.ReposicaoDoDia, tipoCalendarioId, codigoUe, string.Empty);
+
+            var eventoReposicaoDeAula = await repositorioEvento
+                .EventosNosDiasETipo(dataAula, dataAula, TipoEvento.ReposicaoDeAula, tipoCalendarioId, codigoUe, string.Empty);
+
+            if (!eventoReposicaoAulaNoDia.Any() && !eventoReposicaoDeAula.Any())
+                return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula fora do periodo escolar");
+            return null;
+        }
     }
 }
