@@ -842,6 +842,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }
 
+        public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
         {
             throw new NotImplementedException();

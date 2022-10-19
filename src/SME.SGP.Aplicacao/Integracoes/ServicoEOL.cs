@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -20,14 +18,12 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEol
     {
-        private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
         private readonly HttpClient httpClient;
 
-        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IMediator mediator)
+        public ServicoEOL(HttpClient httpClient, IMediator mediator)
         {
             this.httpClient = httpClient;
-            this.cache = cache;
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -509,16 +505,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
+        public async Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
         {
-            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPermissoesPorPerfil/{perfilGuid}");
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<int[]>(json);
-            }
-            return null;
+            HttpResponseMessage resposta;
+            
+            if (administradorSuporte != null)
+                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}?loginAdmin={administradorSuporte.Login}&nomeAdm={administradorSuporte.Nome}");
+            else
+                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}");                
+            
+            if (!resposta.IsSuccessStatusCode) 
+                return null;
+            
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<RetornoDadosAcessoUsuarioSgpDto>(json);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
