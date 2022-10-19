@@ -63,23 +63,6 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
         {
             if (filtroDiarioBordoDto.ContemDevolutiva)
             {
-                /*var diariosBordo = new List<DiarioBordo>();
-                diariosBordo.Add(new()
-                {
-                    Id = DIARIO_BORDO_ID_1,
-                    AulaId = AULA_ID_1,
-                    ComponenteCurricularId = COMPONENTE_CURRICULAR_512,
-                    TurmaId = TURMA_ID_1,
-                    DevolutivaId = filtroDiarioBordoDto.ContemDevolutiva ? DEVOLUTIVA_DIARIO_BORDO_ID_1 : null,
-                    Planejamento = "Planejado",
-                    Excluido = false,
-                    InseridoCJ = false,
-                    CriadoEm = DateTimeExtension.HorarioBrasilia(),
-                    CriadoPor = "Sistema",
-                    CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
-                }
-                    );*/
-
                 await InserirNaBase(new Devolutiva()
                 {
                     Id = DEVOLUTIVA_DIARIO_BORDO_ID_1,
