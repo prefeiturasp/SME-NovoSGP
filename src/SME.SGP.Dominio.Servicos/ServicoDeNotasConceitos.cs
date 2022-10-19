@@ -30,7 +30,7 @@ namespace SME.SGP.Dominio
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
-            string disciplinaId)
+            string disciplinaId, bool consideraHistorico = false)
         {
             try
             {
@@ -90,8 +90,7 @@ namespace SME.SGP.Dominio
                     .Select(a => a.CodigoAluno)
                     .ToList();
 
-                var temAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilUE();
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao,temAbrangenciaUeOuDreOuSme), Guid.NewGuid(), usuario));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, false, consideraHistorico), Guid.NewGuid(), usuario));
 
             }
             catch (Exception ex)
@@ -360,7 +359,7 @@ namespace SME.SGP.Dominio
 
             if (!usuario.EhProfessorCj() && !podePersistir)
                 throw new NegocioException(
-                    "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                    MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

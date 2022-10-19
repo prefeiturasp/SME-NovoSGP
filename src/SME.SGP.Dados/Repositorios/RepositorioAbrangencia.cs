@@ -794,7 +794,7 @@ namespace SME.SGP.Dados.Repositorios
                     resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
             }
 
-            return resultadoFiltrado;
+            return resultadoFiltrado.DistinctBy(p => new {p.Nome});
         }
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)
@@ -904,8 +904,12 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, Modalidade modalidade, int semestre, string dre, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno)
         {
+            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();   
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+
+            if(retorno.Any())
+                retornoUesSupervisor.AddRange(retorno);
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
@@ -955,12 +959,12 @@ namespace SME.SGP.Dados.Repositorios
                                                           Id = u.UeId
                                                       });
 
-                    retorno = listaDistinta.OrderBy(d => d.Nome);
+                    retornoUesSupervisor.AddRange(listaDistinta);
                 }
 
             }
 
-            return retorno;
+            return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
         }
 
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)

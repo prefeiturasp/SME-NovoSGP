@@ -318,7 +318,8 @@ namespace SME.SGP.Dados.Repositorios
                         break;
                     case TipoPendenciaAssunto.Pendencia:
                     default:
-                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");                        
+                        query.Append(@" LEFT JOIN turma t ON t.id = p.turma_id      
+                                        WHERE p.id = any(@pendenciasIds) ");                        
                         break;
                 }
 

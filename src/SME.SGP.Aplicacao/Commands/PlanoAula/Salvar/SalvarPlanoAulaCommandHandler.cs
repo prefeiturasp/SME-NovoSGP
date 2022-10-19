@@ -120,18 +120,16 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
 
                 // Salvar Objetivos aprendizagem
-                var objetivosAtuais =  await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id));
+                var objetivosAtuais =  (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
                 var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
                 
                 if (objetivosPropostos != null && objetivosPropostos.Any())
                 {
-                    var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id)
-                        .Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
+                    var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id).Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
                     
-                    var objetivosIdParaExcluir = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId)
-                        .Except(objetivosPropostos.Select(s => s.Id));
+                    var objetivosIdParaExcluir = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId).Except(objetivosPropostos.Select(s => s.Id));
 
-                    foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.Id)))
+                    foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.ObjetivoAprendizagemId)))
                         await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
                         
                     foreach (var objetivoAprendizagem in objetivosPropostos.Where(w=> objetivosIdParaIncluir.Contains(w.Id)))
@@ -221,7 +219,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, bool ehProfessorCj)
         {
             if (!ehProfessorCj && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

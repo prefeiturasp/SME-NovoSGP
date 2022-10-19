@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
@@ -284,17 +285,18 @@ namespace SME.SGP.Aplicacao
         
         private async Task InserirOuAtualizarCache(FechamentoFinalTurmaDisciplinaDto fechamentoFinalTurmaDisciplina, bool emAprovacao)
         {
-            var disciplinaId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
+            var componenteCurricularId = fechamentoFinalTurmaDisciplina.EhRegencia ? fechamentoFinalTurmaDisciplina.DisciplinaId :
                 fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.First().DisciplinaId;
 
             var fechamentosNotasConceitos = fechamentoFinalTurmaDisciplina.NotaConceitoAlunos.Select(notaConceitoAluno => new FechamentoNotaConceitoDto
             {
+                DiscplinaId = notaConceitoAluno.DisciplinaId,
                 CodigoAluno = notaConceitoAluno.CodigoAluno, 
                 Nota = notaConceitoAluno.Nota, 
                 ConceitoId = notaConceitoAluno.ConceitoId
             }).ToList();
 
-            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(disciplinaId,
+            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
                 fechamentoFinalTurmaDisciplina.TurmaId,
                 fechamentosNotasConceitos, emAprovacao, fechamentoFinalTurmaDisciplina.Bimestre));
         }        
@@ -481,7 +483,7 @@ namespace SME.SGP.Aplicacao
             var podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, dataAula, usuario));
 
             if (!usuario.EhProfessorCj() && !podePersistir)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina, int anoLetivo, string codigoTurma)

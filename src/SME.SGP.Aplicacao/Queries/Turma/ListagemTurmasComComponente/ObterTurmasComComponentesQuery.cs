@@ -18,13 +18,12 @@ namespace SME.SGP.Aplicacao
         public Modalidade? Modalidade{ get; set; }
         public int? Semestre { get; set; }
         public bool EhProfessor { get; set; }
-        public bool EhGestorUe { get; set; }
         public string CodigoRf { get; set; }
         public bool ConsideraHistorico { get; set; }
         public DateTime PeriodoEscolarInicio { get; set; }
         public string AnosInfantilDesconsiderar { get; set; }
 
-        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, bool ehGestorUe, string codigoRf, bool consideraHistorico, DateTime periodoEscolarInicio, string anosInfantilDesconsiderar)
+        public ObterTurmasComComponentesQuery(string ueCodigo, string dreCodigo, string turmaCodigo, int anoLetivo, int qtdeRegistros, int qtdeRegistrosIgnorados, int? bimestre, Modalidade? modalidade, int? semestre, bool ehProfessor, string codigoRf, bool consideraHistorico, DateTime periodoEscolarInicio, string anosInfantilDesconsiderar)
         {
             UeCodigo = ueCodigo;
             DreCodigo = dreCodigo;
@@ -36,7 +35,6 @@ namespace SME.SGP.Aplicacao
             Modalidade = modalidade;
             Semestre = semestre;
             EhProfessor = ehProfessor;
-            EhGestorUe = ehGestorUe;
             CodigoRf = codigoRf;
             ConsideraHistorico = consideraHistorico;
             PeriodoEscolarInicio = periodoEscolarInicio;

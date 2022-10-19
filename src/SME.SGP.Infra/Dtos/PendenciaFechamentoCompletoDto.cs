@@ -8,6 +8,7 @@ namespace SME.SGP.Infra
     {
         public long PendenciaId { get; set; }
         public long FechamentoId { get; set; }
+        public long TurmaId { get; set; }
         public int Bimestre { get; set; }
         public long DisciplinaId { get; set; }
         public string ComponenteCurricular { get; set; }
