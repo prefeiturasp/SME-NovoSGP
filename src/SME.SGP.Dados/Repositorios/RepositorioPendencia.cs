@@ -266,8 +266,8 @@ namespace SME.SGP.Dados.Repositorios
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.PendenciaDevolutiva))
                 .Select(c => c.Id).Distinct().ToArray();
             
-            const string selectBase = "select p.id from pendencia p";
-            
+            string selectBase = "select p.id from pendencia p";
+
             var query = new StringBuilder();
 
             //-> Montando a query
@@ -323,7 +323,10 @@ namespace SME.SGP.Dados.Repositorios
                         break;
                     case TipoPendenciaAssunto.Pendencia:
                     default:
-                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");                        
+                        if (!string.IsNullOrEmpty(turmaCodigo))
+                            query.Append(@" INNER JOIN turma t on t.id = p.turma_id");
+
+                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");
                         break;
                 }
 
