@@ -1,32 +1,29 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
-using SME.SGP.Dominio;
-using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao.DiariosBordo
+namespace SME.SGP.TesteIntegracao.DiarioBordo
 {
-    public class Ao_excluir_diario_bordo_deve : DiarioBordoTesteBase
+    public class Ao_excluir_diario_bordo : DiarioBordoTesteBase
     {
 
-        public Ao_excluir_diario_bordo_deve(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_excluir_diario_bordo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
         [Fact(DisplayName = "Diario de Bordo com Devolutiva - Deve marcar registro Diário de Bordo como excluido ao efetuar a exclusão")]
-        public async Task ExcluirDiarioBordoComDevolutiva()
+        public async Task Deve_excluir_diario_bordo_com_devolutiva()
         {
-            var filtro = new FiltroDiarioBordoDto { ContemDevolutiva = true };
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, ContemDevolutiva = true };
             await ExecutarTesteDiarioBordo(filtro);
         }
 
         [Fact(DisplayName = "Diario de Bordo - Deve marcar registro Diário de Bordo como excluido ao efetuar a exclusão")]
-        public async Task ExcluirDiarioBordo()
+        public async Task Deve_excluir_diario_bordo()
         {
-            var filtro = new FiltroDiarioBordoDto { };
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512 };
             await ExecutarTesteDiarioBordo(filtro);
         }
 
@@ -56,13 +53,12 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
                 devolutiva.ShouldNotBeNull();
                 devolutiva.Excluido.ShouldBe(false);
             }
-
         }
 
         [Fact(DisplayName = "Diario de Bordo - Deve marcar registro de observações Diário de Bordo como excluido ao efetuar a exclusão")]
-        public async Task ExcluirDiarioBordoComObservacoes()
+        public async Task Deve_excluir_diario_bordo_com_observacoes()
         {
-            var filtro = new FiltroDiarioBordoDto { ContemObservacoes = true };
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, ContemObservacoes = true };
             await ExecutarTesteDiarioBordo_Observacoes(filtro);
         }
 
