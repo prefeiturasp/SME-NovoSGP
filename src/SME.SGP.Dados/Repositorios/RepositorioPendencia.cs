@@ -266,7 +266,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.PendenciaDevolutiva))
                 .Select(c => c.Id).Distinct().ToArray();
             
-            string selectBase = "select p.id from pendencia p";
+            const string selectBase = "select p.id from pendencia p";
 
             var query = new StringBuilder();
 
