@@ -116,12 +116,9 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             var obterResgistros = ObterTodos<Dominio.DiarioBordo>();
             obterResgistros.Count.ShouldBeEquivalentTo(0);
 
-            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)
-            {
-                var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
-                pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);
-            }
-
+            var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
+            pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);
+            
             await CriarDadosBasicos(filtro);
 
             var obterResgistrosNaoExcluidos = ObterTodos<Dominio.DiarioBordo>().Where(diariobordo => !diariobordo.Excluido).ToList();
@@ -135,11 +132,11 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             obterResgistrosExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_ID_1);
 
-            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)
-            {
-                var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
+            pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
+            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)             
                 pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(1);
-            }
+            else
+                pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);
 
         }
     }
