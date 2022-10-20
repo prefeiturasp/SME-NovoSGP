@@ -30,10 +30,14 @@ namespace SME.SGP.Aplicacao
 
             // Periodo Escolar
             var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(request.TipoCalendarioId, request.DataAula);
-
+            var eventoReposicao = new PodeCadastrarAulaPorDataRetornoDto(false,"");
             if (periodoEscolar == null)
             {
-                 await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+               eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+                if (eventoReposicao != null)
+                {
+                    return eventoReposicao;
+                }
             }
 
             // Domingo
@@ -41,7 +45,7 @@ namespace SME.SGP.Aplicacao
             {
                 var temEventoLetivoDeLiberacao = await repositorioEvento.DataPossuiEventoDeLiberacaoEoutroEventoLetivo(request.TipoCalendarioId, request.DataAula, request.UeCodigo);
 
-                var eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
+                 eventoReposicao = await EventoReposicao(request.DataAula, request.TipoCalendarioId, turma.Ue.CodigoUe, string.Empty);
 
                 if (!temEventoLetivoDeLiberacao && (eventoReposicao != null))
                     return new PodeCadastrarAulaPorDataRetornoDto(false, "Não é possível cadastrar aula no final de semana");
