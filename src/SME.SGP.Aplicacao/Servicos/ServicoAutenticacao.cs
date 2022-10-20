@@ -36,34 +36,33 @@ namespace SME.SGP.Aplicacao.Servicos
         {
             var retornoServicoEol = await servicoEOL.Autenticar(login, senha);
 
-            return await ObtenhaAutenticacao(retornoServicoEol);
+            return await ObterAutenticacao(retornoServicoEol);
         }
 
         public async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> AutenticarNoEolSemSenha(string login)
         {
             var retornoServicoEol = await servicoEOL.ObtenhaAutenticacaoSemSenha(login);
 
-            return await ObtenhaAutenticacao(retornoServicoEol);
+            return await ObterAutenticacao(retornoServicoEol);
         }
 
-        private async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> ObtenhaAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
+        private async Task<(UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)> ObterAutenticacao(AutenticacaoApiEolDto retornoServicoEol)
         {
             var retornoDto = new UsuarioAutenticacaoRetornoDto();
-            if (retornoServicoEol != null)
-            {
-                retornoDto.Autenticado = retornoServicoEol.Status == AutenticacaoStatusEol.Ok || retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
-                retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
-                retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
 
-                var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
+            if (retornoServicoEol == null) 
+                return (retornoDto, "", null, false, false);
+            
+            retornoDto.Autenticado = retornoServicoEol.Status is AutenticacaoStatusEol.Ok or AutenticacaoStatusEol.SenhaPadrao;
+            retornoDto.ModificarSenha = retornoServicoEol.Status == AutenticacaoStatusEol.SenhaPadrao;
+            retornoDto.UsuarioId = retornoServicoEol.UsuarioId;
 
-                if (perfis == null)
-                    throw new NegocioException("Usuário sem perfis de acesso.");
+            var perfis = await servicoEOL.ObterPerfisPorLogin(retornoServicoEol.CodigoRf);
 
-                return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
-            }
+            if (perfis == null)
+                throw new NegocioException("Usuário sem perfis de acesso.");
 
-            return (retornoDto, "", null, false, false);
+            return (retornoDto, retornoServicoEol.CodigoRf, perfis.Perfis, perfis.PossuiCargoCJ, perfis.PossuiPerfilCJ);
         }
 
         public bool TemPerfilNoToken(string guid)
