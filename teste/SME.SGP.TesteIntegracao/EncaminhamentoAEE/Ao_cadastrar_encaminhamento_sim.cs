@@ -106,7 +106,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
                 TurmaId = TURMA_ID_1,
-                Situacao = SituacaoAEE.Rascunho,
+                Situacao = SituacaoAEE.Encaminhado,
                 Secoes = new List<EncaminhamentoAEESecaoDto>()
                 {
                     new ()
