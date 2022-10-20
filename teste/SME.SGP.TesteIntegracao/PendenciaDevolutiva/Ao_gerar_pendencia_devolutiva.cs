@@ -234,7 +234,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
             await InserirNaBase("componente_curricular", "512", "512", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
-            await InserirNaBase(new DiarioBordo()
+            await InserirNaBase(new Dominio.DiarioBordo()
             {
                 AulaId = 1,
                 ComponenteCurricularId = 512,
@@ -370,7 +370,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
             await InserirNaBase("componente_curricular_area_conhecimento", "1", "'Área de conhecimento 1'");
             await InserirNaBase("componente_curricular_grupo_matriz", "1", "'Grupo matriz 1'");
             await InserirNaBase("componente_curricular", "512", "512", "1", "1", "'ED.INF. EMEI 4 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 4H'");
-            await InserirNaBase(new DiarioBordo()
+            await InserirNaBase(new Dominio.DiarioBordo()
             {
                 AulaId = 1,
                 ComponenteCurricularId = 512,
@@ -381,10 +381,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 InseridoCJ = false,
                 CriadoEm = DateTime.Now,
                 CriadoPor = "Sistema",
-                CriadoRF = "0",
-                
+                CriadoRF = "0"
             });
-
         }
     }
 }
