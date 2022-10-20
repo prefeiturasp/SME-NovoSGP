@@ -46,10 +46,8 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             diariosBordos = ObterTodos<Dominio.DiarioBordo>();
             diarioBordo.ShouldNotBeNull();
 
-            var diarioBordoId = diarioBordo.Id;
-            diarioBordo = diariosBordos.FirstOrDefault(c => c.Id == diarioBordoId);
-            diarioBordo.ShouldNotBeNull();
-            diarioBordo.Excluido.ShouldBeTrue();            
+            foreach (var item in diariosBordos)
+                item.Excluido.ShouldBeTrue();
         }
         
         [Fact]
@@ -85,15 +83,16 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             diariosBordos = ObterTodos<Dominio.DiarioBordo>();
             diariosBordos.ShouldNotBeNull();
 
-            diarioBordo = diariosBordos.FirstOrDefault(c => c.Id == diarioBordo.Id);
-            diarioBordo.ShouldNotBeNull();
-            
-            diarioBordo.Excluido.ShouldBeTrue();
+            foreach (var item in diariosBordos)
+            {
+                item.Excluido.ShouldBeTrue();
+                
+                observacoes = ObterTodos<DiarioBordoObservacao>().Where(c => c.DiarioBordoId == item.Id).ToList();
+                observacoes.ShouldNotBeNull();
 
-            observacoes = ObterTodos<DiarioBordoObservacao>().Where(c => c.DiarioBordoId == diarioBordoId);
-
-            foreach (var obs in observacoes)
-                obs.Excluido.ShouldBeTrue();
+                foreach (var obs in observacoes)
+                    obs.Excluido.ShouldBeTrue();                
+            }
         }        
 
         private IExcluirDiarioBordoPorAulaIdUseCase ObterExcluirAulaUseCase()
