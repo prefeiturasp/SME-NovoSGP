@@ -232,7 +232,7 @@ namespace SME.SGP.Dados.Repositorios
 
             condicao.AppendLine(@"from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo  and not db.excluido
                          where t.id = @turmaId
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido 
