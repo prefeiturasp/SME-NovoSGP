@@ -289,7 +289,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);
             }
 
-            if (questoesObrigatoriasNaorespondidas.Any())
+            if (questoesObrigatoriasNaorespondidas.Any() && encaminhamentoAEEDto.Situacao != SituacaoAEE.Rascunho)
             {
                 var mensagem = new List<string>();
                 foreach (var secao in questoesObrigatoriasNaorespondidas.GroupBy(questao => questao.Secao))
