@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Shouldly;
+using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -92,6 +93,54 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             diariosBordoExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_ID_1);
             diariosBordoObsExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_OBS_ID_1);
             diariosBordoObsExcluidos.LastOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_OBS_ID_2);
+        }
+
+        [Fact(DisplayName = "Diario de Bordo com Data Aula retroativa- Deve gerar Pendência de Diário de Bordo ao excluir Diário de Bordo caso a data da aula seja anterior")]
+        public async Task Deve_Criar_Pendencia_Ciario_Bordo_Data_Aula_Anterior()
+        {
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, DataAulaDiarioBordo = DateTimeExtension.HorarioBrasilia().AddDays(-7).Date };
+            await ExecutarTesteDiarioBordo_Pendencias(filtro);
+        }
+
+        [Fact(DisplayName = "Diario de Bordo com Data Aula atual/futura - Não deve gerar Pendência de Diário de Bordo ao excluir Diário de Bordo caso a data da aula seja anterior")]
+        public async Task Nao_Deve_Criar_Pendencia_Ciario_Bordo_Data_Aula_Anterior()
+        {
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512 };
+            await ExecutarTesteDiarioBordo_Pendencias(filtro);
+        }
+
+        private async Task ExecutarTesteDiarioBordo_Pendencias(FiltroDiarioBordoDto filtro)
+        {
+            var useCase = ObterServicoExcluirDiarioBordoUseCase();
+
+            var obterResgistros = ObterTodos<Dominio.DiarioBordo>();
+            obterResgistros.Count.ShouldBeEquivalentTo(0);
+
+            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)
+            {
+                var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
+                pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(0);
+            }
+
+            await CriarDadosBasicos(filtro);
+
+            var obterResgistrosNaoExcluidos = ObterTodos<Dominio.DiarioBordo>().Where(diariobordo => !diariobordo.Excluido).ToList();
+            obterResgistrosNaoExcluidos.Count.ShouldBeEquivalentTo(1);
+
+            var excluiu = await useCase.Executar(DIARIO_BORDO_ID_1);
+            excluiu.ShouldBeTrue();
+
+            var obterResgistrosExcluidos = ObterTodos<Dominio.DiarioBordo>().Where(diariobordo => diariobordo.Excluido).ToList();
+            obterResgistrosExcluidos.Count.ShouldBeEquivalentTo(1);
+
+            obterResgistrosExcluidos.FirstOrDefault()?.Id.ShouldBeEquivalentTo(DIARIO_BORDO_ID_1);
+
+            if (filtro.DataAulaDiarioBordo < DateTimeExtension.HorarioBrasilia().Date)
+            {
+                var pendenciasDiarioBordo = ObterTodos<Dominio.PendenciaDiarioBordo>();
+                pendenciasDiarioBordo.Count.ShouldBeEquivalentTo(1);
+            }
+
         }
     }
 }
