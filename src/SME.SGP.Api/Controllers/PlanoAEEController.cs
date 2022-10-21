@@ -211,7 +211,7 @@ namespace SME.SGP.Api.Controllers
         [Route("paai")]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPAAI([FromQuery] string codigoDre, [FromServices] IObterPAAIPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoDre));
