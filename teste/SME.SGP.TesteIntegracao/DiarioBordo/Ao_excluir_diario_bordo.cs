@@ -96,14 +96,14 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
         }
 
         [Fact(DisplayName = "Diario de Bordo com Data Aula retroativa- Deve gerar Pendência de Diário de Bordo ao excluir Diário de Bordo caso a data da aula seja anterior")]
-        public async Task Deve_Criar_Pendencia_Ciario_Bordo_Data_Aula_Anterior()
+        public async Task Deve_Criar_Pendencia_Diario_Bordo_Data_Aula_Anterior()
         {
             var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, DataAulaDiarioBordo = DateTimeExtension.HorarioBrasilia().AddDays(-7).Date };
             await ExecutarTesteDiarioBordo_Pendencias(filtro);
         }
 
         [Fact(DisplayName = "Diario de Bordo com Data Aula atual/futura - Não deve gerar Pendência de Diário de Bordo ao excluir Diário de Bordo caso a data da aula seja anterior")]
-        public async Task Nao_Deve_Criar_Pendencia_Ciario_Bordo_Data_Aula_Anterior()
+        public async Task Nao_Deve_Criar_Pendencia_Diario_Bordo_Data_Aula_Anterior()
         {
             var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512 };
             await ExecutarTesteDiarioBordo_Pendencias(filtro);
