@@ -3,6 +3,5 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPerfilDoTokenQuery : IRequest<Guid>
-    {}    
+    public class ObterPerfilDoTokenQuery : IRequest<Guid>{}    
 }
