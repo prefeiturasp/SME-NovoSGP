@@ -553,5 +553,25 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaId, componenteCodigo });
         }
+
+        public async Task<DiarioBordoDetalhesParaPendenciaDto> ObterDadosDiarioBordoParaPendenciaPorid(long diarioBordoId)
+        {
+            var sql = $@"select db.id,
+                               u.nome as nomeEscola, 
+	                           coalesce(cc.descricao_sgp, cc.descricao) as descricaocomponenteCurricular,
+                               a.professor_rf as ProfessorRf,
+                               db.componente_curricular_id as componenteCurricularId, db.turma_id as turmaId, 
+                               db.aula_id as aulaId, a.data_aula as dataAula,
+                               t.nome nomeTurma,
+                               t.modalidade_codigo as codModalidadeTurma
+                              from diario_bordo db 
+                        inner join turma t on t.id = db.turma_id 
+                        inner join aula a on a.id = db.aula_id 
+                        inner join ue u on u.ue_id  = a.ue_id 
+                        inner join componente_curricular cc on cc.id = db.componente_curricular_id
+                        where db.id = @diariobordo; ";
+           
+            return await database.Conexao.QueryFirstOrDefaultAsync<DiarioBordoDetalhesParaPendenciaDto>(sql, new { diariobordo = diarioBordoId });
+        }
     }
 }

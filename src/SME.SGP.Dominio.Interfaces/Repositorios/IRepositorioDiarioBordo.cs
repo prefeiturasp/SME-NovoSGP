@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirReferenciaDevolutiva(long devolutivaId);
 
         Task<DiarioBordo> ObterDiarioBordoComAulaETurmaPorCodigo(long diarioBordoId);
-
+        Task<DiarioBordoDetalhesParaPendenciaDto> ObterDadosDiarioBordoParaPendenciaPorid(long diarioBordoId);
         Task<PaginacaoResultadoDto<DiarioBordoResumoDto>> ObterListagemDiarioBordoPorPeriodoPaginado(long turmaId, string componenteCurricularPaiCodigo, long componenteCurricularFilhoCodigo, DateTime? periodoInicio, DateTime? periodoFim, Paginacao paginacao);
 
         Task <IEnumerable<QuantidadeTotalDiariosEDevolutivasPorAnoETurmaDTO>>ObterQuantidadeTotalDeDiariosEDevolutivasPorAnoTurmaAsync(int anoLetivo, long dreId, long ueId, Modalidade modalidade);

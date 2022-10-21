@@ -47,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
             await CriarComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Fundamental);
-            await CriarAula(DateTimeExtension.HorarioBrasilia(), RecorrenciaAula.AulaUnica, 
+            await CriarAula(filtroDiarioBordoDto.DataAulaDiarioBordo, RecorrenciaAula.AulaUnica, 
                             TipoAula.Normal, 
                             USUARIO_PROFESSOR_CODIGO_RF_1111111, 
                             TURMA_CODIGO_1, UE_CODIGO_1,
