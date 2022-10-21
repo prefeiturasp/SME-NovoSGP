@@ -129,7 +129,7 @@ namespace SME.SGP.Aplicacao
             usuario.AtualizaUltimoLogin();
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.AtualizaUltimoLoginUsuario, usuario));
 
-            await servicoAbrangencia.Salvar(login, perfilSelecionado, true);
+            await mediator.Send(new CarregarAbrangenciaUsuarioCommand(login, perfilSelecionado));
 
             retornoAutenticacaoEol.Item1.UsuarioLogin = usuario.Login;
             retornoAutenticacaoEol.Item1.UsuarioRf = usuario.CodigoRf;
