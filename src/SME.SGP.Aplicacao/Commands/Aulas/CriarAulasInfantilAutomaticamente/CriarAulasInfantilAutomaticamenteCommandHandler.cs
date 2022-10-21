@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IMediator mediator;
+        private const string AUDITORIA_SISTEMA = "SISTEMA";
 
         public CriarAulasInfantilAutomaticamenteCommandHandler(IRepositorioAula repositorioAula,
                                                                IMediator mediator)
@@ -176,12 +177,18 @@ namespace SME.SGP.Aplicacao
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia && aula.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && !a.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.PossuiFrequencia));
 
+                if(!excluirAula)
+                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(aula, diasLetivos);
+
                 if (excluirAula)
                     aulasExclusao.Add(aula);
             }
 
             return aulasExclusao;
         }
+
+        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
+            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA;
 
         private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
@@ -201,7 +208,7 @@ namespace SME.SGP.Aplicacao
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DateTime> diasNaoLetivos, Turma turma)
         {
-            return diasDoPeriodo.Where(c => c.CriarAulaSME ||
+            return diasDoPeriodo.Where(c => !c.Data.FimDeSemana() && c.CriarAulaSME ||
                                             ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) || c.PossuiEventoUe(turma.Ue.CodigoUe)) && c.EhLetivo) ||
                                             (c.NaoPossuiDre && c.NaoPossuiUe && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
                                 .OrderBy(c => c.Data)?.ToList();
