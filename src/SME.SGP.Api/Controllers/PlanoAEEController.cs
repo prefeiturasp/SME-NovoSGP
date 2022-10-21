@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee")]
-    // [Authorize("Bearer")]
+    [Authorize("Bearer")]
     public class PlanoAEEController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -140,7 +140,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("{planoAeeId}/parecer/cp")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        // [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
         public async Task<IActionResult> CadastrarParecerCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerCPPlanoAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(planoAEEId, planoAEEParecer));
