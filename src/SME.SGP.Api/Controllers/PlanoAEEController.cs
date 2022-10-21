@@ -16,7 +16,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/plano-aee")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class PlanoAEEController : ControllerBase
     {
         private readonly IMediator mediator;
@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<PlanoAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        //[Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPlanosAEE([FromQuery] FiltroPlanosAEEDto filtro, [FromServices] IObterPlanosAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
