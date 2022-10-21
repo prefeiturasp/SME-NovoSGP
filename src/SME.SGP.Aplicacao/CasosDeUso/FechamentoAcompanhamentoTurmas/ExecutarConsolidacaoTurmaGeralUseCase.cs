@@ -52,9 +52,11 @@ namespace SME.SGP.Aplicacao
         {
             for (var i = 1; i <= bimestres; i++)
                 await PublicaNaFila(mensagem, i, guidParaCorrelacao);
+
+            await PublicaNaFila(mensagem, null, guidParaCorrelacao);
         }
 
-        private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int bimestre, Guid codigoCorrelacao)
+        private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int? bimestre, Guid codigoCorrelacao)
         {
             mensagem.Bimestre = bimestre;
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaTratar, mensagem, codigoCorrelacao, null));

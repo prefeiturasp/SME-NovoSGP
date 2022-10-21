@@ -16,6 +16,6 @@ namespace SME.SGP.Dominio
 
         public long TurmaId { get; set; }
 
-        public int Bimestre { get; set; }
+        public int? Bimestre { get; set; }
     }
 }
