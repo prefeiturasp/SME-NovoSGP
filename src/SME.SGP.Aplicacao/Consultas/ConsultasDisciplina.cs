@@ -106,6 +106,9 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente));
 
+                if(componentesCurriculares == null)
+                    componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false));
+
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(
                     componentesCurriculares?
                     .Select(a => a.TerritorioSaber ? (a.CodigoComponenteTerritorioSaber == 0 ? a.Codigo : a.CodigoComponenteTerritorioSaber) : a.Codigo).ToArray()))?.OrderBy(c => c.Nome)?.ToList();

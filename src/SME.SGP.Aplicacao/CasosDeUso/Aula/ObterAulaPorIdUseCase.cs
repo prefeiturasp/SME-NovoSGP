@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,6 +28,18 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Aula de id {aulaId} não encontrada");
 
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            
+            var eventosDaUeSME = await mediator.Send(new ObterEventosCalendarioProfessorPorMesDiaQuery()
+            {
+                UeCodigo = turma.Ue.CodigoUe,
+                DreCodigo = turma.Ue.Dre.CodigoDre,
+                DataConsulta = aula.DataAula,
+                TipoCalendarioId = aula.TipoCalendarioId
+            });
+            bool temEventoDeRecesso = false;
+            eventosDaUeSME = eventosDaUeSME.Where(x => x.TipoEvento.Id == 11);
+            if (eventosDaUeSME != null && eventosDaUeSME.Any())
+                temEventoDeRecesso = true;
 
             var aberto = await AulaDentroDoPeriodo(aula.TurmaId, aula.DataAula);
 
@@ -42,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             bool temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAula, mesmoAnoLetivo));
 
-            return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto);
+            return await MapearParaDto(aula, aberto, usuarioAcessoAoComponente, aulaEmManutencao, temPeriodoAberto, temEventoDeRecesso);
         }
 
         private async Task<bool> AulaDentroDoPeriodo(string turmaCodigo, DateTime dataAula)
@@ -91,7 +104,7 @@ namespace SME.SGP.Aplicacao
             return disciplina != null;
         }
 
-        private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto)
+        private async Task<AulaConsultaDto> MapearParaDto(Aula aula, bool aberto, bool usuarioAcessoAoComponente, bool aulaEmManutencao, bool temPeriodoAberto, bool temEventoDeRecesso)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
@@ -116,7 +129,7 @@ namespace SME.SGP.Aplicacao
                 CriadoPor = aula.CriadoPor,
                 CriadoRF = aula.CriadoRF,
                 Migrado = aula.Migrado,
-                SomenteLeitura = !usuarioAcessoAoComponente || !temPeriodoAberto,
+                SomenteLeitura = !usuarioAcessoAoComponente || !temEventoDeRecesso ? !temPeriodoAberto : false,
                 EmManutencao = aulaEmManutencao,
                 PodeEditar = (usuarioLogado.EhProfessorCj() && aula.AulaCJ)
                           || (!aula.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPoed()

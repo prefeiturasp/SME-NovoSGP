@@ -47,6 +47,7 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
             var turma = await ObterTurma(turmaCodigo);
+
             await ValidarPersistenciaTurmaSemestre(turma, semestre);
 
             var relatorioSemestralAluno = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId > 0 ?
@@ -126,8 +127,26 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)
         {
             var bimestre = await ObterBimestreAtual(turma);
+
             if ((semestre == 1 && bimestre != 2) || (semestre == 2 && bimestre != 4))
-                throw new NegocioException("Não é possível salvar os dados pois o período não esta em aberto!");
+            {
+                long tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+                var semestreVigente = new SemestreAcompanhamentoDto()
+                {
+                    Semestre = semestre,
+                    Descricao = $"Acompanhamento {semestre}º Semestre",
+                    PodeEditar = false
+                };
+                var listaSemestresVigentes = new List<SemestreAcompanhamentoDto>();
+                listaSemestresVigentes.Add(semestreVigente);
+
+                var semestresComReaberturaVigente = await mediator.Send(new ObterSemestresComReaberturaAtivaPAPQuery(DateTime.Now, tipoCalendarioId, turma.UeId, listaSemestresVigentes));
+
+                if(!semestresComReaberturaVigente.Any(s=> s.Semestre == semestre && s.PodeEditar))
+                    throw new NegocioException("Não é possível salvar os dados pois o período não esta em aberto!");
+            }
+            
         }
 
         private async Task<int> ObterBimestreAtual(Turma turma)

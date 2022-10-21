@@ -163,6 +163,12 @@ namespace SME.SGP.Aplicacao
                 }
 
                 planoAulaDto.Id = planoAula.Id;
+                planoAulaDto.AlteradoEm = planoAula.AlteradoEm;
+                planoAulaDto.AlteradoPor = planoAula.AlteradoPor;
+                planoAulaDto.AlteradoRf = planoAula.AlteradoRF;
+                planoAulaDto.CriadoEm = planoAula.CriadoEm;
+                planoAulaDto.CriadoPor = planoAula.CriadoPor;
+                planoAulaDto.CriadoRf = planoAula.CriadoRF;
 
                 return planoAulaDto;
             }

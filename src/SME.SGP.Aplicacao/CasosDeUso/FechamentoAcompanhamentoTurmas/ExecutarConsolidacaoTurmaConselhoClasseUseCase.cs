@@ -40,8 +40,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");
 
-            var alunos = await mediator
-                .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+            var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, DateTime.Today));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foram encontrados alunos para a turma {turma.CodigoTurma} no Eol");
@@ -58,14 +57,22 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi possivel obter o período escolar.");
 
             var componentes = await mediator.Send(new ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery(new string[] { turma.CodigoTurma }, turma.Ue.CodigoUe));
-
             foreach (var aluno in alunos)
             {
                 var ultimoBimestreAtivo = aluno.Inativo ?
                     periodosEscolares.FirstOrDefault(p => p.PeriodoInicio.Date <= aluno.DataSituacao && p.PeriodoFim.Date >= aluno.DataSituacao)?.Bimestre : 4;
 
-                if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
+                if (ultimoBimestreAtivo == null)
+                {
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id);
                     continue;
+                }
+
+                if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
+                {
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
+                    continue;
+                }
 
                 var matriculasAlunoTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, aluno.CodigoAluno));
 
@@ -80,7 +87,10 @@ namespace SME.SGP.Aplicacao
                     periodosEscolares.FirstOrDefault(p => dataSituacao > p.PeriodoFim.Date)?.Bimestre : null;
 
                 if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
+                {
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
                     continue;
+                }
 
                 if (componentes != null && componentes.Any())
                 {
@@ -99,7 +109,22 @@ namespace SME.SGP.Aplicacao
                     }
                 }
             }
+
             return true;
+        }
+
+        private async Task VerificaSeHaConsolidacaoErrada(string codigoAluno, long turmaId, int bimestreVigente = 0)
+        {
+            var consolidacoesConselhoId = await mediator.Send(new ObterConsolidacoesConselhoClasseAtivasIdPorAlunoETurmaQuery(codigoAluno, turmaId));
+
+            if (consolidacoesConselhoId.Any())
+            {
+                var consolidacoesNotaIds = await mediator.Send(new ObterConsolidacoesConselhoClasseNotaPorConsolidacaoAlunoIdsBimestreQuery(consolidacoesConselhoId.ToArray(), bimestreVigente));
+               
+                if(consolidacoesNotaIds.Any())
+                    await mediator.Send(new ExcluirConsolidacaoConselhoPorIdBimestreCommand(consolidacoesNotaIds.ToArray(), bimestreVigente == 0 ? consolidacoesConselhoId.ToArray() : new long[] { }));
+            }
+                
         }
 
         private async Task<bool> PublicarMensagem(AlunoPorTurmaResposta aluno, ConsolidacaoTurmaDto consolidacaoTurmaConselhoClasse, long codigoComponenteCurricular, Guid CodigoCorrelacao)
