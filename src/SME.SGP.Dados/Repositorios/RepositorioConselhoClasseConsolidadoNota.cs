@@ -1,5 +1,7 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -54,6 +56,23 @@ namespace SME.SGP.Dados
             {
                 throw ex;
             }
+        }
+
+        public async Task<bool> ExcluirConsolidacaoConselhoClasseNotaPorIdsConsolidacaoAlunoEBimestre(long[] idsConsolidacao)
+        {
+            var query = $@"delete from consolidado_conselho_classe_aluno_turma_nota where id = ANY(@idsConsolidacao)";
+
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { idsConsolidacao });
+        }
+
+        public async Task<IEnumerable<long>> ObterConsolidacoesConselhoClasseNotaIdsPorConsolidacoesAlunoTurmaIds(long[] consolidacoesAlunoTurmaIds, int bimestre = 0)
+        {
+            var query = $@"select id from consolidado_conselho_classe_aluno_turma_nota where consolidado_conselho_classe_aluno_turma_id = ANY(@consolidacoesAlunoTurmaIds)";
+
+            if (bimestre > 0)
+                query += $@" and bimestre = @bimestre";
+
+            return await database.Conexao.QueryAsync<long>(query, new { consolidacoesAlunoTurmaIds, bimestre });
         }
     }
 }
