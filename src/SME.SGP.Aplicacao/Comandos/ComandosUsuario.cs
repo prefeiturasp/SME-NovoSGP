@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAutenticacao servicoAutenticacao;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoPerfil servicoPerfil;
-        private readonly IServicoTokenJwt servicoTokenJwt;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
 
@@ -27,7 +26,6 @@ namespace SME.SGP.Aplicacao
             IServicoUsuario servicoUsuario,
             IServicoPerfil servicoPerfil,
             IServicoEol servicoEOL,
-            IServicoTokenJwt servicoTokenJwt,
             IRepositorioCache repositorioCache,
             IServicoAbrangencia servicoAbrangencia,
             IRepositorioHistoricoEmailUsuario repositorioHistoricoEmailUsuario,
@@ -38,7 +36,6 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.servicoPerfil = servicoPerfil ?? throw new ArgumentNullException(nameof(servicoPerfil));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
-            this.servicoTokenJwt = servicoTokenJwt ?? throw new ArgumentNullException(nameof(servicoTokenJwt));
             this.servicoAbrangencia = servicoAbrangencia ?? throw new ArgumentNullException(nameof(servicoAbrangencia));
             this.repositorioHistoricoEmailUsuario = repositorioHistoricoEmailUsuario ?? throw new ArgumentNullException(nameof(repositorioHistoricoEmailUsuario));
             this.repositorioSuporteUsuario = repositorioSuporteUsuario ?? throw new ArgumentNullException(nameof(repositorioSuporteUsuario));
@@ -213,7 +210,7 @@ namespace SME.SGP.Aplicacao
             var login = servicoUsuario.ObterLoginAtual();
 
             // Obter Perfil do token atual
-            var guidPerfil = servicoTokenJwt.ObterPerfil();
+            var guidPerfil = await mediator.Send(new ObterPerfilDoTokenQuery());
 
             // Busca lista de permissões do EOL
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, guidPerfil);

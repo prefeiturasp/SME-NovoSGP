@@ -539,7 +539,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
-            services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
             services.TryAddScoped<IServicoMenu, ServicoMenu>();
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
