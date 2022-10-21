@@ -4,8 +4,10 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Commands
 {
@@ -30,10 +32,20 @@ namespace SME.SGP.Aplicacao.Commands
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
 
             if (planoAEE == null)
-                throw new NegocioException("Plano AEE não encontrado!");
+                throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
+            
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId), cancellationToken);
+
+            if (turma == null)
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
             planoAEE.ParecerCoordenacao = request.ParecerCoordenacao;
+            
+            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
+
+            if (funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
+                await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE.Id, funcionarioPAAI.FirstOrDefault().CodigoRf));
 
             var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
 
