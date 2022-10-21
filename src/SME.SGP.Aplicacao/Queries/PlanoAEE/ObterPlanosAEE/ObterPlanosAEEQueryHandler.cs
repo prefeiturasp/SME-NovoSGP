@@ -34,8 +34,6 @@ namespace SME.SGP.Aplicacao
             int[] tipos = new int[0];
             List<string> turmasCodigos = new List<string>();
 
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             var ueCodigo = await mediator.Send(new ObterUePorIdQuery(request.UeId));
 
             var turmas =
@@ -55,20 +53,20 @@ namespace SME.SGP.Aplicacao
                                                                           request.AlunoCodigo,
                                                                           (int?)request.Situacao,
                                                                           turmasCodigos.ToArray(),
-                                                                          Paginacao), usuarioLogado);
+                                                                          Paginacao));
         }
 
-        private PaginacaoResultadoDto<PlanoAEEResumoDto> MapearParaDto(PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto> resultadoDto, Usuario usuarioLogado)
+        private PaginacaoResultadoDto<PlanoAEEResumoDto> MapearParaDto(PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto> resultadoDto)
         {
             return new PaginacaoResultadoDto<PlanoAEEResumoDto>()
             {
                 TotalPaginas = resultadoDto.TotalPaginas,
                 TotalRegistros = resultadoDto.TotalRegistros,
-                Items = MapearParaDto(resultadoDto.Items, usuarioLogado)
+                Items = MapearParaDto(resultadoDto.Items)
             };
         }
 
-        private IEnumerable<PlanoAEEResumoDto> MapearParaDto(IEnumerable<PlanoAEEAlunoTurmaDto> planosAEE, Usuario usuarioLogado)
+        private IEnumerable<PlanoAEEResumoDto> MapearParaDto(IEnumerable<PlanoAEEAlunoTurmaDto> planosAEE)
         {
             foreach (var planoAEE in planosAEE)
             {
@@ -87,21 +85,8 @@ namespace SME.SGP.Aplicacao
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
                     NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
-                    PermitirExcluir = PermiteExclusaoPlanoAEE(planoAEE, usuarioLogado)
                 };
             }
-        }
-
-        private bool PermiteExclusaoPlanoAEE(PlanoAEEAlunoTurmaDto planoAEE, Usuario usuarioLogado)
-        {
-            var EhProfessor = usuarioLogado.EhProfessor() || 
-                                        usuarioLogado.EhProfessorPaee();
-            var EhGestor = usuarioLogado.EhGestorEscolar();
-            var planoDevolvido = (planoAEE.Situacao == SituacaoPlanoAEE.Devolvido);
-            var planoAguardandoParecerCoordenacao = (planoAEE.Situacao == SituacaoPlanoAEE.ParecerCP);
-            
-            return (EhProfessor && planoDevolvido) ||
-                   (EhGestor && (planoDevolvido || planoAguardandoParecerCoordenacao));
         }
     }
 }
