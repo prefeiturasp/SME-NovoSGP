@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao.Commands.Autenticacao.DeslogarSuporteUsuario
         {
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEolSemSenha(request.Administrador.Login);
 
-            return await comandoUsuario.ObtenhaAutenticacao(retornoAutenticacaoEol, request.Administrador.Login);
+            return await comandoUsuario.ObterAutenticacao(retornoAutenticacaoEol, request.Administrador.Login);
         }
     }
 }
