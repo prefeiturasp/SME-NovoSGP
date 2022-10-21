@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
                 {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
                 }
 
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
                 }
 
