@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (request.UsuarioLogado.EhProfessorCj())
                 return await ObterComponentesAtribuicaoCj(request.TurmaCodigo, request.UsuarioLogado.CodigoRf);
             else
-                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
+                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf ?? request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual);
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual)
