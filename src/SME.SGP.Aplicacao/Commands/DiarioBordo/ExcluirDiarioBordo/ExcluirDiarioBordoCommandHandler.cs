@@ -38,6 +38,7 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(obs.Id));
                 await repositorioDiarioBordo.RemoverLogico(request.DiarioBordoId);
                 await mediator.Send(new SalvarPendenciaAoExcluirDiarioBordoCommand(request.DiarioBordoId));
+                unitOfWork.PersistirTransacao();
             }
             catch
             {
