@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,10 +16,10 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
             var anosComParametroAtivo = await VerificaAnosAtivosRegistrosPedagogicos();
-            if(anosComParametroAtivo.Count > 0)
+            if (anosComParametroAtivo.Count > 0)
             {
                 var anosParaConsolidar = await VerificaAnosAnterioresComConsolidacao(anosComParametroAtivo);
-                if(anosParaConsolidar.Count > 0)
+                if (anosParaConsolidar.Count > 0)
                 {
                     await ConsolidarRegistrosPedagogicos(anosParaConsolidar);
                     return true;
@@ -41,25 +41,26 @@ namespace SME.SGP.Aplicacao
             return listaAnosAtivos;
         }
 
-        private async Task<List<int>> VerificaAnosAnterioresComConsolidacao(List<int> anosAtivos) 
+        private async Task<List<int>> VerificaAnosAnterioresComConsolidacao(List<int> anosAtivos)
         {
-            foreach(var ano in anosAtivos)
+            var listaAnos = anosAtivos.GetRange(0, anosAtivos.Count);
+
+            foreach (var ano in anosAtivos)
             {
-                if(ano < DateTime.Now.Year)
+                if (ano < DateTime.Now.Year)
                 {
                     bool existeConsolidacao = await mediator.Send(new ExisteConsolidacaoRegistroPedagogicoPorAnoQuery(ano));
                     if (existeConsolidacao)
-                    {
-                        anosAtivos.Remove(ano);
-                    }
+                        listaAnos.Remove(ano);
                 }
             }
-            return anosAtivos;
+
+            return listaAnos;
         }
 
         private async Task ConsolidarRegistrosPedagogicos(List<int> anosParaConsolidar)
         {
-            foreach(var ano in anosParaConsolidar)
+            foreach (var ano in anosParaConsolidar)
             {
                 var dados = await BuscarDadosParametroConsolidacao(ano);
 

@@ -22,14 +22,14 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAlunoPorCodigoEAnoQueryValidator()
         {
-
             RuleFor(c => c.CodigoAluno)
                 .NotEmpty()
                 .WithMessage("O código do aluno deve ser informado.");
 
             RuleFor(c => c.AnoLetivo)
-               .NotEmpty()
-               .WithMessage("O ano letivo deve ser informado.");
+                .NotEmpty()
+                .WithMessage("O ano letivo deve ser informado.");
+
         }
     }
 }
