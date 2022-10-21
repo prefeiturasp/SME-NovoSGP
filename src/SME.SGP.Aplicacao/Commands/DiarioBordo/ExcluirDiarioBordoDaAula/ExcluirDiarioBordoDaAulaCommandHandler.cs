@@ -11,15 +11,11 @@ namespace SME.SGP.Aplicacao.Commands
     public class ExcluirDiarioBordoDaAulaCommandHandler : IRequestHandler<ExcluirDiarioBordoDaAulaCommand, bool>
     {
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
-        private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
         private readonly IMediator mediator;
-        private const int ID_USUARIO_LOGADO_ZERO = 0;
-
         public ExcluirDiarioBordoDaAulaCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo, 
                                                       IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
-            this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 

@@ -11,28 +11,14 @@ namespace SME.SGP.Aplicacao
     public class ExcluirDiarioBordoUseCase : IExcluirDiarioBordoUseCase
     {
         private readonly IMediator mediator;
-        public readonly IUnitOfWork unitOfWork;
 
-        public ExcluirDiarioBordoUseCase(IMediator mediator, IUnitOfWork unitOfWork)
+        public ExcluirDiarioBordoUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        public async Task<bool> Executar(long diarioBordoId)
-        {
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                var retorno = await mediator.Send(new ExcluirDiarioBordoCommand(diarioBordoId));
-                unitOfWork.PersistirTransacao();
-                return retorno;
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
-        }
+        public async Task<bool> Executar(long diarioBordoId) =>
+            (await mediator.Send(new ExcluirDiarioBordoCommand(diarioBordoId)));
+        
     }
 }
