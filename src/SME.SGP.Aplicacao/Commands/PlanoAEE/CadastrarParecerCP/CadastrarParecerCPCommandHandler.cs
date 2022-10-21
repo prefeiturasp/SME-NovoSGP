@@ -42,16 +42,17 @@ namespace SME.SGP.Aplicacao.Commands
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
             planoAEE.ParecerCoordenacao = request.ParecerCoordenacao;
             
+            await ExcluirPendenciaCPs(planoAEE);
+            
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
             if (funcionarioPAAI != null && funcionarioPAAI.Count() == 1)
                 await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE.Id, funcionarioPAAI.FirstOrDefault().CodigoRf));
-
+            else
+                await GerarPendenciaCEFAI(planoAEE, planoAEE.TurmaId);
+            
             var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
-
-            await ExcluirPendenciaCPs(planoAEE);
-            await GerarPendenciaCEFAI(planoAEE, planoAEE.TurmaId);
-
+            
             return idEntidadeEncaminhamento != 0;
         }
 
