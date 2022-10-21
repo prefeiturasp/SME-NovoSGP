@@ -157,7 +157,7 @@ namespace SME.SGP.Api.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        //[Permissao(Permissao.DDB_E, Policy = "Bearer")]
+        [Permissao(Permissao.DDB_E, Policy = "Bearer")]
         public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirDiarioBordoUseCase excluirDiarioBordoUseCase)
         {
             return Ok(await excluirDiarioBordoUseCase.Executar(id));
