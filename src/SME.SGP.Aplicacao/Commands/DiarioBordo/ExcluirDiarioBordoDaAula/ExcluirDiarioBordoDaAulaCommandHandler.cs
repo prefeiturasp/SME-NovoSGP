@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Linq;
@@ -25,18 +26,8 @@ namespace SME.SGP.Aplicacao.Commands
         public async Task<bool> Handle(ExcluirDiarioBordoDaAulaCommand request, CancellationToken cancellationToken)
         {
             var diariosBordosIds = (await repositorioDiarioBordo.ObterPorAulaId(request.AulaId)).Select(c => c.Id);
-
             foreach (var idDiarioBordo in diariosBordosIds)
-            {
-                var observacoesDiarioBordo = await repositorioDiarioBordoObservacao.ListarPorDiarioBordoAsync(idDiarioBordo, ID_USUARIO_LOGADO_ZERO);
-
-                foreach (var obs in observacoesDiarioBordo)
-                    await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(obs.Id), cancellationToken);                
-            }
-            
-            // diario_bordo <- observacao <- notificacao
-            await repositorioDiarioBordo.RemoverLogico(request.AulaId, "aula_id");            
-
+                await mediator.Send(new ExcluirDiarioBordoCommand(idDiarioBordo));
             return true;
         }
     }

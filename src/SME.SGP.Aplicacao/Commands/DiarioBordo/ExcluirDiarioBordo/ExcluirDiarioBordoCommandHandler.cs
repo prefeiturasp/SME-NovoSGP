@@ -15,40 +15,23 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioDiarioBordo repositorioDiarioBordo;
         private readonly IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao;
         private readonly IMediator mediator;
-        public readonly IUnitOfWork unitOfWork;
 
         public ExcluirDiarioBordoCommandHandler(IRepositorioDiarioBordo repositorioDiarioBordo, 
-                                                IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator,
-                                                IUnitOfWork unitOfWork)
+                                                IRepositorioDiarioBordoObservacao repositorioDiarioBordoObservacao, IMediator mediator)
         {
             this.repositorioDiarioBordo = repositorioDiarioBordo ?? throw new ArgumentNullException(nameof(repositorioDiarioBordo));
             this.repositorioDiarioBordoObservacao = repositorioDiarioBordoObservacao ?? throw new ArgumentNullException(nameof(repositorioDiarioBordoObservacao));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(ExcluirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
-            unitOfWork.IniciarTransacao();
-            try
-            {
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-                var observacoesDiarioBordo = await repositorioDiarioBordoObservacao.ListarPorDiarioBordoAsync(request.DiarioBordoId, usuario.Id);
-                foreach (var obs in observacoesDiarioBordo)
-                    await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(obs.Id));
-
-                await repositorioDiarioBordo.RemoverLogico(request.DiarioBordoId);
-
-                await mediator.Send(new SalvarPendenciaAoExcluirDiarioBordoCommand(request.DiarioBordoId)); 
-
-                unitOfWork.PersistirTransacao();
-            }
-            catch
-            {
-                unitOfWork.Rollback();
-                throw;
-            }
-
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var observacoesDiarioBordo = await repositorioDiarioBordoObservacao.ListarPorDiarioBordoAsync(request.DiarioBordoId, usuario.Id);
+            foreach (var obs in observacoesDiarioBordo)
+                await mediator.Send(new ExcluirObservacaoDiarioBordoCommand(obs.Id));
+            await repositorioDiarioBordo.RemoverLogico(request.DiarioBordoId);
+            await mediator.Send(new SalvarPendenciaAoExcluirDiarioBordoCommand(request.DiarioBordoId)); 
             return true;
         }
     }
