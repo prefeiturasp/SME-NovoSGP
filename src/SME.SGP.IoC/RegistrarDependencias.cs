@@ -539,7 +539,6 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IServicoUsuario, ServicoUsuario>();
             services.TryAddScoped<IServicoAutenticacao, ServicoAutenticacao>();
             services.TryAddScoped<IServicoPerfil, ServicoPerfil>();
-            services.TryAddScoped<IServicoTokenJwt, ServicoTokenJwt>();
             services.TryAddScoped<IServicoMenu, ServicoMenu>();
             services.TryAddScoped<IServicoPeriodoEscolar, ServicoPeriodoEscolar>();
             services.TryAddScoped<IServicoFeriadoCalendario, ServicoFeriadoCalendario>();
@@ -665,6 +664,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAdicionarObservacaoDiarioBordoUseCase, AdicionarObservacaoDiarioBordoUseCase>();
             services.TryAddScoped<IAlterarObservacaoDiarioBordoUseCase, AlterarObservacaoDiarioBordoUseCase>();
             services.TryAddScoped<IExcluirObservacaoDiarioBordoUseCase, ExcluirObservacaoDiarioBordoUseCase>();
+            services.TryAddScoped<IExcluirDiarioBordoUseCase, ExcluirDiarioBordoUseCase>();
             services.TryAddScoped<IListarObservacaoDiarioBordoUseCase, ListarObservacaoDiarioBordoUseCase>();
             services.TryAddScoped<IObterSintesePorAnoLetivoUseCase, ObterSintesePorAnoLetivoUseCase>();                                    
             services.TryAddScoped<ISalvarAnotacaoFrequenciaAlunoUseCase, SalvarAnotacaoFrequenciaAlunoUseCase>();
