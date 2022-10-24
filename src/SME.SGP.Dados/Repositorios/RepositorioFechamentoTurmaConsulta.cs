@@ -79,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder();
 
             query.AppendLine("with fechamentos as (select ft.*,");
-            query.AppendLine("row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia")
+            query.AppendLine("row_number() over (partition by ft.id, ft.turma_id order by ft.id desc) sequencia");
             query.AppendLine("	from fechamento_turma ft");
             query.AppendLine("		inner join turma t");
             query.AppendLine("			on ft.turma_id = t.id");
@@ -96,10 +96,10 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("	 		 		 not tc.excluido");
                 if (semestre.HasValue && semestre.Value > 0)
                     query.AppendLine($"	 		 		and pe.periodo_inicio {(semestre.Value.Equals(1) ? "<" : ">=")} @dataReferenciaSemestre");
-                query.AppendLine(");");
+                query.AppendLine(")");
             }
             else
-                query.AppendLine("	  and ft.periodo_escolar_id is null;");
+                query.AppendLine("	  and ft.periodo_escolar_id is null");
 
             query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
 
