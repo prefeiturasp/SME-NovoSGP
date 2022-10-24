@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -25,7 +26,19 @@ namespace SME.SGP.Aplicacao
 
             var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today, turma));
 
-            return await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
+            var semestres = await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
+            var tipoCalendarioTurmaId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+            if(tipoCalendarioTurmaId > 0)
+            {
+                var semestresComReaberturaVigente = await mediator.Send(new ObterSemestresComReaberturaAtivaPAPQuery(DateTime.Now, tipoCalendarioTurmaId, turma.UeId, semestres));
+
+                if (semestresComReaberturaVigente.Any())
+                    return semestresComReaberturaVigente.ToList();
+            }
+
+            return semestres;
         }
     }
+            
 }

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseConsolidadoNota repositorioConsolidacaoConselhoClasseNota;
         private readonly IMediator mediator;
 
-        public ExcluirConsolidacaoConselhoPorIdBimestreCommandHandler(IRepositorioConselhoClasseConsolidado repositorioConsolidacaoConselhoClasse,
+        public ExcluirConsolidacaoConselhoPorIdBimestreCommandHandler(IRepositorioConselhoClasseConsolidado repositorioConsolidacaoConselhoClasse, 
             IRepositorioConselhoClasseConsolidadoNota repositorioConsolidacaoConselhoClasseNota,
             IMediator mediator)
         {
@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
 
                 return true;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao excluir consolidação do conselho nos ids: {request.ConsolidacaoConselhoAlunoTurmaIds}", LogNivel.Critico, LogContexto.ConselhoClasse, ex.Message));
                 return false;

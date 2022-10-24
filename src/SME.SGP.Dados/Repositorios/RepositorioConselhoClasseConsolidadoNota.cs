@@ -62,7 +62,7 @@ namespace SME.SGP.Dados
         {
             var query = $@"delete from consolidado_conselho_classe_aluno_turma_nota where id = ANY(@idsConsolidacao)";
 
-            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { idsConsolidacao });
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { idsConsolidacao});
         }
 
         public async Task<IEnumerable<long>> ObterConsolidacoesConselhoClasseNotaIdsPorConsolidacoesAlunoTurmaIds(long[] consolidacoesAlunoTurmaIds, int bimestre = 0)
@@ -74,5 +74,6 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<long>(query, new { consolidacoesAlunoTurmaIds, bimestre });
         }
+
     }
 }

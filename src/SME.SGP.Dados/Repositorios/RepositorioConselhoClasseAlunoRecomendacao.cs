@@ -19,7 +19,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
         }
-        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int? bimestre, long fechamentoTurmaId)
+        public async Task<IEnumerable<RecomendacoesAlunoFamiliaDto>> ObterRecomendacoesDoAlunoPorConselho(string alunoCodigo, int? bimestre, long fechamentoTurmaId, long[] conselhoClasseIds)
         {
             var sql = new StringBuilder();
 
@@ -36,7 +36,10 @@ namespace SME.SGP.Dados.Repositorios
 
             sql.AppendLine(@" and ft.id = @fechamentoTurmaId");
 
-            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId });
+            if (conselhoClasseIds.Any())
+                sql.AppendLine(@" and cc.id = ANY(@conselhoClasseIds)");
+
+            return await database.Conexao.QueryAsync<RecomendacoesAlunoFamiliaDto>(sql.ToString(), new { alunoCodigo, bimestre, fechamentoTurmaId, conselhoClasseIds});
         }
 
         public void InserirRecomendacaoAlunoFamilia(long[] recomendacoesId, long conselhoClasseAlunoId)
