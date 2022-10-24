@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseRecomendacao
 
             await DadosConselhoClasse();
 
-            var retorno = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery("12345", 1, 1));
+            var retorno = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery("12345", 1, 1, new long[] { }));
 
             retorno.ShouldNotBeEmpty();
             retorno.First().Tipo.ShouldBe((int)ConselhoClasseRecomendacaoTipo.Aluno);
