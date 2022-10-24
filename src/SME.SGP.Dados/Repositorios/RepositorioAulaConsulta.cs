@@ -1162,7 +1162,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,db.id, db.alterado_em as AlteradoEm, db.alterado_por as AlteradoPor, db.alterado_rf as AlteradoRF, db.criado_em as CriadoEm, db.criado_por as CriadoPor, db.criado_rf as CriadoRF
                          from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilho
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilho and not db.excluido
                          where t.turma_id = @turmaCodigo
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido
