@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao.Queries
     {
         public VerificaNotasTodosComponentesCurricularesQuery(string alunoCodigo, Turma turma,
             int? bimestre = null, long? fechamentoTurmaId = null, bool? historico = false, 
-            bool adicionarComponentesPlanejamento = true)
+            bool adicionarComponentesPlanejamento = true, Dominio.PeriodoEscolar periodoEscolar = null)
         {
             AlunoCodigo = alunoCodigo;
             Turma = turma;
@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Queries
             FechamentoTurmaId = fechamentoTurmaId;
             Historico = historico;
             AdicionarComponentesPlanejamento = adicionarComponentesPlanejamento;
+            PeriodoEscolar = periodoEscolar;
         }
 
         public Turma Turma { get; set; }
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao.Queries
         public long? FechamentoTurmaId { get; set; }
         public bool? Historico { get; set; }
         public bool AdicionarComponentesPlanejamento { get; set; }
+        public Dominio.PeriodoEscolar PeriodoEscolar { get; set; }
     }
 
     public class VerificaNotasTodosComponentesCurricularesQueryValidator : AbstractValidator<VerificaNotasTodosComponentesCurricularesQuery>
