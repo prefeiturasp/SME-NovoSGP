@@ -17,7 +17,7 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/encaminhamento-aee")]
-    [Authorize("Bearer")]
+    // [Authorize("Bearer")]
     public class EncaminhamentoAEEController : ControllerBase
     {
 
@@ -97,7 +97,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoAEEResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        // [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentos([FromQuery] FiltroPesquisaEncaminhamentosAEEDto filtro, [FromServices] IObterEncaminhamentosAEEUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -124,7 +124,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoAEERespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        // [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
@@ -237,6 +237,16 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPAAI([FromQuery] string codigoDre, [FromServices] IObterPAAIPorDreUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoDre));
+        }
+        
+        [HttpGet]
+        [Route("paai-ue")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        // [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAIPorUe([FromQuery] string codigoUe, [FromServices] IObterPAAIPorUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoUe));
         }
     }
 }
