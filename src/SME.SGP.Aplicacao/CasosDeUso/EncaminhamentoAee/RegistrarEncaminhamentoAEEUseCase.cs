@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             if (!encaminhamentoAEEDto.Secoes.Any())
                 throw new NegocioException("Nenhuma seção foi encontrada");
 
-            await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoAEEDto);
+            if(encaminhamentoAEEDto.Situacao != SituacaoAEE.Encaminhado || encaminhamentoAEEDto.Secoes.Any(s => s.Concluido == false))
+                await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoAEEDto);
 
             if (encaminhamentoAEEDto.Id.GetValueOrDefault() > 0)
             {
