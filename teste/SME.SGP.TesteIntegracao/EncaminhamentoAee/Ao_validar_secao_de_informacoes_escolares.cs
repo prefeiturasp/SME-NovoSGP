@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             informacoes.Aluno.DataNascimento.Date.ShouldBe(new DateTime(DateTime.Now.AddYears(-10).Year, 1, 1).Date);
             informacoes.Aluno.CodigoAluno.ShouldBe("1");
             informacoes.Aluno.Situacao.ShouldBe("RECLASSIFICADO SAIDA");
-            informacoes.Aluno.DataSituacao.Date.ShouldBe(DateTime.Now.AddDays(-10).Date);
+            informacoes.Aluno.DataSituacao.Date.ShouldBe(DateTime.Now.Date.AddDays(-10));
             informacoes.Aluno.CodigoTurma.ShouldBe("1");
             informacoes.responsavelEncaminhamentoAEE.Id.ShouldBe(2);
         }

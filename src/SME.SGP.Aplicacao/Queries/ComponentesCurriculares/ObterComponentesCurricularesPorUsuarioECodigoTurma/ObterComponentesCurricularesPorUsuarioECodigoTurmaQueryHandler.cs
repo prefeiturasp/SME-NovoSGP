@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (request.UsuarioLogado.EhProfessorCj())
                 return await ObterComponentesAtribuicaoCj(request.TurmaCodigo, request.UsuarioLogado.CodigoRf);
             else
-                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf, request.UsuarioLogado.PerfilAtual);
+                return await ObterComponentesCurricularesUsuario(request.TurmaCodigo, request.UsuarioLogado.CodigoRf ?? request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual);
         }
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesUsuario(string turmaCodigo, string codigoRf, Guid perfilAtual)
