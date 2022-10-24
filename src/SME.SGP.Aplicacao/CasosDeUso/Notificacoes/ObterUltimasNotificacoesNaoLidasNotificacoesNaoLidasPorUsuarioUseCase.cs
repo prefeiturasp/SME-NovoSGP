@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             //TODO: Utilizar query que retorna apenas o RF quando for feito merge com dev release
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterUltimasNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf, tituloReduzido));
+            return await mediator.Send(new ObterUltimasNotificacoesNaoLidasPorUsuarioQuery(DateTime.Now.Year, usuarioLogado.CodigoRf ?? usuarioLogado.Login, tituloReduzido));
         }
     }
 }
