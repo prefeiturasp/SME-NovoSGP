@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes;
-using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.TesteIntegracao.RegistroIndividual;
 
-namespace SME.SGP.TesteIntegracao.DiariosBordo
+namespace SME.SGP.TesteIntegracao.DiarioBordo
 {
     public abstract class DiarioBordoTesteBase : TesteBaseComuns
     {
-
         protected const long DIARIO_BORDO_ID_1 = 1;
         protected const long AULA_ID_1 = 1;
         protected const long DIARIO_BORDO_OBS_ID_1 = 1;
         protected const long DIARIO_BORDO_OBS_ID_2 = 2;
         protected const long DEVOLUTIVA_DIARIO_BORDO_ID_1 = 1;
+
         public DiarioBordoTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -35,7 +29,9 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
         
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery,AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(EncaminhamentoAEE.ServicosFake.ObterUsuarioLogadoPaai4444444QueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>),
+                typeof(EncaminhamentoAEE.ServicosFake.ObterUsuarioLogadoPaai4444444QueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected IExcluirDiarioBordoUseCase ObterServicoExcluirDiarioBordoUseCase()
@@ -51,11 +47,11 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
             await CriarComponenteCurricular();
             await CriarTipoCalendario(ModalidadeTipoCalendario.FundamentalMedio);
             await CriarTurma(Modalidade.Fundamental);
-            await CriarAula(DateTimeExtension.HorarioBrasilia(), RecorrenciaAula.AulaUnica, 
+            await CriarAula(filtroDiarioBordoDto.DataAulaDiarioBordo, RecorrenciaAula.AulaUnica, 
                             TipoAula.Normal, 
                             USUARIO_PROFESSOR_CODIGO_RF_1111111, 
                             TURMA_CODIGO_1, UE_CODIGO_1,
-                            COMPONENTE_CURRICULAR_512.ToString(), TIPO_CALENDARIO_1);
+                            filtroDiarioBordoDto.ComponenteCurricularId.ToString(), TIPO_CALENDARIO_1);
             await CriarDiarioBordo(filtroDiarioBordoDto);
         }
 
@@ -66,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
                 await InserirNaBase(new Devolutiva()
                 {
                     Id = DEVOLUTIVA_DIARIO_BORDO_ID_1,
-                    CodigoComponenteCurricular = COMPONENTE_CURRICULAR_512,
+                    CodigoComponenteCurricular = filtroDiarioBordoDto.ComponenteCurricularId,
                     PeriodoInicio = DateTimeExtension.HorarioBrasilia().AddDays(-7),
                     PeriodoFim = DateTimeExtension.HorarioBrasilia().AddDays(60),
                     Descricao = "Devolutiva Diário de Bordo 01",
@@ -75,14 +71,14 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
                     CriadoEm = DateTimeExtension.HorarioBrasilia(),
                     CriadoPor = "Sistema",
                     CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
-                }); ;
+                });
             }
 
-            await InserirNaBase(new DiarioBordo()
+            await InserirNaBase(new Dominio.DiarioBordo()
             {
                 Id = DIARIO_BORDO_ID_1,
                 AulaId = AULA_ID_1,
-                ComponenteCurricularId = COMPONENTE_CURRICULAR_512,
+                ComponenteCurricularId = filtroDiarioBordoDto.ComponenteCurricularId,
                 TurmaId = TURMA_ID_1,
                 DevolutivaId = filtroDiarioBordoDto.ContemDevolutiva ? DEVOLUTIVA_DIARIO_BORDO_ID_1 : null,
                 Planejamento = "Planejado",
@@ -104,6 +100,7 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
                     CriadoPor = "Sistema",
                     CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
                 });
+
                 await InserirNaBase(new DiarioBordoObservacao()
                 {
                     Id = DIARIO_BORDO_OBS_ID_2,
@@ -115,9 +112,6 @@ namespace SME.SGP.TesteIntegracao.DiariosBordo
                     CriadoRF = USUARIO_PROFESSOR_CODIGO_RF_1111111
                 });
             }
-
         }
-
-       
     }
 }
