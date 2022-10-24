@@ -216,5 +216,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoDre));
         }
+        
+        [HttpGet]
+        [Route("paai-ue")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAIPorUe([FromQuery] string codigoUe, [FromServices] IObterPAAIPorUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoUe));
+        }
     }
 }
