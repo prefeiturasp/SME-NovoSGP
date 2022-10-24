@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aluno.Inativo && consolidacaoTurmaConselhoClasse.Bimestre > ultimoBimestreAtivo)
                 {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
                 }
 
@@ -88,7 +88,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!aluno.Inativo && matriculadoDepois != null && consolidacaoTurmaConselhoClasse.Bimestre > 0 && consolidacaoTurmaConselhoClasse.Bimestre < matriculadoDepois)
                 {
-                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre);
+                    await VerificaSeHaConsolidacaoErrada(aluno.CodigoAluno, turma.Id, consolidacaoTurmaConselhoClasse.Bimestre ?? 0);
                     continue;
                 }
 
@@ -120,11 +120,11 @@ namespace SME.SGP.Aplicacao
             if (consolidacoesConselhoId.Any())
             {
                 var consolidacoesNotaIds = await mediator.Send(new ObterConsolidacoesConselhoClasseNotaPorConsolidacaoAlunoIdsBimestreQuery(consolidacoesConselhoId.ToArray(), bimestreVigente));
-               
-                if(consolidacoesNotaIds.Any())
+
+                if (consolidacoesNotaIds.Any())
                     await mediator.Send(new ExcluirConsolidacaoConselhoPorIdBimestreCommand(consolidacoesNotaIds.ToArray(), bimestreVigente == 0 ? consolidacoesConselhoId.ToArray() : new long[] { }));
             }
-                
+
         }
 
         private async Task<bool> PublicarMensagem(AlunoPorTurmaResposta aluno, ConsolidacaoTurmaDto consolidacaoTurmaConselhoClasse, long codigoComponenteCurricular, Guid CodigoCorrelacao)
@@ -137,7 +137,7 @@ namespace SME.SGP.Aplicacao
                                                                                                              aluno.Inativo,
                                                                                                              componenteCurricularId: codigoComponenteCurricular);
 
-                    var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
+                var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemConsolidacaoConselhoClasseAluno);
 
                 var publicarFilaConsolidacaoConselhoClasseAluno = await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemParaPublicar, CodigoCorrelacao, null));
                 if (!publicarFilaConsolidacaoConselhoClasseAluno)
