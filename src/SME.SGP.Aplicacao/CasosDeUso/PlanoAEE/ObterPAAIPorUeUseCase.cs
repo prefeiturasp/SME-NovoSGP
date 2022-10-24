@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         public ObterPAAIPorUeUseCase(IMediator mediator) : base(mediator) { }
         public async Task<IEnumerable<SupervisorDto>> Executar(string codigoUe)
         {
-            return await mediator.Send(new ObterPAAIPorUeQuery(codigoUe, TipoResponsavelAtribuicao.PAAI));
+            return await mediator.Send(new ObterPAAIPorUeTipoResponsavelAtribuicaoQuery(codigoUe, TipoResponsavelAtribuicao.PAAI));
         }
     }
 }

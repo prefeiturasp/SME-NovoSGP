@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPAAIPorUeQueryHandler : IRequestHandler<ObterPAAIPorUeQuery, IEnumerable<SupervisorDto>>
+    public class ObterPAAIPorUeTipoResponsavelAtribuicaoQueryHandler : IRequestHandler<ObterPAAIPorUeTipoResponsavelAtribuicaoQuery, IEnumerable<SupervisorDto>>
     {
         private IRepositorioSupervisorEscolaDre repositorioSupervisorEscola;
-        public ObterPAAIPorUeQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscola)
+        public ObterPAAIPorUeTipoResponsavelAtribuicaoQueryHandler(IRepositorioSupervisorEscolaDre repositorioSupervisorEscola)
         {
             this.repositorioSupervisorEscola = repositorioSupervisorEscola;
         }
-        public async Task<IEnumerable<SupervisorDto>> Handle(ObterPAAIPorUeQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SupervisorDto>> Handle(ObterPAAIPorUeTipoResponsavelAtribuicaoQuery request, CancellationToken cancellationToken)
         {
             return await repositorioSupervisorEscola.ObtemSupervisoresPorUeAsync(request.CodigoUe, request.TipoResponsavel);
         }
