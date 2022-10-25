@@ -12,7 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ObterPAAIPorUeUseCase : AbstractUseCase, IObterPAAIPorUeUseCase
     {
         public ObterPAAIPorUeUseCase(IMediator mediator) : base(mediator) { }
-        public async Task<IEnumerable<SupervisorDto>> Executar(string codigoUe)
+
+        public async Task<IEnumerable<ServidorDto>> Executar(string codigoUe)
         {
             return await mediator.Send(new ObterPAAIPorUeTipoResponsavelAtribuicaoQuery(codigoUe, TipoResponsavelAtribuicao.PAAI));
         }

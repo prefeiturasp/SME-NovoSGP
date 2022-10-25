@@ -1,11 +1,9 @@
 using SME.SGP.Infra;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterPAAIPorUeUseCase : IUseCase<string, IEnumerable<SupervisorDto>>
+    public interface IObterPAAIPorUeUseCase : IUseCase<string, IEnumerable<ServidorDto>>
     {
-        Task<IEnumerable<SupervisorDto>> Executar(string codigoUe);
     }
 }

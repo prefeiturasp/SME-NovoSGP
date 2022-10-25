@@ -241,7 +241,7 @@ namespace SME.SGP.Api.Controllers
         
         [HttpGet]
         [Route("paai-ue")]
-        [ProducesResponseType(typeof(IEnumerable<SupervisorDto>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<ServidorDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPAAIPorUe([FromQuery] string codigoUe, [FromServices] IObterPAAIPorUeUseCase useCase)

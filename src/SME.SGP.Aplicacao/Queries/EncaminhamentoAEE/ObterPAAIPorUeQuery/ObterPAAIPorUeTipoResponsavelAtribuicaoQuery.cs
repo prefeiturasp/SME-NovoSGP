@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterPAAIPorUeTipoResponsavelAtribuicaoQuery : IRequest<IEnumerable<SupervisorDto>>
+    public class ObterPAAIPorUeTipoResponsavelAtribuicaoQuery : IRequest<IEnumerable<ServidorDto>>
     {
         public ObterPAAIPorUeTipoResponsavelAtribuicaoQuery(string codigoUe, TipoResponsavelAtribuicao tipoResponsavel)
         {
