@@ -556,7 +556,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<DiarioBordoDetalhesParaPendenciaDto> ObterDadosDiarioBordoParaPendenciaPorid(long diarioBordoId)
         {
-            var sql = $@"select db.id,
+            var sql = $@"select db.id, db.excluido,
                                u.nome as nomeEscola, 
 	                           coalesce(cc.descricao_sgp, cc.descricao) as descricaocomponenteCurricular,
                                a.professor_rf as ProfessorRf,
