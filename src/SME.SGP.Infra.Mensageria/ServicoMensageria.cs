@@ -10,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Infra
 {
-    public abstract class ServicoMensageria : IServicoMensageria
+    public abstract class ServicoMensageria<T> : IServicoMensageria<T>
+        where T : class 
     {
         private readonly IConexoesRabbit conexaoRabbit;
         private readonly IServicoTelemetria servicoTelemetria;
@@ -23,7 +24,7 @@ namespace SME.SGP.Infra
             this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
         }
 
-        public async Task<bool> Publicar(MensagemRabbit request, string rota, string exchange, string nomeAcao)
+        public async Task<bool> Publicar(T request, string rota, string exchange, string nomeAcao)
         {
             var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
             {
@@ -33,13 +34,10 @@ namespace SME.SGP.Infra
 
             await servicoTelemetria.RegistrarAsync(async () =>
                     await policy.ExecuteAsync(async () => await PublicarMensagem(rota, body, exchange)),
-                            "RabbitMQ", nomeAcao, rota,ObterParametrosMensagem(request));
+                            "RabbitMQ", nomeAcao, rota, ObterParametrosMensagem(request));
 
             return true;
         }
-        
-        public Task<bool> Publicar<T>(T mensagem, string rota, string exchange, string nomeAcao)
-            => Publicar(new MensagemRabbit(mensagem), rota, exchange, nomeAcao);
 
         private Task PublicarMensagem(string rota, byte[] body, string exchange = null)
         {
@@ -60,23 +58,21 @@ namespace SME.SGP.Infra
         }
 
         
-        public virtual string ObterParametrosMensagem(MensagemRabbit mensagemRabbit)
-        {
-            return "";
-        }
+        public virtual string ObterParametrosMensagem(T mensagemRabbit)
+            => "";
     }
 
-    public class ServicoMensageriaSGP : ServicoMensageria, IServicoMensageriaSGP
+    public class ServicoMensageriaSGP : ServicoMensageria<MensagemRabbit>, IServicoMensageriaSGP
     {
         public ServicoMensageriaSGP(IConexoesRabbitFilasSGP conexaoRabbit, IServicoTelemetria servicoTelemetria, IReadOnlyPolicyRegistry<string> registry) 
             : base(conexaoRabbit, servicoTelemetria, registry) { }
     }
 
-    public class ServicoMensageriaLogs : ServicoMensageria, IServicoMensageriaLogs
+    public class ServicoMensageriaLogs : ServicoMensageria<LogMensagem>, IServicoMensageriaLogs
     {
-        public override string ObterParametrosMensagem(MensagemRabbit mensagemRabbit)
+        public override string ObterParametrosMensagem(LogMensagem mensagemLog)
         {
-            var json = JsonConvert.SerializeObject(mensagemRabbit.Mensagem);
+            var json = JsonConvert.SerializeObject(mensagemLog);
             var mensagem = JsonConvert.DeserializeObject<LogMensagem>(json);
             return mensagem!.Mensagem +", ExcecaoInterna:" + mensagem.ExcecaoInterna;
         }
