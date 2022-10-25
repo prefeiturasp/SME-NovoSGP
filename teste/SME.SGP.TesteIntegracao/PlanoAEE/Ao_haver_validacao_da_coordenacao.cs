@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
@@ -108,6 +109,139 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendencia.Id.ShouldBe(pendenciaPerfil.PendenciaId);
             pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CEFAI);
 
+        }
+        
+        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE não tiver paai atribuído")]
+        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_nao_tiver_paai_atribuido()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+            });
+
+            var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
+            var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
+
+            var planoAEEPersistenciaDto = ObterPlanoAEEDto();
+            var filtroPlanoAeeDto = ObterFiltroPlanoAEEDto();
+
+            await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
+            var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
+
+            var servicoCadastrarParecerCP = ObterServicoCadastrarParecerCPPlanoAEEUseCase();
+            var parecerDto = ObterPlanoAEECadastroParecerDto();
+
+            await servicoCadastrarParecerCP.Executar(retorno.Items.FirstOrDefault().Id,parecerDto);
+
+            var planoAee = ObterTodos<Dominio.PlanoAEE>();
+            planoAee.FirstOrDefault().Situacao = SituacaoPlanoAEE.AtribuicaoPAAI;
+            
+            var pendencia = ObterTodos<Pendencia>().LastOrDefault();
+            var pendenciaPerfil = ObterTodos<PendenciaPerfil>().LastOrDefault();
+
+            pendencia.Id.ShouldBe(pendenciaPerfil.PendenciaId);
+            pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CEFAI);
+        }
+        
+        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE tiver mais de um paai atribuído")]
+        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_tiver_mais_de_um_paai_atribuido()
+        {
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+            });
+
+            await InserirNaBase(new SupervisorEscolaDre()
+            {
+                SupervisorId = "1", EscolaId = "1", DreId = "1", Tipo = (int)TipoResponsavelAtribuicao.PAAI,
+                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new SupervisorEscolaDre()
+            {
+                SupervisorId = "2", EscolaId = "1", DreId = "1", Tipo = (int)TipoResponsavelAtribuicao.PAAI,
+                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
+            var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
+
+            var planoAEEPersistenciaDto = ObterPlanoAEEDto();
+            var filtroPlanoAeeDto = ObterFiltroPlanoAEEDto();
+
+            await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
+            var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
+
+            var servicoCadastrarParecerCP = ObterServicoCadastrarParecerCPPlanoAEEUseCase();
+            var parecerDto = ObterPlanoAEECadastroParecerDto();
+
+            await servicoCadastrarParecerCP.Executar(retorno.Items.FirstOrDefault().Id,parecerDto);
+
+            var planoAee = ObterTodos<Dominio.PlanoAEE>();
+            planoAee.FirstOrDefault().Situacao = SituacaoPlanoAEE.AtribuicaoPAAI;
+            
+            var pendencia = ObterTodos<Pendencia>().LastOrDefault();
+            var pendenciaPerfil = ObterTodos<PendenciaPerfil>().LastOrDefault();
+
+            pendencia.Id.ShouldBe(pendenciaPerfil.PendenciaId);
+            pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CEFAI);
+        }
+        
+         [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE tiver mais de um paai atribuído")]
+        public async Task Deve_atribuir_automaticamente_paai_quando_a_ue_tiver_um_unico_paai_atribuido()
+        {
+            const string LOGIN_USUARIO_PAAI_ATRIBUIDO = "1";
+            
+            await CriarDadosBasicos(new FiltroPlanoAee()
+            {
+                Modalidade = Modalidade.Fundamental,
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio
+            });
+
+            await InserirNaBase(new Usuario
+            {
+                Login = LOGIN_USUARIO_PAAI_ATRIBUIDO,CodigoRf = LOGIN_USUARIO_PAAI_ATRIBUIDO,Nome = "Usuario Paai atribuido",
+                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            await InserirNaBase(new SupervisorEscolaDre()
+            {
+                SupervisorId = "1", EscolaId = "1", DreId = "1", Tipo = (int)TipoResponsavelAtribuicao.PAAI,
+                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+            
+            var servicoCadastrarPlanoAee = ObterServicoSalvarPlanoAEEUseCase();
+            var servicoObterPlanoAEE = ObterServicoObterPlanosAEEUseCase();
+
+            var planoAEEPersistenciaDto = ObterPlanoAEEDto();
+            var filtroPlanoAeeDto = ObterFiltroPlanoAEEDto();
+
+            await servicoCadastrarPlanoAee.Executar(planoAEEPersistenciaDto);
+            var retorno = await servicoObterPlanoAEE.Executar(filtroPlanoAeeDto);
+
+            var servicoCadastrarParecerCP = ObterServicoCadastrarParecerCPPlanoAEEUseCase();
+            var parecerDto = ObterPlanoAEECadastroParecerDto();
+
+            await servicoCadastrarParecerCP.Executar(retorno.Items.FirstOrDefault().Id,parecerDto);
+
+            var planoAee = ObterTodos<Dominio.PlanoAEE>();
+            planoAee.FirstOrDefault().Situacao = SituacaoPlanoAEE.ParecerPAAI;
+
+            var pendencias = ObterTodos<Pendencia>();
+            pendencias.FirstOrDefault(a=> a.Excluido).Id.ShouldBe(1);
+            pendencias.FirstOrDefault(a=> !a.Excluido).Id.ShouldBe(2);
+
+            var pendenciaPerfilusuarios = ObterTodos<PendenciaPerfilUsuario>();
+            pendenciaPerfilusuarios.Count.ShouldBe(0);
+            
+            var pendenciaUsuarios = ObterTodos<Dominio.PendenciaUsuario>();
+            var usuarios = ObterTodos<Dominio.Usuario>();
+            pendenciaUsuarios.FirstOrDefault().UsuarioId.ShouldBe(usuarios.FirstOrDefault(f=> f.Login.Equals("1")).Id);
         }
 
         private PlanoAEECadastroParecerDto ObterPlanoAEECadastroParecerDto()
