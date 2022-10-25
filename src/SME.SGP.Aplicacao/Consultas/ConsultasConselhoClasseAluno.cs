@@ -1,8 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -63,18 +66,10 @@ namespace SME.SGP.Aplicacao
                 periodoEscolar.Bimestre, fechamentoTurmaId, turma.Historica));
         }
 
-        private static long ObterCodigoComponenteCurricular(DisciplinaResposta componenteCurricular)
+        public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
         {
-            return componenteCurricular.TerritorioSaber
-                ? componenteCurricular.CodigoComponenteTerritorioSaber.GetValueOrDefault()
-                : componenteCurricular.CodigoComponenteCurricular;
-        }
-
-        public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId,
-            string alunoCodigo, string codigoTurma, int bimestre)
-        {
-            var totalCompensacoesComponenteSemNota = (await mediator.Send(new ObterTotalCompensacoesComponenteNaoLancaNotaQuery(codigoTurma, bimestre))).ToList();
-            totalCompensacoesComponenteSemNota = totalCompensacoesComponenteSemNota.Where(x => x.CodigoAluno == alunoCodigo).ToList();
+            var totalCompensacoesComponenteSemNota = await mediator.Send(new ObterTotalCompensacoesComponenteNaoLancaNotaQuery(codigoTurma, bimestre));
+            totalCompensacoesComponenteSemNota = totalCompensacoesComponenteSemNota.Where(x => x.CodigoAluno == alunoCodigo);
 
             var totalAulasComponenteSemNota = Enumerable.Empty<TotalAulasNaoLancamNotaDto>();
 
@@ -114,6 +109,9 @@ namespace SME.SGP.Aplicacao
             {
                 turma.CodigoTurma
             }, tipoCalendarioId, bimestre))).ToList();
+
+            if (fechamentoTurma != null)
+                turma = fechamentoTurma.Turma;
 
             if (fechamentoTurma != null)
                 turma = fechamentoTurma.Turma;
@@ -291,6 +289,7 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
                     turmasCodigos = new string[1] { turma.CodigoTurma };
+
             }
 
             //Verificar as notas finais
@@ -310,8 +309,8 @@ namespace SME.SGP.Aplicacao
             if (turmasComMatriculasValidas.Contains(codigoTurma))
             {
                 var turmasParaNotasFinais = turma.EhEJA() || await ValidaTurmaRegularJuntoAEdFisica(turmasCodigos.ToList(), codigoTurma)
-                      ? turmasCodigos
-                      : new[] { codigoTurma };
+                    ? turmasCodigos
+                    : new string[] { codigoTurma };
 
                 validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
@@ -625,7 +624,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private static string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, long componenteCurricular)
+        private string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, long componenteCurricular)
         {
             var aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular);
 
@@ -634,7 +633,8 @@ namespace SME.SGP.Aplicacao
 
             return $"{percentualFrequencia}%";
         }
-        private static string ExibirTotalCompensadas(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacao, long codigoComponenteCurricular, int bimestre)
+
+        private string ExibirTotalCompensadas(IEnumerable<TotalCompensacoesComponenteNaoLancaNotaDto> totalCompensacao, long codigoComponenteCurricular, int bimestre)
         {
             if (bimestre != (int)Bimestre.Final)
             {
@@ -648,7 +648,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private static string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, long codigoComponenteCurricular)
+        private string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, long codigoComponenteCurricular)
         {
             var totalAulas = aulas.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
 
@@ -776,7 +776,7 @@ namespace SME.SGP.Aplicacao
             if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
             {
                 var notaComponenteFechamento = new NotaConceitoBimestreComponenteDto();
-                
+
                 if (turmaComplementar != null && turmaComplementar.EhEJA() && turmaComplementar.TurmaRegularCodigo != null)
                 {
                     var codigosTurma = new string[] { turmaComplementar.CodigoTurma, turmaComplementar.TurmaRegularCodigo };
@@ -901,7 +901,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private static string ExibirTotalAulas(IEnumerable<TotalAulasPorAlunoTurmaDto> totalAulas, long componenteCurricularCodigo, string codigoAluno)
+        private string ExibirTotalAulas(IEnumerable<TotalAulasPorAlunoTurmaDto> totalAulas, long componenteCurricularCodigo, string codigoAluno)
         {
             var aulasPorAlunoEComponente = totalAulas.Where(x => x.DisciplinaId == componenteCurricularCodigo.ToString() && x.CodigoAluno == codigoAluno);
 
@@ -987,7 +987,13 @@ namespace SME.SGP.Aplicacao
             await VerificaEmAprovacaoParecerConclusivo(conselhoClasseAluno?.Id, parecerConclusivoDto);
 
             return parecerConclusivoDto;
+        }
 
+        private long ObterCodigoComponenteCurricular(DisciplinaResposta componenteCurricular)
+        {
+            return componenteCurricular.TerritorioSaber
+                ? componenteCurricular.CodigoComponenteTerritorioSaber.GetValueOrDefault()
+                : componenteCurricular.CodigoComponenteCurricular;
         }
     }
 }
