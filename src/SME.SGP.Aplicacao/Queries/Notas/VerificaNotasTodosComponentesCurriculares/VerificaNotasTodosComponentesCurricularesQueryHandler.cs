@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,13 +11,13 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Queries
 {
-    public class VerificaNotasTodosComponentesCurricularesQueryHandler : IRequestHandler<VerificaNotasTodosComponentesCurricularesQuery,bool>
+    public class VerificaNotasTodosComponentesCurricularesQueryHandler : IRequestHandler<VerificaNotasTodosComponentesCurricularesQuery, bool>
     {
-	    private readonly IMediator mediator;
+        private readonly IMediator mediator;
 
         public VerificaNotasTodosComponentesCurricularesQueryHandler(IMediator mediator)
         {
-	        this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
@@ -40,7 +41,7 @@ namespace SME.SGP.Aplicacao.Queries
                             periodoEscolar?.PeriodoFim),
                         cancellationToken);
 
-                if (request.Historico == true)
+                if (request.Historico.HasValue && request.Historico.Value)
                 {
                     var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL), cancellationToken);
 
@@ -52,9 +53,7 @@ namespace SME.SGP.Aplicacao.Queries
                             turmasCodigos = turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray();
                     }
                     else
-                    {
-                        turmasCodigos = new[] { request.Turma.CodigoTurma };
-                    }
+                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
                 }
                 else
                 {
@@ -115,10 +114,9 @@ namespace SME.SGP.Aplicacao.Queries
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
             }
 
-            var componentesCurriculares = (await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, 
-                request.Turma.TurnoParaComponentesCurriculares, request.AdicionarComponentesPlanejamento))
-                .Where(c => c.LancaNota);
-            
+            turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
+
+            var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
             var disciplinasDaTurma = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()), cancellationToken);
 
@@ -128,22 +126,39 @@ namespace SME.SGP.Aplicacao.Queries
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
         }
 
-        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, 
-            int turnoParaComponentesCurriculares, bool adicionarComponentesPlanejamento = true)
+        private string[] DefinirTurmasConsideradasDeAcordoComMatricula(string alunoCodigo, Dominio.PeriodoEscolar periodoEscolar, string[] turmasCodigos)
         {
-	        var componentesTurma = new List<DisciplinaDto>();
-	        var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+            if (periodoEscolar != null)
+            {
+                var codigosTurmaVerificacao = new string[turmasCodigos.Length];
+                turmasCodigos.CopyTo(codigosTurmaVerificacao, 0);
+                var listaCodigosConsiderados = new List<string>();
 
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(
-                turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial,
-                turnoParaComponentesCurriculares, adicionarComponentesPlanejamento));
-            
-	        if (componentesCurriculares != null && componentesCurriculares.Any())
-		        componentesTurma.AddRange(componentesCurriculares);
-            else 
-                throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_DISCIPLINAS_TURMA_EOL);
+                codigosTurmaVerificacao.ToList().ForEach(ct =>
+                {
+                    var dadosMatricula = mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(ct, alunoCodigo)).Result;
+                    if (dadosMatricula != null && dadosMatricula.Any() && dadosMatricula.OrderBy(dm => dm.DataSituacao).First().DataMatricula.Date <= periodoEscolar.PeriodoFim.Date)
+                        listaCodigosConsiderados.Add(ct);
+                });
 
-	        return componentesTurma;
+                if (listaCodigosConsiderados.Any())
+                    turmasCodigos = listaCodigosConsiderados.ToArray();
+            }
+
+            return turmasCodigos;
+        }
+
+        private async Task<IEnumerable<DisciplinaDto>> ObterComponentesTurmas(string[] turmasCodigo, bool ehEnsinoEspecial, int turnoParaComponentesCurriculares)
+        {
+            var componentesTurma = new List<DisciplinaDto>();
+            var usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigo, usuarioAtual.PerfilAtual, usuarioAtual.Login, ehEnsinoEspecial, turnoParaComponentesCurriculares));
+            if (componentesCurriculares != null && componentesCurriculares.Any())
+                componentesTurma.AddRange(componentesCurriculares);
+            else throw new NegocioException(MensagemNegocioEOL.NAO_LOCALIZADO_DISCIPLINAS_TURMA_EOL);
+
+            return componentesTurma;
         }
     }
 }
