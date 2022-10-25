@@ -143,7 +143,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 CriadoPor = "Sistema",
                 CriadoRF = "0",
                 Instrucao = "Esta pendência será resolvida automaticamente quando o registro da devolutiva for regularizado.",
-                UeId = 1
+                UeId = 1,
+                TurmaId = 1,
             });
 
             var pendenciaPerfil = new PendenciaPerfil()
