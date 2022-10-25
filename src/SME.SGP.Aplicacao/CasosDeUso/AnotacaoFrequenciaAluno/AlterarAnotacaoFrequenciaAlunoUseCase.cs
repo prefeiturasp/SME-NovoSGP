@@ -27,12 +27,12 @@ namespace SME.SGP.Aplicacao
         }
         private async Task MoverRemoverExcluidos(AlterarAnotacaoFrequenciaAlunoDto anotacaoAluno, AnotacaoFrequenciaAluno anotacao)
         {
-            if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao.Trim()))
+            if (!string.IsNullOrEmpty(anotacaoAluno.Anotacao?.Trim()))
             {
                 var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.FrequenciaAnotacaoEstudante, anotacao.Anotacao, anotacaoAluno.Anotacao));
                 anotacaoAluno.Anotacao = moverArquivo;
             }
-            if (!string.IsNullOrEmpty(anotacao.Anotacao.Trim()))
+            if (!string.IsNullOrEmpty(anotacao.Anotacao?.Trim()))
                  await mediator.Send(new RemoverArquivosExcluidosCommand(anotacao.Anotacao, anotacaoAluno.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
         }
         private async Task<bool> AtualizarAnotacaoFrequenciaAluno(AnotacaoFrequenciaAluno anotacao, AlterarAnotacaoFrequenciaAlunoDto param)
