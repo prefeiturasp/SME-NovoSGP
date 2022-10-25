@@ -112,7 +112,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
                     new ()
                     {
                         SecaoId = 1,
-                        Concluido = true,
+                        Concluido = false,
                         Questoes = new List<EncaminhamentoAEESecaoQuestaoDto>()
                         {
                             new ()
