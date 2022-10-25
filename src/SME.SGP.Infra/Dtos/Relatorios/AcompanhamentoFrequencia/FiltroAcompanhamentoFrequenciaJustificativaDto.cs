@@ -12,6 +12,7 @@ namespace SME.SGP.Infra
         public string UsuarioRF { get; set; }
         public string UsuarioNome { get; set; }
         public IEnumerable<string> AlunosCodigos { get; set; }
+        public bool ImprimirFrequenciaDiaria { get; set; }
 
     }
 }
