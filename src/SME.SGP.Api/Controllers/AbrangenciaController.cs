@@ -272,5 +272,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar());
         }
+
+        [HttpGet("/api/v1/abrangencias/usuarios/{login}/perfis/{perfil}/carregar")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> CarregarAbrangencia(string login, Guid perfil, [FromServices] ICarregarAbrangenciaUsusarioUseCase useCase)
+        {
+            return Ok(await useCase.Executar(new UsuarioPerfilDto(login, perfil)));
+        }
     }
 }

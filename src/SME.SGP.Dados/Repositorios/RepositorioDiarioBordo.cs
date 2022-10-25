@@ -230,7 +230,7 @@ namespace SME.SGP.Dados.Repositorios
 
             condicao.AppendLine(@"from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo and not db.Excluido
                          where t.id = @turmaId
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido 
@@ -562,13 +562,14 @@ namespace SME.SGP.Dados.Repositorios
                                a.professor_rf as ProfessorRf,
                                db.componente_curricular_id as componenteCurricularId, db.turma_id as turmaId, 
                                db.aula_id as aulaId, a.data_aula as dataAula,
-                               t.nome nomeTurma,
-                               t.modalidade_codigo as codModalidadeTurma
+                               t.nome nomeTurma, t.turma_id as codigoTurma,
+                               t.modalidade_codigo as codModalidadeTurma, pe.id as periodoEscolarId
                               from diario_bordo db 
                         inner join turma t on t.id = db.turma_id 
                         inner join aula a on a.id = db.aula_id 
                         inner join ue u on u.ue_id  = a.ue_id 
                         inner join componente_curricular cc on cc.id = db.componente_curricular_id
+                        inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
                         where db.id = @diariobordo; ";
            
             return await database.Conexao.QueryFirstOrDefaultAsync<DiarioBordoDetalhesParaPendenciaDto>(sql, new { diariobordo = diarioBordoId });

@@ -226,5 +226,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoUe));
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirPlanoAEEUseCase excluirPlanoAEEUseCase)
+        {
+            return Ok(await excluirPlanoAEEUseCase.Executar(id));
+        }
+
     }
 }
