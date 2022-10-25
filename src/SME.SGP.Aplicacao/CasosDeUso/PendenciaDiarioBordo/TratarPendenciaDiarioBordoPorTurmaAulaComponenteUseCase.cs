@@ -23,7 +23,9 @@ namespace SME.SGP.Aplicacao
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {
-                var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId && f.ProfessorRf.Equals(item.ProfessorRf));
+                var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId 
+                                                                                    && f.ProfessorRf.Equals(item.ProfessorRf)
+                                                                                    && f.CodigoTurma == filtro.CodigoTurma);
                 if (pendencia == null)
                 {
                     pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(item.ComponenteCurricularId, item.ProfessorRf, item.PeriodoEscolarId, filtro.CodigoTurma));
@@ -35,7 +37,8 @@ namespace SME.SGP.Aplicacao
                         {
                             ComponenteCurricularId = item.ComponenteCurricularId,
                             ProfessorRf = item.ProfessorRf,
-                            PendenciaId = pendenciaId
+                            PendenciaId = pendenciaId,
+                            CodigoTurma = filtro.CodigoTurma
                         });
                     }
                 }
