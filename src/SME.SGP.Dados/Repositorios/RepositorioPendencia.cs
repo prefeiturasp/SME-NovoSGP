@@ -418,14 +418,12 @@ namespace SME.SGP.Dados.Repositorios
                             select distinct p.id
 							from pendencia p 
                                 inner join pendencia_usuario pu on pu.pendencia_id = p.id
-                                inner join pendencia_aula pa on p.id = pa.pendencia_id
-	                            inner join aula a on pa.aula_id = a.id
-                                {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.turma_id = a.turma_id " : string.Empty)}
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.id = p.turma_id " : string.Empty)}
                             WHERE pu.pendencia_id = any(@pendencias)
                             and situacao = 1
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
                             and p.tipo in (7,8,9,10,17,19)
-                            and not p.excluido",
+                            and not p.excluido ",
                 TipoPendenciaGrupo.AEE => $@"
                             select distinct p.id
 							from pendencia p 
