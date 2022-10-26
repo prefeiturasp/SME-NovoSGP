@@ -111,8 +111,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
         
-        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE não tiver paai atribuído")]
-        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_nao_tiver_paai_atribuido()
+        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE não tiver paai")]
+        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_nao_tiver_paai()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
