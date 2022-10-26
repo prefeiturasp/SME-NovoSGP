@@ -25,6 +25,11 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
         }
 
+        public void ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
+        {
+            database.Conexao.Execute("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
+        }
+
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
@@ -262,7 +267,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(c => c.Id).Distinct().ToArray();
             
             const string selectBase = "select p.id from pendencia p";
-            
+
             var query = new StringBuilder();
 
             //-> Montando a query
@@ -318,8 +323,10 @@ namespace SME.SGP.Dados.Repositorios
                         break;
                     case TipoPendenciaAssunto.Pendencia:
                     default:
-                        query.Append(@" LEFT JOIN turma t ON t.id = p.turma_id      
-                                        WHERE p.id = any(@pendenciasIds) ");                        
+                        if (!string.IsNullOrEmpty(turmaCodigo))
+                            query.Append(@" INNER JOIN turma t on t.id = p.turma_id");
+
+                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");
                         break;
                 }
 

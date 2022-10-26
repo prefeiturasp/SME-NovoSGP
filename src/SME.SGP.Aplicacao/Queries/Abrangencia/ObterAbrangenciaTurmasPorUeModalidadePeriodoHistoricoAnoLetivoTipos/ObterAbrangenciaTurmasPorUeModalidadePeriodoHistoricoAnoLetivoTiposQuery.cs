@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             ConsideraHistorico = consideraHistorico;
             AnoLetivo = anoLetivo;
             Tipos = tipos;
-            ConsideraNovosAnosInfantil = ConsideraNovosAnosInfantil;
+            ConsideraNovosAnosInfantil = consideraNovosAnosInfantil;
         }
 
         public string CodigoUe { get; set; }

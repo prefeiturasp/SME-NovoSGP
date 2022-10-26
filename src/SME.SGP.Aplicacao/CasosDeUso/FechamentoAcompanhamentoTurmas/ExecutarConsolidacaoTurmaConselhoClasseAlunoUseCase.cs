@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma != null)
             {
                 var conselhoClasseId = await mediator.Send(new ObterConselhoClassePorFechamentoIdQuery(fechamentoTurma.Id));
-                var fechamentosTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre));
+                var fechamentosTurmaDisciplina = filtro.ComponenteCurricularId.HasValue ? await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(turma.CodigoTurma, (long)filtro.ComponenteCurricularId, filtro.Bimestre)) : null;
 
                 if (fechamentosTurmaDisciplina != null && fechamentosTurmaDisciplina.Any())
                     fechamentoNotasAluno = await mediator.Send(new ObterPorFechamentoTurmaDisciplinaIdAlunoCodigoQuery(fechamentosTurmaDisciplina.Select(ftd => ftd.Id).ToArray(), filtro.AlunoCodigo));
@@ -198,16 +198,24 @@ namespace SME.SGP.Aplicacao
             double? conceito = null;
             if (conselhoClasseNotasAluno != null && conselhoClasseNotasAluno.Any(x => x.ComponenteCurricularCodigo == componenteCurricularId))
             {
-                nota = conselhoClasseNotasAluno.First(x => x.ComponenteCurricularCodigo == componenteCurricularId).Nota;
-                conceito = conselhoClasseNotasAluno.First(x => x.ComponenteCurricularCodigo == componenteCurricularId).ConceitoId;
+                nota = conselhoClasseNotasAluno
+                    .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.Nota;
+
+                conceito = conselhoClasseNotasAluno
+                    .FirstOrDefault(x => x.ComponenteCurricularCodigo == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.ConceitoId;
             }
             else if (fechamentoNotasAluno != null && fechamentoNotasAluno.Any(x => x.ComponenteCurricularId == componenteCurricularId))
             {
-                nota = fechamentoNotasAluno.First(x => x.ComponenteCurricularId == componenteCurricularId).Nota;
-                conceito = fechamentoNotasAluno.First(x => x.ComponenteCurricularId == componenteCurricularId).ConceitoId;
+                nota = fechamentoNotasAluno
+                    .FirstOrDefault(x => x.ComponenteCurricularId == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.Nota;
+
+                conceito = fechamentoNotasAluno
+                    .FirstOrDefault(x => x.ComponenteCurricularId == componenteCurricularId && ((bimestre.HasValue && x.Bimestre == bimestre.Value) || !x.Bimestre.HasValue))?.ConceitoId;
             }
 
-            var consolidadoNota = await repositorioConselhoClasseConsolidadoNota.ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, bimestre, componenteCurricularId);
+            var consolidadoNota = await repositorioConselhoClasseConsolidadoNota
+                .ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoNotaAsync(consolidadoTurmaAlunoId, bimestre, componenteCurricularId);
+
             consolidadoNota ??= new ConselhoClasseConsolidadoTurmaAlunoNota()
             {
                 ConselhoClasseConsolidadoTurmaAlunoId = consolidadoTurmaAlunoId,
@@ -218,7 +226,9 @@ namespace SME.SGP.Aplicacao
             consolidadoNota.Nota = (notaFiltro != null ? notaFiltro : nota);
             consolidadoNota.ConceitoId = (long?)(conceitoFiltro != null ? conceitoFiltro : conceito);
 
-            await repositorioConselhoClasseConsolidadoNota.SalvarAsync(consolidadoNota);
+            await repositorioConselhoClasseConsolidadoNota
+                .SalvarAsync(consolidadoNota);
+
             return true;
         }
     }

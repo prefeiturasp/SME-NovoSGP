@@ -89,7 +89,7 @@ namespace SME.SGP.Auditoria.Worker
         private void RegistrarElasticSearch(IServiceCollection services)
         {
             var elasticOptions = new ElasticOptions();
-            Configuration.GetSection("ElasticSearchAuditoria").Bind(elasticOptions, c => c.BindNonPublicProperties = true);
+            Configuration.GetSection("ElasticSearch").Bind(elasticOptions, c => c.BindNonPublicProperties = true);
             services.AddSingleton(elasticOptions);
 
             var nodes = new List<Uri>();
@@ -107,13 +107,13 @@ namespace SME.SGP.Auditoria.Worker
             var connectionPool = new StaticConnectionPool(nodes);
             var connectionSettings = new ConnectionSettings(connectionPool);
             connectionSettings.ServerCertificateValidationCallback((sender, cert, chain, errors) => true);
-            connectionSettings.DefaultIndex(elasticOptions.DefaultIndex);
+            connectionSettings.DefaultIndex(elasticOptions.IndicePadrao);
 
             if (!string.IsNullOrEmpty(elasticOptions.CertificateFingerprint))
                 connectionSettings.CertificateFingerprint(elasticOptions.CertificateFingerprint);
 
-            if (!string.IsNullOrEmpty(elasticOptions.Username) && !string.IsNullOrEmpty(elasticOptions.Password))
-                connectionSettings.BasicAuthentication(elasticOptions.Username, elasticOptions.Password);
+            if (!string.IsNullOrEmpty(elasticOptions.Usuario) && !string.IsNullOrEmpty(elasticOptions.Senha))
+                connectionSettings.BasicAuthentication(elasticOptions.Usuario, elasticOptions.Senha);
             
             var elasticClient = new ElasticClient(connectionSettings);
             services.AddSingleton<IElasticClient>(elasticClient);
