@@ -29,6 +29,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
+            var diarioBordo = await repositorioDiarioBordo.ObterPorIdAsync(request.DiarioBordoId);
+            if (diarioBordo.Excluido) return false;
+
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
             var observacoesDiarioBordo = await repositorioDiarioBordoObservacao.ListarPorDiarioBordoAsync(request.DiarioBordoId, usuario.Id);
             unitOfWork.IniciarTransacao();

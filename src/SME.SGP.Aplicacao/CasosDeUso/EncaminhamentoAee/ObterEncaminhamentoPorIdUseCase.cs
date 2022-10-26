@@ -41,7 +41,8 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = encaminhamentoAee.Turma.Id,
                     Codigo = encaminhamentoAee.Turma.CodigoTurma,
-                    AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
+                    AnoLetivo = encaminhamentoAee.Turma.AnoLetivo,
+                    CodigoUE = encaminhamentoAee.Turma.Ue.CodigoUe
                 },
                 Situacao = encaminhamentoAee.Situacao,
                 SituacaoDescricao = encaminhamentoAee.Situacao.Name(),
