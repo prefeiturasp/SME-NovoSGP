@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.periodo_fim
                           from devolutiva d
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.aula_id
                          where a.turma_id = @turmaCodigo
                            and d.componente_curricular_codigo = @componenteCurricularCodigo";
@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.id 
                           from devolutiva d 
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.id
                          where not d.excluido
                            and a.turma_id = @turmaCodigo
