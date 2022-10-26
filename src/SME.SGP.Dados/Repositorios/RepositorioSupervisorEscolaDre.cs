@@ -210,22 +210,6 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }
         
-        public async Task<IEnumerable<ServidorDto>> ObtemSupervisoresPorUeAsync(string codigoUe,TipoResponsavelAtribuicao? tipoResponsavelAtribuicao)
-        {
-            StringBuilder query = new();
-
-            query.AppendLine(@"select sed.supervisor_id CodigoRF, u.nome NomeServidor 
-                                from supervisor_escola_dre sed
-                                    join usuario u on coalesce(u.rf_codigo,u.login)  = sed.supervisor_id 
-                               where escola_id = @codigoUe 
-                                     and excluido = false ");
-
-            if (tipoResponsavelAtribuicao != null)
-                query.AppendLine("and tipo = @tipoResponsavelAtribuicao");
-
-            return await database.Conexao.QueryAsync<ServidorDto>(query.ToString(), new { codigoUe, tipoResponsavelAtribuicao });
-        }
-
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUe(string ueId)
         {
             StringBuilder query = new();
