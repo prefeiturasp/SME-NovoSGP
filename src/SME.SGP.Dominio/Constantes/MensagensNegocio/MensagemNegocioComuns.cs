@@ -14,5 +14,7 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string USUARIO_SEM_ACESSO_TURMA_RESPECTIVA_AULA = "Usuario sem acesso a turma da respectiva aula";
         
         public const string Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data = "Você não pode fazer alterações ou inclusões nesta turma, componente e data.";
+
+        public const string O_plano_aee_informado_nao_foi_encontrado = "O plano Aee informado não foi encontrado";
     }
 }
