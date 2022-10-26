@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new ExcluirAnotacaoFrequenciaAlunoCommand(anotacao));
             
-            if (!string.IsNullOrEmpty(anotacao?.Anotacao.Trim()))
+            if (!string.IsNullOrEmpty(anotacao?.Anotacao?.Trim()))
                 await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(anotacao.Anotacao, TipoArquivo.FrequenciaAnotacaoEstudante.Name()));
             
             return true;
