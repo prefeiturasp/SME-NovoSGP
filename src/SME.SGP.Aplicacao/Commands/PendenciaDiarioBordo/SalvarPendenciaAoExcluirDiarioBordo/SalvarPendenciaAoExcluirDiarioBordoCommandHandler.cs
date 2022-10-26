@@ -22,8 +22,7 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(SalvarPendenciaAoExcluirDiarioBordoCommand request, CancellationToken cancellationToken)
         {
             var diarioBordo = await repositorioDiarioBordo.ObterDadosDiarioBordoParaPendenciaPorid(request.DiarioBordoId);
-            if (diarioBordo != null && !diarioBordo.Excluido
-                && diarioBordo.DataAula < DateTimeExtension.HorarioBrasilia().Date)
+            if (diarioBordo != null && diarioBordo.DataAula < DateTimeExtension.HorarioBrasilia().Date)
             {
                 var diarioBordoExistente = await repositorioDiarioBordo.ObterPorAulaId(diarioBordo.AulaId, diarioBordo.ComponenteCurricularId);
                 if (diarioBordoExistente == null)

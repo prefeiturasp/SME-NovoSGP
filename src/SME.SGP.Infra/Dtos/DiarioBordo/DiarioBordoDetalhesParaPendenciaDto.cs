@@ -18,7 +18,6 @@ namespace SME.SGP.Infra
         public string CodigoTurma { get; set; }
         public int CodModalidadeTurma { get; set; }
         public int PeriodoEscolarId { get; set; }
-        public bool Excluido { get; set; }
         public string RetornarTurmaComModalidade()
         {
             var modalidadeEnum = ((Modalidade)CodModalidadeTurma);
