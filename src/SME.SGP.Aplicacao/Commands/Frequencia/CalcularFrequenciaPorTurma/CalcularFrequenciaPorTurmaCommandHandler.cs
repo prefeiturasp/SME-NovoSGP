@@ -220,23 +220,27 @@ namespace SME.SGP.Aplicacao
 
                 if (frequenciaParaTratar == null)
                 {
-                    var frequenciaFinal = new FrequenciaAluno
-                             (
-                                 alunoCodigo,
-                                 turmaId,
-                                 componenteCurricularId,
-                                 registroFrequenciaAluno.PeriodoEscolarId,
-                                 registroFrequenciaAluno.PeriodoInicio,
-                                 registroFrequenciaAluno.PeriodoFim,
-                                 registroFrequenciaAluno.Bimestre,
-                                 registroFrequenciaAluno.TotalAusencias,
-                                 totalAulasNaDisciplina,
-                                 totalCompensacoes,
-                                 TipoFrequenciaAluno.PorDisciplina,
-                                 registroFrequenciaAluno.TotalRemotos,
-                                 registroFrequenciaAluno.TotalPresencas);
+                    if(registroFrequenciaAluno != null)
+                    {
+                        var frequenciaFinal = new FrequenciaAluno
+                            (
+                                alunoCodigo,
+                                turmaId,
+                                componenteCurricularId,
+                                registroFrequenciaAluno.PeriodoEscolarId,
+                                registroFrequenciaAluno.PeriodoInicio,
+                                registroFrequenciaAluno.PeriodoFim,
+                                registroFrequenciaAluno.Bimestre,
+                                registroFrequenciaAluno.TotalAusencias,
+                                totalAulasNaDisciplina,
+                                totalCompensacoes,
+                                TipoFrequenciaAluno.PorDisciplina,
+                                registroFrequenciaAluno.TotalRemotos,
+                                registroFrequenciaAluno.TotalPresencas);
 
-                    frequenciaDosAlunos.Add(frequenciaFinal);
+                        frequenciaDosAlunos.Add(frequenciaFinal);
+                    }
+                   
                 }
                 else
                 {

@@ -64,7 +64,9 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+
             ValidaDisciplinaNaAvaliacao(disciplina);
+            ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
 
@@ -206,9 +208,10 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+
             ValidaDisciplinaNaAvaliacao(disciplina);
+            ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
@@ -373,6 +376,14 @@ namespace SME.SGP.Aplicacao
             if (!disciplina.Any())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
             return disciplina.FirstOrDefault();
+        }
+
+        private void ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
+        {
+            if (dto.CategoriaId == CategoriaAtividadeAvaliativa.Interdisciplinar && dto.DisciplinasId.Count() < 2)
+            {
+                throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
+            }
         }
 
         private async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessor(string codigoRf, long disciplinaId)

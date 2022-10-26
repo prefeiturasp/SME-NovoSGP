@@ -9,22 +9,26 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQueryHandler : IRequestHandler<ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery, ConselhoClasseAluno>
     {
-        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
-        private readonly IRepositorioConselhoClasseConsulta repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasse repositorioConselhoClasse;
+        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
         private readonly IMediator mediator;
 
-        public ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQueryHandler(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno,
-                                                                                    IRepositorioConselhoClasseConsulta repositorioConselhoClasse,
-                                                                                    IMediator mediator)
+        public ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQueryHandler(
+            IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
+            IRepositorioConselhoClasse repositorioConselhoClasse,
+            IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta,
+            IMediator mediator)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.repositorioConselhoClasse = repositorioConselhoClasse ?? throw new ArgumentNullException(nameof(repositorioConselhoClasse));
+            this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ConselhoClasseAluno> Handle(ObterConselhoClasseAlunoPorConselhoFechamentoAlunoCodigoQuery request, CancellationToken cancellationToken)
         {
-            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(request.ConselhoClasseId, request.AlunoCodigo);
+            ConselhoClasseAluno conselhoClasseAluno = await repositorioConselhoClasseAlunoConsulta.ObterPorConselhoClasseAlunoCodigoAsync(request.ConselhoClasseId, request.AlunoCodigo);
             if (conselhoClasseAluno == null)
             {
                 ConselhoClasse conselhoClasse = null;

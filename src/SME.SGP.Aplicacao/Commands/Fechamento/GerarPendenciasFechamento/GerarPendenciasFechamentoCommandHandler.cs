@@ -60,6 +60,10 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
             catch (Exception)
             {
                 await mediator.Send(new AtualizarSituacaoFechamentoTurmaDisciplinaCommand(request.FechamentoTurmaDisciplinaId, SituacaoFechamento.ProcessadoComErro));
+
+                var consolidacaoTurmaProcessadoComErro = new ConsolidacaoTurmaDto(request.TurmaId, request.Bimestre);
+                var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurmaProcessadoComErro);
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, mensagemParaPublicar, Guid.NewGuid(), null));
                 throw;
             }
 
@@ -80,10 +84,6 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
 
             var ue = turma.Ue;
             var dre = turma.Ue.Dre;
-
-            var urlFrontEnd = configuration["UrlFrontEnd"];
-            if (string.IsNullOrWhiteSpace(urlFrontEnd))
-                throw new NegocioException("Url do frontend não encontrada.");
 
             var pendencias = FormatarPendenciasGeradas(servicoPendenciaFechamento.ObterDescricaoPendenciasGeradas());
 

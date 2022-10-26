@@ -14,12 +14,14 @@ namespace SME.SGP.Aplicacao
         public string AlunoCodigo { get; set; }
         public int? Bimestre { get; set; }
         public long FechamentoTurmaId { get; set; }
+        public long[] ConselhoClasseIds { get; set; }
 
-        public ObterRecomendacoesPorAlunoConselhoQuery(string alunoCodigo, int? bimestre, long fechamentoTurmaId)
+        public ObterRecomendacoesPorAlunoConselhoQuery(string alunoCodigo, int? bimestre, long fechamentoTurmaId, long[] conselhoClasseIds)
         {
             AlunoCodigo = alunoCodigo;
             Bimestre = bimestre;
             FechamentoTurmaId = fechamentoTurmaId;
+            ConselhoClasseIds = conselhoClasseIds;
         }
     }
 
