@@ -100,31 +100,31 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoEstudante));
         }
 
-        [HttpGet("{planoAEEId}/reestruturacoes")]
+        [HttpGet("{planoAeeId}/reestruturacoes")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEReestruturacaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterReestruturacoesPlanoAEE(long planoAEEId, [FromServices] IObterRestruturacoesPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterReestruturacoesPlanoAEE(long planoAeeId, [FromServices] IObterRestruturacoesPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(planoAeeId));
         }
 
-        [HttpGet("{planoAEEId}/versoes/reestruturacao/{reestruturacaoId}")]
+        [HttpGet("{planoAeeId}/versoes/reestruturacao/{reestruturacaoId}")]
         [ProducesResponseType(typeof(IEnumerable<PlanoAEEDescricaoVersaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterVersoes(long planoAEEId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
+        public async Task<IActionResult> ObterVersoes(long planoAeeId, long reestruturacaoId, [FromServices] IObterVersoesPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAEEId, reestruturacaoId)));
+            return Ok(await useCase.Executar(new FiltroVersoesPlanoAEEDto(planoAeeId, reestruturacaoId)));
         }      
 
         [HttpGet("{planoAeeId}/parecer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterParecerPlanoAEE(long planoAEEId, [FromServices] IObterParecerPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterParecerPlanoAEE(long planoAeeId, [FromServices] IObterParecerPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(planoAeeId));
         }
 
         [HttpPost("encerrar-plano")]
@@ -132,27 +132,27 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAEEId, [FromServices] IEncerrarPlanoAEEUseCase useCase)
+        public async Task<IActionResult> EncerrarPlanoAEE([FromQuery] long planoAeeId, [FromServices] IEncerrarPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId));
+            return Ok(await useCase.Executar(planoAeeId));
         }
 
         [HttpPost("{planoAeeId}/parecer/cp")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> CadastrarParecerCPPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerCPPlanoAEEUseCase useCase)
+        public async Task<IActionResult> CadastrarParecerCPPlanoAEE(long planoAeeId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerCPPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId, planoAEEParecer));
+            return Ok(await useCase.Executar(planoAeeId, planoAEEParecer));
         }
 
         [HttpPost("{planoAeeId}/parecer/paai")]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
-        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAEEId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerPAAIPlanoAEEUseCase useCase)
+        public async Task<IActionResult> CadastrarDevolutivaPAAIPlanoAEE(long planoAeeId, [FromBody] PlanoAEECadastroParecerDto planoAEEParecer, [FromServices] ICadastrarParecerPAAIPlanoAEEUseCase useCase)
         {
-            return Ok(await useCase.Executar(planoAEEId, planoAEEParecer));
+            return Ok(await useCase.Executar(planoAeeId, planoAEEParecer));
         }
 
         [HttpPost("atribuir-responsavel")]
@@ -206,5 +206,35 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(parametros.PlanoAEEId, parametros.ResponsavelRF, parametros.ResponsavelNome));
         }
+        
+        [HttpGet]
+        [Route("paai")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAI([FromQuery] string codigoDre, [FromServices] IObterPAAIPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoDre));
+        }
+        
+        [HttpGet]
+        [Route("paai-ue")]
+        [ProducesResponseType(typeof(IEnumerable<ServidorDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAIPorUe([FromQuery] string codigoUe, [FromServices] IObterPAAIPorUeUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoUe));
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_E, Policy = "Bearer")]
+        public async Task<IActionResult> Excluir(long id, [FromServices] IExcluirPlanoAEEUseCase excluirPlanoAEEUseCase)
+        {
+            return Ok(await excluirPlanoAEEUseCase.Executar(id));
+        }
+
     }
 }

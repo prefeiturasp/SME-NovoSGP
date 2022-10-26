@@ -14,12 +14,14 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IConfiguration configuration;
+        private readonly IUnitOfWork unitOfWork;
 
-        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IConfiguration configuration)
+        public AtribuirResponsavelPlanoAEECommandHandler(IMediator mediator, IRepositorioPlanoAEE repositorioPlanoAEE, IConfiguration configuration,IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(AtribuirResponsavelPlanoAEECommand request, CancellationToken cancellationToken)
@@ -35,23 +37,35 @@ namespace SME.SGP.Aplicacao
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
             planoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
-            var idEntidadePlanoAEE = await repositorioPlanoAEE.SalvarAsync(planoAEE);
-
-            await VerificaGeracaoPendenciaPAAI(planoAEE);
-
-            return idEntidadePlanoAEE != 0;
+            return await SalvarGerarPendenciaPaai(request, planoAEE);
         }
 
-        private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE)
+        private async Task<bool> SalvarGerarPendenciaPaai(AtribuirResponsavelPlanoAEECommand request, PlanoAEE planoAEE)
+        {
+            bool idEntidadeEncaminhamento = false;
+            try
+            {
+                unitOfWork.IniciarTransacao();
+
+                idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE) > 0;
+                await VerificaGeracaoPendenciaPAAI(planoAEE, request.Turma);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception ex)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+            return idEntidadeEncaminhamento;
+        }
+
+        private async Task VerificaGeracaoPendenciaPAAI(PlanoAEE planoAEE, Turma turma)
         {
             await ExcluirPendenciaCEFAI(planoAEE);
 
             if (!await ParametroGeracaoPendenciaAtivo() || await AtribuidoAoMesmoUsuario(planoAEE))
                 return;            
-
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
-            if (turma == null)
-                throw new NegocioException($"Não foi possível localizar a turma [{planoAEE.TurmaId}]");
 
             await GerarPendenciaPAAI(planoAEE, turma);
         }

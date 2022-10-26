@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -26,21 +27,27 @@ namespace SME.SGP.Aplicacao
                 var diarioBordoExistente = await repositorioDiarioBordo.ObterPorAulaId(diarioBordo.AulaId, diarioBordo.ComponenteCurricularId);
                 if (diarioBordoExistente == null)
                 {
-                    var salvarPendenciaCommand = new SalvarPendenciaCommand
+                    var professorTitular = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(diarioBordo.CodigoTurma, diarioBordo.ComponenteCurricularId.ToString()));
+
+                    var pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(diarioBordo.ComponenteCurricularId, professorTitular.ProfessorRf, diarioBordo.PeriodoEscolarId, diarioBordo.CodigoTurma));
+                    if (pendenciaId == 0)
                     {
-                        TipoPendencia = TipoPendencia.DiarioBordo,
-                        DescricaoComponenteCurricular = diarioBordo.DescricaoComponenteCurricular,
-                        TurmaAnoComModalidade = diarioBordo.RetornarTurmaComModalidade(),
-                        DescricaoUeDre = diarioBordo.NomeEscola,
-                        TurmaId = diarioBordo.TurmaId
-                    };
-                    var pendenciaId = await mediator.Send(salvarPendenciaCommand);
+                        var salvarPendenciaCommand = new SalvarPendenciaCommand
+                        {
+                            TipoPendencia = TipoPendencia.DiarioBordo,
+                            DescricaoComponenteCurricular = diarioBordo.DescricaoComponenteCurricular,
+                            TurmaAnoComModalidade = diarioBordo.RetornarTurmaComModalidade(),
+                            DescricaoUeDre = diarioBordo.NomeEscola,
+                            TurmaId = diarioBordo.TurmaId
+                        };
+                        pendenciaId = await mediator.Send(salvarPendenciaCommand);
+                    }
                     if (pendenciaId != 0)
                         await mediator.Send(new SalvarPendenciaDiarioBordoCommand()
                         {
                             AulaId = diarioBordo.AulaId,
                             PendenciaId = pendenciaId,
-                            ProfessorRf = diarioBordo.ProfessorRf,
+                            ProfessorRf = professorTitular.ProfessorRf,
                             ComponenteCurricularId = diarioBordo.ComponenteCurricularId
                         });
                 }

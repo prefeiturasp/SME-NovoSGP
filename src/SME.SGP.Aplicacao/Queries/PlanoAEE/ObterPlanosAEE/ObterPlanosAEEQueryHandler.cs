@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -17,7 +20,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IMediator mediator;
 
-        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, IConsultasAbrangencia consultasAbrangencia, IMediator mediator) : base(contextoAplicacao)
+        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, 
+                                          IConsultasAbrangencia consultasAbrangencia, IMediator mediator) : base(contextoAplicacao)
         {            
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
@@ -80,7 +84,7 @@ namespace SME.SGP.Aplicacao
                     RfReponsavel = planoAEE.RfReponsavel,
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
-                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel 
+                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
                 };
             }
         }

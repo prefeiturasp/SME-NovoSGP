@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join diario_bordo db on a.id = db.aula_id
                          where t.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularFilhoId 
-                           and not a.excluido
+                           and not a.excluido and not db.excluido
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim
                          union all
@@ -166,7 +166,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim
                            and not a.excluido
-                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoId and db.aula_id = a.id)";
+                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoId and db.aula_id = a.id and not db.excluido)";
 
             return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query,
                                                     new
