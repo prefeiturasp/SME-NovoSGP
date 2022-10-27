@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SME.SGP.Infra
@@ -18,6 +19,12 @@ namespace SME.SGP.Infra
         public long? ComponenteCurricularId { get; set; }
 
         public bool ConsideraHistorico { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public string CriadoPor { get; set; }
+        public string CriadoRf { get; set; }
+        public DateTime? AlteradoEm { get; set; }
+        public string AlteradoPor { get; set; }
+        public string AlteradoRf { get; set; }
     }
 
     public class PlanoAulaResumidoDto

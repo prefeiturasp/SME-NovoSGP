@@ -29,10 +29,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterTurmasRegularesPorUeModalidadePeriodoAnoLetivoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>), typeof(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake), ServiceLifetime.Scoped));
-
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasPorProfessorRfQuery, IEnumerable<ProfessorTurmaDto>>), typeof(ObterTurmasPorProfessorRfQueryHandlerFakeFundamental1AAno2), ServiceLifetime.Scoped));
         }
-        
-        
+
+
         [Fact(DisplayName = "Cópia de plano de aula para outra aula da mesma turma e componente curricular - Sem sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_sem_sobrescrever()
         {
