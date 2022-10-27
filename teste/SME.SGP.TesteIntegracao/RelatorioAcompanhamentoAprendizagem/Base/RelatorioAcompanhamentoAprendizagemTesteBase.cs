@@ -36,11 +36,12 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task CriarDadosBasicos()
+        protected async Task CriarDadosBasicos(bool abrirPeriodos = true)
         {
             await CriarDreUePerfil();
             await CriarComponenteCurricular();
-            await CriarPeriodoEscolarTodosBimestres();
+            if(abrirPeriodos)
+              await CriarPeriodoEscolarTodosBimestres();
             await CriarTipoCalendario(ModalidadeTipoCalendario.Infantil);
             CriarClaimUsuario(ObterPerfilProfessorInfantil());
             await CriarUsuarios();
