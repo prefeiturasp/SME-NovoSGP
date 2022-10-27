@@ -25,6 +25,11 @@ namespace SME.SGP.Dados.Repositorios
             database.Conexao.Execute("update pendencia set excluido = true where id = @pendenciaId", new { pendenciaId });
         }
 
+        public void ExclusaoLogicaPendenciaIds(long[] pendenciasIds)
+        {
+            database.Conexao.Execute("update pendencia set excluido = true where id = ANY(@pendenciasIds)", new { pendenciasIds });
+        }
+
         public void AtualizarPendencias(long fechamentoId, SituacaoPendencia situacaoPendencia, TipoPendencia tipoPendencia)
         {
             const string query = @"update pendencia p
@@ -318,8 +323,10 @@ namespace SME.SGP.Dados.Repositorios
                         break;
                     case TipoPendenciaAssunto.Pendencia:
                     default:
-                        query.Append(@" LEFT JOIN turma t ON t.id = p.turma_id      
-                                        WHERE p.id = any(@pendenciasIds) ");                        
+                        if (!string.IsNullOrEmpty(turmaCodigo))
+                            query.Append(@" INNER JOIN turma t on t.id = p.turma_id");
+
+                        query.Append(@" WHERE p.id = any(@pendenciasIds) ");
                         break;
                 }
 
@@ -418,8 +425,20 @@ namespace SME.SGP.Dados.Repositorios
                             select distinct p.id
 							from pendencia p 
                                 inner join pendencia_usuario pu on pu.pendencia_id = p.id
+                                inner join pendencia_aula pa on p.id = pa.pendencia_id
+	                            inner join aula a on pa.aula_id = a.id
+                                {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.turma_id = a.turma_id " : string.Empty)}
+                            WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is null
+                            and situacao = 1
+                            {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
+                            and p.tipo in (7,8,9,10,17,19)
+                            and not p.excluido
+                            UNION ALL
+                            select distinct p.id
+							from pendencia p 
+                                inner join pendencia_usuario pu on pu.pendencia_id = p.id
                                 {(!string.IsNullOrEmpty(turmaCodigo) ? " join turma t ON t.id = p.turma_id " : string.Empty)}
-                            WHERE pu.pendencia_id = any(@pendencias)
+                            WHERE pu.pendencia_id = any(@pendencias) and p.turma_id is not null
                             and situacao = 1
                             {(!string.IsNullOrEmpty(turmaCodigo) ? " and t.turma_id = @turmaCodigo" : string.Empty)}
                             and p.tipo in (7,8,9,10,17,19)

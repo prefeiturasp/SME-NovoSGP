@@ -838,6 +838,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid(PerfilUsuario.AD.Name())
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "4444444",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.PAAI.Name())
+                    }
+                },
             };
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }
@@ -907,7 +915,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
         {
             throw new NotImplementedException();
         }

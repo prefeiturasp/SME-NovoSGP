@@ -12,6 +12,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.AnoTurma).ToColumn("ano_turma");
             Map(c => c.AtualizadoEm).ToColumn("atualizado_em");
             Map(c => c.CodigoCompleto).ToColumn("codigo");
+            Map(c => c.Codigo).Ignore();
             Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
             Map(c => c.CriadoEm).ToColumn("criado_em");
             Map(c => c.Descricao).ToColumn("descricao");

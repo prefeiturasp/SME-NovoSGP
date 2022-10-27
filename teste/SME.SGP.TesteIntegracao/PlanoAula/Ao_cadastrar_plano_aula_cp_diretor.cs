@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaPorTurmaEConsideraHistoricoQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaPorTurmaEConsideraHistoricoQueryHandlerFakeFundamental6A), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmaQuery, AbrangenciaFiltroRetorno>), typeof(ObterAbrangenciaTurmaQueryFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Cadastro do plano de aula pelo CP")]
