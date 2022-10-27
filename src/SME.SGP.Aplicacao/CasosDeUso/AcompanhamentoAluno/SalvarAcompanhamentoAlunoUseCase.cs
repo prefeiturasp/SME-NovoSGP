@@ -35,6 +35,10 @@ namespace SME.SGP.Aplicacao
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, DateTimeExtension.HorarioBrasilia().Year));
+            if (aluno == null)
+                throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
+            
             if (acompanhamentoAlunoDto.TextoSugerido)
                 await CopiarArquivo(acompanhamentoAlunoDto);
 

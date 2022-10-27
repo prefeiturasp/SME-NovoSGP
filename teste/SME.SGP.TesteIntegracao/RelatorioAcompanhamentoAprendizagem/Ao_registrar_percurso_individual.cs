@@ -51,6 +51,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
 
+        
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 2º semestre")]
         public async Task Deve_registrar_percurso_individual_para_segundo_semestre()
         {
@@ -85,6 +86,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
+        
         
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual  no período de fechamento (após o término do bimestre)")]
         public async Task Deve_registrar_o_percurso_individual_em_periodo_fechamento_pos_termino_bimestre()
@@ -124,6 +126,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
         
+        
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual fora do período de fechamento (após o término do bimestre)")]
         public async Task Nao_deve_registrar_o_percurso_individual_fora_periodo_fechamento_pos_termino_bimestre()
         {
@@ -146,6 +149,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
         }
         
+        
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual sem período de fechamento (após o término do bimestre)")]
         public async Task Nao_deve_registrar_o_percurso_individual_sem_periodo_fechamento_pos_termino_bimestre()
         {
@@ -165,6 +169,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
         }
+        
         
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Registrar o percurso individual  para semestre e ano anterior com reabertura")]
         public async Task Deve_registrar_o_percurso_individual_para_semestre_ano_anterior_com_reabertura()
@@ -205,6 +210,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
+        
+        
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual  para semestre e ano anterior sem reabertura")]
         public async Task Nao_deve_registrar_o_percurso_individual_para_semestre_ano_anterior_sem_reabertura()
         {
@@ -219,6 +226,26 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
                 Semestre = 2, 
+                TextoSugerido = true,
+                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
+                AlunoCodigo = ALUNO_CODIGO_1
+            };
+            
+            await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
+        }
+        
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual no 1º semestre para criança inativa")]
+        public async Task Nao_deve_registrar_o_percurso_individual_para_primeiro_semestre_para_crianca_inativa()
+        {
+            await CriarDadosBasicos(abrirPeriodos:false);
+            
+            await CriarPeriodoEscolarCustomizadoSegundoBimestre();
+            
+            var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
+                
+            var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
+                TurmaId = TURMA_ID_1, 
+                Semestre = 1, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
