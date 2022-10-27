@@ -3,7 +3,9 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Dominio;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,9 +17,23 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
         {
+            if (ExcedeuLimiteDeQuantidadeDeImagensPermitidas(dto.ApanhadoGeral))
+                throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
+            
             var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
 
             return acompanhamentoTurma;
+        }
+        private async Task<bool> TurmaEmPeridoAberto(Turma turma)
+        {
+            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today,turma));
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAtual, true));
+        }
+
+        private bool ExcedeuLimiteDeQuantidadeDeImagensPermitidas(string dtoApanhadoGeral)
+        {
+            var quantidade = dtoApanhadoGeral.Split().Count(x => x.Contains("src="));
+            return quantidade > 2;
         }
 
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
@@ -57,7 +73,11 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
             if (turma == null)
-                throw new NegocioException("Turma não encontrada");
+                throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
+
+            var periodAberto = await TurmaEmPeridoAberto(turma);
+            if (!periodAberto)
+                throw new NegocioException(MensagemAcompanhamentoTurma.PERIODO_NAO_ESTA_ABERTO);
 
             await MoverRemoverExcluidos(dto, new AcompanhamentoTurma() { ApanhadoGeral = string.Empty });
             return await mediator.Send(new GerarAcompanhamentoTurmaCommand(turma.Id, dto.Semestre, dto.ApanhadoGeral));
