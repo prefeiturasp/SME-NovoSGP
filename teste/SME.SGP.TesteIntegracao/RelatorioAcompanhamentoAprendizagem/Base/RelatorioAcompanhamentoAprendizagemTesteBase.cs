@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
@@ -20,6 +21,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_NOME = "QuantidadeImagensPercursoIndividualCrianca";
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_DESCRICAO = "Quantidade de Imagens permitiras no percurso individual da criança";
         private const string PARAMETRO_QUANTIDADE_IMAGENS_PERCURSO_INDIVIDUAL_CRIANCA_VALOR = "3";
+
+        protected const string TEXTO_PADRAO_APANHADO_GERAL = "<html><body>teste</body><html/>";
+        protected const string TEXTO_PADRAO_PERCURSO_INDIVIDUAL = "<html><body>Texto padrão do percurso individual</body><html/>";
 
         public RelatorioAcompanhamentoAprendizagemTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -97,6 +101,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Ativo = true
             });            
-        }        
+        }  
+        
+        protected ISalvarAcompanhamentoAlunoUseCase ObterServicoSalvarAcompanhamentoAlunoUseCase()
+        {
+            return ServiceProvider.GetService<ISalvarAcompanhamentoAlunoUseCase>();
+        }
     }
 }
