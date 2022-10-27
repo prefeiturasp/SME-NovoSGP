@@ -38,10 +38,10 @@ namespace SME.SGP.Aplicacao
             
             planoAee.ResponsavelPaaiId = null;
 
+            var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAee.Id));
+            
             try
             {
-                var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAee.Id));
-                
                 unitOfWork.IniciarTransacao();
 
                 await repositorioPlanoAee.SalvarAsync(planoAee);
