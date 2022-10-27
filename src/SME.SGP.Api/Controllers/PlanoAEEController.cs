@@ -226,5 +226,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await excluirPlanoAEEUseCase.Executar(id));
         }
 
+        [HttpPost("remover-responsavel/{planoAeeId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> RemoverAtribuicaoResponsavelPlanoAee(long planoAeeId, [FromServices] IRemoverResponsavelPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAeeId));
+        }
     }
 }

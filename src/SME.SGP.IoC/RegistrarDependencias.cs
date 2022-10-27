@@ -1015,6 +1015,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IDevolverPlanoAEEUseCase, DevolverPlanoAEEUseCase>();
             services.TryAddScoped<IAtribuirResponsavelGeralDoPlanoUseCase, AtribuirResponsavelGeralDoPlanoUseCase>();
             services.TryAddScoped<IExcluirPlanoAEEUseCase, ExcluirPlanoAEEUseCase>();
+            services.TryAddScoped<IRemoverResponsavelPlanoAEEUseCase, RemoverResponsavelPlanoAEEUseCase>();
 
             //Notificacoes EncaminhamentoAEE
             services.TryAddScoped<IObterInformacoesDeFrequenciaAlunoPorSemestreUseCase, ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase>();
