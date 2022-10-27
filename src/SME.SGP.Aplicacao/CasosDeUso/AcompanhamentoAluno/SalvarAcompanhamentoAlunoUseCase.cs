@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        private const int QUANTIDADE_IMAGENS_PERMITIDAS_2 = 2;
         public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -22,6 +23,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
+            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
+            
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(acompanhamentoAlunoDto.TurmaId.ToString()));
             
             if (turma == null)
@@ -34,6 +38,13 @@ namespace SME.SGP.Aplicacao
             
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+            
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, dataAtual.Year, true,false, acompanhamentoAlunoDto.TurmaId.ToString()));
+            if (aluno == null)
+                throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
+            
+            if (aluno.EstaInativo(dataAtual))
+                throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_INATIVO);
             
             if (acompanhamentoAlunoDto.TextoSugerido)
                 await CopiarArquivo(acompanhamentoAlunoDto);
