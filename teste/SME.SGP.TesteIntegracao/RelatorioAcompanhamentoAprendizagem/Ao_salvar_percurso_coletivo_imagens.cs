@@ -20,7 +20,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         public async Task Registrar_percurso_coletivo_para_semestre_e_ano_anterior_sem_reabertura()
         {
             await CriarDadosBasicos(abrirPeriodos:false);
-            var useCase = SalvarAcompanhamentoTurmaUseCase();
+            var useCase = ObterSalvarAcompanhamentoUseCase();
             
             var dto = new AcompanhamentoTurmaDto
             {
@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         public async Task Registrar_o_percurso_coletivo_inserindo_duas_imagens()
         {
             await CriarDadosBasicos();
-            var useCase = SalvarAcompanhamentoTurmaUseCase();
+            var useCase = ObterSalvarAcompanhamentoUseCase();
             
             var dto = new AcompanhamentoTurmaDto
             {
@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         public async Task Registrar_o_percurso_coletivo_inserindo_mais_de_duas_imagens()
         {
             await CriarDadosBasicos();
-            var useCase = SalvarAcompanhamentoTurmaUseCase();
+            var useCase = ObterSalvarAcompanhamentoUseCase();
             
             var dto = new AcompanhamentoTurmaDto
             {
@@ -82,11 +82,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var obterTodos = ObterTodos<AcompanhamentoTurma>();
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(0);
-        }
-
-        private ISalvarAcompanhamentoTurmaUseCase SalvarAcompanhamentoTurmaUseCase()
-        {
-            return ServiceProvider.GetService<ISalvarAcompanhamentoTurmaUseCase>();
         }
     }
 }
