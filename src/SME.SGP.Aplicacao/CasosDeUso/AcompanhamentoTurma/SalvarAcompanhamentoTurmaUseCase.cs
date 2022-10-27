@@ -14,14 +14,15 @@ namespace SME.SGP.Aplicacao
         private const int PRIMEIRO_SEMESTRE = 1;
         private const int SEGUNDO_BIMESTRE = 2;
         private const int QUARTO_BIMESTRE = 4;
+        private const int QUANTIDADE_IMAGENS_PERMITIDAS_2 = 2;
         public SalvarAcompanhamentoTurmaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
         {
-            if (dto.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(2))
-                throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
+            if (dto.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
             
             var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
 

@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        private const int QUANTIDADE_IMAGENS_PERMITIDAS_2 = 2;
         public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -22,8 +23,8 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(MensagemNegocioComuns.QUANTIDADE_IMAGENS_PERMITIDAS_2))
-                throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
+            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(acompanhamentoAlunoDto.TurmaId.ToString()));
             
