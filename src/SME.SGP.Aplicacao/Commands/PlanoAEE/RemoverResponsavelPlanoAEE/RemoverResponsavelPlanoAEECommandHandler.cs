@@ -47,11 +47,11 @@ namespace SME.SGP.Aplicacao
             
             try
             {
+                var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(idEntidadePlanoAee));
+                
                 unitOfWork.IniciarTransacao();
 
                 idEntidadePlanoAee = await repositorioPlanoAee.SalvarAsync(planoAee);
-
-                var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(idEntidadePlanoAee));
                
                 if (pendenciaPlanoAEE != null)
                    await mediator.Send(new ExcluirPendenciaPlanoAEECommand(pendenciaPlanoAEE.Id));
