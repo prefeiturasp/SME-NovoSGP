@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(2))
+            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(MensagemNegocioComuns.QUANTIDADE_IMAGENS_PERMITIDAS_2))
                 throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
             
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(acompanhamentoAlunoDto.TurmaId.ToString()));
