@@ -20,7 +20,5 @@ namespace SME.SGP.Dominio.Enumerados
         Expirado = 8,
         [Display(Name = "Devolvido")]
         Devolvido = 9,
-        [Display(Name = "Aguardando atribuição de responsável")]
-        AtribuicaoResponsavel = 10,
     }
 }

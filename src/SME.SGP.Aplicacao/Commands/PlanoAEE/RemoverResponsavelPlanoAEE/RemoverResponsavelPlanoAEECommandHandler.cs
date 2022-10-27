@@ -34,30 +34,23 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
-            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI));
-
-            if(funcionarioPAAI != null && funcionarioPAAI.Any())
-                planoAee.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
-            else
-                planoAee.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoResponsavel;
-
+            planoAee.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
+            
             planoAee.ResponsavelPaaiId = null;
 
-            long idEntidadePlanoAee = 0;
-            
             try
             {
-                var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(idEntidadePlanoAee));
+                var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAee.Id));
                 
                 unitOfWork.IniciarTransacao();
 
-                idEntidadePlanoAee = await repositorioPlanoAee.SalvarAsync(planoAee);
+                await repositorioPlanoAee.SalvarAsync(planoAee);
                
                 if (pendenciaPlanoAEE != null)
                    await mediator.Send(new ExcluirPendenciaPlanoAEECommand(pendenciaPlanoAEE.Id));
                 
                 if (await ParametroGeracaoPendenciaAtivo())
-                    await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(idEntidadePlanoAee));
+                    await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id));
                 
                 unitOfWork.PersistirTransacao();
             }
@@ -67,7 +60,7 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
 
-            return idEntidadePlanoAee != 0;
+            return planoAee.Id != 0;
         }
         
         private async Task<bool> ParametroGeracaoPendenciaAtivo()
