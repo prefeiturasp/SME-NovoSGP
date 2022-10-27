@@ -40,10 +40,10 @@ namespace SME.SGP.Aplicacao
 
             var pendenciaPlanoAEE = await mediator.Send(new ObterUltimaPendenciaPlanoAEEQuery(planoAee.Id));
             
+            unitOfWork.IniciarTransacao();
+            
             try
             {
-                unitOfWork.IniciarTransacao();
-
                 await repositorioPlanoAee.SalvarAsync(planoAee);
                
                 if (pendenciaPlanoAEE != null)
