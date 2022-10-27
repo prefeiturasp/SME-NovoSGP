@@ -29,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new AlunoPorTurmaResposta
                 {
                     Ano=0,
-                    CodigoAluno = 1,
+                    CodigoAluno = "1",
                     CodigoComponenteCurricular= 0,
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                     CodigoTurma=int.Parse(turmaId),

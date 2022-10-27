@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
         {
-            if (ExcedeuLimiteDeQuantidadeDeImagensPermitidas(dto.ApanhadoGeral))
+            if (dto.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(2))
                 throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
             
             var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
@@ -31,12 +31,6 @@ namespace SME.SGP.Aplicacao
         {
             var bimestre = semestre == PRIMEIRO_SEMESTRE ? SEGUNDO_BIMESTRE : QUARTO_BIMESTRE;
             return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, true));
-        }
-
-        private bool ExcedeuLimiteDeQuantidadeDeImagensPermitidas(string dtoApanhadoGeral)
-        {
-            var quantidade = dtoApanhadoGeral.Split().Count(x => x.Contains("src="));
-            return quantidade > 2;
         }
 
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)

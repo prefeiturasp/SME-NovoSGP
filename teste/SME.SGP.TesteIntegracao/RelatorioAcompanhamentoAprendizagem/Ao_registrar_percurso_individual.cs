@@ -234,12 +234,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
         }
         
-        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual no 1º semestre para criança inativa")]
-        public async Task Nao_deve_registrar_o_percurso_individual_para_primeiro_semestre_para_crianca_inativa()
+       
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual no 1º semestre com 3 imagens")]
+        public async Task Nao_deve_registrar_o_percurso_individual_para_primeiro_semestre_com_tres_imagens()
         {
             await CriarDadosBasicos(abrirPeriodos:false);
             
-            await CriarPeriodoEscolarCustomizadoSegundoBimestre();
+            await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
             
             var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
                 
@@ -247,11 +248,47 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 TurmaId = TURMA_ID_1, 
                 Semestre = 1, 
                 TextoSugerido = true,
-                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
+                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_3_IMAGENS,
                 AlunoCodigo = ALUNO_CODIGO_1
             };
             
             await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
+        }
+        
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 1º semestre com 2 imagens")]
+        public async Task Deve_registrar_o_percurso_individual_para_primeiro_semestre_com_duas_imagens()
+        {
+            await CriarDadosBasicos(abrirPeriodos:false);
+            
+            await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
+            
+            var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
+                
+            var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
+                TurmaId = TURMA_ID_1, 
+                Semestre = 1, 
+                TextoSugerido = true,
+                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_2_IMAGENS,
+                AlunoCodigo = ALUNO_CODIGO_1
+            };
+            
+            var retorno = await salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto);
+            retorno.ShouldNotBeNull();
+            retorno.AcompanhamentoAlunoId.ShouldBe(1);
+            retorno.AcompanhamentoAlunoSemestreId.ShouldBe(1);
+            retorno.Auditoria.ShouldNotBeNull();
+            retorno.Auditoria.Id.ShouldBe(1);
+            
+            var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
+            acompanhamentoAluno.ShouldNotBeNull();
+            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            
+            var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
+            acompanhamentoAlunoSemestres.ShouldNotBeNull();
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(1);
+            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_2_IMAGENS);
+            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
     }
 }
