@@ -618,10 +618,16 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || (!buscarPorTodasDre && (string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))))
                 throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
 
-            var paramUeId = !string.IsNullOrWhiteSpace(ueId) ? $"ueId={ueId}&" : string.Empty;
-            var paramDreId = !string.IsNullOrWhiteSpace(dreId) ? $"dreId={dreId}&" : string.Empty;
+            string paramUeId = string.Empty, paramDreId = string.Empty;
 
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={buscarOutrosCargos}");
+            if (!buscarPorTodasDre)
+            {
+                paramUeId = !string.IsNullOrWhiteSpace(ueId) ? $"ueId={ueId}&" : string.Empty;
+                paramDreId = !string.IsNullOrWhiteSpace(dreId) ? $"dreId={dreId}&" : string.Empty;
+            }            
+
+            var resposta = await httpClient
+                .GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
