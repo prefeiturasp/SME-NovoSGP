@@ -121,8 +121,21 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
+        
+        protected async Task CriarPeriodoEscolarCustomizadoSegundoBimestre(bool periodoValido = false)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
-        protected async Task CriarPeriodoAberturaCustomizadoQuartoBimestre(bool periodoEscolarValido = true)
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_1, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-35), periodoValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_2, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(10), dataReferencia.AddDays(85), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(95), dataReferencia.AddDays(170), BIMESTRE_4, TIPO_CALENDARIO_1);
+        }
+
+        protected async Task CriarPeriodoAberturaCustomizadoQuartoBimestre(bool periodoValido = true)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
@@ -165,8 +178,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             {
                 PeriodoEscolarId = PERIODO_ESCOLAR_CODIGO_4,
                 PeriodoFechamentoId = 1,
-                InicioDoFechamento = periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5),
-                FinalDoFechamento = periodoEscolarValido ? dataReferencia.AddDays(4) : dataReferencia.AddDays(-2)
+                InicioDoFechamento = periodoValido ? dataReferencia : dataReferencia.AddDays(-5),
+                FinalDoFechamento = periodoValido ? dataReferencia.AddDays(4) : dataReferencia.AddDays(-2)
             });
         }
     }

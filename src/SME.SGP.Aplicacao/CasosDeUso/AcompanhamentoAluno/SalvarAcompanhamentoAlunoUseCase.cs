@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -19,12 +20,25 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto dto)
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            if (dto.TextoSugerido)
-                await CopiarArquivo(dto);
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(acompanhamentoAlunoDto.TurmaId.ToString()));
+            
+            if (turma == null)
+                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
+            
+            var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
 
-            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, bimestre,turma.AnoLetivo == dataAtual.Year));
+            
+            if (!temPeriodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+            
+            if (acompanhamentoAlunoDto.TextoSugerido)
+                await CopiarArquivo(acompanhamentoAlunoDto);
+
+            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(acompanhamentoAlunoDto);
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
         }
