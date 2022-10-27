@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
-                TurmaId = 1, 
+                TurmaId = TURMA_ID_1, 
                 Semestre = 1, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
@@ -31,15 +31,15 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var retorno = await salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto);
             retorno.ShouldNotBeNull();
-            retorno.AcompanhamentoAlunoId.ShouldBeGreaterThanOrEqualTo(1);
-            retorno.AcompanhamentoAlunoSemestreId.ShouldBeGreaterThanOrEqualTo(1);
+            retorno.AcompanhamentoAlunoId.ShouldBe(1);
+            retorno.AcompanhamentoAlunoSemestreId.ShouldBe(1);
             retorno.Auditoria.ShouldNotBeNull();
-            retorno.Auditoria.Id.ShouldBeGreaterThanOrEqualTo(1);
+            retorno.Auditoria.Id.ShouldBe(1);
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe("1");
+            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
@@ -48,54 +48,71 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
 
-        // [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 2º semestre")]
-        // public async Task Deve_registrar_percurso_individual_para_segundo_semestre()
-        // {
-        //     await CriarDadosBasicos();
-        //     var useCase = SalvarAcompanhamentoTurmaUseCase();
-        //     
-        //     var dto = new AcompanhamentoTurmaDto
-        //     {
-        //         TurmaId = 1,
-        //         Semestre = 1,
-        //         ApanhadoGeral = @"<html><body>
-        //                                 teste
-        //                             <img src='http://www.localhost.com.br/imagem.png'>
-        //                             <img src='http://www.localhost.com.br/imagem.png'>
-        //                             </body><html/>"
-        //     };
-        //     var salvar = await useCase.Executar(dto);
-        //     salvar.Id.ShouldBeEquivalentTo((long)1);
-        //     
-        //     var obterTodos = ObterTodos<AcompanhamentoTurma>();
-        //     obterTodos.ShouldNotBeNull();
-        //     obterTodos.Count.ShouldBeEquivalentTo(1);
-        // }
-        //
-        // [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual  no período de fechamento (após o término do bimestre)")]
-        // public async Task Deve_registrar_o_percurso_individual_em_periodo_fechamento_pos_termino_bimestre()
-        // {
-        //     await CriarDadosBasicos();
-        //     var useCase = SalvarAcompanhamentoTurmaUseCase();
-        //     
-        //     var dto = new AcompanhamentoTurmaDto
-        //     {
-        //         TurmaId = 1,
-        //         Semestre = 1,
-        //         ApanhadoGeral = $@"<html><body>
-        //                                  teste
-        //                             <img src='http://www.localhost.com.br/imagem.png'>
-        //                             <img src='http://www.localhost.com.br/imagem.png'>
-        //                             <img src='http://www.localhost.com.br/imagem.png'>
-        //                           <body/><html/>"
-        //     };
-        //     var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-        //     ex.ShouldNotBeNull();
-        //     
-        //     var obterTodos = ObterTodos<AcompanhamentoTurma>();
-        //     obterTodos.ShouldNotBeNull();
-        //     obterTodos.Count.ShouldBeEquivalentTo(0);
-        // }
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 2º semestre")]
+        public async Task Deve_registrar_percurso_individual_para_segundo_semestre()
+        {
+            await CriarDadosBasicos(abrirPeriodos:false);
+            var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
+                
+            var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
+                TurmaId = TURMA_ID_1, 
+                Semestre = 2, 
+                TextoSugerido = true,
+                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
+                AlunoCodigo = ALUNO_CODIGO_1
+            };
+            
+            var retorno = await salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto);
+            retorno.ShouldNotBeNull();
+            retorno.AcompanhamentoAlunoId.ShouldBe(1);
+            retorno.AcompanhamentoAlunoSemestreId.ShouldBe(1);
+            retorno.Auditoria.ShouldNotBeNull();
+            retorno.Auditoria.Id.ShouldBe(1);
+            
+            var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
+            acompanhamentoAluno.ShouldNotBeNull();
+            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            
+            var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
+            acompanhamentoAlunoSemestres.ShouldNotBeNull();
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(2);
+            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+        }
+        
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual  no período de fechamento (após o término do bimestre)")]
+        public async Task Deve_registrar_o_percurso_individual_em_periodo_fechamento_pos_termino_bimestre()
+        {
+            await CriarDadosBasicos(abrirPeriodos:false);
+            var salvarAcompanhamentoAlunoUseCase = ObterServicoSalvarAcompanhamentoAlunoUseCase();
+                
+            var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
+                TurmaId = TURMA_ID_1, 
+                Semestre = 2, 
+                TextoSugerido = true,
+                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
+                AlunoCodigo = ALUNO_CODIGO_1
+            };
+            
+            var retorno = await salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto);
+            retorno.ShouldNotBeNull();
+            retorno.AcompanhamentoAlunoId.ShouldBe(1);
+            retorno.AcompanhamentoAlunoSemestreId.ShouldBe(1);
+            retorno.Auditoria.ShouldNotBeNull();
+            retorno.Auditoria.Id.ShouldBe(1);
+            
+            var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
+            acompanhamentoAluno.ShouldNotBeNull();
+            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            
+            var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
+            acompanhamentoAlunoSemestres.ShouldNotBeNull();
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(2);
+            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+        }
         //
         // [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Registrar o percurso individual  para semestre e ano anterior com reabertura")]
         // public async Task Deve_registrar_o_percurso_individual_para_semestre_ano_anterior_com_reabertura()
