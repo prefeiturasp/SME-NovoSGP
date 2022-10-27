@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
+using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.ServicosFakes;
@@ -34,6 +35,10 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+        }
+        protected ISalvarAcompanhamentoTurmaUseCase SalvarAcompanhamentoTurmaUseCase()
+        {
+            return ServiceProvider.GetService<ISalvarAcompanhamentoTurmaUseCase>();
         }
 
         protected async Task CriarDadosBasicos(bool abrirPeriodos = true)

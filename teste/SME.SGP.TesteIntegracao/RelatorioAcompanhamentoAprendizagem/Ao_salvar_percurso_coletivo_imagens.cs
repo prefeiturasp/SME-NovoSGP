@@ -83,10 +83,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(0);
         }
-
-        private ISalvarAcompanhamentoTurmaUseCase SalvarAcompanhamentoTurmaUseCase()
-        {
-            return ServiceProvider.GetService<ISalvarAcompanhamentoTurmaUseCase>();
-        }
+        
     }
 }
