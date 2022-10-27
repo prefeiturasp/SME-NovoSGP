@@ -9,15 +9,16 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 {
-    public class Ao_registrar_percurso_individual_nao_permitir : RelatorioAcompanhamentoAprendizagemTesteBase
+    public class Ao_registrar_percurso_individual_nao_permitir_crianca_nova : RelatorioAcompanhamentoAprendizagemTesteBase
     {
-        public Ao_registrar_percurso_individual_nao_permitir(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_registrar_percurso_individual_nao_permitir_crianca_nova(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
         protected override void RegistrarFakes(IServiceCollection services)
@@ -25,11 +26,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             base.RegistrarFakes(services);
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
-                typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake), ServiceLifetime.Scoped));
+                typeof(ObterAlunoPorCodigoEolQueryHandlerCriancaNovaFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual no 1º semestre para criança inativa")]
-        public async Task Nao_deve_registrar_o_percurso_individual_para_primeiro_semestre_para_crianca_inativa()
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Não deve registrar o percurso individual no 1º semestre para criança nova (DataSituacao após o fim do 1º semestre)")]
+        public async Task Nao_deve_registrar_o_percurso_individual_para_primeiro_semestre_para_crianca_nova()
         {
             await CriarDadosBasicos(abrirPeriodos:false);
             
@@ -42,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 Semestre = 1, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
-                AlunoCodigo = "77777"
+                AlunoCodigo = CODIGO_ALUNO_1
             };
             
             await Assert.ThrowsAsync<NegocioException>(() => salvarAcompanhamentoAlunoUseCase.Executar(acompanhamentoAlunoDto));
