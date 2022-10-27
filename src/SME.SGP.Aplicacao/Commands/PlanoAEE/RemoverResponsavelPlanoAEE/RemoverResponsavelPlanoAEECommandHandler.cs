@@ -47,10 +47,12 @@ namespace SME.SGP.Aplicacao
                 await repositorioPlanoAee.SalvarAsync(planoAee);
                
                 if (pendenciaPlanoAEE != null)
-                   await mediator.Send(new ExcluirPendenciaPlanoAEECommand(pendenciaPlanoAEE.Id));
+                   await mediator.Send(new ExcluirPendenciaPlanoAEECommand(planoAee.Id));
                 
                 if (await ParametroGeracaoPendenciaAtivo())
-                    await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id));
+                    await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoAee.Id, PerfilUsuario.CEFAI));
+                
+                unitOfWork.Rollback();
                 
                 unitOfWork.PersistirTransacao();
             }
