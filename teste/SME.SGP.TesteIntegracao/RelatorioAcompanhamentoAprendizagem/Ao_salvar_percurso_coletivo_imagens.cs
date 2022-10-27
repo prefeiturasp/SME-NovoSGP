@@ -16,7 +16,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         }
 
 
-        [Fact(DisplayName = "Registrar o percurso coletivo para semestre e ano anterior sem reabertura (não deve permitir)")]
+        [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Não Deve Registrar o percurso coletivo para semestre e ano anterior sem reabertura")]
         public async Task Registrar_percurso_coletivo_para_semestre_e_ano_anterior_sem_reabertura()
         {
             await CriarDadosBasicos(abrirPeriodos:false);
@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             obterTodos.Count.ShouldBeEquivalentTo(0);
         }
 
-        [Fact(DisplayName = "Registrar o percurso coletivo inserindo duas imagens (Deve permitir)")]
+        [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Deve Registrar o percurso coletivo inserindo duas imagens")]
         public async Task Registrar_o_percurso_coletivo_inserindo_duas_imagens()
         {
             await CriarDadosBasicos();
@@ -59,7 +59,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             obterTodos.ShouldNotBeNull();
             obterTodos.Count.ShouldBeEquivalentTo(1);
         }
-        [Fact(DisplayName = "Registrar o percurso coletivo inserindo mais de duas imagens (Não deve permitir)")]
+        [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Não deve Registrar o percurso coletivo inserindo mais de duas imagens")]
         public async Task Registrar_o_percurso_coletivo_inserindo_mais_de_duas_imagens()
         {
             await CriarDadosBasicos();
