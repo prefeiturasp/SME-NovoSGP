@@ -11,6 +11,9 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAcompanhamentoTurmaUseCase : AbstractUseCase, ISalvarAcompanhamentoTurmaUseCase
     {
+        private const int PRIMEIRO_SEMESTRE = 1;
+        private const int SEGUNDO_BIMESTRE = 2;
+        private const int QUARTO_BIMESTRE = 4;
         public SalvarAcompanhamentoTurmaUseCase(IMediator mediator) : base(mediator)
         {
         }
@@ -24,10 +27,10 @@ namespace SME.SGP.Aplicacao
 
             return acompanhamentoTurma;
         }
-        private async Task<bool> TurmaEmPeridoAberto(Turma turma)
+        private async Task<bool> TurmaEmPeridoAberto(Turma turma, int semestre)
         {
-            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today,turma));
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAtual, true));
+            var bimestre = semestre == PRIMEIRO_SEMESTRE ? SEGUNDO_BIMESTRE : QUARTO_BIMESTRE;
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, true));
         }
 
         private bool ExcedeuLimiteDeQuantidadeDeImagensPermitidas(string dtoApanhadoGeral)
@@ -75,7 +78,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
 
-            var periodAberto = await TurmaEmPeridoAberto(turma);
+            var periodAberto = await TurmaEmPeridoAberto(turma, dto.Semestre);
             if (!periodAberto)
                 throw new NegocioException(MensagemAcompanhamentoTurma.PERIODO_NAO_ESTA_ABERTO);
 
