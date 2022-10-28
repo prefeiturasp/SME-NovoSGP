@@ -26,18 +26,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(AtribuirResponsavelPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
+            request.PlanoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
+            request.PlanoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
 
-            if (planoAEE == null)
-                throw new NegocioException("O Plano AEE informado não foi encontrado");
-
-            if (planoAEE.Situacao == Dominio.Enumerados.SituacaoPlanoAEE.Encerrado)
-                throw new NegocioException("A situação do Plano AEE não permite a remoção do responsável");
-
-            planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.ParecerPAAI;
-            planoAEE.ResponsavelPaaiId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(request.ResponsavelRF));
-
-            return await SalvarGerarPendenciaPaai(request, planoAEE);
+            return await SalvarGerarPendenciaPaai(request, request.PlanoAEE);
         }
 
         private async Task<bool> SalvarGerarPendenciaPaai(AtribuirResponsavelPlanoAEECommand request, PlanoAEE planoAEE)

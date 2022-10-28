@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao.Commands
             var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
             var idEntidadeEncaminhamento = funcionarioPAAI != null && funcionarioPAAI.Count() == 1
-            ? await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE.Id, funcionarioPAAI.FirstOrDefault().CodigoRf, turma))
+            ? await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf, turma))
             : await ExcluirPendenciaCPsGerarPendenciaCEFAI(planoAEE);
 
             return idEntidadeEncaminhamento;
