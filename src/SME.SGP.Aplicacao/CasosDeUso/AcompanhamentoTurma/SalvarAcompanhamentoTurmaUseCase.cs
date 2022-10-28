@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> TurmaEmPeridoAberto(Turma turma, int semestre)
         {
             var bimestre = semestre == PRIMEIRO_SEMESTRE ? SEGUNDO_BIMESTRE : QUARTO_BIMESTRE;
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, true));
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, bimestre, true));
         }
 
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)

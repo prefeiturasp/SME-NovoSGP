@@ -130,7 +130,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 Descricao = "Descricao Da Ocorrencia",
                 Excluido = false,
                 CriadoPor = "Sistema",
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoRF = "1"
             });
         }
@@ -213,7 +213,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
             await InserirNaBase(new PeriodoFechamento()
-            { CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
+            { CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF });
 
             await InserirNaBase(new PeriodoFechamentoBimestre()
             {
