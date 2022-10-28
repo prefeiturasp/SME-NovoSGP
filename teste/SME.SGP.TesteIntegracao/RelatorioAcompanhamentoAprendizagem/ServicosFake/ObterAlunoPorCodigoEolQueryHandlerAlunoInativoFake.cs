@@ -16,9 +16,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
         private const string ALUNO_DESISTENTE_CODIGO_77777 = "77777";
         private const string ALUNO_DESISTENTE_NOME_77777 = "ALUNO INATIVO 77777";
         private const string DESISTENTE = "Desistente";
-        private const string ALUNO_DESISTENTE_RESPONSAVEL_77777 = "RESPONSAVEL DO ALUNO DESISTENTE 77777";
-        private const string TIPO_RESPONSAVEL_4 = "4";
-        private const string CELULAR_11111111111 = "11111111111";
 
         public async Task<AlunoPorTurmaResposta> Handle(ObterAlunoPorCodigoEolQuery request, CancellationToken cancellationToken)
         {
@@ -33,30 +30,17 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
             var dataReferencia = DateTimeExtension.HorarioBrasilia().Date;
 
             return new List<AlunoPorTurmaResposta> {
-                new AlunoPorTurmaResposta
+                new()
                 {
-                    Ano=0,
                     CodigoAluno = ALUNO_DESISTENTE_CODIGO_77777,
-                    CodigoComponenteCurricular= 0,
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                     CodigoTurma=int.Parse(turmaId),
                     DataNascimento=new DateTime(dataReferencia.AddYears(-15).Year,01,16,00,00,00),
                     DataSituacao= new DateTime(dataReferencia.AddYears(-1).Year,11,09,17,25,31),
                     DataMatricula= new DateTime(dataReferencia.AddYears(-1).Year,11,09,17,25,31),
-                    EscolaTransferencia=null,
                     NomeAluno= ALUNO_DESISTENTE_NOME_77777,
-                    NomeSocialAluno=null,
                     NumeroAlunoChamada=1,
-                    ParecerConclusivo=null,
-                    PossuiDeficiencia=false,
                     SituacaoMatricula=DESISTENTE,
-                    Transferencia_Interna=false,
-                    TurmaEscola=null,
-                    TurmaRemanejamento=null,
-                    TurmaTransferencia=null,
-                    NomeResponsavel=ALUNO_DESISTENTE_RESPONSAVEL_77777,
-                    TipoResponsavel=TIPO_RESPONSAVEL_4,
-                    CelularResponsavel= CELULAR_11111111111,
                     DataAtualizacaoContato= new DateTime(dataReferencia.AddYears(-1).Year,06,22,19,02,35),
                 }
             };

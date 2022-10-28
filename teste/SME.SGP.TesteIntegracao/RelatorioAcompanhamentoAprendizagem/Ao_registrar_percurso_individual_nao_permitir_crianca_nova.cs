@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 1, 
+                Semestre = PRIMEIRO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = CODIGO_ALUNO_1

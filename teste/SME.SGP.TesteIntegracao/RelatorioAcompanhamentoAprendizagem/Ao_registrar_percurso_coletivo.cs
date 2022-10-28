@@ -11,7 +11,6 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 {
     public class Ao_registrar_percurso_coletivo : RelatorioAcompanhamentoAprendizagemTesteBase
     {
-        private const int SEGUNDO_SEMESTRE = 2;
         public Ao_registrar_percurso_coletivo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }

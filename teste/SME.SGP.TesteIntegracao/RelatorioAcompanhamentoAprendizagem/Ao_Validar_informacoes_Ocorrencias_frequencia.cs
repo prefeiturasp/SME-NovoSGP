@@ -18,6 +18,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
 {
     public class Ao_Validar_informacoes_Ocorrencias_frequencia :  RelatorioAcompanhamentoAprendizagemTesteBase
     {
+        private const string OCORRENCIA = "Ocorrencia";
+        private const int OCORRENCIA_TIPO_INCIDENTE = 1;
+        private const string TITULO_OCORRENCIA = "Titulo da Ocorrencia";
+        private const string HORARIO_OCORRENCIA = "17:37";
+        
         public Ao_Validar_informacoes_Ocorrencias_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -53,12 +58,12 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var dtoOcorrencia = new InserirOcorrenciaDto
             {
                 DataOcorrencia = new DateTime(2022,10,27),
-                Descricao = "Ocorrencia",
-                OcorrenciaTipoId = 1,
-                Titulo = "Titulo da Ocorrencia",
-                HoraOcorrencia = "17:37",
-                TurmaId = 1,
-                CodigosAlunos = new List<long>(){1}
+                Descricao = OCORRENCIA,
+                OcorrenciaTipoId = OCORRENCIA_TIPO_INCIDENTE,
+                Titulo = TITULO_OCORRENCIA,
+                HoraOcorrencia = HORARIO_OCORRENCIA,
+                TurmaId = TURMA_ID_1,
+                CodigosAlunos = new List<long>{1}
             };
             await useCaseOcorrencia.Executar(dtoOcorrencia);
             

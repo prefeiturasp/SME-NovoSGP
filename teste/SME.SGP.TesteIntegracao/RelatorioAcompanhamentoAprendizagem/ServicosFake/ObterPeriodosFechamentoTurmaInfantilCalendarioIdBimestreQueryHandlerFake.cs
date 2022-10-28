@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
         {
             var lista = new List<PeriodoFechamentoBimestre>
             {
-                new PeriodoFechamentoBimestre
+                new ()
                 {
                     PeriodoFechamento = null,
                     PeriodoFechamentoId = 0,

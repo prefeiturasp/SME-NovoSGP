@@ -20,9 +20,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var dto = new AcompanhamentoTurmaDto
             {
-                TurmaId = 1,
-                Semestre = 1,
-                ApanhadoGeral = "<html><body>teste</body><html/>"
+                TurmaId = TURMA_ID_1,
+                Semestre = PRIMEIRO_SEMESTRE,
+                ApanhadoGeral = TEXTO_PADRAO_APANHADO_GERAL
             };
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
             ex.ShouldNotBeNull();

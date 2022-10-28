@@ -61,14 +61,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var dto = new AcompanhamentoTurmaDto
             {
-                TurmaId = 1,
-                Semestre = 1,
-                ApanhadoGeral = $@"<html><body>
-                                         teste
-                                    <img src='http://www.localhost.com.br/imagem.png'>
-                                    <img src='http://www.localhost.com.br/imagem.png'>
-                                    <img src='http://www.localhost.com.br/imagem.png'>
-                                  <body/><html/>"
+                TurmaId = TURMA_ID_1,
+                Semestre = PRIMEIRO_SEMESTRE,
+                ApanhadoGeral = TEXTO_PADRAO_COM_3_IMAGENS
             };
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
             ex.ShouldNotBeNull();

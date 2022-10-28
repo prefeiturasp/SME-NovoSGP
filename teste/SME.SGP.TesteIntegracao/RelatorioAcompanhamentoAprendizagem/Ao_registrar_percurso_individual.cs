@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 1, 
+                Semestre = PRIMEIRO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(1);
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
@@ -62,7 +62,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -82,7 +82,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(2);
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
@@ -101,7 +101,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(2);
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
@@ -140,7 +140,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -161,7 +161,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -186,7 +186,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -206,7 +206,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(2);
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
             acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
@@ -225,7 +225,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 2, 
+                Semestre = SEGUNDO_SEMESTRE, 
                 TextoSugerido = true,
                 PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL,
                 AlunoCodigo = ALUNO_CODIGO_1
@@ -246,9 +246,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 1, 
+                Semestre = PRIMEIRO_SEMESTRE, 
                 TextoSugerido = true,
-                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_3_IMAGENS,
+                PercursoIndividual = TEXTO_PADRAO_COM_3_IMAGENS,
                 AlunoCodigo = ALUNO_CODIGO_1
             };
             
@@ -266,9 +266,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 
             var acompanhamentoAlunoDto = new AcompanhamentoAlunoDto { 
                 TurmaId = TURMA_ID_1, 
-                Semestre = 1, 
+                Semestre = PRIMEIRO_SEMESTRE, 
                 TextoSugerido = true,
-                PercursoIndividual = TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_2_IMAGENS,
+                PercursoIndividual = TEXTO_PADRAO_COM_2_IMAGENS,
                 AlunoCodigo = ALUNO_CODIGO_1
             };
             
@@ -286,8 +286,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(1);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL_COM_2_IMAGENS);
+            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_COM_2_IMAGENS);
             acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
     }
