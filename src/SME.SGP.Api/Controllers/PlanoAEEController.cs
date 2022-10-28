@@ -216,16 +216,6 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoDre));
         }
-        
-        [HttpGet]
-        [Route("paai-ue")]
-        [ProducesResponseType(typeof(IEnumerable<ServidorDto>), 200)]
-        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPAAIPorUe([FromQuery] string codigoUe, [FromServices] IObterPAAIPorUeUseCase useCase)
-        {
-            return Ok(await useCase.Executar(codigoUe));
-        }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
@@ -236,5 +226,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await excluirPlanoAEEUseCase.Executar(id));
         }
 
+        [HttpPost("remover-responsavel/{planoAeeId}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_A, Policy = "Bearer")]
+        public async Task<IActionResult> RemoverAtribuicaoResponsavelPlanoAee(long planoAeeId, [FromServices] IRemoverResponsavelPlanoAEEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(planoAeeId));
+        }
     }
 }

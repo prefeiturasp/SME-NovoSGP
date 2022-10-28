@@ -267,7 +267,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Select(c => c.Id).Distinct().ToArray();
             
             const string selectBase = "select p.id from pendencia p";
-
+            
             var query = new StringBuilder();
 
             //-> Montando a query

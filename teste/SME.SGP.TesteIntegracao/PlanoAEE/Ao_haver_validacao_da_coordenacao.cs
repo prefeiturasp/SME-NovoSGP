@@ -111,8 +111,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
 
         }
         
-        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE não tiver paai atribuído")]
-        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_nao_tiver_paai_atribuido()
+        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE não tiver paai")]
+        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_nao_tiver_paai()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
@@ -145,8 +145,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CEFAI);
         }
         
-        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE tiver mais de um paai atribuído")]
-        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_tiver_mais_de_um_paai_atribuido()
+        [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE tiver mais de um paai")]
+        public async Task Nao_deve_atribuir_automaticamente_paai_quando_a_ue_tiver_mais_de_um_paai()
         {
             await CriarDadosBasicos(new FiltroPlanoAee()
             {
@@ -191,8 +191,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             pendenciaPerfil.PerfilCodigo.ShouldBe(PerfilUsuario.CEFAI);
         }
         
-         [Fact(DisplayName = "Plano AEE - Não deve atribuir automaticamente paai quando a UE tiver mais de um paai atribuído")]
-        public async Task Deve_atribuir_automaticamente_paai_quando_a_ue_tiver_um_unico_paai_atribuido()
+         [Fact(DisplayName = "Plano AEE - Deve atribuir automaticamente paai quando a UE tiver um único paai")]
+        public async Task Deve_atribuir_automaticamente_paai_quando_a_ue_tiver_um_unico_paai()
         {
             const string LOGIN_USUARIO_PAAI_ATRIBUIDO = "1";
             
