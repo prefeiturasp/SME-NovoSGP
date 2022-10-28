@@ -312,7 +312,7 @@ namespace SME.SGP.Aplicacao
                 var turmasCodigosFiltro = turmasCodigos;
 
                 turmasCodigosFiltro = turmasCodigosFiltro
-                    .Concat(turmasCodigosEOL).Distinct().ToArray();
+                .Concat(turmasCodigosEOL).Distinct().ToArray();
 
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                     await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigosFiltro, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
@@ -327,7 +327,7 @@ namespace SME.SGP.Aplicacao
 
             if (turmasComplementaresFiltradas != null && turmasComplementaresFiltradas.TurmaRegularCodigo != null)
             {
-                if (notasFechamentoAluno.Any(x => x.Nota != null))
+                if (notasFechamentoAluno.Any(x => x.Nota != null && turma.EhTurmaEdFisica()))
                     ConverterNotaFechamentoAlunoNumerica(notasFechamentoAluno);
 
                 var disciplinasDaTurmaTipo =
