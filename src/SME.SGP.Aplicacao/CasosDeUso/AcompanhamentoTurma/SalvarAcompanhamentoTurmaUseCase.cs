@@ -11,29 +11,27 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarAcompanhamentoTurmaUseCase : AbstractUseCase, ISalvarAcompanhamentoTurmaUseCase
     {
+        private const int PRIMEIRO_SEMESTRE = 1;
+        private const int SEGUNDO_BIMESTRE = 2;
+        private const int QUARTO_BIMESTRE = 4;
+        private const int QUANTIDADE_IMAGENS_PERMITIDAS_2 = 2;
         public SalvarAcompanhamentoTurmaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
         public async Task<AcompanhamentoTurma> Executar(AcompanhamentoTurmaDto dto)
         {
-            if (ExcedeuLimiteDeQuantidadeDeImagensPermitidas(dto.ApanhadoGeral))
-                throw new NegocioException(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS);
+            if (dto.ApanhadoGeral.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
             
             var acompanhamentoTurma = await MapearAcompanhamentoTurma(dto);
 
             return acompanhamentoTurma;
         }
-        private async Task<bool> TurmaEmPeridoAberto(Turma turma)
+        private async Task<bool> TurmaEmPeridoAberto(Turma turma, int semestre)
         {
-            var bimestreAtual = await mediator.Send(new ObterBimestreAtualQuery(DateTime.Today,turma));
-            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestreAtual, true));
-        }
-
-        private bool ExcedeuLimiteDeQuantidadeDeImagensPermitidas(string dtoApanhadoGeral)
-        {
-            var quantidade = dtoApanhadoGeral.Split().Count(x => x.Contains("src="));
-            return quantidade > 2;
+            var bimestre = semestre == PRIMEIRO_SEMESTRE ? SEGUNDO_BIMESTRE : QUARTO_BIMESTRE;
+            return await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, true));
         }
 
         private async Task<AcompanhamentoTurma> MapearAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
@@ -75,7 +73,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
 
-            var periodAberto = await TurmaEmPeridoAberto(turma);
+            var periodAberto = await TurmaEmPeridoAberto(turma, dto.Semestre);
             if (!periodAberto)
                 throw new NegocioException(MensagemAcompanhamentoTurma.PERIODO_NAO_ESTA_ABERTO);
 
