@@ -7,12 +7,12 @@ namespace SME.SGP.Aplicacao
     {
         public AtribuirResponsavelPlanoAEECommandValidator()
         {
-            RuleFor(x => x.PlanoAEEId)
-                   .GreaterThan(0)
-                    .WithMessage("O Id do Plano AEE deve ser informado!");
+            RuleFor(x => x.PlanoAEE)
+                .NotNull()
+                .WithMessage("O Plano AEE deve ser informado para atribuição de responsável!");
             RuleFor(x => x.ResponsavelRF)
                    .NotEmpty()
-                   .WithMessage("O RF do responsável deve ser informado!");
+                   .WithMessage("O RF do responsável deve ser informado para atribuição de responsável!");
         }
     }
 }
