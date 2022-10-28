@@ -32,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             await CriarDadosBasicos();
             var useCase = ObterSalvarAcompanhamentoUseCase();
             
+            await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
+            
             var dto = new AcompanhamentoTurmaDto
             {
                 TurmaId = 1,
@@ -54,6 +56,8 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
             await CriarDadosBasicos();
             var useCase = ObterSalvarAcompanhamentoUseCase();
+            
+            await CriarPeriodoEscolarCustomizadoSegundoBimestre(true);
             
             var dto = new AcompanhamentoTurmaDto
             {
