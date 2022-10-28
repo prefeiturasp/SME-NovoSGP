@@ -1,9 +1,13 @@
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -15,26 +19,12 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
         }
 
-
-        [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Não Deve Registrar o percurso coletivo para semestre e ano anterior sem reabertura")]
-        public async Task Registrar_percurso_coletivo_para_semestre_e_ano_anterior_sem_reabertura()
+        protected override void RegistrarFakes(IServiceCollection services)
         {
-            await CriarDadosBasicos(abrirPeriodos:false);
-            var useCase = ObterSalvarAcompanhamentoUseCase();
-            
-            var dto = new AcompanhamentoTurmaDto
-            {
-                TurmaId = 1,
-                Semestre = 1,
-                ApanhadoGeral = "<html><body>teste</body><html/>"
-            };
-            var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
-            ex.ShouldNotBeNull();
-            
-            var obterTodos = ObterTodos<AcompanhamentoTurma>();
-            obterTodos.ShouldNotBeNull();
-            obterTodos.Count.ShouldBeEquivalentTo(0);
+            base.RegistrarFakes(services);
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<TurmaEmPeriodoAbertoQuery,bool>),typeof(TurmaEmPeriodoAbertoQueryHandlerFake),ServiceLifetime.Scoped));
         }
+        
 
         [Fact(DisplayName = "Relatório do Acompanhamento da Aprendizagem - Deve Registrar o percurso coletivo inserindo duas imagens")]
         public async Task Registrar_o_percurso_coletivo_inserindo_duas_imagens()
