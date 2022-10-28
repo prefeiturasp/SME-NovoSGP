@@ -26,9 +26,15 @@ namespace SME.SGP.Aplicacao
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-                        
+            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
+            var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
+            bool historico = turma.Historica;
+
+            if (alunoNaTurma != null)
+                historico = alunoNaTurma.Inativo;
+
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, turma.Historica))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
@@ -109,13 +115,19 @@ namespace SME.SGP.Aplicacao
             int bimestre;
             long[] conselhosClassesIds;
             string[] turmasCodigos;
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery())).ToList();
 
-            if (turma.DeveVerificarRegraRegulares())
+            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(periodoEscolarId == null && turma.EhEJA()))
             {
-               var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, turma.ObterTiposRegularesDiferentes(), historico));
+                var tiposTurmasParaConsulta = new List<int> { (int)turma.TipoTurma };
 
-                if (historico == true)
+                tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
+                tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
+
+                var turmasCodigosEOL = await mediator
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico));
+
+                if (turma.Historica == true)
                 {
                     var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL));
 
@@ -137,6 +149,7 @@ namespace SME.SGP.Aplicacao
             }
             else turmasCodigos = new string[] { turma.CodigoTurma };
 
+            turmasCodigos = turmasCodigos.Distinct().ToArray();
 
             if (periodoEscolarId.HasValue)
             {

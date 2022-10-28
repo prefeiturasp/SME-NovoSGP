@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery : IRequest<FechamentoTurmaDisciplina>
+    public class ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery : IRequest<IEnumerable<FechamentoTurmaDisciplina>>
     {
         public ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinaBimestreQuery(string turmaCodigo, long disciplinaId, int? bimestre = 0)
         {

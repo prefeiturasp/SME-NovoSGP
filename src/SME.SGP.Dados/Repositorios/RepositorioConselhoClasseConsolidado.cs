@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -42,6 +43,25 @@ namespace SME.SGP.Dados
 
             var retorno = await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
             return retorno;
+        }
+
+        public async Task<IEnumerable<long>> ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(string alunoCodigo, long turmaId)
+        {
+            var query = $@"select id from consolidado_conselho_classe_aluno_turma where aluno_codigo = @alunoCodigo and turma_id = @turmaId and not excluido";
+
+            return await database.Conexao.QueryAsync<long>(query, new { alunoCodigo, turmaId });
+        }
+
+        public async Task<bool> ExcluirLogicamenteConsolidacaoConselhoClasseAlunoTurmaPorIdConsolidacao(long[] idsConsolidacoes)
+        {
+            var sqlQuery = @"update consolidado_conselho_classe_aluno_turma
+                             set excluido = true
+                             where id = any(@idsConsolidacoes);";
+
+            await database.Conexao
+                .ExecuteAsync(sqlQuery, new { idsConsolidacoes });
+
+            return true;
         }
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterFechamentoNotaAlunoOuConselhoClasseAsync(long turmaId)

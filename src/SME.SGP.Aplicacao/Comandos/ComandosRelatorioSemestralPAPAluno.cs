@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,7 +31,7 @@ namespace SME.SGP.Aplicacao
                                                IComandosRelatorioSemestralPAPAlunoSecao comandosRelatorioSemestralAlunoSecao,
                                                IConsultasTurma consultasTurma,
                                                IUnitOfWork unitOfWork, IMediator mediator,
-                                               ConfiguracaoArmazenamentoOptions configuracaoArmazenamentoOptions)
+                                               IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioRelatorioSemestralAluno = repositorioRelatorioSemestralAluno ?? throw new ArgumentNullException(nameof(repositorioRelatorioSemestralAluno));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
@@ -40,12 +41,13 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions?.Value ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<AuditoriaRelatorioSemestralAlunoDto> Salvar(string alunoCodigo, string turmaCodigo, int semestre, RelatorioSemestralAlunoPersistenciaDto relatorioSemestralAlunoDto)
         {
             var turma = await ObterTurma(turmaCodigo);
+
             await ValidarPersistenciaTurmaSemestre(turma, semestre);
 
             var relatorioSemestralAluno = relatorioSemestralAlunoDto.RelatorioSemestralAlunoId > 0 ?
@@ -123,8 +125,26 @@ namespace SME.SGP.Aplicacao
         private async Task ValidarPersistenciaTurmaSemestre(Turma turma, int semestre)
         {
             var bimestre = await ObterBimestreAtual(turma);
+
             if ((semestre == 1 && bimestre != 2) || (semestre == 2 && bimestre != 4))
-                throw new NegocioException("Não é possível salvar os dados pois o período não esta em aberto!");
+            {
+                long tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+
+                var semestreVigente = new SemestreAcompanhamentoDto()
+                {
+                    Semestre = semestre,
+                    Descricao = $"Acompanhamento {semestre}º Semestre",
+                    PodeEditar = false
+                };
+                var listaSemestresVigentes = new List<SemestreAcompanhamentoDto>();
+                listaSemestresVigentes.Add(semestreVigente);
+
+                var semestresComReaberturaVigente = await mediator.Send(new ObterSemestresComReaberturaAtivaPAPQuery(DateTime.Now, tipoCalendarioId, turma.UeId, listaSemestresVigentes));
+
+                if(!semestresComReaberturaVigente.Any(s=> s.Semestre == semestre && s.PodeEditar))
+                    throw new NegocioException("Não é possível salvar os dados pois o período não esta em aberto!");
+            }
+            
         }
 
         private async Task<int> ObterBimestreAtual(Turma turma)

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dominio
 {
     public class Pendencia : EntidadeBase
     {
-        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "", string descricaoHtml = "", long? ueId = null)
+        public Pendencia(TipoPendencia tipo, string titulo = "", string descricao = "", string instrucao = "", string descricaoHtml = "", long? ueId = null, long? turmaId = null)
         {
             Situacao = SituacaoPendencia.Pendente;
             Tipo = tipo;
@@ -14,6 +14,15 @@ namespace SME.SGP.Dominio
             Instrucao = instrucao;
             DescricaoHtml = descricaoHtml;
             UeId = ueId;
+            TurmaId = turmaId;
+        }
+
+        public Pendencia(TipoPendencia tipo, string titulo, string descricao, long? turmaId = null)
+        {
+            Tipo = tipo;
+            Titulo = titulo;
+            Descricao = descricao;
+            TurmaId = turmaId;
         }
 
         public Pendencia()
@@ -28,6 +37,44 @@ namespace SME.SGP.Dominio
         public bool Excluido { get; set; }
         public string DescricaoHtml { get; set; }
         public long? UeId { get; set; }
+        public long? TurmaId { get; set; }
+
+        public TipoPendenciaAssunto PendenciaAssunto
+        {
+            get
+            {
+                switch (Tipo)
+                {
+                    case TipoPendencia.AvaliacaoSemNotaParaNenhumAluno:
+                    case TipoPendencia.AulasReposicaoPendenteAprovacao:
+                    case TipoPendencia.AulasSemFrequenciaNaDataDoFechamento:
+                    case TipoPendencia.ResultadosFinaisAbaixoDaMedia:
+                        return TipoPendenciaAssunto.PendenciaFechamento;
+                    case TipoPendencia.AulaNaoLetivo:
+                    case TipoPendencia.Avaliacao:
+                        return TipoPendenciaAssunto.PendenciaAula;
+                    case TipoPendencia.CalendarioLetivoInsuficiente:
+                    case TipoPendencia.CadastroEventoPendente:
+                        return TipoPendenciaAssunto.PendenciaCalendario;
+                    case TipoPendencia.AusenciaDeAvaliacaoProfessor:
+                    case TipoPendencia.AusenciaDeAvaliacaoCP:
+                    case TipoPendencia.AusenciaFechamento:
+                        return TipoPendenciaAssunto.PendenciaProfessor;
+                    case TipoPendencia.AusenciaDeRegistroIndividual:
+                        return TipoPendenciaAssunto.PendenciaRegistroIndividual;
+                    case TipoPendencia.Devolutiva:
+                        return TipoPendenciaAssunto.PendenciaDevolutiva;
+                    case TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento:
+                    case TipoPendencia.AlteracaoNotaFechamento:
+                    case TipoPendencia.Frequencia:
+                    case TipoPendencia.PlanoAula:
+                    case TipoPendencia.DiarioBordo:
+                    case TipoPendencia.AEE:
+                    default:
+                        return TipoPendenciaAssunto.Pendencia;
+                }
+            }
+        }
 
         public bool EhPendenciaFechamento()
             => new TipoPendencia[] {

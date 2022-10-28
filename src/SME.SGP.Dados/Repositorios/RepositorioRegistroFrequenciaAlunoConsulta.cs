@@ -249,7 +249,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FrequenciaAlunoTurmaDto>> ObterRegistroFrequenciaAlunosNaTurma(string turmaCodigo, string alunoCodigo)
         {
-            const string query = @"select  a.id as AulaId, rfa.id as RegistroFrequenciaAlunoId, a.data_aula as DataAula, a.disciplina_id as DisciplinaCodigo
+            const string query = @"select  a.id as AulaId, rfa.id as RegistroFrequenciaAlunoId, a.data_aula as DataAula, a.disciplina_id as DisciplinaCodigo, rfa.valor as Valor
                                             from registro_frequencia_aluno rfa 
                                             inner join registro_frequencia rf on rf.id  = rfa.registro_frequencia_id 
                                             inner join aula a on a.id = rf.aula_id 

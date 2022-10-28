@@ -24,6 +24,7 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.WorkflowAprovacaoNivel).Ignore();
             Map(c => c.DeveMarcarComoLido).Ignore();
             Map(c => c.PodeRemover).Ignore();
+            Map(c => c.AnoAnterior).Ignore();
         }
     }
 }

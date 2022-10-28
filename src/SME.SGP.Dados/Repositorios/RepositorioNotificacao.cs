@@ -85,7 +85,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join usuario u on
 	                        n.usuario_id = u.id
                         where
-	                        u.rf_codigo = @usuarioRf
+	                        (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)
 	                        and extract(year
                         from
 	                        n.criado_em) = @anoLetivo

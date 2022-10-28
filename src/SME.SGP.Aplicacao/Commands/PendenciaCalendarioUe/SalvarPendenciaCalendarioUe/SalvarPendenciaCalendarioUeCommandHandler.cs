@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             unitOfWork.IniciarTransacao();
             try
             {
-                pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, request.Descricao, request.Instrucao));
+                pendenciaId = await mediator.Send(new SalvarPendenciaCommand(request.TipoPendencia, request.Ue.Id, null, request.Descricao, request.Instrucao));
                 await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfilParaPendencia(request.TipoPendencia)));
                 idPendenciaCalendarioUe = await repositorioPendenciaCalendarioUe.SalvarAsync(new Dominio.PendenciaCalendarioUe()
                 {
