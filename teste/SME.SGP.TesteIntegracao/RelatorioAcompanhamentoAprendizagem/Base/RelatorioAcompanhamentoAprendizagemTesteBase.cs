@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 DataAula = dataAula,
                 RecorrenciaAula = recorrencia,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = DateTime.Now,
+                CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 Excluido = false,

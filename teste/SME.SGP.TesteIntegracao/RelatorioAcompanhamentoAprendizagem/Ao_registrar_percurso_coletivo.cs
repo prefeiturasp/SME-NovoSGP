@@ -15,13 +15,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
         }
 
-        [Theory(DisplayName= "Ao registrar percurso coletivo dos semestres")]
+        [Theory(DisplayName= "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo dos semestres")]
         [InlineData(1)]
         [InlineData(2)]
         public async Task Ao_registrar_percurso_coletivo_dos_semestres(int semestre)
         {
             await CriarDadosBasicos();
-            await CriarPeriodoEscolar(DateTime.Today, DateTime.Today.AddMonths(2), semestre * 2);
+            await CriarPeriodoEscolar(DateTime.Today, DateTimeExtension.HorarioBrasilia().AddMonths(2), semestre * 2);
             var acompanhamento = $"Registro de percurso coletivo semestre {semestre}";
             var useCase = ObterSalvarAcompanhamentoUseCase();
             var dto = new AcompanhamentoTurmaDto()
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             registro.TurmaId.ShouldBe(TURMA_ID_1);
         }
 
-        [Fact(DisplayName = "Ao registrar percurso coletivo com período fechado")]
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem -  Ao registrar percurso coletivo com período fechado")]
         public async Task Ao_registrar_percurso_coletivo_com_periodo_fechado() 
         {
             await CriarDadosBasicos(false);
@@ -55,7 +55,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                     .ShouldThrowAsync<NegocioException>(MensagemAcompanhamentoTurma.PERIODO_NAO_ESTA_ABERTO);
         }
 
-        [Fact(DisplayName = "Ao registrar percurso coletivo com período em reabertura")]
+        [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Ao registrar percurso coletivo com período em reabertura")]
         public async Task Ao_registrar_percurso_coletivo_com_periodo_em_reabertura()
         {
             await CriarDadosBasicos(false);
