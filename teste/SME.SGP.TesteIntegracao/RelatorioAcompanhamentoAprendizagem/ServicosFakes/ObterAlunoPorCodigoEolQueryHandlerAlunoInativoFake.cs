@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.TesteIntegracao.ServicosFakes
+namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFakes
 {
     public class ObterAlunoPorCodigoEolQueryHandlerAlunoInativoFake : IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>
     {
@@ -41,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
                     CodigoTurma=int.Parse(turmaId),
                     DataNascimento=new DateTime(dataReferencia.AddYears(-15).Year,01,16,00,00,00),
-                    DataSituacao= new DateTime(dataReferencia.Year,11,09,17,25,31),
-                    DataMatricula= new DateTime(dataReferencia.Year,11,09,17,25,31),
+                    DataSituacao= new DateTime(dataReferencia.AddYears(-1).Year,11,09,17,25,31),
+                    DataMatricula= new DateTime(dataReferencia.AddYears(-1).Year,11,09,17,25,31),
                     EscolaTransferencia=null,
                     NomeAluno= ALUNO_DESISTENTE_NOME_77777,
                     NomeSocialAluno=null,
