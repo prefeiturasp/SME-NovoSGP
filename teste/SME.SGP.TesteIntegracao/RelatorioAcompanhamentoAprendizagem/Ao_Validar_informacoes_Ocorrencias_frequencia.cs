@@ -41,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         {
             await CriarDadosBasicos();
             var informacoesDeFrequenciaAlunoPorSemestreUseCase = ObterInformacoesDeFrequenciaAlunoPorSemestreUseCase();
-            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),DateTime.Today, RecorrenciaAula.AulaUnica);
+            await CriarAula(COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),DateTimeExtension.HorarioBrasilia().Date, RecorrenciaAula.AulaUnica);
 
             var obterFrequenciaAluno = await informacoesDeFrequenciaAlunoPorSemestreUseCase.Executar(new FiltroTurmaAlunoSemestreDto(1,1,2,138));
             obterFrequenciaAluno.ShouldNotBeNull();

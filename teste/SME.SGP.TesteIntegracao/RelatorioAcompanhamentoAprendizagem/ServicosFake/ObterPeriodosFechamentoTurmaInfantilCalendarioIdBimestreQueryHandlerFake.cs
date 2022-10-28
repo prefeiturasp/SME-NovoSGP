@@ -18,9 +18,9 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFa
                 {
                     PeriodoFechamento = null,
                     PeriodoFechamentoId = 0,
-                    FinalDoFechamento = DateTime.Today,
+                    FinalDoFechamento = DateTimeExtension.HorarioBrasilia().Date,
                     Id = 1,
-                    InicioDoFechamento = DateTime.Today,
+                    InicioDoFechamento = DateTimeExtension.HorarioBrasilia().Date,
                     PeriodoEscolarId = 1,
                 },
             };

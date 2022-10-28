@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         public async Task Ao_registrar_percurso_coletivo_dos_semestres(int semestre)
         {
             await CriarDadosBasicos();
-            await CriarPeriodoEscolar(DateTime.Today, DateTimeExtension.HorarioBrasilia().AddMonths(2), semestre * 2);
+            await CriarPeriodoEscolar(DateTimeExtension.HorarioBrasilia().Date, DateTimeExtension.HorarioBrasilia().AddMonths(2), semestre * 2);
             var acompanhamento = $"Registro de percurso coletivo semestre {semestre}";
             var useCase = ObterSalvarAcompanhamentoUseCase();
             var dto = new AcompanhamentoTurmaDto()
