@@ -27,11 +27,16 @@ begin
 
 	  	if _turmaId <> 0 and _turmaId is not null then		  
 			update pendencia set turma_id = _turmaId where id = _pendencia_db.id and turma_id <> _turmaId and _turmaId <> 0; 
-			delete from pendencia_diario_bordo where id in (
-						select pdb.id from pendencia_diario_bordo pdb 
-					   inner join aula a on a.id = pdb.aula_id 
-					   inner join turma t on t.turma_id  = a.turma_id
-					   where pdb.pendencia_id = _pendencia_db.id and t.id <> _turmaId and _turmaId <> 0);	 
+			delete 	
+				from 
+					pendencia_diario_bordo as pdb 
+	 	   		using 
+		 	   		aula as a,  
+		 	   		turma as t
+			   	where 
+			   		a.id = pdb.aula_id
+			   		and t.turma_id  = a.turma_id 
+			   		and pdb.pendencia_id = _pendencia_db.id and t.id <> _turmaId and _turmaId <> 0;		 
 		else
 			delete from pendencia_diario_bordo where pendencia_id = _pendencia_db.id; --nenhuma pendencia db eh da turma da pendencia
 			update pendencia set turma_id = null, excluido = true where id = _pendencia_db.id;
