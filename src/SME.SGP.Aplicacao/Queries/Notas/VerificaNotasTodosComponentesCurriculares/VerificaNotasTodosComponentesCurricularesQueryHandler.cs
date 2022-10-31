@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao.Queries
                 {
                     if (todasAsNotas != null && todasAsNotas.Any())
                     {
-                        if (conselhosClassesIds != null && todasAsNotas.Any(t=> t.Bimestre == 2))
+                        if (conselhosClassesIds != null && todasAsNotas.Any(t => t.Bimestre == 2))
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == 2));
                         else
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
@@ -107,6 +107,7 @@ namespace SME.SGP.Aplicacao.Queries
                             new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo,
                                 request.Bimestre ?? 0), cancellationToken));
                     }
+                }
                 else
                 {
                     notasParaVerificar.AddRange(await mediator.Send(
