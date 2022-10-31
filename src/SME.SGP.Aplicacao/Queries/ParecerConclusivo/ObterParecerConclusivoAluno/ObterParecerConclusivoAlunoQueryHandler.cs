@@ -272,7 +272,7 @@ namespace SME.SGP.Aplicacao
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
             else
-                notasConselhoClasse = notasConselhoClasse.DistinctBy(c => c.ComponenteCurricularCodigo);
+                notasConselhoClasse = notasConselhoClasse.OrderByDescending(c=> c.ConselhoClasseAlunoId).DistinctBy(c => c.ComponenteCurricularCodigo);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?
