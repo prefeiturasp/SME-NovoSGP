@@ -21,6 +21,9 @@ namespace SME.SGP.Aplicacao
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.CodigoTurma));
             long pendenciaId = 0;
 
+            if (turmaId == 0)
+                throw new NegocioException("Turma não encontrada.");
+
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {
                 var pendencia = pendenciaProfessorDisciplinaCache.FirstOrDefault(f => f.ComponenteCurricularId == item.ComponenteCurricularId && f.ProfessorRf.Equals(item.ProfessorRf));
