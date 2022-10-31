@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
                             from componente_curricular cc 
                             where cc.id = @componenteCurricularId";
 
-            var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int>(obtempai, new { componenteCurricularId });
+            var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int?>(obtempai, new { componenteCurricularId });
 
             var condicao = @" from registro_individual ri
                                   inner join componente_curricular cc on ri.componente_curricular_id = cc.id
