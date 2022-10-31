@@ -2,7 +2,6 @@ do $$
 declare
 	_turmaId integer := 0;
 	_pendencia_db record;
-	contador integer := 0;
 begin	
 	for _pendencia_db in 
 		select p.id  
@@ -41,14 +40,7 @@ begin
 			delete from pendencia_diario_bordo where pendencia_id = _pendencia_db.id; --nenhuma pendencia db eh da turma da pendencia
 			update pendencia set turma_id = null, excluido = true where id = _pendencia_db.id;
 	  	end if; 
-		
-		contador = contador + 1;
-	     if (contador % 1000) = 0 then
-	  		commit;
-	  	 	raise notice 'Commitou! Esta no registro de numero: %',contador; 
-	  	 end if; 	
   	end loop;
-	commit;
 end $$ 
 
 
