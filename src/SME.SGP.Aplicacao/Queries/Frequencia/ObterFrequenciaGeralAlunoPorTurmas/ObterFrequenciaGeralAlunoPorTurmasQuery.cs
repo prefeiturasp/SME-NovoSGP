@@ -7,18 +7,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaGeralAlunoPorTurmasQuery : IRequest<string>
     {
-        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0, DateTime? dataMatricula = null)
+        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0, DateTime? dataMatricula = null, DateTime? dataSituacaoAluno = null)
         {
             CodigoAluno = codigoAluno;
             CodigosTurmas = codigosTurmas;
             TipoCalendarioId = tipoCalendarioId;
             DataMatriculaTurmaFiltro = dataMatricula;
+            DataSituacaoAluno = dataSituacaoAluno;
         }
 
         public string CodigoAluno { get; }
         public string[] CodigosTurmas { get; }
         public long TipoCalendarioId { get; }
         public DateTime? DataMatriculaTurmaFiltro { get; set; }
+        public DateTime? DataSituacaoAluno { get; set; }
     }
 
     public class ObterFrequenciaGeralAlunoPorTurmasQueryValidator : AbstractValidator<ObterFrequenciaGeralAlunoPorTurmasQuery>
