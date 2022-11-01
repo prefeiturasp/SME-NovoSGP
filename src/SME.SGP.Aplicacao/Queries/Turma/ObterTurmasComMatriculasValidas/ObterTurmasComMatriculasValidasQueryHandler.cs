@@ -34,8 +34,7 @@ namespace SME.SGP.Aplicacao
 
                 if ((matriculasAluno != null || matriculasAluno.Any()) &&
                     matriculasAluno.Any(m => m.PossuiSituacaoAtiva() ||
-                                             (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio &&
-                                              m.DataSituacao <= request.PeriodoFim)))
+                                             (!m.PossuiSituacaoAtiva() && m.DataSituacao >= request.PeriodoInicio)))
                 {
                     turmasCodigosComMatriculasValidas.Add(codTurma);
                 }
