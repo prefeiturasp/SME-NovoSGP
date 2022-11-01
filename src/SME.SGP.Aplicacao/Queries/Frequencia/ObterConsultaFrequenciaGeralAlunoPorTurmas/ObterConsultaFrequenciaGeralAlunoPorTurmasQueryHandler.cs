@@ -32,8 +32,10 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
 
-            var dataMatriculaAluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == request.AlunoCodigo)?.DataMatricula;
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, dataMatriculaAluno));
+            var aluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == request.AlunoCodigo);
+            var dataMatriculaAluno = aluno?.DataMatricula;
+            var dataSituacao = aluno?.Inativo ?? false ? aluno.DataSituacao : (DateTime?)null;
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, dataMatriculaAluno, dataSituacao));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)
