@@ -133,8 +133,6 @@ namespace SME.SGP.Aplicacao
             if (dataMatriculaAluno != null)
                 frequencias = frequencias.Where(f => f.PeriodoFim > dataMatriculaAluno);
 
-
-
             if (FrequenciaAnualPorComponenteCritica(AgruparValoresPorDisciplina(frequencias), parametroFrequenciaBaseNacional, turma.AnoLetivo))
                 return false;
 
