@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio
         public string Titulo { get; set; }
         public long TurmaId { get; set; }
         public Turma Turma { get; set; }
+        public long UeId { get; set; }
 
         public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
         {
