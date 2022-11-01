@@ -9,7 +9,7 @@ namespace SME.SGP.Dados.Mapeamentos
         {
             ToTable("ocorrencia_servidor");
             Map(c => c.Id).ToColumn("id").IsIdentity().IsKey();
-            Map(c => c.CodigoRf).ToColumn("rf_codigo");
+            Map(c => c.CodigoServidor).ToColumn("rf_codigo");
             Map(c => c.OcorrenciaId).ToColumn("ocorrencia_id");
         }
     }
