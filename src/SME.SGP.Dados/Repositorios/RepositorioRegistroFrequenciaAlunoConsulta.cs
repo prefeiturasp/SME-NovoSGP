@@ -204,11 +204,11 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno::date and @dataSituacaoAluno::date");
+                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno::date and @dataSituacaoAluno::date - 1");
             else if (dataMatriculaAluno.HasValue)
                 query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno::date");
             else if (dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date <= @dataSituacaoAluno::date");
+                query.AppendLine("and a.data_aula::date < @dataSituacaoAluno::date");
 
             query.AppendLine("and a.turma_id = any(@turmasId)");
             query.AppendLine("and exists (select 1");

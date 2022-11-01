@@ -57,7 +57,7 @@ namespace SME.SGP.Dominio
                 if (TotalAulas == 0)
                     return 0;
 
-                var porcentagem = 100 - ((double) NumeroFaltasNaoCompensadas / TotalAulas) * 100;
+                var porcentagem = 100 - (((double)NumeroFaltasNaoCompensadas / TotalAulas) * 100);
 
                 return Math.Round(porcentagem > 100 ? 100 : porcentagem, 2);
             }
@@ -93,7 +93,7 @@ namespace SME.SGP.Dominio
             }
         }
 
-        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes,TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas)
+        public FrequenciaAluno DefinirFrequencia(int totalAusencias, int totalAulas, int totalCompensacoes, TipoFrequenciaAluno tipoFrequencia, int totalRemotos, int totalPresencas)
         {
             Tipo = tipoFrequencia;
             TotalAusencias = totalAusencias;
