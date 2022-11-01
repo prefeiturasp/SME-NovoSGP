@@ -224,36 +224,32 @@ namespace SME.SGP.Aplicacao
 
                 if (frequenciaParaTratar == null)
                 {
-                    if (registroFrequenciaAluno != null)
-                    {
-                        var frequenciaFinal = new FrequenciaAluno
-                             (
+                    var frequenciaFinal = new FrequenciaAluno(
                                  alunoCodigo,
                                  turma.CodigoTurma,
                                  componenteCurricularId,
-                                 registroFrequenciaAluno.PeriodoEscolarId,
-                                 registroFrequenciaAluno.PeriodoInicio,
-                                 registroFrequenciaAluno.PeriodoFim,
-                                 registroFrequenciaAluno.Bimestre,
+                                 registroFrequenciaAluno?.PeriodoEscolarId ?? periodoEscolar.Id,
+                                 registroFrequenciaAluno?.PeriodoInicio ?? periodoEscolar.PeriodoInicio,
+                                 registroFrequenciaAluno?.PeriodoFim ?? periodoEscolar.PeriodoFim,
+                                 registroFrequenciaAluno?.Bimestre ?? periodoEscolar.Bimestre,
                                  totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
                                  totalAulasNaDisciplina,
                                  totalCompensacoes,
                                  TipoFrequenciaAluno.PorDisciplina,
                                  registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                 totalPresencas);
+                                 registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
 
-                        frequenciaDosAlunos.Add(frequenciaFinal);
-                    }
-                    else
-                    {
-                        frequenciaParaTratar
-                            .DefinirFrequencia(totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
-                                               totalAulasNaDisciplina,
-                                               totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0,
-                                               TipoFrequenciaAluno.PorDisciplina,
-                                               registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                               totalPresencas);
-                    }
+                    frequenciaDosAlunos.Add(frequenciaFinal);
+                }
+                else
+                {
+                    frequenciaParaTratar
+                        .DefinirFrequencia(totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
+                                           totalAulasNaDisciplina,
+                                           totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0,
+                                           TipoFrequenciaAluno.PorDisciplina,
+                                           registroFrequenciaAluno?.TotalRemotos ?? 0,
+                                           registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
                 }
             }
         }
