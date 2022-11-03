@@ -5,7 +5,6 @@ namespace SME.SGP.Infra
 {
     public class InserirOcorrenciaDto
     {
-        public long Id { get; set; }
         public bool ConsideraHistorico { get; set; }
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }

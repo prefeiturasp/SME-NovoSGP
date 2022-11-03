@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                                                     request.Titulo, 
                                                     request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos),
                                                     ocorrenciaTipo,
-                                                    turma);
+                                                    turma,request.UeId);
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
@@ -58,7 +58,15 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                     }
-
+                    
+                    //Foreach Servidor
+                    /*
+                     *                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
+                    foreach (var ocorrenciaAluno in ocorrencia.Alunos)
+                    {
+                        await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
+                    }
+                     */
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;

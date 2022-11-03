@@ -40,6 +40,10 @@ namespace SME.SGP.Aplicacao
                 {
                     await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia.Name()));
                 }
+                
+                //Obter Ocorrencias Servidor 
+                
+                //Excluir Ocorrencias Servidor
             }
             catch(Exception ex)
             {

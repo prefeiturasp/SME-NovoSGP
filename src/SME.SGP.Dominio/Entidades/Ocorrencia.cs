@@ -18,17 +18,18 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public long UeId { get; set; }
 
-        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
+        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
         {
             DataOcorrencia = dataOcorrencia;
             Titulo = titulo;
             Descricao = descricao;
             SetOcorrenciaTipo(ocorrenciaTipo);
             SetTurma(turma);
+            UeId = ueId;
         }
 
-        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
-            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma)
+        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
+            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma,ueId)
         {
             SetHoraOcorrencia(horaOcorrencia);
         }
@@ -48,6 +49,11 @@ namespace SME.SGP.Dominio
         {
             foreach (var codigoAluno in codigosAlunos)
                 AdicionarAluno(codigoAluno);
+        }
+
+        public void AdicionarServidores(IEnumerable<long> codigosServidor)
+        {
+            foreach (var codigoServidor in codigosServidor) ;
         }
 
         public void SetHoraOcorrencia(string horaOcorrencia)
