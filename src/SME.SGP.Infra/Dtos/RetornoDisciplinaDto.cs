@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -13,5 +14,7 @@ namespace SME.SGP.Infra
         public bool RegistraFrequencia { get; set; }
         public bool Territorio { get; set; }
         public bool LancaNota { get; set; }
+        public GrupoMatriz GrupoMatriz { get; set; }
+        public bool BaseNacional { get; set; }
     }
 }

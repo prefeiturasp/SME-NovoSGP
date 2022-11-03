@@ -6,16 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarExclusaoNotificacaoCommand : IRequest
     {
-        public NotificarExclusaoNotificacaoCommand(long codigo, NotificacaoStatus status,  string usuarioRf)
+        public NotificarExclusaoNotificacaoCommand(long codigo, NotificacaoStatus status,  string usuarioRf, bool anoAnterior = false)
         {
             Codigo = codigo;
             Status = status;
             UsuarioRf = usuarioRf;
+            AnoAnterior = anoAnterior;
         }
 
         public long Codigo { get; }
         public NotificacaoStatus Status { get; }
         public string UsuarioRf { get; }
+        public bool AnoAnterior { get; }
     }
 
     public class NotificarExclusaoNotificacaoCommandValidator : AbstractValidator<NotificarExclusaoNotificacaoCommand>

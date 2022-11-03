@@ -27,7 +27,9 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
 
-            acompanhamentoAlunoTurmaSemestre.PodeEditar = await PodeEditarTurma(turma, filtro.Semestre);
+            int bimestre = filtro.Semestre == 1 ? 2 : 4;
+
+            acompanhamentoAlunoTurmaSemestre.PodeEditar = await PodeEditarTurma(turma, bimestre);
 
             TratamentoSemestre(acompanhamentoAlunoTurmaSemestre, periodosEscolares, filtro.Semestre, turma.ModalidadeCodigo);
             await TratamentoPercursoIndividual(acompanhamentoAlunoTurmaSemestre, filtro.TurmaId, filtro.AlunoId, filtro.ComponenteCurricularId);

@@ -86,6 +86,9 @@ namespace SME.SGP.Dominio.Servicos
             if (aprovar)
                 await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
             else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+
+            foreach (var notificacao in nivel.Notificacoes)
+                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
         }
 
         public async Task ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)

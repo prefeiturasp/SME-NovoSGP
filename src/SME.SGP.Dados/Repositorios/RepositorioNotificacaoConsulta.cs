@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and n.tipo = @tipoId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and u.rf_codigo = @usuarioRf");
+                query.AppendLine("and u.rf_codigo = @usuarioRf or u.login = @usuarioRf");
 
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
@@ -231,7 +231,7 @@ namespace SME.SGP.Dados.Repositorios
                         left join usuario u on
 	                        n.usuario_id = u.id
                         where
-	                        u.rf_codigo = @codigoRf
+	                        (u.rf_codigo = @codigoRf or u.login = @codigoRf)
 	                        and not excluida
 	                        and n.status = @naoLida
 	                        and extract(year from n.criado_em) = @anoLetivo";

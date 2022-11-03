@@ -133,8 +133,6 @@ namespace SME.SGP.Aplicacao
             if (dataMatriculaAluno != null)
                 frequencias = frequencias.Where(f => f.PeriodoFim > dataMatriculaAluno);
 
-
-
             if (FrequenciaAnualPorComponenteCritica(AgruparValoresPorDisciplina(frequencias), parametroFrequenciaBaseNacional, turma.AnoLetivo))
                 return false;
 
@@ -271,6 +269,8 @@ namespace SME.SGP.Aplicacao
             var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
+            else
+                notasConselhoClasse = notasConselhoClasse.OrderByDescending(c=> c.ConselhoClasseAlunoId).DistinctBy(c => c.ComponenteCurricularCodigo);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?
