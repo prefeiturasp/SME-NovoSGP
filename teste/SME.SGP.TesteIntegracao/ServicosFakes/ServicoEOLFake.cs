@@ -592,9 +592,18 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
-            throw new NotImplementedException();
+            return new List<DisciplinaDto>
+            {
+                new DisciplinaDto
+                {
+                    Id = 123,
+                    CodigoComponenteCurricular = 1217,
+                    GrupoMatrizId = 4,
+
+                }
+            };
         }
 
         public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
