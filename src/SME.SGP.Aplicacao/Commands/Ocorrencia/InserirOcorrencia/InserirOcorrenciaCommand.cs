@@ -22,7 +22,7 @@ namespace SME.SGP.Aplicacao
         public long OcorrenciaTipoId { get; set; }
         public long TurmaId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
-        public IEnumerable<long> CodigosServidores { get; set; }
+        public IEnumerable<string> CodigosServidores { get; set; }
 
         public InserirOcorrenciaCommand(InserirOcorrenciaDto dto)
         {

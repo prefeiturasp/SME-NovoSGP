@@ -16,16 +16,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
+        private readonly IRepositorioOcorrenciaServidor _ocorrenciaServidor;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno,IRepositorioOcorrenciaServidor ocorrenciaServidor, 
+            IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
+            _ocorrenciaServidor = ocorrenciaServidor ?? throw new ArgumentNullException(nameof(ocorrenciaServidor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -59,14 +62,12 @@ namespace SME.SGP.Aplicacao
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                     }
                     
-                    //Foreach Servidor
-                    /*
-                     *                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
-                    foreach (var ocorrenciaAluno in ocorrencia.Alunos)
+                    ocorrencia.AdicionarServidores(request.CodigosServidores);
+                    foreach (var ocorrenciaServidor in ocorrencia.Servidores)
                     {
-                        await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
+                        await _ocorrenciaServidor.SalvarAsync(ocorrenciaServidor);
                     }
-                     */
+                    
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
@@ -82,7 +83,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
             }
         }
     }

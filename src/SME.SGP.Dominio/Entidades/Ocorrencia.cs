@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
     public class Ocorrencia : EntidadeBase
     {
         public ICollection<OcorrenciaAluno> Alunos { get; set; }
+        public ICollection<OcorrenciaServidor> Servidores { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
@@ -45,15 +46,22 @@ namespace SME.SGP.Dominio
             Alunos.Add(ocorrenciaAluno);
         }
 
+        public void AdicinarServidor(string codigoServidor)
+        {
+            var ocorrenciaServidor = new OcorrenciaServidor(codigoServidor, this);
+            Servidores = Servidores ?? new List<OcorrenciaServidor>();
+            Servidores.Add(ocorrenciaServidor);
+        }
         public void AdiconarAlunos(IEnumerable<long> codigosAlunos)
         {
             foreach (var codigoAluno in codigosAlunos)
                 AdicionarAluno(codigoAluno);
         }
 
-        public void AdicionarServidores(IEnumerable<long> codigosServidor)
+        public void AdicionarServidores(IEnumerable<string> codigosServidor)
         {
-            foreach (var codigoServidor in codigosServidor) ;
+            foreach (var codigoServidor in codigosServidor)
+                AdicinarServidor(codigoServidor);
         }
 
         public void SetHoraOcorrencia(string horaOcorrencia)

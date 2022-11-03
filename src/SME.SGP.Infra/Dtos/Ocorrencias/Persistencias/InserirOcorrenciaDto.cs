@@ -18,11 +18,11 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
-        public IEnumerable<long> CodigosServidores { get; set; }
+        public IEnumerable<string> CodigosServidores { get; set; }
         public InserirOcorrenciaDto()
         {
             CodigosAlunos = new List<long>();
-            CodigosServidores = new List<long>();
+            CodigosServidores = new List<string>();
         }
     }
 }
