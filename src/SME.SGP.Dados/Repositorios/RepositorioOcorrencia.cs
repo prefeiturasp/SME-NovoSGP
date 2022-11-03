@@ -132,19 +132,21 @@ namespace SME.SGP.Dados
 									o.excluido as Excluido,
 									oa.id,
 									oa.codigo_aluno as CodigoAluno,
+									os.rf_codigo  as CodigoServidor,
 									oa.ocorrencia_id as OcorrenciaId
 								FROM 
 									public.ocorrencia o
 								INNER JOIN
 									public.ocorrencia_aluno oa
 									ON o.id = oa.ocorrencia_id
+								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id 
 								WHERE
 									o.id = @id
 									AND not o.excluido;";
 
             Ocorrencia resultado = null;
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, Ocorrencia>(sql,
-                (ocorrencia, ocorrenciaAluno) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, OcorrenciaServidor,Ocorrencia>(sql,
+                (ocorrencia, ocorrenciaAluno,ocorrenciaServidor) =>
                 {
                     if (resultado is null)
                     {
@@ -153,6 +155,10 @@ namespace SME.SGP.Dados
 
                     resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
                     resultado.Alunos.Add(ocorrenciaAluno);
+                    
+                    resultado.Servidores = resultado.Servidores ?? new List<OcorrenciaServidor>();
+                    resultado.Servidores.Add(ocorrenciaServidor);
+                    
                     return resultado;
                 },
                 new { id });

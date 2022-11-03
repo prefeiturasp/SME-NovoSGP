@@ -5,18 +5,21 @@ using SME.SGP.Infra;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Queries.Ocorrencia.OcorrenciaServidor.ObterOcorrenciasServidorPorIdOcorrencia;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaCommand, RetornoBaseDto>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
+        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
         private readonly IMediator mediator;
 
-        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IMediator mediator)
+        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia,  IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor,IMediator mediator)
         {
-            this.repositorioOcorrencia = repositorioOcorrencia;
+            this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -36,10 +39,12 @@ namespace SME.SGP.Aplicacao
 
                 ocorrencia.Excluir();
                 await repositorioOcorrencia.SalvarAsync(ocorrencia);
-                if (!String.IsNullOrEmpty(ocorrencia?.Descricao))
+                if (!string.IsNullOrEmpty(ocorrencia?.Descricao))
                 {
                     await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia.Name()));
                 }
+
+                await mediator.Send(new ExcluirOcorrenciaServidorPorIdOcorrenciaCommand(ocorrencia.Id));
             }
             catch(Exception ex)
             {

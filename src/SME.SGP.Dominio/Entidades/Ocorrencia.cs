@@ -7,6 +7,7 @@ namespace SME.SGP.Dominio
     public class Ocorrencia : EntidadeBase
     {
         public ICollection<OcorrenciaAluno> Alunos { get; set; }
+        public ICollection<OcorrenciaServidor> Servidores { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string Descricao { get; set; }
         public bool Excluido { get; set; }
@@ -18,17 +19,18 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public long UeId { get; set; }
 
-        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
+        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
         {
             DataOcorrencia = dataOcorrencia;
             Titulo = titulo;
             Descricao = descricao;
             SetOcorrenciaTipo(ocorrenciaTipo);
             SetTurma(turma);
+            UeId = ueId;
         }
 
-        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma)
-            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma)
+        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
+            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma,ueId)
         {
             SetHoraOcorrencia(horaOcorrencia);
         }
@@ -44,10 +46,22 @@ namespace SME.SGP.Dominio
             Alunos.Add(ocorrenciaAluno);
         }
 
+        public void AdicinarServidor(string codigoServidor)
+        {
+            var ocorrenciaServidor = new OcorrenciaServidor(codigoServidor, this);
+            Servidores = Servidores ?? new List<OcorrenciaServidor>();
+            Servidores.Add(ocorrenciaServidor);
+        }
         public void AdiconarAlunos(IEnumerable<long> codigosAlunos)
         {
             foreach (var codigoAluno in codigosAlunos)
                 AdicionarAluno(codigoAluno);
+        }
+
+        public void AdicionarServidores(IEnumerable<string> codigosServidor)
+        {
+            foreach (var codigoServidor in codigosServidor)
+                AdicinarServidor(codigoServidor);
         }
 
         public void SetHoraOcorrencia(string horaOcorrencia)

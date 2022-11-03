@@ -3,11 +3,18 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class InserirOcorrenciaCommand : IRequest<AuditoriaDto>
     {
+        public bool ConsideraHistorico { get; set; }
+        public int AnoLetivo { get; set; }
+        public long DreId { get; set; }
+        public long UeId { get; set; }
+        public int Modalidade { get; set; }
+        public int Semestre { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string HoraOcorrencia { get; set; }
         public string Titulo { get; set; }
@@ -15,23 +22,24 @@ namespace SME.SGP.Aplicacao
         public long OcorrenciaTipoId { get; set; }
         public long TurmaId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
+        public IEnumerable<string> CodigosServidores { get; set; }
 
-        public InserirOcorrenciaCommand()
+        public InserirOcorrenciaCommand(InserirOcorrenciaDto dto)
         {
-            CodigosAlunos = new List<long>();
-        }
-
-        public InserirOcorrenciaCommand(DateTime dataOcorrencia, string horaOcorrencia, 
-                                        string titulo, string descricao, long ocorrenciaTipoId, long turmaId, 
-                                        IEnumerable<long> codigosAlunos)
-        {
-            DataOcorrencia = dataOcorrencia;
-            HoraOcorrencia = horaOcorrencia;
-            Titulo = titulo;
-            Descricao = descricao;
-            OcorrenciaTipoId = ocorrenciaTipoId;
-            TurmaId = turmaId;
-            CodigosAlunos = codigosAlunos;
+            DataOcorrencia = dto.DataOcorrencia;
+            HoraOcorrencia = dto.HoraOcorrencia;
+            Titulo = dto.Titulo;
+            Descricao = dto.Descricao;
+            OcorrenciaTipoId = dto.OcorrenciaTipoId;
+            TurmaId = dto.TurmaId;
+            CodigosAlunos = dto.CodigosAlunos;
+            ConsideraHistorico = dto.ConsideraHistorico;
+            AnoLetivo = dto.AnoLetivo;
+            DreId = dto.DreId;
+            UeId = dto.UeId;
+            Modalidade = dto.Modalidade;
+            Semestre = dto.Semestre;
+            CodigosServidores = dto.CodigosServidores;
         }
     }
 
