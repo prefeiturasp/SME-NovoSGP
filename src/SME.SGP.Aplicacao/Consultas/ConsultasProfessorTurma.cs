@@ -60,9 +60,9 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
-        public async Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterResumoPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
-            var professorResumo = await ObterProfessorUeRFEOL(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
+            var professorResumo = await ObterProfessorUeRFEOL(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
 
             return professorResumo;
         }
@@ -89,9 +89,9 @@ namespace SME.SGP.Aplicacao
 
             return professorResumo;
         }
-        private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        private async Task<ProfessorResumoDto> ObterProfessorUeRFEOL(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
-            var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos);
+            var professorResumo = await servicoEOL.ObterProfessorPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
             if (professorResumo == null)
                 throw new NegocioException("RF não localizado do EOL");
 

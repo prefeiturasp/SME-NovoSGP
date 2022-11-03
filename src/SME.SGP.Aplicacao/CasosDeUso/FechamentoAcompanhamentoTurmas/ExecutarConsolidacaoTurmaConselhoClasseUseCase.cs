@@ -35,7 +35,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var turma = await mediator
-                .Send(new ObterTurmaPorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
+                .Send(new ObterTurmaComUeEDrePorIdQuery(consolidacaoTurmaConselhoClasse.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("Turma não encontrada");

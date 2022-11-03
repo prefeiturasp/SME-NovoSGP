@@ -9,18 +9,20 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery : IRequest<IEnumerable<ComponenteCurricularEol>>
     {
-        public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
+        public ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true)
         {
             CodigoTurma = codigoTurma;
             Login = login;
             Perfil = perfil;
             RealizarAgrupamentoComponente = realizarAgrupamentoComponente;
+            ChecaMotivoDisponibilizacao = checaMotivoDisponibilizacao;
         }
 
         public string CodigoTurma { get; }
         public string Login { get; }
         public Guid Perfil { get; }
         public bool RealizarAgrupamentoComponente { get; set; }
+        public bool ChecaMotivoDisponibilizacao { get; set; }
     }
 
     public class ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQueryValidator : AbstractValidator<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery>
