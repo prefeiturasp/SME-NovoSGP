@@ -67,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             };
             await useCaseOcorrencia.Executar(dtoOcorrencia);
             
-            var obeterOcorrencias = ObterTodos<Ocorrencia>();
+            var obeterOcorrencias = ObterTodos<Dominio.Ocorrencia>();
             obeterOcorrencias.Count.ShouldBeEquivalentTo(1);
             obeterOcorrencias.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
             obeterOcorrencias.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(dtoOcorrencia.Titulo);
