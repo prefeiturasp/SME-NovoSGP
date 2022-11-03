@@ -512,7 +512,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
         {
             return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
@@ -838,6 +838,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         new Guid(PerfilUsuario.AD.Name())
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = "4444444",
+                    Perfis = new List<Guid>
+                    {
+                        new Guid(PerfilUsuario.PAAI.Name())
+                    }
+                },
             };
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
         }
@@ -902,7 +910,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId)
+        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
         {
             throw new NotImplementedException();
         }

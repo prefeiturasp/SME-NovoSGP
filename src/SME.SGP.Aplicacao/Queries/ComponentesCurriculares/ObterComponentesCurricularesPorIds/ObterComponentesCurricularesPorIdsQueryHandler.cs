@@ -13,19 +13,33 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
         private readonly IServicoEol servicoEol;
+        private readonly IMediator mediator;
 
-        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEol)
+        public ObterComponentesCurricularesPorIdsQueryHandler(IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular, IServicoEol servicoEol, IMediator mediator)
         {
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new System.ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.servicoEol = servicoEol ?? throw new System.ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value)
-                return await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.Ids);
+            {
+                var listaDisciplinas = new List<DisciplinaDto>();
+                var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.Ids);
+                foreach(var disciplina in disciplinasAgrupadas)
+                {
+                    disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                    listaDisciplinas.Add(disciplina);
+                }
+
+                return listaDisciplinas;
+            }
             else
                 return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
         }
+
+
     }
 }

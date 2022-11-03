@@ -24,9 +24,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(
-            ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery request,
-            CancellationToken cancellationToken)
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> Handle(ObterNotasConceitosConselhoClassePorTurmasCodigosEBimestreQuery request, CancellationToken cancellationToken)
         {
             var retorno = new List<NotaConceitoBimestreComponenteDto>();
 
@@ -37,7 +35,7 @@ namespace SME.SGP.Aplicacao
                             request.Bimestre),
                         async () => await repositorioConselhoClasseNota
                             .ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(turmaCodigo,
-                                request.Bimestre),
+                                request.Bimestre == 0 ? null : request.Bimestre),
                         "Obter notas ou conceitos do conselho de classe"))
                     .ToList();
 
@@ -45,7 +43,7 @@ namespace SME.SGP.Aplicacao
                     retorno.AddRange(notasConceitosConselhoClasse);
             }
 
-            return await Task.FromResult(retorno);
+            return retorno;
         }
     }
 }

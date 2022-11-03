@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = mensagem.ObterObjetoMensagem<FiltroValidarMediaAlunosDto>();
 
-            var dataAtual = DateTime.Now;
             var notasConceitos = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(filtro.AtividadesAvaliativasIds.ToArray(), filtro.AlunosIds.ToArray(), filtro.DisciplinaId, filtro.CodigoTurma));
 
             var atividadesAvaliativas = await repositorioAtividadeAvaliativa.ListarPorIds(filtro.AtividadesAvaliativasIds);
@@ -32,15 +31,15 @@ namespace SME.SGP.Aplicacao
 
             foreach (var notasPorAvaliacao in notasPorAvaliacoes)
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunosAtividadeAvaliativa,
-                                                               ObterFiltroAtividadeAvaliativa(filtro, atividadesAvaliativas, percentualAlunosInsuficientes, notasPorAvaliacao.Key, notasPorAvaliacao.ToList()),
+                                                               ObterFiltroAtividadeAvaliativa(filtro, atividadesAvaliativas, percentualAlunosInsuficientes, notasPorAvaliacao.Key, notasPorAvaliacao.ToList(), filtro.ConsideraHistorico),
                                                                Guid.NewGuid(), null));
 
             return true;
         }
 
-        private FiltroValidarMediaAlunosAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(FiltroValidarMediaAlunosDto filtroValidarMedia, System.Collections.Generic.IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, long notaChaveAvaliativa, IEnumerable<NotaConceito> notasPorAvaliacao)
+        private FiltroValidarMediaAlunosAtividadeAvaliativaDto ObterFiltroAtividadeAvaliativa(FiltroValidarMediaAlunosDto filtroValidarMedia, System.Collections.Generic.IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, double percentualAlunosInsuficientes, long notaChaveAvaliativa, IEnumerable<NotaConceito> notasPorAvaliacao, bool consideraHistorico = false)
         {
-            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notaChaveAvaliativa, notasPorAvaliacao, filtroValidarMedia.Usuario, filtroValidarMedia.DisciplinaId, filtroValidarMedia.HostAplicacao);
+            return new FiltroValidarMediaAlunosAtividadeAvaliativaDto(atividadesAvaliativas, percentualAlunosInsuficientes, notaChaveAvaliativa, notasPorAvaliacao, filtroValidarMedia.Usuario, filtroValidarMedia.DisciplinaId, filtroValidarMedia.HostAplicacao, filtroValidarMedia.TemAbrangenciaUeOuDreOuSme, consideraHistorico);
         }
     }
 }

@@ -42,7 +42,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            var query = @"select t.id 
+                        from turma t
+                        inner join ue u on t.ue_id = u.id
+                        where t.turma_id = @turmaCodigo
+                            and u.tipo_escola not in (10, 11, 18)";
+            
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
@@ -87,7 +93,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre d on
 	                        u.dre_id = d.id
                         where
-	                        turma_id = @turmaCodigo";
+	                        turma_id = @turmaCodigo
+                            and u.tipo_escola not in (10, 11, 18)";
 
             contexto.AbrirConexao();
 
@@ -106,6 +113,7 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.turma_id,
 	                        t.ue_id,
 	                        t.nome,
+                            t.nome_filtro,
 	                        t.ano,
 	                        t.ano_letivo,
 	                        t.modalidade_codigo,
@@ -115,10 +123,11 @@ namespace SME.SGP.Dados.Repositorios
 	                        t.data_atualizacao,
                             t.tipo_turma,
                             t.historica,
+                            t.data_inicio,
 	                        u.id as UeId,
 	                        u.id,
 	                        u.ue_id,
-	                        u.nome,
+	                        u.nome,                            
 	                        u.dre_id,
 	                        u.tipo_escola,
 	                        u.data_atualizacao,
@@ -679,6 +688,23 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, new { turmaCodigo });
         }
 
+        public async Task<IEnumerable<TurmaConsolidacaoFechamentoGeralDto>> ObterTurmasConsolidacaoFechamentoGeralAsync(int anoLetivo, int pagina, int quantidadeRegistrosPorPagina, params TipoEscola[] tiposEscola)
+        {
+            var query = @"select distinct t.id as turmaId, t.modalidade_codigo as modalidade 
+                            from turma t 
+                                inner join ue
+                                    on t.ue_id = ue.id
+                           where t.tipo_turma in  (1,2,7) 
+                             and t.modalidade_codigo  in (3,5,6) 
+                             and t.ano_letivo = @anoLetivo
+                             and ue.tipo_escola = any(@tiposEscola)
+                         limit @quantidadeRegistrosPorPagina
+                         offset (@pagina - 1) * @quantidadeRegistrosPorPagina";            
+
+            return await contexto.Conexao.QueryAsync<TurmaConsolidacaoFechamentoGeralDto>(query, 
+                new { anoLetivo, pagina, quantidadeRegistrosPorPagina, tiposEscola = tiposEscola.Select(tp => (int)tp).ToArray() });
+        }
+
         public async Task<IEnumerable<string>> ObterCodigosTurmasPorAnoModalidade(int anoLetivo, int[] modalidades, string turmaCodigo = "")
         {
             var query = @"select turma_id 
@@ -820,7 +846,9 @@ namespace SME.SGP.Dados.Repositorios
             if (anoLetivo == DateTimeExtension.HorarioBrasilia().Year)
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro
+                            t.nome as Nome, t.nome_filtro as nomeFiltro,
+                                    t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
@@ -829,7 +857,9 @@ namespace SME.SGP.Dados.Repositorios
             else
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
-                            t.nome as Nome, t.nome_filtro as nomeFiltro, t.ano_letivo as Ano
+                            t.nome as Nome, t.nome_filtro as nomeFiltro, 
+                                    t.ano  AS AnoTurma,
+	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia_historica a
                                 inner join turma t on t.turma_id = a.turma_id
                                 where a.usuario_id = @usuarioId
@@ -887,5 +917,44 @@ namespace SME.SGP.Dados.Repositorios
 
             return await contexto.Conexao.QueryAsync<RetornoConsultaTurmaNomeFiltroDto>(query, new { turmasCodigos },queryName: "ObterTurmasNomeFiltro");
         }
+
+        public async Task<IEnumerable<TurmaComplementarDto>> ObterTurmasComplementaresPorAlunos(string[] alunosCodigos)
+        {
+            var query = @"select distinct 
+    	                    t.id,
+    	                    t.turma_id as CodigoTurma,
+    	                    t.nome,
+    	                    t.nome_filtro,
+    	                    t.ano,
+    	                    t.ano_letivo,
+    	                    t.modalidade_codigo,
+    	                    t.semestre,
+    	                    t.tipo_turno,
+    	                    t.tipo_turma,
+    	                    t.historica,
+    	                    t.data_inicio,
+    	                    t.dt_fim_eol,
+    	                    t.data_atualizacao,    
+                            tr.turma_id as TurmaRegularCodigo,
+                            tc.descricao Ciclo
+                        from conselho_classe_aluno cca
+                        inner join 
+                            conselho_classe_aluno_turma_complementar ccat on cca.id = ccat.conselho_classe_aluno_id
+                        inner join 
+                            conselho_classe cc on cc.id = cca.conselho_classe_id
+                        inner join
+                            fechamento_turma ft on cc.fechamento_turma_id = ft.id
+                        inner join 
+                            turma tr on tr.id = ft.turma_id
+                        inner join 
+                            turma t on t.id = ccat.turma_id
+                        inner join 
+                            tipo_ciclo_ano tca on tca.modalidade = t.modalidade_codigo and tca.ano = t.ano
+                        inner join tipo_ciclo tc on tc.id = tca.tipo_ciclo_id
+                    where cca.aluno_codigo = any(@alunosCodigos);";
+            return await contexto.Conexao.QueryAsync<TurmaComplementarDto>(query, new { alunosCodigos });
+        }
+
+
     }
 }

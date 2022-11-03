@@ -472,7 +472,7 @@ namespace SME.SGP.Dados
                 turmasCodigo
             });
         }
-        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres)
+        public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunoTurmasDisciplinasDataAsync(string codigoAluno, TipoFrequenciaAluno tipoFrequencia, string[] disciplinasId, string[] turmasCodigo, int[] bimestres, long[] periodosEscolaresId = null)
         {
             var query = new StringBuilder(@"select * 
 	                                        from (select fa.*,
@@ -484,9 +484,12 @@ namespace SME.SGP.Dados
                                                     and codigo_aluno = @codigoAluno
 	       	                                        and tipo = @tipoFrequencia
 	                                                and turma_id = ANY(@turmasCodigo)
-	                                                and disciplina_id = ANY(@disciplinasId)) rf ");
+	                                                and disciplina_id = ANY(@disciplinasId)");
 
-            query.AppendLine("where rf.sequencia = 1");
+            if (periodosEscolaresId != null)
+                query.AppendLine(" and fa.periodo_escolar_id = ANY(@periodosEscolaresId)");
+
+            query.AppendLine(") rf where rf.sequencia = 1");
 
             if (bimestres.Length > 0)
                 query.AppendLine(" and rf.bimestre = ANY(@bimestres)");
@@ -497,7 +500,8 @@ namespace SME.SGP.Dados
                 tipoFrequencia,
                 disciplinasId,
                 turmasCodigo,
-                bimestres
+                bimestres,
+                periodosEscolaresId
             });
         }
 

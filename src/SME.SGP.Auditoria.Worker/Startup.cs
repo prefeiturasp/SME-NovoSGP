@@ -14,6 +14,13 @@ using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using SME.SGP.Auditoria.Worker.Interfaces;
 using System;
+using System.Collections.Generic;
+using Elasticsearch.Net;
+using Nest;
+using SME.SGP.Auditoria.Worker.Repositorio;
+using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
+using SME.SGP.Dados.ElasticSearch;
+using SME.SGP.IoC;
 
 namespace SME.SGP.Auditoria.Worker
 {
@@ -29,6 +36,7 @@ namespace SME.SGP.Auditoria.Worker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            RegistrarElasticSearch(services);
             RegistrarDependencias(services);
             RegistrarMapeamentos();
             RegistrarRabbitMQ(services);
@@ -78,13 +86,45 @@ namespace SME.SGP.Auditoria.Worker
             });
         }
 
+        private void RegistrarElasticSearch(IServiceCollection services)
+        {
+            var elasticOptions = new ElasticOptions();
+            Configuration.GetSection("ElasticSearch").Bind(elasticOptions, c => c.BindNonPublicProperties = true);
+            services.AddSingleton(elasticOptions);
+
+            var nodes = new List<Uri>();
+
+            if (elasticOptions.Urls.Contains(','))
+            {
+                string[] urls = elasticOptions.Urls.Split(',');
+                foreach (string url in urls)
+                    nodes.Add(new Uri(url));
+            }
+            else
+            {
+                nodes.Add(new Uri(elasticOptions.Urls));
+            }
+            var connectionPool = new StaticConnectionPool(nodes);
+            var connectionSettings = new ConnectionSettings(connectionPool);
+            connectionSettings.ServerCertificateValidationCallback((sender, cert, chain, errors) => true);
+            connectionSettings.DefaultIndex(elasticOptions.IndicePadrao);
+
+            if (!string.IsNullOrEmpty(elasticOptions.CertificateFingerprint))
+                connectionSettings.CertificateFingerprint(elasticOptions.CertificateFingerprint);
+
+            if (!string.IsNullOrEmpty(elasticOptions.Usuario) && !string.IsNullOrEmpty(elasticOptions.Senha))
+                connectionSettings.BasicAuthentication(elasticOptions.Usuario, elasticOptions.Senha);
+            
+            var elasticClient = new ElasticClient(connectionSettings);
+            services.AddSingleton<IElasticClient>(elasticClient);
+        }
+
         private void RegistrarDependencias(IServiceCollection services)
         {
-            services.TryAddScoped<ISgpContext, SgpContext>();
+            services.ConfigurarTelemetria(Configuration);
             services.TryAddScoped<IRepositorioAuditoria, RepositorioAuditoria>();
 
             services.TryAddScoped<IRegistrarAuditoriaUseCase, RegistrarAuditoriaUseCase>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

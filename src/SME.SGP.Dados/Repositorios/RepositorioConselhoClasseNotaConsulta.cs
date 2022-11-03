@@ -140,7 +140,8 @@ namespace SME.SGP.Dados.Repositorios
                        fn.disciplina_id as ComponenteCurricularCodigo, 
                        fn.conceito_id as ConceitoId, 
                        fn.nota as Nota,
-                       fa.aluno_codigo as AlunoCodigo
+                       fa.aluno_codigo as AlunoCodigo,
+                       t.turma_id TurmaCodigo
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
@@ -148,7 +149,6 @@ namespace SME.SGP.Dados.Repositorios
                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
                  where t.turma_id = @turmaCodigo
-                 and not ft.excluido
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
@@ -204,10 +204,10 @@ namespace SME.SGP.Dados.Repositorios
         }
 
 
-        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0,
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int? bimestre,
             DateTime? dataMatricula = null, DateTime? dataSituacao = null)
         {
-            var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null";
+            var condicaoBimestre = bimestre.HasValue ? bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null" : string.Empty;
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             
@@ -226,7 +226,6 @@ namespace SME.SGP.Dados.Repositorios
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
                  inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
                  where t.turma_id = @turmaCodigo
-                 and not ft.excluido
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}

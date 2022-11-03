@@ -161,7 +161,7 @@ namespace SME.SGP.Aplicacao
                 auditoriaListaDto.Add((AuditoriaDto)conselhoClasseAluno); //No final, buscar a mais recente
             }
                         
-            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId));
+            var recomendacoesAlunoFamiliaSelecionado = await mediator.Send(new ObterRecomendacoesPorAlunoConselhoQuery(alunoCodigo, bimestre, fechamentoTurmaId, conselhosClassesIds));
 
             var alunos = await mediator
                             .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));

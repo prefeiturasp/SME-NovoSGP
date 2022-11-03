@@ -13,6 +13,11 @@ namespace SME.SGP.Infra
             PodeEditar = podeEditar;
         }
 
+        public SemestreAcompanhamentoDto()
+        {
+
+        }
+
         public int Semestre { get; set; }
         public string Descricao { get; set; }
         public bool PodeEditar { get; set; }

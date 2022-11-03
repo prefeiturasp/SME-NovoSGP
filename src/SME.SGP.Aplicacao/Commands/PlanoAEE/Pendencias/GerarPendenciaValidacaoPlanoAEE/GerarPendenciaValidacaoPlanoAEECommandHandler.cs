@@ -25,29 +25,37 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(GerarPendenciaValidacaoPlanoAEECommand request, CancellationToken cancellationToken)
         {
-            var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
+            try
+            {
+                var planoAEE = await mediator.Send(new ObterPlanoAEEPorIdQuery(request.PlanoAEEId));
 
-            if (planoAEE == null)
-                throw new NegocioException("Não foi possível localizar o PlanoAEE");
+                if (planoAEE == null)
+                    throw new NegocioException("Não foi possível localizar o PlanoAEE");
 
-            var existePendencia = await mediator.Send(new ExistePendenciaPlanoAEEQuery(request.PlanoAEEId));
+                var existePendencia = await mediator.Send(new ExistePendenciaPlanoAEEQuery(request.PlanoAEEId));
 
-            if (existePendencia)
-                return false;
+                if (existePendencia)
+                    return false;
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
+                var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId));
 
-            var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
-            var hostAplicacao = configuration["UrlFrontEnd"];
-            var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
+                var ueDre = $"{turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao})";
+                var hostAplicacao = configuration["UrlFrontEnd"];
+                var estudanteOuCrianca = turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? "da criança" : "do estudante";
 
-            var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
-            var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
-                $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
+                var titulo = $"Plano AEE para validação - {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) - {ueDre}";
+                var descricao = $"O Plano AEE {estudanteOuCrianca} {planoAEE.AlunoNome} ({planoAEE.AlunoCodigo}) da turma {turma.NomeComModalidade()} da {ueDre} foi cadastrado. <br/><a href='{hostAplicacao}aee/plano/editar/{planoAEE.Id}'>Clique aqui</a> para acessar o plano e registrar o seu parecer. " +
+                                $"<br/><br/>A pendência será resolvida automaticamente após este registro.";
 
-            await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, null, titulo, descricao, turma.UeId, PerfilUsuario.CP));
+                await mediator.Send(new GerarPendenciaPlanoAEECommand(planoAEE.Id, null, titulo, descricao, turma.UeId, turma.Id, PerfilUsuario.CP));
 
-            return true;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível Gerar pendência de Validacao do Plano AEE {request.PlanoAEEId}", LogNivel.Negocio, LogContexto.Geral,ex.Message,rastreamento:ex.StackTrace,innerException:ex.InnerException.ToString()));
+                throw;
+            }
         }
     }
 }

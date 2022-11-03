@@ -30,7 +30,7 @@ namespace SME.SGP.Dominio
         }
 
         public async Task Salvar(IEnumerable<NotaConceito> notasConceitos, string professorRf, string turmaId,
-            string disciplinaId)
+            string disciplinaId, bool consideraHistorico = false)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio
                     .Select(a => a.CodigoAluno)
                     .ToList();
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao), Guid.NewGuid(), usuario));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAvaliacao.RotaValidarMediaAlunos, new FiltroValidarMediaAlunosDto(idsAtividadesAvaliativas, alunosId, usuario, disciplinaId, turma.CodigoTurma, hostAplicacao, false, consideraHistorico), Guid.NewGuid(), usuario));
 
             }
             catch (Exception ex)

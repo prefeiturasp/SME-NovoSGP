@@ -102,9 +102,9 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("consolidar")]
         [ProducesResponseType(200)]
         [Permissao(Permissao.FB_C, Policy = "Bearer")]
-        public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
+        public async Task<IActionResult> ProcessarPendentes([FromQuery] string turmaCodigo, [FromQuery] int? bimestre, [FromQuery] int? anoLetivo, [FromServices] IIniciaConsolidacaoTurmaGeralUseCase useCase)
         {
-            await useCase.Executar(turmaCodigo, bimestre);
+            await useCase.Executar(turmaCodigo, bimestre, anoLetivo);
             return Ok();
         }
 
@@ -119,11 +119,12 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("salvar-fechamento")]
-        [ProducesResponseType(typeof(AuditoriaPersistenciaDto), 200)]
+        [ProducesResponseType(typeof(AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.CP_I, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoFinalTurmaDisciplinaDto fechamentoTurma, [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
+        public async Task<IActionResult> SalvarFechamento([FromBody] FechamentoFinalTurmaDisciplinaDto fechamentoTurma,
+            [FromServices] IInserirFechamentoTurmaDisciplinaUseCase useCase)
         {
             return Ok(await useCase.Executar(fechamentoTurma));
         }

@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Leitura,
                                                            new MensagemLeituraNotificacaoDto(request.Notificacao.Codigo,
-                                                                                            usuarioRf)));
+                                                                                             usuarioRf,
+                                                                                             request.Notificacao.AnoAnterior)));
         }
     }
 }

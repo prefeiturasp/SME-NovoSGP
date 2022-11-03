@@ -223,7 +223,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("       t.ue_nome as nomeUe,");
             query.AppendLine("       t.turma_semestre as semestre,");
             query.AppendLine("       t.qt_duracao_aula as qtDuracaoAula,");
-            query.AppendLine("       t.tipo_turno as tipoTurno");
+            query.AppendLine("       t.tipo_turno as tipoTurno,");
+            query.AppendLine("       t.tipo_turma as tipoTurma");
             query.AppendLine("from abrangencia a");
             query.AppendLine("  join usuario u");
             query.AppendLine("      on a.usuario_id = u.id");
@@ -233,7 +234,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where { (!consideraHistorico || abrangenciaPermitida ? "not " : string.Empty) }a.historico");
+            query.AppendLine($"where { (!consideraHistorico || abrangenciaPermitida ? "not " : string.Empty) } coalesce(nullif(t.turma_historica, false), a.historico)");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
@@ -903,8 +904,12 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, Modalidade modalidade, int semestre, string dre, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno)
         {
+            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();   
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
+
+            if(retorno.Any())
+                retornoUesSupervisor.AddRange(retorno);
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
@@ -954,12 +959,12 @@ namespace SME.SGP.Dados.Repositorios
                                                           Id = u.UeId
                                                       });
 
-                    retorno = listaDistinta.OrderBy(d => d.Nome);
+                    retornoUesSupervisor.AddRange(listaDistinta);
                 }
 
             }
 
-            return retorno;
+            return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
         }
 
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)

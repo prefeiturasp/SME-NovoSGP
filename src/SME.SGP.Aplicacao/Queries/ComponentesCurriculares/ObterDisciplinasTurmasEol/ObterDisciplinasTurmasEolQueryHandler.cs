@@ -47,7 +47,8 @@ namespace SME.SGP.Aplicacao
                     Compartilhada = disciplinaEol.Compartilhada,
                     RegistroFrequencia = disciplinaEol.RegistraFrequencia,
                     LancaNota = disciplinaEol.LancaNota,
-                    TurmaCodigo = disciplinaEol.TurmaCodigo
+                    TurmaCodigo = disciplinaEol.TurmaCodigo,
+                    TerritorioSaber = disciplinaEol.TerritorioSaber
                 };
             }
         }

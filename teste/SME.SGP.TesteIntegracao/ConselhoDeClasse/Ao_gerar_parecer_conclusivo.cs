@@ -12,6 +12,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
@@ -39,6 +40,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmaECodigoUeQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmaECodigoUeQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -60,7 +62,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_GEOGRAFIA_ID_8), TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_ARTES_ID_139, TipoNota.Nota, true);
-            
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_CIENCIAS_ID_89), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060, TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061, TipoNota.Nota, true);
+
+
             var conselhoClasseFechamentoAluno = new ConselhoClasseFechamentoAlunoDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,
@@ -96,7 +104,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_GEOGRAFIA_ID_8), TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INGLES_ID_9, TipoNota.Nota, true);
             await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_ARTES_ID_139, TipoNota.Nota, true);
-            
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_CIENCIAS_ID_89), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(long.Parse(COMPONENTE_EDUCACAO_FISICA_ID_6), TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060, TipoNota.Nota, true);
+            await CriarConselhoClasseTodosBimestres(COMPONENTE_CURRICULAR_LEITURA_OSL_ID_1061, TipoNota.Nota, true);
+
             var conselhoClasseFechamentoAluno = new ConselhoClasseFechamentoAlunoDto()
             {
                 AlunoCodigo = ALUNO_CODIGO_1,

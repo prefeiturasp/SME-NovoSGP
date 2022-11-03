@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             var datasDosPeriodosEscolares = new List<DiaLetivoDto>();
 
             var eventos = (await repositorioEvento
-                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId, EventoLetivo.Sim, EventoLetivo.Nao))?
+                .ObterEventosPorTipoDeCalendarioAsync(request.TipoCalendarioId, request.UeCodigo, EventoLetivo.Sim, EventoLetivo.Nao))?
                 .Where(c => (c.EhEventoUE() || c.EhEventoSME()));
 
             foreach (var periodoEscolar in request.PeriodosEscolares.OrderBy(c => c.Bimestre))
@@ -93,9 +93,11 @@ namespace SME.SGP.Aplicacao
                         if (request.DesconsiderarCriacaoDiaLetivoProximasUes)
                             continue;
                     }
-
-                    diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
-                    datasDosPeriodosEscolares.Add(diaLetivoDto);
+                    else
+                    {
+                        diaLetivoDto.EhLetivo = !diaAtual.FimDeSemana();
+                        datasDosPeriodosEscolares.Add(diaLetivoDto);    
+                    }
                 }
             }
 

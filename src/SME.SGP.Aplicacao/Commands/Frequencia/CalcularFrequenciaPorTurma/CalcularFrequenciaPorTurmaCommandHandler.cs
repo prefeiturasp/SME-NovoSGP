@@ -227,7 +227,7 @@ namespace SME.SGP.Aplicacao
                                  registroFrequenciaAluno?.TotalRemotos ?? 0,
                                  totalPresencas);
 
-                    frequenciaDosAlunos.Add(frequenciaFinal);
+                        frequenciaDosAlunos.Add(frequenciaFinal);                   
                 }
                 else
                 {
