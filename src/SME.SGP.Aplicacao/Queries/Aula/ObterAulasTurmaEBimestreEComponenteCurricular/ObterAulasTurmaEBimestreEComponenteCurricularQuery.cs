@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery : IRequest<IEnumerable<TurmaComponenteQntAulasDto>>
+    public class ObterAulasTurmaEBimestreEComponenteCurricularQuery : IRequest<IEnumerable<TurmaDataAulaComponenteQtdeAulasDto>>
     {
-        public ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery(string[] turmasCodigo, long tipoCalendarioId, string[] componentesCurricularesId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
-        {
+        public ObterAulasTurmaEBimestreEComponenteCurricularQuery(string[] turmasCodigo, string[] codigosAlunos, long tipoCalendarioId, string[] componentesCurricularesId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
+        {            
             TurmasCodigo = turmasCodigo;
+            CodigosAlunos = codigosAlunos;
             TipoCalendarioId = tipoCalendarioId;
             ComponentesCurricularesId = componentesCurricularesId;
             Bimestres = bimestres;
@@ -19,6 +20,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public string[] TurmasCodigo { get; set; }
+        public string[] CodigosAlunos { get; set; }
         public long TipoCalendarioId { get; set; }
         public string[] ComponentesCurricularesId { get; set; }
         public int[] Bimestres { get; set; }
@@ -26,9 +28,9 @@ namespace SME.SGP.Aplicacao
         public DateTime? DataSituacaoAluno { get; set; }
     }
 
-    public class ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryValidator : AbstractValidator<ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery>
+    public class ObterAulasTurmaEBimestreEComponenteCurricularQueryValidator : AbstractValidator<ObterTotalAulasTurmaEBimestreEComponenteCurricularQuery>
     {
-        public ObterTotalAulasTurmaEBimestreEComponenteCurricularQueryValidator()
+        public ObterAulasTurmaEBimestreEComponenteCurricularQueryValidator()
         {
             RuleFor(x => x.TurmasCodigo)
                 .NotEmpty()

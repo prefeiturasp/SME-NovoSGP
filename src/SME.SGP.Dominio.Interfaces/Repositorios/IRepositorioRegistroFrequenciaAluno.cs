@@ -1,4 +1,6 @@
 ﻿using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,5 +15,6 @@ namespace SME.SGP.Dominio
         Task ExcluirVarios(List<long> idsParaExcluir);
         Task AlterarRegistroAdicionandoAula(long registroFrequenciaId, long aulaId);
         Task ExcluirVariosLogicamente(long[] idsParaExcluir);
+        Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> alunos, bool somenteAusencias = false);
     }
 }
