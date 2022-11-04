@@ -71,14 +71,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.TurmaId)
                 .NotEmpty()
                 .WithMessage("A turma da ocorrência deve ser informada.");
-
-            RuleFor(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Os alunos envolvidos na ocorrência devem ser informados.");
-
-            RuleForEach(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Um ou mais alunos selecionados são inválidos.");
+            
         }
     }
 }

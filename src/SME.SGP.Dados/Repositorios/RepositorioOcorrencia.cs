@@ -128,24 +128,23 @@ namespace SME.SGP.Dados
 									o.ocorrencia_tipo_id as OcorrenciaTipoId,
 									o.turma_id as TurmaId,
 									o.titulo as Titulo,
+									o.ue_id  as UeId,
 									o.descricao as Descricao,
 									o.excluido as Excluido,
 									oa.id,
 									oa.codigo_aluno as CodigoAluno,
+									oa.ocorrencia_id as OcorrenciaId,
+									os.id,
 									os.rf_codigo  as CodigoServidor,
-									oa.ocorrencia_id as OcorrenciaId
-								FROM 
-									public.ocorrencia o
-								INNER JOIN
-									public.ocorrencia_aluno oa
-									ON o.id = oa.ocorrencia_id
+									os.ocorrencia_id  as OcorrenciaId
+								FROM public.ocorrencia o
+								left JOIN public.ocorrencia_aluno oa ON o.id = oa.ocorrencia_id
 								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id 
-								WHERE
-									o.id = @id
+								WHERE o.id = @id
 									AND not o.excluido;";
 
             Ocorrencia resultado = null;
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, OcorrenciaServidor,Ocorrencia>(sql,
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ocorrencia>(sql,
                 (ocorrencia, ocorrenciaAluno,ocorrenciaServidor) =>
                 {
                     if (resultado is null)
@@ -153,11 +152,11 @@ namespace SME.SGP.Dados
                         resultado = ocorrencia;
                     }
 
-                    resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
-                    resultado.Alunos.Add(ocorrenciaAluno);
+                    resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
+                    if(ocorrenciaAluno != null)resultado.Alunos.Add(ocorrenciaAluno);
                     
-                    resultado.Servidores = resultado.Servidores ?? new List<OcorrenciaServidor>();
-                    resultado.Servidores.Add(ocorrenciaServidor);
+                    resultado.Servidores = resultado?.Servidores ?? new List<OcorrenciaServidor>();
+                    if(ocorrenciaServidor != null) resultado.Servidores.Add(ocorrenciaServidor);
                     
                     return resultado;
                 },

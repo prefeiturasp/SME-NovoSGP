@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
@@ -57,16 +58,15 @@ namespace SME.SGP.Aplicacao
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
-                    foreach (var ocorrenciaAluno in ocorrencia.Alunos)
-                    {
+                    
+                    foreach (var ocorrenciaAluno in ocorrencia?.Alunos)
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
-                    }
                     
                     ocorrencia.AdicionarServidores(request.CodigosServidores);
-                    foreach (var ocorrenciaServidor in ocorrencia.Servidores)
-                    {
+                    
+                    foreach (var ocorrenciaServidor in ocorrencia?.Servidores)
                         await _ocorrenciaServidor.SalvarAsync(ocorrenciaServidor);
-                    }
+                    
                     
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);

@@ -32,6 +32,8 @@ namespace SME.SGP.Dominio
         public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
             : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma,ueId)
         {
+            Alunos = Alunos ?? new List<OcorrenciaAluno>();
+            Servidores = Servidores ?? new List<OcorrenciaServidor>();
             SetHoraOcorrencia(horaOcorrencia);
         }
 
