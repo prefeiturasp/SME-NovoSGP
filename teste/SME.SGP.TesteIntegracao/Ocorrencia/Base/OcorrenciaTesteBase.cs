@@ -20,12 +20,11 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>), typeof(DeletarArquivoDeRegistroExcluidoCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ExcluirOcorrenciaServidorPorIdOcorrenciaCommand>), typeof(ExcluirOcorrenciaServidorPorIdOcorrenciaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand,string>), typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand,bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade = Modalidade.EducacaoInfantil,
+        protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.EducacaoInfantil,
             ModalidadeTipoCalendario modalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil)
         {
             await CriarDreUePerfil();

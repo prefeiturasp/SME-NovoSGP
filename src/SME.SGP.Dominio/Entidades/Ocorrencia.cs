@@ -32,6 +32,8 @@ namespace SME.SGP.Dominio
         public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long? turmaId, long ueId)
             : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turmaId, ueId)
         {
+            Alunos = Alunos ?? new List<OcorrenciaAluno>();
+            Servidores = Servidores ?? new List<OcorrenciaServidor>();
             SetHoraOcorrencia(horaOcorrencia);
         }
 
@@ -88,6 +90,15 @@ namespace SME.SGP.Dominio
 
             OcorrenciaTipo = ocorrenciaTipo;
             OcorrenciaTipoId = ocorrenciaTipo.Id;
+        }
+
+        public void SetTurma(Turma turma)
+        {
+            if (turma !=null)
+            {
+                Turma = turma;
+                TurmaId = turma.Id;    
+            }
         }
 
         public void Excluir() => Excluido = true;

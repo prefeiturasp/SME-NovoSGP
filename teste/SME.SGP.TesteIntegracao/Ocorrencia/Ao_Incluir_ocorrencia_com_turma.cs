@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         [InlineData(PROFESSOR, Modalidade.Fundamental)]
         public async Task Deve_inserir_ocorrencia_para_turma_sem_aluno(string perfil, Modalidade modalidade)
         {
-            await CriarDadosBasicos(perfil, modalidade);
+            await CriarDadosBasicos(modalidade);
             var descricaoTitulo = "Ocorrência sem aluno";
             var useCase = InserirOcorrenciaUseCase();
             var dtoInserir = new InserirOcorrenciaDto()
@@ -66,7 +66,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         [InlineData(PROFESSOR, Modalidade.Fundamental)]
         public async Task Deve_inserir_ocorrencia_para_turma_com_aluno(string perfil, Modalidade modalidade)
         {
-            await CriarDadosBasicos(perfil, modalidade);
+            await CriarDadosBasicos(modalidade);
             var descricaoTitulo = "Ocorrência com aluno";
             var useCase = InserirOcorrenciaUseCase();
             var dtoInserir = new InserirOcorrenciaDto()
@@ -104,7 +104,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
         [InlineData(PROFESSOR, Modalidade.Fundamental)]
         public async Task Deve_inserir_ocorrencia_para_turma_com_servidor(string perfil, Modalidade modalidade)
         {
-            await CriarDadosBasicos(perfil, modalidade);
+            await CriarDadosBasicos(modalidade);
             var descricaoTitulo = "Ocorrência com servidor";
             var useCase = InserirOcorrenciaUseCase();
             var dtoInserir = new InserirOcorrenciaDto()
