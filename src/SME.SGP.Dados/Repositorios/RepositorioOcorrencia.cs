@@ -15,27 +15,26 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
-        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(long turmaId, string titulo, string alunoNome, DateTime? dataOcorrenciaInicio, DateTime? dataOcorrenciaFim, long[] codigosAluno, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, string[] codigosServidores, Paginacao paginacao)
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id ";
+                        inner join turma tu on tu.ue_id = o.ue_id
+						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
+                        left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
-            var condicao = new StringBuilder();
-            condicao.AppendLine(" where not o.excluido and turma_id = @turmaId ");
+            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and tu.ano_letivo = @anoLetivo ");
 
-            if (!string.IsNullOrEmpty(titulo))
-                condicao.AppendLine("and lower(f_unaccent(o.titulo)) LIKE ('%' || lower(f_unaccent(@titulo)) || '%')");
+            gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
+            gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
+            gerador.AdicioneCondicao(filtro.Semestre.HasValue, "and tu.semestre = @semestre ");
+            gerador.AdicioneCondicao(filtro.TipoOcorrencia.HasValue, "and ot.id = @tipoOcorrencia ");
+            gerador.AdicioneCondicao(!string.IsNullOrEmpty(filtro.Titulo), "and lower(f_unaccent(o.titulo)) LIKE ('%' || lower(f_unaccent(@titulo)) || '%')");
+            gerador.AdicioneCondicao(filtro.DataOcorrenciaInicio.HasValue, "and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
+            gerador.AdicioneCondicao(filtro.DataOcorrenciaFim.HasValue, "and data_ocorrencia::date <= @dataOcorrenciaFim");
+            gerador.AdicioneCondicao(codigosServidores != null, "and os.rf_codigo = ANY(@codigosServidores)");
 
-            if (dataOcorrenciaInicio.HasValue)
-                condicao.AppendLine("and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
-
-            if (dataOcorrenciaFim.HasValue)
-                condicao.AppendLine("and data_ocorrencia::date <= @dataOcorrenciaFim");
-
-            if (codigosAluno != null)
-                condicao.AppendLine("and oa.codigo_aluno = ANY(@codigosAluno)");
-
+            var condicao = gerador.ObterCondicao();
             var orderBy = "order by o.data_ocorrencia desc";
 
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
@@ -44,7 +43,17 @@ namespace SME.SGP.Dados
             var query = $"select count(distinct o.id) from {tabelas} {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-               new { titulo, alunoNome, dataOcorrenciaInicio, dataOcorrenciaFim, codigosAluno, turmaId });
+               new { titulo = filtro.Titulo, 
+                     dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(), 
+                     dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(), 
+                     codigosServidores,
+                     turmaId = filtro.TurmaId.GetValueOrDefault(),
+                     ueId = filtro.UeId,
+                     modalidade = filtro.Modalidade.GetValueOrDefault(),
+                     semestre = filtro.Semestre.GetValueOrDefault(),
+                     tipoOcorrencia = filtro.TipoOcorrencia.GetValueOrDefault(),
+                     anoLetivo = filtro.AnoLetivo
+               });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
@@ -73,15 +82,17 @@ namespace SME.SGP.Dados
 							ot.id,
 							ot.descricao,
 							oa.id,
-							oa.codigo_aluno
+							oa.codigo_aluno,
+                            os.*
                         from tempOcorrenciasSelecionadas tos
                         inner join ocorrencia o on tos.id = o.id
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-						inner join ocorrencia_aluno oa on oa.ocorrencia_id = o.id;";
+						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
+                        left join ocorrencia_servidor os on os.ocorrencia_id = o.id;";
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
 
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, OcorrenciaServidor, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno, servidor) =>
             {
                 if (!lstOcorrencias.TryGetValue(ocorrencia.Id, out Ocorrencia ocorrenciaEntrada))
                 {
@@ -91,16 +102,23 @@ namespace SME.SGP.Dados
                 }
 
                 ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
-                ocorrenciaEntrada.Alunos.Add(aluno);
+                if (aluno != null)
+                    ocorrenciaEntrada.Alunos.Add(aluno);
+                if (servidor != null)
+                    ocorrenciaEntrada.Servidores.Add(servidor);
                 return ocorrenciaEntrada;
             }, new
             {
-                titulo,
-                alunoNome,
-                dataOcorrenciaInicio,
-                dataOcorrenciaFim,
-                codigosAluno,
-                turmaId,
+                titulo = filtro.Titulo,
+                dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(),
+                dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(),
+                codigosServidores,
+                turmaId = filtro.TurmaId.GetValueOrDefault(),
+                ueId = filtro.UeId,
+                modalidade = filtro.Modalidade.GetValueOrDefault(),
+                semestre = filtro.Semestre.GetValueOrDefault(),
+                tipoOcorrencia = filtro.TipoOcorrencia.GetValueOrDefault(),
+                anoLetivo = filtro.AnoLetivo,
                 qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
                 qtdeRegistros = paginacao.QuantidadeRegistros
             }, splitOn: "id, id");

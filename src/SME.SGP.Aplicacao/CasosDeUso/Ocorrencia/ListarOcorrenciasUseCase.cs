@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> Executar(FiltroOcorrenciaListagemDto dto)
         {
-            var retorno = await mediator.Send(new ListarOcorrenciasQuery(dto.DataOcorrenciaInicio, dto.DataOcorrenciaFim, dto.AlunoNome, dto.Titulo, dto.TurmaId));
+            var retorno = await mediator.Send(new ListarOcorrenciasQuery(dto));
             return retorno;
         }
     }

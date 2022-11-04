@@ -55,6 +55,12 @@ namespace SME.SGP.Aplicacao
                     Id = ao.Id,
                     CodigoAluno = ao.CodigoAluno,
                     Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno.ToString())?.NomeAluno
+                }),
+                Servidores = ocorrencia.Servidores.Select(ao => new OcorrenciaServidorDto()
+                {
+                    Id = ao.Id,
+                    CodigoServidor = ao.CodigoServidor,
+                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoServidor.ToString())?.NomeAluno
                 })
             };
     }

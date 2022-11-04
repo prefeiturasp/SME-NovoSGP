@@ -1,17 +1,18 @@
-﻿using System;
+﻿using MediatR;
+using SME.SGP.Dados;
+using SME.SGP.Dominio;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using SME.SGP.Dados;
 
-namespace SME.SGP.Aplicacao.Queries.Ocorrencia.OcorrenciaServidor.ObterOcorrenciasServidorPorIdOcorrencia
+namespace SME.SGP.Aplicacao
 {
     public class ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler : IRequestHandler<ObterOcorrenciasServidorPorIdOcorrenciaQuery,IEnumerable<Dominio.OcorrenciaServidor>>
     {
-        private readonly RepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
+        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
 
-        public ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler(RepositorioOcorrenciaServidor repositorioOcorrenciaServidor)
+        public ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler(IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor)
         {
             _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
         }
