@@ -1,4 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -17,7 +20,8 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IMediator mediator;
 
-        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, IConsultasAbrangencia consultasAbrangencia, IMediator mediator) : base(contextoAplicacao)
+        public ObterPlanosAEEQueryHandler(IContextoAplicacao contextoAplicacao, IRepositorioPlanoAEEConsulta repositorioPlanoAEE, 
+                                          IConsultasAbrangencia consultasAbrangencia, IMediator mediator) : base(contextoAplicacao)
         {            
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
@@ -31,16 +35,22 @@ namespace SME.SGP.Aplicacao
             List<string> turmasCodigos = new List<string>();
 
             var ueCodigo = await mediator.Send(new ObterUePorIdQuery(request.UeId));
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var turmas =
-                await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
-                        periodo, false, DateTime.Now.Year, tipos, true)); 
+            bool ehAdmin = usuario.EhAdmGestao();
 
-            if (turmas != null || turmas.Any())
-            {               
-                foreach (var item in turmas)
-                    turmasCodigos.Add(item.Codigo);
+            
+            if (!ehAdmin){
+                var turmas =
+                    await mediator.Send(
+                        new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0,
+                            periodo, false, DateTime.Now.Year, tipos, true));
+
+                if (turmas != null || turmas.Any())
+                {
+                    foreach (var item in turmas)
+                        turmasCodigos.Add(item.Codigo);
+                }
             }
 
             return MapearParaDto(await repositorioPlanoAEE.ListarPaginado(request.DreId,
@@ -49,6 +59,7 @@ namespace SME.SGP.Aplicacao
                                                                           request.AlunoCodigo,
                                                                           (int?)request.Situacao,
                                                                           turmasCodigos.ToArray(),
+                                                                          ehAdmin,
                                                                           Paginacao));
         }
 
@@ -80,7 +91,7 @@ namespace SME.SGP.Aplicacao
                     RfReponsavel = planoAEE.RfReponsavel,
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
-                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel 
+                    NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
                 };
             }
         }

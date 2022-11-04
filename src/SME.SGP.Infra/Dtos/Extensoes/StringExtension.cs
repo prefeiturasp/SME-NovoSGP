@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using System.Linq;
+
+namespace SME.SGP.Infra
 {
     public static class StringExtension
     {
@@ -15,5 +17,10 @@
 
             return returnValue;
         }
+
+        public static bool ExcedeuQuantidadeImagensPermitidas(this string textoParaAvaliar, int quantidadePermitida)
+        {
+            return textoParaAvaliar.Split().LongCount(x => x.Contains("src=")) > quantidadePermitida;
+        } 
     }
 }

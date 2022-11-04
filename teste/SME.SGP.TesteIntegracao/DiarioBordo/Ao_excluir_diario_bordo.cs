@@ -98,7 +98,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
         [Fact(DisplayName = "Diario de Bordo com Data Aula retroativa- Deve gerar Pendência de Diário de Bordo ao excluir Diário de Bordo caso a data da aula seja anterior")]
         public async Task Deve_Criar_Pendencia_Diario_Bordo_Data_Aula_Anterior()
         {
-            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, DataAulaDiarioBordo = DateTimeExtension.HorarioBrasilia().AddDays(-7).Date };
+            var filtro = new FiltroDiarioBordoDto { ComponenteCurricularId = COMPONENTE_CURRICULAR_512, DataAulaDiarioBordo = DateTimeExtension.HorarioBrasilia().AddDays(-5).Date };
             await ExecutarTesteDiarioBordo_Pendencias(filtro);
         }
 
@@ -126,6 +126,8 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             var excluiu = await useCase.Executar(DIARIO_BORDO_ID_1);
             excluiu.ShouldBeTrue();
+
+            obterResgistrosNaoExcluidos = ObterTodos<Dominio.DiarioBordo>();
 
             var obterResgistrosExcluidos = ObterTodos<Dominio.DiarioBordo>().Where(diariobordo => diariobordo.Excluido).ToList();
             obterResgistrosExcluidos.Count.ShouldBeEquivalentTo(1);

@@ -17,15 +17,18 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
+        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public AlterarOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
             IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IUnitOfWork unitOfWork, IMediator mediator,
+            IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor,
             IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
+            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo)); ;
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno)); ;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -53,7 +56,7 @@ namespace SME.SGP.Aplicacao
 
                     var alunosParaSeremDeletados = ocorrencia.Alunos.Where(x => !request.CodigosAlunos.Contains(x.CodigoAluno)).Select(x => x.Id);
                     await repositorioOcorrenciaAluno.ExcluirAsync(alunosParaSeremDeletados);
-
+                    
                     var novosAlunos = request.CodigosAlunos.Where(x => !ocorrencia.Alunos.Any(y => y.CodigoAluno == x)).ToList();
                     ocorrencia.AdiconarAlunos(novosAlunos);
                     foreach (var novoAluno in novosAlunos)
@@ -62,6 +65,18 @@ namespace SME.SGP.Aplicacao
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                     }
 
+                    var servidoresParaSeremDeletados = ocorrencia.Servidores.Where(s => !request.CodigosServidores.Contains(s.CodigoServidor)).Select(d => d.Id);
+                    await _repositorioOcorrenciaServidor.ExcluirPoIds(servidoresParaSeremDeletados);
+                    
+                    var novosServidores = request.CodigosServidores.Where(x => !ocorrencia.Servidores.Any(y => y.CodigoServidor == x)).ToList();
+                    ocorrencia.AdicionarServidores(novosServidores);
+                    foreach (var novoServidor in novosServidores)
+                    {
+                        var ocorrenciaServidor = ocorrencia.Servidores.FirstOrDefault(x => x.CodigoServidor == novoServidor);
+                        await _repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
+                    }
+                    
+                    
                     unitOfWork.PersistirTransacao();
                     await MoverRemoverExcluidos(request.Descricao, descricaoAtual);
                     return (AuditoriaDto)ocorrencia;
@@ -90,6 +105,7 @@ namespace SME.SGP.Aplicacao
             entidade.SetHoraOcorrencia(request.HoraOcorrencia);
             entidade.Titulo = request.Titulo;
             entidade.Descricao = request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            entidade.UeId = request.UeId;
             entidade.SetOcorrenciaTipo(ocorrenciaTipo);
         }
     }

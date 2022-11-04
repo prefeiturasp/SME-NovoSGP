@@ -32,6 +32,11 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>),
                 typeof(EncaminhamentoAEE.ServicosFake.ObterUsuarioLogadoPaai4444444QueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessorTitularPorTurmaEComponenteCurricularQuery, ProfessorTitularDisciplinaEol>),
+                typeof(DiarioBordo.ServicosFakes.ObterProfessorTitularPorTurmaEComponenteCurricularQueryHandlerFakeDiarioClasse), ServiceLifetime.Scoped));
+
+            
         }
 
         protected IExcluirDiarioBordoUseCase ObterServicoExcluirDiarioBordoUseCase()

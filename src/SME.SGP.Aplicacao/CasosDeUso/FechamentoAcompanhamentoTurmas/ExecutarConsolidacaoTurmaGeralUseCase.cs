@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
             var filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoTurmaDto>();
 
             var turmasEModalidadesParaConsolidar = filtro.TurmaCodigo.Equals("-1") ?
-                await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralPorAnoLetivoTiposEscolaQuery(0, filtro.Pagina, QUANTIDADE_REGISTROS_POR_PAGINA, null)) :
+                await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralPorAnoLetivoTiposEscolaQuery(filtro.AnoLetivo, filtro.Pagina, QUANTIDADE_REGISTROS_POR_PAGINA, null)) :
                 await mediator.Send(new ObterTurmasConsolidacaoFechamentoGeralQuery(filtro.TurmaCodigo));
 
             if (turmasEModalidadesParaConsolidar == null || !turmasEModalidadesParaConsolidar.Any())
@@ -52,9 +52,11 @@ namespace SME.SGP.Aplicacao
         {
             for (var i = 1; i <= bimestres; i++)
                 await PublicaNaFila(mensagem, i, guidParaCorrelacao);
+
+            await PublicaNaFila(mensagem, null, guidParaCorrelacao);
         }
 
-        private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int bimestre, Guid codigoCorrelacao)
+        private async Task PublicaNaFila(ConsolidacaoTurmaDto mensagem, int? bimestre, Guid codigoCorrelacao)
         {
             mensagem.Bimestre = bimestre;
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaTratar, mensagem, codigoCorrelacao, null));

@@ -32,5 +32,15 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(dreId));
         }
+
+        [HttpGet]
+        [Route("codigoUe/{codigoUe}")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro, [FromServices] IObterFuncionarioPorUeComFiltroUseCase useCase)
+        {
+            return Ok(await useCase.Executar((codigoUe, filtro)));
+        }
     }
 }

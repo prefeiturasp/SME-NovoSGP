@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
             
-            return await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEEId, responsavelRF, turma));
+            return await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE, responsavelRF, turma));
         }
     }
 }

@@ -31,12 +31,18 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<KeyValuePair<string, string>?> ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("select nome, valor");
             query.AppendLine("from parametros_sistema");
             query.AppendLine("where ativo and tipo = @tipo");
 
-            return await database.Conexao
-                .QueryFirstAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+            var resultado = await database.Conexao
+                .QueryFirstAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo });
+
+            if (resultado != null)
+                return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
+
+            return null;
+            
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)

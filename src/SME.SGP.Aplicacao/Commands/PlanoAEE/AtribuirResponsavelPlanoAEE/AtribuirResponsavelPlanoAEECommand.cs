@@ -6,14 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class AtribuirResponsavelPlanoAEECommand : IRequest<bool>
     {
-        public AtribuirResponsavelPlanoAEECommand(long planoAEEId, string responsavelRF, Turma turma)
+        public AtribuirResponsavelPlanoAEECommand(PlanoAEE planoAEE, string responsavelRF, Turma turma)
         {
-            PlanoAEEId = planoAEEId;
+            PlanoAEE = planoAEE;
             ResponsavelRF = responsavelRF;
             Turma = turma;
         }
 
-        public long PlanoAEEId { get; set; }
+        public PlanoAEE PlanoAEE { get; set; }
         public string ResponsavelRF { get; set; }
         public Turma Turma { get; set; }
     }
