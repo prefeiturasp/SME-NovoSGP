@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
             if (ocorrencia is null)
                 throw new NegocioException($"Não foi possível localizar a ocorrência {request.Id}.");
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(ocorrencia.TurmaId));
+            var turmaId = ocorrencia.TurmaId ?? 0;
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
             var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
 
             return MapearParaDto(ocorrencia, alunos);

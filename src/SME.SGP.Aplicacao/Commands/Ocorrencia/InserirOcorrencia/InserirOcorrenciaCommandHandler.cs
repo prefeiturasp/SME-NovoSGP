@@ -5,6 +5,8 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -37,8 +39,12 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
+                Turma turma = null;
                 try
                 {
+                    if(request.TurmaId is > 0)
+                      turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId ?? 0), cancellationToken);
+
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");
@@ -54,25 +60,24 @@ namespace SME.SGP.Aplicacao
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
-                    foreach (var ocorrenciaAluno in ocorrencia.Alunos)
-                    {
+                    
+                    foreach (var ocorrenciaAluno in ocorrencia?.Alunos)
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
-                    }
                     
                     ocorrencia.AdicionarServidores(request.CodigosServidores);
-                    foreach (var ocorrenciaServidor in ocorrencia.Servidores)
-                    {
-                        await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
-                    }
+                    
+                    foreach (var ocorrenciaServidor in ocorrencia?.Servidores)
+                        await _ocorrenciaServidor.SalvarAsync(ocorrenciaServidor);
+                    
                     
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
-                catch
+                catch (Exception ex)
                 {
                     unitOfWork.Rollback();
-                    throw;
+                    throw ex;
                 }
             }
         }
