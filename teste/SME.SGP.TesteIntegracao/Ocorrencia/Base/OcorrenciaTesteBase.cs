@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand,bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade = Modalidade.EducacaoInfantil,
+        protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.EducacaoInfantil,
             ModalidadeTipoCalendario modalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil)
         {
             await CriarDreUePerfil();
