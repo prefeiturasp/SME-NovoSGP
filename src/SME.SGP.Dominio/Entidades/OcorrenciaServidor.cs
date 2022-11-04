@@ -12,7 +12,7 @@
             SetOcorrencia(ocorrencia);
         }
 
-        protected OcorrenciaServidor()
+        public OcorrenciaServidor()
         {
         }
 
