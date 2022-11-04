@@ -108,7 +108,7 @@ namespace SME.SGP.Dados
                       	   a.disciplina_id, 
                       	   rfa.valor,  	
                       	   rfa.criado_em,
-                      	   row_number() over (partition by a.id, rfa.codigo_aluno, rfa.numero_aula order by rfa.id) sequencia
+                      	   row_number() over (partition by a.id, rfa.codigo_aluno, rfa.numero_aula order by rfa.id desc) sequencia
                       	from registro_frequencia_aluno rfa 
                       		inner join aula a 
                       			on rfa.aula_id = a.id

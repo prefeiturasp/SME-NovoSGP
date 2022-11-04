@@ -78,6 +78,31 @@ namespace SME.SGP.Dados.Repositorios
             var dataReferenciaSemestre = new DateTime(anoLetivoTurma, 07, 01);
             var query = new StringBuilder();
 
+            query.AppendLine("with fechamentos as (select ft.*,");
+            query.AppendLine("row_number() over (partition by ft.id, ft.turma_id order by ft.id desc) sequencia");
+            query.AppendLine("	from fechamento_turma ft");
+            query.AppendLine("		inner join turma t");
+            query.AppendLine("			on ft.turma_id = t.id");
+            query.AppendLine("where not ft.excluido and");
+            query.AppendLine("	  t.turma_id = @turmaCodigo");
+            if (bimestre > 0)
+            {
+                query.AppendLine(" and exists (select 1");
+                query.AppendLine("	 		     from periodo_escolar pe");
+                query.AppendLine("	 		    	inner join tipo_calendario tc");
+                query.AppendLine("	 		    		on pe.tipo_calendario_id = tc.id");
+                query.AppendLine("	 		   where pe.id = ft.periodo_escolar_id and");
+                query.AppendLine("	 		  		 pe.bimestre = @bimestre and");
+                query.AppendLine("	 		 		 not tc.excluido");
+                if (semestre.HasValue && semestre.Value > 0)
+                    query.AppendLine($"	 		 		and pe.periodo_inicio {(semestre.Value.Equals(1) ? "<" : ">=")} @dataReferenciaSemestre");
+                query.AppendLine(")");
+            }
+            else
+                query.AppendLine("	  and ft.periodo_escolar_id is null");
+
+            query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
+
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
@@ -133,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                         fechamentoTurmaDisciplinaLista = fechamentoTurmaDiscplina;
                         fechammentosTurmaDisciplina.Add(fechamentoTurmaDiscplina);
                     }
-                    
+
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
 
                     fechamentoTurmaDisciplinaLista.AdicionarNota(fechamentoNota);
@@ -152,7 +177,7 @@ namespace SME.SGP.Dados.Repositorios
                     where ft.turma_id = @turmaId and 
                         ftd.disciplina_id = @componenteCurricularId and 
                         ft.periodo_escolar_id = @periodoEscolarId  ");
-            
+
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query.ToString(), new { turmaId, componenteCurricularId, periodoEscolarId });
         }
 
