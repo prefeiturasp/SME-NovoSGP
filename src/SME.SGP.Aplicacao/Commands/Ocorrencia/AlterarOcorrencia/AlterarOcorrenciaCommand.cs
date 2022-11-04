@@ -15,23 +15,40 @@ namespace SME.SGP.Aplicacao
         public string Descricao { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
+        public IEnumerable<string> CodigosServidores { get; set; }
+        public bool ConsideraHistorico { get; set; }
+        public int AnoLetivo { get; set; }
+        public int DreId { get; set; }
+        public int UeId { get; set; }
+        public int Modalidade { get; set; }
+        public int Semestre { get; set; }
+        public long TurmaId { get; set; }
+
+
 
         public AlterarOcorrenciaCommand()
         {
             CodigosAlunos = new List<long>();
+            CodigosServidores = new List<string>();
         }
 
-        public AlterarOcorrenciaCommand(long id, DateTime dataOcorrencia, string horaOcorrencia, 
-                                        string titulo, string descricao, long ocorrenciaTipoId, 
-                                        IEnumerable<long> codigosAlunos)
+        public AlterarOcorrenciaCommand(AlterarOcorrenciaDto dto)
         {
-            Id = id;
-            DataOcorrencia = dataOcorrencia;
-            HoraOcorrencia = horaOcorrencia;
-            Titulo = titulo;
-            Descricao = descricao;
-            OcorrenciaTipoId = ocorrenciaTipoId;
-            CodigosAlunos = codigosAlunos;
+            Id = dto.Id;
+            DataOcorrencia = dto.DataOcorrencia;
+            HoraOcorrencia = dto.HoraOcorrencia;
+            Titulo = dto.Titulo;
+            Descricao = dto.Descricao;
+            OcorrenciaTipoId = dto.OcorrenciaTipoId;
+            CodigosAlunos = dto.CodigosAlunos;
+            CodigosServidores = dto.CodigosServidores;
+            ConsideraHistorico = dto.ConsideraHistorico;
+            AnoLetivo = dto.AnoLetivo;
+            DreId = dto.DreId;
+            UeId = dto.UeId;
+            Modalidade = dto.Modalidade;
+            Semestre = dto.Semestre;
+            TurmaId = dto.TurmaId;
         }
     }
 

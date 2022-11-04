@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Collections.Generic;
+using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -17,6 +18,18 @@ namespace SME.SGP.Dados
         {
             var sql = "delete from ocorrencia_servidor where ocorrencia_id = @idOcorrencia";
             await database.Conexao.ExecuteAsync(sql, new { idOcorrencia });
+        }
+        
+        public async Task ExcluirPoIds(IEnumerable<long> ids)
+        {
+            var sql = "delete from ocorrencia_servidor where id any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { ids });
+        }
+
+        public async Task<IEnumerable<OcorrenciaServidor>> ObterPorIdOcorrencia(long idOcorrencia)
+        {
+            var sql = "select * from ocorrencia_servidor where ocorrencia_id = @idOcorrencia";
+            return await database.Conexao.QueryAsync<OcorrenciaServidor>(sql,new{idOcorrencia});
         }
     }
 }
