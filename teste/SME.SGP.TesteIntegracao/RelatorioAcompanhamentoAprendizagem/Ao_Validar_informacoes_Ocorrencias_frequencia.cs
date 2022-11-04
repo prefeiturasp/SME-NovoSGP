@@ -63,6 +63,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 Titulo = TITULO_OCORRENCIA,
                 HoraOcorrencia = HORARIO_OCORRENCIA,
                 TurmaId = TURMA_ID_1,
+                UeId = UE_ID_1,
                 CodigosAlunos = new List<long>{1}
             };
             await useCaseOcorrencia.Executar(dtoOcorrencia);
@@ -72,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             obeterOcorrencias.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
             obeterOcorrencias.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(dtoOcorrencia.Titulo);
 
-            var ocorrenciaAluno = await obterOcorrenciasPorAlunoUseCase.Executar(new FiltroTurmaAlunoSemestreDto(dtoOcorrencia.TurmaId ?? 0, dtoOcorrencia.CodigosAlunos.First(), 2));
+            var ocorrenciaAluno = await obterOcorrenciasPorAlunoUseCase.Executar(new FiltroTurmaAlunoSemestreDto(dtoOcorrencia.TurmaId.GetValueOrDefault(), dtoOcorrencia.CodigosAlunos.First(), 2));
             ocorrenciaAluno.Items.Count().ShouldBeEquivalentTo(1);
             ocorrenciaAluno.Items.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
             ocorrenciaAluno.Items.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(dtoOcorrencia.Titulo);

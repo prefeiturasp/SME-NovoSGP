@@ -13,15 +13,6 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 {
     public class Ao_Incluir_ocorrencia_com_turma : OcorrenciaTesteBase
     {
-        private const int ID_TIPO_INCIDENTE = 1;
-        private const long ALUNO_1 = 1;
-        private const long ALUNO_2 = 2;
-        private const long ALUNO_3 = 3;
-        private const string RF_3333333 = "3333333";
-        private const string RF_4444444 = "4444444";
-        private const string PROFESSOR_INFANTIL = "61E1E074-37D6-E911-ABD6-F81654FE895D";
-        private const string PROFESSOR = "43E1E074-37D6-E911-ABD6-F81654FE895D";
-
         public Ao_Incluir_ocorrencia_com_turma(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -130,10 +121,10 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             ocorrencia.Titulo.ShouldBe(descricaoTitulo);
             ocorrencia.TurmaId.ShouldBe(TURMA_ID_1);
 
-            var ocorrenciasAlunos = ObterTodos<OcorrenciaServidor>();
-            ocorrenciasAlunos.ShouldNotBeNull();
-            ocorrenciasAlunos.Count().ShouldBe(2);
-            ocorrenciasAlunos.Exists(ocorrencia => ocorrencia.CodigoServidor == RF_3333333).ShouldBeTrue();
+            var ocorrenciasServidores = ObterTodos<OcorrenciaServidor>();
+            ocorrenciasServidores.ShouldNotBeNull();
+            ocorrenciasServidores.Count().ShouldBe(2);
+            ocorrenciasServidores.Exists(ocorrencia => ocorrencia.CodigoServidor == RF_3333333).ShouldBeTrue();
         }
     }
 }
