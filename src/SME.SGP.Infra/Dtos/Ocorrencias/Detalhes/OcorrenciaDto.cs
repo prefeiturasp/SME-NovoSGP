@@ -10,7 +10,7 @@ namespace SME.SGP.Infra
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public string OcorrenciaTipoId { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public IEnumerable<OcorrenciaAlunoDto> Alunos { get; set; }
 

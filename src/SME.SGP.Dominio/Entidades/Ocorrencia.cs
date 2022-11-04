@@ -15,7 +15,7 @@ namespace SME.SGP.Dominio
         public OcorrenciaTipo OcorrenciaTipo { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public string Titulo { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public Turma Turma { get; set; }
         public long UeId { get; set; }
 
@@ -94,11 +94,11 @@ namespace SME.SGP.Dominio
 
         public void SetTurma(Turma turma)
         {
-            if(turma is null)
-                throw new NegocioException("É necessário informar o tipo de ocorrência.");
-
-            Turma = turma;
-            TurmaId = turma.Id;
+            if (turma !=null)
+            {
+                Turma = turma;
+                TurmaId = turma.Id;    
+            }
         }
 
         public void Excluir() => Excluido = true;

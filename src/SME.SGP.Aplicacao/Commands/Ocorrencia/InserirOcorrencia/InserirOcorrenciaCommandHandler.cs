@@ -39,11 +39,11 @@ namespace SME.SGP.Aplicacao
         {
             using (var transacao = unitOfWork.IniciarTransacao())
             {
+                Turma turma = null;
                 try
                 {
-                    var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-                    if (turma is null)
-                        throw new NegocioException("A turma da ocorrência informada não foi encontrada.");
+                    if(request.TurmaId is > 0)
+                      turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId ?? 0), cancellationToken);
 
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
                     if (ocorrenciaTipo is null)
@@ -72,10 +72,10 @@ namespace SME.SGP.Aplicacao
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
                 }
-                catch
+                catch (Exception ex)
                 {
                     unitOfWork.Rollback();
-                    throw;
+                    throw ex;
                 }
             }
         }

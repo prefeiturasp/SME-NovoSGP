@@ -6,6 +6,6 @@
         public string DataOcorrencia { get; set; }
         public string Titulo { get; set; }
         public string AlunoOcorrencia { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
     }
 }

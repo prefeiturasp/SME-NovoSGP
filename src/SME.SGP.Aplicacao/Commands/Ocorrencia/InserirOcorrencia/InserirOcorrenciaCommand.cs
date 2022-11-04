@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public long OcorrenciaTipoId { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
         public IEnumerable<string> CodigosServidores { get; set; }
 
@@ -68,10 +68,6 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("O título da ocorrência deve ser informado.");
 
-            RuleFor(x => x.TurmaId)
-                .NotEmpty()
-                .WithMessage("A turma da ocorrência deve ser informada.");
-            
         }
     }
 }
