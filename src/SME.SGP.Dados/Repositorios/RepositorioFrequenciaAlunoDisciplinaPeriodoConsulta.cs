@@ -569,7 +569,7 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
-            var query = new StringBuilder();
+            StringBuilder query = new StringBuilder();
             query.AppendLine("with lista as (");
             query.AppendLine(@"select distinct a.id, 
                                                a.disciplina_id as ComponenteCurricularCodigo, 
