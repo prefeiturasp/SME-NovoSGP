@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
@@ -39,6 +40,9 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
+                    if (request.DataOcorrencia > DateTimeExtension.HorarioBrasilia())
+                        throw new NegocioException(MensagemNegocioComuns.Data_da_ocorrencia_nao_pode_ser_futura);
+
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
                     if (ocorrenciaTipo is null)
                         throw new NegocioException("O tipo da ocorrência informado não foi encontrado.");

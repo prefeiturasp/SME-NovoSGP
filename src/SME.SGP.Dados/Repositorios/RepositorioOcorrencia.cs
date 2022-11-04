@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
-        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, string[] codigosServidores, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao)
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
@@ -32,7 +32,6 @@ namespace SME.SGP.Dados
             gerador.AdicioneCondicao(!string.IsNullOrEmpty(filtro.Titulo), "and lower(f_unaccent(o.titulo)) LIKE ('%' || lower(f_unaccent(@titulo)) || '%')");
             gerador.AdicioneCondicao(filtro.DataOcorrenciaInicio.HasValue, "and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
             gerador.AdicioneCondicao(filtro.DataOcorrenciaFim.HasValue, "and data_ocorrencia::date <= @dataOcorrenciaFim");
-            gerador.AdicioneCondicao(codigosServidores != null, "and os.rf_codigo = ANY(@codigosServidores)");
 
             var condicao = gerador.ObterCondicao();
             var orderBy = "order by o.data_ocorrencia desc";
@@ -46,7 +45,6 @@ namespace SME.SGP.Dados
                new { titulo = filtro.Titulo, 
                      dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(), 
                      dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(), 
-                     codigosServidores,
                      turmaId = filtro.TurmaId.GetValueOrDefault(),
                      ueId = filtro.UeId,
                      modalidade = filtro.Modalidade.GetValueOrDefault(),
@@ -112,7 +110,6 @@ namespace SME.SGP.Dados
                 titulo = filtro.Titulo,
                 dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(),
                 dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(),
-                codigosServidores,
                 turmaId = filtro.TurmaId.GetValueOrDefault(),
                 ueId = filtro.UeId,
                 modalidade = filtro.Modalidade.GetValueOrDefault(),

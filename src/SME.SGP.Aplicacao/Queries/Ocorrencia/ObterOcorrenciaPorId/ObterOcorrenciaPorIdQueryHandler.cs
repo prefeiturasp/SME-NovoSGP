@@ -33,13 +33,38 @@ namespace SME.SGP.Aplicacao
             if (ocorrencia is null)
                 throw new NegocioException($"Não foi possível localizar a ocorrência {request.Id}.");
 
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(ocorrencia.TurmaId));
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma));
+            var alunos = await ObterAlunos(ocorrencia);
+            var servidores = await ObterServidores(ocorrencia);
 
-            return MapearParaDto(ocorrencia, alunos);
+            return MapearParaDto(ocorrencia, alunos, servidores);
         }
 
-        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<AlunoPorTurmaResposta> alunos) 
+        private async Task<IEnumerable<UsuarioEolRetornoDto>> ObterServidores(Ocorrencia ocorrencia)
+        {
+            var codigosServidor = ocorrencia.Servidores.Select(servidor => servidor.CodigoServidor).ToArray();
+
+            if (codigosServidor.Any())
+            {
+                var dtoUe = await mediator.Send(new ObterCodigoUEDREPorIdQuery(ocorrencia.UeId));
+                return await mediator.Send(new ObterFuncionariosPorUeQuery(dtoUe.UeCodigo, codigosServidor));
+            }
+
+            return Enumerable.Empty<UsuarioEolRetornoDto>();
+        }
+
+        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(Ocorrencia ocorrencia)
+        {
+            var codigosAlunos = ocorrencia.Alunos.Select(aluno => aluno.CodigoAluno).ToArray();
+
+            if (codigosAlunos.Any())
+            {
+                return await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigosAlunos));
+            }
+
+            return Enumerable.Empty<TurmasDoAlunoDto>();
+        }
+
+        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores) 
             => new OcorrenciaDto()
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
@@ -53,13 +78,13 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = ao.Id,
                     CodigoAluno = ao.CodigoAluno,
-                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno.ToString())?.NomeAluno
+                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno)?.NomeAluno
                 }),
                 Servidores = ocorrencia.Servidores.Select(ao => new OcorrenciaServidorDto()
                 {
                     Id = ao.Id,
                     CodigoServidor = ao.CodigoServidor,
-                    Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoServidor.ToString())?.NomeAluno
+                    Nome = servidores.FirstOrDefault(servidor => servidor.CodigoRf == ao.CodigoServidor)?.NomeServidor
                 })
             };
     }
