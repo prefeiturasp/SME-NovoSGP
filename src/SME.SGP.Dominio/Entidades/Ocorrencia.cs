@@ -19,7 +19,7 @@ namespace SME.SGP.Dominio
         public Turma Turma { get; set; }
         public long UeId { get; set; }
 
-        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long turmaId, long ueId) : this()
+        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long? turmaId, long ueId) : this()
         {
             DataOcorrencia = dataOcorrencia;
             Titulo = titulo;
@@ -29,7 +29,7 @@ namespace SME.SGP.Dominio
             UeId = ueId;
         }
 
-        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long turmaId, long ueId)
+        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long? turmaId, long ueId)
             : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turmaId, ueId)
         {
             Alunos = Alunos ?? new List<OcorrenciaAluno>();
