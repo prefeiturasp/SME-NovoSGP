@@ -142,5 +142,37 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
             obterTodasOcorrenciasAposExcluir.ShouldNotBeNull();
             obterTodasOcorrenciasAposExcluir.Count(x => !x.Excluido).ShouldBeEquivalentTo(0);
         }
+        
+        [Fact(DisplayName = "Ocorrencia - Excluir Ocorrencia Com Turma, Aluno e Servidor")]
+        public async Task ExcluirOcorrenciaComTurmaAlunoEServidor()
+        {
+            await CriarDadosBasicos();
+            var dtoIncluir = new InserirOcorrenciaDto
+            {
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                DreId = 1,
+                UeId = 1,
+                Modalidade = 5,
+                Semestre = 3,
+                TurmaId = 1,
+                DataOcorrencia = DateTimeExtension.HorarioBrasilia(),
+                Titulo = "Lorem ipsum",
+                Descricao = "Lorem Ipsum é simplesmente uma simulação de texto da",
+                OcorrenciaTipoId = 1,
+                HoraOcorrencia = "17:34",
+                CodigosServidores = new List<string>(){"rf1","rf2"},
+                CodigosAlunos = new List<long>(){1,2}
+            };
+            var useCaseIncluir = InserirOcorrenciaUseCase();
+            await useCaseIncluir.Executar(dtoIncluir);
+            
+            var obterTodasOcorrencias = ObterTodos<Dominio.Ocorrencia>();
+            var useCaseExcluir = ExcluirOcorrenciaUseCase();
+            await useCaseExcluir.Executar(obterTodasOcorrencias.Select(x => x.Id));
+
+            var obterTodasOcorrenciasAposExcluir = ObterTodos<Dominio.Ocorrencia>();
+            obterTodasOcorrenciasAposExcluir.ShouldNotBeNull();
+            obterTodasOcorrenciasAposExcluir.Count(x => !x.Excluido).ShouldBeEquivalentTo(0);
+        }
     }
 }
