@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                     ocorrencia.AdicionarServidores(request.CodigosServidores);
                     
                     foreach (var ocorrenciaServidor in ocorrencia?.Servidores)
-                        await _ocorrenciaServidor.SalvarAsync(ocorrenciaServidor);
+                        await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
                     
                     
                     unitOfWork.PersistirTransacao();
