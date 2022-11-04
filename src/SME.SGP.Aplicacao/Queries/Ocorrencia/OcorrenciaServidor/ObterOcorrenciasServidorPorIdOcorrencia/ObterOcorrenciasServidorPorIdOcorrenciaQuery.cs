@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using MediatR;
 
-namespace SME.SGP.Aplicacao.Queries.Ocorrencia.OcorrenciaServidor.ObterOcorrenciasServidorPorIdOcorrencia
+namespace SME.SGP.Aplicacao
 {
     public class ObterOcorrenciasServidorPorIdOcorrenciaQuery : IRequest<IEnumerable<Dominio.OcorrenciaServidor>>
     {

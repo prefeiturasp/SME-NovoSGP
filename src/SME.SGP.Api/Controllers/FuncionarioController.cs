@@ -48,7 +48,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, [FromServices] IObterFuncionariosPAAIPorDreUseCase useCase)
+        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe)
         {
             return Ok(await mediator.Send(new ObterFuncionariosPorUeQuery(codigoUe)));
         }
