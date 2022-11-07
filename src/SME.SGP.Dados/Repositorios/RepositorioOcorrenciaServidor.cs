@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
@@ -22,6 +23,8 @@ namespace SME.SGP.Dados
         
         public async Task ExcluirPoIds(IEnumerable<long> ids)
         {
+            if (!ids?.Any() ?? true) return;
+            
             var sql = "delete from ocorrencia_servidor where id any(@ids)";
             await database.Conexao.ExecuteAsync(sql, new { ids });
         }

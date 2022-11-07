@@ -16,16 +16,9 @@ namespace SME.SGP.Aplicacao
         public long OcorrenciaTipoId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
         public IEnumerable<string> CodigosServidores { get; set; }
-        public bool ConsideraHistorico { get; set; }
-        public int AnoLetivo { get; set; }
-        public int DreId { get; set; }
-        public long UeId { get; set; }
-        public int Modalidade { get; set; }
-        public int Semestre { get; set; }
         public long TurmaId { get; set; }
 
-
-
+        public long UeId { get; set; }
         public AlterarOcorrenciaCommand()
         {
             CodigosAlunos = new List<long>();
@@ -42,12 +35,7 @@ namespace SME.SGP.Aplicacao
             OcorrenciaTipoId = dto.OcorrenciaTipoId;
             CodigosAlunos = dto.CodigosAlunos;
             CodigosServidores = dto.CodigosServidores;
-            ConsideraHistorico = dto.ConsideraHistorico;
-            AnoLetivo = dto.AnoLetivo;
-            DreId = dto.DreId;
             UeId = dto.UeId;
-            Modalidade = dto.Modalidade;
-            Semestre = dto.Semestre;
             TurmaId = dto.TurmaId;
         }
     }
@@ -80,14 +68,7 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Titulo)
                 .NotEmpty()
                 .WithMessage("O título da ocorrência deve ser informado.");
-
-            RuleFor(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Os alunos envolvidos na ocorrência devem ser informados.");
-
-            RuleForEach(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Um ou mais alunos selecionados são inválidos.");
+            
         }
     }
 }

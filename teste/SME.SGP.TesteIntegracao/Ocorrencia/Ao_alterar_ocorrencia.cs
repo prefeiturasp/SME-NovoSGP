@@ -47,12 +47,19 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
              {
                  Id = obterTodos.FirstOrDefault()!.Id,
                  UeId = ocorrencia.UeId,
-                 Modalidade = 5,
+                 OcorrenciaTipoId = 2,
+                 DataOcorrencia = dtoIncluir.DataOcorrencia,
+                 Descricao = "Descricao Alterada",
+                 Titulo = "Titulo Alterado",
              };
-             //
-             //
-             // var alterarUseCase = AlterarOcorrenciaUseCase();
-             // var alterar = await alterarUseCase.Executar(alterarDto);
+              var alterarUseCase = AlterarOcorrenciaUseCase();
+              await alterarUseCase.Executar(alterarDto);
+              
+              var obterTodosAlterados = ObterTodos<Dominio.Ocorrencia>();
+              obterTodosAlterados.ShouldNotBeNull();
+              obterTodosAlterados.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(alterarDto.Titulo);
+              obterTodosAlterados.FirstOrDefault()?.Descricao.ShouldBeEquivalentTo(alterarDto.Descricao);
+              obterTodosAlterados.FirstOrDefault()?.OcorrenciaTipoId.ShouldBeEquivalentTo(alterarDto.OcorrenciaTipoId);
 
         }
     }

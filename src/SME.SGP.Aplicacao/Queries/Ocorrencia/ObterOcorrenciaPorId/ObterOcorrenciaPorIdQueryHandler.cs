@@ -64,8 +64,9 @@ namespace SME.SGP.Aplicacao
             return Enumerable.Empty<TurmasDoAlunoDto>();
         }
 
-        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores) 
-            => new OcorrenciaDto()
+        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores)
+        {
+            var dto = new OcorrenciaDto()
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
                 DataOcorrencia = ocorrencia.DataOcorrencia,
@@ -76,6 +77,9 @@ namespace SME.SGP.Aplicacao
                 Titulo = ocorrencia.Titulo,
                 DreId = ocorrencia.Ue.DreId,
                 AnoLetivo = ocorrencia.Turma!.AnoLetivo,
+                UeId = ocorrencia.UeId,
+                Modalidade = (int)ocorrencia.Turma.ModalidadeCodigo,
+                Semestre = ocorrencia.Turma.Semestre,
                 Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
@@ -89,6 +93,9 @@ namespace SME.SGP.Aplicacao
                     Nome = servidores.FirstOrDefault(servidor => servidor.CodigoRf == ao.CodigoServidor)?.NomeServidor
                 })
             };
+
+            return dto;
+        }
     }
 }
 
