@@ -4,8 +4,10 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.Commands
 {
@@ -14,15 +16,18 @@ namespace SME.SGP.Aplicacao.Commands
         private readonly IRepositorioPlanoAEE repositorioPlanoAEE;
         private readonly IMediator mediator;
         private readonly IConfiguration configuration;
+        private readonly IUnitOfWork unitOfWork;
 
         public CadastrarParecerCPCommandHandler(
             IRepositorioPlanoAEE repositorioPlanoAEE,
             IMediator mediator,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork)
         {
             this.repositorioPlanoAEE = repositorioPlanoAEE ?? throw new ArgumentNullException(nameof(repositorioPlanoAEE));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.unitOfWork = unitOfWork ?? throw new System.ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Handle(CadastrarParecerCPCommand request, CancellationToken cancellationToken)
@@ -30,17 +35,45 @@ namespace SME.SGP.Aplicacao.Commands
             var planoAEE = await repositorioPlanoAEE.ObterPorIdAsync(request.PlanoAEEId);
 
             if (planoAEE == null)
-                throw new NegocioException("Plano AEE não encontrado!");
+                throw new NegocioException(MensagemNegocioPlanoAee.Plano_aee_nao_encontrado);
+            
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(planoAEE.TurmaId), cancellationToken);
+
+            if (turma == null)
+                throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.AtribuicaoPAAI;
             planoAEE.ParecerCoordenacao = request.ParecerCoordenacao;
 
-            var idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE);
+            var funcionarioPAAI = await mediator.Send(new ObterResponsavelAtribuidoUePorUeTipoQuery(turma.Ue.CodigoUe, TipoResponsavelAtribuicao.PAAI), cancellationToken);
 
-            await ExcluirPendenciaCPs(planoAEE);
-            await GerarPendenciaCEFAI(planoAEE, planoAEE.TurmaId);
+            var idEntidadeEncaminhamento = funcionarioPAAI != null && funcionarioPAAI.Count() == 1
+            ? await mediator.Send(new AtribuirResponsavelPlanoAEECommand(planoAEE, funcionarioPAAI.FirstOrDefault().CodigoRf, turma))
+            : await ExcluirPendenciaCPsGerarPendenciaCEFAI(planoAEE);
 
-            return idEntidadeEncaminhamento != 0;
+            return idEntidadeEncaminhamento;
+        }
+
+        private async Task<bool> ExcluirPendenciaCPsGerarPendenciaCEFAI(PlanoAEE planoAEE)
+        {
+            bool idEntidadeEncaminhamento = false;
+            try
+            {
+                unitOfWork.IniciarTransacao();
+
+                idEntidadeEncaminhamento = await repositorioPlanoAEE.SalvarAsync(planoAEE) > 0;
+                await ExcluirPendenciaCPs(planoAEE);
+                await GerarPendenciaCEFAI(planoAEE, planoAEE.TurmaId);
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch (Exception)
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
+            
+            return idEntidadeEncaminhamento;
         }
 
         private async Task ExcluirPendenciaCPs(PlanoAEE planoAEE)

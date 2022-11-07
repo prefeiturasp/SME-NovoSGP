@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             await repositorioDiarioBordoObservacao.ExcluirObservacoesPorDiarioBordoId(request.DiarioBordoObservacaoId);
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExcluirNotificacaoDiarioBordo,
-                      new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoObservacaoId), Guid.NewGuid(), null));
+                      new ExcluirNotificacaoDiarioBordoDto(request.DiarioBordoObservacaoId), Guid.NewGuid(), null), cancellationToken);
 
             return true;
         }

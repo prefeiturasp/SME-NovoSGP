@@ -11,6 +11,12 @@
       <EmbeddedResource Remove="NotaFechamentoBimestre\ServicosFake\**" />
       <None Remove="NotaFechamentoBimestre\ServicosFake\**" />
       <Compile Remove="PlanoAula\ServicosFakes\ObterPlanoAulaPorAulaIdQueryHandlerFake.cs" />
+      <Compile Remove="RelatorioAcompanhamentoAprendizagem\ServicosFake\ObterAcompanhamentoPorAlunoTurmaESemestreAcompanhamentoQueryHandlerFake\**" />
+      <EmbeddedResource Remove="RelatorioAcompanhamentoAprendizagem\ServicosFake\ObterAcompanhamentoPorAlunoTurmaESemestreAcompanhamentoQueryHandlerFake\**" />
+      <None Remove="RelatorioAcompanhamentoAprendizagem\ServicosFake\ObterAcompanhamentoPorAlunoTurmaESemestreAcompanhamentoQueryHandlerFake\**" />
+      <Compile Remove="RelatorioAcompanhamentoAprendizagem\ServicosFakes\**" />
+      <EmbeddedResource Remove="RelatorioAcompanhamentoAprendizagem\ServicosFakes\**" />
+      <None Remove="RelatorioAcompanhamentoAprendizagem\ServicosFakes\**" />
     </ItemGroup>
 
     <ItemGroup>

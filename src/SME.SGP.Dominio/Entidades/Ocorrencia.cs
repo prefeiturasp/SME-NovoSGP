@@ -32,7 +32,7 @@ namespace SME.SGP.Dominio
             SetHoraOcorrencia(horaOcorrencia);
         }
 
-        protected Ocorrencia()
+        public Ocorrencia()
         {
         }
 
