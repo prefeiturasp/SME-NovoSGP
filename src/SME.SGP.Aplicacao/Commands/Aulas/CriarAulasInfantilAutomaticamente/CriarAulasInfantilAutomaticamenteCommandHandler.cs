@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && !a.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.PossuiFrequencia));
 
                 if(!excluirAula)
-                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(aula, diasLetivos);
+                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(aula, diasLetivos);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
@@ -187,8 +187,8 @@ namespace SME.SGP.Aplicacao
             return aulasExclusao;
         }
 
-        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
-            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA;
+        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
+            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA && !diasLetivos.Any(d=> d.Data == aula.DataAula);
 
         private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
