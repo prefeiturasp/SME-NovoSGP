@@ -53,8 +53,8 @@ namespace SME.SGP.Dados
                      anoLetivo = filtro.AnoLetivo
                });
 
-            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
-
+            var offSet = $@"offset {paginacao.QuantidadeRegistrosIgnorados} rows fetch next {paginacao.QuantidadeRegistros} rows only";
+            
             query = $@" drop table if exists tempOcorrenciasSelecionadas;
 
                         select
