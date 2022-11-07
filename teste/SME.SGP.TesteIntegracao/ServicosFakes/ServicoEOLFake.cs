@@ -761,6 +761,24 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizNome = "Teste 2",
                     TurmaCodigo = "1"
                 },
+                new DisciplinaDto
+                {
+                    Id = 512,
+                    CodigoComponenteCurricular = 512,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 10",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
             }.Where(x => ids.Contains(x.Id));
         }
 
