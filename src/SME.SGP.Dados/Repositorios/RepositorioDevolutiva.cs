@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"from devolutiva d
                          inner join diario_bordo db on db.devolutiva_id = d.id
                          inner join aula a on a.id = db.aula_id
-                         where not d.excluido
+                         where not d.excluido  and not db.excluido
                            and a.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularCodigo");
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.periodo_fim
                           from devolutiva d
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.aula_id
                          where a.turma_id = @turmaCodigo
                            and d.componente_curricular_codigo = @componenteCurricularCodigo";
@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.id 
                           from devolutiva d 
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.id
                          where not d.excluido
                            and a.turma_id = @turmaCodigo
@@ -177,7 +177,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@" select t.ano as Ano,
                             count(distinct d.criado_rf) as Quantidade
                             from devolutiva d
-                            inner join diario_bordo db on db.devolutiva_id = d.id
+                            inner join diario_bordo db on db.devolutiva_id = d.id  
                             inner join turma t on t.id = db.turma_id
                             inner join ue on ue.id = t.ue_id
                             where t.ano_letivo = @anoLetivo ");

@@ -13,9 +13,14 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             return new List<ComponenteCurricularEol>()
             {
-                new ComponenteCurricularEol()
+                new()
                 {
                     Codigo = 1114,
+                    TerritorioSaber = false
+                },
+                new()
+                {
+                    Codigo = 1105,
                     TerritorioSaber = false
                 }
             };

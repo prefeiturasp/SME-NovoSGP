@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
                         TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
                         CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                         DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
-                        EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente
+                        EhAtendidoAEE = entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente,
                     };
 
                     plano.Id = filtro.PlanoAEEId.Value;
@@ -158,9 +158,23 @@ namespace SME.SGP.Aplicacao
                     periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()))
                     plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
 
+                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
                 return plano;
             }
+
+        private bool PermiteExclusaoPlanoAEE(SituacaoPlanoAEE situacao, Usuario usuarioLogado)
+        {
+            var EhProfessor = usuarioLogado.EhProfessor() ||
+                                        usuarioLogado.EhProfessorPaee();
+            var EhGestor = usuarioLogado.EhGestorEscolar();
+            var planoDevolvido = (situacao == SituacaoPlanoAEE.Devolvido);
+            var planoAguardandoParecerCoordenacao = (situacao == SituacaoPlanoAEE.ParecerCP);
+
+            return (EhProfessor && planoDevolvido) ||
+                   (EhGestor && (planoDevolvido || planoAguardandoParecerCoordenacao));
+        }
 
         private async Task<AlunoPorTurmaResposta> ChecaSeOAlunoTeveMudancaDeTurmaAnual(string codigoAluno, int anoLetivo)
         {

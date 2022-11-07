@@ -1,15 +1,18 @@
 ﻿using FluentValidation;
 using MediatR;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class GerarPendenciaValidacaoPlanoAEECommand : IRequest<bool>
     {
         public long PlanoAEEId { get; set; }
+        public PerfilUsuario PerfilUsuario { get; set; }
 
-        public GerarPendenciaValidacaoPlanoAEECommand(long planoAEEId)
+        public GerarPendenciaValidacaoPlanoAEECommand(long planoAEEId, PerfilUsuario pendenciaPerfil)
         {
             PlanoAEEId = planoAEEId;
+            PerfilUsuario = pendenciaPerfil;
         }
     }
 

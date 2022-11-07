@@ -160,8 +160,7 @@ namespace SME.SGP.Dados
                                                db.id
                                           from componentesCurricularesInfantisAulas cc
                                                left join diario_bordo db on (db.aula_id = cc.AulaId 
-                                                                        and  db.componente_curricular_id = cc.ComponenteCurricularId)  
-                                         where ((not db.excluido) or (db.id is null))
+                                                                        and  db.componente_curricular_id = cc.ComponenteCurricularId and not db.excluido)  
                                     )
                                     select distinct cc.PeriodoEscolarId,
                                         cc.Bimestre,

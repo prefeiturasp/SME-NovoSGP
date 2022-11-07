@@ -134,7 +134,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDevolutivas
                 Status = EntidadeStatus.Aprovado
             });
 
-            await InserirNaBase(new DiarioBordo
+            await InserirNaBase(new Dominio.DiarioBordo
             {
                 Id = 1,
                 AulaId = 1,

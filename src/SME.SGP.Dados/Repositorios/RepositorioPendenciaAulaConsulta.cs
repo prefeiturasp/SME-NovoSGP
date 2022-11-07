@@ -489,7 +489,7 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        public async Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolar(long componenteCurricularId, string codigoRf, long periodoEscolarId)
+        public async Task<long> ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarTurma(long componenteCurricularId, string codigoRf, long periodoEscolarId, string codigoTurma = "")
         {
             try
             {
@@ -501,10 +501,11 @@ namespace SME.SGP.Dados.Repositorios
                         join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id
                         join componente_curricular cc on cc.id = pdb.componente_curricular_id
                         where u.rf_codigo = @codigoRf and cc.id = @componenteCurricularId 
-                        and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia 
-                        order by p.criado_em desc";
+                        and pe.id = @periodoEscolarId and p.tipo = @tipoPendencia ";
 
-                var retorno = (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
+                sql += (!string.IsNullOrEmpty(codigoTurma) ? " and a.turma_id = @codigoTurma " : "") + " order by p.criado_em desc";
+
+                var retorno =  (await database.Conexao.QueryFirstOrDefaultAsync<long>(sql, new { componenteCurricularId, codigoRf, periodoEscolarId, codigoTurma, tipoPendencia = (int)TipoPendencia.DiarioBordo }, commandTimeout: 60));
                 return retorno;
             }
             catch (Exception ex)
