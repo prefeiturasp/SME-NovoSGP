@@ -658,7 +658,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizId = 1,
                     CdComponenteCurricularPai = null,
                     Compartilhada = false,
-                    Nome = "Teste 3",
+                    Nome = "Teste 4",
                     NomeComponenteInfantil = null,
                     PossuiObjetivos = false,
                     Regencia = false,
@@ -669,7 +669,98 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizNome = "Teste 2",
                     TurmaCodigo = "1"
 
-                }
+                },
+                new DisciplinaDto
+                {
+                    Id = 7,
+                    CodigoComponenteCurricular = 7,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 5",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 139,
+                    CodigoComponenteCurricular = 139,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 6",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1105,
+                    CodigoComponenteCurricular = 1105,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 7",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1114,
+                    CodigoComponenteCurricular = 1114,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 8",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1061,
+                    CodigoComponenteCurricular = 1061,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 9",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
             }.Where(x => ids.Contains(x.Id));
         }
 
