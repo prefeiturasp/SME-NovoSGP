@@ -71,11 +71,11 @@ namespace SME.SGP.Dados.Repositorios
 
             var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int?>(obtempai, new { componenteCurricularId });
 
-            var condicao = @" from registro_individual ri
+            var condicao = @$" from registro_individual ri
                                   inner join componente_curricular cc on ri.componente_curricular_id = cc.id
                                    where not ri.excluido 
                                     and ri.turma_id = @turmaId
-                                    and cc.componente_curricular_pai_id = @componentePai
+                                    {(componentePai != null? "and cc.componente_curricular_pai_id = @componentePai":"")}
                                     and ri.aluno_codigo = @alunoCodigo
                                     and ri.data_registro::date between @dataInicio and @dataFim ";
             var orderBy = "order by ri.data_registro desc";
