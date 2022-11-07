@@ -21,13 +21,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ComponenteCurricularEol>> Handle(ObterComponentesCurricularesDoProfessorNaTurmaQuery request, CancellationToken cancellationToken)
         {
-            string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}";
+            string nomeChaveCache = $"Componentes-{request.Login}-${request.CodigoTurma}-${request.ChecaMotivoDisponibilizacao}";
             return await repositorioCache.ObterAsync(nomeChaveCache, async () =>
             {
                 return await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(request.CodigoTurma,
                                                                                                request.Login,
                                                                                                request.PerfilUsuario,
-                                                                                               request.RealizarAgrupamentoComponente);
+                                                                                               request.RealizarAgrupamentoComponente,
+                                                                                               request.ChecaMotivoDisponibilizacao);
             });
         }
     }
