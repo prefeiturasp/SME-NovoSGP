@@ -6,25 +6,27 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos.Relatorios;
 
-namespace SME.SGP.Aplicacao;
-
-public class ImpressaoPlanoAeeUseCase : IImpressaoPlanoAeeUseCase
+namespace SME.SGP.Aplicacao
 {
-    private readonly IMediator mediator;
-
-    public ImpressaoPlanoAeeUseCase(IMediator mediator)
+    public class ImpressaoPlanoAeeUseCase : IImpressaoPlanoAeeUseCase
     {
-        this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-    }
+        private readonly IMediator mediator;
 
-    public async Task<bool> Executar(FiltroRelatorioPlanoAeeDto filtro)
-    {
-        var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-        
-        if (usuarioLogado == null)
-            throw new NegocioException("Não foi possível localizar o usuário para realizar a impressão do Plano AEE.");        
-        
-        return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAee, filtro, usuarioLogado,
-            rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosPlanoAee));
+        public ImpressaoPlanoAeeUseCase(IMediator mediator)
+        {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        }
+
+        public async Task<bool> Executar(FiltroRelatorioPlanoAeeDto filtro)
+        {
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (usuarioLogado == null)
+                throw new NegocioException(
+                    "Não foi possível localizar o usuário para realizar a impressão do Plano AEE.");
+
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAee, filtro, usuarioLogado,
+                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosPlanoAee));
+        }
     }
 }
