@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<UsuarioEolRetornoDto>> Executar(FiltroPesquisaFuncionarioDto request)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var (codigoDRE, codigoUE) = await ObterCodigos(request.CodigoTurma, request.CodigoDRE, usuario);
+            var (codigoDRE, codigoUE) = await ObterCodigos(request.CodigoTurma, usuario);
             var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario.PerfilAtual);
 
             var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDRE, codigoUE, usuario: usuario));
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<(string codigoDRE, string codigoUE)> ObterCodigos(string codigoTurma, string codigoDRE, Usuario usuario)
+        private async Task<(string codigoDRE, string codigoUE)> ObterCodigos(string codigoTurma, Usuario usuario)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
             return usuario.EhCoordenadorCEFAI() ?

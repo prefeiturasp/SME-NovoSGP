@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),true, TIPO_CALENDARIO_1,false, NUMERO_AULAS_3);
             await CriarAtribuicaoCJ(Modalidade.Fundamental, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
-            await InserirFrequenciaUseCaseComValidacaoBasica(ObtenhaFrenqueciaDto());
+            await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrenqueciaDto());
         }
 
         //[Fact]
@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             await CriarDadosBasicos(ObterPerfilCJ(), Modalidade.EducacaoInfantil, ModalidadeTipoCalendario.Infantil, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213.ToString());
             await CriarAtribuicaoCJ(Modalidade.EducacaoInfantil, COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_ID_1213);
 
-            await InserirFrequenciaUseCaseComValidacaoBasica(ObtenhaFrenqueciaDto());
+            await InserirFrequenciaUseCaseComValidacaoBasica(ObterFrenqueciaDto());
         }
 
     }

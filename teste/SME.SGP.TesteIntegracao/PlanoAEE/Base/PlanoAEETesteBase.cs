@@ -103,6 +103,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         {
             return ServiceProvider.GetService<IAtribuirResponsavelPlanoAEEUseCase>();
         }
+        
+        protected IRemoverResponsavelPlanoAEEUseCase ObterServicoRemocaoAtribuirResponsavelPlanoAEEUseCase()
+        {
+            return ServiceProvider.GetService<IRemoverResponsavelPlanoAEEUseCase>();
+        }
 
         protected IDevolverPlanoAEEUseCase ObterServicoDevolverPlanoAEEUseCase()
         {
