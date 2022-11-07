@@ -64,8 +64,9 @@ namespace SME.SGP.Aplicacao
             return Enumerable.Empty<TurmasDoAlunoDto>();
         }
 
-        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores) 
-            => new OcorrenciaDto()
+        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores)
+        {
+            var dto = new OcorrenciaDto()
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
                 DataOcorrencia = ocorrencia.DataOcorrencia,
@@ -74,19 +75,27 @@ namespace SME.SGP.Aplicacao
                 OcorrenciaTipoId = ocorrencia.OcorrenciaTipoId.ToString(),
                 TurmaId = ocorrencia.TurmaId,
                 Titulo = ocorrencia.Titulo,
-                Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
+                DreId = ocorrencia.Ue.DreId,
+                AnoLetivo = ocorrencia.Turma?.AnoLetivo ?? 0,
+                UeId = ocorrencia.UeId,
+                Modalidade = ocorrencia.Turma?.ModalidadeCodigo != null ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
+                Semestre = ocorrencia.Turma?.Semestre ?? 0,
+                Alunos = ocorrencia.Alunos?.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
                     CodigoAluno = ao.CodigoAluno,
                     Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno)?.NomeAluno
                 }),
-                Servidores = ocorrencia.Servidores.Select(ao => new OcorrenciaServidorDto()
+                Servidores = ocorrencia.Servidores?.Select(ao => new OcorrenciaServidorDto()
                 {
                     Id = ao.Id,
                     CodigoServidor = ao.CodigoServidor,
                     Nome = servidores.FirstOrDefault(servidor => servidor.CodigoRf == ao.CodigoServidor)?.NomeServidor
                 })
             };
+
+            return dto;
+        }
     }
 }
 
