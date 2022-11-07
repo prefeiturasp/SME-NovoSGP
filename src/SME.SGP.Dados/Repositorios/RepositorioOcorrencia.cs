@@ -151,22 +151,28 @@ namespace SME.SGP.Dados
 									oa.ocorrencia_id as OcorrenciaId,
 									os.id,
 									os.rf_codigo  as CodigoServidor,
-									os.ocorrencia_id  as OcorrenciaId
+									os.ocorrencia_id  as OcorrenciaId,
+									u.*,t.*
 								FROM public.ocorrencia o
 								left JOIN public.ocorrencia_aluno oa ON o.id = oa.ocorrencia_id
-								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id 
+								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id
+								inner join public.ue u on o.ue_id = u.id
+								left join public.turma t on o.turma_id = t.id
 								WHERE o.id = @id
 									AND not o.excluido;";
 
             Ocorrencia resultado = null;
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ocorrencia>(sql,
-                (ocorrencia, ocorrenciaAluno,ocorrenciaServidor) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ue,Turma,Ocorrencia>(sql,
+                (ocorrencia, ocorrenciaAluno,ocorrenciaServidor,ue,turma) =>
                 {
                     if (resultado is null)
                     {
                         resultado = ocorrencia;
                     }
 
+                    if (turma != null) resultado.Turma = turma;
+                    if (ue != null) resultado.Ue = ue;
+                    
                     resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
                     if(ocorrenciaAluno != null)resultado.Alunos.Add(ocorrenciaAluno);
                     

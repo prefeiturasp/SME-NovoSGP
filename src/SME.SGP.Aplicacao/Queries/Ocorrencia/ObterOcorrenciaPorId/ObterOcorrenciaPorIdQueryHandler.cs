@@ -74,6 +74,8 @@ namespace SME.SGP.Aplicacao
                 OcorrenciaTipoId = ocorrencia.OcorrenciaTipoId.ToString(),
                 TurmaId = ocorrencia.TurmaId,
                 Titulo = ocorrencia.Titulo,
+                DreId = ocorrencia.Ue.DreId,
+                AnoLetivo = ocorrencia.Turma!.AnoLetivo,
                 Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
