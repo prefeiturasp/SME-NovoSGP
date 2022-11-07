@@ -9,12 +9,7 @@ namespace SME.SGP.Aplicacao
 {
     public class InserirOcorrenciaCommand : IRequest<AuditoriaDto>
     {
-        public bool ConsideraHistorico { get; set; }
-        public int AnoLetivo { get; set; }
-        public long DreId { get; set; }
         public long UeId { get; set; }
-        public int Modalidade { get; set; }
-        public int Semestre { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string HoraOcorrencia { get; set; }
         public string Titulo { get; set; }
@@ -33,12 +28,7 @@ namespace SME.SGP.Aplicacao
             OcorrenciaTipoId = dto.OcorrenciaTipoId;
             TurmaId = dto.TurmaId;
             CodigosAlunos = dto.CodigosAlunos;
-            ConsideraHistorico = dto.ConsideraHistorico;
-            AnoLetivo = dto.AnoLetivo;
-            DreId = dto.DreId;
             UeId = dto.UeId;
-            Modalidade = dto.Modalidade;
-            Semestre = dto.Semestre;
             CodigosServidores = dto.CodigosServidores;
         }
     }
