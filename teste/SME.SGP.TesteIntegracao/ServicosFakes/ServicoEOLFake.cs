@@ -598,12 +598,79 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             {
                 new DisciplinaDto
                 {
-                    Id = 123,
+                    Id = 1217,
                     CodigoComponenteCurricular = 1217,
                     GrupoMatrizId = 4,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 1",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = false,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 1",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 138,
+                    CodigoComponenteCurricular = 138,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 2",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 6,
+                    CodigoComponenteCurricular = 6,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 3",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 2,
+                    CodigoComponenteCurricular = 2,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 3",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
 
                 }
-            };
+            }.Where(x => ids.Contains(x.Id));
         }
 
         public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
