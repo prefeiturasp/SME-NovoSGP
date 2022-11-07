@@ -12,6 +12,15 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
 {
     public  abstract class OcorrenciaTesteBase : TesteBaseComuns
     {
+        protected const int ID_TIPO_INCIDENTE = 1;
+        protected const long ALUNO_1 = 1;
+        protected const long ALUNO_2 = 2;
+        protected const long ALUNO_3 = 3;
+        protected const string RF_3333333 = "3333333";
+        protected const string RF_4444444 = "4444444";
+        protected const string PROFESSOR_INFANTIL = "61E1E074-37D6-E911-ABD6-F81654FE895D";
+        protected const string PROFESSOR = "43E1E074-37D6-E911-ABD6-F81654FE895D";
+
         protected OcorrenciaTesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -20,19 +29,24 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
         {
             base.RegistrarFakes(services);
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>), typeof(DeletarArquivoDeRegistroExcluidoCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ExcluirOcorrenciaServidorPorIdOcorrenciaCommand>), typeof(ExcluirOcorrenciaServidorPorIdOcorrenciaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand,string>), typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand,bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
         }
 
-        protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.Fundamental,
-            ModalidadeTipoCalendario modalidadeTipoCalendario = ModalidadeTipoCalendario.FundamentalMedio)
+        protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.EducacaoInfantil,
+                    ModalidadeTipoCalendario modalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil)
+        {
+            await CriarDadosBasicos(ObterPerfilProfessorInfantil(), modalidade, modalidadeTipoCalendario);
+        }
+
+        protected async Task CriarDadosBasicos(string perfil, Modalidade modalidade = Modalidade.EducacaoInfantil,
+            ModalidadeTipoCalendario modalidadeTipoCalendario = ModalidadeTipoCalendario.Infantil)
         {
             await CriarDreUePerfil();
             await CriarComponenteCurricular();
             await CriarPeriodoEscolarTodosBimestres();
             await CriarTipoCalendario(modalidadeTipoCalendario);
-            CriarClaimUsuario(ObterPerfilProfessorInfantil());
+            CriarClaimUsuario(perfil);
             await CriarUsuarios();
             await CriarTurma(modalidade);
             await CriarTipoOcorrencia();

@@ -21,10 +21,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> Handle(ObterFuncionariosPorUeQuery request, CancellationToken cancellationToken)
         {
-            var dto = new BuscaFuncionariosFiltroDto() { CodigoUE = request.CodigoUe };
+            var dto = new { CodigosRfs = request.CodigosRfs, Filtro = request.Filtro };
             var jsonParaPost = new StringContent(JsonConvert.SerializeObject(dto), UnicodeEncoding.UTF8, "application/json");
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var resposta = await httpClient.PostAsync("funcionarios/", jsonParaPost);
+            var resposta = await httpClient.PostAsync($@"funcionarios/ue/{request.CodigoUe}", jsonParaPost);
 
             if (resposta.IsSuccessStatusCode)
             {

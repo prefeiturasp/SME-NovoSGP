@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -13,6 +15,13 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class FuncionarioController : ControllerBase
     {
+        private readonly IMediator mediator;
+
+        public FuncionarioController(IMediator mediator)
+        {
+            this.mediator = mediator;
+        }
+
         [HttpPost]
         [Route("pesquisa")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -34,13 +43,13 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("codigoUe/{codigoUe}")]
+        [Route("codigoUe/{codigoUe}/filtro/{filtro}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro, [FromServices] IObterFuncionarioPorUeComFiltroUseCase useCase)
+        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro)
         {
-            return Ok(await useCase.Executar((codigoUe, filtro)));
+            return Ok(await mediator.Send(new ObterFuncionariosPorUeQuery(codigoUe, filtro)));
         }
     }
 }

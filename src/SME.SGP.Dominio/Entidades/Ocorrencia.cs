@@ -15,41 +15,43 @@ namespace SME.SGP.Dominio
         public OcorrenciaTipo OcorrenciaTipo { get; set; }
         public long OcorrenciaTipoId { get; set; }
         public string Titulo { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public Turma Turma { get; set; }
         public long UeId { get; set; }
 
-        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
+        public Ocorrencia(DateTime dataOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long? turmaId, long ueId) : this()
         {
             DataOcorrencia = dataOcorrencia;
             Titulo = titulo;
             Descricao = descricao;
             SetOcorrenciaTipo(ocorrenciaTipo);
-            SetTurma(turma);
+            TurmaId = turmaId;
             UeId = ueId;
         }
 
-        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, Turma turma,long ueId)
-            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turma,ueId)
+        public Ocorrencia(DateTime dataOcorrencia, string horaOcorrencia, string titulo, string descricao, OcorrenciaTipo ocorrenciaTipo, long? turmaId, long ueId)
+            : this(dataOcorrencia, titulo, descricao, ocorrenciaTipo, turmaId, ueId)
         {
+            Alunos = Alunos ?? new List<OcorrenciaAluno>();
+            Servidores = Servidores ?? new List<OcorrenciaServidor>();
             SetHoraOcorrencia(horaOcorrencia);
         }
 
         public Ocorrencia()
         {
+            Alunos = new List<OcorrenciaAluno>();
+            Servidores = new List<OcorrenciaServidor>();
         }
 
         public void AdicionarAluno(long codigoAluno)
         {
             var ocorrenciaAluno = new OcorrenciaAluno(codigoAluno, this);
-            Alunos = Alunos ?? new List<OcorrenciaAluno>();
             Alunos.Add(ocorrenciaAluno);
         }
 
         public void AdicinarServidor(string codigoServidor)
         {
             var ocorrenciaServidor = new OcorrenciaServidor(codigoServidor, this);
-            Servidores = Servidores ?? new List<OcorrenciaServidor>();
             Servidores.Add(ocorrenciaServidor);
         }
         public void AdiconarAlunos(IEnumerable<long> codigosAlunos)
@@ -92,11 +94,11 @@ namespace SME.SGP.Dominio
 
         public void SetTurma(Turma turma)
         {
-            if(turma is null)
-                throw new NegocioException("É necessário informar o tipo de ocorrência.");
-
-            Turma = turma;
-            TurmaId = turma.Id;
+            if (turma !=null)
+            {
+                Turma = turma;
+                TurmaId = turma.Id;    
+            }
         }
 
         public void Excluir() => Excluido = true;

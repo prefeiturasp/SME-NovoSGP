@@ -11,7 +11,7 @@ namespace SME.SGP.Infra
         public long UeId { get; set; }
         public int Modalidade { get; set; }
         public int Semestre { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string HoraOcorrencia { get; set; }
         public string Titulo { get; set; }

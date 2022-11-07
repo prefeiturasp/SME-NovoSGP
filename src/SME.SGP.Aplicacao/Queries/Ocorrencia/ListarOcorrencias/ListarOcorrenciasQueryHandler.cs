@@ -27,14 +27,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<OcorrenciaListagemDto>> Handle(ListarOcorrenciasQuery request, CancellationToken cancellationToken)
         {
-            string[] codigosServidoresLike = null;
+            var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, Paginacao);
 
-            await CarregarServidores(request.Filtro.UeId);
+            await CarregarServidores(lstOcorrencias, request.Filtro.UeId);
 
             if (!string.IsNullOrEmpty(request.Filtro.ServidorNome))
-                codigosServidoresLike = ObterCodigosDosServidores(request.Filtro.ServidorNome);
-
-            var lstOcorrencias = await repositorioOcorrencia.ListarPaginado(request.Filtro, codigosServidoresLike, Paginacao);
+                lstOcorrencias = ObterOcorrenciaPorFiltroDeServidores(lstOcorrencias, request.Filtro.ServidorNome);
 
             await CarregarAlunos(lstOcorrencias);
 
@@ -44,15 +42,34 @@ namespace SME.SGP.Aplicacao
             return MapearParaDto(lstOcorrencias);
         }
 
-        private async Task CarregarServidores(long ueId)
+        private async Task CarregarServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias, long ueId)
         {
-            var dtoUe = await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
-            this.Servidores = await mediator.Send(new ObterFuncionariosPorUeQuery(dtoUe.UeCodigo));
+            var codigosServidores = ocorrencias.Items.SelectMany(ocorrencia => ocorrencia.Servidores).Select(aluno => aluno.CodigoServidor).ToArray();
+            
+            if (codigosServidores.Any())
+            {
+                var dtoUe = await mediator.Send(new ObterCodigoUEDREPorIdQuery(ueId));
+                this.Servidores = await mediator.Send(new ObterFuncionariosPorUeQuery(dtoUe.UeCodigo, codigosServidores));
+            }
         }
 
-        private string[] ObterCodigosDosServidores(string nomeServidor)
+        private PaginacaoResultadoDto<Ocorrencia> ObterOcorrenciaPorFiltroDeServidores(PaginacaoResultadoDto<Ocorrencia> ocorrencias, string servidorNome)
         {
-            return this.Servidores.Where(servidor => servidor.NomeServidor.IndexOf(nomeServidor, StringComparison.OrdinalIgnoreCase) != -1)?.Select(servidor => servidor.CodigoRf)?.ToArray();
+            if (this.Servidores.Any())
+            {
+                var codigosServidoresLike = this.Servidores.Where(a => a.NomeServidor.IndexOf(servidorNome, StringComparison.OrdinalIgnoreCase) != -1)?.Select(a => a.CodigoRf)?.ToArray();
+
+                var ocorrenciasServidores = ocorrencias.Items.Where(ocorrencia => ocorrencia.Servidores.ToList().Exists(servidor => codigosServidoresLike.Contains(servidor.CodigoServidor)));
+
+                return new PaginacaoResultadoDto<Ocorrencia>()
+                {
+                    Items = ocorrenciasServidores.ToList(),
+                    TotalRegistros = ocorrenciasServidores.Count(),
+                    TotalPaginas = (int)Math.Ceiling((double)ocorrenciasServidores.Count() / Paginacao.QuantidadeRegistros)
+                };
+            }
+
+            return ocorrencias;
         }
 
         private async Task CarregarAlunos(PaginacaoResultadoDto<Ocorrencia> ocorrencias)
@@ -71,7 +88,7 @@ namespace SME.SGP.Aplicacao
             {
                 var codigosAlunosLike = this.Alunos.Where(a => a.NomeAluno.IndexOf(alunoNome, StringComparison.OrdinalIgnoreCase) != -1)?.Select(a => Convert.ToInt64(a.CodigoAluno))?.ToArray();
 
-                var ocorrenciasAluno = ocorrencias.Items.Where(ocorrencia => ocorrencia.Alunos != null && ocorrencia.Alunos.ToList().Exists(aluno => codigosAlunosLike.Contains(aluno.CodigoAluno)));
+                var ocorrenciasAluno = ocorrencias.Items.Where(ocorrencia => ocorrencia.Alunos.ToList().Exists(aluno => codigosAlunosLike.Contains(aluno.CodigoAluno)));
 
                 return new PaginacaoResultadoDto<Ocorrencia>()
                 {

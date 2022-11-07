@@ -15,7 +15,7 @@ namespace SME.SGP.Dados
     {
         public RepositorioOcorrencia(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria) { }
 
-        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, string[] codigosServidores, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<Ocorrencia>> ListarPaginado(FiltroOcorrenciaListagemDto filtro, Paginacao paginacao)
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
@@ -32,7 +32,6 @@ namespace SME.SGP.Dados
             gerador.AdicioneCondicao(!string.IsNullOrEmpty(filtro.Titulo), "and lower(f_unaccent(o.titulo)) LIKE ('%' || lower(f_unaccent(@titulo)) || '%')");
             gerador.AdicioneCondicao(filtro.DataOcorrenciaInicio.HasValue, "and data_ocorrencia::date >= @dataOcorrenciaInicio  ");
             gerador.AdicioneCondicao(filtro.DataOcorrenciaFim.HasValue, "and data_ocorrencia::date <= @dataOcorrenciaFim");
-            gerador.AdicioneCondicao(codigosServidores != null, "and os.rf_codigo = ANY(@codigosServidores)");
 
             var condicao = gerador.ObterCondicao();
             var orderBy = "order by o.data_ocorrencia desc";
@@ -46,7 +45,6 @@ namespace SME.SGP.Dados
                new { titulo = filtro.Titulo, 
                      dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(), 
                      dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(), 
-                     codigosServidores,
                      turmaId = filtro.TurmaId.GetValueOrDefault(),
                      ueId = filtro.UeId,
                      modalidade = filtro.Modalidade.GetValueOrDefault(),
@@ -55,8 +53,8 @@ namespace SME.SGP.Dados
                      anoLetivo = filtro.AnoLetivo
                });
 
-            var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
-
+            var offSet = $@"offset {paginacao.QuantidadeRegistrosIgnorados} rows fetch next {paginacao.QuantidadeRegistros} rows only";
+            
             query = $@" drop table if exists tempOcorrenciasSelecionadas;
 
                         select
@@ -112,7 +110,6 @@ namespace SME.SGP.Dados
                 titulo = filtro.Titulo,
                 dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(),
                 dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(),
-                codigosServidores,
                 turmaId = filtro.TurmaId.GetValueOrDefault(),
                 ueId = filtro.UeId,
                 modalidade = filtro.Modalidade.GetValueOrDefault(),
@@ -146,42 +143,36 @@ namespace SME.SGP.Dados
 									o.ocorrencia_tipo_id as OcorrenciaTipoId,
 									o.turma_id as TurmaId,
 									o.titulo as Titulo,
+									o.ue_id  as UeId,
 									o.descricao as Descricao,
 									o.excluido as Excluido,
 									oa.id,
 									oa.codigo_aluno as CodigoAluno,
-									os.*,
-									oa.ocorrencia_id as OcorrenciaId
-								FROM 
-									public.ocorrencia o
-								left join
-									ocorrencia_aluno oa
-									ON o.id = oa.ocorrencia_id
-								left join 
-                                    ocorrencia_servidor os 
-                                    on o.id = os.ocorrencia_id 
-								WHERE
-									o.id = @id
+									oa.ocorrencia_id as OcorrenciaId,
+									os.id,
+									os.rf_codigo  as CodigoServidor,
+									os.ocorrencia_id  as OcorrenciaId
+								FROM public.ocorrencia o
+								left JOIN public.ocorrencia_aluno oa ON o.id = oa.ocorrencia_id
+								left join public.ocorrencia_servidor os on o.id = os.ocorrencia_id 
+								WHERE o.id = @id
 									AND not o.excluido;";
 
             Ocorrencia resultado = null;
-
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno, OcorrenciaServidor, Ocorrencia>(sql,
-                (ocorrencia, ocorrenciaAluno, ocorrenciaServidor) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaAluno,OcorrenciaServidor,Ocorrencia>(sql,
+                (ocorrencia, ocorrenciaAluno,ocorrenciaServidor) =>
                 {
                     if (resultado is null)
                     {
                         resultado = ocorrencia;
                     }
 
-                    resultado.Alunos = resultado.Alunos ?? new List<OcorrenciaAluno>();
-                    if (ocorrenciaAluno != null) 
-                        resultado.Alunos.Add(ocorrenciaAluno);
-
-                    resultado.Servidores = resultado.Servidores ?? new List<OcorrenciaServidor>();
-                    if (ocorrenciaServidor != null)
-                        resultado.Servidores.Add(ocorrenciaServidor);
-
+                    resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
+                    if(ocorrenciaAluno != null)resultado.Alunos.Add(ocorrenciaAluno);
+                    
+                    resultado.Servidores = resultado?.Servidores ?? new List<OcorrenciaServidor>();
+                    if(ocorrenciaServidor != null) resultado.Servidores.Add(ocorrenciaServidor);
+                    
                     return resultado;
                 },
                 new { id });
