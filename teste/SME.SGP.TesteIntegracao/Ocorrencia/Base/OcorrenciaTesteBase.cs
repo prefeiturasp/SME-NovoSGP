@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Ocorrencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 
@@ -31,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia.Base
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<DeletarArquivoDeRegistroExcluidoCommand, bool>), typeof(DeletarArquivoDeRegistroExcluidoCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<MoverArquivosTemporariosCommand,string>), typeof(MoverArquivosTemporariosCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand,bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorCodigosQuery,IEnumerable<TurmasDoAlunoDto>>), typeof(ObterAlunosEolPorCodigosQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorUeQuery,IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorUeQueryFake), ServiceLifetime.Scoped));
         }
 
         protected async Task CriarDadosBasicos(Modalidade modalidade = Modalidade.EducacaoInfantil,

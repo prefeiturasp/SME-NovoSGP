@@ -76,17 +76,17 @@ namespace SME.SGP.Aplicacao
                 TurmaId = ocorrencia.TurmaId,
                 Titulo = ocorrencia.Titulo,
                 DreId = ocorrencia.Ue.DreId,
-                AnoLetivo = ocorrencia.Turma!.AnoLetivo,
+                AnoLetivo = ocorrencia.Turma?.AnoLetivo ?? 0,
                 UeId = ocorrencia.UeId,
-                Modalidade = (int)ocorrencia.Turma.ModalidadeCodigo,
-                Semestre = ocorrencia.Turma.Semestre,
-                Alunos = ocorrencia.Alunos.Select(ao => new OcorrenciaAlunoDto()
+                Modalidade = ocorrencia.Turma?.ModalidadeCodigo != null ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
+                Semestre = ocorrencia.Turma?.Semestre ?? 0,
+                Alunos = ocorrencia.Alunos?.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
                     CodigoAluno = ao.CodigoAluno,
                     Nome = alunos.FirstOrDefault(a => a.CodigoAluno == ao.CodigoAluno)?.NomeAluno
                 }),
-                Servidores = ocorrencia.Servidores.Select(ao => new OcorrenciaServidorDto()
+                Servidores = ocorrencia.Servidores?.Select(ao => new OcorrenciaServidorDto()
                 {
                     Id = ao.Id,
                     CodigoServidor = ao.CodigoServidor,

@@ -25,8 +25,8 @@ namespace SME.SGP.Dados
         {
             if (!ids?.Any() ?? true) return;
             
-            var sql = "delete from ocorrencia_servidor where id any(@ids)";
-            await database.Conexao.ExecuteAsync(sql, new { ids });
+            var sql = "delete from ocorrencia_servidor where id = any(@ids)";
+            await database.Conexao.ExecuteAsync(sql, new { ids = ids.ToList() });
         }
 
         public async Task<IEnumerable<OcorrenciaServidor>> ObterPorIdOcorrencia(long idOcorrencia)
