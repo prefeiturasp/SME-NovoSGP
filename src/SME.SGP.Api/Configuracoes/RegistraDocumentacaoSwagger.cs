@@ -12,7 +12,7 @@ namespace SME.SGP.Api
             var sp = services.BuildServiceProvider();
 
             var versaoService = sp.GetService<IServicoGithub>();
-            var versaoAtual = versaoService.RecuperarUltimaVersao().Result;
+            var versaoAtual = versaoService?.RecuperarUltimaVersao().Result;
 
             services.AddSwaggerGen(c =>
             {
@@ -31,28 +31,14 @@ namespace SME.SGP.Api
                     Scheme = "Bearer",
                     BearerFormat = "JWT"
                 });
-
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                        },
-                        new string[] { }
-                    }
-                });
+                
+                c.OperationFilter<BasicAuthOperationsFilter>();
             });
 
             services.AddSwaggerGen(o =>
             {
                 o.OperationFilter<FiltroIntegracaoExterna>();
             });
-
         }
     }
 }

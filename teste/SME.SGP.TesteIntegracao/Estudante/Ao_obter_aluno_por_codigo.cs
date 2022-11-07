@@ -26,8 +26,6 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
         public Ao_obter_aluno_por_codigo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
-            _builder = new ItensBasicosBuilder(this);
-            
             collectionFixture.Services.Replace(
                 new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
                 typeof(ObterAlunoPorCodigoEolQueryHandlerFake), ServiceLifetime.Scoped));
@@ -38,6 +36,8 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         [Fact]
         public async Task Deve_obter_estudante_por_codigo_e_turma()
         {
+            _builder = new ItensBasicosBuilder(this);
+            
             await _builder.CriaItensComunsEja();
 
             var useCase = ServiceProvider.GetService<IObterAlunoPorCodigoEolEAnoLetivoUseCase>();
@@ -52,6 +52,8 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         [Fact]
         public async Task Deve_obter_estudante_por_codigo()
         {
+            _builder = new ItensBasicosBuilder(this);
+            
             await _builder.CriaItensComunsEja();
             await CriaTurma2();
 

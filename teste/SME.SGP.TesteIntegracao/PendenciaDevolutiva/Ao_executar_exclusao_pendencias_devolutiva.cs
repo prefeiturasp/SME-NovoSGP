@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDevolutiva
                 AulaCJ = false
             });
 
-            await InserirNaBase(new DiarioBordo()
+            await InserirNaBase(new Dominio.DiarioBordo()
             {
                 Id = 1,
                 AulaId = 1,

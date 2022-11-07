@@ -7,6 +7,7 @@ using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AvaliacaoAula
@@ -40,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => comando.Inserir(atividadeAvaliativa));
 
-            excecao.Message.ShouldBe("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
         private static async Task Validar(IComandosAtividadeAvaliativa comando, Infra.AtividadeAvaliativaDto atividadeAvaliativa)

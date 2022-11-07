@@ -359,7 +359,7 @@ namespace SME.SGP.Dominio
 
             if (!usuario.EhProfessorCj() && !podePersistir)
                 throw new NegocioException(
-                    "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                    MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

@@ -174,7 +174,7 @@ namespace SME.SGP.Aplicacao
         private async Task ValidaProfessorPodePersistirTurma(Turma turma, PeriodoEscolar periodo, Usuario usuarioLogado)
         {
             if (!usuarioLogado.EhGestorEscolar() && !await PossuiPermissaoTurma(turma, periodo, usuarioLogado))
-                throw new NegocioException(MensagensNegocioFrequencia.Nao_pode_fazer_alteracoes_anotacao_nesta_turma_componente_e_data);
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
         private async Task ValidarConceitoOuNota(SalvarConselhoClasseAlunoNotaDto dto, FechamentoTurma fechamentoTurma,
