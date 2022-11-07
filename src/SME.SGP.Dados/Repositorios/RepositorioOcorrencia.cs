@@ -58,7 +58,7 @@ namespace SME.SGP.Dados
             query = $@" drop table if exists tempOcorrenciasSelecionadas;
 
                         select
-                            distinct o.id, o.data_ocorrencia
+                            distinct o.id, o.data_ocorrencia, tu.id as turmaId
                         into temp tempOcorrenciasSelecionadas
                         from {tabelas}
                         {condicao} {orderBy} {offSet};
@@ -81,21 +81,24 @@ namespace SME.SGP.Dados
 							ot.descricao,
 							oa.id,
 							oa.codigo_aluno,
-                            os.*
+                            os.*,
+                            tu.*
                         from tempOcorrenciasSelecionadas tos
                         inner join ocorrencia o on tos.id = o.id
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
+                        inner join turma tu on tu.id = tos.turmaId
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id;";
 
             var lstOcorrencias = new Dictionary<long, Ocorrencia>();
 
-            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, OcorrenciaServidor, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno, servidor) =>
+            await database.Conexao.QueryAsync<Ocorrencia, OcorrenciaTipo, OcorrenciaAluno, OcorrenciaServidor, Turma, Ocorrencia>(query.ToString(), (ocorrencia, tipo, aluno, servidor, turma) =>
             {
                 if (!lstOcorrencias.TryGetValue(ocorrencia.Id, out Ocorrencia ocorrenciaEntrada))
                 {
                     ocorrenciaEntrada = ocorrencia;
                     ocorrenciaEntrada.OcorrenciaTipo = tipo;
+                    ocorrenciaEntrada.Turma = turma;
                     lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 

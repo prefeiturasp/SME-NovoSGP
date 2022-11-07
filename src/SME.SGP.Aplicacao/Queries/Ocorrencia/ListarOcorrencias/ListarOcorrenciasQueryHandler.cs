@@ -121,7 +121,7 @@ namespace SME.SGP.Aplicacao
                         DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
                         Id = ocorrencia.Id,
                         Titulo = ocorrencia.Titulo,
-                        TurmaId = ocorrencia.TurmaId
+                        Turma = ocorrencia.Turma?.NomeFiltro 
                     };
                 }),
                 TotalRegistros = ocorrencias.TotalRegistros,
