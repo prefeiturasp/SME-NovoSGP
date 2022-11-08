@@ -4,7 +4,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirOcorrenciaServidorPorIdOcorrenciaCommand : IRequest
+    public class ExcluirOcorrenciaServidorPorIdOcorrenciaCommand : IRequest<bool>
     {
         public ExcluirOcorrenciaServidorPorIdOcorrenciaCommand(long idOcorrencia)
         {
