@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             long idBimestre = 0;
             if (periodos.Any())
-                idBimestre = periodos.FirstOrDefault(x => x.Bimestre == periodoEscolar.Bimestre).Id;
+                idBimestre = periodos.FirstOrDefault(x => x.Bimestre == periodoEscolar.Bimestre)?.Id ?? 0;
 
             return periodoEscolar == null || idBimestre == 0 ? null :
                 new BimestreDto() { Id = idBimestre, Numero = periodoEscolar.Bimestre };
