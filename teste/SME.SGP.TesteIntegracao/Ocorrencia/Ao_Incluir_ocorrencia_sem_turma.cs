@@ -38,7 +38,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
                 Titulo = "Ocorrência data futura"
             };
 
-            await useCase.Executar(dtoInserir).ShouldThrowAsync<NegocioException>(MensagemNegocioComuns.Data_da_ocorrencia_nao_pode_ser_futura);
+            await useCase.Executar(dtoInserir).ShouldThrowAsync<NegocioException>(MensagemNegocioOcorrencia.Data_da_ocorrencia_nao_pode_ser_futura);
         }
 
 
