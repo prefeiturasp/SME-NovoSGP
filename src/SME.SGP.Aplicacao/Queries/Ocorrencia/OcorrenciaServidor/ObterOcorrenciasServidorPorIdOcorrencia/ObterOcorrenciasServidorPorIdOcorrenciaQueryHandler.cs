@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler : IRequestHandler<ObterOcorrenciasServidorPorIdOcorrenciaQuery,IEnumerable<Dominio.OcorrenciaServidor>>
     {
-        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
+        private readonly IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor;
 
         public ObterOcorrenciasServidorPorIdOcorrenciaQueryHandler(IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor)
         {
-            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
+            this.repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
         }
 
         public async Task<IEnumerable<Dominio.OcorrenciaServidor>> Handle(ObterOcorrenciasServidorPorIdOcorrenciaQuery request, CancellationToken cancellationToken)
         {
-            return await _repositorioOcorrenciaServidor.ObterPorIdOcorrencia(request.IdOcorrencia);
+            return await repositorioOcorrenciaServidor.ObterPorIdOcorrencia(request.IdOcorrencia);
         }
     }
 }
