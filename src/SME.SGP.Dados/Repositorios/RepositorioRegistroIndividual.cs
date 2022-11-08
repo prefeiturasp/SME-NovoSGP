@@ -278,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
 		                               where data_registro between @dataInicial and now()
 			                             and t.modalidade_codigo = @modalidade
 		  	                             and t.ue_id = @ueId
-			                             and t.ano <> '0'
+			                             and t.ano = '7'
 		                            group by t.nome
 		                            union
 		                            select 0 as quantidade_registros,
@@ -289,7 +289,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            where t.modalidade_codigo = @modalidade
 		                              and t.ue_id = @ueId
                                       and t.ano_letivo = @anoLetivo
-		                              and t.ano <> '0'
+		                              and t.ano = '7'
 		                            group by t.nome
 		                            )z
                             group by z.nome
