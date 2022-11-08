@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -23,6 +24,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
+            if (filtroRelatorioBoletimDto.QuantidadeBoletim <= 0)
+                throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
+            
             bool existeUe = await mediator
                 .Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
 
@@ -48,6 +52,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var usuarioLogado = await mediator
                 .Send(new ObterUsuarioLogadoQuery());
+            
 
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
 
