@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿#nullable enable
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
             var alunos = await ObterAlunos(ocorrencia);
             var servidores = await ObterServidores(ocorrencia);
 
-            return MapearParaDto(ocorrencia, alunos, servidores);
+            return await MapearParaDto(ocorrencia, alunos, servidores);
         }
 
         private async Task<IEnumerable<UsuarioEolRetornoDto>> ObterServidores(Ocorrencia ocorrencia)
@@ -63,8 +64,22 @@ namespace SME.SGP.Aplicacao
 
             return Enumerable.Empty<TurmasDoAlunoDto>();
         }
+        private async Task<string> ObterNomeUeAsync(long ueId)
+        {
+            var ue = await mediator.Send(new ObterUePorIdQuery(ueId));
+            if (ue == null)
+                throw new NegocioException("Não foi possível encrontra a UE!");
+            
+            return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
+        }
 
-        private OcorrenciaDto MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores)
+        private async Task<string> ObterNomeDre(long idDre)
+        {
+            
+            var dre = await mediator.Send(new ObterDREPorIdQuery(idDre));
+            return dre.Nome;
+        }
+        private async Task<OcorrenciaDto> MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores)
         {
             var dto = new OcorrenciaDto()
             {
@@ -80,6 +95,10 @@ namespace SME.SGP.Aplicacao
                 UeId = ocorrencia.UeId,
                 Modalidade = ocorrencia.Turma?.ModalidadeCodigo != null ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
                 Semestre = ocorrencia.Turma?.Semestre ?? 0,
+                DreNome = await ObterNomeDre(ocorrencia.Ue.DreId),
+                UeNome = await ObterNomeUeAsync(ocorrencia.UeId),
+                ModalidadeNome = ocorrencia.Turma?.ModalidadeCodigo.Name(),
+                TurmaNome = ocorrencia.Turma?.NomeFiltro,
                 Alunos = ocorrencia.Alunos?.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
