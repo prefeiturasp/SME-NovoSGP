@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
-            if (filtroRelatorioBoletimDto.QuantidadeBoletim <= 0)
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= 0)
                 throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
             
             bool existeUe = await mediator
@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             bool retorno;
 
-            if (filtroRelatorioBoletimDto.QuantidadePorPagina <= DOIS_BOLETIM)
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= DOIS_BOLETIM)
             {
                 retorno = await mediator
                     .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
