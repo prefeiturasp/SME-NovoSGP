@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
-            if (filtroRelatorioBoletimDto.QuantidadeBoletim <= 0)
+            if (filtroRelatorioBoletimDto.QuantidadePorPagina <= 0)
                 throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
             
             bool existeUe = await mediator

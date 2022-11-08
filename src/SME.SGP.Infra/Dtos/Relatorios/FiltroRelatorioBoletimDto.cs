@@ -9,7 +9,6 @@ namespace SME.SGP.Infra
         public string UeCodigo { get; set; }
 
         public int Semestre { get; set; }
-        public int QuantidadeBoletim { get; set; }
 
         public string TurmaCodigo { get; set; }
 
