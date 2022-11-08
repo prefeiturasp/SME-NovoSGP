@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = 2,
+                Valor = 1,
                 NumeroAula = 2,
                 AulaId = 1
             });
