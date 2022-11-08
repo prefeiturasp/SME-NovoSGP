@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private const int DOIS_BOLETIM = 2;
 
         public BoletimUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork)
@@ -66,7 +67,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             bool retorno;
 
-            if (filtroRelatorioBoletimDto.Modelo == ModeloBoletim.Detalhado)
+            if (filtroRelatorioBoletimDto.QuantidadePorPagina <= DOIS_BOLETIM)
             {
                 retorno = await mediator
                     .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));

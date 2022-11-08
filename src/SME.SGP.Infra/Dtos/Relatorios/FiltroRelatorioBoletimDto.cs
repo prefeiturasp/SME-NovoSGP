@@ -25,5 +25,6 @@ namespace SME.SGP.Infra
 
         public bool ConsideraHistorico { get; set; }
         public bool ConsideraInativo { get; set; }
+        public int QuantidadePorPagina { get; set; }
     }
 }
