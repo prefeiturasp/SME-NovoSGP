@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
             
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(acompanhamentoAlunoDto.TurmaId.ToString()));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(acompanhamentoAlunoDto.TurmaId));
             
             if (turma == null)
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             if (!temPeriodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
             
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, dataAtual.Year, true,false, acompanhamentoAlunoDto.TurmaId.ToString()));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, dataAtual.Year, true,false, turma.CodigoTurma));
             if (aluno == null)
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
             
