@@ -66,8 +66,13 @@ namespace SME.SGP.Aplicacao
             if (request.ConsideraTodosAlunos)
                 request.Alunos = request.Alunos.Union(alunosDaTurma.Select(a => a.CodigoAluno)).ToArray();
 
+            var alunos = (from a in request.Alunos
+                          join at in alunosDaTurma
+                          on a equals at.CodigoAluno
+                          select at).Select(at => (at.CodigoAluno, at.DataMatricula, (at.EstaAtivo(request.DataAula) ? (DateTime?)null : at.DataSituacao)));
+
             var excluirFrequenciaAlunoIds = new List<long>();
-            var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, request.Alunos, request.TurmaId))).ToList();
+            var registroFreqAlunos = (await mediator.Send(new ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(request.DataAula, alunos, request.TurmaId))).ToList();
             var periodosEscolaresParaFiltro = periodos.Select(p => (long?)p.Id);
             var frequenciaDosAlunos = (await mediator.Send(new ObterFrequenciasPorAlunosTurmaQuery(request.Alunos, periodosEscolaresParaFiltro, request.TurmaId, request.DisciplinaId))).ToList();
             var totalAulasDaDisciplina = await mediator.Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, turmasId: request.TurmaId));
@@ -120,8 +125,8 @@ namespace SME.SGP.Aplicacao
                     return;
 
                 var frequenciasParaRealizarExclusao = frequenciasConsolidadas
-                    .Where(f => f.PeriodoEscolarId == periodoRegistrosLancados && 
-                                f.Tipo == TipoFrequenciaAluno.PorDisciplina && 
+                    .Where(f => f.PeriodoEscolarId == periodoRegistrosLancados &&
+                                f.Tipo == TipoFrequenciaAluno.PorDisciplina &&
                                 !registrosLancados.Any(r => r.AlunoCodigo == f.CodigoAluno && r.ComponenteCurricularId == f.DisciplinaId))
                     .Select(f => f.Id).ToList();
 

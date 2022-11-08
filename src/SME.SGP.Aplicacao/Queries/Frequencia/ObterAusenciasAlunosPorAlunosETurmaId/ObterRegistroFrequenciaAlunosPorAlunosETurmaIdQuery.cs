@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery : IRequest<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>>
     {
-        public ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<string> alunos, params string[] turmasId)
+        public ObterRegistroFrequenciaAlunosPorAlunosETurmaIdQuery(DateTime dataAula, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, params string[] turmasId)
         {
             DataAula = dataAula;
             Alunos = alunos;
@@ -17,7 +16,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public DateTime DataAula { get; set; }
-        public IEnumerable<string> Alunos { get; set; }
+        public IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> Alunos { get; set; }
         public string[] TurmasId { get; set; }
     }
 
