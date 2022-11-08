@@ -43,7 +43,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("codigoUe/{codigoUe}/filtro/{filtro}")]
+        [Route("codigoUe/{codigoUe}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
