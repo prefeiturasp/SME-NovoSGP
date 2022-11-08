@@ -73,13 +73,6 @@ namespace SME.SGP.Aplicacao
             return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
         }
 
-        private static string ObterNomeTurma(Turma? turma)
-        {
-            if (turma != null)
-                return $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
-            return "";
-        }
-
         private async Task<string> ObterNomeDre(long idDre)
         {
             
@@ -105,7 +98,7 @@ namespace SME.SGP.Aplicacao
                 DreNome = await ObterNomeDre(ocorrencia.Ue.DreId),
                 UeNome = await ObterNomeUeAsync(ocorrencia.UeId),
                 ModalidadeNome = ocorrencia.Turma?.ModalidadeCodigo.Name(),
-                TurmaNome = ObterNomeTurma(ocorrencia.Turma),
+                TurmaNome = ocorrencia.Turma?.NomeFiltro,
                 Alunos = ocorrencia.Alunos?.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
