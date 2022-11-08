@@ -243,7 +243,7 @@ namespace SME.SGP.Dados.Repositorios
 		                              inner join turma t on t.id = ri.turma_id
 		                              inner join ue on ue.id = t.ue_id
 		                              where data_registro between @dataInicial and now()
-			                            and t.ano <> '0'
+			                            and t.ano = '7'
 			                            and t.modalidade_codigo = @modalidade
                                         {condicaoDre}
 		                           group by t.ano, t.modalidade_codigo
@@ -256,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
 		                           inner join turma t on t.id = cmt.turma_id 
 		                           inner join ue on ue.id = t.ue_id 
 		                           where t.modalidade_codigo = @modalidade
-		                             and t.ano <> '0'
+		                             and t.ano = '7'
 		                             and t.ano_letivo = @anoLetivo
                                      {condicaoDre}	
 		                           group by t.ano, t.modalidade_codigo 
