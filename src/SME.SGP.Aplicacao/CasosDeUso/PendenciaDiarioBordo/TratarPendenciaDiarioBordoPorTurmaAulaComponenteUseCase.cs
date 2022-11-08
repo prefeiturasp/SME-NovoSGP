@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
 
             if (ue.TipoEscola == TipoEscola.CEIDIRET || ue.TipoEscola == TipoEscola.CEIINDIR || ue.TipoEscola == TipoEscola.CEUCEI)
-                throw new NegocioException("Escola tipo CEI não tratada pelo SGP.");
+                return true;
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {

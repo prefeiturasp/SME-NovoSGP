@@ -87,8 +87,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre d on
 	                        u.dre_id = d.id
                         where
-	                        turma_id = @turmaCodigo
-                            and u.tipo_escola not in (10, 11, 18)";
+	                        turma_id = @turmaCodigo";
 
             contexto.AbrirConexao();
 
