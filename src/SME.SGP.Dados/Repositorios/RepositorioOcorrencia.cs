@@ -102,11 +102,14 @@ namespace SME.SGP.Dados
                     lstOcorrencias.Add(ocorrenciaEntrada.Id, ocorrenciaEntrada);
                 }
 
-                ocorrenciaEntrada.Alunos = ocorrenciaEntrada.Alunos ?? new List<OcorrenciaAluno>();
-                if (aluno != null)
+                if (aluno != null &&
+                    !ocorrenciaEntrada.Alunos.ToList().Exists(item => item.CodigoAluno == aluno.CodigoAluno))
                     ocorrenciaEntrada.Alunos.Add(aluno);
-                if (servidor != null)
+
+                if (servidor != null &&
+                   !ocorrenciaEntrada.Servidores.ToList().Exists(item => item.CodigoServidor == servidor.CodigoServidor))
                     ocorrenciaEntrada.Servidores.Add(servidor);
+
                 return ocorrenciaEntrada;
             }, new
             {
@@ -177,10 +180,14 @@ namespace SME.SGP.Dados
                     if (ue != null) resultado.Ue = ue;
                     
                     resultado.Alunos = resultado?.Alunos ?? new List<OcorrenciaAluno>();
-                    if(ocorrenciaAluno != null)resultado.Alunos.Add(ocorrenciaAluno);
+                    if(ocorrenciaAluno != null && 
+                        !resultado.Alunos.ToList().Exists(aluno => aluno.CodigoAluno == ocorrenciaAluno.CodigoAluno)) 
+                        resultado.Alunos.Add(ocorrenciaAluno);
                     
                     resultado.Servidores = resultado?.Servidores ?? new List<OcorrenciaServidor>();
-                    if(ocorrenciaServidor != null) resultado.Servidores.Add(ocorrenciaServidor);
+                    if(ocorrenciaServidor != null && 
+                       !resultado.Servidores.ToList().Exists(servidor => servidor.CodigoServidor == ocorrenciaServidor.CodigoServidor)) 
+                        resultado.Servidores.Add(ocorrenciaServidor);
                     
                     return resultado;
                 },
