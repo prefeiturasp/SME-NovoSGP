@@ -107,7 +107,9 @@ namespace SME.SGP.Aplicacao
                 foreach (var componenteAula in componentesCurriculares){
                     if (componenteAula.TerritorioSaber == true)
                     {
-                        var auxComponenteCalendaraio = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDoProfessor.Select(cc => Convert.ToInt64(cc)).ToArray(), componentesCurricularesDoProfessor.Any(a => a.Length > 5), filtroAulasEventosCalendarioDto.TurmaCodigo));
+                        var componenteAulaTerritorio = componentesCurricularesDoProfessor.Any(a => a.Length > 5) ? componentesCurricularesDoProfessor.Any(a => a.Length > 5) : componenteAula.TerritorioSaber;
+                        var componenteCurricularAula = componentesCurricularesDoProfessor.Any() ? componentesCurricularesDoProfessor.Select(cc => Convert.ToInt64(cc)).ToArray() : new long[] { componenteAula.CodigoComponenteCurricular };
+                        var auxComponenteCalendaraio = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteCurricularAula, componenteAulaTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
                         foreach (var componenteTerritorio in auxComponenteCalendaraio) {
                             componenteAula.Nome = componenteTerritorio.Nome;
                         }
