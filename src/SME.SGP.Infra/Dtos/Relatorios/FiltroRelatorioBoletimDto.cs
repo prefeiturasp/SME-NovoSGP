@@ -10,6 +10,8 @@ namespace SME.SGP.Infra
 
         public int Semestre { get; set; }
 
+        public int QuantidadeBoletimPorPagina { get; set; }
+
         public string TurmaCodigo { get; set; }
 
         public int AnoLetivo { get; set; }
@@ -24,6 +26,5 @@ namespace SME.SGP.Infra
 
         public bool ConsideraHistorico { get; set; }
         public bool ConsideraInativo { get; set; }
-        public int QuantidadePorPagina { get; set; }
     }
 }
