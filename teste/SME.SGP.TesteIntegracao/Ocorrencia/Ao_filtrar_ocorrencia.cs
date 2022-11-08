@@ -40,7 +40,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 Titulo = titulo
             };
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 TurmaId = turmaId
             };
@@ -80,7 +80,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 AlunoNome = nome
             };
@@ -100,7 +100,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 ServidorNome = nome
             };
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 Titulo = "Ocorrência",
                 Semestre = 1,
