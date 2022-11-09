@@ -1,28 +1,19 @@
-﻿using Dapper;
+﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-    public class RepositorioWFAprovacaoNotaConselho : IRepositorioWFAprovacaoNotaConselho
+    public class RepositorioWFAprovacaoNotaConselho : RepositorioBase<WFAprovacaoNotaConselho>, IRepositorioWFAprovacaoNotaConselho
     {
-        protected readonly ISgpContext database;
 
-        public RepositorioWFAprovacaoNotaConselho(ISgpContext database)
+        public RepositorioWFAprovacaoNotaConselho(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
-            this.database = database ?? throw new ArgumentNullException(nameof(database));
-        }
-
-        public async Task Excluir(long id)
-        {
-            var query = @"delete from wf_aprovacao_nota_conselho where id = @id";
-
-            await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
 
         public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId)
@@ -66,14 +57,5 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<WFAprovacaoNotaConselho>(query, new { conselhoClasseNotaId });
         }
-
-        public async Task Salvar(WFAprovacaoNotaConselho entidade)
-        {
-            if (entidade.Id > 0)
-                await database.Conexao.UpdateAsync(entidade);
-            else
-                await database.Conexao.InsertAsync(entidade);
-        }
-
     }
 }
