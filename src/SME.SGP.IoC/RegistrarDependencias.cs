@@ -401,6 +401,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioOcorrencia, RepositorioOcorrencia>();
             services.TryAddScoped<IRepositorioOcorrenciaAluno, RepositorioOcorrenciaAluno>();
             services.TryAddScoped<IRepositorioOcorrenciaTipo, RepositorioOcorrenciaTipo>();
+            services.TryAddScoped<IRepositorioOcorrenciaServidor, RepositorioOcorrenciaServidor>();
             services.TryAddScoped<IRepositorioAlunoFoto, RepositorioAlunoFoto>();
             services.TryAddScoped<IRepositorioAreaDoConhecimento, RepositorioAreaDoConhecimento>();
             services.TryAddScoped<IRepositorioComponenteCurricularGrupoAreaOrdenacao, RepositorioComponenteCurricularGrupoAreaOrdenacao>();
@@ -833,6 +834,7 @@ namespace SME.SGP.IoC
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
             services.TryAddScoped<IObterFuncionariosPAAIPorDreUseCase, ObterFuncionariosPAAIPorDreUseCase>();
+            services.TryAddScoped<IObterFuncionariosPorUeUseCase, ObterFuncionariosPorUeUseCase>();
 
             // Grade Curricular
             services.TryAddScoped<IRelatorioControleGradeUseCase, RelatorioControleGradeUseCase>();
