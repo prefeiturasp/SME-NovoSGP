@@ -24,6 +24,9 @@ namespace SME.SGP.Infra
         public AuditoriaDto Auditoria { get; set; }
         public IEnumerable<OcorrenciaAlunoDto> Alunos { get; set; }
         public IEnumerable<OcorrenciaServidorDto> Servidores { get; set; }
+        public string UeCodigo { get; set; }
+        public string DreCodigo { get; set; }
+
         public OcorrenciaDto()
         {
             Alunos = new List<OcorrenciaAlunoDto>();

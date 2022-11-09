@@ -118,6 +118,7 @@ namespace SME.SGP.Aplicacao
                     return new OcorrenciaListagemDto()
                     {
                         AlunoOcorrencia = alunoOcorrencia,
+                        ServidorOcorrencia = alunoServidor,
                         DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
                         Id = ocorrencia.Id,
                         Titulo = ocorrencia.Titulo,
