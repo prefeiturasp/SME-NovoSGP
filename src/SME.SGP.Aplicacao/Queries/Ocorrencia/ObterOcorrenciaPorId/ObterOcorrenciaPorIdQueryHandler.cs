@@ -75,7 +75,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterNomeDre(long idDre)
         {
-            
             var dre = await mediator.Send(new ObterDREPorIdQuery(idDre));
             return dre.Nome;
         }

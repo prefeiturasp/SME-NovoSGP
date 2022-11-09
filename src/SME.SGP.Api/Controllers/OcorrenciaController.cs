@@ -10,13 +10,13 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/ocorrencias")]
-    [Authorize("Bearer")]
+    //[Authorize("Bearer")]
     public class OcorrenciaController : ControllerBase
     {
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<OcorrenciaListagemDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
+        //[Permissao(Permissao.OCO_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromServices] IListarOcorrenciasUseCase useCase, [FromQuery] FiltroOcorrenciaListagemDto dto)
         {
             return Ok(await useCase.Executar(dto));

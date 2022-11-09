@@ -58,7 +58,7 @@ namespace SME.SGP.Dados
             query = $@" drop table if exists tempOcorrenciasSelecionadas;
 
                         select
-                            distinct o.id, o.data_ocorrencia, tu.id as turmaId
+                            distinct o.id, o.data_ocorrencia, o.turma_id  as turmaId
                         into temp tempOcorrenciasSelecionadas
                         from {tabelas}
                         {condicao} {orderBy} {offSet};
