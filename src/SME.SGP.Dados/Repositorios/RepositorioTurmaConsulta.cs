@@ -786,7 +786,8 @@ namespace SME.SGP.Dados.Repositorios
                        inner join ue on ue.id = t.ue_id
                        where t.modalidade_codigo = 1 
                          and ue.ue_id = @ueCodigo
-                         and t.ano_letivo = @anoLetivo ";
+                         and t.ano_letivo = @anoLetivo
+                         and t.ano = '7'";
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
         }
