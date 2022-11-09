@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 try
                 {
                     if (request.DataOcorrencia > DateTimeExtension.HorarioBrasilia())
-                        throw new NegocioException(MensagemNegocioComuns.Data_da_ocorrencia_nao_pode_ser_futura);
+                        throw new NegocioException(MensagemNegocioOcorrencia.Data_da_ocorrencia_nao_pode_ser_futura);
 
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
                     if (ocorrenciaTipo is null)

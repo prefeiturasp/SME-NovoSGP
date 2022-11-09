@@ -6,7 +6,9 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -15,19 +17,11 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class FuncionarioController : ControllerBase
     {
-        private readonly IMediator mediator;
-
-        public FuncionarioController(IMediator mediator)
-        {
-            this.mediator = mediator;
-        }
-
         [HttpPost]
         [Route("pesquisa")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
-        [Permissao(Permissao.AS_C, Policy = "Bearer")]
-        [Permissao(Permissao.OCO_C, Policy = "Bearer")]
+        [Permissao(Permissao.AS_C,Permissao.OCO_C,Policy = "Bearer")]
         public async Task<IActionResult> PesquisaFuncionariosPorDreUe([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaFuncionariosPorDreUeUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
@@ -48,9 +42,12 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
         [Permissao(Permissao.OCO_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro)
+        public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro,[FromServices] IObterFuncionariosPorUeUseCase useCase)
         {
-            return Ok(await mediator.Send(new ObterFuncionariosPorUeQuery(codigoUe, filtro)));
+            var consulta = await useCase.Executar(codigoUe, filtro);
+            if (consulta.Any())
+                return StatusCode(204);
+            return Ok(consulta);
         }
     }
 }

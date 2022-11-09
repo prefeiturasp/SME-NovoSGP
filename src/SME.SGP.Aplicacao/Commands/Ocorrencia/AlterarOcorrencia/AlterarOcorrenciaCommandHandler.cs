@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
-        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
+        private readonly IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
-            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
+            this.repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo)); ;
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno)); ;
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
@@ -66,14 +66,14 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var servidoresParaSeremDeletados = ocorrencia.Servidores.Where(s => !request.CodigosServidores.Contains(s.CodigoServidor)).Select(d => d.Id);
-                    await _repositorioOcorrenciaServidor.ExcluirPoIds(servidoresParaSeremDeletados);
+                    await repositorioOcorrenciaServidor.ExcluirPoIds(servidoresParaSeremDeletados);
                     
                     var novosServidores = request.CodigosServidores.Where(x => !ocorrencia.Servidores.Any(y => y.CodigoServidor == x)).ToList();
                     ocorrencia.AdicionarServidores(novosServidores);
                     foreach (var novoServidor in novosServidores)
                     {
                         var ocorrenciaServidor = ocorrencia.Servidores.FirstOrDefault(x => x.CodigoServidor == novoServidor);
-                        await _repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
+                        await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
                     }
                     
                     

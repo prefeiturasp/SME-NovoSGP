@@ -114,21 +114,21 @@ namespace SME.SGP.Aplicacao
                     var alunoServidor = ocorrencia.Servidores?.Count > 1
                       ? $"{ocorrencia.Servidores?.Count} servidores"
                       : DefinirDescricaoOcorrenciaServidor(ocorrencia);
-
+                    
                     return new OcorrenciaListagemDto()
                     {
                         AlunoOcorrencia = alunoOcorrencia,
+                        ServidorOcorrencia = alunoServidor,
                         DataOcorrencia = ocorrencia.DataOcorrencia.ToString("dd/MM/yyyy"),
                         Id = ocorrencia.Id,
                         Titulo = ocorrencia.Titulo,
-                        Turma = ocorrencia.Turma?.NomeFiltro 
+                        Turma = ocorrencia.Turma?.NomeFiltro,
                     };
                 }),
                 TotalRegistros = ocorrencias.TotalRegistros,
                 TotalPaginas = ocorrencias.TotalPaginas
             };
         }
-
         private string DefinirDescricaoOcorrenciaAluno(Ocorrencia ocorrencia)
         {
             var ocorrenciaAluno = ocorrencia.Alunos?.FirstOrDefault();

@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             
             RuleFor(x => x.UeId)
                 .NotEmpty()
-                .WithMessage("A Ue da ocorrência deve ser informada.");
+                .WithMessage("A Ue da ocorrência deve ser informada para inserir a ocorrência");
 
         }
     }

@@ -73,15 +73,15 @@ namespace SME.SGP.Aplicacao
             return $"{ue.TipoEscola.ShortName()} {ue.Nome}";
         }
 
-        private async Task<string> ObterNomeDre(long idDre)
+        private async Task<Dre> ObterNomeDre(long idDre)
         {
-            
             var dre = await mediator.Send(new ObterDREPorIdQuery(idDre));
-            return dre.Nome;
+            return dre;
         }
         private async Task<OcorrenciaDto> MapearParaDto(Ocorrencia ocorrencia, IEnumerable<TurmasDoAlunoDto> alunos, IEnumerable<UsuarioEolRetornoDto> servidores)
         {
-            var dto = new OcorrenciaDto()
+            var dre = await ObterNomeDre(ocorrencia.Ue.DreId);
+            return new OcorrenciaDto
             {
                 Auditoria = (AuditoriaDto)ocorrencia,
                 DataOcorrencia = ocorrencia.DataOcorrencia,
@@ -95,10 +95,12 @@ namespace SME.SGP.Aplicacao
                 UeId = ocorrencia.UeId,
                 Modalidade = ocorrencia.Turma?.ModalidadeCodigo != null ? (int)ocorrencia.Turma.ModalidadeCodigo : 0,
                 Semestre = ocorrencia.Turma?.Semestre ?? 0,
-                DreNome = await ObterNomeDre(ocorrencia.Ue.DreId),
+                DreNome = dre.Nome,
                 UeNome = await ObterNomeUeAsync(ocorrencia.UeId),
                 ModalidadeNome = ocorrencia.Turma?.ModalidadeCodigo.Name(),
                 TurmaNome = ocorrencia.Turma?.NomeFiltro,
+                UeCodigo = ocorrencia.Ue.CodigoUe,
+                DreCodigo = dre.CodigoDre,
                 Alunos = ocorrencia.Alunos?.Select(ao => new OcorrenciaAlunoDto()
                 {
                     Id = ao.Id,
@@ -112,8 +114,6 @@ namespace SME.SGP.Aplicacao
                     Nome = servidores.FirstOrDefault(servidor => servidor.CodigoRf == ao.CodigoServidor)?.NomeServidor
                 })
             };
-
-            return dto;
         }
     }
 }
