@@ -512,16 +512,16 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true)
         {
-            return new List<ComponenteCurricularEol>()
+            return await Task.FromResult(new List<ComponenteCurricularEol>()
             {
                 new ComponenteCurricularEol()
                 {
                     Codigo = 1106,
                     TerritorioSaber = false
                 }
-            };
+            });
         }
 
         public Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(string codigoTurma, string login, Guid perfil)
@@ -848,6 +848,11 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 },
             };
             return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
+        }
+
+        public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)

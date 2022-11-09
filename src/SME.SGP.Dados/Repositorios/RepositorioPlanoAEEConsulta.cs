@@ -168,9 +168,11 @@ namespace SME.SGP.Dados.Repositorios
 	                                        pa.situacao 
                                         from plano_aee pa
                                         inner join turma tu on tu.id = pa.turma_id 
+                                        inner join plano_aee_versao pav on pav.plano_aee_id = pa.id and not pav.excluido 
                                         where pa.aluno_codigo = @codigoEstudante 
                                         and pa.situacao not in (3,7)
-                                        and EXTRACT(ISOYEAR from pa.criado_em) = @ano 
+                                        and (EXTRACT(ISOYEAR from pa.criado_em) = @ano 
+                                        or EXTRACT(ISOYEAR from pav.criado_em) = @ano)
                                         limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAEEResumoDto>(query, new { codigoEstudante, ano });

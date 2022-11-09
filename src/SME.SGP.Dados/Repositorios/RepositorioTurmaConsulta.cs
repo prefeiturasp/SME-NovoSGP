@@ -42,7 +42,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<long> ObterTurmaIdPorCodigo(string turmaCodigo)
         {
-            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>("select id from turma where turma_id = @turmaCodigo", new { turmaCodigo });
+            var query = @"select t.id 
+                        from turma t
+                        inner join ue u on t.ue_id = u.id
+                        where t.turma_id = @turmaCodigo
+                            and u.tipo_escola not in (10, 11, 18)";
+            
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaCodigo });
         }
 
         public async Task<Turma> ObterPorId(long id)
@@ -87,7 +93,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre d on
 	                        u.dre_id = d.id
                         where
-	                        turma_id = @turmaCodigo";
+	                        turma_id = @turmaCodigo
+                            and u.tipo_escola not in (10, 11, 18)";
 
             contexto.AbrirConexao();
 
@@ -786,7 +793,8 @@ namespace SME.SGP.Dados.Repositorios
                        inner join ue on ue.id = t.ue_id
                        where t.modalidade_codigo = 1 
                          and ue.ue_id = @ueCodigo
-                         and t.ano_letivo = @anoLetivo ";
+                         and t.ano_letivo = @anoLetivo
+                         and t.ano = '7'";
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
         }

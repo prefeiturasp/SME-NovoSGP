@@ -218,7 +218,7 @@ namespace SME.SGP.Dados
                 sql.AppendLine(" count(o.id) ");
             else
             {
-                sql.AppendLine(" o.data_ocorrencia data_ocorrencia ");
+                sql.AppendLine(" o.data_ocorrencia dataOcorrencia ");
                 sql.AppendLine(", CONCAT(o.criado_por, ' (', o.criado_rf, ')') registrado_por ");
                 sql.AppendLine(", o.titulo ");
             }

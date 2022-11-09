@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -108,7 +109,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualDto.TurmaId.ToString(), planoAnualDto.ComponenteCurricularEolId.ToString(), DateTime.Now);
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !podePersistir)
-                        throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                        throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
                 planoAnual = MapearParaDominio(planoAnualDto, planoAnual, bimestrePlanoAnual.Bimestre.Value, bimestrePlanoAnual.Descricao, bimestrePlanoAnual.ObjetivosAprendizagemOpcionais);
                 Salvar(planoAnualDto, planoAnual, bimestrePlanoAnual);

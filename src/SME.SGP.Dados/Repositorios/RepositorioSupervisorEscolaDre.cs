@@ -209,7 +209,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new { codigoDre, tipoResponsavelAtribuicao });
         }
-
+        
         public async Task<IEnumerable<SupervisorEscolasDreDto>> ObtemSupervisoresPorUe(string ueId)
         {
             StringBuilder query = new();

@@ -58,12 +58,9 @@ namespace SME.SGP.Aplicacao
             }
 
             if (disciplinas != null && disciplinas.Any())
-            {
-                disciplinasDto = await MapearParaDto(disciplinas, disciplinasCJ, request.TemEnsinoEspecial);
-            }
+                disciplinasDto = await ChecarSeComponenteLancaFrequenciaSgp(await MapearParaDto(disciplinas, disciplinasCJ, request.TemEnsinoEspecial));
 
             return disciplinasDto;
-
         }
 
         private async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasCJRegencia(IEnumerable<DisciplinaResposta> disciplinas)
@@ -151,5 +148,18 @@ namespace SME.SGP.Aplicacao
             RegistroFrequencia = disciplinaEol.RegistraFrequencia,
             LancaNota = disciplinaEol.LancaNota,
         };
+
+        private async Task<List<DisciplinaDto>> ChecarSeComponenteLancaFrequenciaSgp(IEnumerable<DisciplinaDto> disciplinasEol)
+        {
+            var disciplinasAjustadas = disciplinasEol.Where(d => d.RegistraFrequencia).ToList();
+
+            foreach (var disciplina in disciplinasEol.Where(d => !d.RegistraFrequencia).ToList())
+            {
+                disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                disciplinasAjustadas.Add(disciplina);
+            }
+
+            return disciplinasAjustadas;
+        }
     }
 }

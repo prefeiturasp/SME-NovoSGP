@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
         private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario)
         {
             if (!usuario.EhProfessorCj() && !await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(long.Parse(disciplinaId), turmaId, dataAula, usuario)))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

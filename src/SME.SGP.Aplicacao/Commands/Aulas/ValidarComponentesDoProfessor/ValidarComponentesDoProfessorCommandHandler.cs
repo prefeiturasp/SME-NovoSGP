@@ -1,8 +1,11 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -26,7 +29,7 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesDoProfessorCJ == null 
                  || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo 
                                                                 && c.DisciplinaId == request.ComponenteCurricularCodigo))
-                    return (false, "Você não pode criar aulas para essa Turma.");
+                    return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
             else
             {
@@ -35,10 +38,13 @@ namespace SME.SGP.Aplicacao
                                                                                                                              request.Usuario.Login, 
                                                                                                                              request.Usuario.PerfilAtual, 
                                                                                                                              request.Usuario.EhProfessorInfantilOuCjInfantil()));
+                if (componentesCurricularesDoProfessor == null)
+                    componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual,
+                                                                                                                   request.Usuario.EhProfessorInfantilOuCjInfantil());
 
                 if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => (c.Codigo == request.ComponenteCurricularCodigo && !c.TerritorioSaber
                                                                                      || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber)))
-                    return (false, "Você não pode criar aulas para essa Turma.");
+                    return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
                 if (!request.Usuario.EhGestorEscolar())
                 {
@@ -49,11 +55,14 @@ namespace SME.SGP.Aplicacao
                                                                                                                              request.Usuario));
                 
                     if (!usuarioPodePersistirTurmaNaData)
-                        return (false, "Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                        return (false, MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }
             }
 
             return (true, string.Empty);
         }
+
+        public async Task<IEnumerable<ComponenteCurricularEol>> VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(string turmaCodigo, string login, Guid perfilAtual, bool realizaAgrupamento)
+         => await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turmaCodigo, login, perfilAtual, realizaAgrupamento, false));
     }
 }
