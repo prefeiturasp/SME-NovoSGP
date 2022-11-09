@@ -22,7 +22,8 @@ namespace SME.SGP.Aplicacao
             foreach(var wfAprovacaoNota in wfAprovacaoNotas)
             {
                 await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(wfAprovacaoNota.Id));
-                await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId));
+                if (wfAprovacaoNota.WfAprovacaoId != 0)
+                    await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId));
             }
         }
     }
