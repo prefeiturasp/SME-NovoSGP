@@ -7,6 +7,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
@@ -94,11 +95,14 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteAsync(query, new { idsParaExcluir });
         }
 
-        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<string> codigoAlunos, bool somenteAusencias = false)
+        public async Task<IEnumerable<RegistroFrequenciaPorDisciplinaAlunoDto>> ObterRegistroFrequenciaAlunosPorAlunosETurmaIdEDataAula(DateTime dataAula, string[] turmasId, IEnumerable<(string codigo, DateTime dataMatricula, DateTime? dataSituacao)> alunos, bool somenteAusencias = false)
         {
-            var query = $@"           
-                    drop table if exists tmp_lista_dados_frequencia;
-                    create temporary table tmp_lista_dados_frequencia as
+            var query = "with lista1 as (";
+            var listaAlunos = alunos.ToList();
+
+            for (int i = 0; i < listaAlunos.Count; i++)
+            {
+                query += $@"
                     select a.id aula_id,
                            pe.id periodo_id,
                       	   pe.periodo_inicio,
@@ -108,7 +112,8 @@ namespace SME.SGP.Dados
                       	   a.disciplina_id, 
                       	   rfa.valor,  	
                       	   rfa.criado_em,
-                      	   row_number() over (partition by a.id, rfa.codigo_aluno, rfa.numero_aula order by rfa.id) sequencia
+                           rfa.numero_aula,
+                           rfa.id registro_frequencia_aluno_id                    	   
                       	from registro_frequencia_aluno rfa 
                       		inner join aula a 
                       			on rfa.aula_id = a.id
@@ -116,11 +121,20 @@ namespace SME.SGP.Dados
                       			on a.tipo_calendario_id = pe.tipo_calendario_id
                     where not rfa.excluido and
                       	  not a.excluido and
-                      	  rfa.codigo_aluno = any(@codigoAlunos) and
+                      	  rfa.codigo_aluno = '{listaAlunos[i].codigo}' and
                     	  a.turma_id = any(@turmasId) and
                           @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
-                          a.data_aula::date between pe.periodo_inicio and pe.periodo_fim;
+                          a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
+                          a.data_aula::date >= '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
+                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date < '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
+
+                query += i + 1 == listaAlunos.Count ? string.Empty : " union ";
+            }
                     
+            query += $@"), lista2 as (
+                    select *,
+                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id) sequencia
+                    from lista1)
                     select {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 1) TotalPresencas,")}
                     	   count(0) filter (where tmp.valor = 2) TotalAusencias,
                     	   {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 3) TotalRemotos,")}
@@ -130,7 +144,7 @@ namespace SME.SGP.Dados
                     	   tmp.bimestre,
                            tmp.codigo_aluno as AlunoCodigo,
                            tmp.disciplina_id as ComponenteCurricularId
-                    	from tmp_lista_dados_frequencia tmp
+                    	from lista2 tmp
                     where tmp.sequencia = 1	                               
                     group by tmp.periodo_id,
                         	 tmp.periodo_inicio,
@@ -139,7 +153,7 @@ namespace SME.SGP.Dados
                         	 tmp.codigo_aluno,
                         	 tmp.disciplina_id;";
 
-            return await database.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, codigoAlunos, turmasId });
+            return await database.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId });
         }
     }
 }
