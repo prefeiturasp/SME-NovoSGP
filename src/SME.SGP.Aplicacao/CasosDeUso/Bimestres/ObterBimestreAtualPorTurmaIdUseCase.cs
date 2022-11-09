@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
 
             long idBimestre = 0;
-            if (periodos.Any())
+            if (periodos.Any() && periodoEscolar != null)
                 idBimestre = periodos.FirstOrDefault(x => x.Bimestre == periodoEscolar.Bimestre)?.Id ?? 0;
 
             return periodoEscolar == null || idBimestre == 0 ? null :
