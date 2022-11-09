@@ -48,6 +48,7 @@ namespace SME.SGP.Dominio
                          inner join ue on ue.id = t.ue_id 
                         where t.ano_letivo = @anoLetivo
                            and c.semestre = @semestre
+                           and t.ano = '7'
                            {filtro}
                          group by t.{agrupamento}
                         order by 1";
