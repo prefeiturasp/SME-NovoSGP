@@ -624,7 +624,20 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
-                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+            {
+                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                if (dadosUsuarioLogado.EhProfessorCj())
+                {
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+                    bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                    if (possuiAtribuicaoNaUE)
+                        return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };                           
+                }
+                else
+                    throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+            }
 
             var json = await resposta.Content.ReadAsStringAsync();
 
