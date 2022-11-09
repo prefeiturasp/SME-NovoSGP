@@ -3,7 +3,7 @@
     public class WFAprovacaoNotaConselho
     {
         public long Id { get; set; }
-        public long WfAprovacaoId { get; set; }
+        public long? WfAprovacaoId { get; set; }
         public WorkflowAprovacao WfAprovacao { get; set; }
         public long ConselhoClasseNotaId { get; set; }
         public ConselhoClasseNota ConselhoClasseNota { get; set; }
