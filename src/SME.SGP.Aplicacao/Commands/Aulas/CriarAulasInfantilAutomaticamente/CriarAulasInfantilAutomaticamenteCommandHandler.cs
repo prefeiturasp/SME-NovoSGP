@@ -120,7 +120,14 @@ namespace SME.SGP.Aplicacao
                 contadorAulasCriadas = CriarAulas(aulasACriar, contadorAulasCriadas);
 
             if (idsAulasAExcluir.Any())
+            {                
+                foreach(var idAula in idsAulasAExcluir)
+                {
+                    await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);
+                }
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
+            }
+                
 
             return true;
         }
@@ -170,7 +177,7 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula) &&
-                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && aula.DadosComplementares.PossuiFrequencia) ||
+                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && !aula.DadosComplementares.PossuiFrequencia) ||
                                     !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
