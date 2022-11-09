@@ -2,7 +2,7 @@
 {
     public class WFAprovacaoNotaConselho : EntidadeBase
     {
-        public long WfAprovacaoId { get; set; }
+        public long? WfAprovacaoId { get; set; }
         public WorkflowAprovacao WfAprovacao { get; set; }
         public long ConselhoClasseNotaId { get; set; }
         public ConselhoClasseNota ConselhoClasseNota { get; set; }

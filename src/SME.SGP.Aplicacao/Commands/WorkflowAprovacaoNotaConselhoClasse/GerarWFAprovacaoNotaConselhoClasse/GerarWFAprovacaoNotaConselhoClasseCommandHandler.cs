@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
             await ExcluirWorkflowAprovacao(request.ConselhoClasseNotaId);
             var wfAprovacaoId = await GerarWFAprovacao(request);
 
-            await repositorioWFAprovacaoNotaConselho.Salvar(new WFAprovacaoNotaConselho()
+            await repositorioWFAprovacaoNotaConselho.SalvarAsync(new WFAprovacaoNotaConselho()
             {
                 ConselhoClasseNotaId = request.ConselhoClasseNotaId,
                 Nota = request.Nota,
