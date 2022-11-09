@@ -630,13 +630,18 @@ namespace SME.SGP.Aplicacao.Integracoes
                 if (dadosUsuarioLogado.EhProfessorCj())
                 {
                     var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
-                    bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+                   
+                    if (obterAtribuicoesCJAtivas.Any())
+                    {
+                        bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
 
-                    if (possuiAtribuicaoNaUE)
-                        return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };                           
+                        if (possuiAtribuicaoNaUE)
+                            return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                                
                 }
-                else
-                    throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+                
+                throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
             }
 
             var json = await resposta.Content.ReadAsStringAsync();
