@@ -9,11 +9,14 @@ namespace SME.SGP.Aplicacao
         public string CodigoRf { get; set; }
         public long PeriodoEscolarId { get; set; }
 
-        public ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(long componenteId, string codigoRf, long periodoEscolarId)
+        public string CodigoTurma { get; set; }
+
+        public ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(long componenteId, string codigoRf, long periodoEscolarId, string turmaCodigo = "")
         {
             ComponenteCurricularId = componenteId;
             CodigoRf = codigoRf;
             PeriodoEscolarId = periodoEscolarId;
+            CodigoTurma = turmaCodigo;
         }
     }
 

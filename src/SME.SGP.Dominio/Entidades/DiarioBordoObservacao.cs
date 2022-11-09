@@ -10,7 +10,7 @@ namespace SME.SGP.Dominio
             DiarioBordoId = diarioBordoId;
             UsuarioId = usuarioId;
         }
-        protected DiarioBordoObservacao()
+        public DiarioBordoObservacao()
         {
         }
 

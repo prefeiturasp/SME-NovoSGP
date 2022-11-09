@@ -19,6 +19,7 @@ namespace SME.SGP.Infra
         public IEnumerable<PlanoAEEVersaoDto> Versoes { get; set; }
         public ResponsavelDto Responsavel { get; set; }
         public bool PodeDevolverPlanoAEE { get; set; }
+        public bool PermitirExcluir { get; set; }
     }
 
 }

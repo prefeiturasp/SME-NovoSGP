@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
@@ -73,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var excecao = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
 
-            excecao.Message.ShouldBe("Você não pode criar aulas para essa Turma.");
+            excecao.Message.ShouldBe(MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
         }
 
         [Fact]

@@ -292,7 +292,7 @@ namespace SME.SGP.TesteIntegracao
             });
         }
 
-        protected FrequenciaDto ObtenhaFrenqueciaDto()
+        protected FrequenciaDto ObterFrenqueciaDto()
         {
             var frenquencia = new FrequenciaDto(AULA_ID_1);
 
