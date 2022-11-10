@@ -36,7 +36,7 @@ namespace SME.SGP.Dados
                 });
         }
 
-        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId)
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoPorWorkflow(long workflowId)
         {
             var query = ObterQueryNotaEmAprovacaoPorWorkflow();
             query += " where nwf.wf_aprovacao_id = @workflowId";
