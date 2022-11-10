@@ -9,17 +9,17 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AprovacaoNotaConselhoClasseCommandHandler : AprovacaoNotaConselhoCommandBase<AprovacaoNotaConselhoClasseCommand>
+    public class NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommandHandler : AprovacaoNotaConselhoCommandBase<NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand>
     {
         private readonly IRepositorioWFAprovacaoNotaConselho repositorioWFAprovacaoNotaConselho;
 
-        public AprovacaoNotaConselhoClasseCommandHandler(IMediator mediator, IRepositorioWFAprovacaoNotaConselho repositorioWFAprovacaoNotaConselho) 
+        public NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommandHandler(IMediator mediator, IRepositorioWFAprovacaoNotaConselho repositorioWFAprovacaoNotaConselho) 
                     : base(mediator)
         {
             this.repositorioWFAprovacaoNotaConselho = repositorioWFAprovacaoNotaConselho ?? throw new ArgumentNullException(nameof(repositorioWFAprovacaoNotaConselho));
         }
 
-        protected override async Task Handle(AprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand request, CancellationToken cancellationToken)
         {
             await IniciarAprovacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
-                var idAprovacao = await EnvicarNotificacao(grupoTurma.Key, grupoTurma.ToList());
+                var idAprovacao = await EnviarNotificacao(grupoTurma.Key, grupoTurma.ToList());
 
                 await ExecuteAlteracoesDasAprovacoes(grupoTurma.ToList(), idAprovacao);
             }
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<long> EnvicarNotificacao(Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        private async Task<long> EnviarNotificacao(Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);

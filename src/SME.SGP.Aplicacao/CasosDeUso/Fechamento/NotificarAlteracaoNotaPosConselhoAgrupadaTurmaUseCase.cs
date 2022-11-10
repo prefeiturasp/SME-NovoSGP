@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.Fechamento
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            await this.mediator.Send(new AprovacaoNotaConselhoClasseCommand());
+            await this.mediator.Send(new NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand());
 
             return true;
         }
