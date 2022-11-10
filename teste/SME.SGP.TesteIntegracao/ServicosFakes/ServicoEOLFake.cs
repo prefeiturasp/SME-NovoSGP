@@ -592,9 +592,9 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids, string codigoTurma = null)
+        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids, string codigoTurma = null)
         {
-            return new List<DisciplinaDto>
+            return Task.FromResult(new List<DisciplinaDto>
             {
                 new DisciplinaDto
                 {
@@ -779,7 +779,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     GrupoMatrizNome = "Teste 2",
                     TurmaCodigo = "1"
                 },
-            }.Where(x => ids.Contains(x.Id));
+            }.Where(x => ids.Contains(x.Id)));
         }
 
         public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
