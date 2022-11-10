@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(AprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
         {
-            await IniciarAprovacao();
+            await IniciarAprovacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
             var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma);
 
@@ -31,11 +31,6 @@ namespace SME.SGP.Aplicacao
 
                 await ExecuteAlteracoesDasAprovacoes(grupoTurma.ToList(), idAprovacao);
             }
-        }
-
-        protected override async Task CarregueWFAprovacoes()
-        {
-            WFAprovacoes = (await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow()).ToList();
         }
 
         protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
@@ -63,11 +58,11 @@ namespace SME.SGP.Aplicacao
         {
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
-            var descricao = ObterDescricao(ue, turma, aprovacoesPorTurma);
+            var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);
 
             return await mediator.Send(new EnviarNotificacaoCommand(
                                                                     titulo,
-                                                                    descricao,
+                                                                    mensagem,
                                                                     NotificacaoCategoria.Workflow_Aprovacao,
                                                                     NotificacaoTipo.Fechamento,
                                                                     new Cargo[] { Cargo.CP, Cargo.Supervisor },

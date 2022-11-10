@@ -14,25 +14,23 @@ namespace SME.SGP.Aplicacao
         protected readonly IMediator mediator;
         protected List<WFAprovacaoNotaConselho> WFAprovacoes;
         protected List<Ue> Ues;
-        private List<TurmasDoAlunoDto> Alunos;
-        private List<ComponenteCurricularDescricaoDto> ComponentesCurriculares;
-        private List<Usuario> Usuarios;
-        private List<Conceito> Conceitos;
+        protected List<TurmasDoAlunoDto> Alunos;
+        protected List<ComponenteCurricularDescricaoDto> ComponentesCurriculares;
+        protected List<Usuario> Usuarios;
+        protected List<Conceito> Conceitos;
 
         public AprovacaoNotaConselhoCommandBase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        protected abstract Task CarregueWFAprovacoes();
-
         protected abstract string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar);
 
         protected abstract string ObterTitulo(Ue ue, Turma turma);
 
-        protected async Task IniciarAprovacao()
+        protected async Task IniciarAprovacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
         {
-            await CarregueWFAprovacoes();
+            WFAprovacoes = wfAprovacoes.ToList();
             await CarregarTodasUes();
             await CarregarTodosAlunos();
             await CarregarTodosComponentes();
@@ -40,7 +38,7 @@ namespace SME.SGP.Aplicacao
             await CarregarConceitos();
         }
 
-        protected string ObterDescricao(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var periodoEscolar = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var descricao = new StringBuilder(ObterTexto(ue, turma, periodoEscolar));
