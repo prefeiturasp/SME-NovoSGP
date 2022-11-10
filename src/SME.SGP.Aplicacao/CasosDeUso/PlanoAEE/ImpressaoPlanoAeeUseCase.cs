@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
                     "Não foi possível localizar o usuário para realizar a impressão do Plano AEE.");
 
             return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.PlanoAee, filtro, usuarioLogado,
-                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosPlanoAee));
+                rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanoAee));
         }
     }
 }
