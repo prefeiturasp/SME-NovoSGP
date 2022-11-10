@@ -21,7 +21,10 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> 
+            
+            
+            Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
                 throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
