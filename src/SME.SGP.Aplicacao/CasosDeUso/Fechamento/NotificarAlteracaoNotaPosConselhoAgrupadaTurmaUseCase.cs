@@ -2,7 +2,7 @@
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso.Fechamento
+namespace SME.SGP.Aplicacao
 {
     public class NotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase : AbstractUseCase, INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase
     {

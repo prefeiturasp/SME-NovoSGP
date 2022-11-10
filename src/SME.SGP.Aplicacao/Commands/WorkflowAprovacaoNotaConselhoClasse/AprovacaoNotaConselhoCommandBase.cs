@@ -54,12 +54,12 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             descricao.AppendLine("<tbody>");
             descricao.AppendLine("<tr>");
-            descricao.AppendLine("<td><strong>Componente curricular</strong></td>");
-            descricao.AppendLine("<td><strong>Estudante</strong></td>");
-            descricao.AppendLine("<td style='text-align: center;'><strong>Valor anterior</strong></td>");
-            descricao.AppendLine("<td style='text-align: center;'><strong>Novo valor</strong></td>");
-            descricao.AppendLine("<td><strong>Usuário que alterou</strong></td>");
-            descricao.AppendLine("<td><strong>Data da alteração</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Componente curricular</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Estudante</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Valor anterior</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Novo valor</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Usuário que alterou</strong></td>");
+            descricao.AppendLine("<td style='padding: 3px;'><strong>Data da alteração</strong></td>");
             descricao.AppendLine("</tr>");
 
             foreach (var aprovaco in aprovacoesPorTurma)
@@ -81,12 +81,12 @@ namespace SME.SGP.Aplicacao
             var notas = ObtenhaValoresNotasNovoAnterior(aprovacao);
 
             return $@"<tr>
-                           <td>{componenteCurricular.Descricao}</td>
-                           <td>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                           <td>{notas.Item1}</td>
-                           <td>{notas.Item2}</td>
-                           <td>{usuario.Nome} ({usuario.CodigoRf})</td>
-                           <td>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
+                           <td style='padding: 3px;'>{componenteCurricular.Descricao}</td>
+                           <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
+                           <td style='padding: 3px;'>{notas.Item1}</td>
+                           <td style='padding: 3px;'>{notas.Item2}</td>
+                           <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
+                           <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
                       </tr>";
         }
 

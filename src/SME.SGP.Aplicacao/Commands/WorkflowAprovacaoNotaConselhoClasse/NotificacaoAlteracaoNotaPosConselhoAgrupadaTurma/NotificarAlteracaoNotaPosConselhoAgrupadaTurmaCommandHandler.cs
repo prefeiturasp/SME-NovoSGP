@@ -23,12 +23,12 @@ namespace SME.SGP.Aplicacao
         {
             await IniciarAprovacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
-            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => new { wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma, 
+            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => new { wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id, 
                                                                        wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre } );
 
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
-                var idAprovacao = await EnviarNotificacao(grupoTurma.Key.Turma, grupoTurma.ToList());
+                var idAprovacao = await EnviarNotificacao(grupoTurma.ToList());
 
                 await ExecuteAlteracoesDasAprovacoes(grupoTurma.ToList(), idAprovacao);
             }
@@ -55,8 +55,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task<long> EnviarNotificacao(Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        private async Task<long> EnviarNotificacao(List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
+            var turma = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
             var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);

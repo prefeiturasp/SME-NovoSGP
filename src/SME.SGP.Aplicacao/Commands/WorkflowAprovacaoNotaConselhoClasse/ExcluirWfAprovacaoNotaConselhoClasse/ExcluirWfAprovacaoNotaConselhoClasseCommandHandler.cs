@@ -17,7 +17,9 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirWfAprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
         {
-             repositorioWF.Remover(request.WfAprovacaoConselhoClasseNotaId);
+            var wfAprovacao = await repositorioWF.ObterPorIdAsync(request.WfAprovacaoConselhoClasseNotaId);
+
+            await repositorioWF.RemoverAsync(wfAprovacao);
         }
     }
 }
