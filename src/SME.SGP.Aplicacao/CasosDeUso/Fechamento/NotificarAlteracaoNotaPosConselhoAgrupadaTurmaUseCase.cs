@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.Fechamento
 {
-    public class NotificarAprovacaoDeNotaConselhoUseCase : AbstractUseCase, INotificarAprovacaoDeNotaConselhoUseCase
+    public class NotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase : AbstractUseCase, INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase
     {
-        public NotificarAprovacaoDeNotaConselhoUseCase(IMediator mediator) : base(mediator)
+        public NotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase(IMediator mediator) : base(mediator)
         { 
         }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface INotificarAprovacaoDeNotaConselhoUseCase : IRabbitUseCase
+    public interface INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase : IRabbitUseCase
     {
     }
 }
