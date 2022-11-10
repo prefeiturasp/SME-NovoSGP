@@ -36,26 +36,25 @@ namespace SME.SGP.Dados
                 });
         }
 
-        public async Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId)
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoPorWorkflow(long workflowId)
         {
             var query = ObterQueryNotaEmAprovacaoPorWorkflow();
             query += " where nwf.wf_aprovacao_id = @workflowId";
 
             return (await database.Conexao
-                .QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, Turma, PeriodoEscolar, WFAprovacaoNotaConselho>(query,
-                (wfAprovacao, conselhoClasseNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma, turma, periodoEscolar) => 
-                {
-                    fechamentoTurma.Turma = turma;
-                    conselhoClasse.FechamentoTurma = fechamentoTurma;
-                    conselhoClasse.FechamentoTurma.PeriodoEscolar = periodoEscolar;
-                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
-                    conselhoClasseNota.ConselhoClasseAluno = conselhoClasseAluno;
-                    wfAprovacao.ConselhoClasseNota = conselhoClasseNota;
+               .QueryAsync<WFAprovacaoNotaConselho, ConselhoClasseNota, ConselhoClasseAluno, ConselhoClasse, FechamentoTurma, Turma, PeriodoEscolar, WFAprovacaoNotaConselho>(query,
+               (wfAprovacao, conselhoClasseNota, conselhoClasseAluno, conselhoClasse, fechamentoTurma, turma, periodoEscolar) =>
+               {
+                   fechamentoTurma.Turma = turma;
+                   conselhoClasse.FechamentoTurma = fechamentoTurma;
+                   conselhoClasse.FechamentoTurma.PeriodoEscolar = periodoEscolar;
+                   conselhoClasseAluno.ConselhoClasse = conselhoClasse;
+                   conselhoClasseNota.ConselhoClasseAluno = conselhoClasseAluno;
+                   wfAprovacao.ConselhoClasseNota = conselhoClasseNota;
 
-                    return wfAprovacao;
-                }
-                , new { workflowId }))
-                .FirstOrDefault();
+                   return wfAprovacao;
+               }
+               , new { workflowId }));
         }
 
         public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId)

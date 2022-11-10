@@ -3,6 +3,9 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra.Consts;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,17 +14,32 @@ namespace SME.SGP.Aplicacao
     public class AprovarWorkflowAlteracaoNotaConselhoCommandHandler : AsyncRequestHandler<AprovarWorkflowAlteracaoNotaConselhoCommand>
     {
         private readonly IMediator mediator;
+        public readonly IUnitOfWork unitOfWork;
 
-        public AprovarWorkflowAlteracaoNotaConselhoCommandHandler(IMediator mediator)
+        public AprovarWorkflowAlteracaoNotaConselhoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         protected override async Task Handle(AprovarWorkflowAlteracaoNotaConselhoCommand request, CancellationToken cancellationToken)
         {
-            var notaEmAprovacao = await ObterNotaConselhoEmAprovacao(request.WorkflowId);
-            if (notaEmAprovacao != null)
-                await AtualizarNotaConselho(notaEmAprovacao, request);
+            var notasEmAprovacao = await ObterNotasConselhoEmAprovacao(request.WorkflowId);
+            if (notasEmAprovacao != null && notasEmAprovacao.ToArray().Any())
+            {
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    foreach (var notaEmAprovacao in notasEmAprovacao)
+                        await AtualizarNotaConselho(notaEmAprovacao, request);
+                    unitOfWork.PersistirTransacao();
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+            }
         }
 
         private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)
@@ -78,7 +96,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new GerarParecerConclusivoAlunoCommand(conselhoClasseAluno, usuarioSolicitanteId));
         }
 
-        private async Task<WFAprovacaoNotaConselho> ObterNotaConselhoEmAprovacao(long workFlowId)
-            => await mediator.Send(new ObterNotaConselhoEmAprovacaoPorWorkflowQuery(workFlowId));
+        private async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasConselhoEmAprovacao(long workFlowId)
+            => await mediator.Send(new ObterNotasConselhoEmAprovacaoPorWorkflowQuery(workFlowId));
     }
 }
