@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(AprovacaoNotaConselhoClasseCommand request, CancellationToken cancellationToken)
         {
-            WFAprovacoes = (await repositorioWFAprovacaoNotaConselho.ObterNotaAguardandoAprovacaoPorWorkflow()).ToList();
+            WFAprovacoes = (await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow()).ToList();
             var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma);
 
             await CarregarTodasUes();

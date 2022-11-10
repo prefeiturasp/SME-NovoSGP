@@ -16,7 +16,7 @@ namespace SME.SGP.Dados
         {
         }
 
-        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotaAguardandoAprovacaoPorWorkflow()
+        public async Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasAguardandoAprovacaoSemWorkflow()
         {
             var query = ObterQueryNotaEmAprovacaoPorWorkflow();
             query += " where nwf.wf_aprovacao_id is null";
