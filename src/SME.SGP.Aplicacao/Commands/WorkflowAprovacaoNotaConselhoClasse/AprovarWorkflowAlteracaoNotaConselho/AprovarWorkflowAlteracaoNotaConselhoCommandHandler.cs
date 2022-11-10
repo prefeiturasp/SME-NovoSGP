@@ -50,14 +50,12 @@ namespace SME.SGP.Aplicacao
             await AlterarNota(notaEmAprovacao);
             await ExcluirWorkFlow(notaEmAprovacao);
 
-            await mediator.Send(new NotificarAprovacaoNotaConselhoCommand(notaEmAprovacao,
+            await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(new List<WFAprovacaoNotaConselho>(),
                                                                           request.CodigoDaNotificacao,
                                                                           request.TurmaCodigo,
                                                                           request.WorkflowId,
                                                                           true,
-                                                                          "",
-                                                                          notaAnterior,
-                                                                          conceitoAnterior));
+                                                                          ""));
             await GerarParecerConclusivo(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno, notaEmAprovacao.UsuarioSolicitanteId);
         }
 
