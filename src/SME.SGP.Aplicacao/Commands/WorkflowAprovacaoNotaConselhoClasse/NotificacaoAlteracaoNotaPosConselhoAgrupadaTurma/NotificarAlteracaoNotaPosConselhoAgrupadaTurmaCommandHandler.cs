@@ -23,11 +23,12 @@ namespace SME.SGP.Aplicacao
         {
             await IniciarAprovacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
-            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma);
+            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => new { wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma, 
+                                                                       wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre } );
 
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
-                var idAprovacao = await EnviarNotificacao(grupoTurma.Key, grupoTurma.ToList());
+                var idAprovacao = await EnviarNotificacao(grupoTurma.Key.Turma, grupoTurma.ToList());
 
                 await ExecuteAlteracoesDasAprovacoes(grupoTurma.ToList(), idAprovacao);
             }
@@ -59,6 +60,7 @@ namespace SME.SGP.Aplicacao
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
             var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);
+            var conselhoClasseId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasseId;
 
             return await mediator.Send(new EnviarNotificacaoCommand(
                                                                     titulo,
@@ -70,7 +72,7 @@ namespace SME.SGP.Aplicacao
                                                                     ue.CodigoUe,
                                                                     turma.CodigoTurma,
                                                                     WorkflowAprovacaoTipo.AlteracaoNotaConselho,
-                                                                    0)); //ConselhoClasseNotaId
+                                                                    conselhoClasseId)); 
         }
     }
 }
