@@ -239,7 +239,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("imprimir")]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImprimirConselhoTurma([FromQuery] long[] versoesPlanosIds, [FromServices] IImpressaoPlanoAeeUseCase useCase)
-            => Ok(await useCase.Executar(versoesPlanosIds));        
+        public async Task<IActionResult> ImprimirConselhoTurma([FromBody] FiltroRelatorioPlanoAeeDto filtro, [FromServices] IImpressaoPlanoAeeUseCase useCase)
+            => Ok(await useCase.Executar(filtro));        
     }
 }
