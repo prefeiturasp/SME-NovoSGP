@@ -108,7 +108,7 @@ namespace SME.SGP.Aplicacao
                 if (qtdeDiasAulas < 5)
                     qtdeDiasAulas++;
 
-                if (qtdeDiasAulas == 5 || contador == periodosAulas.Count())
+                if (qtdeDiasAulas == 5 || (contador == (periodosAulas.Count() - 1)))
                 {
                     string formataDataInicio = dataInicioPeriodo.Date.ToString("dd/MM/yy");
                     string formataDataFim = dataAula.Date.ToString("dd/MM/yy");
