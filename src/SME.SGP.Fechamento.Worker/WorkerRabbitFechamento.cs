@@ -62,6 +62,8 @@ namespace SME.SGP.Fechamento.Worker
             Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamentoPorTurma, new ComandoRabbit("Notificar usuário sobre alteração de nota de fechamento segregado por turma nos anos anteriores", typeof(INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020, new ComandoRabbit("Processo para gerar fechamento para turmas de Ed. Física do ano letivo de 2020", typeof(IGerarFechamentoTurmaEdFisica2020UseCase)));
             Comandos.Add(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma, new ComandoRabbit("Processo para gerar fechamento para turmas de Ed. Física do ano letivo de 2020 - separação de filas alunos com turma", typeof(IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoNotaPosConselho, new ComandoRabbit("Executa notificação de aprovação de nota do conselho", typeof(INotificarAprovacaoDeNotaConselhoUseCase)));
+                                                                               
         }
     }
 }

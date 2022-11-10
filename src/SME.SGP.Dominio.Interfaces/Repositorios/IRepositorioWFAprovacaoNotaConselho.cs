@@ -7,5 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoPorWorkflow(long workflowId);
         Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId);
+        Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasAguardandoAprovacaoSemWorkflow();
     }
 }
