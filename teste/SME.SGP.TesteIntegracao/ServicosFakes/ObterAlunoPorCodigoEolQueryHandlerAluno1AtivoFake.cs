@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     Ano=0,
                     CodigoAluno = "1",
                     CodigoComponenteCurricular= 0,
-                    CodigoSituacaoMatricula= SituacaoMatriculaAluno.Desistente,
+                    CodigoSituacaoMatricula= SituacaoMatriculaAluno.Rematriculado,
                     CodigoTurma=int.Parse(turmaId),
                     DataNascimento=new DateTime(dataReferencia.AddYears(-15).Year,01,16,00,00,00),
                     DataSituacao= new DateTime(dataReferencia.Year,11,09,17,25,31),
