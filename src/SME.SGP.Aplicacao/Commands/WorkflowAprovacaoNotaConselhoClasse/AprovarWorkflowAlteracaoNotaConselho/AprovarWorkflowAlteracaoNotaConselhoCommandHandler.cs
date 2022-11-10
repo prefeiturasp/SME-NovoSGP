@@ -32,6 +32,13 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var notaEmAprovacao in notasEmAprovacao)
                         await AtualizarNotaConselho(notaEmAprovacao, request);
+                    
+                    await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(notasEmAprovacao,
+                                                                          request.CodigoDaNotificacao,
+                                                                          request.TurmaCodigo,
+                                                                          request.WorkflowId,
+                                                                          true,
+                                                                          ""));
                     unitOfWork.PersistirTransacao();
                 }
                 catch
@@ -44,18 +51,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task AtualizarNotaConselho(WFAprovacaoNotaConselho notaEmAprovacao, AprovarWorkflowAlteracaoNotaConselhoCommand request)
         {
-            var notaAnterior = notaEmAprovacao.ConselhoClasseNota.Nota;
-            var conceitoAnterior = notaEmAprovacao.ConselhoClasseNota.ConceitoId;
-
             await AlterarNota(notaEmAprovacao);
             await ExcluirWorkFlow(notaEmAprovacao);
-
-            await mediator.Send(new NotificarAprovacaoNotasConselhoCommand(new List<WFAprovacaoNotaConselho>(),
-                                                                          request.CodigoDaNotificacao,
-                                                                          request.TurmaCodigo,
-                                                                          request.WorkflowId,
-                                                                          true,
-                                                                          ""));
             await GerarParecerConclusivo(notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno, notaEmAprovacao.UsuarioSolicitanteId);
         }
 
