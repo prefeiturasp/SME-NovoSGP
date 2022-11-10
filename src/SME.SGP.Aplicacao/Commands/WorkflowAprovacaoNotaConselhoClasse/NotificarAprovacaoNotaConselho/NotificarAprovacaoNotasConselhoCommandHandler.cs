@@ -46,23 +46,15 @@ namespace SME.SGP.Aplicacao
 
         protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
         {
-            if (notificarAprovacaoNotasConselhoCommand.Aprovada)
-            {
-                return String.Empty;
-            }
+            var descricaoAprovadoRecusado = notificarAprovacaoNotasConselhoCommand.Aprovada ? "aprovada", "recusada";
 
             return $@"A alteração de notas/conceitos pós-conselho do bimestre { periodoEscolar.Bimestre } 
                       de { turma.AnoLetivo } da turma { turma.NomeFiltro } da { ue.Nome } ({ ue.Dre.Abreviacao }) 
-                      abaixo foi recusada. Motivo: { notificarAprovacaoNotasConselhoCommand.Justificativa }.";
+                      abaixo foi { descricaoAprovadoRecusado }. Motivo: { notificarAprovacaoNotasConselhoCommand.Justificativa }.";
         }
 
         protected override string ObterTitulo(Ue ue, Turma turma)
         {
-            if (notificarAprovacaoNotasConselhoCommand.Aprovada)
-            {
-                return String.Empty;
-            }
-
             return $@"Alteração em nota/conceito final pós-conselho - { ue.Nome } ({ ue.Dre.Abreviacao }) - { turma.NomeFiltro } (ano anterior)";
         }
     }
