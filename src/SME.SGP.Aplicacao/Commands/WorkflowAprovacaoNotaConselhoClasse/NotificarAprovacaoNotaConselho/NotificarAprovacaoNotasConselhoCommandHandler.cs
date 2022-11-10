@@ -12,69 +12,97 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoNotaConselhoCommandHandler : AsyncRequestHandler<NotificarAprovacaoNotaConselhoCommand>
+    public class NotificarAprovacaoNotasConselhoCommandHandler : AprovacaoNotaConselhoCommandBase<NotificarAprovacaoNotasConselhoCommand>
     {
-        private readonly IMediator mediator;
         private readonly IRepositorioNotificacao repositorioNotificacao;
         private readonly IRepositorioTurmaConsulta repositorioTurma;
         private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
         private readonly IServicoEol servicoEOL;
-        public NotificarAprovacaoNotaConselhoCommandHandler(IMediator mediator, 
+        private NotificarAprovacaoNotasConselhoCommand notificarAprovacaoNotasConselhoCommand;
+        public NotificarAprovacaoNotasConselhoCommandHandler(IMediator mediator, 
                                                             IRepositorioNotificacao repositorioNotificacao,
                                                             IRepositorioTurmaConsulta repositorioTurma,
                                                             IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno,
                                                             IServicoEol servicoEOL)
+            :base(mediator)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
         }
 
-        protected override async Task Handle(NotificarAprovacaoNotaConselhoCommand request, CancellationToken cancellationToken)
+        protected override async Task Handle(NotificarAprovacaoNotasConselhoCommand request, CancellationToken cancellationToken)
         {
-            var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
-            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(usuarioRf));
+            notificarAprovacaoNotasConselhoCommand = request;
+            //var usuarioRf = await mediator.Send(new ObterCriadorWorkflowQuery(request.WorkFlowId));
+            //var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(usuarioRf));
 
-            if (usuario != null)
+            //if (usuario != null)
+            //{
+            //    var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
+            //    var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
+            //    var periodoEscolarId = request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolarId;
+            //    var bimestre = periodoEscolarId.HasValue ? 
+            //        await mediator.Send(new ObterBimestreDoPeriodoEscolarQuery(periodoEscolarId.Value)) :
+            //        0;
+
+            //    var alunosTurma =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
+
+            //    var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
+            //    var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
+            //    var componenteCurricular = await ObterComponente(request.NotasEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
+
+            //    var mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
+            //                                                               aluno,
+            //                                                               request.NotasEmAprovacao,
+            //                                                               request.Aprovada,
+            //                                                               request.Justificativa,
+            //                                                               bimestre,
+            //                                                               request.NotaAnterior,
+            //                                                               request.ConceitoAnterior,
+            //                                                               componenteCurricular);
+
+            //    await mediator.Send(new NotificarUsuarioCommand(
+            //        $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {componenteCurricular} - {turma.Nome} ({turma.AnoLetivo})",
+            //        mensagem,
+            //        usuarioRf,
+            //        NotificacaoCategoria.Aviso,
+            //        NotificacaoTipo.Notas,
+            //        turma.Ue.Dre.CodigoDre,
+            //        turma.Ue.CodigoUe,
+            //        turma.CodigoTurma,
+            //        DateTime.Today.Year,
+            //        request.CodigoDaNotificacao ?? 0,
+            //        usuarioId: usuario.Id ));
+            //}
+        }
+
+        protected override async Task CarregueWFAprovacoes()
+        {
+            WFAprovacoes = notificarAprovacaoNotasConselhoCommand.NotasEmAprovacao.ToList();
+        }
+
+        protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
+        {
+            if (notificarAprovacaoNotasConselhoCommand.Aprovada)
             {
-                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo);
-                var notaConceitoTitulo = request.NotasEmAprovacao.ConceitoId.HasValue ? "conceito" : "nota";
-                var periodoEscolarId = request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolarId;
-                var bimestre = periodoEscolarId.HasValue ? 
-                    await mediator.Send(new ObterBimestreDoPeriodoEscolarQuery(periodoEscolarId.Value)) :
-                    0;
-
-                var alunosTurma =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
-
-                var codigoAluno = repositorioConselhoClasseAluno.ObterPorId(request.NotasEmAprovacao.ConselhoClasseNota.ConselhoClasseAlunoId);
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == codigoAluno.AlunoCodigo);
-                var componenteCurricular = await ObterComponente(request.NotasEmAprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
-
-                var mensagem = await MontaMensagemAprovacaoNotaPosConselho(turma,
-                                                                           aluno,
-                                                                           request.NotasEmAprovacao,
-                                                                           request.Aprovada,
-                                                                           request.Justificativa,
-                                                                           bimestre,
-                                                                           request.NotaAnterior,
-                                                                           request.ConceitoAnterior,
-                                                                           componenteCurricular);
-
-                await mediator.Send(new NotificarUsuarioCommand(
-                    $"Alteração em {notaConceitoTitulo} pós-conselho - {aluno.NomeAluno} ({aluno.CodigoAluno}) - {componenteCurricular} - {turma.Nome} ({turma.AnoLetivo})",
-                    mensagem,
-                    usuarioRf,
-                    NotificacaoCategoria.Aviso,
-                    NotificacaoTipo.Notas,
-                    turma.Ue.Dre.CodigoDre,
-                    turma.Ue.CodigoUe,
-                    turma.CodigoTurma,
-                    DateTime.Today.Year,
-                    request.CodigoDaNotificacao ?? 0,
-                    usuarioId: usuario.Id ));
+                return String.Empty;
             }
+
+            return $@"A alteração de notas/conceitos pós-conselho do bimestre { periodoEscolar.Bimestre } 
+                      de { turma.AnoLetivo } da turma { turma.NomeFiltro } da { ue.Nome } ({ ue.Dre.Abreviacao }) 
+                      abaixo foi recusada. Motivo: Descrição do motivo.";
+        }
+
+        protected override string ObterTitulo(Ue ue, Turma turma)
+        {
+            if (notificarAprovacaoNotasConselhoCommand.Aprovada)
+            {
+                return String.Empty;
+            }
+
+            return $@"Alteração em nota/conceito final pós-conselho - { ue.Nome } ({ ue.Dre.Abreviacao }) - { turma.NomeFiltro } (ano anterior)";
         }
 
         private async Task<string> MontaMensagemAprovacaoNotaPosConselho(Turma turma,
@@ -146,6 +174,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<string> ObterComponente(long componenteCurricularCodigo)
            => await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteCurricularCodigo));
+
 
     }
 }
