@@ -123,7 +123,8 @@ namespace SME.SGP.Aplicacao
             {                
                 foreach(var idAula in idsAulasAExcluir)
                 {
-                    await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);
+                    await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);                    
+                    await mediator.Send(new ExcluirPendenciaDiarioPorAulaIdCommand(idAula));
                 }
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
             }
