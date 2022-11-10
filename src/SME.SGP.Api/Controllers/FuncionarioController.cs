@@ -45,7 +45,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterFuncionariosPorUe(string codigoUe, string filtro,[FromServices] IObterFuncionariosPorUeUseCase useCase)
         {
             var consulta = await useCase.Executar(codigoUe, filtro);
-            if (consulta.Any())
+            if (!consulta.Any())
                 return StatusCode(204);
             return Ok(consulta);
         }
