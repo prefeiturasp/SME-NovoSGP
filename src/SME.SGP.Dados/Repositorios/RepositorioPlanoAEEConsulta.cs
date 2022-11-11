@@ -77,7 +77,6 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("       , usu_responsavel.nome");
                 sql.AppendLine("       , usu_paai_responsavel.rf_codigo");
                 sql.AppendLine("       , usu_paai_responsavel.nome ");
-                sql.AppendLine("       , pav.id ");
                 sql.AppendLine("        order by pa.aluno_nome ");
             }
 
@@ -112,7 +111,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", usu_responsavel.nome NomeReponsavel ");
                 sql.AppendLine(", usu_paai_responsavel.rf_codigo RfPaaiReponsavel ");
                 sql.AppendLine(", usu_paai_responsavel.nome NomePaaiReponsavel ");
-                sql.AppendLine(", pav.id planoAeeVersaoId ");
+                sql.AppendLine(", max(pav.id) as planoAeeVersaoId ");
             }
 
             sql.AppendLine(" from plano_aee pa ");
