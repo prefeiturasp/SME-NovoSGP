@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
         {
             var descricaoAprovadoRecusado = notificarAprovacaoNotasConselhoCommand.Aprovada ? "aprovada" : "recusada";
 
-            return $@"A alteração de notas/conceitos pós-conselho do bimestre { periodoEscolar.Bimestre } 
+            return $@"A alteração de notas/conceitos pós-conselho do bimestre {(periodoEscolar != null ? periodoEscolar.Bimestre : "final")} 
                       de { turma.AnoLetivo } da turma { turma.NomeFiltro } da { ue.Nome } ({ ue.Dre.Abreviacao }) 
                       abaixo foi { descricaoAprovadoRecusado }. Motivo: { notificarAprovacaoNotasConselhoCommand.Justificativa }.";
         }

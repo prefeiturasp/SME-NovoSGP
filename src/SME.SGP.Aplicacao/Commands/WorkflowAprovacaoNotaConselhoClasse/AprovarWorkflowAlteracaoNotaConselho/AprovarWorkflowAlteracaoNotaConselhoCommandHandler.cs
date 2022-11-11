@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
                 AlunoCodigo = notaConselhoClasse.ConselhoClasseAluno.AlunoCodigo,
                 TurmaId = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id,
                 Bimestre = periodoEscolar == null ? (int?)null : periodoEscolar.Bimestre,
-                AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre,
+                AnoLetivo = notaEmAprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo,
                 Nota = notaConselhoClasse.Nota,
                 ConceitoId = notaConselhoClasse.ConceitoId,
                 ComponenteCurricularId = notaConselhoClasse.ComponenteCurricularCodigo
