@@ -19,7 +19,7 @@ namespace SME.SGP.Dados
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-                        inner join turma tu on tu.ue_id = o.ue_id
+                        left  join turma tu on tu.id  = o.turma_id 
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
