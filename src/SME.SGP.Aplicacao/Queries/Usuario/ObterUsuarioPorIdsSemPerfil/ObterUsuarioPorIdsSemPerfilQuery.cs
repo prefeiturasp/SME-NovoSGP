@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.Ids)
                 .NotEmpty()
-                .WithMessage("Os Ids dos usuários devem ser informados.");
+                .WithMessage("Os Ids dos usuários devem ser informados para consulta dos usuários.");
         }
     }
 }
