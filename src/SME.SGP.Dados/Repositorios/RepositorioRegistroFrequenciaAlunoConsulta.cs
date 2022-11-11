@@ -210,7 +210,11 @@ namespace SME.SGP.Dados.Repositorios
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno::date");
 
-            query.AppendLine("and a.turma_id = any(@turmasId);");           
+            query.AppendLine("and a.turma_id = any(@turmasId)");            
+            query.AppendLine("and exists (select 1");
+            query.AppendLine("				from registro_frequencia_aluno rfa");
+            query.AppendLine("			  where a.id = rfa.aula_id and");
+            query.AppendLine("				  not a.excluido);");
 
             return query.ToString();
         }
