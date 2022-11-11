@@ -79,7 +79,7 @@ namespace SME.SGP.Dados
                      inner join conselho_classe cc on cc.id = cca.conselho_classe_id 
                      inner join fechamento_turma ft on ft.id = cc.fechamento_turma_id 
                      inner join turma t on t.id = ft.turma_id 
-                     inner join periodo_escolar pe on ft.periodo_escolar_id = pe.id ";
+                     left join periodo_escolar pe on ft.periodo_escolar_id = pe.id ";
         }
     }
 }

@@ -23,8 +23,9 @@ namespace SME.SGP.Aplicacao
         {
             await IniciarAprovacao(await repositorioWFAprovacaoNotaConselho.ObterNotasAguardandoAprovacaoSemWorkflow());
 
+            if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
             var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => new { wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id, 
-                                                                       wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre } );
+                                                                       wf.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar?.Bimestre } );
 
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
 
         protected override string ObterTexto(Ue ue, Turma turma, PeriodoEscolar periodoEscolar)
         {
-            return $@"A alteração de notas/conceitos pós-conselho do bimestre { periodoEscolar.Bimestre } 
+            return $@"A alteração de notas/conceitos pós-conselho do bimestre { (periodoEscolar != null ? periodoEscolar.Bimestre : "final") } 
                       de { turma.AnoLetivo } da turma { turma.NomeFiltro } da { ue.Nome } ({ ue.Dre.Abreviacao }) foram alteradas.";
         }
 
