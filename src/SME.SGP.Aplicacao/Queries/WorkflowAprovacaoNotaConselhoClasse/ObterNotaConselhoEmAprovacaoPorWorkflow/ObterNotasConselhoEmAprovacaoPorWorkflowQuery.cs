@@ -1,12 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaConselhoEmAprovacaoPorWorkflowQuery : IRequest<WFAprovacaoNotaConselho>
+    public class ObterNotasConselhoEmAprovacaoPorWorkflowQuery : IRequest<IEnumerable<WFAprovacaoNotaConselho>>
     {
-        public ObterNotaConselhoEmAprovacaoPorWorkflowQuery(long workflowId)
+        public ObterNotasConselhoEmAprovacaoPorWorkflowQuery(long workflowId)
         {
             WorkflowId = workflowId;
         }
@@ -14,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long WorkflowId { get; }
     }
 
-    public class ObterNotaConselhoEmAprovacaoPorWorkflowQueryValidator : AbstractValidator<ObterNotaConselhoEmAprovacaoPorWorkflowQuery>
+    public class ObterNotaConselhoEmAprovacaoPorWorkflowQueryValidator : AbstractValidator<ObterNotasConselhoEmAprovacaoPorWorkflowQuery>
     {
         public ObterNotaConselhoEmAprovacaoPorWorkflowQueryValidator()
         {

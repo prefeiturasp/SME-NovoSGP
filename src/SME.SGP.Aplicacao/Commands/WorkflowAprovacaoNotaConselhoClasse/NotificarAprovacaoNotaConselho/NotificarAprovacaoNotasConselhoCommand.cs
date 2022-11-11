@@ -1,19 +1,18 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoNotaConselhoCommand : IRequest
+    public class NotificarAprovacaoNotasConselhoCommand : IRequest
     {
-        public NotificarAprovacaoNotaConselhoCommand(WFAprovacaoNotaConselho notasEmAprovacao,
+        public NotificarAprovacaoNotasConselhoCommand(IEnumerable<WFAprovacaoNotaConselho> notasEmAprovacao,
                                                      long? codigoDaNotificacao,
                                                      string turmaCodigo,
                                                      long workflowId,
                                                      bool aprovada = true,
-                                                     string justificativa = "",
-                                                     double? notaAnterior = null,
-                                                     long? conceitoAnterior = null)
+                                                     string justificativa = "")
         {
             NotasEmAprovacao = notasEmAprovacao;
             TurmaCodigo = turmaCodigo;
@@ -21,20 +20,16 @@ namespace SME.SGP.Aplicacao
             WorkFlowId = workflowId;
             Aprovada = aprovada;
             Justificativa = justificativa;
-            NotaAnterior = notaAnterior;
-            ConceitoAnterior = conceitoAnterior;
         }
 
-        public WFAprovacaoNotaConselho NotasEmAprovacao { get; }
+        public IEnumerable<WFAprovacaoNotaConselho> NotasEmAprovacao { get; }
         public long? CodigoDaNotificacao { get; }
         public string TurmaCodigo { get; }
         public long WorkFlowId { get; }
         public bool Aprovada { get; }
         public string Justificativa { get; }
-        public double? NotaAnterior { get; }
-        public long? ConceitoAnterior { get; }
     }
-    public class NotificarAprovacaoNotaConselhoCommandValidator : AbstractValidator<NotificarAprovacaoNotaConselhoCommand>
+    public class NotificarAprovacaoNotaConselhoCommandValidator : AbstractValidator<NotificarAprovacaoNotasConselhoCommand>
     {
         public NotificarAprovacaoNotaConselhoCommandValidator()
         {
