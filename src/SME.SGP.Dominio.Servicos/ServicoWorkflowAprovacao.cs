@@ -897,7 +897,6 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            //var notasEmAprovacao = await ObterNotaEmAprovacaoPosConselho(workflow.Id);
             await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(codigoDaNotificacao,
                                                                         workflow.TurmaId,
                                                                         workflow.Id,
