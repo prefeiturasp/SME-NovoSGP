@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao
 
             var periodoEscolar = turma.AnoLetivo.Equals(DateTime.Today.Year) || periodoAtual != null ? await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date)) : null;
 
-            return periodoEscolar == null || idBimestre == 0 ? null :
-                new BimestreDto() { Id = idBimestre, Numero = periodoEscolar.Bimestre };
+            return periodoEscolar == null? null :
+                new BimestreDto() { Id = periodoEscolar.Id, Numero = periodoEscolar.Bimestre };
         }
     }
 }
