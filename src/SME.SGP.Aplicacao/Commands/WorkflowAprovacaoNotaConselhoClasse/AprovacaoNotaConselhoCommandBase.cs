@@ -78,7 +78,7 @@ namespace SME.SGP.Aplicacao
             var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo);
             var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
-            var notas = ObtenhaValoresNotasNovoAnterior(aprovacao);
+            var notas = ObterValoresNotasNovoAnterior(aprovacao);
 
             return $@"<tr>
                            <td style='padding: 3px;'>{componenteCurricular.Descricao}</td>
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                       </tr>";
         }
 
-        private (string, string) ObtenhaValoresNotasNovoAnterior(WFAprovacaoNotaConselho aprovacao)
+        private (string, string) ObterValoresNotasNovoAnterior(WFAprovacaoNotaConselho aprovacao)
         {
             var valorAnterior = string.Empty;
             var valorNovo = string.Empty;
@@ -98,10 +98,10 @@ namespace SME.SGP.Aplicacao
             if (aprovacao.ConceitoId.HasValue || aprovacao.ConselhoClasseNota.ConceitoId.HasValue)
             {
                 if (aprovacao.ConselhoClasseNota.ConceitoId.HasValue)
-                    valorAnterior = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConselhoClasseNota.ConceitoId)?.Descricao;
+                    valorAnterior = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConselhoClasseNota.ConceitoId)?.Valor;
 
                 if (aprovacao.ConceitoId.HasValue)
-                    valorNovo = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConceitoId)?.Descricao;
+                    valorNovo = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConceitoId)?.Valor;
             }
             else
             {
