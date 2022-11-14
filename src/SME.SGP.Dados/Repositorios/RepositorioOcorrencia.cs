@@ -19,11 +19,11 @@ namespace SME.SGP.Dados
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-                        left  join turma tu on tu.id  = o.turma_id 
+                        left  join turma tu on tu.id  = o.turma_id
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
-            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and tu.ano_letivo = @anoLetivo ");
+            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and extract(year from o.data_ocorrencia) = @anoLetivo ");
 
             gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
             gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
