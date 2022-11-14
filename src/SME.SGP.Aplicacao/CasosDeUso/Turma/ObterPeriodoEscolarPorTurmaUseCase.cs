@@ -23,13 +23,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException($"Turma [{turmaId}] não localizada!");
 
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            var periodosAtuais = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
+            var periodoAtual = await mediator.Send(new ObterPeriodoEscolarAtualQuery(turmaId, DateTime.Now.Date));
 
 
             if (periodos.Any())
                 periodosEscolares = FiltrarPeriodosCorretos(periodos.ToList());
-            if (periodosAtuais != null)
-                periodosEscolares.Add(periodosAtuais);
+            if (periodoAtual != null)
+                periodosEscolares.Add(periodoAtual);
             return periodosEscolares?.Select(c => new PeriodoEscolarPorTurmaDto
             {
                 Bimestre = c.Bimestre,
