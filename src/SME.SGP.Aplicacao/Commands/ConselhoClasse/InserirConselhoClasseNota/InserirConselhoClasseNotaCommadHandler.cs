@@ -57,7 +57,17 @@ namespace SME.SGP.Aplicacao
                 enviarAprovacao = await EnviarParaAprovacao(request.FechamentoTurma.Turma, request.UsuarioLogado);
 
                 if (enviarAprovacao)
-                    await GerarWFAprovacao(conselhoClasseNota, request.FechamentoTurma.Turma, request.Bimestre, request.UsuarioLogado, request.CodigoAluno, null, null); 
+                {
+                    double? notaAnterior = null;
+                    long? conceitoIdAnterior = null;
+                    /*var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(request.FechamentoTurma.Id, request.CodigoAluno, request.ConselhoClasseNotaDto.CodigoComponenteCurricular));
+                    if (fechamentoNotas != null && fechamentoNotas.Any())
+                    {
+                        notaAnterior = fechamentoNotas.FirstOrDefault().Nota;
+                        conceitoIdAnterior = fechamentoNotas.FirstOrDefault().ConceitoId;
+                    }*/
+                    await GerarWFAprovacao(conselhoClasseNota, request.FechamentoTurma.Turma, request.Bimestre, request.UsuarioLogado, request.CodigoAluno, notaAnterior, conceitoIdAnterior);
+                }
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 

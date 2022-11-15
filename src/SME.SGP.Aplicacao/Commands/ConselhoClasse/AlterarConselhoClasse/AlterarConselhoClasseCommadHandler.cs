@@ -58,7 +58,15 @@ namespace SME.SGP.Aplicacao
                 await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseNota == null ? string.Empty : conselhoClasseNota.Justificativa);
 
                 if (conselhoClasseNota == null)
+                {
                     conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAlunoId);
+                    var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(request.FechamentoTurmaId, request.CodigoAluno, request.ConselhoClasseNotaDto.CodigoComponenteCurricular));
+                    if (fechamentoNotas != null && fechamentoNotas.Any())
+                    {
+                        notaAnterior = fechamentoNotas.FirstOrDefault().Nota;
+                        conceitoIdAnterior = fechamentoNotas.FirstOrDefault().ConceitoId;
+                    }
+                }
                 else
                 {
                     notaAnterior = conselhoClasseNota.Nota;
@@ -74,11 +82,11 @@ namespace SME.SGP.Aplicacao
                         conselhoClasseNota.Nota = request.ConselhoClasseNotaDto.Nota.Value;
                     }
                     else conselhoClasseNota.Nota = null;
-                    
+
                     // Gera histórico de alteração
                     if (request.ConselhoClasseNotaDto.Conceito.HasValue)
                     {
-                        if (conselhoClasseNota.ConceitoId != null &&  conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
+                        if (conselhoClasseNota.ConceitoId != null && conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, request.ConselhoClasseNotaDto.Conceito.Value), cancellationToken);
                     }
                     else

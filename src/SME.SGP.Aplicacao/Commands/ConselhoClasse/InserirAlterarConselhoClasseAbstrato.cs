@@ -67,8 +67,8 @@ namespace SME.SGP.Aplicacao
 
             if (conselhoClasseNota.Id == 0)
             {
-                conselhoClasseNota.Nota = null;
-                conselhoClasseNota.ConceitoId = null;
+                conselhoClasseNota.Nota = notaAnterior;
+                conselhoClasseNota.ConceitoId = conceitoIdAnterior;
 
                 await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
             }
