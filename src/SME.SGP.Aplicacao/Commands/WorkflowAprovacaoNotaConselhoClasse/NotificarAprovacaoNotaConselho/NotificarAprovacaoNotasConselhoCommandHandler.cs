@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var turma = WFAprovacoes.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
-            var mensagem = ObterMensagem(ue, turma, WFAprovacoes);
+            var mensagem = await ObterMensagem(ue, turma, WFAprovacoes);
 
             foreach (var usuario in Usuarios)
             {

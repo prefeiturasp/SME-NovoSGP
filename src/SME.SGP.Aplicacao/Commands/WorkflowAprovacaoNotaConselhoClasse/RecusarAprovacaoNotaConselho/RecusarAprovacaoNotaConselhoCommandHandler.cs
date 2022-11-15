@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(notaEmProvacao.Id));
 
-                if (notaEmProvacao.Nota == null && notaEmProvacao.Conceito == null)
+                if (notaEmProvacao.ConselhoClasseNota.Nota == null && notaEmProvacao.ConselhoClasseNota.Conceito == null) //Conselho de classe nota gerado automaticamente pelo WF Conselho Nota
                 {
                     await mediator.Send(new ExcluirConselhoClasseNotaCommand(notaEmProvacao.ConselhoClasseNotaId));
                 }
