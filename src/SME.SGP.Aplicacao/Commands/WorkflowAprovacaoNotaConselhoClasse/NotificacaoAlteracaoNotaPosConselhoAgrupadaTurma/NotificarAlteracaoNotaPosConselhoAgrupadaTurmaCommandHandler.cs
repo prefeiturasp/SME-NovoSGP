@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
             var turma = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var ue = Ues.Find(ue => ue.Id == turma.UeId);
             var titulo = ObterTitulo(ue, turma);
-            var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);
+            var mensagem = await ObterMensagem(ue, turma, aprovacoesPorTurma);
             var conselhoClasseId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasseId;
 
             return await mediator.Send(new EnviarNotificacaoCommand(

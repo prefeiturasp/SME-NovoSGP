@@ -60,12 +60,12 @@ namespace SME.SGP.Aplicacao
                 if (conselhoClasseNota == null)
                 {
                     conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAlunoId);
-                    var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(request.FechamentoTurmaId, request.CodigoAluno, request.ConselhoClasseNotaDto.CodigoComponenteCurricular));
+                    /*var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(request.FechamentoTurmaId, request.CodigoAluno, request.ConselhoClasseNotaDto.CodigoComponenteCurricular));
                     if (fechamentoNotas != null && fechamentoNotas.Any())
                     {
                         notaAnterior = fechamentoNotas.FirstOrDefault().Nota;
                         conceitoIdAnterior = fechamentoNotas.FirstOrDefault().ConceitoId;
-                    }
+                    }*/
                 }
                 else
                 {

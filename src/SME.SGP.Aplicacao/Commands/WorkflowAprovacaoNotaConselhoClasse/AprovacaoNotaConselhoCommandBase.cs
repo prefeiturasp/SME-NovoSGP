@@ -38,17 +38,17 @@ namespace SME.SGP.Aplicacao
             await CarregarConceitos();
         }
 
-        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        protected async Task<string> ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var periodoEscolar = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var descricao = new StringBuilder(ObterTexto(ue, turma, periodoEscolar));
 
-            descricao.Append(ObterTabelaDosAlunos(aprovacoesPorTurma));
+            descricao.Append(await ObterTabelaDosAlunos(aprovacoesPorTurma));
 
             return descricao.ToString();
         }
 
-        private string ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        private async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
         {
             var descricao = new StringBuilder();
             descricao.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aprovaco in aprovacoesPorTurma)
             {
-                descricao.AppendLine(ObterLinhaDoAluno(aprovaco));
+                descricao.AppendLine(await ObterLinhaDoAluno(aprovaco));
             }
 
             descricao.AppendLine("<tbody>");
@@ -73,12 +73,12 @@ namespace SME.SGP.Aplicacao
             return descricao.ToString();
         }
 
-        private string ObterLinhaDoAluno(WFAprovacaoNotaConselho aprovacao)
+        private async Task<string> ObterLinhaDoAluno(WFAprovacaoNotaConselho aprovacao)
         {
             var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo);
             var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
-            var notas = ObterValoresNotasNovoAnterior(aprovacao);
+            var notas = await ObterValoresNotasNovoAnterior(aprovacao);
 
             return $@"<tr>
                            <td style='padding: 3px;'>{componenteCurricular.Descricao}</td>
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                       </tr>";
         }
 
-        private (string, string) ObterValoresNotasNovoAnterior(WFAprovacaoNotaConselho aprovacao)
+        private async Task<(string, string)> ObterValoresNotasNovoAnterior(WFAprovacaoNotaConselho aprovacao)
         {
             var valorAnterior = string.Empty;
             var valorNovo = string.Empty;
@@ -109,7 +109,32 @@ namespace SME.SGP.Aplicacao
                 valorNovo = aprovacao.Nota?.ToString() ?? string.Empty;
             }
 
+            if (string.IsNullOrEmpty(valorAnterior))
+            {
+                valorAnterior = await ObterNotaConceitoFechamentoAluno(aprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
+                                                                                                          aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo,
+                                                                                                          aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
+            }
+
             return (valorAnterior, valorNovo);
+        }
+
+        private async Task<string> ObterNotaConceitoFechamentoAluno(long fechamentoTurmaId, string codigoAluno, long componenteCurricularId)
+        {
+            var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(fechamentoTurmaId,
+                                                                                                      codigoAluno,
+                                                                                                      componenteCurricularId));
+            if (fechamentoNotas != null && fechamentoNotas.Any())
+            {
+                var fechamentoNota = fechamentoNotas.FirstOrDefault();
+                if (fechamentoNota.Nota.HasValue)
+                    return fechamentoNota.Nota.ToString();
+                else
+                if (fechamentoNota.ConceitoId.HasValue)
+                    return Conceitos.FirstOrDefault(conceito => conceito.Id == fechamentoNota.ConceitoId)?.Valor;
+            }
+
+            return string.Empty;
         }
 
         private async Task CarregarTodasUes()
