@@ -38,6 +38,7 @@ namespace SME.SGP.Aplicacao
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             bool ehAdmin = usuario.EhAdmGestao();
+            bool ehPAEE = usuario.EhProfessorPaee();
 
             
             if (!ehAdmin){
@@ -60,6 +61,7 @@ namespace SME.SGP.Aplicacao
                                                                           (int?)request.Situacao,
                                                                           turmasCodigos.ToArray(),
                                                                           ehAdmin,
+                                                                          ehPAEE,
                                                                           Paginacao));
         }
 
