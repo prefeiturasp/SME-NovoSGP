@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }))
             {
-                retornoPaginado.Items = multi.Read<Notificacao>().ToList();
+                retornoPaginado.Items = multi.Read<Notificacao>().Where(n => n.Excluida != true).ToList();
                 retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
             }
 
