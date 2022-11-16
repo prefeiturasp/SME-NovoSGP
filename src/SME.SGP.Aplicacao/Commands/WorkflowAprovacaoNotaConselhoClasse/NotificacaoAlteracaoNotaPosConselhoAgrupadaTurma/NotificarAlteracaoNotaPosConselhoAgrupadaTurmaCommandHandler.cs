@@ -63,13 +63,15 @@ namespace SME.SGP.Aplicacao
             var titulo = ObterTitulo(ue, turma);
             var mensagem = await ObterMensagem(ue, turma, aprovacoesPorTurma);
             var conselhoClasseId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasseId;
+            var periodo = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
 
+            Cargo[] cargosAprovacao  = (periodo != null) ? new Cargo[] { Cargo.CP } : new Cargo[] { Cargo.CP, Cargo.Supervisor };
             return await mediator.Send(new EnviarNotificacaoCommand(
                                                                     titulo,
                                                                     mensagem,
                                                                     NotificacaoCategoria.Workflow_Aprovacao,
                                                                     NotificacaoTipo.Fechamento,
-                                                                    new Cargo[] { Cargo.CP, Cargo.Supervisor },
+                                                                    cargosAprovacao,
                                                                     ue.Dre.CodigoDre,
                                                                     ue.CodigoUe,
                                                                     turma.CodigoTurma,
