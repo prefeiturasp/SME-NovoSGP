@@ -48,6 +48,7 @@ namespace SME.SGP.Aplicacao
 
                 if (!request.Usuario.EhGestorEscolar())
                 {
+                    
                     var usuarioPodePersistirTurmaNaData = await mediator
                                                                 .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, 
                                                                                                                              request.TurmaCodigo, 

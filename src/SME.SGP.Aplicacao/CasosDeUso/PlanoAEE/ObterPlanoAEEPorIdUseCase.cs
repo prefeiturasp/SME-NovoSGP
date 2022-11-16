@@ -76,8 +76,8 @@ namespace SME.SGP.Aplicacao
                     if((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) || !SituacaoAtivaPlanoAEE(entidadePlano))
                     alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, anoLetivo);
 
-                    if (alunoPorTurmaResposta == null)
-                        throw new NegocioException("Aluno não localizado");               
+                if (alunoPorTurmaResposta == null)
+                    throw new NegocioException("Aluno não localizado");
 
                     turma = await mediator
                         .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
