@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }))
             {
-                retornoPaginado.Items = multi.Read<Notificacao>().Where(n => n.Excluida != true).ToList();
+                retornoPaginado.Items = multi.Read<Notificacao>().ToList();
                 retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
             }
 
@@ -96,9 +96,10 @@ namespace SME.SGP.Dados.Repositorios
         private static void MontaQueryObterCabecalho(StringBuilder query, bool EhParaCount)
         {
             query.Append(";");
-
+            query.AppendLine("select * from( ");
+            
             if (EhParaCount)
-                query.AppendLine("select count(n.*) from notificacao n");
+                query.AppendLine("select count(n.*),n.excluida from notificacao n");
             else query.AppendLine("select n.* from notificacao n");
 
             query.AppendLine("left join usuario u");
@@ -114,6 +115,8 @@ namespace SME.SGP.Dados.Repositorios
 
             if (paginacao.QuantidadeRegistros != 0)
                 query.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY ", quantidadeRegistrosIgnorados, quantidadeRegistros);
+            query.AppendLine(") as nt ");
+            query.AppendLine("where excluida = false");
         }
 
         private static void MontaQueryObterCount(string dreId, string ueId, int statusId, string turmaId, string usuarioRf, int tipoId, int categoriaId, string titulo,
@@ -121,6 +124,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             MontaQueryObterCabecalho(query, true);
             MontaFiltrosObter(dreId, ueId, statusId, turmaId, usuarioRf, tipoId, categoriaId, titulo, codigo, anoLetivo, query);
+            query.AppendLine("group by n.excluida ");
+            query.AppendLine(") as nt ");
+            query.AppendLine("where excluida = false");
         }
 
         public async Task<IEnumerable<Notificacao>> ObterNotificacoesPorAnoLetivoERf(int anoLetivo, string usuarioRf, int limite)
