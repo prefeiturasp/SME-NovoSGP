@@ -50,7 +50,7 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo
             }))
             {
-                retornoPaginado.Items = multi.Read<Notificacao>().Where(n => n.Excluida != true).ToList();
+                retornoPaginado.Items = multi.Read<Notificacao>().ToList();
                 retornoPaginado.TotalRegistros = multi.ReadFirst<int>();
             }
 
@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and n.tipo = @tipoId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and u.rf_codigo = @usuarioRf or u.login = @usuarioRf");
+                query.AppendLine("and (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)");
 
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
