@@ -36,9 +36,7 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, request.Bimestre);
 
-            var alunosEOL = await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaId));
-
-            var alunosAtivos = alunosEOL.Where(a =>  !a.Inativo && a.DataMatricula < periodo.PeriodoFim || (a.Inativo && a.DataSituacao.Date > periodo.PeriodoInicio.Date)).ToList();
+            var alunosEOL = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(request.TurmaId, periodo.PeriodoFim));
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(request.DisciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
@@ -47,6 +45,7 @@ namespace SME.SGP.Aplicacao
             var quantidadeMaximaCompensacoes = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.QuantidadeMaximaCompensacaoAusencia, DateTime.Today.Year)));
             var percentualFrequenciaAlerta = int.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(disciplinasEOL.First().Regencia ? TipoParametroSistema.CompensacaoAusenciaPercentualRegenciaClasse : TipoParametroSistema.CompensacaoAusenciaPercentualFund2, DateTime.Today.Year)));
 
+            var alunosAtivos = alunosEOL.Where(a => a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.RemanejadoSaida);
             foreach (var alunoEOL in alunosAtivos)
             {
                 var frequenciaAluno = repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoDisciplinaData(alunoEOL.CodigoAluno, request.DisciplinaId, periodo.PeriodoFim, turma.CodigoTurma);
