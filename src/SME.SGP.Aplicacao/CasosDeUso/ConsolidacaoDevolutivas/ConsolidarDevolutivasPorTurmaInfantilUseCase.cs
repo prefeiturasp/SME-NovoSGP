@@ -34,9 +34,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var anoAtual = DateTime.Now.Year;
 
-            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+            var turmasInfantil = await mediator
+                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
 
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+            await mediator
+                .Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
@@ -78,7 +80,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
                 }
 
             }
