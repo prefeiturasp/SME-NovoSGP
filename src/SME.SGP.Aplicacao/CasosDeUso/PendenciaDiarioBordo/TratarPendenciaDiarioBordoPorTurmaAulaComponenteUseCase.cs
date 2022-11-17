@@ -34,16 +34,15 @@ namespace SME.SGP.Aplicacao
                     pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(item.ComponenteCurricularId, item.ProfessorRf, item.PeriodoEscolarId, filtro.CodigoTurma));
 
                     if (pendenciaId == 0)
-                    {
                         pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola, turmaId));
-                        pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto()
-                        {
-                            ComponenteCurricularId = item.ComponenteCurricularId,
-                            ProfessorRf = item.ProfessorRf,
-                            PendenciaId = pendenciaId,
-                            CodigoTurma = filtro.CodigoTurma
-                        });
-                    }
+
+                    pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto()
+                    {
+                        ComponenteCurricularId = item.ComponenteCurricularId,
+                        ProfessorRf = item.ProfessorRf,
+                        PendenciaId = pendenciaId,
+                        CodigoTurma = filtro.CodigoTurma
+                    });
                 }
                 else
                     pendenciaId = pendencia.PendenciaId;

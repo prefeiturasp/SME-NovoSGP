@@ -592,9 +592,194 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids, string codigoTurma = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new List<DisciplinaDto>
+            {
+                new DisciplinaDto
+                {
+                    Id = 1217,
+                    CodigoComponenteCurricular = 1217,
+                    GrupoMatrizId = 4,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 1",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = false,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 1",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 138,
+                    CodigoComponenteCurricular = 138,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 2",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 6,
+                    CodigoComponenteCurricular = 6,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 3",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 2,
+                    CodigoComponenteCurricular = 2,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 4",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 7,
+                    CodigoComponenteCurricular = 7,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 5",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 139,
+                    CodigoComponenteCurricular = 139,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 6",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1105,
+                    CodigoComponenteCurricular = 1105,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 7",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1114,
+                    CodigoComponenteCurricular = 1114,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 8",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1061,
+                    CodigoComponenteCurricular = 1061,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 9",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 512,
+                    CodigoComponenteCurricular = 512,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 10",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+            }.Where(x => ids.Contains(x.Id)));
         }
 
         public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
@@ -915,7 +1100,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
             throw new NotImplementedException();
         }

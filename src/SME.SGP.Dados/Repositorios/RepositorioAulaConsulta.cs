@@ -507,19 +507,20 @@ namespace SME.SGP.Dados.Repositorios
             });
         }
 
-        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana)
+        public async Task<int> ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(string turma, int semana, string disciplina)
         {
             var query = @"select sum(quantidade)
                  from aula
                 where not excluido
                   and turma_id = @turma
-                  and disciplina_id in ('1214','1215','1216','1217','1218','1219','1220','1221','1222','1223')
+                  and disciplina_id =@disciplina
                   and extract('week' from data_aula) = @semana";
 
             var qtd = await database.Conexao.QueryFirstOrDefaultAsync<int?>(query, new
             {
                 turma,
-                semana
+                semana,
+                disciplina
             }) ?? 0;
             database.Conexao.Close();
 

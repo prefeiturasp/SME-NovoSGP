@@ -155,6 +155,10 @@ namespace SME.SGP.Aplicacao
 
                     grupoMatriz.ComponenteSinteses.Add(componenteCurricularDto);
                 }
+
+                if (grupoMatriz.ComponenteSinteses.Any())
+                    grupoMatriz.ComponenteSinteses = grupoMatriz.ComponenteSinteses.OrderBy(c => c.Nome).ToList();
+
                 retorno.Add(grupoMatriz);
             }
             return retorno;
@@ -211,7 +215,7 @@ namespace SME.SGP.Aplicacao
                     consideraHistorico = alunoNaTurma.Inativo;
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo,
-                    tiposTurmasParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
+                    tiposTurmasParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim, semestre: turma.Semestre));
 
                 if (!turmasCodigos.Any())
                 {
@@ -435,6 +439,12 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                 }
+
+                if(conselhoClasseAlunoNotas.ComponentesCurriculares.Any())
+                    conselhoClasseAlunoNotas.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
+                
+                if(conselhoClasseAlunoNotas.ComponenteRegencia != null)
+                    conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
 
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
             }

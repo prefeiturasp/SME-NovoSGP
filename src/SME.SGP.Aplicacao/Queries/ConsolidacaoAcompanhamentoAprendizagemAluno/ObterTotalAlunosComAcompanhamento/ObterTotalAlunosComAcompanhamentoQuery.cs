@@ -5,16 +5,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTotalAlunosComAcompanhamentoQuery : IRequest<int>
     {
-        public ObterTotalAlunosComAcompanhamentoQuery(long turmaId, int anoLetivo, int semestre)
+        public ObterTotalAlunosComAcompanhamentoQuery(long turmaId, int anoLetivo, int semestre, string[] codigosAlunos)
         {
             TurmaId = turmaId;
             AnoLetivo = anoLetivo;
             Semestre = semestre;
+            CodigosAlunos = codigosAlunos;
         }
 
         public long TurmaId { get; set; }
         public int AnoLetivo { get; set; }
         public int Semestre { get; set; }
+        public string[] CodigosAlunos { get; set; }
     }
 
     public class ObterTotalAlunosComAcompanhamentoQueryValidator : AbstractValidator<ObterTotalAlunosComAcompanhamentoQuery>
