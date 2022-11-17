@@ -289,7 +289,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma.Id);
+                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma?.Id);
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();

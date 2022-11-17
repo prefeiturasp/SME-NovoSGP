@@ -157,9 +157,10 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
+                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id  
+                        left join componente_curricular cc on cc.id = fn.disciplina_id
                         where t.id = @turmaId 
-                        and f.disciplina_id = @componenteCurricularId
+                        and (f.disciplina_id = @componenteCurricularId or cc.id = @componenteCurricularId)
                         and ft.periodo_escolar_id = @periodoEscolarId                        
                         ORDER BY fn.alterado_em, fn.criado_em) select * from lista where sequencia = 1;";
 
