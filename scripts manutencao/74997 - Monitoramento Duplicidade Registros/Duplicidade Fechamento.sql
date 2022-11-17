@@ -3,7 +3,8 @@ create table monitoramento.fechamento_turma_duplicado(
 	periodo_escolar_id int8 null,
 	quantidade int not null,
 	primeiro_registro timestamp not null,
-	ultimo_registro timestamp not null
+	ultimo_registro timestamp not null,
+	ultimo_id int8 not null
 );
 
 create table monitoramento.fechamento_turma_disciplina_duplicado (
@@ -11,7 +12,8 @@ create table monitoramento.fechamento_turma_disciplina_duplicado (
 	disciplina_id int8 not null,
 	quantidade int not null,
 	primeiro_registro timestamp not null,
-	ultimo_registro timestamp not null
+	ultimo_registro timestamp not null,
+	ultimo_id int8 not null
 );
 
 create table monitoramento.fechamento_aluno_duplicado (
@@ -19,7 +21,8 @@ create table monitoramento.fechamento_aluno_duplicado (
 	aluno_codigo int8 not null,
 	quantidade int not null,
 	primeiro_registro timestamp not null,
-	ultimo_registro timestamp not null
+	ultimo_registro timestamp not null,
+	ultimo_id int8 not null
 );
 
 
@@ -27,7 +30,8 @@ create table monitoramento.conselho_classe_duplicado (
 	fechamento_turma_id int8 not null,
 	quantidade int not null,
 	primeiro_registro timestamp not null,
-	ultimo_registro timestamp not null
+	ultimo_registro timestamp not null,
+	ultimo_id int8 not null
 );
 
 
@@ -35,7 +39,8 @@ create table monitoramento.conselho_classe_aluno_duplicado (
 	conselho_classe_id int8 not null,
 	quantidade int not null,
 	primeiro_registro timestamp not null,
-	ultimo_registro timestamp not null
+	ultimo_registro timestamp not null,
+	ultimo_id int8 not null
 );
 
 
@@ -51,6 +56,7 @@ select ft.turma_id
 	, count(ft.id) as quantidade
 	, min(ft.criado_em) as primeiro_registro
 	, max(ft.criado_em) as ultimo_registro
+	, max(ft.id) as ultimo_id
   from turma t
  inner join fechamento_turma ft on ft.turma_id = t.id
  where not ft.excluido 
@@ -67,6 +73,7 @@ select ftd.fechamento_turma_id
 	, count(ftd.id) as quantidade
 	, min(ftd.criado_em) as primeiro_registro
 	, max(ftd.criado_em) as ultimo_registro
+	, max(ftd.id) as ultimo_id
   from turma t
  inner join fechamento_turma ft on ft.turma_id = t.id and not ft.excluido
  inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id and not ftd.excluido 
@@ -85,6 +92,7 @@ select fa.fechamento_turma_disciplina_id
 	, count(fa.id) as quantidade
 	, min(fa.criado_em) as primeiro_registro
 	, max(fa.criado_em) as ultimo_registro
+	, max(fa.id) as ultimo_id
   from fechamento_aluno fa  
  where fa.criado_em >= '2022-01-01'
 group by fa.fechamento_turma_disciplina_id
@@ -99,6 +107,7 @@ select cc.fechamento_turma_id
 	, count(cc.id) as quantidade
 	, min(cc.criado_em) as primeiro_registro
 	, max(cc.criado_em) as ultimo_registro
+	, max(cc.id) as ultimo_id
   from turma t
  inner join fechamento_turma ft on ft.turma_id = t.id and not ft.excluido
  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id and not cc.excluido 
@@ -114,6 +123,7 @@ select cca.conselho_classe_id
 	, count(cca.id) as quantidade
 	, min(cca.criado_em) as primeiro_registro
 	, max(cca.criado_em) as ultimo_registro
+	, max(cca.id) as ultimo_id
   from turma t
  inner join fechamento_turma ft on ft.turma_id = t.id and not ft.excluido
  inner join conselho_classe cc on cc.fechamento_turma_id = ft.id and not cc.excluido 
