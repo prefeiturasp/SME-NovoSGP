@@ -21,9 +21,9 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE, Paginacao paginacao)
         {          
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin);
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE);
 
             var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, turmasCodigos};
             var retorno = new PaginacaoResultadoDto<PlanoAEEAlunoTurmaDto>();
@@ -40,25 +40,25 @@ namespace SME.SGP.Dados.Repositorios
 
         }
 
-        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin)
+        private string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE)
         {                        
             
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin);
+            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin);
+            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE);
 
             return sql.ToString();
         }
 
-        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin)
+        private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin);
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, turmasCodigos, ehAdmin, ehPAEE);
 
             if (!contador)
             {
@@ -122,7 +122,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(" left join usuario usu_paai_responsavel on usu_paai_responsavel.id = pa.responsavel_paai_id");
         }
 
-        private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin)
+        private void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string[] turmasCodigos, bool ehAdmin, bool ehPAEE)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not pa.excluido ");
 
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and pa.aluno_codigo = @alunoCodigo ");
             if (situacao.HasValue && situacao > 0)
                 sql.AppendLine(" and pa.situacao = @situacao ");
-            if (turmasCodigos.Length > 0 && !ehAdmin)
+            if (turmasCodigos.Length > 0 && !ehAdmin && !ehPAEE)
                 sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
         }
 
