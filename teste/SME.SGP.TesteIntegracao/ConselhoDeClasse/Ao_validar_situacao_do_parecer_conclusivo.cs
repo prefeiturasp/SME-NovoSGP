@@ -188,6 +188,33 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         [Theory]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_7)]
+        [InlineData(ANO_8)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_deve_ser_diferente_de_retido_por_estudante_com_nota_numerica_inferior_a_5(string ano)
+        {
+            await CriarDadosNotas(ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                TipoNota.Nota,
+                ano,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                NOTA_4,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            await CriarConselhosClasseComNotasNaoAleatorias();
+
+            await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
+
+            var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId != RETIDO).ShouldBeTrue();
+        }
+
+        [Theory]
         [InlineData(ANO_3)]
         [InlineData(ANO_6)]
         [InlineData(ANO_9)]
