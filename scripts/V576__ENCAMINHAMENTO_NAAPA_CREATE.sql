@@ -8,8 +8,10 @@ drop table if exists secao_encaminhamento_naapa;
 CREATE table public.secao_encaminhamento_naapa (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
 	questionario_id int8 not null,
-	
 	excluido bool NOT NULL DEFAULT false,
+	nome varchar,
+	ordem int4,
+	etapa int4,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
 	alterado_em timestamp NULL,
@@ -31,7 +33,6 @@ CREATE table public.encaminhamento_naapa (
 	aluno_nome varchar not null,
 	aluno_numero int4 not null,
 	situacao int4 not null,
-
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -53,7 +54,6 @@ CREATE table public.encaminhamento_naapa_secao (
 	encaminhamento_naapa_id int8 not null,
 	secao_encaminhamento_id int8 not null,
 	concluido bool not null default false,
-	
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -74,8 +74,8 @@ ALTER TABLE public.encaminhamento_naapa_secao ADD CONSTRAINT encaminhamento_naap
 -- Questão Encaminhamento NAAPA
 CREATE table public.encaminhamento_naapa_questao (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
+	encaminhamento_naapa_secao_id int8 not null,
 	questao_id int8 not null,
-	
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -89,17 +89,16 @@ CREATE table public.encaminhamento_naapa_questao (
 CREATE INDEX encaminhamento_naapa_questao_questao_idx ON public.encaminhamento_naapa_questao USING btree (questao_id);
 ALTER TABLE public.encaminhamento_naapa_questao ADD CONSTRAINT encaminhamento_naapa_questao_questao_fk FOREIGN KEY (questao_id) REFERENCES questao(id);
 
+CREATE INDEX encaminhamento_naapa_questao_secao_idx ON public.encaminhamento_naapa_questao USING btree (encaminhamento_naapa_secao_id);
+ALTER TABLE public.encaminhamento_naapa_questao ADD CONSTRAINT encaminhamento_naapa_questao_secao_fk FOREIGN KEY (encaminhamento_naapa_secao_id) REFERENCES encaminhamento_naapa_secao(id);
 
 -- Resposta Encaminhamento NAAPA
 CREATE table public.encaminhamento_naapa_resposta (
 	id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-	plano_questao_id int8 not null,
+	questao_encaminhamento_id int8 not null,
 	resposta_id int8 null,
 	arquivo_id int8 null,
 	texto varchar null,
-	periodo_inicio timestamp null,
-	periodo_fim timestamp null,
-	
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -110,8 +109,8 @@ CREATE table public.encaminhamento_naapa_resposta (
 	CONSTRAINT encaminhamento_naapa_resposta_pk PRIMARY KEY (id)
 );
 
-CREATE INDEX encaminhamento_naapa_resposta_questao_idx ON public.encaminhamento_naapa_resposta USING btree (plano_questao_id);
-ALTER TABLE public.encaminhamento_naapa_resposta ADD CONSTRAINT encaminhamento_naapa_resposta_questao_fk FOREIGN KEY (plano_questao_id) REFERENCES encaminhamento_naapa_questao(id);
+CREATE INDEX encaminhamento_naapa_resposta_questao_idx ON public.encaminhamento_naapa_resposta USING btree (questao_encaminhamento_id);
+ALTER TABLE public.encaminhamento_naapa_resposta ADD CONSTRAINT encaminhamento_naapa_resposta_questao_fk FOREIGN KEY (questao_encaminhamento_id) REFERENCES encaminhamento_naapa_questao(id);
 
 CREATE INDEX encaminhamento_naapa_resposta_resposta_idx ON public.encaminhamento_naapa_resposta USING btree (resposta_id);
 ALTER TABLE public.encaminhamento_naapa_resposta ADD CONSTRAINT encaminhamento_naapa_resposta_resposta_fk FOREIGN KEY (resposta_id) REFERENCES opcao_resposta(id);

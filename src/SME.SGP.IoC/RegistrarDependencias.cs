@@ -524,6 +524,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSuporteUsuario, RepositorioSuporteUsuario>();
 
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
+
+            // Encaminhamento NAAPA
+            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPA, RepositorioEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
+            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
