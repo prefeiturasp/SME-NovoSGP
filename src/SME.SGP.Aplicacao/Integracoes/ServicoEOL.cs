@@ -633,7 +633,25 @@ namespace SME.SGP.Aplicacao.Integracoes
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                if (dadosUsuarioLogado.EhProfessorCj())
+                {
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+                   
+                    if (obterAtribuicoesCJAtivas.Any())
+                    {
+                        bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                        if (possuiAtribuicaoNaUE)
+                            return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                                
+                }
+                
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+            }
 
             var json = await resposta.Content.ReadAsStringAsync();
 
@@ -957,12 +975,13 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
             var parametros = JsonConvert.SerializeObject(ids);
 
-            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-
+            var url = $@"disciplinas/turma/{codigoTurma}";
+            var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);

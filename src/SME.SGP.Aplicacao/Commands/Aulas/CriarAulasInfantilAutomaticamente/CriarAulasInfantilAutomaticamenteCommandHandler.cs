@@ -120,7 +120,15 @@ namespace SME.SGP.Aplicacao
                 contadorAulasCriadas = CriarAulas(aulasACriar, contadorAulasCriadas);
 
             if (idsAulasAExcluir.Any())
+            {                
+                foreach(var idAula in idsAulasAExcluir)
+                {
+                    await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);                    
+                    await mediator.Send(new ExcluirPendenciaDiarioPorAulaIdCommand(idAula));
+                }
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
+            }
+                
 
             return true;
         }
@@ -170,7 +178,7 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula) &&
-                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && aula.DadosComplementares.PossuiFrequencia) ||
+                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && !aula.DadosComplementares.PossuiFrequencia) ||
                                     !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
@@ -178,7 +186,7 @@ namespace SME.SGP.Aplicacao
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && !a.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.PossuiFrequencia));
 
                 if(!excluirAula)
-                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(aula, diasLetivos);
+                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(aula, diasLetivos);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
@@ -187,8 +195,8 @@ namespace SME.SGP.Aplicacao
             return aulasExclusao;
         }
 
-        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomatica(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
-            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA;
+        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
+            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA && !diasLetivos.Any(d=> d.Data == aula.DataAula);
 
         private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {

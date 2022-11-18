@@ -153,7 +153,7 @@ namespace SME.SGP.Aplicacao
             alunosAtivos = from a in alunos
                            where a.EstaAtivo(periodoInicio, periodoFim) 
                            || !a.EstaAtivo(periodoInicio, periodoFim) 
-                           && VerificaSeEsteveAtivoUmDiaNaTurma(a, periodoInicio)
+                           && VerificaSeEsteveAtivoUmDiaNaTurma(a, periodoInicio, periodoFim)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
 
@@ -440,10 +440,10 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio)
+        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio, DateTime periodoFim)
         {
             return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
-                   && aluno.DataMatricula <= periodoInicio;
+                   && aluno.DataMatricula <= periodoFim;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)

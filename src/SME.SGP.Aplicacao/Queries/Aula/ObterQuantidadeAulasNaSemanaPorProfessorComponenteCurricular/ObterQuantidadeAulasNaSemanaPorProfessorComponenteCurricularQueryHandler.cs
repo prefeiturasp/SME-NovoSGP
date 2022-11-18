@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<int> Handle(ObterQuantidadeAulasNaSemanaPorProfessorComponenteCurricularQuery request, CancellationToken cancellationToken)
             => request.ExperienciaPedagogica ?
-                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(request.TurmaCodigo, request.Semana) :
+                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(request.TurmaCodigo, request.Semana,request.ComponenteCurricular.ToString()) :
                 await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(request.TurmaCodigo, request.ComponenteCurricular.ToString(), request.Semana, request.ProfessorRf, request.DataExcecao, request.EhGestor);
 
     }
