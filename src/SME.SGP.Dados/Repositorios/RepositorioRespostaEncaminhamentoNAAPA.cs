@@ -12,4 +12,5 @@ namespace SME.SGP.Dados.Repositorios
         public RepositorioRespostaEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
+    }
 }
