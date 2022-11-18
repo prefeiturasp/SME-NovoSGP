@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueId,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaId,
-                                count(db.planejamento) as quantidadeRegistradaDevolutivas
+                                count(distinct d.id) as quantidadeRegistradaDevolutivas
                             from devolutiva d 
                              inner join diario_bordo db on db.devolutiva_id = d.id
                              inner join aula a on a.id = db.aula_id
@@ -146,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueid,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaid,
-                                count(db.id) as quantidadeDiarioBordoRegistrado
+                                count(distinct db.id) as quantidadeDiarioBordoRegistrado
                             from diario_bordo db
 	                            inner join aula a on a.id = db.aula_id
 	                            inner join turma t on t.turma_id = a.turma_id 
