@@ -162,7 +162,7 @@ namespace SME.SGP.Aplicacao
                     x.Resposta.Any()) &&
                     plano.UltimaVersao.CriadoEm.Year.Equals(DateTime.Now.Year))
                     plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-                else
+                else if(periodos.Any() && periodoEscolar != null)
                     plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodos.Single(x => periodoEscolar.Bimestre == x.Bimestre).Id.ToString();
                 var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                 plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
