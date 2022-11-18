@@ -188,7 +188,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         [Theory]
-        [InlineData(ANO_6)]
+        [InlineData(ANO_5)]
         [InlineData(ANO_7)]
         [InlineData(ANO_8)]
         public async Task Ao_validar_situacao_parecer_conclusivo_deve_ser_diferente_de_retido_por_estudante_com_nota_numerica_inferior_a_5(string ano)
@@ -211,7 +211,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
-            parecerConclusivo.Any(f => f.ConselhoClasseParecerId != RETIDO).ShouldBeTrue();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == RETIDO).ShouldBeFalse();
         }
 
         [Theory]
