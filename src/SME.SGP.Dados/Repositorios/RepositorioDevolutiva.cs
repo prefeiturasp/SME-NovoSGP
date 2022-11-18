@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueId,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaId,
-                                count(db.planejamento) as quantidadeRegistradaDevolutivas
+                                count(distinct d.id) as quantidadeRegistradaDevolutivas
                             from devolutiva d 
                              inner join diario_bordo db on db.devolutiva_id = d.id
                              inner join aula a on a.id = db.aula_id
@@ -125,16 +125,19 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
         {
-            var query = @" SELECT DISTINCT t.turma_id AS turmaId ,
-                               t.ano_letivo as anoLetivo,
-                               t.ue_id AS UeId,
-                               t.id
-                               FROM turma t 
-                               inner join ue ue on ue.id = t.ue_id 
-                               WHERE t.ano_letivo = @anoLetivo
-                               AND t.modalidade_codigo in (1,2);";
+            var query = @" select distinct
+                            t.turma_id as turmaId,
+                            t.ano_letivo as anoLetivo
+                        from diario_bordo db 
+                            inner join aula a on a.id = db.aula_id
+                            inner join turma t on t.turma_id = a.turma_id 
+                            inner join ue ue on ue.id = t.ue_id 
+                        where not db.excluido 
+                            and t.ano_letivo = @anoLetivo
+                            and t.modalidade_codigo in (1,2)
+                            and a.data_aula::date < current_date;";
 
-            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo });
+            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId)
@@ -155,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueid,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaid,
-                                count(db.id) as quantidadeDiarioBordoRegistrado
+                                count(distinct db.id) as quantidadeDiarioBordoRegistrado
                             from diario_bordo db
 	                            inner join aula a on a.id = db.aula_id
 	                            inner join turma t on t.turma_id = a.turma_id 
