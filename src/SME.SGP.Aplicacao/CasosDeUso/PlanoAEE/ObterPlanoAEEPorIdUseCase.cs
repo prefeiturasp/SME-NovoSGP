@@ -147,7 +147,10 @@ namespace SME.SGP.Aplicacao
 
                 plano.QuestionarioId = questionarioId;
 
+                var periodoEscolarId = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto;
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+                var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId)));
 
                 if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
                     plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
@@ -159,7 +162,8 @@ namespace SME.SGP.Aplicacao
                     x.Resposta.Any()) &&
                     plano.UltimaVersao.CriadoEm.Year.Equals(DateTime.Now.Year))
                     plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-
+                else
+                    plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodos.Single(x => periodoEscolar.Bimestre == x.Bimestre).Id.ToString();
                 var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                 plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
