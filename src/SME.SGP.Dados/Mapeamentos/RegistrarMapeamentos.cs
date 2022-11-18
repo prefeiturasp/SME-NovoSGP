@@ -208,7 +208,12 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new FrequenciaTurmaEvasaoMap());
                config.AddMap(new SuporteUsuarioMap());
                config.AddMap(new PendenciaDevolutivaMap());
-               
+               config.AddMap(new SecaoEncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPASecaoMap());
+               config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
+               config.AddMap(new RespostaEncaminhamentoNAAPAMap());
+
                config.ForDommel();
            });
         }
