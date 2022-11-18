@@ -135,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
                         where not db.excluido 
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo in (1,2)
-                            and a.data_aula::date < current_date;";
+                            and a.data_aula::date <= current_date;";
 
             return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo }, commandTimeout: 60);
         }
