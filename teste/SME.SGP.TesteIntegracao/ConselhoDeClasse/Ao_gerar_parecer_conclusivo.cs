@@ -76,7 +76,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 FechamentoTurmaId = FECHAMENTO_TURMA_ID_1
             };
             
-            var gerarParecerConclusivoUseCase = ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();;
+            var gerarParecerConclusivoUseCase = ServiceProvider.GetService<IGerarParecerConclusivoUseCase>();
 
             var retorno = await gerarParecerConclusivoUseCase.Executar(conselhoClasseFechamentoAluno);
 
