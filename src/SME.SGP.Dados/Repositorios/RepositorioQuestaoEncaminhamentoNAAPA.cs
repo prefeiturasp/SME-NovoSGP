@@ -11,7 +11,19 @@ namespace SME.SGP.Dados.Repositorios
     {
         public RepositorioQuestaoEncaminhamentoNAAPA(ISgpContext repositorio, IServicoAuditoria servicoAuditoria) : base(repositorio, servicoAuditoria)
         {
+        }
 
+        public async Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> ObterPrioridadeEncaminhamento()
+        {
+            var query = @"select opre.id, opre.nome
+                            from secao_encaminhamento_naapa sen
+                            inner join questionario qti on qti.id = sen.questionario_id
+                            inner join questao qta on qta.questionario_id = qti.id
+                            inner join opcao_resposta opre on opre.questao_id = qta.id
+                            where sen.etapa = 1 and qta.nome = 'Prioridade'
+                            order by opre.ordem";
+
+            return await database.Conexao.QueryAsync<PrioridadeEncaminhamentoNAAPADto>(query);
         }
 
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoNAAPASecaoId)
