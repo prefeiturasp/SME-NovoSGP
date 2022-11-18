@@ -147,10 +147,10 @@ namespace SME.SGP.Aplicacao
 
                 plano.QuestionarioId = questionarioId;
 
-                var periodoEscolarId = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto;
+                var periodoEscolarId = plano.Questoes.Any() ? plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto : null;
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
                 var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-                var periodoEscolar = await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId)));
+                var periodoEscolar = periodoEscolarId != null ? await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId))) : null;
 
                 if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
                     plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
