@@ -10,10 +10,8 @@ namespace SME.SGP.Dominio
             Secoes = new List<EncaminhamentoNAAPASecao>();
             Situacao = SituacaoNAAPA.Rascunho;
         }
-        public Ue Ue { get; set; }
-        public long UeId { get; set; }
         public Turma Turma { get; set; }
-        public long? TurmaId { get; set; }
+        public long TurmaId { get; set; }
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public SituacaoNAAPA Situacao { get; set; }

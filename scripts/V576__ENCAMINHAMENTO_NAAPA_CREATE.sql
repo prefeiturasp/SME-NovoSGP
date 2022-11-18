@@ -31,7 +31,7 @@ CREATE table public.encaminhamento_naapa (
 	aluno_nome varchar not null,
 	aluno_numero int4 not null,
 	situacao int4 not null,
-	
+
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,
 	criado_por varchar(200) NOT NULL,
@@ -46,7 +46,6 @@ CREATE INDEX encaminhamento_naapa_turma_idx ON public.encaminhamento_naapa USING
 ALTER TABLE public.encaminhamento_naapa ADD CONSTRAINT encaminhamento_naapa_turma_fk FOREIGN KEY (turma_id) REFERENCES turma(id);
 
 CREATE INDEX encaminhamento_naapa_aluno_idx ON public.encaminhamento_naapa USING btree (aluno_codigo);
-
 
 -- encaminhamento_naapa_SECAO
 CREATE table public.encaminhamento_naapa_secao (
