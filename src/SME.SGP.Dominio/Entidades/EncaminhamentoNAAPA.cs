@@ -1,0 +1,23 @@
+﻿using SME.SGP.Dominio.Enumerados;
+using System.Collections.Generic;
+
+namespace SME.SGP.Dominio
+{
+    public class EncaminhamentoNAAPA : EntidadeBase
+    {
+        public EncaminhamentoNAAPA()
+        {
+            Secoes = new List<EncaminhamentoNAAPASecao>();
+            Situacao = SituacaoNAAPA.Rascunho;
+        }
+        public Ue Ue { get; set; }
+        public long UeId { get; set; }
+        public Turma Turma { get; set; }
+        public long? TurmaId { get; set; }
+        public string AlunoCodigo { get; set; }
+        public string AlunoNome { get; set; }
+        public SituacaoNAAPA Situacao { get; set; }
+        public bool Excluido { get; set; }
+        public List<EncaminhamentoNAAPASecao> Secoes { get; set; }
+    }
+}
