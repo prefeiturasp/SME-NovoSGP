@@ -134,6 +134,15 @@ namespace SME.SGP.Api
             
             return BadRequest();
         }
+        
+        [HttpDelete("excluir-arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoItineranciaUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoCodigo));
+        }
 
     }
 }
