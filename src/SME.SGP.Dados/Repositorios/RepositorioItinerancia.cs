@@ -218,14 +218,17 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" i.id ");
                 sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", i.ue_id as UeId ");
-                sql.AppendLine(", i.situacao ");
+                sql.AppendLine(", i.situacao, ");
+                sql.AppendLine(" q.tipo as TipoQuestao,");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
 
             }
 
             sql.AppendLine(" from itinerancia i ");
-
+            sql.AppendLine(@" inner join itinerancia_questao iq on i.id = iq.itinerancia_id 
+                              inner join questao q on iq.questao_id = q.id ");
+            
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 

@@ -77,6 +77,7 @@ namespace SME.SGP.Aplicacao
                 itineranciaParaAdicionar.EstudanteNome = ObterEstudanteNomeCodigo(item, alunosEol, itineranciasAlunos);
                 itineranciaParaAdicionar.Id = item.Id;
                 itineranciaParaAdicionar.Situacao = item.Situacao.Name();
+                itineranciaParaAdicionar.TipoQuestao = item.TipoQuestao.Name();
                 itineranciaParaAdicionar.UeNome = await ObterNomeUeAsync(item.UeId);
                 itineranciaParaAdicionar.TurmaNome = ObterTurmaNome(item, turmas, itineranciasAlunos);
                 itineranciaParaAdicionar.CriadoPor = item.CriadoPor;
