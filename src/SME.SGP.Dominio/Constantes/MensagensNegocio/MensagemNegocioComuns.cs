@@ -17,5 +17,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
 
         public const string O_plano_aee_informado_nao_foi_encontrado = "O plano Aee informado não foi encontrado";
         public const string FORMATO_ARQUIVO_NAO_ACEITO = "O formato de arquivo enviado não é aceito";
+        public const string ARQUIVO_INF0RMADO_NAO_ENCONTRADO = "O arquivo informado não foi encontrado";
     }
 }
