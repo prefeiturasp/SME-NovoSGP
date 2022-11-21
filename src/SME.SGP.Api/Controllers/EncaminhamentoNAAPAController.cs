@@ -25,26 +25,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
             [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
         {
-            // filtro = new FiltroEncaminhamentoNAAPADto()
-            // {
-            //     ExibirHistorico = true,
-            //     AnoLetivo = 2022,
-            //     DreId = 7,
-            //     CodigoUe = "307288",
-            //     TurmaId = 1549249,
-            //     //DataAberturaQueixaInicio = new DateTime(2022, 11, 1),
-            //     //DataAberturaQueixaFim = new DateTime(2022, 11, 18),
-            //     Situacao = 1,
-            //     Prioridade = 1,
-            // };
-
             return Ok(await useCase.Executar(filtro));
         }
 
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        //[Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoNAAPA([FromQuery] long encaminhamentoAeeId, [FromServices] IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase obterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase)
         {
             return Ok(await obterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoAeeId));
@@ -53,7 +40,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("questionario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        //[Permissao(Permissao.AEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterQuestionario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoId, [FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromServices] IObterQuestionarioEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoId, codigoAluno, codigoTurma));
@@ -62,7 +49,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("situacoes")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        //[Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
             var lista = EnumExtensao.ListarDto<SituacaoNAAPA>().ToList().OrderBy(situacao => situacao.Descricao);
@@ -73,7 +60,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("prioridades")]
         [ProducesResponseType(typeof(IEnumerable<PrioridadeEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
+        //[Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPrioridades([FromServices] IObterPrioridadeEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar());

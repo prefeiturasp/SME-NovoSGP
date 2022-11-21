@@ -18,13 +18,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(bool exibirHistorico, 
             int anoLetivo, long dreId, string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, string[] turmasCodigos, Paginacao paginacao)
+            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, long[] turmasIds, Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, exibirHistorico, anoLetivo, dreId, codigoUe, 
-                nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim, situacao,prioridade , turmasCodigos);
+                nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim, situacao,prioridade , turmasIds);
 
-            var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno, turmasCodigos, situacao, 
-                prioridade = prioridade.ToString(), dataAberturaQueixaInicio, dataAberturaQueixaFim };
+            var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
+                turmasIds, situacao, prioridade = prioridade.ToString(), dataAberturaQueixaInicio, dataAberturaQueixaFim };
             
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
 
@@ -40,28 +40,28 @@ namespace SME.SGP.Dados.Repositorios
         }
         private string MontaQueryCompleta(Paginacao paginacao, bool exibirHistorico, int anoLetivo, long dreId, 
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, int prioridade, string[] turmasCodigos)
+            int situacao, int prioridade, long[] turmasIds)
         {
             var sql = new StringBuilder();
 
             MontaQueryConsulta(paginacao, sql, contador: false, nomeAluno,dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasCodigos);
+                dataAberturaQueixaFim,situacao, prioridade, turmasIds);
             
             sql.AppendLine(";");
 
             MontaQueryConsulta(paginacao, sql, contador: true, nomeAluno,dataAberturaQueixaInicio,
-                dataAberturaQueixaFim,situacao, prioridade, turmasCodigos);
+                dataAberturaQueixaFim,situacao, prioridade, turmasIds);
 
             return sql.ToString();
         }
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string nomeAluno, 
             DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, int prioridade, 
-            string[] turmasCodigos)
+            long[] turmasIds)
         {
             ObterCabecalho(sql, contador);
 
-            ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasCodigos);
+            ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds);
             
             if (!contador && (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue))
                 sql.AppendLine(" order by to_date(enr.texto,'dd/MM/YYYY') desc ");
@@ -77,7 +77,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("count(np.id) ");
             else
             {
-                sql.AppendLine(@"np.id EncaminhamentoNAAPAId
+                sql.AppendLine(@"np.id
                                 ,ue.nome UeNome 
                                 ,ue.tipo_escola TipoEscola
                                 ,np.aluno_codigo as CodigoAluno
@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private void ObterFiltro(StringBuilder sql, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, string[] turmasCodigos)
+            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, long[] turmasIds)
         {
             sql.AppendLine(@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo 
@@ -109,8 +109,8 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(nomeAluno))
                 sql.AppendLine(" and enp.aluno_nome = @nomeAluno ");
             
-            if (turmasCodigos.Any())
-                sql.AppendLine(" and t.id = ANY(@turmasCodigos) ");
+            if (turmasIds.Any())
+                sql.AppendLine(" and t.id = ANY(@turmasIds) ");
             
             if (situacao > 0)
                 sql.AppendLine(" and np.situacao = @situacao ");
