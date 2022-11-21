@@ -524,6 +524,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioSuporteUsuario, RepositorioSuporteUsuario>();
 
             services.TryAddScoped<IRepositorioTipoRelatorio, RepositorioTipoRelatorio>();
+
+            // Encaminhamento NAAPA
+            services.TryAddScoped<IRepositorioSecaoEncaminhamentoNAAPA, RepositorioSecaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPA, RepositorioEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioEncaminhamentoNAAPASecao, RepositorioEncaminhamentoNAAPASecao>();
+            services.TryAddScoped<IRepositorioQuestaoEncaminhamentoNAAPA, RepositorioQuestaoEncaminhamentoNAAPA>();
+            services.TryAddScoped<IRepositorioRespostaEncaminhamentoNAAPA, RepositorioRespostaEncaminhamentoNAAPA>();
         }
 
         protected virtual void RegistrarServicos(IServiceCollection services)
@@ -1173,12 +1180,18 @@ namespace SME.SGP.IoC
             // NAAPA - Frequência turma evasão
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase, ObterDashboardFrequenciaTurmaEvasaoAbaixo50PorcentoUseCase>();
             services.TryAddScoped<IObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase, ObterDashboardFrequenciaTurmaEvasaoSemPresencaUseCase>();
+            services.TryAddScoped<IObterEncaminhamentoNAAPAUseCase, ObterEncaminhamentoNAAPAUseCase>();
 
             services.TryAddScoped<IVerificarExistenciaRelatorioPorCodigoUseCase, VerificarExistenciaRelatorioPorCodigoUseCase>();
             services.TryAddScoped<IObterPAAIPorDreUseCase, ObterPAAIPorDreUseCase>();
             services.TryAddScoped<IObterResponsaveisPorDreUseCase, ObterResponsaveisPorDreUseCase>();
             services.TryAddScoped<IAtribuirUeResponsavelUseCase, AtribuirUeResponsavelUseCase>();
             services.TryAddScoped<IObterListaTipoReponsavelUseCase, ObterListaTipoReponsavelUseCase>();
+
+            // Encaminhamento NAAPA
+            services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase, ObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterQuestionarioEncaminhamentoNAAPAUseCase, ObterQuestionarioEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterPrioridadeEncaminhamentoNAAPAUseCase, ObterPrioridadeEncaminhamentoNAAPAUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);

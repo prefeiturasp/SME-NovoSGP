@@ -76,10 +76,17 @@ namespace SME.SGP.Aplicacao
                 aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
             else
             {
-                aulaPrevista = new AulaPrevista();
+                totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId, false));
+                aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
-                var periodosBimestre = await ObterPeriodosEscolares(tipoCalendario.Id);
-                aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
+                if (aulaPrevista == null)
+                {
+                    aulaPrevista = new AulaPrevista();
+                    var periodosBimestre = await ObterPeriodosEscolares(tipoCalendario.Id);
+                    aulaPrevistaBimestres = MapearPeriodoParaBimestreDto(periodosBimestre);
+                }
+                else
+                    aulaPrevistaBimestres = await ObterBimestres(aulaPrevista.Id);
             }
 
             return MapearDtoRetorno(aulaPrevista, aulaPrevistaBimestres, periodosAbertos);
@@ -102,18 +109,22 @@ namespace SME.SGP.Aplicacao
 
         private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
         {
-            foreach (var aula in aulaPrevistaDto.AulasPrevistasPorBimestre)
+            if(aulaPrevistaDto.AulasPrevistasPorBimestre != null)
             {
-                List<string> mensagens = new List<string>();
+                foreach (var aula in aulaPrevistaDto.AulasPrevistasPorBimestre)
+                {
+                    List<string> mensagens = new List<string>();
 
-                if (aula.Previstas.Quantidade != (aula.Criadas.QuantidadeCJ + aula.Criadas.QuantidadeTitular) && aula.Fim.Date >= DateTime.Today)
-                    mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
+                    if (aula.Previstas.Quantidade != (aula.Criadas.QuantidadeCJ + aula.Criadas.QuantidadeTitular) && aula.Fim.Date >= DateTime.Today)
+                        mensagens.Add("Quantidade de aulas previstas diferente da quantidade de aulas criadas.");
 
-                if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
-                    mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
+                    if (aula.Previstas.Quantidade != (aula.Cumpridas + aula.Reposicoes) && aula.Fim.Date < DateTime.Today)
+                        mensagens.Add("Quantidade de aulas previstas diferente do somatório de aulas dadas + aulas repostas, após o final do bimestre.");
 
-                if (mensagens.Any())
-                    aula.Previstas.Mensagens = mensagens.ToArray();
+                    if (mensagens.Any())
+                        aula.Previstas.Mensagens = mensagens.ToArray();
+                }
+
             }
 
             return aulaPrevistaDto;

@@ -588,7 +588,7 @@
 
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
-
+        
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 

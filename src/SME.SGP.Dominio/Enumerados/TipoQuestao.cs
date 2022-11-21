@@ -14,5 +14,10 @@
         Periodo = 10,
         FrequenciaEstudanteAEE = 11,
         PeriodoEscolar = 12,
+        Numerico = 13,
+        Data = 14,
+        Endereco = 15,
+        ContatoResponsaveis = 16,
+        AtividadesContraturno = 17
     }
 }

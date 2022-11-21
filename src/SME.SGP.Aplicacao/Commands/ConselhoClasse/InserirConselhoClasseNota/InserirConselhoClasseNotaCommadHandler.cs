@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 enviarAprovacao = await EnviarParaAprovacao(request.FechamentoTurma.Turma, request.UsuarioLogado);
 
                 if (enviarAprovacao)
-                    await GerarWFAprovacao(conselhoClasseNota, request.FechamentoTurma.Turma, request.Bimestre, request.UsuarioLogado, request.CodigoAluno, null, null); 
+                    await GerarWFAprovacao(conselhoClasseNota, request.FechamentoTurma.Turma, request.Bimestre, request.UsuarioLogado, request.CodigoAluno, null, null);
                 else
                     await repositorioConselhoClasseNota.SalvarAsync(conselhoClasseNota);
 

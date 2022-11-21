@@ -21,7 +21,9 @@ namespace SME.SGP.Dominio
         public TipoQuestao Tipo { get; set; }
         public string Opcionais { get; set; }
         public bool SomenteLeitura { get; set; }
-
+        public int Dimensao { get; set; }
+        public int Tamanho { get; set; }
+        public string Mascara { get; set; }
         public List<OpcaoResposta> OpcoesRespostas { get; set; }
     }
 }

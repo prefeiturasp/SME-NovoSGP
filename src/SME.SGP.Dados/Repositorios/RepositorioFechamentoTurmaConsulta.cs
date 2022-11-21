@@ -1,8 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using FluentValidation.Results;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
-        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre)
+        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre)
         {
             var query = new StringBuilder(@"with fechamentos as (select f.*,
                             row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia

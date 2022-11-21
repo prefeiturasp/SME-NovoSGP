@@ -15,23 +15,31 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioCache repositorioCache;
         private readonly IMediator mediator;
-        public ObterAulasPrevistasPorCodigoUeQueryHandler(IRepositorioCache repositorioCache, IMediator mediator)
+        private readonly IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta;
+        public ObterAulasPrevistasPorCodigoUeQueryHandler(IRepositorioCache repositorioCache, IMediator mediator, IRepositorioAulaPrevistaConsulta repositorioAulaPrevistaConsulta)
         {
             this.repositorioCache = repositorioCache ?? throw new System.ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.repositorioAulaPrevistaConsulta = repositorioAulaPrevistaConsulta ?? throw new System.ArgumentNullException(nameof(repositorioAulaPrevistaConsulta));
         }
 
         public async Task<IEnumerable<AulaPrevista>> Handle(ObterAulasPrevistasPorCodigoUeQuery request, CancellationToken cancellationToken)
         {
             var nomeChave = $"Aulas-Previstas-{request.CodigoUe}";
-            var atividadesPrevistasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
-            if (string.IsNullOrEmpty(atividadesPrevistasNoCache))
+            if (request.ObterPorCache)
             {
-                return await mediator.Send(new CriarCacheAulaPrevistaCommand(nomeChave, request.CodigoUe));
-            }
+                var atividadesPrevistasNoCache = await repositorioCache.ObterAsync(nomeChave);
 
-            return JsonConvert.DeserializeObject<IEnumerable<AulaPrevista>>(atividadesPrevistasNoCache);
+                if (string.IsNullOrEmpty(atividadesPrevistasNoCache))
+                {
+                    return await mediator.Send(new CriarCacheAulaPrevistaCommand(nomeChave, request.CodigoUe));
+                }
+
+                return JsonConvert.DeserializeObject<IEnumerable<AulaPrevista>>(atividadesPrevistasNoCache);
+            }
+            else
+                return await repositorioAulaPrevistaConsulta.ObterAulasPrevistasPorUe(request.CodigoUe);
 
         }
 

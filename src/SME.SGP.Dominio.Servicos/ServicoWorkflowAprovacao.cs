@@ -25,7 +25,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -47,7 +46,6 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
-                                        IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
                                         IRepositorioPendencia repositorioPendencia,
                                         IMediator mediator)
         {
@@ -65,7 +63,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -900,18 +897,11 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = await ObterNotaEmAprovacaoPosConselho(workflow.Id);
-            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(notasEmAprovacao,
-                                                                        codigoDaNotificacao,
+            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(codigoDaNotificacao,
                                                                         workflow.TurmaId,
                                                                         workflow.Id,
-                                                                        motivo,
-                                                                        notasEmAprovacao.ConselhoClasseNota.Nota,
-                                                                        notasEmAprovacao.ConselhoClasseNota.ConceitoId));
+                                                                        motivo));
         }
-
-        private Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPosConselho(long workflowId)
-            => repositorioConselhoClasseNota.ObterNotaEmAprovacaoWf(workflowId);
 
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {

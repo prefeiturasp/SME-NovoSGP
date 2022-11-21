@@ -19,11 +19,11 @@ namespace SME.SGP.Dados
         {
             var tabelas = @" ocorrencia o
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-                        inner join turma tu on tu.ue_id = o.ue_id
+                        left  join turma tu on tu.id  = o.turma_id
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id 
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id";
 
-            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and tu.ano_letivo = @anoLetivo ");
+            var gerador = new GeradorDeCondicoes(" where not o.excluido and o.ue_id = @ueId and extract(year from o.data_ocorrencia) = @anoLetivo ");
 
             gerador.AdicioneCondicao(filtro.TurmaId.HasValue, "and tu.id = @turmaId ");
             gerador.AdicioneCondicao(filtro.Modalidade.HasValue, "and tu.modalidade_codigo = @modalidade ");
@@ -39,29 +39,13 @@ namespace SME.SGP.Dados
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(distinct o.id) from {tabelas} {condicao}";
-
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-               new { titulo = filtro.Titulo, 
-                     dataOcorrenciaInicio = filtro.DataOcorrenciaInicio.GetValueOrDefault(), 
-                     dataOcorrenciaFim = filtro.DataOcorrenciaFim.GetValueOrDefault(), 
-                     turmaId = filtro.TurmaId.GetValueOrDefault(),
-                     ueId = filtro.UeId,
-                     modalidade = filtro.Modalidade.GetValueOrDefault(),
-                     semestre = filtro.Semestre.GetValueOrDefault(),
-                     tipoOcorrencia = filtro.TipoOcorrencia.GetValueOrDefault(),
-                     anoLetivo = filtro.AnoLetivo
-               });
-
-            var offSet = $@"offset {paginacao.QuantidadeRegistrosIgnorados} rows fetch next {paginacao.QuantidadeRegistros} rows only";
-            
-            query = $@" drop table if exists tempOcorrenciasSelecionadas;
+            var query = $@" drop table if exists tempOcorrenciasSelecionadas;
 
                         select
                             distinct o.id, o.data_ocorrencia, o.turma_id  as turmaId
                         into temp tempOcorrenciasSelecionadas
                         from {tabelas}
-                        {condicao} {orderBy} {offSet};
+                        {condicao} {orderBy};
 
                         select
 							o.id,
@@ -86,7 +70,7 @@ namespace SME.SGP.Dados
                         from tempOcorrenciasSelecionadas tos
                         inner join ocorrencia o on tos.id = o.id
 						inner join ocorrencia_tipo ot on ot.id = o.ocorrencia_tipo_id 
-                        inner join turma tu on tu.id = tos.turmaId
+                        left join turma tu on tu.id = tos.turmaId
 						left join ocorrencia_aluno oa on oa.ocorrencia_id = o.id
                         left join ocorrencia_servidor os on os.ocorrencia_id = o.id;";
 
@@ -129,8 +113,8 @@ namespace SME.SGP.Dados
             return new PaginacaoResultadoDto<Ocorrencia>()
             {
                 Items = lstOcorrencias.Values.ToList(),
-                TotalRegistros = totalRegistrosDaQuery,
-                TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
+                TotalRegistros = lstOcorrencias.Values.Count,
+                TotalPaginas = (int)Math.Ceiling((double)lstOcorrencias.Values.Count / paginacao.QuantidadeRegistros)
             };
         }
 

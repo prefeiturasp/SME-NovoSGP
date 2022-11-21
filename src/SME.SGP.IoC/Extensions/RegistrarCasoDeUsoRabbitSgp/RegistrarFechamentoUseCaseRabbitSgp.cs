@@ -49,7 +49,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase, ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase>();
             services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020UseCase, GerarFechamentoTurmaEdFisica2020UseCase>();
             services.TryAddScoped<IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase, GerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase>();
-
+            services.TryAddScoped<INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase, NotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase>();
         }
     }
 }
