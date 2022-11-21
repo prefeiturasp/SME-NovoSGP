@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("situacoes")]
         [ProducesResponseType(typeof(IEnumerable<EnumeradoRetornoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public IActionResult ObterSituacoes()
         {
             var lista = EnumExtensao.ListarDto<SituacaoNAAPA>().ToList().OrderBy(situacao => situacao.Descricao);
@@ -49,7 +49,7 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("prioridades")]
         [ProducesResponseType(typeof(IEnumerable<PrioridadeEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.DNA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPrioridades([FromServices] IObterPrioridadeEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar());
