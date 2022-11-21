@@ -400,10 +400,19 @@ namespace SME.SGP.Aplicacao
                         FrequenciaAluno frequenciaAluno;
                         var percentualFrequenciaPadrao = false;
 
+
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
                             frequenciaAluno = new FrequenciaAluno { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
+                        {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
+                            if (frequenciasAlunoParaTratar.FirstOrDefault().TotalPresencas == 0 && frequenciasAlunoParaTratar.FirstOrDefault().TotalAusencias == 0 && bimestre != 0)
+                            {
+                                int totalCompensacoesAVerificar = await TotalCompensacoesEFaltasAlunoAVerificar(codigoTurma, alunoCodigo, bimestre, disciplina.CodigoComponenteCurricular.ToString());
+                                frequenciaAluno.TotalCompensacoes = totalCompensacoesAVerificar;
+                                frequenciaAluno.TotalPresencas = frequenciaAluno.TotalAulas - totalCompensacoesAVerificar;
+                            }
+                        }   
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno
@@ -460,6 +469,20 @@ namespace SME.SGP.Aplicacao
             retorno.NotasConceitos = gruposMatrizesNotas;
 
             return retorno;
+        }
+
+        private async Task<int> TotalCompensacoesEFaltasAlunoAVerificar(string turmaCodigo, string codigoAluno, int bimestre, string disciplinaCodigo)
+        {
+            var compensacoes = await mediator.Send(new ObterTotalCompensacoesAlunosETurmaPorPeriodoQuery(bimestre, new List<string>() { codigoAluno }, turmaCodigo));
+            if (compensacoes.Any())
+            {
+                var compensacoesDisciplina = compensacoes.Where(c => c.ComponenteCurricularId == disciplinaCodigo).FirstOrDefault();
+
+                if (compensacoesDisciplina != null)
+                    return compensacoesDisciplina.Compensacoes;
+            }
+
+            return 0;
         }
 
         private void ConverterNotaFechamentoAlunoNumerica(IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno)
