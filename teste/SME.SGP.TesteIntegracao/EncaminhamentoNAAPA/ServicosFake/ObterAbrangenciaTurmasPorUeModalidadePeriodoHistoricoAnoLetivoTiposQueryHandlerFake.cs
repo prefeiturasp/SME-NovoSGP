@@ -1,15 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using SME.SGP.Aplicacao;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 
-namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFake
 {
     public class ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake : IRequestHandler<
         ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>
@@ -20,8 +16,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
             {
                 new AbrangenciaTurmaRetorno()
                 {
-                    Codigo = "1",
-                    Id = 1,
+                    Codigo = "1"
                 }
             };
         }

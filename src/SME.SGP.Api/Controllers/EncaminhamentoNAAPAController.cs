@@ -25,19 +25,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
             [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
         {
-            // filtro = new FiltroEncaminhamentoNAAPADto()
-            // {
-            //     ExibirHistorico = true,
-            //     AnoLetivo = 2022,
-            //     DreId = 7,
-            //     CodigoUe = "307288",
-            //     TurmaId = 1549249,
-            //     //DataAberturaQueixaInicio = new DateTime(2022, 11, 1),
-            //     //DataAberturaQueixaFim = new DateTime(2022, 11, 18),
-            //     Situacao = 1,
-            //     Prioridade = 1,
-            // };
-
             return Ok(await useCase.Executar(filtro));
         }
 

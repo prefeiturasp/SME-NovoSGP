@@ -1,0 +1,2 @@
+﻿ALTER TABLE encaminhamento_naapa
+DROP COLUMN IF EXISTS aluno_numero;
