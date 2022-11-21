@@ -147,7 +147,10 @@ namespace SME.SGP.Aplicacao
 
                 plano.QuestionarioId = questionarioId;
 
+                var periodoEscolarId = plano.Questoes.Any() ? plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto : null;
                 var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+                var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
+                var periodoEscolar = periodoEscolarId != null ? await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId))) : null;
 
                 if (plano.Situacao != SituacaoPlanoAEE.Encerrado && 
                     plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente && 
@@ -155,9 +158,12 @@ namespace SME.SGP.Aplicacao
                     plano.Questoes != null && 
                     plano.Questoes.Any() &&
                     turma.AnoLetivo.Equals(DateTime.Today.Year) &&
-                    periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()))
+                    periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && 
+                    x.Resposta.Any()) &&
+                    plano.UltimaVersao.CriadoEm.Year.Equals(DateTime.Now.Year))
                     plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
-
+                else if(periodos.Any() && periodoEscolar != null)
+                    plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodos.Single(x => periodoEscolar.Bimestre == x.Bimestre).Id.ToString();
                 var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
                 plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
