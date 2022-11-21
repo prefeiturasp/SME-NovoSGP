@@ -8,6 +8,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(bool exibirHistorico, int anoLetivo, long dreId, 
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, int prioridade, string[] turmasCodigos, Paginacao paginacao);
+            int situacao, int prioridade, long[] turmasIds, Paginacao paginacao);
     }
 }

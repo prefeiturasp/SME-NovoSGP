@@ -26,15 +26,30 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> Handle(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery request,CancellationToken cancellationToken)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-            var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
-   
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil, request.Modalidade, request.Tipos.Any() ? request.Tipos : null, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
+            try
+            {
+                var login = servicoUsuario.ObterLoginAtual();
+                var perfil = servicoUsuario.ObterPerfilAtual();
+                var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil
+                    ? await mediator.Send(
+                        new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo,
+                            Modalidade.EducacaoInfantil))
+                    : null;
 
-            result = request.Modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, request.CodigoUe) : result;
+                var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
+                    request.Modalidade, request.Tipos != null && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
+                    request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
 
-            return OrdernarTurmasItinerario(result);
+                result = request.Modalidade == Modalidade.EducacaoInfantil
+                    ? await VerificaTurmasCEMEI(result, request.CodigoUe)
+                    : result;
+
+                return OrdernarTurmasItinerario(result);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }   
         }  
         
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> VerificaTurmasCEMEI(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoUe)

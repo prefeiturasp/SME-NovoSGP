@@ -26,23 +26,14 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> Handle(ObterEncaminhamentosNAAPAQuery request, CancellationToken cancellationToken)
         {
-            try
-            {
-                // var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe, 
-                //     0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
+            var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe, 
+                 0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
 
-                var turmas = new List<AbrangenciaTurmaRetorno>();
-                var turmasCodigos = turmas != null || turmas.Any() ? turmas.Select(s => s.Codigo) : null;
+            var turmasIds = turmas != null || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
-                return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.ExibirHistorico, request.AnoLetivo, request.DreId, 
-                    request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
-                    request.Prioridade, turmasCodigos.ToArray(), Paginacao),request.AnoLetivo);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.ExibirHistorico, request.AnoLetivo, request.DreId, 
+                request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
+                request.Prioridade, turmasIds.ToArray(), Paginacao),request.AnoLetivo);
         }
 
         private async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> MapearParaDto(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto> resultadoDto,int anoLetivo)
