@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Api
 {
@@ -120,6 +122,17 @@ namespace SME.SGP.Api
         public async Task<IActionResult> ObterEventosPorCalendario([FromQuery]long tipoCalendarioId, [FromQuery] long itineranciaId, [FromQuery] string codigoUE, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroEventosItineranciaDto(tipoCalendarioId, itineranciaId, codigoUE)));
+        }
+
+        [HttpPost("upload")]
+        [ProducesResponseType(typeof(AuditoriaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> Upload([FromForm] IFormFile file,[FromServices] IUploadDeArquivoItineranciaUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file));
+            
+            return BadRequest();
         }
 
     }

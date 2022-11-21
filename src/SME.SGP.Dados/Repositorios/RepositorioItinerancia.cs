@@ -124,7 +124,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<Itinerancia> ObterEntidadeCompleta(long id)
         {
             var query = @"select i.*, ia.*, iaq.*, iq.* , io.*, iob.*
-                            from itinerancia i 
+                            from itinerancia i
                            left join itinerancia_aluno ia on ia.itinerancia_id = i.id
                            left join itinerancia_aluno_questao iaq on iaq.itinerancia_aluno_id = ia.id    
                            left join itinerancia_questao iq on iq.itinerancia_id = i.id 
@@ -135,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, Itinerancia>();
 
-            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase, Itinerancia>(query,
+            await database.Conexao.QueryAsync<Itinerancia, ItineranciaAluno, ItineranciaAlunoQuestao, ItineranciaQuestao, ItineranciaObjetivo, ItineranciaObjetivoBase,Itinerancia>(query,
                  (registroItinerancia, itineranciaAluno, itineranciaAlunoquestao, itineranciaQuestao, itineranciaObjetivo, itineranciaObjetivoBase) =>
                  {
                      Itinerancia itinerancia;
@@ -167,20 +167,28 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<ItineranciaRetornoQueryDto>> ObterItineranciasPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
-
-            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf };
-            var retorno = new PaginacaoResultadoDto<ItineranciaRetornoQueryDto>();
-
-            using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
+            try
             {
-                retorno.Items = multi.Read<ItineranciaRetornoQueryDto>();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
+                var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf);
+
+                var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo, dataInicio, dataFim, criadoRf };
+                var retorno = new PaginacaoResultadoDto<ItineranciaRetornoQueryDto>();
+
+                using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
+                {
+                    retorno.Items = multi.Read<ItineranciaRetornoQueryDto>();
+                    retorno.TotalRegistros = multi.ReadFirst<int>();
+                }
+
+                retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+
+                return retorno;
             }
-
-            retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
-
-            return retorno;
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, int anoLetivo, DateTime? dataInicio, DateTime? dataFim, string criadoRf)
@@ -218,8 +226,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" i.id ");
                 sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", i.ue_id as UeId ");
-                sql.AppendLine(", i.situacao, ");
-                sql.AppendLine(" q.tipo as TipoQuestao,");
+                sql.AppendLine(", i.situacao ");
+                sql.AppendLine(", q.tipo as TipoQuestao ");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
 
@@ -405,5 +413,15 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteAsync(query, new { itineranciaId, situacao });
         }
 
+        public async Task<List<QuestaoTipoDto>> ObterTipoDaQuestaoItinerancia(long itineranciaId)
+        {
+            var query = @" select iq.id  as QuestaoId,q.tipo as TipoQuestao 
+                             from itinerancia_questao iq 
+                             inner join questao q on iq.questao_id  = q.id 
+                             where iq.itinerancia_id = @itineranciaId ";
+            
+            var retorno = await database.Conexao.QueryAsync<QuestaoTipoDto>(query, new { itineranciaId });
+            return retorno.ToList();
+        }
     }
 }

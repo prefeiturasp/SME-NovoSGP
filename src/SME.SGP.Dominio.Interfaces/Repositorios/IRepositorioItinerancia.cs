@@ -28,5 +28,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<ItineranciaObjetivoDescricaoDto>> ObterDecricaoObjetivosPorId(long itineranciaId);
 
         Task<int> AtualizarStatusItinerancia(long itineranciaId, int situacao);
+        Task<List<QuestaoTipoDto>> ObterTipoDaQuestaoItinerancia(long itineranciaId);
     }
 }

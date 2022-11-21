@@ -16,5 +16,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data = "Você não pode fazer alterações ou inclusões nesta turma, componente e data.";
 
         public const string O_plano_aee_informado_nao_foi_encontrado = "O plano Aee informado não foi encontrado";
+        public const string FORMATO_ARQUIVO_NAO_ACEITO = "O formato de arquivo enviado não é aceito";
     }
 }
