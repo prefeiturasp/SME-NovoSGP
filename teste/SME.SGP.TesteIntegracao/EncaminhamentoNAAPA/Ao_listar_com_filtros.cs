@@ -55,7 +55,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = ALUNO_CODIGO_1,
-                AlunoNumero = 1,
                 Situacao = SituacaoNAAPA.Rascunho,
                 AlunoNome = "Nome do aluno 1",
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
