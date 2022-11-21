@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Polly;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
+using SME.SGP.Infra;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace SME.SGP.Api.Controllers
 {
@@ -16,6 +17,29 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class EncaminhamentoNAAPAController : ControllerBase
     {
+
+        [HttpGet]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        // [Permissao(Permissao.NAAPA_C, Policy = "Bearer")] 
+        public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
+            [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
+        {
+            // filtro = new FiltroEncaminhamentoNAAPADto()
+            // {
+            //     ExibirHistorico = true,
+            //     AnoLetivo = 2022,
+            //     DreId = 7,
+            //     CodigoUe = "307288",
+            //     TurmaId = 1549249,
+            //     //DataAberturaQueixaInicio = new DateTime(2022, 11, 1),
+            //     //DataAberturaQueixaFim = new DateTime(2022, 11, 18),
+            //     Situacao = 1,
+            //     Prioridade = 1,
+            // };
+
+            return Ok(await useCase.Executar(filtro));
+        }
 
         [HttpGet("secoes")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
