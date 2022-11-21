@@ -36,6 +36,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         [Fact]
         public async Task Ao_filtrar_por_situacao_rascunho_por_questao_prioridade()
         {
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
+            
             var filtroNAAPA = new FiltroNAAPADto()
             {
                 Perfil = ObterPerfilCP(),
@@ -81,10 +83,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
             
+            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 1,
-                Texto = "10/11/2022",
+                Texto = dataQueixa.ToString("dd/MM/yyyy"),
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
             
