@@ -1,6 +1,12 @@
-﻿using Shouldly;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
@@ -13,6 +19,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
     {
         public Ao_editar_registrar_percurso_observacoes(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
+                typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoAtivoFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Deve registrar observações adicionais")]
