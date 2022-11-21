@@ -146,6 +146,9 @@ namespace SME.SGP.Dominio
             || EhAD()
             || EhDiretor();
 
+        public bool PossuiPerfilGestorEscolar()
+            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR);
+
         private bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
