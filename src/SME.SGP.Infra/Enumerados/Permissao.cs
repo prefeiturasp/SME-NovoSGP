@@ -589,18 +589,6 @@
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
         
-        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-universal-access", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhConsulta = true, Url = "/gestao/naapa")]
-        NAAPA_C = 202,
-
-        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-universal-access", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhInclusao = true, Url = "/gestao/naapa")]
-        NAAPA_I = 203,
-
-        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-universal-access", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhExclusao = true, Url = "/gestao/naapa")]
-        NAAPA_E = 204,
-
-        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-universal-access", Agrupamento = "Gestão", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/gestao/naapa")]
-        NAAPA_A = 205,
-
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
