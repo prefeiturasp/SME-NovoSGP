@@ -18,13 +18,13 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> ListarPaginado(bool exibirHistorico, 
             int anoLetivo, long dreId, string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, long[] turmasIds, Paginacao paginacao)
+            DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds, Paginacao paginacao)
         {
             var query = MontaQueryCompleta(paginacao, exibirHistorico, anoLetivo, dreId, codigoUe, 
                 nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim, situacao,prioridade , turmasIds);
 
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
-                turmasIds, situacao, prioridade = prioridade.ToString(), dataAberturaQueixaInicio, dataAberturaQueixaFim };
+                turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
             
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
 
@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
         }
         private string MontaQueryCompleta(Paginacao paginacao, bool exibirHistorico, int anoLetivo, long dreId, 
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
-            int situacao, int prioridade, long[] turmasIds)
+            int situacao, long prioridade, long[] turmasIds)
         {
             var sql = new StringBuilder();
 
@@ -56,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, string nomeAluno, 
-            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, int prioridade, 
+            DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, int situacao, long prioridade, 
             long[] turmasIds)
         {
             ObterCabecalho(sql, contador);
@@ -99,7 +99,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         private void ObterFiltro(StringBuilder sql, string nomeAluno, DateTime? dataAberturaQueixaInicio, 
-            DateTime? dataAberturaQueixaFim, int situacao, int prioridade, long[] turmasIds)
+            DateTime? dataAberturaQueixaFim, int situacao, long prioridade, long[] turmasIds)
         {
             sql.AppendLine(@" where not np.excluido 
                                     and t.ano_letivo = @anoLetivo 
@@ -116,7 +116,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and np.situacao = @situacao ");
             
             if (prioridade > 0)
-                sql.AppendLine(" and q.nome = 'Prioridade' and enr.texto = @prioridade ");
+                sql.AppendLine(" and q.nome = 'Prioridade' and enr.resposta_id = @prioridade ");
 
             if (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue)
             {
@@ -148,11 +148,11 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
                         from encaminhamento_naapa ea
-                        inner join encaminhamento_naapa_secao eas on eas.encaminhamento_aee_id = ea.id
+                        inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
                         inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id 
-                        inner join questao_encaminhamento_naapa qea on qea.encaminhamento_aee_secao_id = eas.id
+                        inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
                         inner join questao q on q.id = qea.questao_id
-                        inner join resposta_encaminhamento_naapa rea on rea.questao_encaminhamento_id = qea.id
+                        inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
                          left join opcao_resposta op on op.id = rea.resposta_id
                         where ea.id = @id";
 

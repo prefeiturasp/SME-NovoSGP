@@ -27,20 +27,13 @@ namespace SME.SGP.Aplicacao.Commands
 
         private async Task<RespostaEncaminhamentoNAAPA> MapearParaEntidade(RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand request)
         {
-            var resposta = new RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = request.QuestaoId
-            };
+            var resposta = new RespostaEncaminhamentoNAAPA() { QuestaoEncaminhamentoId = request.QuestaoId };
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Radio, TipoQuestao.Combo, TipoQuestao.Checkbox, TipoQuestao.ComboMultiplaEscolha }))
-            {
                 resposta.RespostaId = long.Parse(request.Resposta);
-            }
 
-            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico }))
-            {
+            if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico, TipoQuestao.Data }))
                 resposta.Texto = request.Resposta;
-            }
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
             {

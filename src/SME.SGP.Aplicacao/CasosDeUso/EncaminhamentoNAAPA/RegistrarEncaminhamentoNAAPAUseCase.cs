@@ -154,7 +154,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             foreach (var questao in questoes)
             {
-                await mediator.Send(new RegistrarEncaminhamentoAEESecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
+                await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(questao.Resposta, questaoEncaminhamentoId, questao.TipoQuestao));
             }
         }
 
