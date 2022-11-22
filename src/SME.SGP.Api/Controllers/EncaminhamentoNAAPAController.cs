@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System;
+using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -97,6 +98,15 @@ namespace SME.SGP.Api.Controllers
                 return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
 
             return BadRequest();
+        }
+
+        [HttpDelete("{encaminhamentoNAAPAId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirEncaminhamento(long encaminhamentoNAAPAId, [FromServices] IExcluirEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
     }
 }

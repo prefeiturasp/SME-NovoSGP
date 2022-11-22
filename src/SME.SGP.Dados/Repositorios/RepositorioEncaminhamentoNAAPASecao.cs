@@ -13,5 +13,11 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
+        public async Task<IEnumerable<long>> ObterIdsSecoesPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId)
+        {
+            var query = "select id from encaminhamento_naapa_secao eas where not excluido and encaminhamento_naapa_id = @encaminhamentoNAAPAId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { encaminhamentoNAAPAId });
+        }
     }
 }
