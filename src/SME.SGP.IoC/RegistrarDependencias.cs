@@ -1192,6 +1192,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase, ObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterQuestionarioEncaminhamentoNAAPAUseCase, ObterQuestionarioEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IObterPrioridadeEncaminhamentoNAAPAUseCase, ObterPrioridadeEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterInformacoesAlunoPorCodigoUseCase, ObterInformacoesAlunoPorCodigoUseCase>();
 
             RegistrarCasoDeUsoAEERabbitSgp(services);
             RegistrarCasoDeUsoAulaRabbitSgp(services);
