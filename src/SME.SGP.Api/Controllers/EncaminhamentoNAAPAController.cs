@@ -8,6 +8,8 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -72,6 +74,29 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPrioridades([FromServices] IObterPrioridadeEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+
+        [HttpDelete("arquivo")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirArquivo([FromQuery] Guid arquivoCodigo, [FromServices] IExcluirArquivoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(arquivoCodigo));
+        }
+
+        [HttpPost("upload")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoUseCase useCase)
+        {
+            if (file.Length > 0)
+                return Ok(await useCase.Executar(file, Dominio.TipoArquivo.EncaminhamentoNAAPA));
+
+            return BadRequest();
         }
     }
 }
