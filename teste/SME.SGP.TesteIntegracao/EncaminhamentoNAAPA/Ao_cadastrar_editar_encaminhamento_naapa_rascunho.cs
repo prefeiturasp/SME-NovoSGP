@@ -17,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         public Ao_cadastrar_editar_encaminhamento_naapa_rascunho(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
         
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA")]
         public async Task Ao_cadastrar_encaminhamento_rascunho()
         {
             var filtroNAAPA = new FiltroNAAPADto()
@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.Any(a=> a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }
         
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA")]
         public async Task Ao_editar_encaminhamento_rascunho()
         {
             var filtroNAAPA = new FiltroNAAPADto()

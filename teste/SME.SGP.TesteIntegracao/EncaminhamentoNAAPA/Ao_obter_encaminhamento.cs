@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Obter encaminhamento NAAPA por Id")]
         public async Task Ao_obter_encaminhamento_por_id()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
