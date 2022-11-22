@@ -694,8 +694,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoNAAPAUseCase>();    
         }
-        
-        
+
+        protected IExcluirEncaminhamentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
+        {
+            return ServiceProvider.GetService<IExcluirEncaminhamentoNAAPAUseCase>();
+        }
 
 
         private async Task CriarRespostasComplementares()
