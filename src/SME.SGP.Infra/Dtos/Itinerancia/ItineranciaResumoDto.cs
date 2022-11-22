@@ -12,6 +12,9 @@ namespace SME.SGP.Infra
         public string TurmaNome { get; set; }
         public string Situacao { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
+        public long ArquivoId { get; set; }
+        public string ArquivoNome { get; set; }
+        public Guid ArquivoCodigo { get; set; }
         public string CriadoPor { get; set; }
     }
 }

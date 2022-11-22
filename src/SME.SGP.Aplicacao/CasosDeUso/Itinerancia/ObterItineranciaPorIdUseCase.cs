@@ -81,7 +81,11 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var questao in questoes)
                 {
-                    questao.TipoQuestao = tipos.FirstOrDefault(x => x.QuestaoId == questao.Id)!.TipoQuestao;
+                    var tipo = tipos.FirstOrDefault(x => x.QuestaoId == questao.Id);
+                    questao.TipoQuestao = tipo!.TipoQuestao;
+                    questao.ArquivoId = tipo!.ArquivoId;
+                    questao.ArquivoCodigo = tipo!.ArquivoCodigo;
+                    questao.ArquivoNome = tipo!.ArquivoNome;
                     questoesItinerancia.Add(questao);
                 }
             }
