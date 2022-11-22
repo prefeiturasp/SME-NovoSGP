@@ -16,7 +16,7 @@ begin
 
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 0, 'Data de entrada da queixa', 'Data', true, 14, '', NOW(), 'SISTEMA', '0', 3, null, null);
+		values(questionarioId, 0, 'Data de entrada da queixa', '', true, 14, '', NOW(), 'SISTEMA', '0', 3, null, null);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 1, 'Prioridade', '', true, 4, '', NOW(), 'SISTEMA', '0', 3, null, null)
@@ -54,10 +54,10 @@ begin
 
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 3, 'NIS (Número de Identificação Social)', 'Informe o NIS', false, 13, '', NOW(), 'SISTEMA', '0', 4, 11, null);
+		values(questionarioId, 3, 'NIS (Número de Identificação Social)', '', false, 13, '', NOW(), 'SISTEMA', '0', 4, 11, null);
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 4, 'CNS (Cartão SUS)', 'Informe o CNS', false, 13, '', NOW(), 'SISTEMA', '0', 4, 15, null);
+		values(questionarioId, 4, 'CNS (Cartão SUS)', '', false, 13, '', NOW(), 'SISTEMA', '0', 4, 15, null);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 5, 'Contato dos responsáveis', '', false, 16, '', NOW(), 'SISTEMA', '0', 12, null, null);
@@ -66,7 +66,7 @@ begin
 		values(questionarioId, 6, 'Endereço residencial', '', false, 16, '', NOW(), 'SISTEMA', '0', 12, null, null);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 7, 'Nome da mãe', 'Informe o nome da mãe', true, 1, '', NOW(), 'SISTEMA', '0', 6, 150, null);
+		values(questionarioId, 7, 'Nome da mãe', '', true, 1, '', NOW(), 'SISTEMA', '0', 6, 150, null);
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 8, 'Gênero', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, null, null)
@@ -80,7 +80,7 @@ begin
 		values(questaoId, 3, 'Outro', NOW(), 'SISTEMA', '0');
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 9, 'Grupo étnico (autodenominação)', 'Grupo étnico', true, 4, '', NOW(), 'SISTEMA', '0', 6, null, null)
+		values(questionarioId, 9, 'Grupo étnico (autodenominação)', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, null, null)
 		RETURNING id INTO questaoId;
 	
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
@@ -115,10 +115,10 @@ begin
 		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');		
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 12, 'UBS de referência', 'Informe a UBS', false, 1, '', NOW(), 'SISTEMA', '0', 12, 200, null);					
+		values(questionarioId, 12, 'UBS de referência', '', false, 1, '', NOW(), 'SISTEMA', '0', 12, 200, null);					
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 13, 'CRAS de referência', 'Informe o CRAS', false, 1, '', NOW(), 'SISTEMA', '0', 12, 200, null);		
+		values(questionarioId, 13, 'CRAS de referência', '', false, 1, '', NOW(), 'SISTEMA', '0', 12, 200, null);		
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 14, 'Atividades de contraturno', '', false, 17, '', NOW(), 'SISTEMA', '0', 12, null, null);		

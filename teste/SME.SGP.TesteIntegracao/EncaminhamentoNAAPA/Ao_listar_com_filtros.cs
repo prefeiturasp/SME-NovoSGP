@@ -53,50 +53,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await CriarDadosBase(filtroNAAPA);
 
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPA()
-            {
-                TurmaId = TURMA_ID_1,
-                AlunoCodigo = ALUNO_CODIGO_1,
-                Situacao = SituacaoNAAPA.Rascunho,
-                AlunoNome = "Nome do aluno 1",
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await CriarEncaminhamentoNAAPA();
             
-            await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
-            {
-                EncaminhamentoNAAPAId = 1,
-                SecaoEncaminhamentoNAAPAId = 1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await CriarEncaminhamentoNAAPASecao();
             
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 1,
-                QuestaoId = 1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
-            
-            await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
-            {
-                EncaminhamentoNAAPASecaoId = 1,
-                QuestaoId = 2,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
-            
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 1,
-                Texto = dataQueixa.ToString("dd/MM/yyyy"),
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
-            
-            await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
-            {
-                QuestaoEncaminhamentoId = 2,
-                RespostaId = 1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+            await CriarQuestoesEncaminhamentoNAAPA();
+
+            await CriarRespostasEncaminhamentoNAAPA(dataAtual);
             
             var obterEncaminhamentosNAAPAUseCase = ObterServicoListagemComFiltros();
 
@@ -180,7 +143,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
             {
                 QuestaoEncaminhamentoId = 2,
-                Texto = "1",
+                RespostaId = 1,
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
         }
