@@ -63,7 +63,7 @@ begin
 		values(questionarioId, 5, 'Contato dos responsáveis', '', false, 16, '', NOW(), 'SISTEMA', '0', 12, null, null);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 6, 'Endereço residencial', '', false, 16, '', NOW(), 'SISTEMA', '0', 12, null, null);
+		values(questionarioId, 6, 'Endereço residencial', '', false, 15, '', NOW(), 'SISTEMA', '0', 12, null, null);
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 7, 'Nome da mãe', '', true, 1, '', NOW(), 'SISTEMA', '0', 6, 150, null);
