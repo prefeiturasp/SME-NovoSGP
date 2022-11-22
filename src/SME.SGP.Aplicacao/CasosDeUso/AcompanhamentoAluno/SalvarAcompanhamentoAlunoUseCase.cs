@@ -15,7 +15,6 @@ namespace SME.SGP.Aplicacao
     public class SalvarAcompanhamentoAlunoUseCase : AbstractUseCase, ISalvarAcompanhamentoAlunoUseCase
     {
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
-        private const int QUANTIDADE_IMAGENS_PERMITIDAS_2 = 2;
         public SalvarAcompanhamentoAlunoUseCase(IMediator mediator,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -23,10 +22,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(QUANTIDADE_IMAGENS_PERMITIDAS_2))
-                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA,QUANTIDADE_IMAGENS_PERMITIDAS_2));
-            
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(acompanhamentoAlunoDto.TurmaId));
+            var parametroQuantidadeImagens = await ObterQuantidadeLimiteImagens(turma.AnoLetivo);
+
+            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
             
             if (turma == null)
                 throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
@@ -52,6 +52,13 @@ namespace SME.SGP.Aplicacao
             var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(acompanhamentoAlunoDto);
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
+        }
+
+        private async Task<int> ObterQuantidadeLimiteImagens(int ano)
+        {
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
+            return parametroQuantidade == null ?
+                0 : int.Parse(parametroQuantidade.Valor);
         }
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
