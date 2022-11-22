@@ -97,10 +97,22 @@ begin
 		values(questaoId, 6, 'Não declarado', NOW(), 'SISTEMA', '0');		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 10, 'Criança/Estudante é imigrante (autodenominação)', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, null, null);					
+		values(questionarioId, 10, 'Criança/Estudante é imigrante (autodenominação)', '', true, 3, '', NOW(), 'SISTEMA', '0', 6, null, null)
+	RETURNING id INTO questaoId;		
+
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');			
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
-		values(questionarioId, 11, 'Responsável/Cuidador é imigrante', '', false, 3, '', NOW(), 'SISTEMA', '0', 12, null, null);					
+		values(questionarioId, 11, 'Responsável/Cuidador é imigrante', '', false, 3, '', NOW(), 'SISTEMA', '0', 12, null, null)
+	RETURNING id INTO questaoId;		
+
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+		values(questaoId, 1, 'Sim', NOW(), 'SISTEMA', '0');
+	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
+		values(questaoId, 2, 'Não', NOW(), 'SISTEMA', '0');		
 
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, tamanho, mascara)
 		values(questionarioId, 12, 'UBS de referência', 'Informe a UBS', false, 1, '', NOW(), 'SISTEMA', '0', 12, 200, null);					
