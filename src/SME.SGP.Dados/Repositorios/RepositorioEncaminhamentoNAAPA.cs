@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -192,6 +193,26 @@ namespace SME.SGP.Dados.Repositorios
             }, new { id });
 
             return encaminhamento;
-        }        
+        }
+
+        public async Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId)
+        {
+            var sql = @"select
+	                        a.codigo
+                        from
+	                        encaminhamento_naapa ea
+                        inner join encaminhamento_naapa_secao eas on
+	                        ea.id = eas.encaminhamento_naapa_id
+                        inner join encaminhamento_naapa_questao qea on
+	                        eas.id = qea.encaminhamento_naapa_secao_id
+                        inner join encaminhamento_naapa_resposta rea on
+	                        qea.id = rea.questao_encaminhamento_id
+                        inner join arquivo a on
+	                        rea.arquivo_id = a.id
+                        where
+	                        ea.id = @encaminhamentoId";
+
+            return await database.Conexao.QueryAsync<EncaminhamentoNAAPACodigoArquivoDto>(sql.ToString(), new { encaminhamentoId });
+        }
     }
 }
