@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                                                                                                        request.RealizarAgrupamentoComponente,
                                                                                                        false);
 
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.TerritorioSaber ? b.CodigoComponenteTerritorioSaber.ToString() : b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
                 if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
