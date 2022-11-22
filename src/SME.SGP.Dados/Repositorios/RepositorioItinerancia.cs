@@ -423,5 +423,14 @@ namespace SME.SGP.Dados.Repositorios
             var retorno = await database.Conexao.QueryAsync<QuestaoTipoDto>(query, new { itineranciaId });
             return retorno.ToList();
         }
+
+        public async Task<int> ObterQuantidadeDeAnexosNaItinerancia(long itineranciaId)
+        {
+            var query = @"select count(*)  from itinerancia i 
+                            join itinerancia_questao iq on i.id = iq.itinerancia_id 
+                            join arquivo a on iq.arquivo_id  = a.id
+                            where i.id = @itineranciaId ";
+            return await database.ExecuteAsync(query, new {itineranciaId});
+        }
     }
 }
