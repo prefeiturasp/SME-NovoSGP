@@ -20,5 +20,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string O_plano_aee_informado_nao_foi_encontrado = "O plano Aee informado não foi encontrado";
         public const string NENHUMA_SECAO_ENCONTRADA = "Nenhuma seção foi encontrada";
         public const string NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X = "Nenhuma questão foi encontrada na Seção {0}";
+        public const string ARQUIVO_NAO_ENCONTRADO = "O arquivo informado não foi encontrado";
     }
 }
