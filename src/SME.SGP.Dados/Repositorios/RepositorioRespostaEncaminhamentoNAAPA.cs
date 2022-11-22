@@ -19,5 +19,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<RespostaEncaminhamentoNAAPA>(query, new { questaoEncaminhamentoNAAPAId });
         }
+
+        public async Task<bool> RemoverPorArquivoId(long arquivoId)
+        {
+            await Task.CompletedTask;
+
+            var sql =
+                $@"
+					update encaminhamento_naapa_resposta 
+                        set excluido = true,
+                            arquivo_id = null
+					where arquivo_id = @arquivoId 
+                ";
+
+            return (
+                database
+                .Conexao
+                .Execute(sql, new { arquivoId })
+                ) > 0;
+        }
+
+        public async Task<IEnumerable<long>> ObterArquivosPorQuestaoId(long questaoEncaminhamentoNAAPAId)
+        {
+            var query = "select arquivo_id from encaminhamento_naapa_resposta where questao_encaminhamento_id = @questaoEncaminhamentoNAAPAId and arquivo_id is not null";
+
+            return await database.Conexao.QueryAsync<long>(query, new { questaoEncaminhamentoNAAPAId });
+        }
     }
 }
