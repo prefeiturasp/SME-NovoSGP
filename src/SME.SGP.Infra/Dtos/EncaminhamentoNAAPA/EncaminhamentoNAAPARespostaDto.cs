@@ -19,9 +19,3 @@ namespace SME.SGP.Infra.Dtos
         public AlunoReduzidoDto Aluno { get; set; }
     }
 }
-
-// dre: {codigo, id, nome},
-// ue: {codigo, id, nome},
-// turma: {codigo, id, nome},
-// aluno: {},
-// anoLetivo
