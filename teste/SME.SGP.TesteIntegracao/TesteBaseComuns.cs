@@ -178,7 +178,7 @@ namespace SME.SGP.TesteIntegracao
         private const string REGENCIA_INFATIL_EMEI_4H = "'REGÊNCIA INFANTIL EMEI 4H'";
 
         protected const string UE_CODIGO_1 = "1";
-        private const string UE_NOME_1 = "Nome da UE";
+        protected const string UE_NOME_1 = "Nome da UE";
 
         protected const string DRE_CODIGO_1 = "1";
         protected const string DRE_NOME_1 = "DRE 1";

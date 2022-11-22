@@ -8,6 +8,7 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using System.Collections.Generic;
 using System.Linq;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -72,6 +73,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterPrioridades([FromServices] IObterPrioridadeEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar());
+        }
+        
+        [HttpGet("{encaminhamentoId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoId));
         }
     }
 }

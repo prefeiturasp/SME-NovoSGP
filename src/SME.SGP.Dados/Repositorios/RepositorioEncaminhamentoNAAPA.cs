@@ -192,6 +192,26 @@ namespace SME.SGP.Dados.Repositorios
             }, new { id });
 
             return encaminhamento;
-        }        
+        }   
+        
+        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
+        {
+            var query = @" select ea.*, t.*, ue.*, dre.*
+                            from encaminhamento_naapa ea
+                           inner join turma t on t.id = ea.turma_id
+                            join ue on ue.id = t.ue_id
+                            join dre on dre.id = ue.dre_id  
+                           where ea.id = @encaminhamentoId";
+
+            return (await database.Conexao.QueryAsync<EncaminhamentoNAAPA, Turma, Ue, Dre,EncaminhamentoNAAPA>(query,
+                (encaminhamentoNAAPA, turma, ue, dre) =>
+                {
+                    encaminhamentoNAAPA.Turma = turma;
+                    encaminhamentoNAAPA.Turma.Ue = ue;
+                    encaminhamentoNAAPA.Turma.Ue.Dre = dre;
+                    
+                    return encaminhamentoNAAPA;
+                }, new { encaminhamentoId })).FirstOrDefault();
+        }
     }
 }

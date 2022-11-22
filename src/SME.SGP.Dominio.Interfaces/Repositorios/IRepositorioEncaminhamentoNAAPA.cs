@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string requestCodigoEstudante, long requestUeId);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long requestId);
+        Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
     }
 }
