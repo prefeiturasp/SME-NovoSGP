@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace SME.SGP.Dominio.Interfaces
 {
@@ -13,6 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
 
         Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string requestCodigoEstudante, long requestUeId);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long requestId);
+        Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
 
         Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId);
     }
