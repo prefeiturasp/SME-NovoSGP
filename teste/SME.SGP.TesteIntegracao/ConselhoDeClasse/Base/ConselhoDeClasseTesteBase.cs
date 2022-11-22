@@ -1346,17 +1346,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 ParecerId = 3,
                 AnoTurma = 1,
-                Modalidade = 3,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 3,
-                AnoTurma = 1,
                 Modalidade = 5,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF,
@@ -1399,6 +1388,28 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
+                ParecerId = 3,
+                AnoTurma = 7,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new ConselhoClasseParecerAno()
+            {
+                ParecerId = 3,
+                AnoTurma = 8,
+                Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new ConselhoClasseParecerAno()
+            {
                 ParecerId = 5,
                 AnoTurma = 1,
                 Modalidade = 3,
@@ -1446,6 +1457,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 ParecerId = 5,
                 AnoTurma = 5,
                 Modalidade = 5,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new ConselhoClasseParecerAno()
+            {
+                ParecerId = 1,
+                AnoTurma = 1,
+                Modalidade = 3,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF,
                 CriadoRF = SISTEMA_CODIGO_RF,
@@ -1500,28 +1522,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 ParecerId = 1,
                 AnoTurma = 6,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 1,
-                AnoTurma = 7,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 1,
-                AnoTurma = 8,
                 Modalidade = 5,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF,
@@ -1565,6 +1565,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
                 ParecerId = 2,
+                AnoTurma = 1,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new ConselhoClasseParecerAno()
+            {
+                ParecerId = 2,
                 AnoTurma = 2,
                 Modalidade = 3,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
@@ -1610,28 +1621,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 ParecerId = 2,
                 AnoTurma = 6,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 2,
-                AnoTurma = 7,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 2,
-                AnoTurma = 8,
                 Modalidade = 5,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF,
@@ -1686,6 +1675,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await InserirNaBase(new ConselhoClasseParecerAno()
             {
                 ParecerId = 4,
+                AnoTurma = 1,
+                Modalidade = 3,
+                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
+                CriadoPor = SISTEMA_CODIGO_RF,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTimeExtension.HorarioBrasilia()
+            });
+
+            await InserirNaBase(new ConselhoClasseParecerAno()
+            {
+                ParecerId = 4,
                 AnoTurma = 2,
                 Modalidade = 3,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
@@ -1731,27 +1731,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             {
                 ParecerId = 4,
                 AnoTurma = 6,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 4,
-                AnoTurma = 7,
-                Modalidade = 5,
-                InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
-                CriadoPor = SISTEMA_CODIGO_RF,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTimeExtension.HorarioBrasilia()
-            });
-            await InserirNaBase(new ConselhoClasseParecerAno()
-            {
-                ParecerId = 4,
-                AnoTurma = 8,
                 Modalidade = 5,
                 InicioVigencia = DateTimeExtension.HorarioBrasilia().Date.AddYears(-1),
                 CriadoPor = SISTEMA_CODIGO_RF,

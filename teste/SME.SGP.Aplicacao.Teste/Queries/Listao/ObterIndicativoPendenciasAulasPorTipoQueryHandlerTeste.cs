@@ -2,10 +2,7 @@
 using Moq;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,13 +14,15 @@ namespace SME.SGP.Aplicacao.Teste.Queries
 
         private readonly ObterIndicativoPendenciasAulasPorTipoQueryHandler query;
         private readonly Mock<IRepositorioPendenciaAulaConsulta> repositorioPendenciaAula;
+        private readonly Mock<IRepositorioPendenciaDiarioBordoConsulta> repositorioPendenciaDiarioBordoConsulta;
         private readonly Mock<IMediator> mediator;
 
         public ObterIndicativoPendenciasAulasPorTipoQueryHandlerTeste()
         {
             repositorioPendenciaAula = new Mock<IRepositorioPendenciaAulaConsulta>();
+            repositorioPendenciaDiarioBordoConsulta = new Mock<IRepositorioPendenciaDiarioBordoConsulta>();
             mediator = new Mock<IMediator>();
-            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAula.Object);
+            query = new ObterIndicativoPendenciasAulasPorTipoQueryHandler(repositorioPendenciaAula.Object,repositorioPendenciaDiarioBordoConsulta.Object);
         }
 
         [Fact]
@@ -45,7 +44,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706", false, "", 2022))
                 .ReturnsAsync(aulas);
 
-            repositorioPendenciaAula.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
+            repositorioPendenciaDiarioBordoConsulta.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
                 .ReturnsAsync(dados);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterIndicativoPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
