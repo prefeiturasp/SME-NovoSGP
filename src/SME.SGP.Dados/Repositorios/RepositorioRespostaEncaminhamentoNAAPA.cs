@@ -15,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<IEnumerable<RespostaEncaminhamentoNAAPA>> ObterPorQuestaoEncaminhamentoId(long questaoEncaminhamentoNAAPAId)
         {
-            var query = "select * from resposta_encaminhamento_naapa where not excluido and questao_encaminhamento_id = @questaoEncaminhamentoNAAPAId";
+            var query = "select * from encaminhamento_naapa_resposta where not excluido and questao_encaminhamento_id = @questaoEncaminhamentoNAAPAId";
 
             return await database.Conexao.QueryAsync<RespostaEncaminhamentoNAAPA>(query, new { questaoEncaminhamentoNAAPAId });
         }
