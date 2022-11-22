@@ -22,6 +22,7 @@ namespace SME.SGP.Aplicacao.Commands
             var encaminhamento = MapearParaEntidade(request);
             var id = await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamento);
             var resultado = new ResultadoEncaminhamentoNAAPADto(id);
+            resultado.Auditoria = (AuditoriaDto)encaminhamento;
             return resultado;
         }
 

@@ -56,7 +56,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                     await AlterarEncaminhamento(encaminhamentoNAAPADto, encaminhamentoNAAPA);
                     await RemoverArquivosNaoUtilizados(encaminhamentoNAAPADto.Secoes);
 
-                    return new ResultadoEncaminhamentoNAAPADto() { Id = encaminhamentoNAAPA.Id };
+                    return new ResultadoEncaminhamentoNAAPADto() { Id = encaminhamentoNAAPA.Id, Auditoria = (AuditoriaDto)encaminhamentoNAAPA};
                 }
             }
 

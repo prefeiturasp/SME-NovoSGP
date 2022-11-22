@@ -72,11 +72,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 }
             };
 
-            var encaminhamento = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
+            retorno.Auditoria.ShouldNotBeNull();
+            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
+            (retorno.Auditoria.CriadoEm.Year == dataAtual.Year).ShouldBeTrue();
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
@@ -171,6 +172,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
             retorno.ShouldNotBeNull();
             retorno.Id.ShouldBe(1);
+            retorno.Auditoria.ShouldNotBeNull();
+            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue();
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
