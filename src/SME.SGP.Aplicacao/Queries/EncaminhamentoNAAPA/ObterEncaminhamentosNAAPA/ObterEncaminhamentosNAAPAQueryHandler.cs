@@ -55,7 +55,6 @@ namespace SME.SGP.Aplicacao
                 var retorno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(encaminhamento.CodigoAluno, anoLetivo, false));
                 var aluno = retorno.OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();                
 
-                var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo));
                 listaEncaminhamentos.Add(new EncaminhamentoNAAPAResumoDto()
                 {
                     Id = encaminhamento.Id,

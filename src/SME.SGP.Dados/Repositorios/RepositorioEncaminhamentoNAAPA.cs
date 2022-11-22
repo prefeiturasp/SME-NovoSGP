@@ -26,14 +26,38 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
-            
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
+            var encaminhamentosNAAPA = await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros);
+            
+            var acompanhamentosAgrupados = encaminhamentosNAAPA.GroupBy(x => new 
+                {
+                    x.Id,  
+                    x.UeNome,
+                    x.TipoEscola,
+                    x.CodigoAluno,
+                    x.NomeAluno,
+                    x.Situacao,
+                }).ToList()
+                .Select(x => new EncaminhamentoNAAPAResumoDto
+                {
+                    Id = x.Key.Id,  
+                    UeNome = x.Key.UeNome,
+                    TipoEscola = x.Key.TipoEscola,
+                    CodigoAluno = x.Key.CodigoAluno,
+                    NomeAluno = x.Key.NomeAluno,
+                    Situacao = x.Key.Situacao,
+                    Prioridade = x.Any() && x.Any(a=> !string.IsNullOrEmpty(a.Prioridade)) 
+                        ? x.FirstOrDefault(a=> !string.IsNullOrEmpty(a.Prioridade)).Prioridade : null,
+                    DataAberturaQueixaInicio = x.Any() && x.Any(a=> a.DataAberturaQueixaInicio.HasValue) 
+                        ? x.FirstOrDefault(b=> b.DataAberturaQueixaInicio.HasValue).DataAberturaQueixaInicio.Value  : null,
+                })
+                .ToList();
+            
+            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
             {
-                retorno.Items = multi.Read<EncaminhamentoNAAPAResumoDto>();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
-            }
+                Items = acompanhamentosAgrupados.ToList(),
+                TotalRegistros = acompanhamentosAgrupados.Count
+            };
 
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
@@ -84,8 +108,8 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_codigo as CodigoAluno
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
-                                ,case when q.nome = 'Prioridade' then enr.texto else null end Prioridade 
-                                ,case when q.nome = 'Data de entrada da queixa' then enr.texto else null end DataAberturaQueixaInicio 
+                                ,case when q.nome = 'Prioridade' then enr.resposta_id else null end Prioridade 
+                                ,case when q.nome = 'Data de entrada da queixa' then to_date(enr.texto,'dd/MM/YYYY') else null end DataAberturaQueixaInicio 
                 ");
             }
 
