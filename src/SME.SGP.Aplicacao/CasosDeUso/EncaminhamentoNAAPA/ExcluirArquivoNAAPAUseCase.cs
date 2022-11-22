@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using SME.SGP.Infra;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,7 +19,7 @@ namespace SME.SGP.Aplicacao
             var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(arquivoCodigo));
 
             if (entidadeArquivo == null)
-                throw new NegocioException("O arquivo informado não foi encontrado");
+                throw new NegocioException(MensagemNegocioComuns.ARQUIVO_NAO_ENCONTRADO);
 
             await mediator.Send(new ExcluirReferenciaArquivoAeePorArquivoIdCommand(entidadeArquivo.Id));
             await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
