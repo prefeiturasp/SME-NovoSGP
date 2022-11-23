@@ -37,7 +37,9 @@ namespace SME.SGP.Aplicacao
                 resposta.RespostaId = long.Parse(request.RespostaQuestaoDto.Resposta);
             }
 
-            if (EnumExtension.EhUmDosValores(request.RespostaQuestaoDto.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.AtendimentoClinico }))
+            if (EnumExtension.EhUmDosValores(request.RespostaQuestaoDto.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto, 
+                                                                                                  TipoQuestao.Data, TipoQuestao.Numerico, TipoQuestao.Endereco,
+                                                                                                  TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno}))
             {
                 resposta.Texto = request.RespostaQuestaoDto.Resposta;
             }
@@ -50,5 +52,6 @@ namespace SME.SGP.Aplicacao
 
             return resposta;
         }
+        
     }
 }
