@@ -59,7 +59,7 @@ namespace SME.SGP.Aplicacao
             if (periodoConsiderado == null)
                 throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
 
-            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaQuery(request.TurmaId, true));
+            var alunosDaTurma = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(request.TurmaId)));
             if (alunosDaTurma == null || !alunosDaTurma.Any())
                 throw new NegocioException($"Não localizados alunos para turma [{request.TurmaId}] no EOL");
 
@@ -69,6 +69,7 @@ namespace SME.SGP.Aplicacao
             var alunos = (from a in request.Alunos
                           join at in alunosDaTurma
                           on a equals at.CodigoAluno
+                          where at.DataMatricula.Date <= periodoConsiderado.PeriodoFim.Date                                
                           select at).Select(at => (at.CodigoAluno, at.DataMatricula, (at.EstaAtivo(request.DataAula) ? (DateTime?)null : at.DataSituacao)));
 
             var excluirFrequenciaAlunoIds = new List<long>();
@@ -88,7 +89,8 @@ namespace SME.SGP.Aplicacao
 
             foreach (var codigoAluno in alunosComFrequencia)
             {
-                var dadosMatriculaAluno = alunosDaTurma.SingleOrDefault(a => a.CodigoAluno.Equals(codigoAluno));
+                var dadosMatriculaAluno = alunosDaTurma
+                    .FirstOrDefault(a => a.CodigoAluno.Equals(codigoAluno) && a.DataMatricula.Date <= periodoConsiderado.PeriodoFim);
 
                 if (dadosMatriculaAluno == null)
                     continue;
