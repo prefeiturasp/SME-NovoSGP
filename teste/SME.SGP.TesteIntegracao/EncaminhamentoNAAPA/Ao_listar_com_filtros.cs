@@ -116,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(6);
-            retorno.Items.Any(a=> !a.Situacao.Equals(((int)SituacaoNAAPA.Rascunho).ToString())).ShouldBeFalse();
+            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue")]
@@ -156,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(((int)SituacaoNAAPA.Rascunho).ToString())).ShouldBeFalse();
+            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
         
         private async Task CriarEncaminhamentos(DateTime dataAtual)
