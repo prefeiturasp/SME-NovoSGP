@@ -96,11 +96,7 @@ namespace SME.SGP.Aplicacao.Workers
 
                 if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
-                    var argsDlq = new Dictionary<string, object>();
-                    argsDlq.Add("x-dead-letter-exchange", exchange);
-                    argsDlq.Add("x-message-ttl", ExchangeSgpRabbit.SgpDeadLetterTTL);
-                    argsDlq.Add("x-queue-mode", "lazy");
-
+                    var argsDlq = ObterArgumentoDaFilaDeadLetter(fila, exchange);
                     var filaDeadLetter = $"{fila}.deadletter";
 
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
@@ -134,6 +130,18 @@ namespace SME.SGP.Aplicacao.Workers
                 args.Add("x-queue-mode", "lazy");
             
             return args;
+        }
+
+        private Dictionary<string, object> ObterArgumentoDaFilaDeadLetter(string fila, string exchange)
+        {
+            var argsDlq = new Dictionary<string, object>();
+            var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
+
+            argsDlq.Add("x-dead-letter-exchange", exchange);
+            argsDlq.Add("x-message-ttl", ttl);
+            argsDlq.Add("x-queue-mode", "lazy");
+
+            return argsDlq;
         }
 
         private ulong GetRetryCount(IBasicProperties properties)
