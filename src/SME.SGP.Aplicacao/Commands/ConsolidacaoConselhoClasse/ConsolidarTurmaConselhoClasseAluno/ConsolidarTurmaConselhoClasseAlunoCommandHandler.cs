@@ -103,13 +103,12 @@ namespace SME.SGP.Aplicacao
 
                             if (disciplinaEol.Regencia)
                             {
-                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(disciplina.CodigoComponenteCurricular, turma);
+                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(turma);
                             }
                             else
                             {
                                 conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterComponenteCurricular(disciplina.Nome,
-                                                                                                                    disciplina.CodigoComponenteCurricular,
-                                                                                                                    turma));
+                                                                                                                    disciplina.CodigoComponenteCurricular));
                             }
                         }
                     }
@@ -184,7 +183,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo)
         {
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
@@ -194,7 +193,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(Turma turma)
         {
             var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma);
 

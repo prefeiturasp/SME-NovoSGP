@@ -20,8 +20,8 @@ namespace SME.SGP.Aplicacao
             if (inserirRegistroIndividualDto.Data.Date > DateTimeExtension.HorarioBrasilia().Date)
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.NAO_EH_PERMITIDO_FAZER_REGISTRO_INDIVIDUAL_EM_DATA_FUTURA);
             
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(inserirRegistroIndividualDto.TurmaId));
-
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(inserirRegistroIndividualDto.TurmaId));
+            
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
