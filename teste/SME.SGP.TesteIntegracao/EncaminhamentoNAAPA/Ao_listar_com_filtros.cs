@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue e Questão Prioridade")]
         public async Task Ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_ue_questao_prioridade()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
@@ -77,7 +77,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Any(a=> !a.Situacao.Equals(((int)SituacaoNAAPA.Rascunho).ToString())).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue e Questão Data Entrada Queixa")]
         public async Task Ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_ue_questao_data_entrada_queixa()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Items.Any(a=> !a.Situacao.Equals(((int)SituacaoNAAPA.Rascunho).ToString())).ShouldBeFalse();
         }
         
-        [Fact]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue")]
         public async Task Ao_filtrar_por_situacao_rascunho_por_ano_letivo_dre_ue()
         {
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
