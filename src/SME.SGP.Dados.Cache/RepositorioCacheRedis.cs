@@ -9,19 +9,20 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCacheRedis : RepositorioCache
     {
-        private readonly IConnectionMultiplexerSME connectionMultiplexerSME;
         private readonly IDatabase redis;
         private readonly RedisOptions redisOptions;
 
-        public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSME,
+        public RepositorioCacheRedis(IConnectionMultiplexerSME connectionMultiplexerSme,
             IServicoTelemetria servicoTelemetria,
             RedisOptions redisOptions) : base(servicoTelemetria)
         {
-            this.connectionMultiplexerSME = connectionMultiplexerSME ?? throw new ArgumentNullException(nameof(connectionMultiplexerSME));
-            redis = connectionMultiplexerSME.GetDatabase() ?? throw new ArgumentNullException("RedisDatabase");
+            ConnectionMultiplexerSme = connectionMultiplexerSme ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme));
+            redis = connectionMultiplexerSme.GetDatabase() ?? throw new ArgumentNullException(nameof(connectionMultiplexerSme.GetDatabase), "RedisDatabase");
             this.redisOptions = redisOptions ?? throw new ArgumentNullException(nameof(redisOptions));
             NomeServicoCache = "Cache Redis";
         }
+        
+        public IConnectionMultiplexerSME ConnectionMultiplexerSme { get; }
 
         protected override string ObterValor(string nomeChave)
             => redis.StringGet(string.Concat(redisOptions.Prefixo, nomeChave));
