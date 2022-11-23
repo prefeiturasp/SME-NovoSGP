@@ -94,6 +94,8 @@ namespace SME.SGP.Api
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
+
+            app.UseHealthChecksUI();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -138,6 +140,16 @@ namespace SME.SGP.Api
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
             });
+
+            services.AddHealthChecksUI(opt =>
+            {
+                opt.SetEvaluationTimeInSeconds(5);
+                opt.MaximumHistoryEntriesPerEndpoint(10);
+                opt.SetApiMaxActiveRequests(1);
+
+                opt.AddHealthCheckEndpoint("Health-API Indicadores", "/healthz");
+            })
+            .AddInMemoryStorage();
 
             services.AddCors();
             services.AddControllers();
