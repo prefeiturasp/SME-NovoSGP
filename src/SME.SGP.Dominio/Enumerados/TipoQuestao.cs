@@ -18,6 +18,7 @@
         Data = 14,
         Endereco = 15,
         ContatoResponsaveis = 16,
-        AtividadesContraturno = 17
+        AtividadesContraturno = 17,
+        EditorTexto = 18
     }
 }
