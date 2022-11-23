@@ -16,6 +16,7 @@ namespace SME.SGP.Infra.Dtos
         public string TurmaCodigo { get; set; }
         
         public int AnoLetivo { get; set; }
+        public int Situacao { get; set; }
         public AlunoReduzidoDto Aluno { get; set; }
     }
 }
