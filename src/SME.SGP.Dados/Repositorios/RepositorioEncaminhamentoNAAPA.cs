@@ -155,20 +155,6 @@ namespace SME.SGP.Dados.Repositorios
             }
         }
         
-        public async Task<bool> VerificaSeExisteEncaminhamentoPorAluno(string codigoEstudante, long ueId)
-        {
-            var sql = @"select exists (select 1 
-                          from encaminhamento_naapa ea 
-                         inner join turma t on t.id = ea.turma_id                     
-                         where not ea.excluido 
-                           and ea.situacao not in (4, 5, 8, 10)
-                           and ea.aluno_codigo = @codigoEstudante
-                           and t.ue_id = @ueId
-                           limit 1) ";
-
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoEstudante, ueId });            
-        }
-        
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
         {
             var query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*

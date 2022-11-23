@@ -13,34 +13,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.CasosDeUso
+namespace SME.SGP.Aplicacao
 {
     public class RegistrarEncaminhamentoNAAPAUseCase : IRegistrarEncaminhamentoNAAPAUseCase
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioRespostaEncaminhamentoNAAPA repositorioRespostaEncaminhamentoNAAPA;
-        private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA;
 
-        public RegistrarEncaminhamentoNAAPAUseCase(IMediator mediator, IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamentoNAAPA, IRepositorioRespostaEncaminhamentoNAAPA repositorioRespostaEncaminhamentoNAAPA)
+        public RegistrarEncaminhamentoNAAPAUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
-            this.repositorioRespostaEncaminhamentoNAAPA = repositorioRespostaEncaminhamentoNAAPA ?? throw new System.ArgumentNullException(nameof(repositorioRespostaEncaminhamentoNAAPA));
-            this.repositorioQuestaoEncaminhamentoNAAPA = repositorioQuestaoEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamentoNAAPA));
         }
 
         public async Task<ResultadoEncaminhamentoNAAPADto> Executar(EncaminhamentoNAAPADto encaminhamentoNAAPADto)
         {
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(encaminhamentoNAAPADto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(encaminhamentoNAAPADto.TurmaId));
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(encaminhamentoNAAPADto.AlunoCodigo, DateTime.Now.Year));
             if (aluno == null)
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
-
-            var alunoEncaminhamentoNAAPA = await mediator.Send(new ExisteEncaminhamentoNAAPAPorEstudanteQuery(encaminhamentoNAAPADto.AlunoCodigo, turma.Ue.Id));
-            if (alunoEncaminhamentoNAAPA && encaminhamentoNAAPADto.Id == 0)
-                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ESTUDANTE_JA_POSSUI_ENCAMINHAMENTO_NAAPA_EM_ABERTO);
 
             if (!encaminhamentoNAAPADto.Secoes.Any())
                 throw new NegocioException(MensagemNegocioComuns.NENHUMA_SECAO_ENCONTRADA);
@@ -85,7 +77,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 foreach (var item in resposta)
                 {
-                    var entidadeResposta = repositorioRespostaEncaminhamentoNAAPA.ObterPorId(item.RespostaEncaminhamentoId);
+                    var entidadeResposta = await mediator.Send(new ObterRespostaEncaminhamentoNAAPAPorIdQuery(item.RespostaEncaminhamentoId));
                     if (entidadeResposta != null)
                         await mediator.Send(new ExcluirRespostaEncaminhamentoNAAPACommand(entidadeResposta));
                 }
@@ -199,12 +191,10 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
         }
 
-
         private bool NaoNuloEContemRegistros(IEnumerable<dynamic> data)
         {
             return data != null && data.Any();
         }
-
 
         private bool EhQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
         {
@@ -271,7 +261,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             else
             {
                 var respostasJaPreenchidas = encaminhamentoNAAPADto.Id.HasValue ?
-                await repositorioQuestaoEncaminhamentoNAAPA.ObterRespostasEncaminhamento(encaminhamentoNAAPADto.Id.Value) :
+                    await mediator.Send(new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.Value)) :
                 Enumerable.Empty<RespostaQuestaoEncaminhamentoNAAPADto>();
 
                 if (encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)

@@ -81,6 +81,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
+            encaminhamentoNAAPA.Count().ShouldBe(1);
             
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
@@ -98,6 +99,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.Any(a=> a.RespostaId == 1).ShouldBeTrue();
             respostaEncaminhamentoNAAPA.Any(a=> a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }
+        
         
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA")]
         public async Task Ao_editar_encaminhamento_rascunho()
@@ -177,6 +179,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
+            encaminhamentoNAAPA.Count().ShouldBe(1);
             
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
@@ -194,6 +197,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.Any(a=> a.RespostaId == 2).ShouldBeTrue();
             respostaEncaminhamentoNAAPA.Any(a=> a.Texto.Equals(dataQueixa.ToString("dd/MM/yyyy"))).ShouldBeTrue();
         }
+        
         
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
         {
