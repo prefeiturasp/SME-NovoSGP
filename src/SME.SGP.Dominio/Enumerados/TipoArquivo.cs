@@ -75,7 +75,7 @@ namespace SME.SGP.Dominio
         RegistroPOA = 23,
 
         [Display(Name = "encaminhamento/naapa")]
-        EncaminhamentoNAAPA = 24,
+        EncaminhamentoNAAPA = 25,
 
         [Display(Name = "temp")]
         temp = 99
