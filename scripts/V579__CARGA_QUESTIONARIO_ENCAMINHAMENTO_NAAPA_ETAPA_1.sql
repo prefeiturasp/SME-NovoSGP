@@ -124,7 +124,7 @@ begin
 		values(questionarioId, 14, 'Atividades de contraturno', '', false, 17, '', NOW(), 'SISTEMA', '0', 12);		
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao)
-		values(questionarioId, 15, 'Descrição do encaminhamento', '', true, 2, '', NOW(), 'SISTEMA', '0', 12);		
+		values(questionarioId, 15, 'Descrição do encaminhamento', '', true, 18, '', NOW(), 'SISTEMA', '0', 12);		
 	
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao)
 		values(questionarioId, 16, 'Anexos', '', false, 6, '', NOW(), 'SISTEMA', '0', 12);		
