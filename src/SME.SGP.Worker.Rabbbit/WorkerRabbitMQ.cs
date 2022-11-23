@@ -12,6 +12,8 @@ namespace SME.SGP.Worker.RabbitMQ
 {
     public class WorkerRabbitMQ : WorkerRabbitMQBase
     {
+        private const int TENTATIVA_REPROCESSAR_10 = 10;
+
         public WorkerRabbitMQ(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IOptions<TelemetriaOptions> telemetriaOptions,
@@ -30,7 +32,7 @@ namespace SME.SGP.Worker.RabbitMQ
 
         private void RegistrarUseCasesRelatorios()
         {
-            Comandos.Add(RotasRabbitSgp.RotaRelatoriosProntos, new ComandoRabbit("Receber dados do relatório", typeof(IReceberRelatorioProntoUseCase)));
+            Comandos.Add(RotasRabbitSgp.RotaRelatoriosProntos, new ComandoRabbit("Receber dados do relatório", typeof(IReceberRelatorioProntoUseCase), TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
             Comandos.Add(RotasRabbitSgp.RotaRelatoriosProntosApp, new ComandoRabbit("Receber dados do relatório do Escola Aqui", typeof(IReceberRelatorioProntoEscolaAquiUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaRelatorioCorrelacaoCopiar, new ComandoRabbit("Copiar e gerar novo código de correlação", typeof(ICopiarCodigoCorrelacaoUseCase)));
             Comandos.Add(RotasRabbitSgp.RotaRelatorioCorrelacaoInserir, new ComandoRabbit("Inserir novo código de correlação", typeof(IInserirCodigoCorrelacaoUseCase)));

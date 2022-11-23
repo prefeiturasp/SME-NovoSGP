@@ -11,6 +11,7 @@ namespace SME.SGP.Frequencia.Worker
 {
     public class WorkerRabbitFrequencia : WorkerRabbitMQBase
     {
+        private const int TENTATIVA_REPROCESSAR_10 = 10;
         public WorkerRabbitFrequencia(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
             IOptions<TelemetriaOptions> telemetriaOptions,
@@ -24,7 +25,7 @@ namespace SME.SGP.Frequencia.Worker
         protected override void RegistrarUseCasesDoWorker()
         {
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConciliacaoCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Conciliação de Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase), true));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase), true));
+            Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaAlunoPorTurmaMensal, new ComandoRabbit("Consolidação de frequência do aluno por turma mensal", typeof(IConsolidarFrequenciaAlunoPorTurmaEMesUseCase), true, TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoFrequenciaTurmaEvasao, new ComandoRabbit("Consolidação de evasão da turma", typeof(IConsolidarFrequenciaTurmaEvasaoUseCase), true));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaNotificacaoFrequenciaUe, new ComandoRabbit("Notificar frequências dos alunos no bimestre para UE", typeof(INotificacaoFrequenciaUeUseCase), true));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidacaoFrequenciasTurmasCarregar, new ComandoRabbit("Consolidação de Registros de Frequência das Turmas - Carregar", typeof(IConsolidarFrequenciaTurmasUseCase), true));
@@ -50,8 +51,8 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequenciaPorUe, new ComandoRabbit("Consolidação por UE para o dashboard geral (diário, semanal e mensal)", typeof(IExecutaConsolidacaoDashBoardFrequenciaPorUeUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.NotificacaoFrequencia, new ComandoRabbit("Executar a notificacao de frequencia", typeof(INotificacaoFrequenciaUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.NotifificarRegistroFrequencia, new ComandoRabbit("Notificação do registro de frequênica", typeof(IExecutarNotificacaoRegistroFrequenciaUseCase), true));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase), true));
-            Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequencia, new ComandoRabbit("Consolidar frequências por tipo período para o dashboard", typeof(IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase)));
+            Comandos.Add(RotasRabbitSgpFrequencia.RotaCalculoFrequenciaPorTurmaComponente, new ComandoRabbit("Cálculo de frequência por Turma e Componente", typeof(ICalculoFrequenciaTurmaDisciplinaUseCase), true, TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
+            Comandos.Add(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequencia, new ComandoRabbit("Consolidar frequências por tipo período para o dashboard", typeof(IConsolidacaoDashBoardFrequenciaPorDataETipoUseCase), TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarFrequenciasTurmasPorUe, new ComandoRabbit("Consolidar Registros de Frequência das Turmas por UE", typeof(IConsolidarFrequenciaTurmasPorUEUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.ConsolidarFrequenciasPorTurma, new ComandoRabbit("Consolidar Registros de Frequência por Turma", typeof(IConsolidarFrequenciaPorTurmaUseCase)));
             //Tratar a carga referência Aula no registro frequencia aluno
