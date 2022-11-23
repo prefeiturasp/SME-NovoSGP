@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
 using SME.SGP.Api.HealthCheck;
@@ -21,6 +20,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Api
 {
@@ -129,15 +129,14 @@ namespace SME.SGP.Api
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddHealthChecks()
-                .AddNpgSql(Configuration.GetConnectionString("SGP_Postgres"),
-                    name: "Postgres")
-                .AddCheck<ApiJuremaCheck>("API Jurema")
-                .AddCheck<ApiEolCheck>("API EOL");
+                .AddNpgSql(Configuration.GetConnectionString("SGP_Postgres"), name: "Postgres")
+                .AddCheck<RedisCheck>("Redis")
+                .AddRabbitMQ(Configuration);
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
+                options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
             });
 
             services.AddCors();
