@@ -74,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.ShouldNotBeNull();
             retorno.Items.ShouldNotBeNull();
             retorno.Items.Count().ShouldBe(10);
-            retorno.Items.Any(a=> !a.Situacao.Equals(((int)SituacaoNAAPA.Rascunho).ToString())).ShouldBeFalse();
+            retorno.Items.Any(a=> !a.Situacao.Equals(SituacaoNAAPA.Rascunho.ToString())).ShouldBeFalse();
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Filtrar encaminhamentos por situação rascunho por Ano Letivo, Dre, Ue e Questão Data Entrada Queixa")]
