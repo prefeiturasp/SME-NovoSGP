@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Commands
                 {
                     var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(item.Codigo));
                     if (entidadeArquivo == null)
-                        throw new NegocioException(MensagemNegocioComuns.ARQUIVO_NAO_ENCONTRADO);
+                        throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
 
                     
                     var extencao = Path.GetExtension(entidadeArquivo.Nome);
