@@ -129,7 +129,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.TurmaCodigo.ShouldBe(TURMA_CODIGO_1);
             retorno.TurmaNome.ShouldBe(TURMA_NOME_1);
             
-            retorno.Anoletivo.ShouldBe(dataAtual.Year);
+            retorno.AnoLetivo.ShouldBe(dataAtual.Year);
         }
     }
 }

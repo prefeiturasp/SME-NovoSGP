@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 TurmaCodigo = encaminhamentoNAAPA.Turma.CodigoTurma,
                 TurmaNome = encaminhamentoNAAPA.Turma.Nome,
                 
-                Anoletivo = encaminhamentoNAAPA.Turma.AnoLetivo,
+                AnoLetivo = encaminhamentoNAAPA.Turma.AnoLetivo,
             };
         }
     }
