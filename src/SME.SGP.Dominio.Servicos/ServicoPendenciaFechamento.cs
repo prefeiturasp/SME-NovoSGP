@@ -122,6 +122,8 @@ namespace SME.SGP.Dominio.Servicos
                 .Where(a => a.PermiteRegistroFrequencia())
                 .ToList();
 
+            var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(turmaCodigo);
+
             if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
@@ -155,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                     {
                         var professor = usuariosPendencias
-                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p=> p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
                         var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
 
@@ -181,6 +183,9 @@ namespace SME.SGP.Dominio.Servicos
             aulasSemFrequencia = registrosAulasSemFrequencia?.Count ?? 0;
             return aulasSemFrequencia;
         }
+
+        public async Task<IEnumerable<string>> RetornaProfessoresDaTurma(string codigoTurma)
+         => await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string>() { codigoTurma }));
 
         public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre, long turmaId)
         {
