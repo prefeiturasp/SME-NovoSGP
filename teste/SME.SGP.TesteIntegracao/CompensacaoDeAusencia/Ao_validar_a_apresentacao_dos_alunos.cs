@@ -97,7 +97,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                         codigoAluno,
                         totalPresenca,
                         totalAusencia,
-                        PERIODO_ESCOLAR_ID_1);
+                        PERIODO_ESCOLAR_ID_3);
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
