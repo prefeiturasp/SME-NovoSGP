@@ -107,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_codigo as CodigoAluno
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
-                                ,case when q.nome = 'Prioridade' then enr.resposta_id else null end Prioridade 
+                                ,case when q.nome = 'Prioridade' then opr.nome else null end Prioridade 
                                 ,case when q.nome = 'Data de entrada da queixa' and enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio 
                 ");
             }
@@ -119,6 +119,7 @@ namespace SME.SGP.Dados.Repositorios
                                 join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id 
                                 join questao q on enq.questao_id = q.id 
                                 join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                                left join opcao_resposta opr on opr.id = enr.resposta_id
             ");
         }
 
