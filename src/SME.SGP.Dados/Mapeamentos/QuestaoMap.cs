@@ -22,6 +22,7 @@ namespace SME.SGP.Dados
             Map(c => c.Tamanho).ToColumn("tamanho");
             Map(c => c.Mascara).ToColumn("mascara");
             Map(c => c.PlaceHolder).ToColumn("placeholder");
+            Map(c => c.NomeComponente).ToColumn("nome_componente");
         }
     }
 }

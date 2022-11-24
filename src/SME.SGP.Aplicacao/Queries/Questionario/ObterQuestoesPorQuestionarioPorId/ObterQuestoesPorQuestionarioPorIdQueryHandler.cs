@@ -65,6 +65,7 @@ namespace SME.SGP.Aplicacao
                 Tamanho = questao.Tamanho,
                 PlaceHolder = questao.PlaceHolder,
                 Mascara = questao.Mascara,
+                NomeComponente = questao.NomeComponente,
                 OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
                 {
                     return new OpcaoRespostaDto()
