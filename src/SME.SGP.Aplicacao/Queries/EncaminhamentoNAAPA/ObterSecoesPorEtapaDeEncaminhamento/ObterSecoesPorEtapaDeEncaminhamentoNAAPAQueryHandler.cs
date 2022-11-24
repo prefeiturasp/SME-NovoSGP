@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
                     Concluido = secao.EncaminhamentoNAAPASecao?.Concluido ?? false,
+                    NomeComponente = secao.NomeComponente,
                     Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao
                 };
             }

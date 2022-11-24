@@ -19,5 +19,6 @@ namespace SME.SGP.Infra
         public int? Tamanho { get; set; }
         public string? Mascara { get; set; }
         public string? PlaceHolder { get; set; }
+        public string? NomeComponente { get; set; }
     }
 }

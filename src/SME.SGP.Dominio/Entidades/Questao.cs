@@ -25,6 +25,7 @@ namespace SME.SGP.Dominio
         public int? Tamanho { get; set; }
         public string? Mascara { get; set; }
         public string? PlaceHolder { get; set; }
+        public string? NomeComponente { get; set; }
         public List<OpcaoResposta> OpcoesRespostas { get; set; }
     }
 }
