@@ -146,7 +146,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private bool ImagemJaExistente(string imagem)
-        => imagem.Contains("/arquivos/");
+        => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketArquivos}/");
 
     }
 }
