@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
@@ -16,7 +17,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
     public abstract class CompensacaoDeAusenciaTesteBase : TesteBaseComuns
     {
         protected const int COMPENSACAO_AUSENCIA_ID_1 = 1;
-        protected const int PERIODO_ESCOLAR_ID_1 = 1;
+        protected const int PERIODO_ESCOLAR_ID_3 = 3;
         protected const int REGISTRO_FREQUENCIA_ID_1 = 1;
 
         protected const string DESCRICAO_COMPENSACAO = "Compensação de ausência teste";
@@ -32,7 +33,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
 
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria), typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         protected async Task CriarDadosBase(CompensacaoDeAusenciaDBDto dtoDB)
