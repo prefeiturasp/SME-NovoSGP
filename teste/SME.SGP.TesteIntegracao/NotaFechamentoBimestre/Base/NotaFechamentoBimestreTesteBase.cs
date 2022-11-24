@@ -217,7 +217,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new FechamentoTurmaDisciplinaDto()
                 {
-                    Bimestre = BIMESTRE_1,
+                    Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplina,
                     Justificativa = "" ,
                     TurmaId = TURMA_CODIGO_1 ,
