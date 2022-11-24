@@ -31,7 +31,6 @@ CREATE table public.encaminhamento_naapa (
 	turma_id int8 not null,
 	aluno_codigo varchar(15) not null,
 	aluno_nome varchar not null,
-	aluno_numero int4 not null,
 	situacao int4 not null,
 	excluido bool NOT NULL DEFAULT false,
 	criado_em timestamp NOT NULL,

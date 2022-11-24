@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
@@ -55,7 +56,6 @@ namespace SME.SGP.Aplicacao
                 var retorno = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(encaminhamento.CodigoAluno, anoLetivo, false));
                 var aluno = retorno.OrderByDescending(a => a.DataSituacao)?.FirstOrDefault();                
 
-                var ehAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, anoLetivo));
                 listaEncaminhamentos.Add(new EncaminhamentoNAAPAResumoDto()
                 {
                     Id = encaminhamento.Id,
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     CodigoAluno = encaminhamento.CodigoAluno,
                     NomeAluno = encaminhamento.NomeAluno,
                     Prioridade = encaminhamento.Prioridade,
-                    Situacao = encaminhamento.Situacao,
+                    Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).ToString(),
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio
                 });
             }
