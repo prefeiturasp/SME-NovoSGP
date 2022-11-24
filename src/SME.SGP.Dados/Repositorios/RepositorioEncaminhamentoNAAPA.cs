@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
                                 ,case when q.nome = 'Prioridade' then enr.resposta_id else null end Prioridade 
-                                ,case when q.nome = 'Data de entrada da queixa' then to_date(enr.texto,'dd/MM/YYYY') else null end DataAberturaQueixaInicio 
+                                ,case when q.nome = 'Data de entrada da queixa' and enr.texto <> '' then to_date(enr.texto,'dd/MM/YYYY') else null end DataAberturaQueixaInicio 
                 ");
             }
 
