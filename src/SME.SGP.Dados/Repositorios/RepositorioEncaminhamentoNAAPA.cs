@@ -88,7 +88,7 @@ namespace SME.SGP.Dados.Repositorios
             ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
             
             if (!contador && (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue))
-                sql.AppendLine(" order by to_date(enr.texto,'dd/MM/YYYY') desc ");
+                sql.AppendLine(" order by to_date(enr.texto,'yyyy-mm-dd') desc ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
@@ -108,7 +108,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
                                 ,case when q.nome = 'Prioridade' then enr.resposta_id else null end Prioridade 
-                                ,case when q.nome = 'Data de entrada da queixa' and enr.texto <> '' then to_date(enr.texto,'dd/MM/YYYY') else null end DataAberturaQueixaInicio 
+                                ,case when q.nome = 'Data de entrada da queixa' and enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio 
                 ");
             }
 
@@ -149,10 +149,10 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and q.nome = 'Data de entrada da queixa' ");
                
                 if (dataAberturaQueixaInicio.HasValue)
-                    sql.AppendLine(" and to_date(enr.texto,'dd/MM/YYYY') >= @dataAberturaQueixaInicio ");
+                    sql.AppendLine(" and to_date(enr.texto,'yyyy-mm-dd') >= @dataAberturaQueixaInicio ");
                 
                 if (dataAberturaQueixaFim.HasValue)
-                    sql.AppendLine(" and to_date(enr.texto,'dd/MM/YYYY') <= @dataAberturaQueixaFim  ");
+                    sql.AppendLine(" and to_date(enr.texto,'yyyy-mm-dd') <= @dataAberturaQueixaFim  ");
             }
         }
         
