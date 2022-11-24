@@ -990,9 +990,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             var parametros = JsonConvert.SerializeObject(ids);
             
-            var url = $@"disciplinas/turma/";
+            var url = @"disciplinas/turma/";
             if (codigoTurma != null)
-                url += "?codigoTurma={codigoTurma}";
+                url += $"?codigoTurma={codigoTurma}";
             var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
