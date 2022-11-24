@@ -40,7 +40,6 @@ namespace SME.SGP.Aplicacao
         {
             RuleFor(c => c.AnoLetivo).NotEmpty().WithMessage("O ano letivo deve ser informado para pesquisa de Encaminhamentos NAAPA");
             RuleFor(c => c.DreId).NotEmpty().WithMessage("O identificador da DRE deve ser informado para pesquisa de Encaminhamentos NAAPA");
-            RuleFor(c => c.CodigoUe).NotEmpty().WithMessage("O código da UE deve ser informado para pesquisa de Encaminhamentos NAAPA");
         }
     }
 }
