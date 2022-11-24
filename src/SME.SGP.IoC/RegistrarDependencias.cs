@@ -715,6 +715,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IDownloadDeArquivoUseCase, DownloadDeArquivoUseCase>();
             services.TryAddScoped<IExcluirArquivoUseCase, ExcluirArquivoUseCase>();
             services.TryAddScoped<IUploadDeArquivoItineranciaUseCase, UploadDeArquivoItineranciaUseCase>();
+            services.TryAddScoped<IExcluirArquivoItineranciaUseCase, ExcluirArquivoItineranciaUseCase>();
 
             // Atividades
             services.TryAddScoped<IObterAtividadesNotasAlunoPorTurmaPeriodoUseCase, ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase>();
