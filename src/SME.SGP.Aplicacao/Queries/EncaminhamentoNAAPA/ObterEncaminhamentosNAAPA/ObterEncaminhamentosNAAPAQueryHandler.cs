@@ -27,12 +27,15 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>> Handle(ObterEncaminhamentosNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe, 
-                 0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
+            var turmas = Enumerable.Empty<AbrangenciaTurmaRetorno>();
+            
+            if (!string.IsNullOrEmpty(request.CodigoUe))
+                turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(request.CodigoUe, 
+                    0, 0, request.ExibirHistorico, DateTimeExtension.HorarioBrasilia().Year, null, true));
 
             var turmasIds = turmas != null || turmas.Any() ? turmas.Select(s => s.Id) : null;
 
-            return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.ExibirHistorico, request.AnoLetivo, request.DreId, 
+            return await MapearParaDto(await repositorioEncaminhamentoNAAPA.ListarPaginado(request.AnoLetivo, request.DreId, 
                 request.CodigoUe,request.NomeAluno, request.DataAberturaQueixaInicio, request.DataAberturaQueixaFim, request.Situacao, 
                 request.Prioridade, turmasIds.ToArray(), Paginacao),request.AnoLetivo);
         }

@@ -179,9 +179,15 @@ namespace SME.SGP.TesteIntegracao
 
         protected const string UE_CODIGO_1 = "1";
         protected const string UE_NOME_1 = "Nome da UE";
+        
+        protected const string UE_CODIGO_2 = "2";
+        protected const string UE_NOME_2 = "UE 2";
 
         protected const string DRE_CODIGO_1 = "1";
         protected const string DRE_NOME_1 = "DRE 1";
+        
+        protected const string DRE_CODIGO_2 = "2";
+        protected const string DRE_NOME_2 = "DRE 2";
 
         protected const string SISTEMA_NOME = "Sistema";
         protected const string SISTEMA_CODIGO_RF = "1";
@@ -1074,6 +1080,20 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_1,
                 DreId = 1,
                 Nome = UE_NOME_1,
+            });
+            
+            await InserirNaBase(new Dre
+            {
+                CodigoDre = DRE_CODIGO_2,
+                Abreviacao = DRE_NOME_2,
+                Nome = DRE_NOME_2
+            });
+
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_2,
+                DreId = 2,
+                Nome = UE_NOME_2,
             });
 
             await InserirNaBase(new PrioridadePerfil
