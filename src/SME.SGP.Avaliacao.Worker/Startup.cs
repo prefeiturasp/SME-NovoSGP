@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 using SME.SGP.Worker.Avaliacao;
 
@@ -29,6 +30,8 @@ namespace SME.SGP.Avaliacao.Worker
             registrarDependencias.RegistrarCasoDeUsoAvaliacaoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAvaliacao>();
+            services.AddHealthChecksSgp().Builder();
+            services.AddHealthChecksUiSgp().Builder();            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -36,6 +39,8 @@ namespace SME.SGP.Avaliacao.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
             {

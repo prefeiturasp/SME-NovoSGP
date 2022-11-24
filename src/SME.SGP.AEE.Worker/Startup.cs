@@ -9,8 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.IoC;
 using System;
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.AEE.Worker
 {
@@ -31,17 +30,8 @@ namespace SME.SGP.AEE.Worker
             registrarDependencias.RegistrarCasoDeUsoAEERabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAEE>();
-            services.AddHealthChecks();
-            
-            services.AddHealthChecksUI(opt =>
-            {
-                opt.SetEvaluationTimeInSeconds(5);
-                opt.MaximumHistoryEntriesPerEndpoint(10);
-                opt.SetApiMaxActiveRequests(1);
-
-                opt.AddHealthCheckEndpoint("Health-API Indicadores", "/healthz");
-            })
-            .AddInMemoryStorage();            
+            services.AddHealthChecksSgp().Builder();
+            services.AddHealthChecksUiSgp().Builder();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,13 +41,7 @@ namespace SME.SGP.AEE.Worker
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
             
-            app.UseHealthChecks("/healthz", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });            
-
-            app.UseHealthChecksUI();
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
             {

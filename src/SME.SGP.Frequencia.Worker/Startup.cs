@@ -4,18 +4,11 @@ using Elastic.Apm.SqlClient;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using SME.SGP.IoC;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Frequencia.Worker
 {
@@ -36,6 +29,8 @@ namespace SME.SGP.Frequencia.Worker
             registrarDependencias.RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitFrequencia>();
+            services.AddHealthChecksSgp().Builder();
+            services.AddHealthChecksUiSgp().Builder();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,6 +39,8 @@ namespace SME.SGP.Frequencia.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
             {

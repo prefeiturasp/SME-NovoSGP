@@ -20,6 +20,7 @@ using Nest;
 using SME.SGP.Auditoria.Worker.Repositorio;
 using SME.SGP.Auditoria.Worker.Repositorio.Interfaces;
 using SME.SGP.Dados.ElasticSearch;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 
 namespace SME.SGP.Auditoria.Worker
@@ -43,6 +44,12 @@ namespace SME.SGP.Auditoria.Worker
             RegistrarTelemetria(services);
 
             services.AddHostedService<WorkerRabbitAuditoria>();
+            
+            services.AddHealthChecksSgp()
+                .AddElasticSearchSgp()
+                .Builder();
+            
+            services.AddHealthChecksUiSgp().Builder();
         }
 
         private void RegistrarTelemetria(IServiceCollection services)
@@ -133,6 +140,8 @@ namespace SME.SGP.Auditoria.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();

@@ -8,9 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="5.0.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="5.0.1" />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="5.0.1" />
     <PackageReference Include="Elastic.Apm.AspNetCore" Version="1.11.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
@@ -18,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Aplicacao\SME.SGP.Aplicacao.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.HealthCheck\SME.SGP.Infra.HealthCheck.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Mensageria\SME.SGP.Infra.Mensageria.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
     <ProjectReference Include="..\SME.SGP.IoC\SME.SGP.IoC.csproj" />

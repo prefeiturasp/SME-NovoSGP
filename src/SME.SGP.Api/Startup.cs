@@ -2,16 +2,13 @@
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
-using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Prometheus;
-using SME.SGP.Api.HealthCheck;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
 using System;
@@ -88,14 +85,8 @@ namespace SME.SGP.Api
 
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
-
-            app.UseHealthChecks("/healthz", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
-            app.UseHealthChecksUI();
+            
+            app.UseHealthChecksSgp();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -130,27 +121,22 @@ namespace SME.SGP.Api
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddHealthChecks()
-                .AddNpgSql(Configuration.GetConnectionString("SGP_Postgres"), name: "Postgres")
-                .AddCheck<RedisCheck>("Redis")
-                .AddRabbitMQ(Configuration);
+            services.AddHealthChecksSgp()
+                .AddNpgSqlSgp(Configuration)
+                .AddRedisSgp()
+                .AddRabbitMqSgp(Configuration)
+                .Builder();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
                 options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
             });
-
-            services.AddHealthChecksUI(opt =>
-            {
-                opt.SetEvaluationTimeInSeconds(5);
-                opt.MaximumHistoryEntriesPerEndpoint(10);
-                opt.SetApiMaxActiveRequests(1);
-
-                opt.AddHealthCheckEndpoint("Health-API Indicadores", "/healthz");
-            })
-            .AddInMemoryStorage();
-
+            
+            services.AddHealthChecksUiSgp()
+                .AddPostgreSqlStorageSgp(Configuration)
+                .Builder();
+            
             services.AddCors();
             services.AddControllers();
         }
