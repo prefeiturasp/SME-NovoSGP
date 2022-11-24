@@ -1239,7 +1239,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                tipoNota));
+                tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
 
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
@@ -1255,7 +1255,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         protected SalvarConselhoClasseAlunoNotaDto ObterSalvarConselhoClasseAlunoNotaDto(long componenteCurricular,
-            TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_2, int bimestre = BIMESTRE_2)
+            TipoNota tipoNota, long fechamentoTurma = FECHAMENTO_TURMA_ID_3, int bimestre = BIMESTRE_3)
         {
             return ObterSalvarConselhoClasseAlunoNotaDto(0, ALUNO_CODIGO_1, componenteCurricular, tipoNota, fechamentoTurma,
                 bimestre);
