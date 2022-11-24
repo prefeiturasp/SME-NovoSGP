@@ -68,13 +68,17 @@ namespace SME.SGP.Aplicacao
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
-                    if (!string.IsNullOrEmpty(novoCaminho))
+                    if (!ImagemJaExistente(imagem.ToString()))
                     {
-                        var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
-                        acompanhamentoAluno.PercursoIndividual = str;
-                    }
+                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                        if (!string.IsNullOrEmpty(novoCaminho))
+                        {
+                            var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+                            acompanhamentoAluno.PercursoIndividual = str;
+                        }
+                    }       
                 }
+
         }
 
         private async Task MoverRemoverExcluidosAlterar(string observacoes, string percursoIndividual, AcompanhamentoAlunoSemestre entidade)
@@ -147,5 +151,9 @@ namespace SME.SGP.Aplicacao
 
             return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, dto.Semestre, dto.Observacoes, dto.PercursoIndividual));
         }
+
+        private bool ImagemJaExistente(string imagem)
+        => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketArquivos}/");
+
     }
 }
