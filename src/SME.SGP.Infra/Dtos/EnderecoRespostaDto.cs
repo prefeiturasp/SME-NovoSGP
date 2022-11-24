@@ -13,5 +13,6 @@ namespace SME.SGP.Dto
         public string NomeMunicipio { get; set; }
         public string SiglaUF { get; set; }
         public string Tipologradouro { get; set; }
+        public string Logradouro { get; set; }
     }
 }
