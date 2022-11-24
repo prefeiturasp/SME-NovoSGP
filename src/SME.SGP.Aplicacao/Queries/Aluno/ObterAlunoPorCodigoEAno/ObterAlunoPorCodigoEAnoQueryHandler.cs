@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -39,6 +40,10 @@ namespace SME.SGP.Aplicacao
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
                 TurmaEscola = await ObterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
                 CodigoTurma = alunoPorTurmaResposta.CodigoTurma.ToString(),
+                CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
+                NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
+                DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
+                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel
             };
 
             return alunoReduzido;
@@ -50,7 +55,11 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            {
+                TipoTurno? tipoTurno = (TipoTurno)turma.TipoTurno;
+                var nomeTurno = tipoTurno != null ? $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}" : "";
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} {nomeTurno}";
+            }
 
             return turmaNome;
         }
