@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 }
             };
 
-            await CriarAula(DATA_29_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+            await CriarAula(DATA_28_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
 
             await ExecutarTestePendencia(fechamentoTurmaDisciplinaDto);
         }

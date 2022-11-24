@@ -1,8 +1,12 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Frequencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
@@ -17,6 +21,13 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
     {
         public Ao_calcular_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
+        }
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]
@@ -46,7 +57,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 1
             });
 
@@ -70,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 1
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -103,7 +114,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 2
             });
 
@@ -139,7 +150,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 1
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -170,7 +181,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 2
             });
 
@@ -206,7 +217,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 1
             });            
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -400,7 +411,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 3
             });
 
@@ -458,7 +469,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CompensacaoAusenciaId = 1
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -492,7 +503,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 2
             });
 
@@ -528,7 +539,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 1
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -676,12 +687,12 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             await InserirNaBase(new PeriodoEscolar
             {
                 Id = 1,
-                Bimestre = 1,
+                Bimestre = 3,
                 TipoCalendarioId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
-                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 28)
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 01),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 09, 30)
             });
 
         }
