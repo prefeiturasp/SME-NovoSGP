@@ -8,14 +8,14 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using StackExchange.Redis;
 
-namespace SME.SGP.Api.HealthCheck
+namespace SME.SGP.Infra
 {
     public class RedisCheck : IHealthCheck
     {
         private readonly IRepositorioCache repositorioCache;
         private readonly RedisOptions redisOptions;
         private readonly ConfiguracaoCacheOptions configuracaoCacheOptions;
-        
+
         public RedisCheck(IRepositorioCache repositorioCache, IOptions<RedisOptions> redisOptions,
             IOptions<ConfiguracaoCacheOptions> configuracaoCacheOptions)
         {
@@ -54,13 +54,13 @@ namespace SME.SGP.Api.HealthCheck
                             {
                                 if (!clusterInfo.ToString()!.Contains("cluster_state:ok"))
                                 {
-                                    return HealthCheckResult.Healthy(
+                                    return HealthCheckResult.Unhealthy(
                                         $"O serviço Redis apresenta problemas: CLUSTER não está íntegro para o endpoint {endPoint}");
                                 }
                             }
                             else
                             {
-                                return HealthCheckResult.Healthy(
+                                return HealthCheckResult.Unhealthy(
                                     $"O serviço Redis apresenta problemas: CLUSTER não está íntegro para o endpoint {endPoint}");
                             }
                         }
@@ -71,7 +71,7 @@ namespace SME.SGP.Api.HealthCheck
             }
             catch (Exception ex)
             {
-                return HealthCheckResult.Healthy($"O serviço Redis apresenta problemas: {ex.Message}");
+                return HealthCheckResult.Unhealthy($"O serviço Redis apresenta problemas: {ex.Message}");
             }
         }
     }
