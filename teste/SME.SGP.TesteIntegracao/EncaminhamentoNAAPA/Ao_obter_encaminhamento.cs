@@ -30,6 +30,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery, IEnumerable<AbrangenciaTurmaRetorno>>), typeof(ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaItinerarioEnsinoMedioQuery, IEnumerable<TurmaItinerarioEnsinoMedioDto>>), typeof(ObterTurmaItinerarioEnsinoMedioQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery, string[]>), typeof(ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Obter encaminhamento NAAPA por Id")]
@@ -64,21 +66,21 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     AlunoCodigo = ALUNO_CODIGO_1,
                     Situacao = SituacaoNAAPA.Rascunho,
                     AlunoNome = "Nome do aluno 1",
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 
                 await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
                 {
                     EncaminhamentoNAAPAId = encaminhamentoNAAPAId,
                     SecaoEncaminhamentoNAAPAId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 
                 await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoId,
                     QuestaoId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 
                 var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
@@ -86,7 +88,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
                     Texto = dataQueixa.ToString("dd/MM/yyyy"),
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 QuestaoEncaminhamentoId++;
@@ -95,14 +97,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoId,
                     QuestaoId = 2,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = QuestaoEncaminhamentoId,
                     RespostaId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 encaminhamentoNAAPAId++;
                 encaminhamentoNAAPASecaoId++;

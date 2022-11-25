@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                 new TurmaItinerarioEnsinoMedioDto()
                 {
                     Serie = SERIE,
-                    Nome = NOME_SERIE
+                    Nome = NOME_SERIE,
                 }
             };
         }
