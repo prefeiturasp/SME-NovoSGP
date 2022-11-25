@@ -20,7 +20,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAEE.ServicosFake
             {
                 new AbrangenciaTurmaRetorno()
                 {
-                    Codigo = "1"
+                    Codigo = "1",
+                    Id = 1,
                 }
             };
         }

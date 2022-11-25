@@ -588,7 +588,7 @@
 
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
-
+        
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
@@ -675,6 +675,18 @@
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, OrdemSubMenu = 2,
             Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, EhInclusao = true, SubMenu = "Suporte")]
-        US_C = 234
+        US_C = 234,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhConsulta = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_C = 235,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhInclusao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_I = 236,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhExclusao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_E = 237,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhAlteracao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_A = 238,
     }
 }

@@ -69,7 +69,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<AcompanhamentoTurma> GerarAcompanhamentoTurma(AcompanhamentoTurmaDto dto)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(dto.TurmaId));
             if (turma == null)
                 throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
 
