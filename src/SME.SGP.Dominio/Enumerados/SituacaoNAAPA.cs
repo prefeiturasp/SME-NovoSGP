@@ -4,7 +4,7 @@ namespace SME.SGP.Dominio.Enumerados
 {
     public enum SituacaoNAAPA
     {
-        [Display(Name = "Em digitação")]
+        [Display(Name = "Rascunho")]
         Rascunho = 1
     }
 }
