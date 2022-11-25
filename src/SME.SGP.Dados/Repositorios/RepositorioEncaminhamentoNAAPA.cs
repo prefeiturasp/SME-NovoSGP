@@ -1,4 +1,5 @@
 using Dapper;
+using Minio.DataModel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -30,36 +31,12 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
 
-            var encaminhamentosNAAPA = await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros);
-            
-            var acompanhamentosAgrupados = encaminhamentosNAAPA.GroupBy(x => new 
-                {
-                    x.Id,  
-                    x.UeNome,
-                    x.TipoEscola,
-                    x.CodigoAluno,
-                    x.NomeAluno,
-                    x.Situacao,
-                }).ToList()
-                .Select(x => new EncaminhamentoNAAPAResumoDto
-                {
-                    Id = x.Key.Id,  
-                    UeNome = x.Key.UeNome,
-                    TipoEscola = x.Key.TipoEscola,
-                    CodigoAluno = x.Key.CodigoAluno,
-                    NomeAluno = x.Key.NomeAluno,
-                    Situacao = x.Key.Situacao,
-                    Prioridade = x.Any() && x.Any(a=> !string.IsNullOrEmpty(a.Prioridade)) 
-                        ? x.FirstOrDefault(a=> !string.IsNullOrEmpty(a.Prioridade)).Prioridade : null,
-                    DataAberturaQueixaInicio = x.Any() && x.Any(a=> a.DataAberturaQueixaInicio.HasValue) 
-                        ? x.FirstOrDefault(b=> b.DataAberturaQueixaInicio.HasValue).DataAberturaQueixaInicio.Value  : null,
-                })
-                .ToList();
-            
+            var encaminhamentosNAAPA = (await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList();
+                        
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
             {
-                Items = acompanhamentosAgrupados.ToList(),
-                TotalRegistros = acompanhamentosAgrupados.Count
+                Items = encaminhamentosNAAPA,
+                TotalRegistros = encaminhamentosNAAPA.Count()
             };
 
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
@@ -91,7 +68,7 @@ namespace SME.SGP.Dados.Repositorios
             ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
             
             if (!contador && (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue))
-                sql.AppendLine(" order by to_date(enr.texto,'yyyy-mm-dd') desc ");
+                sql.AppendLine(" order by qdata.DataAberturaQueixaInicio desc ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
@@ -99,7 +76,31 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterCabecalho(StringBuilder sql, bool contador)
         {
-            sql.AppendLine("select ");
+            var sqlSelect = @"with vw_resposta_data as (
+                        select ens.encaminhamento_naapa_id, 
+		                        case when enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio	
+                        from encaminhamento_naapa_secao ens   
+                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join questao q on enq.questao_id = q.id 
+                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
+                        left join opcao_resposta opr on opr.id = enr.resposta_id
+                        where q.ordem = 0 and secao.etapa = 1
+                        ),
+                        vw_resposta_prioridade as (
+                        select ens.encaminhamento_naapa_id, 
+		                        opr.nome as Prioridade,
+		                        enr.resposta_id  as PrioridadeId
+                        from encaminhamento_naapa_secao ens   
+                        join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                        join questao q on enq.questao_id = q.id 
+                        join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                        -  join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
+                        left join opcao_resposta opr on opr.id = enr.resposta_id
+                        where q.ordem = 1 and secao.etapa = 1
+                        )
+                        select ";
+            sql.AppendLine(sqlSelect);
             if (contador)
                 sql.AppendLine("count(np.id) ");
             else
@@ -110,19 +111,16 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_codigo as CodigoAluno
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
-                                ,case when q.nome = 'Prioridade' then opr.nome else null end Prioridade 
-                                ,case when q.nome = 'Data de entrada da queixa' and enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio 
+                                ,qdata.DataAberturaQueixaInicio
+                                ,qprioridade.Prioridade
                 ");
             }
 
             sql.AppendLine(@" from encaminhamento_naapa np              
                                 join turma t on t.id = np.turma_id
                                 join ue on t.ue_id = ue.id
-                                join encaminhamento_naapa_secao ens on np.id = ens.encaminhamento_naapa_id  
-                                join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id 
-                                join questao q on enq.questao_id = q.id 
-                                join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
-                                left join opcao_resposta opr on opr.id = enr.resposta_id
+                                left join vw_resposta_data qdata on qdata.encaminhamento_naapa_id = np.id
+                                left join vw_resposta_prioridade qprioridade on qprioridade.encaminhamento_naapa_id = np.id 
             ");
         }
 
@@ -146,17 +144,15 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and np.situacao = @situacao ");
             
             if (prioridade > 0)
-                sql.AppendLine(" and q.nome = 'Prioridade' and enr.resposta_id = @prioridade ");
+                sql.AppendLine(" and qPrioridade.PrioridadeId = @prioridade ");
 
             if (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue)
             {
-                sql.AppendLine(" and q.nome = 'Data de entrada da queixa' ");
-               
                 if (dataAberturaQueixaInicio.HasValue)
-                    sql.AppendLine(" and to_date(enr.texto,'yyyy-mm-dd') >= @dataAberturaQueixaInicio ");
+                    sql.AppendLine(" and qdata.DataAberturaQueixaInicio >= @dataAberturaQueixaInicio ");
                 
                 if (dataAberturaQueixaFim.HasValue)
-                    sql.AppendLine(" and to_date(enr.texto,'yyyy-mm-dd') <= @dataAberturaQueixaFim  ");
+                    sql.AppendLine(" and qdata.DataAberturaQueixaInicio <= @dataAberturaQueixaFim");
             }
         }
         
