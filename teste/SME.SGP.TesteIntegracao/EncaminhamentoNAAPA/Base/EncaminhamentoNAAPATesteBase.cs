@@ -671,7 +671,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected async Task CriarTurmaTipoCalendario(FiltroNAAPADto filtro)
         {
             await CriarTipoCalendario(filtro.TipoCalendario, filtro.ConsiderarAnoAnterior);
-            await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior);
+            await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior, tipoTurno:2);
         }
 
         protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)

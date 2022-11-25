@@ -354,7 +354,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = questaoEncaminhamentoNAAPAId,
-                    Texto = dataQueixa.ToString("dd/MM/yyyy"),
+                    Texto = dataQueixa.ToString("yyyy-MM-dd"),
                     CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 questaoEncaminhamentoNAAPAId++;
