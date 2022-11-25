@@ -14,6 +14,10 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEncaminhamentoNAAPA : RepositorioBase<EncaminhamentoNAAPA>, IRepositorioEncaminhamentoNAAPA
     {
+        public const int QUESTAO_DATA_QUEIXA_ORDEM = 0;
+        public const int QUESTAO_PRIORIDADE_ORDEM = 1;
+        public const int SECAO_ETAPA_1 = 1;
+
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
@@ -76,7 +80,7 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void ObterCabecalho(StringBuilder sql, bool contador)
         {
-            var sqlSelect = @"with vw_resposta_data as (
+            var sqlSelect = $@"with vw_resposta_data as (
                         select ens.encaminhamento_naapa_id, 
 		                        case when enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio	
                         from encaminhamento_naapa_secao ens   
@@ -85,7 +89,7 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = 0 and secao.etapa = 1
+                        where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} and secao.etapa = {SECAO_ETAPA_1}
                         ),
                         vw_resposta_prioridade as (
                         select ens.encaminhamento_naapa_id, 
@@ -95,9 +99,9 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
-                        -  join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
+                        join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = 1 and secao.etapa = 1
+                        where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1}
                         )
                         select ";
             sql.AppendLine(sqlSelect);
