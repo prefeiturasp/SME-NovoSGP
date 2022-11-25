@@ -115,7 +115,6 @@ namespace SME.SGP.Aplicacao
                 bimestreEdicao = recuperacaoParalelaPeriodo?.BimestreEdicao ?? 0;
 
             var somenteLeitura = bimestreEdicao != 0 && (periodoEscolarAtual == null || bimestreEdicao != periodoEscolarAtual.Bimestre);
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
 
             var recuperacaoRetorno = new RecuperacaoParalelaListagemDto
             {
