@@ -45,11 +45,10 @@ namespace SME.SGP.Auditoria.Worker
 
             services.AddHostedService<WorkerRabbitAuditoria>();
             
-            services.AddHealthChecksSgp()
-                .AddElasticSearchSgp()
-                .Builder();
+            services.AddHealthChecks()
+                .AddElasticSearchSgp();
             
-            services.AddHealthChecksUiSgp().Builder();
+            services.AddHealthChecksUiSgp();
         }
 
         private void RegistrarTelemetria(IServiceCollection services)

@@ -30,8 +30,8 @@ namespace SME.SGP.Avaliacao.Worker
             registrarDependencias.RegistrarCasoDeUsoAvaliacaoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAvaliacao>();
-            services.AddHealthChecksSgp().Builder();
-            services.AddHealthChecksUiSgp().Builder();            
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -121,11 +121,10 @@ namespace SME.SGP.Api
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-            services.AddHealthChecksSgp()
-                .AddNpgSqlSgp(Configuration)
+            services.AddHealthChecks()
+                .AddPostgreSqlSgp(Configuration)
                 .AddRedisSgp()
-                .AddRabbitMqSgp(Configuration)
-                .Builder();
+                .AddRabbitMqSgp(Configuration);
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
@@ -134,8 +133,7 @@ namespace SME.SGP.Api
             });
             
             services.AddHealthChecksUiSgp()
-                .AddPostgreSqlStorageSgp(Configuration)
-                .Builder();
+                .AddPostgreSqlStorageSgp(Configuration);
             
             services.AddCors();
             services.AddControllers();

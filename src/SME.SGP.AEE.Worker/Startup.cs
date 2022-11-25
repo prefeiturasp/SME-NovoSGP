@@ -30,8 +30,8 @@ namespace SME.SGP.AEE.Worker
             registrarDependencias.RegistrarCasoDeUsoAEERabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAEE>();
-            services.AddHealthChecksSgp().Builder();
-            services.AddHealthChecksUiSgp().Builder();
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

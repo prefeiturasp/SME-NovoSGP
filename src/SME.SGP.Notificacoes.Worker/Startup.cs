@@ -30,8 +30,8 @@ namespace SME.SGP.Notificacoes.Worker
             RegistrarHub(services);
 
             services.AddHostedService<WorkerRabbitNotificacao>();
-            services.AddHealthChecksSgp().Builder();
-            services.AddHealthChecksUiSgp().Builder();            
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();            
         }
 
         private void RegistrarHub(IServiceCollection services)

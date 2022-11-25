@@ -34,8 +34,8 @@ namespace SME.SGP.Notificacoes.Hub
             RegistrarEventosNotificacao(services);
             RegistrarAutenticacao(services);
             
-            services.AddHealthChecksSgp().Builder();
-            services.AddHealthChecksUiSgp().Builder();            
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();            
         }
 
         private void RegistrarAutenticacao(IServiceCollection services)
