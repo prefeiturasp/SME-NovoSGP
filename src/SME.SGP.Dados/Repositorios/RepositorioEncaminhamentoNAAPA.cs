@@ -24,6 +24,9 @@ namespace SME.SGP.Dados.Repositorios
             var query = MontaQueryCompleta(paginacao, dreId, codigoUe, nomeAluno, dataAberturaQueixaInicio, 
                 dataAberturaQueixaFim, situacao,prioridade , turmasIds);
 
+            if (!string.IsNullOrWhiteSpace(nomeAluno))
+                nomeAluno = $"%{nomeAluno.ToLower()}%";
+            
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
 
@@ -132,9 +135,9 @@ namespace SME.SGP.Dados.Repositorios
 
             if (!string.IsNullOrEmpty(codigoUe))
                 sql.AppendLine(@" and ue.ue_id = @codigoUe ");
-            
+
             if (!string.IsNullOrEmpty(nomeAluno))
-                sql.AppendLine(" and enp.aluno_nome = @nomeAluno ");
+                sql.AppendLine(" and lower(np.aluno_nome) like @nomeAluno ");
             
             if (turmasIds.Any())
                 sql.AppendLine(" and t.id = ANY(@turmasIds) ");

@@ -14,6 +14,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
     {
         protected const int NORMAL = 1;
         protected const int PRIORITARIA = 2;
+        protected const string NOME_ALUNO_1 = "Nome do aluno 1";
         public EncaminhamentoNAAPATesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
