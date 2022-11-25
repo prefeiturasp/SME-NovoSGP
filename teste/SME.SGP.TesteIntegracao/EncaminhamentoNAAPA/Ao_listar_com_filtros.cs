@@ -409,28 +409,28 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                     AlunoCodigo = ALUNO_CODIGO_1,
                     Situacao = SituacaoNAAPA.Rascunho,
                     AlunoNome = NOME_ALUNO_1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.EncaminhamentoNAAPASecao()
                 {
                     EncaminhamentoNAAPAId = encaminhamentoNAAPAId,
                     SecaoEncaminhamentoNAAPAId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.QuestaoEncaminhamentoNAAPA()
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoID,
                     QuestaoId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = questaoEncaminhamentoNAAPAId,
                     Texto = dataQueixa.ToString("yyyy-MM-dd"),
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 questaoEncaminhamentoNAAPAId++;
                 dataQueixa = dataQueixa.AddDays(i);
@@ -439,14 +439,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 {
                     EncaminhamentoNAAPASecaoId = encaminhamentoNAAPASecaoID,
                     QuestaoId = 2,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
 
                 await InserirNaBase(new Dominio.RespostaEncaminhamentoNAAPA()
                 {
                     QuestaoEncaminhamentoId = questaoEncaminhamentoNAAPAId,
                     RespostaId = 1,
-                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                    CriadoEm = DateTimeExtension.HorarioBrasilia(), CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
                 });
                 encaminhamentoNAAPASecaoID++;
                 questaoEncaminhamentoNAAPAId++;
