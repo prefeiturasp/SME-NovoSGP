@@ -42,13 +42,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 Perfil = ObterPerfilCP(),
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                Modalidade = Modalidade.Fundamental,
-                AnoTurma = "8",
-                DreId = 1,
-                CodigoUe = "1",
-                TurmaId = TURMA_ID_1,
-                Situacao = (int)SituacaoNAAPA.Rascunho,
-                Prioridade = NORMAL
+                Modalidade = Modalidade.Fundamental
             };
 
             await CriarDadosBase(filtroNAAPA);

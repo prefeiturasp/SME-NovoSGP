@@ -24,6 +24,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
         private const string NOME_TURMA_2 = "Turma Nome 2";
         private const int ID_UE = 1;
         private const string TIPO_TURNO_TARDE = "Tarde";
+        private const string TIPO_TURNO_INTERMEDIARIO = "Intermediário";
 
         public Ao_obter_aluno_por_codigo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -47,7 +48,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
             retorno.ShouldNotBeNull();
 
-            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_1, TIPO_TURNO_TARDE));
+            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_1, TIPO_TURNO_INTERMEDIARIO));
         }
 
         [Fact]
@@ -64,7 +65,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
             retorno.ShouldNotBeNull();
 
-            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_2, TIPO_TURNO_TARDE));
+            retorno.TurmaEscola.ShouldBe(ObterNomeTurma(NOME_TURMA_2, TIPO_TURNO_INTERMEDIARIO));
         }
 
         private async Task CriaTurma2()
