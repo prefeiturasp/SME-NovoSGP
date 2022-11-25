@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -45,7 +46,11 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId));
 
             if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            {
+                TipoTurno? tipoTurno = (TipoTurno)turma.TipoTurno;
+                var nomeTurno = tipoTurno != null ? $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}" : "";
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} {nomeTurno}";
+            }
 
             return turmaNome;
         }
