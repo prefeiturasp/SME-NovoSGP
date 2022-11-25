@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 
 namespace SME.SGP.Notificacoes.Hub
@@ -28,10 +29,13 @@ namespace SME.SGP.Notificacoes.Hub
             services.AddSignalR();
             services.ConfigurarTelemetria(Configuration);
             services.AddPolicies();
+            
             RegistrarCache(services);
             RegistrarEventosNotificacao(services);
-
             RegistrarAutenticacao(services);
+            
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();            
         }
 
         private void RegistrarAutenticacao(IServiceCollection services)
@@ -75,6 +79,8 @@ namespace SME.SGP.Notificacoes.Hub
         {
             app.UseElasticApm(Configuration,
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
             {

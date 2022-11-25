@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 
 namespace SME.SGP.Notificacoes.Worker
@@ -31,6 +30,8 @@ namespace SME.SGP.Notificacoes.Worker
             RegistrarHub(services);
 
             services.AddHostedService<WorkerRabbitNotificacao>();
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();            
         }
 
         private void RegistrarHub(IServiceCollection services)
@@ -47,6 +48,8 @@ namespace SME.SGP.Notificacoes.Worker
         {
             app.UseElasticApm(Configuration,
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
 
             if (env.IsDevelopment())
             {
