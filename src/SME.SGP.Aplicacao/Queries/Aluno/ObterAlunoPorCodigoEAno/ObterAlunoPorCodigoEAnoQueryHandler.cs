@@ -59,8 +59,12 @@ namespace SME.SGP.Aplicacao
 
             if (turma != null)
             {
-                TipoTurno? tipoTurno = (TipoTurno)turma.TipoTurno;
-                var nomeTurno = tipoTurno != null ? $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}" : "";
+                var nomeTurno = "";
+                if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))
+                {
+                    TipoTurnoEOL tipoTurno = (TipoTurnoEOL)turma.TipoTurno;
+                    nomeTurno = $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}";
+                }
                 turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} {nomeTurno}";
             }
 
