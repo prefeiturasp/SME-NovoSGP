@@ -47,7 +47,9 @@ namespace SME.SGP.Aplicacao
             await MontarTabelaEstudantes(estudantes, mensagem, turmas);
 
             mensagem.AppendLine();
-            mensagem.AppendLine("<br/>Você precisa validar este registro aceitando esta notificação para que o registro seja considerado válido.");
+            mensagem.AppendLine("<br/>Você precisa aceitar esta notificação para que o registro seja considerado válido.");
+            mensagem.AppendLine();
+            mensagem.AppendLine(await MontarMensagemCasoExistaAnexoOuNao(itineranciaId));
             mensagem.AppendLine();
             mensagem.AppendLine("<br/><br/>Clique no botão abaixo para fazer o download do arquivo.");
             mensagem.AppendLine();
@@ -85,6 +87,17 @@ namespace SME.SGP.Aplicacao
             return mensagem;
         }
 
+        private async Task<string> MontarMensagemCasoExistaAnexoOuNao(long itineranciaId)
+        {
+            var urlFront = configuration.GetSection("UrlFrontEnd").Value;
+            var totalDeAnexosNaItinerancia = await mediator.Send(new ObterQuantidadeDeAnexosNaItineranciaQuery(itineranciaId));
+            var mensagem = new StringBuilder();
+            if (totalDeAnexosNaItinerancia > 0)
+                mensagem.AppendLine(" OBS.: Esta itinerância contém anexos. ");
+
+            mensagem.AppendLine($" Consulte o registro de itinerância através deste <a href='{urlFront}aee/registro-itinerancia/editar/{itineranciaId}' target='_blank'/>link</a> ou clique no botão abaixo para fazer o download do relatório. ");
+            return mensagem.ToString();
+        }
         private async Task MontarTabelaEstudantes(IEnumerable<ItineranciaAlunoDto> estudantes, StringBuilder mensagem, List<Turma> turmas)
         {
             if (estudantes != null && estudantes.Any())
