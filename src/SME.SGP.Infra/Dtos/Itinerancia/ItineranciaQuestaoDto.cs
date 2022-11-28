@@ -14,7 +14,6 @@ namespace SME.SGP.Infra
 
         public long? ArquivoId { get; set; }
         public string ArquivoNome { get; set; }
-        public Guid ArquivoCodigo { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public bool? Obrigatorio { get; set; }
         public bool Excluido { get; set; } = false;
