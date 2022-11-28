@@ -49,9 +49,8 @@ namespace SME.SGP.Aplicacao
                     if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
                         {
-                            if  (!String.IsNullOrEmpty(questao.Resposta) 
-                                && ((questao.ArquivoId?? 0) == 0)
-                                && EnumExtension.EhUmDosValores(questao.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
+                            if (questao.QuestaoTipoUploadRespondida() &&
+                                questao.QuestaoSemArquivoId())
                             {
                                 var arquivoCodigo = Guid.Parse(questao.Resposta);
                                 questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
