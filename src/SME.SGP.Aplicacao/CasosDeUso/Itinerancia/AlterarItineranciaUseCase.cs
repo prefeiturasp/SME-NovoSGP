@@ -155,7 +155,20 @@ namespace SME.SGP.Aplicacao.Interfaces
 
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
-                    await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta,questao.ArquivoId));
+                {
+                    if (!questao.Excluido)
+                    {
+                        if (!String.IsNullOrEmpty(questao.Resposta)
+                                        && ((questao.ArquivoId ?? 0) == 0)
+                                        && EnumExtension.EhUmDosValores(questao.TipoQuestao, new Enum[] { TipoQuestao.Upload }))
+                        {
+                            var arquivoCodigo = Guid.Parse(questao.Resposta);
+                            questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+                        }
+
+                        await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                    }
+                }
 
             return true;
         }
