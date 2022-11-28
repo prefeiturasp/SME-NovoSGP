@@ -4,15 +4,8 @@ declare
 	periodo_db record;
 begin	
 	raise notice 'Iniciando validação frenquência geral bimestral';
-	raise notice 'Criando tabela';
-	DROP TABLE IF EXISTS public.frequencia_aluno_geral_inconsistencia;
-	CREATE TABLE public.frequencia_aluno_geral_inconsistencia (
-		id int8 NOT NULL GENERATED ALWAYS AS IDENTITY,
-		codigo_aluno VARCHAR(15) NOT NULL,
-		turma_id VARCHAR(15) NOT NULL,
-		bimestre int4 NOT null,
-		CONSTRAINT frequencia_aluno_geral_inconsistencia_pk PRIMARY KEY (id)
-	);
+	raise notice 'Limpando tabela';
+	TRUNCATE TABLE public.frequencia_aluno_geral_inconsistencia;
 	raise notice 'Iniciando carga das inconsistências';
 	for turma_db in 
 		select t.turma_id from turma t where ano_letivo = extract('Year' from now()) 
