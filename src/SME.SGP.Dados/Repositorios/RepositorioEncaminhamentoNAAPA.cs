@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var sqlSelect = $@"with vw_resposta_data as (
                         select ens.encaminhamento_naapa_id, 
-		                        case when enr.texto <> '' then to_date(enr.texto,'yyyy-mm-dd') else null end DataAberturaQueixaInicio	
+		                       enr.texto DataAberturaQueixaInicio	
                         from encaminhamento_naapa_secao ens   
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
@@ -115,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
                                 ,np.aluno_codigo as CodigoAluno
                                 ,np.aluno_nome as NomeAluno 
                                 ,np.situacao 
-                                ,qdata.DataAberturaQueixaInicio
+                                ,case when length(qdata.DataAberturaQueixaInicio) > 0 then to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') else null end DataAberturaQueixaInicio
                                 ,qprioridade.Prioridade
                 ");
             }
