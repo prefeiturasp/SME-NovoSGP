@@ -2,7 +2,7 @@ do $$
 declare
 	turma_db record;
 begin	
-	raise notice 'Iniciando validação frenquência mensal';
+	raise notice 'Iniciando validação frenquência geral mensal';
 	raise notice 'Criando tabela';
 	DROP TABLE IF EXISTS public.consolidacao_frequencia_aluno_mensal_inconsistencia;
 	CREATE TABLE public.consolidacao_frequencia_aluno_mensal_inconsistencia (
