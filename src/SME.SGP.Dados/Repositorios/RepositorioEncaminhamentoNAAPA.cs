@@ -153,10 +153,10 @@ namespace SME.SGP.Dados.Repositorios
             if (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue)
             {
                 if (dataAberturaQueixaInicio.HasValue)
-                    sql.AppendLine(" and qdata.DataAberturaQueixaInicio >= @dataAberturaQueixaInicio ");
+                    sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') >= @dataAberturaQueixaInicio ");
                 
                 if (dataAberturaQueixaFim.HasValue)
-                    sql.AppendLine(" and qdata.DataAberturaQueixaInicio <= @dataAberturaQueixaFim");
+                    sql.AppendLine(" and to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') <= @dataAberturaQueixaFim");
             }
         }
         
