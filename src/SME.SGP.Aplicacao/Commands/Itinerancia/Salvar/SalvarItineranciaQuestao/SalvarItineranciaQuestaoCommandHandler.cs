@@ -30,6 +30,7 @@ namespace SME.SGP.Aplicacao
             {
                 QuestaoId = request.QuestaoId,
                 ItineranciaId = request.ItineranciaId,
+                ArquivoId = request.ArquivoId,
                 Resposta = request.Resposta
             };
     }

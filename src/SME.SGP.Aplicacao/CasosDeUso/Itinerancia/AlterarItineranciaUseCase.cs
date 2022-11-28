@@ -155,7 +155,7 @@ namespace SME.SGP.Aplicacao.Interfaces
 
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
-                    await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
+                    await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta,questao.ArquivoId));
 
             return true;
         }
