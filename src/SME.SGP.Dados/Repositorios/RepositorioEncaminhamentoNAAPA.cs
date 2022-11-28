@@ -36,12 +36,6 @@ namespace SME.SGP.Dados.Repositorios
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
 
             var encaminhamentosNAAPA = (await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList();
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
-            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
 
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
             {
