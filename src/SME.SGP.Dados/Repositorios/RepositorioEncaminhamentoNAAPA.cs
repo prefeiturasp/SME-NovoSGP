@@ -36,13 +36,19 @@ namespace SME.SGP.Dados.Repositorios
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
 
             var encaminhamentosNAAPA = (await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList();
-                        
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+            encaminhamentosNAAPA.AddRange((await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList());
+
             var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
             {
-                Items = encaminhamentosNAAPA,
+                Items = encaminhamentosNAAPA.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros),
                 TotalRegistros = encaminhamentosNAAPA.Count()
             };
-
+            
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
