@@ -35,13 +35,13 @@ namespace SME.SGP.Dados.Repositorios
             var parametros = new { anoLetivo, codigoUe, dreId, nomeAluno,
                 turmasIds, situacao, prioridade, dataAberturaQueixaInicio, dataAberturaQueixaFim };
 
-            var encaminhamentosNAAPA = (await database.Conexao.QueryAsync<EncaminhamentoNAAPAResumoDto>(query, parametros)).ToList();
-                        
-            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>()
+            var retorno = new PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>();
+            
+            using (var encaminhamentosNAAPA = await database.Conexao.QueryMultipleAsync(query, parametros))
             {
-                Items = encaminhamentosNAAPA,
-                TotalRegistros = encaminhamentosNAAPA.Count()
-            };
+                retorno.Items = encaminhamentosNAAPA.Read<EncaminhamentoNAAPAResumoDto>();
+                retorno.TotalRegistros = encaminhamentosNAAPA.ReadFirst<int>();
+            }
 
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
