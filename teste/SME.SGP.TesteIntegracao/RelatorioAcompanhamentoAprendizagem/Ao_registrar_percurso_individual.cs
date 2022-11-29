@@ -248,7 +248,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
                 TurmaId = TURMA_ID_1, 
                 Semestre = PRIMEIRO_SEMESTRE, 
                 TextoSugerido = true,
-                PercursoIndividual = TEXTO_PADRAO_COM_3_IMAGENS,
+                PercursoIndividual = TEXTO_PADRAO_COM_4_IMAGENS,
                 AlunoCodigo = ALUNO_CODIGO_1
             };
             

@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Elastic.Apm.Api;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,10 +7,17 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.Frequencia.ServicosFakes;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
@@ -21,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
     public class Ao_lancar_nota_ano_anterior : NotaFechamentoBimestreTesteBase
     {
         private readonly DateTime DATA_18_04_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 04, 18);
-        
+
         public Ao_lancar_nota_ano_anterior(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -30,7 +34,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), 
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>),
                 typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery, IEnumerable<ComponenteCurricularEol>>),
@@ -41,9 +45,18 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>),
                 typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));
-            
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
+                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
+
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior), ServiceLifetime.Scoped));
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunosAnoAnterior), ServiceLifetime.Scoped));            
         }
 
         [Fact]
@@ -59,10 +72,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
             await CriarCiclo();
-            
+
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
-            
+
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
@@ -163,7 +176,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             fechamentoNota.ShouldNotBeNull();
 
             fechamentoNota.Bimestres.FirstOrDefault(c => c.Numero == BIMESTRE_3)!
-                .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();            
+                .Alunos.Any(c => c.NotasBimestre.Any(b => !b.EmAprovacao)).ShouldBeTrue();
         }
 
         [Fact]
@@ -196,7 +209,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         private async Task<NotasConceitosRetornoDto> ObterFechamentoNotaBimestre(FiltroFechamentoNotaDto filtroFechamentoNota)
         {
             var resultado = new NotasConceitosRetornoDto();
-            
+
             var periodosEscolares = ObterTodos<PeriodoEscolar>();
             var periodoEscolarId = periodosEscolares.FirstOrDefault(c => c.Bimestre == BIMESTRE_3)!.Id;
             var dataInicioTicks = periodosEscolares.FirstOrDefault((c => c.Bimestre == BIMESTRE_3))!.PeriodoInicio.Ticks;
@@ -211,10 +224,10 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 dataInicioTicks,
                 dataFimTicks,
                 periodoEscolarId);
-            
+
             var useCase = ServiceProvider.GetService<IObterNotasParaAvaliacoesUseCase>();
 
-            if (useCase != null) 
+            if (useCase != null)
                 resultado = await useCase.Executar(listaNotasConceitos);
 
             return await Task.FromResult(resultado);
@@ -229,14 +242,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosDurantePeriodoFechamento(long disciplinaId)
         {
             var alunosCodigos = new[] { CODIGO_ALUNO_5, CODIGO_ALUNO_6, CODIGO_ALUNO_7, CODIGO_ALUNO_8, CODIGO_ALUNO_9, CODIGO_ALUNO_10, CODIGO_ALUNO_11 };
-            return await LancarNotasAlunos(alunosCodigos, disciplinaId);            
+            return await LancarNotasAlunos(alunosCodigos, disciplinaId);
         }
-        
+
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunosInativosForaPeriodoFechamento(long disciplinaId)
         {
             var alunosCodigos = new[] { CODIGO_ALUNO_12, CODIGO_ALUNO_13 };
-            return await LancarNotasAlunos(alunosCodigos, disciplinaId);            
-        }        
+            return await LancarNotasAlunos(alunosCodigos, disciplinaId);
+        }
 
         private static async Task<List<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos(string[] alunosCodigos,
             long disciplinaId)
@@ -277,7 +290,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 }
             };
 
-            return await Task.FromResult(fechamentoTurma);            
+            return await Task.FromResult(fechamentoTurma);
         }
 
         private static async Task<ListaNotasConceitosDto> ObterListaNotasConceitos(int bimestre, long disciplinaCodigo,
@@ -319,6 +332,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 CriarPeriodoEscolar = criarPeriodoEscolar,
                 CriarPeriodoEscolarCustomizado = criarPeriodoEscolarCustomizado
             });
-        }        
+        }
     }
 }

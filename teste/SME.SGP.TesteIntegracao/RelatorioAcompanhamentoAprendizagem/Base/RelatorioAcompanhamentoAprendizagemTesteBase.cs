@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         protected const string TEXTO_PADRAO_APANHADO_GERAL = "<html><body>teste</body><html/>";
         protected const string TEXTO_PADRAO_PERCURSO_INDIVIDUAL = "<html><body>Texto padrão do percurso individual</body><html/>";
         protected const string TEXTO_PADRAO_COM_2_IMAGENS = "<html><body>Texto padrão com 2 imagens <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'></body><html/>";
-        protected const string TEXTO_PADRAO_COM_3_IMAGENS = "<html><body>Texto padrão com 3 imagens <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'></body><html/>";
+        protected const string TEXTO_PADRAO_COM_4_IMAGENS = "<html><body>Texto padrão com 4 imagens <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'> <img src='http://www.localhost.com.br/imagem.png'></body><html/>";
         
         protected const int PRIMEIRO_SEMESTRE = 1;
         protected const int SEGUNDO_SEMESTRE = 2;
