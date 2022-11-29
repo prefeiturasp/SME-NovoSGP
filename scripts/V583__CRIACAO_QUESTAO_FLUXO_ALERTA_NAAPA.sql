@@ -30,6 +30,6 @@ begin
 	update questao set opcionais = '{"desabilitarDataFutura":true}' where questionario_id = questionarioId and ordem = 0;
 	update questao set tamanho = 100 where questionario_id = questionarioId and ordem in (12,13);
 
-	update secao_encaminhamento_naapa set nome = 'Informações' where questionario_id = questionarioId and ordem = 0;
+	update secao_encaminhamento_naapa set nome = 'Informações' where questionario_id = questionarioId and ordem = 1;
 end $$
 	
