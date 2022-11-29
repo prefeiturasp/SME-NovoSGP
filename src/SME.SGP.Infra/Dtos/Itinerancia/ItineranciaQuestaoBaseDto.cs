@@ -9,5 +9,6 @@ namespace SME.SGP.Infra
         public int Ordem { get; set; }
         public TipoQuestionario Tipo { get; set; }
         public bool Obrigatorio { get; set; }
+        public TipoQuestao TipoQuestao { get; set; }
     }
 }

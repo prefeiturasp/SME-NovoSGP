@@ -84,7 +84,6 @@ namespace SME.SGP.Aplicacao
                     var tipo = tipos.FirstOrDefault(x => x.QuestaoId == questao.Id);
                     questao.TipoQuestao = tipo!.TipoQuestao;
                     questao.ArquivoId = tipo!.ArquivoId;
-                    questao.ArquivoCodigo = tipo!.ArquivoCodigo;
                     questao.ArquivoNome = tipo!.ArquivoNome;
                     questoesItinerancia.Add(questao);
                 }

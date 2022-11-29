@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Org.BouncyCastle.Ocsp;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -47,7 +48,16 @@ namespace SME.SGP.Aplicacao
 
                     if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
-                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta,questao.ArquivoId));
+                        {
+                            if (questao.QuestaoTipoUploadRespondida() &&
+                                questao.QuestaoSemArquivoId())
+                            {
+                                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+                            }
+
+                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                        }
                     unitOfWork.PersistirTransacao();
 
                     await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));

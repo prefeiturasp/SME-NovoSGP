@@ -45,7 +45,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<ItineranciaQuestaoBaseDto>> ObterItineranciaQuestaoBase(long[] tiposQuestionario)
         {
-            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio 
+            var query = @"select q.id, q.nome, q.ordem, q1.tipo, q.obrigatorio, q.tipo as tipoquestao 
                             from questao q
                            inner join questionario q1 on q1.id = q.questionario_id 
                            where q1.tipo = ANY(@tiposQuestionario)
@@ -222,19 +222,12 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(", i.data_visita as DataVisita ");
                 sql.AppendLine(", i.ue_id as UeId ");
                 sql.AppendLine(", i.situacao ");
-                sql.AppendLine(", q.tipo as TipoQuestao ");
-                sql.AppendLine(", a.id as ArquivoId ");
-                sql.AppendLine(", a.nome as ArquivoNome ");
-                sql.AppendLine(", a.codigo as ArquivoCodigo ");
                 sql.AppendLine(", i.criado_por||'('||i.criado_rf||')' as criado_por");
                 sql.AppendLine($", (select count(*) from itinerancia_aluno ia where ia.itinerancia_id = i.id ) as alunos ");
             }
 
             sql.AppendLine(" from itinerancia i ");
-            sql.AppendLine(@" inner join itinerancia_questao iq on i.id = iq.itinerancia_id 
-                              left join arquivo a on iq.arquivo_id = a.id 
-                              inner join questao q on iq.questao_id = q.id ");
-
+            
             if (dreId > 0 || ueId > 0)
             {
                 sql.AppendLine(@" inner join ue  on i.ue_id  = ue.id 

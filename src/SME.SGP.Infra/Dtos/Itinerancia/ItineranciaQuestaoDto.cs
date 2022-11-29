@@ -14,8 +14,19 @@ namespace SME.SGP.Infra
 
         public long? ArquivoId { get; set; }
         public string ArquivoNome { get; set; }
-        public Guid ArquivoCodigo { get; set; }
         public TipoQuestao TipoQuestao { get; set; }
         public bool? Obrigatorio { get; set; }
+        public bool Excluido { get; set; } = false;
+
+        public bool QuestaoTipoUploadRespondida()
+        {
+            return !String.IsNullOrEmpty(this.Resposta)
+                    && EnumExtension.EhUmDosValores(this.TipoQuestao, new Enum[] { TipoQuestao.Upload });
+        }
+
+        public bool QuestaoSemArquivoId()
+        {
+            return (this.ArquivoId ?? 0) == 0;
+        }
     }
 }
