@@ -11,10 +11,6 @@ namespace SME.SGP.Infra
         public int Alunos { get; set; }
         public long UeId { get; set; }
         public SituacaoItinerancia Situacao { get; set; }
-        public TipoQuestao TipoQuestao { get; set; }
-        public long ArquivoId { get; set; }
-        public string ArquivoNome { get; set; }
-        public Guid ArquivoCodigo { get; set; }
         public string CriadoPor { get; set; }
     }
 
