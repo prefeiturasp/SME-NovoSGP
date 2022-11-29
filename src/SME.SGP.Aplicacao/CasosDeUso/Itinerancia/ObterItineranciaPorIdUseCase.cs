@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Org.BouncyCastle.Utilities;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -37,7 +38,7 @@ namespace SME.SGP.Aplicacao
                 DataVisita = itinerancia.DataVisita,
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
-                Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
+                Questoes = await MontarQuestoesItinerancia(itinerancia, questoesBase),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
                 DreId = itinerancia.DreId,
                 UeId = itinerancia.UeId,
@@ -119,11 +120,13 @@ namespace SME.SGP.Aplicacao
              });
         }
 
-        private IEnumerable<ItineranciaQuestaoDto> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
-        {
-            var questoesItinerancia = itinerancia.Questoes.Select(questao =>
-            {
+        private async Task<IEnumerable<ItineranciaQuestaoDto>> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
+        {            
+            var tiposQuestoes = await mediator.Send(new ObterTipoDaQuestaoItineranciaQuery(itinerancia.Id));
+            var questoesItinerancia = itinerancia.Questoes.Select(questao => {
                 var questaoBase = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId);
+                var arquivo = (questaoBase?.TipoQuestao == TipoQuestao.Upload) ? tiposQuestoes.FirstOrDefault(x => x.QuestaoId == questao.Id) : null;
+
                 return new ItineranciaQuestaoDto
                 {
                     Id = questao.Id,
@@ -133,8 +136,8 @@ namespace SME.SGP.Aplicacao
                     Resposta = questao.Resposta,
                     Obrigatorio = questaoBase?.Obrigatorio,
                     TipoQuestao = (questaoBase?.TipoQuestao ?? TipoQuestao.Texto),
-                    ArquivoId = questaoBase?.ArquivoId,
-                    ArquivoNome = questaoBase?.ArquivoNome
+                    ArquivoId = arquivo?.ArquivoId,
+                    ArquivoNome = arquivo?.ArquivoNome
             };
             }).ToList();
 
