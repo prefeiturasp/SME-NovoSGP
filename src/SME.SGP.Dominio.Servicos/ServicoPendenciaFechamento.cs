@@ -73,7 +73,12 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(aula.TurmaId));
 
-                    Usuario professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
+                    var professor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.ProfessorRf);
+
+                    var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
+
+                    if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
+                        professor.Nome = usuarioCoreSSO.Nome;
 
                     mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                     mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
@@ -117,6 +122,8 @@ namespace SME.SGP.Dominio.Servicos
                 .Where(a => a.PermiteRegistroFrequencia())
                 .ToList();
 
+            var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(turmaCodigo);
+
             if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
@@ -150,7 +157,12 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                     {
                         var professor = usuariosPendencias
-                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p=> p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+
+                        var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
+
+                        if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
+                            professor.Nome = usuarioCoreSSO.Nome;
 
                         mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                         mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
@@ -171,6 +183,9 @@ namespace SME.SGP.Dominio.Servicos
             aulasSemFrequencia = registrosAulasSemFrequencia?.Count ?? 0;
             return aulasSemFrequencia;
         }
+
+        public async Task<IEnumerable<string>> RetornaProfessoresDaTurma(string codigoTurma)
+         => await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string>() { codigoTurma }));
 
         public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre, long turmaId)
         {
@@ -214,6 +229,11 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         var professor = usuariosPendencias
                             .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+
+                        var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
+
+                        if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
+                            professor.Nome = usuarioCoreSSO.Nome;
 
                         mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                         mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
@@ -274,6 +294,11 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         var professor = usuariosPendencias
                             .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
+
+                        var usuarioCoreSSO = await mediator.Send(new ObterUsuarioCoreSSOQuery(professor.CodigoRf));
+
+                        if (usuarioCoreSSO != null && usuarioCoreSSO.CodigoRf == professor.CodigoRf)
+                            professor.Nome = usuarioCoreSSO.Nome;
 
                         mensagem.AppendLine($"Professor {avaliacao.ProfessorRf} - {professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
                         mensagemHtml.Append($"<tr><td>{avaliacao.DataAvaliacao.ToString("dd/MM/yyyy")}</td><td>{avaliacao.NomeAvaliacao}</td><td>{professor.Nome} - {avaliacao.ProfessorRf}</td></tr>");

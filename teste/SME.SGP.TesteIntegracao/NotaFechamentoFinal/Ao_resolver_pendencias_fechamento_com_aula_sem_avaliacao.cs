@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.NotaFechamento.ServicosFakes;
+using SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
 {
@@ -24,6 +25,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaGeracaoPendenciasFechamentoCommand, bool>), typeof(IncluirFilaGeracaoPendenciasFechamentoCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessoresTurmaDisciplinaQuery, IEnumerable<ProfessorAtribuidoTurmaDisciplinaDTO>>), typeof(ProfessoresTurmaDisciplinaQueryHandlerFakeProfessorPortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioCoreSSOQuery, MeusDadosDto>), typeof(ObterUsuarioCoreSSOQueryFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDasTurmasQuery, IEnumerable<string>>), typeof(ObterProfessoresTitularesDasTurmasQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact]

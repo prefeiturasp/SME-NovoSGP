@@ -254,12 +254,10 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaFechamento.CodigoTurma));
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
             var alunosAtivos = from a in alunos
-                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) || !a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) && 
-                    !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && 
-                    a.DataSituacao >= periodoEscolar.PeriodoInicio
+                where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
                 orderby a.NomeValido(), a.NumeroAlunoChamada
                 select a;
 

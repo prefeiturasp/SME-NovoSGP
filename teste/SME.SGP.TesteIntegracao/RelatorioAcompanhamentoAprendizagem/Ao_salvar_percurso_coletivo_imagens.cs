@@ -63,7 +63,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             {
                 TurmaId = TURMA_ID_1,
                 Semestre = PRIMEIRO_SEMESTRE,
-                ApanhadoGeral = TEXTO_PADRAO_COM_3_IMAGENS
+                ApanhadoGeral = TEXTO_PADRAO_COM_4_IMAGENS
             };
             var ex = await Assert.ThrowsAsync<NegocioException>(() => useCase.Executar(dto));
             ex.ShouldNotBeNull();
