@@ -36,8 +36,6 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.DreId = dto.DreId;
             itinerancia.UeId = dto.UeId;
 
-            await ExcluirFilhosItinerancia(dto, itinerancia);
-
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
@@ -45,6 +43,8 @@ namespace SME.SGP.Aplicacao.Interfaces
                     var auditoriaDto = await mediator.Send(new AlterarItineranciaCommand(itinerancia));
                     if (auditoriaDto == null)
                         throw new NegocioException($"Não foi possível alterar a itinerância de Id {itinerancia.Id}");
+
+                    await ExcluirFilhosItinerancia(dto, itinerancia);
 
                     await SalvarFilhosItinerancia(dto, itinerancia);
 
