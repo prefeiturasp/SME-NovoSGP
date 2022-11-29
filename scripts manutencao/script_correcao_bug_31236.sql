@@ -1,1 +1,0 @@
-select setval('plano_anual_territorio_saber_id_seq', (select max(id) + 1 from plano_anual_territorio_saber));

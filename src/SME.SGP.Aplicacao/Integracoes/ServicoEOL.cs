@@ -989,8 +989,10 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
             var parametros = JsonConvert.SerializeObject(ids);
-
-            var url = $@"disciplinas/turma/{codigoTurma}";
+            
+            var url = @"disciplinas/turma/";
+            if (codigoTurma != null)
+                url += $"?codigoTurma={codigoTurma}";
             var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
