@@ -635,19 +635,30 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                bool ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
 
                 if (dadosUsuarioLogado.EhProfessorCj())
                 {
-                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
-                   
-                    if (obterAtribuicoesCJAtivas.Any())
+                    if (ehGestorEscolar)
                     {
-                        bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+                        var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId, new List<int>() { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                        bool ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
+                       
+                        if(ehFuncionarioGestorEscolarDaUe)
+                             return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }     
+                    else
+                    {
+                        var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
 
-                        if (possuiAtribuicaoNaUE)
-                            return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
-                    }
-                                
+                        if (obterAtribuicoesCJAtivas.Any())
+                        {
+                            bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                            if (possuiAtribuicaoNaUE)
+                                return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                        }
+                    }                       
                 }
                 
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
@@ -978,8 +989,10 @@ namespace SME.SGP.Aplicacao.Integracoes
         public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
             var parametros = JsonConvert.SerializeObject(ids);
-
-            var url = $@"disciplinas/turma/{codigoTurma}";
+            
+            var url = @"disciplinas/turma/";
+            if (codigoTurma != null)
+                url += $"?codigoTurma={codigoTurma}";
             var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
             
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
