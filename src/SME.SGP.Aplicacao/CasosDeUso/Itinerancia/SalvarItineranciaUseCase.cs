@@ -55,8 +55,8 @@ namespace SME.SGP.Aplicacao
                                 var arquivoCodigo = Guid.Parse(questao.Resposta);
                                 questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
                             }
-
-                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                            if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                                await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
                         }
                     unitOfWork.PersistirTransacao();
 

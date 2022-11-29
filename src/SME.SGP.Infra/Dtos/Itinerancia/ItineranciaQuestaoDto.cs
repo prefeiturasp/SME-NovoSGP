@@ -24,6 +24,11 @@ namespace SME.SGP.Infra
                     && EnumExtension.EhUmDosValores(this.TipoQuestao, new Enum[] { TipoQuestao.Upload });
         }
 
+        public bool QuestaoTipoTexto()
+        {
+            return EnumExtension.EhUmDosValores(this.TipoQuestao, new Enum[] { TipoQuestao.Texto });
+        }
+
         public bool QuestaoSemArquivoId()
         {
             return (this.ArquivoId ?? 0) == 0;
