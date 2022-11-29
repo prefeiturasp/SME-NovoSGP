@@ -172,7 +172,6 @@ namespace SME.SGP.Aplicacao
             long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre, bool consideraHistorico = false)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
-
             if (turma == null)
                 throw new NegocioException(MensagemNegocioTurma.TURMA_NAO_ENCONTRADA);
 
@@ -185,7 +184,8 @@ namespace SME.SGP.Aplicacao
             else if (bimestre > 0)
                 periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
 
-            var tipoCalendario = await repositorioTipoCalendario.BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
+            var tipoCalendario = await repositorioTipoCalendario
+                .BuscarPorAnoLetivoEModalidade(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre);
 
             if (tipoCalendario == null)
                 throw new NegocioException(MensagemNegocioTipoCalendario.TIPO_CALENDARIO_NAO_ENCONTRADO);
@@ -292,7 +292,6 @@ namespace SME.SGP.Aplicacao
                     turmasCodigos = new string[1] { turma.CodigoTurma };
                 else if (ValidaPossibilidadeMatricula2TurmasRegularesNovoEM(turmas, turma))
                     turmasCodigos = new string[1] { turma.CodigoTurma };
-
             }
 
             //Verificar as notas finais
@@ -315,12 +314,13 @@ namespace SME.SGP.Aplicacao
                     ? turmasCodigos
                     : new string[] { codigoTurma };
 
-                validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
+                if (alunoNaTurma != null)
+                    validaMatricula = !MatriculaIgualDataConclusaoAlunoTurma(alunoNaTurma);
 
-                var turmasCodigosFiltro = turmasCodigos;
-
-                turmasCodigosFiltro = turmasCodigosFiltro
-                .Concat(turmasCodigosEOL).Distinct().ToArray();
+                var turmasCodigosFiltro = turmasCodigos
+                    .Concat(turmasCodigosEOL.Where(t => t != null).ToArray())
+                    .Distinct()
+                    .ToArray();
 
                 notasFechamentoAluno = fechamentoTurma != null && fechamentoTurma.PeriodoEscolarId.HasValue ?
                     await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigosFiltro, alunoCodigo, bimestre, dadosAluno.DataMatricula, !dadosAluno.EstaInativo() ? periodoFim : dadosAluno.DataSituacao, anoLetivo)) :
@@ -353,21 +353,26 @@ namespace SME.SGP.Aplicacao
             var retorno = new ConselhoClasseAlunoNotasConceitosRetornoDto();
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
-            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) ?
+            var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) && alunoNaTurma != null ?
                 await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, bimestre) :
                 Enumerable.Empty<FrequenciaAluno>();
 
-            var registrosFrequencia = (turmasComMatriculasValidas.Contains(codigoTurma) ?
+            var registrosFrequencia = (turmasComMatriculasValidas.Contains(codigoTurma) && alunoNaTurma != null ?
                 await mediator.Send(new ObterFrequenciasRegistradasPorTurmasComponentesCurricularesQuery(alunoCodigo, turmasCodigos,
                     disciplinasCodigo.Select(d => d.ToString()).ToArray(), periodoEscolar?.Id)) :
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>()).ToList();
 
-            var gruposMatrizes = disciplinasDaTurma.Where(c => c.GrupoMatrizNome != null && c.LancaNota).OrderBy(d => d.GrupoMatrizId).GroupBy(c => c.GrupoMatrizId).ToList();
+            var gruposMatrizes = disciplinasDaTurma
+                .Where(c => c.GrupoMatrizNome != null && c.LancaNota)
+                .OrderBy(d => d.GrupoMatrizId)
+                .GroupBy(c => c.GrupoMatrizId)
+                .ToList();
 
             var permiteEdicao = (dadosAluno.EstaAtivo() && dadosAluno.DataMatricula.Date <= periodoFim) ||
-                                    (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date < periodoFim);
+                                (dadosAluno.EstaInativo() && dadosAluno.DataSituacao.Date < periodoFim);
 
-            var periodoMatricula = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula));
+            var periodoMatricula = alunoNaTurma != null ? await mediator
+                .Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, alunoNaTurma.DataMatricula)) : null;
 
             foreach (var grupoDisiplinasMatriz in gruposMatrizes)
             {
@@ -412,7 +417,7 @@ namespace SME.SGP.Aplicacao
                                 frequenciaAluno.TotalCompensacoes = totalCompensacoesAVerificar;
                                 frequenciaAluno.TotalPresencas = frequenciaAluno.TotalAulas - totalCompensacoesAVerificar;
                             }
-                        }   
+                        }
                         else
                         {
                             frequenciaAluno = new FrequenciaAluno
@@ -455,10 +460,10 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                if(conselhoClasseAlunoNotas.ComponentesCurriculares.Any())
+                if (conselhoClasseAlunoNotas.ComponentesCurriculares.Any())
                     conselhoClasseAlunoNotas.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
-                
-                if(conselhoClasseAlunoNotas.ComponenteRegencia != null)
+
+                if (conselhoClasseAlunoNotas.ComponenteRegencia != null)
                     conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares = conselhoClasseAlunoNotas.ComponenteRegencia.ComponentesCurriculares.OrderBy(c => c.Nome).ToList();
 
                 gruposMatrizesNotas.Add(conselhoClasseAlunoNotas);
