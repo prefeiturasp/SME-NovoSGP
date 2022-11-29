@@ -797,7 +797,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 1,
-                Ordem = 1,
+                Ordem = 0,
                 Nome = "Data de entrada da queixa",
                 SomenteLeitura = true,
                 Obrigatorio = true,
@@ -808,7 +808,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 1,
-                Ordem = 2,
+                Ordem = 1,
                 Nome = "Prioridade",
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
