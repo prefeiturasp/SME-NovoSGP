@@ -43,7 +43,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Ao_diminuir_quantidade_de_aula_a_frequencia_deve_ser_excluida()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2, DATA_02_05_INICIO_BIMESTRE_2, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_2);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3, DATA_25_07_INICIO_BIMESTRE_3, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), true, TIPO_CALENDARIO_1, false, QUANTIDADE_AULA_2);
             await CriarRegistrosConsolidacaoFrequenciaAlunoMensal();
             await CrieRegistroDeFrenquencia();
 

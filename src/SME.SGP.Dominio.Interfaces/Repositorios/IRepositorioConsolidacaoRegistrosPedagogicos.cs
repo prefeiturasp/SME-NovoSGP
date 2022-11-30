@@ -12,5 +12,7 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicos(long ueId, int anoLetivo);
         Task<IEnumerable<ConsolidacaoRegistrosPedagogicosDto>> GerarRegistrosPedagogicosComSeparacaoDiarioBordo(string turmaCodigo, int anoLetivo, long[] componentesCurricularesIds);
         Task<long> Inserir(ConsolidacaoRegistrosPedagogicos consolidacao);
+        Task AtualizarConsolidacaoRegistrosPedagogicos(long id, ConsolidacaoRegistrosPedagogicos consolidacao);
+        Task<long> ObterIdConsolidacaoRegistrosPedagogicos(long turmaId,long componenteCurricularId,long periodoEscolarId,int anoLetivo,string rfProfessor);
     }
 }

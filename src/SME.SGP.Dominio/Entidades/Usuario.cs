@@ -146,6 +146,9 @@ namespace SME.SGP.Dominio
             || EhAD()
             || EhDiretor();
 
+        public bool PossuiPerfilGestorEscolar()
+            => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR);
+
         private bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
@@ -199,6 +202,10 @@ namespace SME.SGP.Dominio
             possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaAtiva);
             if (possuiPerfilPrioritario)
                 return Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+
+            possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && PossuiPerfilAD() && !possuiTurmaAtiva;
+            if (possuiPerfilPrioritario)
+                return Dominio.Perfis.PERFIL_AD;
 
             possuiPerfilPrioritario = PossuiPerfilProfessor() && PossuiPerfilCJInfantil() && !possuiTurmaAtiva;
             if (possuiPerfilPrioritario)
@@ -314,6 +321,9 @@ namespace SME.SGP.Dominio
 
         public bool PossuiPerfilCJInfantil()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_CJ_INFANTIL);
+
+        public bool PossuiPerfilAD()
+           => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_AD);
 
         public bool PossuiPerfilProfessor()
            => Perfis != null && Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR);
