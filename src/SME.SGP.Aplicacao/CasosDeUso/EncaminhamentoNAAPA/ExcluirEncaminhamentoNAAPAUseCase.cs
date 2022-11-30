@@ -24,8 +24,6 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Rascunho)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
             
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
             return (await mediator.Send(new ExcluirEncaminhamentoNAAPACommand(encaminhamentoNAAPAId)));
         }
 
