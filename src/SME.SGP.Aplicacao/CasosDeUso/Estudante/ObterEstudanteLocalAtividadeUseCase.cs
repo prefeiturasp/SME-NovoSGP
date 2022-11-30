@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<AlunoLocalAtividadeDto>> Executar(string codigoAluno, int? anoLetivo,bool filtrarSituacaoMatricula, bool tipoTurma)
+        public async Task<IEnumerable<AlunoLocalAtividadeDto>> Executar(string codigoAluno, int? anoLetivo,bool filtrarSituacaoMatricula)
         {
-            var estudantes = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, filtrarSituacaoMatricula, tipoTurma));
+            var estudantes = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, filtrarSituacaoMatricula, false));
 
             var alunosLocaisAtividades = new List<AlunoLocalAtividadeDto>();
 
