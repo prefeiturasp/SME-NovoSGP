@@ -24,16 +24,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoNAAPA.Situacao != SituacaoNAAPA.Rascunho)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_NESSA_SITUACAO);
             
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            
-            if (usuarioLogado.EhGestorEscolar() || encaminhamentoNAAPA.CriadoRF.Equals(usuarioLogado.CodigoRf))
-            {
-                await mediator.Send(new ExcluirEncaminhamentoNAAPACommand(encaminhamentoNAAPAId));
-        
-                return true;
-            }
-            
-            throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_PODE_SER_EXCLUIDO_PELO_USUARIO_LOGADO);
+            return (await mediator.Send(new ExcluirEncaminhamentoNAAPACommand(encaminhamentoNAAPAId)));
         }
 
        
