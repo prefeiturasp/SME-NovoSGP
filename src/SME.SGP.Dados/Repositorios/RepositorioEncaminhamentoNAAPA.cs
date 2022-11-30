@@ -71,8 +71,8 @@ namespace SME.SGP.Dados.Repositorios
 
             ObterFiltro(sql, nomeAluno, dataAberturaQueixaInicio, dataAberturaQueixaFim,situacao, prioridade, turmasIds, codigoUe);
             
-            if (!contador && (dataAberturaQueixaInicio.HasValue || dataAberturaQueixaFim.HasValue))
-                sql.AppendLine(" order by qdata.DataAberturaQueixaInicio desc ");
+            if (!contador)
+                sql.AppendLine(" order by to_date(qdata.DataAberturaQueixaInicio,'yyyy-mm-dd') desc ");
 
             if (paginacao.QuantidadeRegistros > 0 && !contador)
                 sql.AppendLine($" OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY ");
