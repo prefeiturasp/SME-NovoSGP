@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Prometheus;
 
 namespace SME.SGP.Infra
 {
@@ -40,10 +41,9 @@ namespace SME.SGP.Infra
             return builder.AddCheck<ElasticSearchCheck>("Elastic Search");
         }
 
-        public static void UseHealthCheckPrometheusSgp(this IApplicationBuilder app)
+        public static IHealthChecksBuilder AddHealthCheckPrometheusSgp(this IHealthChecksBuilder builder)
         {
-            app.UseHealthChecksPrometheusExporter("/health-metrics",
-                options => options.ResultStatusCodes[HealthStatus.Unhealthy] = (int)HttpStatusCode.OK);
+            return builder.ForwardToPrometheus();
         }
 
         public static void UseHealthChecksSgp(this IApplicationBuilder app)

@@ -30,7 +30,10 @@ namespace SME.SGP.Notificacoes.Worker
             RegistrarHub(services);
 
             services.AddHostedService<WorkerRabbitNotificacao>();
-            services.AddHealthChecks();
+            
+            services.AddHealthChecks()
+                .AddHealthCheckPrometheusSgp();
+            
             services.AddHealthChecksUiSgp();            
         }
 
@@ -50,7 +53,6 @@ namespace SME.SGP.Notificacoes.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

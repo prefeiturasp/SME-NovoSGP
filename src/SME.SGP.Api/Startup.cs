@@ -87,7 +87,6 @@ namespace SME.SGP.Api
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -125,7 +124,8 @@ namespace SME.SGP.Api
             services.AddHealthChecks()
                 .AddPostgreSqlSgp(Configuration)
                 .AddRedisSgp()
-                .AddRabbitMqSgp(Configuration);
+                .AddRabbitMqSgp(Configuration)
+                .AddHealthCheckPrometheusSgp();
 
             services.Configure<RequestLocalizationOptions>(options =>
             {

@@ -30,7 +30,10 @@ namespace SME.SGP.AEE.Worker
             registrarDependencias.RegistrarCasoDeUsoAEERabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitAEE>();
-            services.AddHealthChecks();
+
+            services.AddHealthChecks()
+                .AddHealthCheckPrometheusSgp();
+
             services.AddHealthChecksUiSgp();
         }
 
@@ -42,7 +45,6 @@ namespace SME.SGP.AEE.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

@@ -46,7 +46,8 @@ namespace SME.SGP.Auditoria.Worker
             services.AddHostedService<WorkerRabbitAuditoria>();
             
             services.AddHealthChecks()
-                .AddElasticSearchSgp();
+                .AddElasticSearchSgp()
+                .AddHealthCheckPrometheusSgp();
             
             services.AddHealthChecksUiSgp();
         }
@@ -141,7 +142,6 @@ namespace SME.SGP.Auditoria.Worker
                 new HttpDiagnosticsSubscriber());
 
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();

@@ -29,7 +29,10 @@ namespace SME.SGP.Institucional.Worker
             registrarDependencias.RegistrarCasoDeUsoInstitucionalRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitInstitucional>();
-            services.AddHealthChecks();
+            
+            services.AddHealthChecks()
+                .AddHealthCheckPrometheusSgp();
+            
             services.AddHealthChecksUiSgp();
         }
 
@@ -41,7 +44,6 @@ namespace SME.SGP.Institucional.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
-            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {
