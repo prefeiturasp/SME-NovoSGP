@@ -215,19 +215,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 Valor = 2,
                 NumeroAula = 2,
                 AulaId = 1
-            });
-
-            await InserirNaBase(new RegistroFrequenciaAluno
-            {
-                Id = 2,
-                CodigoAluno = "1",
-                RegistroFrequenciaId = 1,
-                CriadoPor = "",
-                CriadoRF = "",
-                Valor = 2,
-                NumeroAula = 1,
-                AulaId = 1
-            });
+            });            
 
             var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
@@ -244,12 +232,11 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             frequencias.First(x => x.Tipo == TipoFrequenciaAluno.PorDisciplina).PercentualFrequencia.ShouldBe(50);
         }
 
-        //[Fact]
-        // TODO: Robson - Ajustar posteriormente este teste
+        [Fact]        
         public async Task Deve_gravar_50_de_percentual_de_frequencia_discplina_para_um_aluno_e_75_para_outro()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
-            await CriarItensBasicos();       
+            await CriarItensBasicos();
 
             await InserirNaBase(new Dominio.Aula
             {
@@ -261,7 +248,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 2
             });
 
@@ -275,7 +262,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 16),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 16),
                 Quantidade = 2
             });
 
@@ -314,11 +301,10 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 RegistroFrequenciaId = 1,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = 2,
+                Valor = 1,
                 NumeroAula = 2,
                 AulaId = 1
             });
-
 
             await InserirNaBase(new RegistroFrequenciaAluno
             {
@@ -327,7 +313,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 RegistroFrequenciaId = 2,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = 1,
+                Valor = 2,
                 NumeroAula = 1,
                 AulaId = 2
             });
@@ -392,11 +378,11 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 2
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
-            mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "2" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 16), "1", "1");
+            mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "2" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 16), "1", "1");
             jsonMensagem = JsonSerializer.Serialize(mensagem);
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
@@ -570,8 +556,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 
         }
 
-        //[Fact]
-        // TODO: Robson - Ajustar posteriormente este teste 
+        [Fact]        
         public async Task Deve_gravar_50_de_percentual_de_frequencia_para_um_aluno_com_presencial_e_remoto()
         {
             var useCase = ServiceProvider.GetService<ICalculoFrequenciaTurmaDisciplinaUseCase>();
@@ -588,7 +573,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TurmaId = "1",
                 ProfessorRf = "",
                 TipoCalendarioId = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15),
                 Quantidade = 4
             });
 
@@ -648,7 +633,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 AulaId = 1
             });
 
-            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 15), "1", "1");
+            var mensagem = new CalcularFrequenciaPorTurmaCommand(new List<string> { "1" }, new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 15), "1", "1");
             var jsonMensagem = JsonSerializer.Serialize(mensagem);
 
             await useCase.Executar(new MensagemRabbit(jsonMensagem));
@@ -696,7 +681,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 AnoLetivo = DateTime.Now.Year,
-                Situacao = true                
+                Situacao = true
             });
 
             await InserirNaBase(new PeriodoEscolar

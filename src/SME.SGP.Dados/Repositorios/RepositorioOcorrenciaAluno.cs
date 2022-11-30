@@ -60,7 +60,6 @@ namespace SME.SGP.Dados
             };
 
             await servicoAuditoria.Auditar(auditoria);
-
         }
         public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
         {
