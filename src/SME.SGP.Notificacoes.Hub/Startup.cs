@@ -81,6 +81,7 @@ namespace SME.SGP.Notificacoes.Hub
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

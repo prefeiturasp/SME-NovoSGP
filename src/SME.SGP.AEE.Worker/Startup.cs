@@ -42,6 +42,7 @@ namespace SME.SGP.AEE.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

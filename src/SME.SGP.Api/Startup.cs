@@ -87,6 +87,7 @@ namespace SME.SGP.Api
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
