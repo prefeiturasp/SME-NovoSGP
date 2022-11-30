@@ -6,7 +6,7 @@ namespace SME.SGP.Aplicacao.Interfaces
 {
     public interface IObterEstudanteLocalAtividadeUseCase 
     {
-        Task<IEnumerable<AlunoLocalAtividadeDto>> Executar(string codigoAluno, int? anoLetivo, bool filtrarSituacaoMatricula, bool tipoTurma);
+        Task<IEnumerable<AlunoLocalAtividadeDto>> Executar(string codigoAluno, int? anoLetivo, bool filtrarSituacaoMatricula);
     }
 }
 

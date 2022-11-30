@@ -117,9 +117,9 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<AlunoLocalAtividadeDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterLocalAtividadeAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteLocalAtividadeUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true, [FromQuery] bool tipoTurma = false)
+        public async Task<IActionResult> ObterLocalAtividadeAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteLocalAtividadeUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
         {
-            return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula, tipoTurma));
+            return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
         }
     }
 }
