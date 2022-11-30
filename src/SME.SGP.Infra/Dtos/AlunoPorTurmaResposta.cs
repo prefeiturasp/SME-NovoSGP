@@ -39,6 +39,7 @@ namespace SME.SGP.Infra
         public string CelularResponsavel { get; set; }
         public DateTime? DataAtualizacaoContato { get; set; }
         public string CodigoEscola { get; set; }
+        public int CodigoTipoTurma { get; set; }
 
         public bool Inativo
         {
