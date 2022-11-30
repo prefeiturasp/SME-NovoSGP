@@ -1,3 +1,4 @@
+using System.Net;
 using System.Web;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +38,12 @@ namespace SME.SGP.Infra
         public static IHealthChecksBuilder AddElasticSearchSgp(this IHealthChecksBuilder builder)
         {
             return builder.AddCheck<ElasticSearchCheck>("Elastic Search");
+        }
+
+        public static void UseHealthCheckPrometheusSgp(this IApplicationBuilder app)
+        {
+            app.UseHealthChecksPrometheusExporter("/health-metrics",
+                options => options.ResultStatusCodes[HealthStatus.Unhealthy] = (int)HttpStatusCode.OK);
         }
 
         public static void UseHealthChecksSgp(this IApplicationBuilder app)

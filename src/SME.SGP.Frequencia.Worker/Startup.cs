@@ -41,6 +41,7 @@ namespace SME.SGP.Frequencia.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

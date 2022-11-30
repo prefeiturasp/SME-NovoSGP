@@ -41,6 +41,7 @@ namespace SME.SGP.Pendencias.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {
