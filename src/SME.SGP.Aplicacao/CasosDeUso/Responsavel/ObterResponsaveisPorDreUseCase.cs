@@ -75,13 +75,16 @@ namespace SME.SGP.Aplicacao
                     {
                         var funcionariosEol = await mediator.Send(new ObterFuncionariosPorDreECargoQuery(dreCodigo, 29));
 
-                        foreach (var funcionario in funcionariosEol)
+                        if (funcionariosEol != null)
                         {
-                            listaResponsaveis.Add(new ResponsavelRetornoDto()
+                            foreach (var funcionario in funcionariosEol)
                             {
-                                CodigoRfOuLogin = funcionario.CodigoRf,
-                                NomeServidor = funcionario.NomeServidor
-                            });
+                                listaResponsaveis.Add(new ResponsavelRetornoDto()
+                                {
+                                    CodigoRfOuLogin = funcionario.CodigoRf,
+                                    NomeServidor = funcionario.NomeServidor
+                                });
+                            }
                         }
 
                         break;
@@ -100,13 +103,16 @@ namespace SME.SGP.Aplicacao
                         var funcionariosUnidades = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(dreCodigo,
                             new List<Guid> { perfil }))).ToList();
 
-                        foreach (var funcionario in funcionariosUnidades)
+                        if (funcionariosUnidades != null)
                         {
-                            listaResponsaveis.Add(new ResponsavelRetornoDto()
+                            foreach (var funcionario in funcionariosUnidades)
                             {
-                                CodigoRfOuLogin = funcionario.Login,
-                                NomeServidor = funcionario.NomeServidor
-                            });
+                                listaResponsaveis.Add(new ResponsavelRetornoDto()
+                                {
+                                    CodigoRfOuLogin = funcionario.Login,
+                                    NomeServidor = funcionario.NomeServidor
+                                });
+                            }
                         }
 
                         break;
@@ -114,14 +120,18 @@ namespace SME.SGP.Aplicacao
                 default:
                     var supervisoresEol = (await mediator.Send(new ObterSupervisoresPorDreEolQuery(dreCodigo))).ToList();
 
-                    foreach (var supervisor in supervisoresEol)
+                    if(supervisoresEol != null)
                     {
-                        listaResponsaveis.Add(new ResponsavelRetornoDto()
+                        foreach (var supervisor in supervisoresEol)
                         {
-                            CodigoRfOuLogin = supervisor.CodigoRf,
-                            NomeServidor = supervisor.NomeServidor
-                        });
+                            listaResponsaveis.Add(new ResponsavelRetornoDto()
+                            {
+                                CodigoRfOuLogin = supervisor.CodigoRf,
+                                NomeServidor = supervisor.NomeServidor
+                            });
+                        }
                     }
+                    
 
                     break;
             }
