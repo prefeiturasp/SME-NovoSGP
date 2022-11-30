@@ -34,9 +34,7 @@ namespace SME.SGP.Notificacoes.Hub
             RegistrarEventosNotificacao(services);
             RegistrarAutenticacao(services);
             
-            services.AddHealthChecks()
-                .AddHealthCheckPrometheusSgp();
-
+            services.AddHealthChecks();
             services.AddHealthChecksUiSgp();            
         }
 
@@ -83,6 +81,7 @@ namespace SME.SGP.Notificacoes.Hub
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

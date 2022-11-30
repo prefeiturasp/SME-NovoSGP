@@ -29,10 +29,7 @@ namespace SME.SGP.Frequencia.Worker
             registrarDependencias.RegistrarCasoDeUsoFrequenciaRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitFrequencia>();
-            
-            services.AddHealthChecks()
-                .AddHealthCheckPrometheusSgp();
-            
+            services.AddHealthChecks();
             services.AddHealthChecksUiSgp();
         }
 
@@ -44,6 +41,7 @@ namespace SME.SGP.Frequencia.Worker
                 new HttpDiagnosticsSubscriber());
             
             app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {
