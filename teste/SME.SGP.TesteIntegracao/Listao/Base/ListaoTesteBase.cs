@@ -224,7 +224,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 case BIMESTRE_1:
                 {
                     dataInicio = turmaHistorica ? DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR : DATA_03_01_INICIO_BIMESTRE_1;
-                    dataFim = turmaHistorica ? DATA_29_04_FIM_BIMESTRE_1_ANO_ANTERIOR : DATA_29_04_FIM_BIMESTRE_1;
+                    dataFim = turmaHistorica ? DATA_28_04_FIM_BIMESTRE_1_ANO_ANTERIOR : DATA_28_04_FIM_BIMESTRE_1;
                     break;
                 }
                 case BIMESTRE_2:

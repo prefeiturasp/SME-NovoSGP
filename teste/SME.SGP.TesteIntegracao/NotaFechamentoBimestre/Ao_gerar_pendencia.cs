@@ -5,6 +5,7 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using SME.SGP.TesteIntegracao.NotaFechamentoFinal.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
@@ -37,6 +38,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
+                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDasTurmasQuery, IEnumerable<string>>),
                 typeof(ObterProfessoresTitularesDasTurmasQueryHandlerFake), ServiceLifetime.Scoped));
@@ -76,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new FechamentoTurmaDisciplinaDto()
                 {
-                    Bimestre = 1,
+                    Bimestre = 3,
                     DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                     Justificativa = "Justificativa do teste de integração.",
                     TurmaId = TURMA_CODIGO_1 ,
@@ -84,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 }
             };
 
-            await CriarAula(DATA_29_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
+            await CriarAula(DATA_28_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), TIPO_CALENDARIO_1);
 
             await ExecutarTestePendencia(fechamentoTurmaDisciplinaDto);
         }

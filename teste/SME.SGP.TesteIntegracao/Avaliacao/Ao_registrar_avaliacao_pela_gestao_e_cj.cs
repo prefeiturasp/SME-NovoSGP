@@ -99,7 +99,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01, DATA_28_04, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2);
 

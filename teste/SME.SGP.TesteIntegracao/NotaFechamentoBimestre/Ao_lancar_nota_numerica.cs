@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes;
 using Xunit;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 {
@@ -34,7 +35,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));            
+                typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
+                typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
+                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         [Fact]
@@ -264,7 +271,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new FechamentoTurmaDisciplinaDto()
                 {
-                    Bimestre = BIMESTRE_1,
+                    Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplinaId,
                     Justificativa = "",
                     TurmaId = TURMA_CODIGO_1 ,
@@ -312,7 +319,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             {
                 new FechamentoTurmaDisciplinaDto()
                 {
-                    Bimestre = BIMESTRE_1,
+                    Bimestre = BIMESTRE_3,
                     DisciplinaId = disciplinaId,
                     Justificativa = "",
                     TurmaId = TURMA_CODIGO_1 ,
