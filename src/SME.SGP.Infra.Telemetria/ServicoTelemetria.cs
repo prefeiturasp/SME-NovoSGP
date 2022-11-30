@@ -146,17 +146,20 @@ namespace SME.SGP.Infra
             {
                 var transactionElk = Agent.Tracer.CurrentTransaction;
 
-                await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
+                if (transactionElk != null)
                 {
-                    span.SetLabel(telemetriaNome, telemetriaValor);
-                    span.SetLabel("Parametros", parametros);
-                    await acao();
-                });
+                    await transactionElk.CaptureSpan(telemetriaNome, acaoNome, async (span) =>
+                    {
+                        span.SetLabel(telemetriaNome, telemetriaValor);
+                        span.SetLabel("Parametros", parametros);
+                        await acao();
+                    });
+                }
+                else
+                    await acao();                
             }
             else
-            {
                 await acao();
-            }
 
             if (telemetriaOptions.ApplicationInsights)
             {
