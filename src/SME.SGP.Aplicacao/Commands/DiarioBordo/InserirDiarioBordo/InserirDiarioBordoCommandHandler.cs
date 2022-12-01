@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
 
             var diarioAulaComponente = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, request.ComponenteCurricularId);
             if (diarioAulaComponente != null)
-                throw new NegocioException("Já existe um diário cadastrado para a aula e componente selecionados!");
+                throw new NegocioException("Já existe um diário cadastrado para a aula e componente curricular selecionados!");
 
             if (usuario.EhProfessorCj())
             {
