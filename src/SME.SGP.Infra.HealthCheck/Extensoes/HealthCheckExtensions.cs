@@ -25,14 +25,25 @@ namespace SME.SGP.Infra
         public static IHealthChecksBuilder AddRabbitMqSgp(this IHealthChecksBuilder builder, IConfiguration configuration)
         {
             const string configurationSection = "ConfiguracaoRabbit";
+            return builder.AddRabbitMQ(ObterStringConexaoRabbit(configuration, configurationSection), name: "RabbitMQ",
+                failureStatus: HealthStatus.Unhealthy);
+        }
+        
+        public static IHealthChecksBuilder AddRabbitMqLogSgp(this IHealthChecksBuilder builder, IConfiguration configuration)
+        {
+            const string configurationSection = "ConfiguracaoRabbitLog";
+            return builder.AddRabbitMQ(ObterStringConexaoRabbit(configuration, configurationSection), name: "RabbitMQLog",
+                failureStatus: HealthStatus.Unhealthy);
+        }        
 
+        private static string ObterStringConexaoRabbit(IConfiguration configuration, string configurationSection)
+        {
             var userName = HttpUtility.UrlEncode(configuration.GetSection($"{configurationSection}:Username").Value);
             var password = HttpUtility.UrlEncode(configuration.GetSection($"{configurationSection}:Password").Value);
             var hostName = configuration.GetSection($"{configurationSection}:Hostname").Value;
             var vHost = HttpUtility.UrlEncode(configuration.GetSection($"{configurationSection}:Virtualhost").Value);
-
-            var connectionString = $"amqp://{userName}:{password}@{hostName}/{vHost}";
-            return builder.AddRabbitMQ(connectionString, name: "RabbitMQ", failureStatus: HealthStatus.Unhealthy);            
+            
+            return $"amqp://{userName}:{password}@{hostName}/{vHost}";
         }
 
         public static IHealthChecksBuilder AddElasticSearchSgp(this IHealthChecksBuilder builder)
