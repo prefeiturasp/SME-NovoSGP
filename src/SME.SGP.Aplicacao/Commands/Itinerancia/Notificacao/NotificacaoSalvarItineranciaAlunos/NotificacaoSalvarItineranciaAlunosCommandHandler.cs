@@ -62,7 +62,7 @@ namespace SME.SGP.Aplicacao
             }));
 
             if (codigoCorrelacao == Guid.Empty)
-                throw new NegocioException("Não foi possivel obter o relatório para a notificação do registro de itinerância");
+                throw new Exception("Não foi possivel obter o relatório para a notificação do registro de itinerância");
 
             mensagem.AppendLine($"<br/><br/><a href='{urlServidorRelatorios}api/v1/downloads/sgp/pdf/Itiner%C3%A2ncias.pdf/{codigoCorrelacao}' target='_blank' class='btn-baixar-relatorio'><i class='fas fa-arrow-down mr-2'></i>Download</a>");
 
@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
         private async Task<string> MontarMensagemCasoExistaAnexoOuNao(long itineranciaId)
         {
             var urlFront = configuration.GetSection("UrlFrontEnd").Value;
-            var totalDeAnexosNaItinerancia = await mediator.Send(new ObterQuantidadeDeAnexosNaItineranciaQuery(itineranciaId));
+            var totalDeAnexosNaItinerancia = (await mediator.Send(new ObterQuantidadeDeAnexosNaItineranciaQuery(itineranciaId)));
             var mensagem = new StringBuilder();
             if (totalDeAnexosNaItinerancia > 0)
                 mensagem.AppendLine(" OBS.: Esta itinerância contém anexos. ");
