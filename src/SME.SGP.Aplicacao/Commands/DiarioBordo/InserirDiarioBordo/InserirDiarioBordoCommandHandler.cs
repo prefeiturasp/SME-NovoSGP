@@ -38,8 +38,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Turma informada não encontrada");
 
             var diarioAulaComponente = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, request.ComponenteCurricularId);
-            if (diarioAulaComponente != null)
-                throw new NegocioException("Já existe um diário cadastrado para a aula e componente curricular selecionados!");
 
             if (usuario.EhProfessorCj())
             {
@@ -57,6 +55,9 @@ namespace SME.SGP.Aplicacao
 
             await MoverRemoverExcluidos(request);
             var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
+
+            if (diarioAulaComponente != null)
+                diarioBordo.Id = diarioAulaComponente.Id;
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
