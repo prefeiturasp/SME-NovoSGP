@@ -125,7 +125,8 @@ namespace SME.SGP.Api
             services.AddHealthChecks()
                 .AddPostgreSqlSgp(Configuration)
                 .AddRedisSgp()
-                .AddRabbitMqSgp(Configuration);
+                .AddRabbitMqSgp(Configuration)
+                .AddRabbitMqLogSgp(Configuration);
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
