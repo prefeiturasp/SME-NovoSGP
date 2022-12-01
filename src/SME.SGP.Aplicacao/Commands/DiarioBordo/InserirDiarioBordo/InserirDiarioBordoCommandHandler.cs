@@ -37,6 +37,10 @@ namespace SME.SGP.Aplicacao
             if (turma == null)
                 throw new NegocioException("Turma informada não encontrada");
 
+            var diarioAulaComponente = await repositorioDiarioBordo.ObterPorAulaId(request.AulaId, request.ComponenteCurricularId);
+            if (diarioAulaComponente != null)
+                throw new NegocioException("Já existe um diário cadastrado para a aula e componente selecionados!");
+
             if (usuario.EhProfessorCj())
             {
                 var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
