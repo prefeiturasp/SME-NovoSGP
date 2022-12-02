@@ -22,7 +22,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento (observação obrigatória não preenchida)")]
-        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_sem_observacao_obrigatoria()
+        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_consistir_observacao_obrigatoria_nao_preenchida()
         {
             var filtroNAAPA = new FiltroNAAPADto()
             {
@@ -108,7 +108,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento (observação obrigatória preenchida)")]
-        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_com_observacao_obrigatoria()
+        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_nao_consistir_observacao_obrigatoria_preenchida()
         {
             var filtroNAAPA = new FiltroNAAPADto()
             {
@@ -206,7 +206,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento (observação não obrigatória não preenchida)")]
-        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_sem_observacao_nao_obrigatoria()
+        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_nao_consistir_observacao_nao_obrigatoria_nao_preenchida()
         {
             var filtroNAAPA = new FiltroNAAPADto()
             {
