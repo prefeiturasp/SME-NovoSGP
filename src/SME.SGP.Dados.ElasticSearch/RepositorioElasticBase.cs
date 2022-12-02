@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Nest;
 using Newtonsoft.Json;
 using SME.Pedagogico.Interface;
 using SME.SGP.Infra;
+using SME.SGP.Infra.ElasticSearch;
 
 namespace SME.SGP.Dados.ElasticSearch
 {
@@ -14,11 +16,15 @@ namespace SME.SGP.Dados.ElasticSearch
         private const int QUANTIDADE_RETORNO = 200;
         private readonly IElasticClient _elasticClient;
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly ElasticOptions elasticOptions;
 
-        protected RepositorioElasticBase(IElasticClient elasticClient, IServicoTelemetria servicoTelemetria)
+        protected RepositorioElasticBase(IElasticClient elasticClient,
+                                         IServicoTelemetria servicoTelemetria,
+                                         IOptions<ElasticOptions> elasticOptions)
         {
             _elasticClient = elasticClient;
             this.servicoTelemetria = servicoTelemetria;
+            this.elasticOptions = elasticOptions.Value ?? throw new ArgumentNullException(nameof(elasticOptions));
         }
 
         public async Task<bool> ExisteAsync(string indice, string id, string nomeConsulta, object parametro = null)
@@ -130,13 +136,15 @@ namespace SME.SGP.Dados.ElasticSearch
             return response.Total;
         }
 
-        public virtual async Task<bool> InserirAsync(TEntidade entidade, string indice)
+        public virtual async Task<bool> InserirAsync(TEntidade entidade, string indice = "")
         {
+            var nomeIndice = ObterNomeIndice(indice);
+
             var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
-                     await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(indice)),
+                     await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(nomeIndice)),
                 "Elastic",
                 $"Insert {entidade.GetType().Name}",
-                indice,
+                nomeIndice,
                 JsonConvert.SerializeObject(entidade));
 
             if (!response.IsValid)
@@ -144,6 +152,9 @@ namespace SME.SGP.Dados.ElasticSearch
 
             return true;
         }
+
+        private string ObterNomeIndice(string indice = "")
+            => $"{elasticOptions.Prefixo}{indice ?? elasticOptions.IndicePadrao}";
 
         private List<TEntidade> ObtenhaInstancia()
         {
