@@ -235,7 +235,7 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async void ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(string secao, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
+        private async Task ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(string secao, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
             var questaoObservacoesAgrupamentoPromocaoCuidados = questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS) 
                                                                                            && !NaoNuloEContemRegistros(questao.Resposta)).FirstOrDefault();
@@ -282,7 +282,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var secao in secoesEtapa)
             {
-                var secaoPresenteDto = encaminhamentoNAAPADto.Secoes.Where(w => secoesEtapa.Any(s => s.Id == w.SecaoId)).FirstOrDefault();
+                var secaoPresenteDto = encaminhamentoNAAPADto.Secoes.Where(secaoDto => secaoDto.SecaoId == secao.Id).FirstOrDefault();
                 if (secaoPresenteDto != null && secaoPresenteDto.Questoes.Any())
                 {
                     respostasEncaminhamento = secaoPresenteDto.Questoes
@@ -310,7 +310,7 @@ namespace SME.SGP.Aplicacao
                         })));
 
                 if (secao.NomeComponente == SECAO_QUESTOES_APRESENTADAS)
-                    ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao.Nome, questoes, questoesObrigatoriasNaorespondidas);
+                    await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao.Nome, questoes, questoesObrigatoriasNaorespondidas);
                 
                 if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
                 ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);

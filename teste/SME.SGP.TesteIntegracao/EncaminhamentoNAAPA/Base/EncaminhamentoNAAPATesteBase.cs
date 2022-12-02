@@ -16,6 +16,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const int PRIORITARIA = 2;
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
         protected const  long ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = 3;
+        protected const long ID_QUESTAO_PRIORIDADE = 2;
+        protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
         protected const long ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_QUESTAO_TIPO_DOENCA_CRONICA = 5;
         protected const long ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA = 4;
@@ -56,6 +58,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 1,
                 Nome = "Informações do Estudante",
+                NomeComponente = "INFORMACOES_ESTUDANTE",
                 Etapa = 1,Ordem = 1,
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
             });
@@ -63,6 +66,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 2,
                 Nome = "Questões apresentadas",
+                NomeComponente = "QUESTOES_APRESENTADAS_INFANTIL",
                 Etapa = 1,
                 Ordem = 2,
                 CriadoPor = SISTEMA_NOME,
@@ -134,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 1
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 1,
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
                 Ordem = 1,
                 Nome = "Normal",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
@@ -143,7 +147,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             //id 2
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 2,
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
                 Ordem = 2,
                 Nome = "Prioritária",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
