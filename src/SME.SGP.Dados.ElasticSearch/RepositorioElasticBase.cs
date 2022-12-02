@@ -154,7 +154,13 @@ namespace SME.SGP.Dados.ElasticSearch
         }
 
         private string ObterNomeIndice(string indice = "")
-            => $"{elasticOptions.Prefixo}{indice ?? elasticOptions.IndicePadrao}";
+        {
+            var nomeIndice = string.IsNullOrEmpty(indice) ? 
+                elasticOptions.IndicePadrao : 
+                indice;
+
+            return $"{elasticOptions.Prefixo}{nomeIndice}";
+        }
 
         private List<TEntidade> ObtenhaInstancia()
         {

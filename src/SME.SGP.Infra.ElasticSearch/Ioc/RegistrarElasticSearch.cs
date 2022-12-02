@@ -14,14 +14,14 @@ namespace SME.SGP.Infra.ElasticSearch
             if (configuration == null)
                 return;
 
+            var configElastic = configuration.GetSection(ElasticOptions.Secao);
             services.AddOptions<ElasticOptions>()
-                .Bind(configuration.GetSection(ElasticOptions.Secao), c => c.BindNonPublicProperties = true);
+                .Bind(configElastic, c => c.BindNonPublicProperties = true);
 
             services.AddSingleton<ElasticOptions>();
 
             var nodes = new List<Uri>();
-            // TODO Carregar variavel
-            var elasticOptions = new ElasticOptions();
+            var elasticOptions = configElastic.Get<ElasticOptions>();
             if (elasticOptions.Urls.Contains(','))
             {
                 string[] urls = elasticOptions.Urls.Split(',');
