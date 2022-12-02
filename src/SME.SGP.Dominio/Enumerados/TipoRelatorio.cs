@@ -122,6 +122,9 @@ namespace SME.SGP.Dominio
         FrequenciaMensal = 40,
         
         [Display(Name = "relatorios/planoaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
-        PlanoAee = 41,        
+        PlanoAee = 41,
+        
+        [Display(Name = "relatorios/planosaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
+        RelatorioPlanosAee = 42, 
     }
 }
