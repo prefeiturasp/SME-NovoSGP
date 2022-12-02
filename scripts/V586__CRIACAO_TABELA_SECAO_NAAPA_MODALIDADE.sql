@@ -18,3 +18,4 @@ CREATE table public.secao_encaminhamento_naapa_modalidade (
 CREATE INDEX secao_encaminhamento_naapa_modalidade_secao_idx ON public.secao_encaminhamento_naapa_modalidade USING btree (secao_encaminhamento_id);
 ALTER TABLE public.secao_encaminhamento_naapa_modalidade ADD CONSTRAINT secao_encaminhamento_naapa_modalidade_secao_fk FOREIGN KEY (secao_encaminhamento_id) REFERENCES secao_encaminhamento_naapa(id);
 
+CREATE INDEX secao_encaminhamento_naapa_modalidade_codigo_idx ON public.secao_encaminhamento_naapa_modalidade USING btree (modalidade_codigo);
