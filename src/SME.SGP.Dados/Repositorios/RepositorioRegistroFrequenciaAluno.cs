@@ -164,7 +164,7 @@ namespace SME.SGP.Dados
                         	 tmp.codigo_aluno,
                         	 tmp.disciplina_id;";
 
-            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId });
+            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
         }
     }
 }
