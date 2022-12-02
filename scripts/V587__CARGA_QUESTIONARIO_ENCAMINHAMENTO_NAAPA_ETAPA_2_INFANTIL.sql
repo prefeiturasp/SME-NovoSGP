@@ -2,6 +2,7 @@ do $$
 declare 
 	questionarioId bigint;
 	questaoId bigint;
+	secaoId bigint;
 	questaoComplementar_adoececomfrequenciaId bigint;
 	questaoComplementar_doencacronicaId bigint;
 	opcaoresposta_adoececomfrequencia bigint;
@@ -20,8 +21,13 @@ begin
 	insert into questionario (nome, excluido, criado_em, criado_por, criado_rf, tipo)
 		values ('Questionário Encaminhamento NAAPA Etapa 1 Seção 2 - Infantil', false, NOW(), 'SISTEMA', '0', 5)
 		RETURNING id INTO questionarioId;
-	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, modalidade_codigo, nome_componente, criado_em, criado_por, criado_rf)
-		values(questionarioId, 'Questões apresentadas', 1, 2, 1, 'QUESTOES_APRESENTADAS_INFANTIL',NOW(), 'SISTEMA', '0');
+	
+	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, nome_componente, criado_em, criado_por, criado_rf)
+		values(questionarioId, 'Questões apresentadas', 1, 2, 'QUESTOES_APRESENTADAS_INFANTIL',NOW(), 'SISTEMA', '0')
+	RETURNING id INTO secaoId;
+	
+	insert into secao_encaminhamento_naapa_modalidade (secao_encaminhamento_id, modalidade_codigo, criado_em, criado_por, criado_rf)
+		values(secaoId, 1 ,NOW(), 'SISTEMA', '0');
 
 	--Questões no agrupamento desenvolvimento
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
