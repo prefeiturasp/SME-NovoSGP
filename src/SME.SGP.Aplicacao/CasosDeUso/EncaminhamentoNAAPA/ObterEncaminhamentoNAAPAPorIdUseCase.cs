@@ -4,6 +4,7 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
@@ -46,7 +47,9 @@ namespace SME.SGP.Aplicacao
                 TurmaNome = encaminhamentoNAAPA.Turma.Nome,
                 
                 AnoLetivo = encaminhamentoNAAPA.Turma.AnoLetivo,
-                Situacao = (int)encaminhamentoNAAPA.Situacao
+                Situacao = (int)encaminhamentoNAAPA.Situacao,
+                DescricaoSituacao = encaminhamentoNAAPA.Situacao.Name(),
+                Modalidade = (int)encaminhamentoNAAPA.Turma.ModalidadeCodigo
             };
         }
     }
