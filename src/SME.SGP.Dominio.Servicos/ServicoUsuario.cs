@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
         {
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
-            
+
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
-            
+
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio
             var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
-            
+
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
@@ -161,7 +161,7 @@ namespace SME.SGP.Dominio
 
             codigoRf = eNumero ? codigoRf : null;
 
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
 
             if (usuario != null)
             {
@@ -177,7 +177,7 @@ namespace SME.SGP.Dominio
             }
 
             if (string.IsNullOrEmpty(login))
-                login = codigoRf;                     
+                login = codigoRf;
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
@@ -272,7 +272,7 @@ namespace SME.SGP.Dominio
             if (retornoEol == null)
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
-          
+
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);
@@ -301,11 +301,18 @@ namespace SME.SGP.Dominio
 
         private bool AtualizouNomeDoUsuario(Usuario usuario, string nome)
         {
-            if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
+            if (!string.IsNullOrEmpty(nome))
             {
-                usuario.Nome = nome;
-
-                return true;
+                if (string.IsNullOrEmpty(usuario.Nome))
+                {
+                    usuario.Nome = nome;
+                    return true;
+                }
+                else if (!usuario.Nome.Equals(nome))
+                {
+                    usuario.Nome = nome;
+                    return true;
+                }
             }
 
             return false;
