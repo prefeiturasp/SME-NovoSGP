@@ -304,7 +304,11 @@ namespace SME.SGP.Dominio
             if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
             {
                 usuario.Nome = nome;
-
+                return true;
+            }
+            else if (!usuario.Nome.Equals(nome))
+            {
+                usuario.Nome = nome;
                 return true;
             }
 
