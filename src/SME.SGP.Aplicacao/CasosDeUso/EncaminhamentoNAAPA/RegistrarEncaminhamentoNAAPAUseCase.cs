@@ -47,9 +47,7 @@ namespace SME.SGP.Aplicacao
             if (encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
                 await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto);
 
-            //if  (encaminhamentoNAAPADto.Secoes.Any(s => s.Concluido == false))
-
-                if (encaminhamentoNAAPADto.Id.GetValueOrDefault() > 0)
+            if (encaminhamentoNAAPADto.Id.GetValueOrDefault() > 0)
             {
                 var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.GetValueOrDefault()));
                 if (encaminhamentoNAAPA != null)
@@ -210,14 +208,14 @@ namespace SME.SGP.Aplicacao
             return questao.Obrigatorio &&
                     !NaoNuloEContemRegistros(questao.Resposta);
         }
-        private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
+        private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasAConsistir)
         {
             foreach (var questao in questoes)
             {
                 var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
-                    questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
+                    questoesObrigatoriasAConsistir.Add(new { Secao = secao, Ordem = ordem });
                 }
                 else
                 if (NaoNuloEContemRegistros(questao.OpcaoResposta) 
@@ -228,7 +226,7 @@ namespace SME.SGP.Aplicacao
                         var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
                         if (opcao != null && opcao.QuestoesComplementares.Any())
                         {
-                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasAConsistir);
                         }
                     }
                 }
@@ -237,39 +235,63 @@ namespace SME.SGP.Aplicacao
 
         private async Task ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(string secao, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
         {
-            var questaoObservacoesAgrupamentoPromocaoCuidados = questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS) 
-                                                                                           && !NaoNuloEContemRegistros(questao.Resposta)).FirstOrDefault();
-            if (questaoObservacoesAgrupamentoPromocaoCuidados != null)
+            var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
+            if (questaoObservacoes != null)
             {
-                var questaoAgrupamentoPromocaoCuidados = questoes.Where(questao => (questao.NomeComponente == QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS)).FirstOrDefault();
-                var questoesComplementares = questaoAgrupamentoPromocaoCuidados.OpcaoResposta.SelectMany(opcao => opcao.QuestoesComplementares)
-                                                  .Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS
-                                                                                || questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).Distinct();
-
-                var questaoAdoeceComFrequencia = questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS).FirstOrDefault();
-                var questaoDoencaCronica = questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
+                var questaoAgrupamentoPromocaoCuidados = ObterQuestaoAgrupamentoPromocaoCuidados(questoes);
+                var questoesComplementares = ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(questaoAgrupamentoPromocaoCuidados);
+                var questaoAdoeceComFrequencia = ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(questoesComplementares);
+                var questaoDoencaCronica = ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(questoesComplementares);
 
                 if (questaoAdoeceComFrequencia != null)
                 {
                     var opcaoOutras_QuestaoAdoeceComFrequencia = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoAdoeceComFrequencia.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
                     if (questaoAdoeceComFrequencia.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoAdoeceComFrequencia.Id))
-                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoesAgrupamentoPromocaoCuidados.Ordem });
+                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
                 }
+
                 if (questaoDoencaCronica != null)
                 { 
                     var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
                     if (questaoDoencaCronica.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoDoencaCronica.Id))
-                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoesAgrupamentoPromocaoCuidados.Ordem });
+                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
                 }
                 
             }
+        }
+        private QuestaoDto ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(IEnumerable<QuestaoDto> questoes)
+        {
+            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS)
+                                              && !NaoNuloEContemRegistros(questao.Resposta)).FirstOrDefault();
+        }
+
+        private QuestaoDto ObterQuestaoAgrupamentoPromocaoCuidados(IEnumerable<QuestaoDto> questoes)
+        {
+            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS)).FirstOrDefault();
+        }
+
+        private IEnumerable<QuestaoDto> ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(QuestaoDto questaoAgrupamentoPromocaoCuidados)
+        {
+            return questaoAgrupamentoPromocaoCuidados.OpcaoResposta.SelectMany(opcao => opcao.QuestoesComplementares)
+                                                  .Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS
+                                                                                || questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).Distinct();
+        }
+
+        private QuestaoDto ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(IEnumerable<QuestaoDto> questoesComplementares)
+        {
+            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS).FirstOrDefault();
+        }
+
+        private QuestaoDto ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(IEnumerable<QuestaoDto> questoesComplementares)
+        {
+            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
         }
 
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto)
         {
 
             var secoesEtapa = await this.mediator.Send(new ObterSecoesEncaminhamentoNAAPADtoPorEtapaQuery(1));
-            var questoesObrigatoriasNaorespondidas = new List<dynamic>();
+            var questoesObrigatoriasAConsistir = new List<dynamic>();
             var respostasEncaminhamento = Enumerable.Empty<EncaminhamentoNAAPASecaoQuestaoDto>();
 
             var respostasPersistidas = (encaminhamentoNAAPADto.Id.HasValue) ? (await mediator.Send(new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.Value)))
@@ -310,18 +332,18 @@ namespace SME.SGP.Aplicacao
                         })));
 
                 if (secao.NomeComponente == SECAO_QUESTOES_APRESENTADAS)
-                    await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao.Nome, questoes, questoesObrigatoriasNaorespondidas);
+                    await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao.Nome, questoes, questoesObrigatoriasAConsistir);
                 
                 if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
-                ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);
+                ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasAConsistir);
 
 
             }
             
-            if (questoesObrigatoriasNaorespondidas.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
+            if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
             {
                 var mensagem = new List<string>();
-                foreach (var secao in questoesObrigatoriasNaorespondidas.GroupBy(questao => questao.Secao))
+                foreach (var secao in questoesObrigatoriasAConsistir.GroupBy(questao => questao.Secao))
                 {
                     mensagem.Add($"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]");
                 }
