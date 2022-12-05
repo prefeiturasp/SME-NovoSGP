@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
     public class ObterDadosTurmaEolPorCodigoQuery : IRequest<DadosTurmaEolDto>
     {
         public ObterDadosTurmaEolPorCodigoQuery(string codigoTurma)
-        {
+        {//
             CodigoTurma = codigoTurma;
         }
 
