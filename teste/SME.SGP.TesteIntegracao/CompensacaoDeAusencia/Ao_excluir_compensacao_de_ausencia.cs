@@ -52,9 +52,6 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             var comando = ServiceProvider.GetService<IComandosCompensacaoAusencia>();
             var listaIds = new long[] { COMPENSACAO_AUSENCIA_ID_1 };
 
-            var aulas = ObterTodos<Dominio.Aula>();
-            var frequencias = ObterTodos<RegistroFrequenciaAluno>();
-
             await comando.Excluir(listaIds);
 
             var listaDeCompensacaoAusencia = ObterTodos<CompensacaoAusencia>();
