@@ -173,7 +173,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                             new ()
                             {
                                 QuestaoId = ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS,
-                                Resposta = "Observações preenchidas para [Adoece com frequência sem receber cuidados médicos] e [Doença crônica ou em tratamento de longa duração]",
+                                Resposta = "Observações preenchidas para [Adoece com frequência sem receber cuidados médicos] e [Doença crônica ou em tratamento de longa duração] ",
                                 TipoQuestao = TipoQuestao.Texto,
 
                             }
