@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,11 +25,11 @@ namespace SME.SGP.Dados
             await database.Conexao.ExecuteScalarAsync(query, new { id });
         }
 
-        public async Task<WFAprovacaoParecerConclusivo> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId)
+        public async Task<IEnumerable<WFAprovacaoParecerConclusivo>> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId)
         {
             var query = @"select * from wf_aprovacao_parecer_conclusivo where conselho_classe_aluno_id = @conselhoClasseAlunoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoParecerConclusivo>(query, new { conselhoClasseAlunoId });
+            return await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo>(query, new { conselhoClasseAlunoId });
         }
 
         public async Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId)
