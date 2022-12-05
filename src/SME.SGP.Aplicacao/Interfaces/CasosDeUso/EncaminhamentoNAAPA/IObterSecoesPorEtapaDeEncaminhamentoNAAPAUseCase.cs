@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase
     {
-        Task<IEnumerable<SecaoQuestionarioDto>> Executar(long encaminhamentoNAAPAId);
+        Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesPorEtapaDeEncaminhamento filtro);
     }
 }

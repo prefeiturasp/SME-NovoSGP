@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -32,23 +33,28 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas, encaminhamentoNAAPAId });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorEtapa(List<int> etapas, long encaminhamentoNAAPAId = 0)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorEtapa(List<int> etapas, long encaminhamentoNAAPAId = 0, int modalidade = 0)
         {
-            var query = @"SELECT sea.*
-	                            , eas.*
-                         FROM secao_encaminhamento_naapa sea
-                        left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId and eas.secao_encaminhamento_id = sea.id
-                         WHERE not sea.excluido 
-                           AND sea.etapa = ANY(@etapas)
-                         ORDER BY sea.etapa, sea.ordem ";
+            var query = new StringBuilder(@"SELECT sea.*, eas.*
+                                            FROM secao_encaminhamento_naapa sea
+                                                left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
+                                                                                        and eas.secao_encaminhamento_id = sea.id
+                                                left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
+                                            WHERE not sea.excluido 
+                                            AND sea.etapa = ANY(@etapas)");
 
-            return await database.Conexao.QueryAsync<SecaoEncaminhamentoNAAPA, EncaminhamentoNAAPASecao, SecaoEncaminhamentoNAAPA>(query
-                , (secaoEncaminhamento, encaminhamentoSecao) =>
-                {
-                    secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
-                    return secaoEncaminhamento;
-                }
-                , new { etapas, encaminhamentoNAAPAId });
+            if (modalidade > 0)
+                query.Append(" AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) ");
+
+            query.Append(" ORDER BY sea.etapa, sea.ordem; ");
+
+            return await database.Conexao
+                .QueryAsync<SecaoEncaminhamentoNAAPA, EncaminhamentoNAAPASecao, SecaoEncaminhamentoNAAPA>(
+                    query.ToString(), (secaoEncaminhamento, encaminhamentoSecao) =>
+                    {
+                        secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
+                        return secaoEncaminhamento;
+                    }, new { etapas, encaminhamentoNAAPAId, modalidade });
         }
     }
 }
