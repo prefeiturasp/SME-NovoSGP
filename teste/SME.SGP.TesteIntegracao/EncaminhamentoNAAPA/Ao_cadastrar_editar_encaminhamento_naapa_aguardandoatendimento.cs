@@ -44,13 +44,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
             
-            await CriarEncaminhamentoNAAPA();
-            
-            await CriarEncaminhamentoNAAPASecao();
-            
-            await CriarQuestoesEncaminhamentoNAAPA();
-
-            await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
             
@@ -130,13 +124,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
 
-            await CriarEncaminhamentoNAAPA();
-
-            await CriarEncaminhamentoNAAPASecao();
-
-            await CriarQuestoesEncaminhamentoNAAPA();
-
-            await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
 
@@ -195,14 +183,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             };
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
             
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBe(1);
-            retorno.Auditoria.ShouldNotBeNull();
-            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue();
+            retorno.ShouldNotBeNull("Nenhum ResultadoEncaminhamentoNAAPADto obtido ao registrar Encaminhamento NAAPA");
+            retorno.Id.ShouldBe(1, "Id inválido obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.ShouldNotBeNull("Nenhum registro de Auditoria obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue("Auditoria obtida não contém data/hora alteração");
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue();
-            encaminhamentoNAAPA.Count().ShouldBe(1);
+            encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue("Após registrar Encaminhamento NAAPA o status não foi alterado");
+            encaminhamentoNAAPA.Count().ShouldBe(1, "Qdade registros Encaminhamento NAAPA inválidos");
         }
 
         [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento (observação não obrigatória não preenchida)")]
@@ -228,13 +216,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
             var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
 
-            await CriarEncaminhamentoNAAPA();
-
-            await CriarEncaminhamentoNAAPASecao();
-
-            await CriarQuestoesEncaminhamentoNAAPA();
-
-            await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
 
@@ -286,18 +268,129 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             };
             var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
 
-            retorno.ShouldNotBeNull();
-            retorno.Id.ShouldBe(1);
-            retorno.Auditoria.ShouldNotBeNull();
-            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue();
+            retorno.ShouldNotBeNull("Nenhum ResultadoEncaminhamentoNAAPADto obtido ao registrar Encaminhamento NAAPA");
+            retorno.Id.ShouldBe(1, "Id inválido obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.ShouldNotBeNull("Nenhum registro de Auditoria obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue("Auditoria obtida não contém data / hora alteração");
 
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
-            encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue();
-            encaminhamentoNAAPA.Count().ShouldBe(1);
-
-
+            encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue("Após registrar Encaminhamento NAAPA o status não foi alterado");
+            encaminhamentoNAAPA.Count().ShouldBe(1, "Qdade registros Encaminhamento NAAPA inválidos");
         }
 
+        [Fact(DisplayName = "Encaminhamento NAAPA - Alterar encaminhamento NAAPA para Aguardando Atendimento persistindo respostas")]
+        public async Task Ao_editar_encaminhamento_para_aguardandoatendimento_persistir_novo_status_e_respostas()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
+            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
+
+            await GerarDadosEncaminhamentoNAAPA(dataQueixa);
+
+            dataQueixa.AddDays(4);
+
+            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            {
+                Id = 1,
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoNAAPA.AguardandoAtendimento,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno do naapa",
+                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                {
+                    new ()
+                    {
+                        SecaoId = 2,
+                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        {
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = ID_OPCAO_RESPOSTA_DOENCA_CRONICA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA.ToString(),
+                                TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
+
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                                Resposta = "Observações preenchidas para [Adoece com frequência sem receber cuidados médicos] e [Doença crônica ou em tratamento de longa duração]",
+                                TipoQuestao = TipoQuestao.Texto,
+
+                            }
+                        }
+                    }
+                }
+            };
+            var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
+            retorno.ShouldNotBeNull("Nenhum ResultadoEncaminhamentoNAAPADto obtido ao registrar Encaminhamento NAAPA");
+            retorno.Id.ShouldBe(1, "Id inválido obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.ShouldNotBeNull("Nenhum registro de Auditoria obtido ao registrar Encaminhamento NAAPA");
+            retorno.Auditoria.AlteradoEm.HasValue.ShouldBeTrue("Auditoria obtida não contém data/hora alteração");
+
+            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
+            encaminhamentoNAAPA.FirstOrDefault().Situacao.Equals(SituacaoNAAPA.AguardandoAtendimento).ShouldBeTrue("Após registrar Encaminhamento NAAPA o status não foi alterado");
+            encaminhamentoNAAPA.Count().ShouldBe(1, "Qdade registros Encaminhamento NAAPA inválidos");
+
+            var encaminhamentoNAAPASecao = ObterTodos<Dominio.EncaminhamentoNAAPASecao>();
+            encaminhamentoNAAPASecao.Count().ShouldBe(2, "Qdade registros Encaminhamento NAAPA Seção inválidos");
+
+            var questoesQuestionarioNAAPA = ObterTodos<Dominio.Questao>().Where(questao => questao.NomeComponente == NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS);
+            questoesQuestionarioNAAPA.ShouldBeUnique("Qdade registros Questão [Agrupamento promoção de cuidados] inválidos");
+
+            var questoesEncaminhamentoNAAPA = ObterTodos<Dominio.QuestaoEncaminhamentoNAAPA>().Where(questao => questao.QuestaoId == questoesQuestionarioNAAPA.FirstOrDefault().Id);
+            questoesEncaminhamentoNAAPA.ShouldBeUnique("Qdade registros Questão Encaminhamento NAAPA [Agrupamento promoção de cuidados] inválidos");
+
+            var respostasEncaminhamentoNAAPASecao2 = ObterTodos<Dominio.RespostaEncaminhamentoNAAPA>();
+            respostasEncaminhamentoNAAPASecao2 = respostasEncaminhamentoNAAPASecao2.Where(resposta => resposta.QuestaoEncaminhamentoId == questoesEncaminhamentoNAAPA.FirstOrDefault().Id).ToList();
+            respostasEncaminhamentoNAAPASecao2.Count().ShouldBe(2, "Qdade registros Resposta Encaminhamento NAAPA [Agrupamento promoção de cuidados] inválidos");
+            respostasEncaminhamentoNAAPASecao2.Select(resposta => resposta.RespostaId).ShouldContain(ID_OPCAO_RESPOSTA_DOENCA_CRONICA);
+            respostasEncaminhamentoNAAPASecao2.Select(resposta => resposta.RespostaId).ShouldContain(ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA);
+        }
+
+        private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
+        {
+            await CriarEncaminhamentoNAAPA();
+            await CriarEncaminhamentoNAAPASecao();
+            await CriarQuestoesEncaminhamentoNAAPA();
+            await CriarRespostasEncaminhamentoNAAPA(dataQueixa);
+        }
 
         private async Task CriarRespostasEncaminhamentoNAAPA(DateTime dataQueixa)
         {
