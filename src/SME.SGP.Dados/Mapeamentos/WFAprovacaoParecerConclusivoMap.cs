@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 
 namespace SME.SGP.Dados
 {
-    public class WFAprovacaoParecerConclusivoMap : DommelEntityMap<WFAprovacaoParecerConclusivo>
+    public class WFAprovacaoParecerConclusivoMap : BaseMap<WFAprovacaoParecerConclusivo>
     {
         public WFAprovacaoParecerConclusivoMap()
         {
@@ -13,7 +13,6 @@ namespace SME.SGP.Dados
             Map(c => c.ConselhoClasseAlunoId).ToColumn("conselho_classe_aluno_id");
             Map(c => c.UsuarioSolicitanteId).ToColumn("usuario_solicitante_id");
             Map(c => c.ConselhoClasseParecerId).ToColumn("conselho_classe_parecer_id");
-            Map(c => c.CriadoEm).ToColumn("criado_em");
         }
     }
 }

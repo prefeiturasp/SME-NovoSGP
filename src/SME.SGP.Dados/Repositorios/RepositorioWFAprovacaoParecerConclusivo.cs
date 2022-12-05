@@ -1,22 +1,21 @@
 ﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
-    public class RepositorioWFAprovacaoParecerConclusivo : IRepositorioWFAprovacaoParecerConclusivo
+    public class RepositorioWFAprovacaoParecerConclusivo : RepositorioBase<WFAprovacaoParecerConclusivo>, IRepositorioWFAprovacaoParecerConclusivo
     {
-        private readonly ISgpContext database;
 
-        public RepositorioWFAprovacaoParecerConclusivo(ISgpContext database)
-        {
-            this.database = database ?? throw new ArgumentNullException(nameof(database));
-        }
+        public RepositorioWFAprovacaoParecerConclusivo(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
+        {}
 
         public async Task Excluir(long id)
         {
@@ -77,14 +76,6 @@ namespace SME.SGP.Dados
                             where wa.wf_aprovacao_id = @workflowId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<WFAprovacaoParecerConclusivoDto>(query, new { workflowId });
-        }
-
-        public async Task Salvar(WFAprovacaoParecerConclusivo entidade)
-        {
-            if (entidade.Id > 0)
-                await database.Conexao.UpdateAsync(entidade);
-            else
-                await database.Conexao.InsertAsync(entidade);
         }
     }
 }
