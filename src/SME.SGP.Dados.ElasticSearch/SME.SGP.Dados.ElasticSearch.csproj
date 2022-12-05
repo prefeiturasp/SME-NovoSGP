@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SME.SGP.Infra.ElasticSearch\SME.SGP.Infra.ElasticSearch.csproj" />
       <ProjectReference Include="..\SME.SGP.Infra.Telemetria\SME.SGP.Infra.Telemetria.csproj" />
     </ItemGroup>
 

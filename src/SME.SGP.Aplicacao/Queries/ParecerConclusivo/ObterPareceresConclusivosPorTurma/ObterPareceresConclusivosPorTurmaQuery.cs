@@ -7,21 +7,21 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPareceresConclusivosPorTurmaQuery : IRequest<IEnumerable<ConselhoClasseParecerConclusivo>>
     {
-        public ObterPareceresConclusivosPorTurmaQuery(long turmaId)
+        public ObterPareceresConclusivosPorTurmaQuery(Turma turma)
         {
-            TurmaId = turmaId;
+            Turma = turma;
         }
 
-        public long TurmaId { get; }
+        public Turma Turma { get; }
     }
 
     public class ObterPareceresConclusivosPorTurmaQueryValidator : AbstractValidator<ObterPareceresConclusivosPorTurmaQuery>
     {
         public ObterPareceresConclusivosPorTurmaQueryValidator()
         {
-            RuleFor(a => a.TurmaId)
+            RuleFor(a => a.Turma)
                 .NotEmpty()
-                .WithMessage("O identificador da turma deve ser informado para consultar seus pareceres conclusivos");
+                .WithMessage("A turma deve ser informado para consultar seus pareceres conclusivos");
         }
     }
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,13 +6,16 @@ using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 using ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake = SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake;
 
@@ -93,14 +92,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO_POR_FREQUENCIA).ShouldBeTrue();
         }
-        
-        [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_frequencia_abaixo_75_por_cento_com_compensacao_ausencia_atualizar_parecer()
+
+        [Theory]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_frequencia_abaixo_75_por_cento_com_compensacao_ausencia_atualizar_parecer(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
-                ANO_7,
+                ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
@@ -159,14 +160,16 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
-        
-        [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_nota_numerica_inferior_a_5()
+
+        [Theory]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_nota_numerica_inferior_a_5(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
-                ANO_8,
+                ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
@@ -183,15 +186,45 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
         }
-        
-        [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_nota_numerica_inferior_a_5_alterado_nota_maior_atualizar_parecer()
+
+        [Theory]
+        [InlineData(ANO_5)]
+        [InlineData(ANO_7)]
+        [InlineData(ANO_8)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_deve_ser_diferente_de_retido_por_estudante_com_nota_numerica_inferior_a_5(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
-                ANO_8,
-                RetornaModalidadeCorreta(ANO_8),
+                ano,
+                Modalidade.Fundamental,
+                ModalidadeTipoCalendario.FundamentalMedio,
+                false,
+                NOTA_4,
+                SituacaoConselhoClasse.EmAndamento,
+                true);
+
+            await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral, COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            await CriarConselhosClasseComNotasNaoAleatorias();
+
+            await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
+
+            var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
+            parecerConclusivo.Any(f => f.ConselhoClasseParecerId == RETIDO).ShouldBeFalse();
+        }
+
+        [Theory]
+        [InlineData(ANO_3)]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_retido_por_estudante_com_nota_numerica_inferior_a_5_alterado_nota_maior_atualizar_parecer(string ano)
+        {
+            await CriarDadosNotas(ObterPerfilProfessor(),
+                COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                TipoNota.Nota,
+                ano,
+                RetornaModalidadeCorreta(ano),
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
                 NOTA_4,
@@ -221,14 +254,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId != RETIDO).ShouldBeTrue();
         }
-        
-        [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_promovido_por_estudante_com_nota_numerica_superior_a_5_frequencia_acima_75_por_cento()
+
+        [Theory]
+        [InlineData(ANO_3)]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_promovido_por_estudante_com_nota_numerica_superior_a_5_frequencia_acima_75_por_cento(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
-                ANO_8,
+                ano,
                 Modalidade.Fundamental,
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
@@ -251,14 +287,17 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == PROMOVIDO).ShouldBeTrue();
         }
         
-        [Fact]
-        public async Task Ao_validar_situacao_parecer_conclusivo_promovido_pelo_conselho_por_estudante_com_nota_numerica_superior_a_5_frequencia_acima_75_por_cento()
+        [Theory]
+        [InlineData(ANO_3)]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
+        public async Task Ao_validar_situacao_parecer_conclusivo_promovido_pelo_conselho_por_estudante_com_nota_numerica_superior_a_5_frequencia_acima_75_por_cento(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
-                ANO_8,
-                RetornaModalidadeCorreta(ANO_8),
+                ano,
+                RetornaModalidadeCorreta(ano),
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
                 NOTA_4,

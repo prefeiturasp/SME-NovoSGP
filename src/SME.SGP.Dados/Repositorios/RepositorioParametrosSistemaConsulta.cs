@@ -72,7 +72,7 @@ namespace SME.SGP.Dados.Repositorios
                           from parametros_sistema
                          where tipo = @tipoParametroSistema and ativo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { tipoParametroSistema });            
+            return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { tipoParametroSistema });
         }
 
         public async Task<T> ObterValorUnicoPorTipo<T>(TipoParametroSistema tipoParametroSistema)
@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                             from parametros_sistema ");
 
             if (ano.HasValue)
-                query.AppendLine("where (ano = @ano or ano is null)");                             
+                query.AppendLine("where (ano = @ano or ano is null)");
             else query.AppendLine("where ano is null");
 
             query.AppendLine(" and ativo");
