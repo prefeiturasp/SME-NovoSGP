@@ -246,14 +246,14 @@ namespace SME.SGP.Aplicacao
                 if (questaoAdoeceComFrequencia != null)
                 {
                     var opcaoOutras_QuestaoAdoeceComFrequencia = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoAdoeceComFrequencia.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
-                    if (questaoAdoeceComFrequencia.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoAdoeceComFrequencia.Id))
+                    if (questaoAdoeceComFrequencia.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoAdoeceComFrequencia.Id.ToString()))
                         questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
                 }
 
                 if (questaoDoencaCronica != null)
                 { 
                     var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
-                    if (questaoDoencaCronica.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoDoencaCronica.Id))
+                    if (questaoDoencaCronica.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoDoencaCronica.Id.ToString()))
                         questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
                 }
                 

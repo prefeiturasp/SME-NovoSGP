@@ -269,14 +269,14 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                             new ()
                             {
                                 QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
-                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA.ToString(),
+                                Resposta = ID_OPCAO_RESPOSTA_ASSADURA_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA.ToString(),
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
 
                             },
                             new ()
                             {
                                 QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
-                                Resposta = ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA.ToString(),
+                                Resposta = ID_OPCAO_RESPOSTA_ANEMIA_FALCIFORME_QUESTAO_TIPO_DOENCA_CRONICA.ToString(),
                                 TipoQuestao = TipoQuestao.ComboMultiplaEscolha,
 
                             }
