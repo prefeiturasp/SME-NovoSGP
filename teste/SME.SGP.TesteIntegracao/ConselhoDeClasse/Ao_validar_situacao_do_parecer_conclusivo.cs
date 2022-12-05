@@ -191,7 +191,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
                 ANO_8,
-                Modalidade.Fundamental,
+                RetornaModalidadeCorreta(ANO_8),
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
                 NOTA_4,
@@ -258,7 +258,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                 TipoNota.Nota,
                 ANO_8,
-                Modalidade.Fundamental,
+                RetornaModalidadeCorreta(ANO_8),
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false, 
                 NOTA_4,
@@ -458,5 +458,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Nota = tipoNota == TipoNota.Nota ? nota : null
             };
         }
+
+        private Modalidade RetornaModalidadeCorreta(string ano)
+          => ano.Equals("3") ? Modalidade.Medio : Modalidade.Fundamental;
     }
 }
