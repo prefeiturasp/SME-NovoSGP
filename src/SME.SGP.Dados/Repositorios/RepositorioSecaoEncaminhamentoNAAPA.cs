@@ -21,6 +21,8 @@ namespace SME.SGP.Dados.Repositorios
 	                            , sea.questionario_id as questionarioId
 	                            , eas.concluido
 	                            , sea.etapa
+                                , sea.ordem
+                                , sea.nome_componente as nomeComponente
                          FROM secao_encaminhamento_naapa sea
                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 

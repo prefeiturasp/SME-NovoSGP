@@ -17,6 +17,13 @@ namespace SME.SGP.Aplicacao
 {
     public class RegistrarEncaminhamentoNAAPAUseCase : IRegistrarEncaminhamentoNAAPAUseCase
     {
+        private const string SECAO_QUESTOES_APRESENTADAS = "QUESTOES_APRESENTADAS_INFANTIL";
+        private const string QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS = "OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS";
+        private const string QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
+        private const string QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS = "TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS";
+        private const string QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO = "TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO";
+
+
         private readonly IMediator mediator;
 
         public RegistrarEncaminhamentoNAAPAUseCase(IMediator mediator)
@@ -37,7 +44,7 @@ namespace SME.SGP.Aplicacao
             if (!encaminhamentoNAAPADto.Secoes.Any())
                 throw new NegocioException(MensagemNegocioComuns.NENHUMA_SECAO_ENCONTRADA);
 
-            if(encaminhamentoNAAPADto.Secoes.Any(s => s.Concluido == false))
+            if (encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
                 await ValidarQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto);
 
             if (encaminhamentoNAAPADto.Id.GetValueOrDefault() > 0)
@@ -201,14 +208,14 @@ namespace SME.SGP.Aplicacao
             return questao.Obrigatorio &&
                     !NaoNuloEContemRegistros(questao.Resposta);
         }
-        private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
+        private void ValidaRecursivo(string secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasAConsistir)
         {
             foreach (var questao in questoes)
             {
                 var ordem = (questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString());
 
                 if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
-                    questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = ordem });
+                    questoesObrigatoriasAConsistir.Add(new { Secao = secao, Ordem = ordem });
                 }
                 else
                 if (NaoNuloEContemRegistros(questao.OpcaoResposta) 
@@ -219,30 +226,100 @@ namespace SME.SGP.Aplicacao
                         var opcao = questao.OpcaoResposta.Where(opcao => opcao.Id == Convert.ToInt64(resposta.Texto)).FirstOrDefault();
                         if (opcao != null && opcao.QuestoesComplementares.Any())
                         {
-                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasNaoRespondidas);
+                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasAConsistir);
                         }
                     }
                 }
             }
         }
 
+        private async Task ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(string secao, IEnumerable<QuestaoDto> questoes, List<dynamic> questoesObrigatoriasNaoRespondidas)
+        {
+            var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
+            if (questaoObservacoes != null)
+            {
+                var questaoAgrupamentoPromocaoCuidados = ObterQuestaoAgrupamentoPromocaoCuidados(questoes);
+                var questoesComplementares = ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(questaoAgrupamentoPromocaoCuidados);
+                var questaoAdoeceComFrequencia = ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(questoesComplementares);
+                var questaoDoencaCronica = ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(questoesComplementares);
+
+                if (questaoAdoeceComFrequencia != null)
+                {
+                    var opcaoOutras_QuestaoAdoeceComFrequencia = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoAdoeceComFrequencia.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
+                    if (questaoAdoeceComFrequencia.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoAdoeceComFrequencia.Id))
+                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
+                }
+
+                if (questaoDoencaCronica != null)
+                { 
+                    var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).Where(opcao => opcao.Nome == "Outras").FirstOrDefault();
+                    if (questaoDoencaCronica.OpcaoResposta.Any(opcao => opcao.Id == opcaoOutras_QuestaoDoencaCronica.Id))
+                        questoesObrigatoriasNaoRespondidas.Add(new { Secao = secao, Ordem = questaoObservacoes.Ordem });
+                }
+                
+            }
+        }
+        private QuestaoDto ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(IEnumerable<QuestaoDto> questoes)
+        {
+            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS)
+                                              && !NaoNuloEContemRegistros(questao.Resposta)).FirstOrDefault();
+        }
+
+        private QuestaoDto ObterQuestaoAgrupamentoPromocaoCuidados(IEnumerable<QuestaoDto> questoes)
+        {
+            return questoes.Where(questao => (questao.NomeComponente == QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS)).FirstOrDefault();
+        }
+
+        private IEnumerable<QuestaoDto> ObterQuestoesComplementaresAgrupamentoPromocaoCuidados(QuestaoDto questaoAgrupamentoPromocaoCuidados)
+        {
+            return questaoAgrupamentoPromocaoCuidados.OpcaoResposta.SelectMany(opcao => opcao.QuestoesComplementares)
+                                                  .Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS
+                                                                                || questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).Distinct();
+        }
+
+        private QuestaoDto ObterQuestaoComplementarTipoAdoeceComFrequenciaSemCuidadosMedicos(IEnumerable<QuestaoDto> questoesComplementares)
+        {
+            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS).FirstOrDefault();
+        }
+
+        private QuestaoDto ObterQuestaoComplementarTipoDoencaCronicaTratamentoLongaDuracao(IEnumerable<QuestaoDto> questoesComplementares)
+        {
+            return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
+        }
+
         private async Task ValidarQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto)
         {
-            
-            var secoesEtapa = await this.mediator.Send(new ObterSecoesEncaminhamentoDtoPorEtapaQuery(1));
-            var contemSecaoNaResposta = encaminhamentoNAAPADto.Secoes.Where(w => secoesEtapa.Any(s => s.Id == w.SecaoId));
-            var questoesObrigatoriasNaorespondidas = new List<dynamic>();
 
-            if (contemSecaoNaResposta.Any())
+            var secoesEtapa = await this.mediator.Send(new ObterSecoesEncaminhamentoNAAPADtoPorEtapaQuery(1));
+            var questoesObrigatoriasAConsistir = new List<dynamic>();
+            var respostasEncaminhamento = Enumerable.Empty<EncaminhamentoNAAPASecaoQuestaoDto>();
+
+            var respostasPersistidas = (encaminhamentoNAAPADto.Id.HasValue) ? (await mediator.Send(new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.Value)))
+                                                                                .Select(resposta => new EncaminhamentoNAAPASecaoQuestaoDto()
+                                                                                {
+                                                                                    QuestaoId = resposta.QuestaoId,
+                                                                                    Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId.Value.ToString() : resposta.Texto,
+                                                                                    RespostaEncaminhamentoId = resposta.Id
+                                                                                }) : Enumerable.Empty<EncaminhamentoNAAPASecaoQuestaoDto>();
+
+            foreach (var secao in secoesEtapa)
             {
-                var respostasEncaminhamento = encaminhamentoNAAPADto.Secoes.Where(sessao => sessao.Questoes.Any())
-                    .SelectMany(secao => secao.Questoes,
-                                (secao, questao) => new { questao.QuestaoId, questao.Resposta, questao.RespostaEncaminhamentoId })
-                    .Where(questao => !string.IsNullOrEmpty(questao.Resposta));
-                foreach (var secao in secoesEtapa)
+                var secaoPresenteDto = encaminhamentoNAAPADto.Secoes.Where(secaoDto => secaoDto.SecaoId == secao.Id).FirstOrDefault();
+                if (secaoPresenteDto != null && secaoPresenteDto.Questoes.Any())
                 {
-                    var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId, questaoId =>
-                        respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)                        
+                    respostasEncaminhamento = secaoPresenteDto.Questoes
+                                                .Select(questao => new EncaminhamentoNAAPASecaoQuestaoDto()
+                                                                    {
+                                                                        QuestaoId = questao.QuestaoId,
+                                                                        Resposta = questao.Resposta,
+                                                                        RespostaEncaminhamentoId = questao.RespostaEncaminhamentoId
+                                                                    })
+                                                .Where(questao => !string.IsNullOrEmpty(questao.Resposta));
+                }
+                else respostasEncaminhamento = respostasPersistidas;
+
+                var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId, questaoId =>
+                        respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
                         .Select(respostasEncaminhamento =>
                         {
                             return new RespostaQuestaoDto()
@@ -254,42 +331,19 @@ namespace SME.SGP.Aplicacao
                             };
                         })));
 
-                    if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
-                    ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);
-                }                
-            }
-            else
-            {
-                var respostasJaPreenchidas = encaminhamentoNAAPADto.Id.HasValue ?
-                    await mediator.Send(new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.Value)) :
-                Enumerable.Empty<RespostaQuestaoEncaminhamentoNAAPADto>();
+                if (secao.NomeComponente == SECAO_QUESTOES_APRESENTADAS)
+                    await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao.Nome, questoes, questoesObrigatoriasAConsistir);
+                
+                if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
+                ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasAConsistir);
 
-                if (encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
-                {
-                    foreach (var secao in secoesEtapa)
-                    {
-                        var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId, questaoId =>
-                            respostasJaPreenchidas.Where(c => c.QuestaoId == questaoId)
-                            .Select(respostasJaPreenchidas =>
-                            {
-                                return new RespostaQuestaoDto()
-                                {
-                                    Id = GetHashCode(),
-                                    OpcaoRespostaId = 0,
-                                    Texto = respostasJaPreenchidas.Texto,
-                                    Arquivo = null
-                                };
-                            })));
 
-                        if (!questoes.Any(questao => questao.Obrigatorio)) { continue; }
-                        ValidaRecursivo(secao.Nome, "", questoes, questoesObrigatoriasNaorespondidas);
-                    }                    
-                }
             }
-            if (questoesObrigatoriasNaorespondidas.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
+            
+            if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
             {
                 var mensagem = new List<string>();
-                foreach (var secao in questoesObrigatoriasNaorespondidas.GroupBy(questao => questao.Secao))
+                foreach (var secao in questoesObrigatoriasAConsistir.GroupBy(questao => questao.Secao))
                 {
                     mensagem.Add($"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]");
                 }

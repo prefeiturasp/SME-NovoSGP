@@ -15,6 +15,18 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const int NORMAL = 1;
         protected const int PRIORITARIA = 2;
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
+        protected const  long ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = 3;
+        protected const long ID_QUESTAO_PRIORIDADE = 2;
+        protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
+        protected const long ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 4;
+        protected const long ID_QUESTAO_TIPO_DOENCA_CRONICA = 5;
+        protected const long ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA = 4;
+        protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA = 5;
+        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 8;
+        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA = 11;
+
+
+
         public EncaminhamentoNAAPATesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -35,6 +47,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarQuestionario();
             await CriarQuestoes();
             await CriarRespostas();
+            await CriarRespostasComplementares();
             await CriarSecaoEncaminhamentoNAAPAQuestionario();
         }
 
@@ -45,627 +58,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 QuestionarioId = 1,
                 Nome = "Informações do Estudante",
+                NomeComponente = "INFORMACOES_ESTUDANTE",
                 Etapa = 1,Ordem = 1,
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
             });
-        }
-
-        private async Task CriarRespostasComplementaresAlternativas()
-        {
-            //Informações escolares
-            await InserirNaBase(new OpcaoQuestaoComplementar()
+            await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
-                OpcaoRespostaId = 1,
-                QuestaoComplementarId = 4,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 2,
-                QuestaoComplementarId = 5,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 3,
-                QuestaoComplementarId = 5,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 4,
-                QuestaoComplementarId = 8,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 7,
-                QuestaoComplementarId = 12,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 8,
-                QuestaoComplementarId = 12,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 9,
-                QuestaoComplementarId = 12,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 10,
-                QuestaoComplementarId = 13,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 11,
-                QuestaoComplementarId = 16,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 14,
-                QuestaoComplementarId = 18,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 24,
-                QuestaoComplementarId = 19,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 10,
-                QuestaoComplementarId = 23,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 25,
-                QuestaoComplementarId = 25,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 26,
-                QuestaoComplementarId = 26,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-
-        }
-
-        private async Task CriarRespostasAlternativas()
-        {
-            //Informações escolares
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 3,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 3,
+                QuestionarioId = 2,
+                Nome = "Questões apresentadas",
+                NomeComponente = "QUESTOES_APRESENTADAS_INFANTIL",
+                Etapa = 1,
                 Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 3,
-                Ordem = 3,
-                Nome = "Não sei",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            //Descrição do encaminhamento						
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 7,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 7,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 7,
-                Ordem = 3,
-                Nome = "Não sei",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 11,
-                Ordem = 1,
-                Nome = "Leitura",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 11,
-                Ordem = 2,
-                Nome = "Escrita",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 11,
-                Ordem = 3,
-                Nome = "Atividades em grupo",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-                
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 11,
-                Ordem = 4,
-                Nome = "Outros",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 15,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 15,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 15,
-                Ordem = 3,
-                Nome = "Não sei",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 17,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 17,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 17,
-                Ordem = 3,
-                Nome = "Não sei",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 1,
-                Nome = "PAP",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            }); 
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 2,
-                Nome = "SRM",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            }); 
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 3,
-                Nome = "Mais educação (São Paulo Integral)",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 4,
-                Nome = "Imprensa Jovem",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 5,
-                Nome = "Academia Estudantil de Letras (AEL)",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 6,
-                Nome = "Xadrez",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 7,
-                Nome = "Robótica",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 18,
-                Ordem = 8,
-                Nome = "Outros",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 24,
-                Ordem = 1,
-                Nome = "Sim",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoResposta()
-            {
-                QuestaoId = 24,
-                Ordem = 2,
-                Nome = "Não",
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-        }
-
-        private async Task CriarQuestoesAlternativo()
-        {
-            //Informações escolares
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 1,
-                Ordem = 0,
-                Nome = string.Empty,
-                Tipo = TipoQuestao.InformacoesEscolares,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 1,
-                Ordem = 1,
-                Nome = "Justificativa de ausências",
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 1,
-                Ordem = 2,
-                Nome = "Estudante está ou esteve matriculado em classe ou escola especializada",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Radio,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 1,
-                Ordem = 3,
-                Nome = "Qual último período/ano em que o estudante frequentou classe ou escola especializada",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 1,
-                Ordem = 3,
-                Nome = "Qual último período/ano em que o estudante frequentou classe ou escola especializada",
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            //Descrição do encaminhamento
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Por qual(is) motivo(s) a sua unidade educacional está encaminhando o estudante ao Atendimento Educacional Especializado (AEE)?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 2,
-                Nome = "O estudante tem diagnóstico e/ou laudo?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Combo,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });  
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 0,
-                Nome = string.Empty,
-                Tipo = TipoQuestao.Upload,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });            
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 3,
-                Nome = "Quais atividades escolares o estudante mais gosta de fazer?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 4,
-                Nome = "O que o estudante faz que chama a sua atenção?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 5,
-                Nome = "Para o estudante, quais atividades escolares são mais difíceis?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Por quê?",
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Por quê?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 6,
-                Nome = "Diante das dificuldades apresentadas acima, quais estratégias pedagógicas foram feitas em sala de aula antes do encaminhamento ao AEE?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 7,
-                Nome = "O estudante recebe algum atendimento clínico ou participa de outras atividades além da classe comum?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Radio,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Detalhamento de atendimento clínico",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.AtendimentoClinico,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 8,
-                Nome = "Você acha que o estudante necessita de algum outro tipo de atendimento?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Radio,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Selecione os tipos de atendimento",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.ComboMultiplaEscolha,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 1,
-                Nome = "Descreva o tipo de atendimento",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 9,
-                Nome = "Quais informações relevantes a este encaminhamento foram levantadas junto à família do estudante?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 10,
-                Nome = "Documentos relevantes a este encaminhamento",
-                Tipo = TipoQuestao.Upload,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 11,
-                Nome = "Observações adicionais (se necessário)",
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 2,
-                Ordem = 2,
-                Nome = "Detalhe as atividades",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            //Parecer coordenação
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 3,
-                Ordem = 1,
-                Nome = "Quais mediações pedagógicas você realizou junto ao professor de classe comum antes de encaminhar o estudante ao AEE?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 3,
-                Ordem = 2,
-                Nome = "Além do professor de classe comum, o encaminhamento do estudante ao AEE foi discutido com outros profissionais da unidade educacional?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Radio,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 3,
-                Ordem = 1,
-                Nome = "Quais profissionais participaram desta discussão e quais as contribuições de cada um?",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            }); 
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 3,
-                Ordem = 1,
-                Nome = "Justifique o motivo de não haver envolvimento de outros profissionais",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questao()
-            {
-                QuestionarioId = 3,
-                Ordem = 3,
-                Nome = "Observações adicionais (se necessário)",
-                Obrigatorio = true,
-                Tipo = TipoQuestao.Texto,
-                CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
-            });   
-        }
-
-        private async Task CriarQuestionarioAlternativo()
-        {
-            await InserirNaBase(new Questionario()
-            {
-                Nome = "Questionário Encaminhamento AEE Etapa 1 Seção 1 - Informações escolares",
-                Tipo = TipoQuestionario.EncaminhamentoAEE,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questionario()
-            {
-                Nome = "Questionário Encaminhamento AEE Etapa 1 Seção 2 - Descrição do encaminhamento",
-                Tipo = TipoQuestionario.EncaminhamentoAEE,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new Questionario()
-            {
-                Nome = "Questionário Encaminhamento AEE Etapa 1 Seção 3 - Parecer Coordenação",
-                Tipo = TipoQuestionario.EncaminhamentoAEE,
-                CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 
@@ -710,8 +116,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
-                OpcaoRespostaId = 1,
-                QuestaoComplementarId = 15,
+                OpcaoRespostaId = ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA,
+                QuestaoComplementarId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -719,44 +125,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             await InserirNaBase(new OpcaoQuestaoComplementar()
             {
-                OpcaoRespostaId = 2,
-                QuestaoComplementarId = 15,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 3,
-                QuestaoComplementarId = 15,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 8,
-                QuestaoComplementarId = 17,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-          
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 11,
-                QuestaoComplementarId = 18,
-                CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
-            });
-            
-            await InserirNaBase(new OpcaoQuestaoComplementar()
-            {
-                OpcaoRespostaId = 21,
-                QuestaoComplementarId = 19,
+                OpcaoRespostaId = ID_OPCAO_RESPOSTA_DOENCA_CRONICA,
+                QuestaoComplementarId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -765,20 +135,121 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         private async Task CriarRespostas()
         {
+            //id 1
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 1,
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
                 Ordem = 1,
                 Nome = "Normal",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
-            
+
+            //id 2
             await InserirNaBase(new OpcaoResposta()
             {
-                QuestaoId = 2,
+                QuestaoId = ID_QUESTAO_PRIORIDADE,
                 Ordem = 2,
                 Nome = "Prioritária",
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+
+            //id 3
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 1,
+                Nome = "Carteira de vacinas atrasada",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 4
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 2,
+                Nome = "Adoece com frequência sem receber cuidados médicos",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            
+            //id 5
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS,
+                Ordem = 6,
+                Nome = "Doença crônica ou em tratamento de longa duração",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 6
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 1,
+                Nome = "Assadura",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 7
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 2,
+                Nome = "Bronquite",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 8
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA,
+                Ordem = 13,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 9
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 1,
+                Nome = "Anemia falciforme",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 10
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 2,
+                Nome = "Asma",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 11
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                Ordem = 14,
+                Nome = "Outras",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
             });
         }
 
@@ -790,10 +261,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestionario.EncaminhamentoNAAPA,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
+            await InserirNaBase(new Questionario()
+            {
+                Nome = "Questionário Encaminhamento NAAPA Etapa 1 Seção 2 - Infantil",
+                Tipo = TipoQuestionario.EncaminhamentoNAAPA,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
         private async Task CriarQuestoes()
         {
+            //id 1
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 1,
@@ -804,7 +284,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.Data,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
             });
-            
+
+            //id 2
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 1,
@@ -813,6 +294,68 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Obrigatorio = true,
                 Tipo = TipoQuestao.Combo,
                 CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF, CriadoEm = DateTime.Now
+            });
+
+            //id 3
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 4,
+                Nome = "Questões no agrupamento promoção de cuidados",
+                SomenteLeitura = true,
+                Obrigatorio = true,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "AGRUPAMENTO_PROMOCAO_CUIDADOS"
+            });
+
+            //id 4
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Selecione um tipo",
+                Observacao = "Adoece com frequência sem receber cuidados médicos",
+                SomenteLeitura = true,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS"
+            });
+            
+            //id 5
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 1,
+                Nome = "Selecione um tipo",
+                Observacao = "Doença crônica ou em tratamento de longa duração",
+                SomenteLeitura = true,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.ComboMultiplaEscolha,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO"
+            });
+
+            //id 6
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 2,
+                Ordem = 5,
+                Nome = "Observações",
+                SomenteLeitura = true,
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS"
             });
         }
         protected class FiltroNAAPADto
