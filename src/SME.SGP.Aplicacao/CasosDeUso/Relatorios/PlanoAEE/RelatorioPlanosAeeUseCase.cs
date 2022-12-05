@@ -17,12 +17,14 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<bool> Executar(FiltroRelatorioPlanosAEEDto filtro)
         {
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            filtro.UsuarioNome = usuarioLogado.Nome;
+            filtro.UsuarioRf = usuarioLogado.CodigoRf;
 
-            if (usuario == null)
+            if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanosAee, filtro, usuario, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanosAee));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioPlanosAee, filtro, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosPlanosAee));
         }
     }
 }
