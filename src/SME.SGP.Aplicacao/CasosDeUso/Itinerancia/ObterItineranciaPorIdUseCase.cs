@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Org.BouncyCastle.Utilities;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;

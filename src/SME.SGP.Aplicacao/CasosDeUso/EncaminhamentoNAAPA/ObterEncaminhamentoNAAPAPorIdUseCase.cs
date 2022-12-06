@@ -25,6 +25,10 @@ namespace SME.SGP.Aplicacao
 
             var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoNAAPA.AlunoCodigo, encaminhamentoNAAPA.Turma.AnoLetivo, true));
 
+            
+            var nomeUe = encaminhamentoNAAPA.Turma.Ue.TipoEscola == TipoEscola.Nenhum ? encaminhamentoNAAPA.Turma.Ue.Nome : 
+                            $"{encaminhamentoNAAPA.Turma.Ue.TipoEscola.ObterNomeCurto()} {encaminhamentoNAAPA.Turma.Ue.Nome}";
+
             return new EncaminhamentoNAAPARespostaDto()
             {
                 Aluno = aluno,
@@ -35,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 
                 UeId = encaminhamentoNAAPA.Turma.Ue.Id,
                 UeCodigo = encaminhamentoNAAPA.Turma.Ue.CodigoUe,
-                UeNome = encaminhamentoNAAPA.Turma.Ue.Nome,
+                UeNome = nomeUe,
                 
                 TurmaId = encaminhamentoNAAPA.Turma.Id,
                 TurmaCodigo = encaminhamentoNAAPA.Turma.CodigoTurma,

@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -425,7 +426,7 @@ namespace SME.SGP.Dados.Repositorios
                             join itinerancia_questao iq on i.id = iq.itinerancia_id 
                             join arquivo a on iq.arquivo_id  = a.id
                             where i.id = @itineranciaId ";
-            return await database.ExecuteAsync(query, new {itineranciaId});
+            return (await database.Conexao.QueryFirstAsync<int>(query, new { itineranciaId }));
         }
     }
 }
