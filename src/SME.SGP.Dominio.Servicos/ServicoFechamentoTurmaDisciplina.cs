@@ -474,7 +474,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
-            int indiceFechamentoAntigo = 0;
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -526,8 +526,8 @@ namespace SME.SGP.Dominio.Servicos
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
                 
-                if(indiceFechamentoAntigo >= 0)
-                 fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
+                if(indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
                 
                 fechamentoAlunos.Add(fechamentoAluno);
             }
