@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery : IRequest<WFAprovacaoParecerConclusivoDto>
+    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery : IRequest<IEnumerable<WFAprovacaoParecerConclusivoDto>>
     {
         public ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(long workflowId)
         {

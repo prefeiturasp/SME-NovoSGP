@@ -2,12 +2,13 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQueryHandler : IRequestHandler<ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery, WFAprovacaoParecerConclusivoDto>
+    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQueryHandler : IRequestHandler<ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery, IEnumerable<WFAprovacaoParecerConclusivoDto>>
     {
         private readonly IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacaoParecerConclusivo;
 
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioWFAprovacaoParecerConclusivo = repositorioWFAprovacaoParecerConclusivo ?? throw new ArgumentNullException(nameof(repositorioWFAprovacaoParecerConclusivo));
         }
 
-        public Task<WFAprovacaoParecerConclusivoDto> Handle(ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> Handle(ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery request, CancellationToken cancellationToken)
         {
             return repositorioWFAprovacaoParecerConclusivo.ObterAprovacaoParecerConclusivoPorWorkflowId(request.WorkflowId);
         }

@@ -10,8 +10,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId);
         Task<IEnumerable<WFAprovacaoParecerConclusivo>> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId);
         Task Excluir(long id);
-        Task<WFAprovacaoParecerConclusivoDto> ObterAprovacaoParecerConclusivoPorWorkflowId(long workflowId);
+        Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterAprovacaoParecerConclusivoPorWorkflowId(long workflowId);
 
-        Task<IEnumerable<WFAprovacaoParecerConclusivo>> ObterPareceresAguardandoAprovacaoSemWorkflow();
+        Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterPareceresAguardandoAprovacaoSemWorkflow();
     }
 }

@@ -20,8 +20,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacao;
 
         //separar
-        protected List<WFAprovacaoParecerConclusivo> WFAprovacoes;
-        protected List<Ue> Ues;
         protected List<TurmasDoAlunoDto> Alunos;
         protected List<Usuario> Usuarios;
         protected List<Conceito> Conceitos;
@@ -34,10 +32,11 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand request, CancellationToken cancellationToken)
         {
-            await CarregarInformacoesParaNotificacao(await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow());
+            var WFAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
+            await CarregarInformacoesParaNotificacao(WFAprovacoes);
             if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
 
-            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.Id);
+            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.TurmaId);
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
                 var idAprovacao = await EnviarNotificacao(grupoTurma.ToList());
@@ -45,22 +44,22 @@ namespace SME.SGP.Aplicacao
             }
         }
        
-        private async Task ExecuteAlteracoesDasAprovacoes(List<WFAprovacaoParecerConclusivo> aprovacoesPorTurma, long idAprovacao)
+        private async Task ExecuteAlteracoesDasAprovacoes(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, long idAprovacao)
         {
             foreach (var aprovacao in aprovacoesPorTurma)
             {
-                aprovacao.WfAprovacaoId = idAprovacao;
-                await repositorioWFAprovacao.SalvarAsync(aprovacao);
+                var wfAprovacao = repositorioWFAprovacao.ObterPorId(aprovacao.Id);
+                wfAprovacao.WfAprovacaoId = idAprovacao;
+                await repositorioWFAprovacao.SalvarAsync(wfAprovacao);
             }
         }
 
-        private async Task<long> EnviarNotificacao(List<WFAprovacaoParecerConclusivo> aprovacoesPorTurma)
+        private async Task<long> EnviarNotificacao(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
         {
-            var turma = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-            var ue = Ues.Find(ue => ue.Id == turma.UeId);
-            var titulo = $@"Alteração de parecer conclusivo - {turma.NomeFiltro} (ano anterior)";
-            var mensagem = ObterMensagem(ue, turma, aprovacoesPorTurma);
-            var conselhoClasseAlunoId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseAluno.Id;
+            var turma = await ObterTurma(aprovacoesPorTurma.FirstOrDefault().TurmaId);
+            var titulo = $@"Alteração de parecer conclusivo - {turma.Ue.Nome} (ano anterior)";
+            var mensagem = ObterMensagem(turma.Ue, turma, aprovacoesPorTurma);
+            var conselhoClasseAlunoId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseAlunoId;
 
             return await mediator.Send(new EnviarNotificacaoCommand(
                                                                     titulo,
@@ -68,37 +67,37 @@ namespace SME.SGP.Aplicacao
                                                                     NotificacaoCategoria.Workflow_Aprovacao,
                                                                     NotificacaoTipo.Fechamento,
                                                                     new Cargo[] { Cargo.CP, Cargo.Supervisor },
-                                                                    ue.Dre.CodigoDre,
-                                                                    ue.CodigoUe,
+                                                                    turma.Ue.Dre.CodigoDre,
+                                                                    turma.Ue.CodigoUe,
                                                                     turma.CodigoTurma,
                                                                     WorkflowAprovacaoTipo.AlteracaoParecerConclusivo,
                                                                     conselhoClasseAlunoId));
         }
 
-        private async Task CarregarInformacoesParaNotificacao(IEnumerable<WFAprovacaoParecerConclusivo> wfAprovacoes)
+        private async Task<Turma> ObterTurma(long turmaId)
+            => await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
+
+        private async Task CarregarInformacoesParaNotificacao(IEnumerable<WFAprovacaoParecerConclusivoDto> wfAprovacoes)
         {
-            WFAprovacoes = wfAprovacoes.ToList();
-            await CarregarTodasUes();
-            await CarregarTodosAlunos();
-            await CarregarTodosUsuarios();
+            await CarregarTodosAlunos(wfAprovacoes);
+            await CarregarTodosUsuarios(wfAprovacoes);
         }
 
-        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoParecerConclusivo> aprovacoesPorTurma)
+        protected string ObterMensagem(Ue ue, Turma turma, List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
         {
             var msg = new StringBuilder();
-            msg.Append($"O parecer conclusivo dos estudantes abaixo da turma {turma.NomeFiltro} da {ue.Nome} ({ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.");
+            msg.Append($"O parecer conclusivo dos estudantes abaixo da turma {turma.Nome} da {ue.Nome} ({ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.");
             msg.Append(ObterTabelaPareceresAlterados(aprovacoesPorTurma));
             msg.Append("Você precisa aceitar esta notificação para que a alteração seja considerada válida.");
             return msg.ToString();
         }
 
-        private string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivo> aprovacoesPorTurma)
+        private string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
         {
             var msg = new StringBuilder();
             msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             msg.AppendLine("<tbody>");
             msg.AppendLine("<tr>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Componente curricular</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Estudante</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Parecer anterior</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Novo Parecer</strong></td>");
@@ -115,46 +114,34 @@ namespace SME.SGP.Aplicacao
             return msg.ToString();
         }
 
-        private string ObterLinhaParecerAlterado(WFAprovacaoParecerConclusivo aprovacao)
+        private string ObterLinhaParecerAlterado(WFAprovacaoParecerConclusivoDto aprovacao)
         {
-            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseAluno.AlunoCodigo);
+            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
-            /*var componenteCurricular = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(
-                aulaRecorrente.CodigoTurma,
-                usuario.CodigoRf,
-                usuarioLogado.PerfilAtual);*/
 
             return $@"<tr>
-                           <td style='padding: 3px;'>{""}</td> 
                            <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                           <td style='padding: 3px;'>{aprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome}</td>
-                           <td style='padding: 3px;'>{aprovacao.ConselhoClasseParecer.Nome}</td>
+                           <td style='padding: 3px;'>{aprovacao.NomeParecerAnterior}</td>
+                           <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
                            <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
                            <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
                       </tr>";
         }
 
-        private async Task CarregarTodasUes()
+        private async Task CarregarTodosAlunos(IEnumerable<WFAprovacaoParecerConclusivoDto> WFAprovacoes)
         {
-            var ueIds = WFAprovacoes.Select(wf => wf.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.UeId).Distinct().ToArray();
-
-            Ues = (await ObterUes(ueIds)).ToList();
-        }
-        private async Task CarregarTodosAlunos()
-        {
-            var codigos = WFAprovacoes.Select(wf => long.Parse(wf.ConselhoClasseAluno.AlunoCodigo)).ToArray();
+            var codigos = WFAprovacoes.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
 
             Alunos = (await ObterAlunos(codigos)).ToList();
         }
-        private async Task CarregarTodosUsuarios()
+        private async Task CarregarTodosUsuarios(IEnumerable<WFAprovacaoParecerConclusivoDto> WFAprovacoes)
         {
             var ids = WFAprovacoes.Select(wf => wf.UsuarioSolicitanteId).Distinct().ToArray();
 
             Usuarios = (await ObterUsuarios(ids)).ToList();
         }
-        private async Task<IEnumerable<Ue>> ObterUes(long[] ueIds)
-            => await mediator.Send(new ObterUesPorIdsQuery(ueIds));
-        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos)
+        
+    private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos)
             => await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigos));
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
