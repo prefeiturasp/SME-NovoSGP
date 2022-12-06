@@ -43,5 +43,6 @@
         public const string RotaNotificacaoResultadoInsatisfatorio = "sgp.notificacao.nova.resultado.insatisfatorio";
         public const string RotaNotificacaoAprovacaoFechamento = "sgp.fechamento.nota.aprovacao.notificar";
         public const string RotaNotificacaoAprovacaoFechamentoPorTurma = "sgp.fechamento.nota.aprovacao.notificar.turma";
+        public const string RotaNotificacaoAprovacaoNotaPosConselho = "sgp.conselho.classe.nota.pos.conselho.aprovacao.notificar";
     }
 }

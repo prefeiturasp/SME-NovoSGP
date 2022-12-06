@@ -117,7 +117,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 Historica = true,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 ModalidadeCodigo = Modalidade.Fundamental,
-                Nome = "Turma Nome 2"
+                Nome = "Turma Nome 2",
+                TipoTurno = 2
             });
         }
         private async Task CriarTurmaEja()
@@ -131,7 +132,8 @@ namespace SME.SGP.TesteIntegracao.Nota
                 ModalidadeCodigo = Modalidade.EJA,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 2,
-                Nome = "Turma Nome 1"
+                Nome = "Turma Nome 1",
+                TipoTurno = 2
             });
         }
 

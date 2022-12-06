@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -28,6 +29,8 @@ namespace SME.SGP.Aplicacao
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
 
+            var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoPorTurmaResposta.CodigoAluno, alunoPorTurmaResposta.CodigoTurma.ToString()));
+            
             var alunoReduzido = new AlunoReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
@@ -39,6 +42,11 @@ namespace SME.SGP.Aplicacao
                 Situacao = alunoPorTurmaResposta.SituacaoMatricula,               
                 TurmaEscola = await ObterNomeTurmaFormatado(alunoPorTurmaResposta.CodigoTurma.ToString()),
                 CodigoTurma = alunoPorTurmaResposta.CodigoTurma.ToString(),
+                CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
+                NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
+                DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
+                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
+                Frequencia = frequencia
             };
 
             return alunoReduzido;
@@ -50,7 +58,15 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
 
             if (turma != null)
-                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome}";
+            {
+                var nomeTurno = "";
+                if (Enum.IsDefined(typeof(TipoTurnoEOL), turma.TipoTurno))
+                {
+                    TipoTurnoEOL tipoTurno = (TipoTurnoEOL)turma.TipoTurno;
+                    nomeTurno = $"- {tipoTurno.GetAttribute<DisplayAttribute>()?.GetName()}";
+                }
+                turmaNome = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} {nomeTurno}";
+            }
 
             return turmaNome;
         }

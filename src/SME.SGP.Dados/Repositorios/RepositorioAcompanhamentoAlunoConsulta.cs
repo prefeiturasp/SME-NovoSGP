@@ -40,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
 
-        public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre)
+        public async Task<int> ObterTotalAlunosComAcompanhamentoPorTurmaSemestre(long turmaId, int semestre, string[] codigosAlunos)
         {
             var query = $@"select count(distinct aa.aluno_codigo)
                               from acompanhamento_aluno_semestre aas
@@ -49,9 +49,10 @@ namespace SME.SGP.Dados.Repositorios
                              where not aas.excluido
                                and not aa.excluido
                                and aas.semestre = @semestre
-                               and t.id = @turmaId ";
+                               and t.id = @turmaId
+                               and aa.aluno_codigo  = ANY(@codigosAlunos)";
 
-                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre });
+                return await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { turmaId, semestre, codigosAlunos });
         }
 
         public async Task<int> ObterTotalAlunosTurmaSemestre(long turmaId, int semestre)

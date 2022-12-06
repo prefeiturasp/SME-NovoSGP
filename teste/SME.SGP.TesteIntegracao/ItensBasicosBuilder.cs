@@ -43,7 +43,8 @@ namespace SME.SGP.TesteIntegracao.Setup
                 ModalidadeCodigo = Modalidade.Fundamental,
                 TipoTurma = TipoTurma.Regular,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Nome = "Turma Teste 1"
+                Nome = "Turma Teste 1",
+                TipoTurno = 2
             });
 
             await _teste.InserirNaBase(new PrioridadePerfil
@@ -101,7 +102,8 @@ namespace SME.SGP.TesteIntegracao.Setup
                 ModalidadeCodigo = Modalidade.EJA,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 2,
-                Nome = "Turma Nome 1"
+                Nome = "Turma Nome 1",
+                TipoTurno = 2
             });
 
             await _teste.InserirNaBase(new TipoCalendario
@@ -186,7 +188,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 Id = 1,
                 TipoCalendarioId = 1,
                 Bimestre = 2,
-                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 10),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 10, 1),
                 PeriodoFim = DateTime.Now.AddYears(1),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",

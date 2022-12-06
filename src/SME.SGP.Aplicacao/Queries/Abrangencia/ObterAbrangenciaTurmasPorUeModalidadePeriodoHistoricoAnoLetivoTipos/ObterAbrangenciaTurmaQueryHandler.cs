@@ -28,11 +28,19 @@ namespace SME.SGP.Aplicacao
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
-            var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo, Modalidade.EducacaoInfantil)) : null;
-   
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil, request.Modalidade, request.Tipos.Any() ? request.Tipos : null, request.Periodo, request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
+            var anosInfantilDesconsiderar = !request.ConsideraNovosAnosInfantil
+                ? await mediator.Send(
+                    new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(request.AnoLetivo,
+                        Modalidade.EducacaoInfantil))
+                : null;
 
-            result = request.Modalidade == Modalidade.EducacaoInfantil ? await VerificaTurmasCEMEI(result, request.CodigoUe) : result;
+            var result = await repositorioAbrangencia.ObterTurmasPorTipos(request.CodigoUe, login, perfil,
+                request.Modalidade, request.Tipos != null && request.Tipos.Any() ? request.Tipos : null, request.Periodo,
+                request.ConsideraHistorico, request.AnoLetivo, anosInfantilDesconsiderar);
+
+            result = request.Modalidade == Modalidade.EducacaoInfantil
+                ? await VerificaTurmasCEMEI(result, request.CodigoUe)
+                : result;
 
             return OrdernarTurmasItinerario(result);
         }  
