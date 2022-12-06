@@ -66,44 +66,9 @@ namespace SME.SGP.Dados
         {
             var query = ObterQueryPareceresWorkflow();
             query += " where wa.wf_aprovacao_id is null";
-            /*return await database.Conexao
-                .QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseAluno, ConselhoClasse, 
-                            FechamentoTurma, Turma, ConselhoClasseParecerConclusivo, ConselhoClasseParecerConclusivo, 
-                            WFAprovacaoParecerConclusivo>(query, 
-                                                            (wfAprovacao, conselhoClasseAluno, conselhoClasse, 
-                                                            fechamentoTurma, turma, 
-                                                            conselhoClasseParecerAluno, conselhoClasseParecerWf) =>
-                {
-                    fechamentoTurma.Turma = turma;
-                    conselhoClasse.FechamentoTurma = fechamentoTurma;
-                    conselhoClasseAluno.ConselhoClasse = conselhoClasse;
-                    wfAprovacao.ConselhoClasseAluno = conselhoClasseAluno;
-                    wfAprovacao.ConselhoClasseAluno.ConselhoClasseParecer = conselhoClasseParecerAluno;
-                    wfAprovacao.ConselhoClasseParecer = conselhoClasseParecerWf;
-
-                    return wfAprovacao;
-                });*/
             return await database.Conexao
                 .QueryAsync<WFAprovacaoParecerConclusivoDto>(query);
         }
-
-        /*private string ObterQueryPareceresEmAprovacaoPorWorkflow()
-        {
-            return @"select wa.*
-	                    , ca.*
-	                    , cc.*
-	                    , ft.*
-	                    , t.*
-                        , cpa.*
-                        , cpp.*
-                      from wf_aprovacao_parecer_conclusivo wa
-                     join conselho_classe_aluno ca on ca.id = wa.conselho_classe_aluno_id
-                    join conselho_classe cc on cc.id = ca.conselho_classe_id
-                    join fechamento_turma ft on ft.id = cc.fechamento_turma_id
-                    join turma t on t.id = ft.turma_id
-                    left join conselho_classe_parecer cpa on cpa.id = ca.conselho_classe_parecer_id
-                    left join conselho_classe_parecer cpp on cpp.id = wa.conselho_classe_parecer_id";
-        }*/
 
         private string ObterQueryPareceresWorkflow()
         {

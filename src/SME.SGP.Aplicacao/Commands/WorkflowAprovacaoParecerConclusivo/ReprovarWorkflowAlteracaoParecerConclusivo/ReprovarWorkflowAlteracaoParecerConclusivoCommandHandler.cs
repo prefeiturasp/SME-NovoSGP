@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
             if (pareceresEmAprovacao != null && pareceresEmAprovacao.Any())
             {
                 foreach (var parecerEmAprovacao in pareceresEmAprovacao)
-                    await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.WorkFlowAprovacaoId));
+                    await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));
 
                 await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(pareceresEmAprovacao,
                                                                                request.TurmaCodigo,
