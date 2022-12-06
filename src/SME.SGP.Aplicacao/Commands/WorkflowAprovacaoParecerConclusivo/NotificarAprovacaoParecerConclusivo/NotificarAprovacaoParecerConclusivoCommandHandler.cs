@@ -15,16 +15,14 @@ namespace SME.SGP.Aplicacao
     public class NotificarAprovacaoParecerConclusivoCommandHandler : AsyncRequestHandler<NotificarAprovacaoParecerConclusivoCommand>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacao;
-
+        
         //separar
         protected List<TurmasDoAlunoDto> Alunos;
         protected List<Usuario> Usuarios;
         
-        public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator, IRepositorioWFAprovacaoParecerConclusivo repositorioWFAprovacao)
+        public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioWFAprovacao = repositorioWFAprovacao ?? throw new ArgumentNullException(nameof(repositorioWFAprovacao));
         }
 
         protected override async Task Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
@@ -125,5 +123,4 @@ namespace SME.SGP.Aplicacao
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
 
     }
-}
 }

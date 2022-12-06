@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery : IRequest<IEnumerable<WFAprovacaoParecerConclusivoDto>>
+    public class ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery : IRequest<IEnumerable<WFAprovacaoParecerConclusivoDto>>
     {
-        public ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(long workflowId)
+        public ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(long workflowId)
         {
             WorkflowId = workflowId;
         }
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long WorkflowId { get; }
     }
 
-    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQueryValidator : AbstractValidator<ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery>
+    public class ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQueryValidator : AbstractValidator<ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery>
     {
         public ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQueryValidator()
         {

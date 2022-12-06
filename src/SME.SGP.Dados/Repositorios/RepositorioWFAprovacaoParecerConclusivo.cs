@@ -54,7 +54,7 @@ namespace SME.SGP.Dados
                 }, new { workflowId })).FirstOrDefault();
         }
 
-        public async Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterAprovacaoParecerConclusivoPorWorkflowId(long workflowId)
+        public async Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterAprovacaoPareceresConclusivosPorWorkflowId(long workflowId)
         {
             var query = ObterQueryPareceresWorkflow();
             query += " where wa.wf_aprovacao_id = @workflowId";
