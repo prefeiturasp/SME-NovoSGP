@@ -39,7 +39,7 @@ pipeline {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
             stage('Sonar') {
-            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch '_release'; branch '_release-r2'; branch 'infra/*'; } } 
+            when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch 'release'; branch '_release-r2'; branch 'infra/*'; } } 
                 steps {
                   script{
                     boolean testPassed = true
