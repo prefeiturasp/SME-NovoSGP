@@ -37,9 +37,6 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
-            if (!encaminhamentoNAAPADto.Secoes.Any())
-                throw new NegocioException(MensagemNegocioComuns.NENHUMA_SECAO_ENCONTRADA);
-
             ICollection<dynamic> questoesObrigatoriasAConsistir = new List<dynamic>();
             await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, questoesObrigatoriasAConsistir);
             
@@ -213,14 +210,9 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private bool NaoNuloEContemRegistros(IEnumerable<dynamic> data)
-        {
-            return data != null && data.Any();
-        }
-
         private bool EhQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
         {
-            return questao.Obrigatorio && !NaoNuloEContemRegistros(questao.Resposta);
+            return questao.Obrigatorio && !questao.Resposta.NaoNuloEContemRegistrosRespondidos();
         }
         
         private void ValidaRecursivo(SecaoQuestionarioDto secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, ICollection<dynamic> questoesObrigatoriasAConsistir)
@@ -233,7 +225,7 @@ namespace SME.SGP.Aplicacao
                     questoesObrigatoriasAConsistir.Add(new { SecaoId = secao.Id, Secao = secao.Nome, Ordem = ordem });
                 }
                 else
-                if (NaoNuloEContemRegistros(questao.OpcaoResposta) && NaoNuloEContemRegistros(questao.Resposta))
+                if (questao.OpcaoResposta.NaoNuloEContemRegistros() && questao.Resposta.NaoNuloEContemRegistrosRespondidos())
                 {
                     foreach (var resposta in questao.Resposta)
                     {
@@ -277,7 +269,7 @@ namespace SME.SGP.Aplicacao
         private QuestaoDto ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(IEnumerable<QuestaoDto> questoes)
         {
             return questoes.Where(questao => (questao.NomeComponente == QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS)
-                                              && !NaoNuloEContemRegistros(questao.Resposta)).FirstOrDefault();
+                                              && !questao.Resposta.NaoNuloEContemRegistrosRespondidos()).FirstOrDefault();
         }
 
         private QuestaoDto ObterQuestaoAgrupamentoPromocaoCuidados(IEnumerable<QuestaoDto> questoes)
@@ -350,9 +342,6 @@ namespace SME.SGP.Aplicacao
                 if (secao.NomeComponente == SECAO_QUESTOES_APRESENTADAS)
                     await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao, questoes, questoesObrigatoriasAConsistir);
                 
-                if (!questoes.Any(questao => questao.Obrigatorio)) 
-                    continue;
-
                 ValidaRecursivo(secao, "", questoes, questoesObrigatoriasAConsistir);
             }
         }
