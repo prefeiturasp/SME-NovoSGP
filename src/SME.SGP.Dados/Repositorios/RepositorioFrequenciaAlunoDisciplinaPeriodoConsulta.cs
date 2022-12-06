@@ -524,7 +524,7 @@ namespace SME.SGP.Dados
         }
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string componenteCurricularId, long[] periodosEscolaresIds)
         {
-            const string sql = @"select distinct(1)
+            const string sql = @"select 1
                                    from registro_frequencia_aluno rfa
                                   inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
                                   inner join aula a on a.id = rf.aula_id 
@@ -533,7 +533,8 @@ namespace SME.SGP.Dados
                                   where pe.id = ANY(@periodosEscolaresIds)
                                     and a.turma_id = @codigoTurma
                                     and a.disciplina_id = @componenteCurricularId
-                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodosEscolaresIds });
         }
