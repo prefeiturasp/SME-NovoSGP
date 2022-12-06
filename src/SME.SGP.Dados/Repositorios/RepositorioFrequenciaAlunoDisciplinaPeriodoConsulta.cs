@@ -628,12 +628,21 @@ namespace SME.SGP.Dados
             if (bimestres.Length > 0)
                 query.AppendLine(" and p.bimestre = any(@bimestres) ");
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
+            {
+                dataMatriculaAluno = Convert.ToDateTime(dataMatriculaAluno.Value.ToString("yyyy/MM/dd"));
+                dataSituacaoAluno = Convert.ToDateTime(dataSituacaoAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date between @dataMatriculaAluno and @dataSituacaoAluno");
+            }
             else if (dataMatriculaAluno.HasValue)
+            {
+                dataMatriculaAluno = Convert.ToDateTime(dataMatriculaAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno");
+            }
             else if (dataSituacaoAluno.HasValue)
+            {
+                dataSituacaoAluno = Convert.ToDateTime(dataSituacaoAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
-
+            }
             query.AppendLine(" and a.turma_id = any(@turmasCodigo);");
 
             return await database.Conexao.QueryAsync<TurmaDataAulaComponenteQtdeAulasDto>(query.ToString(),
