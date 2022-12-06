@@ -12,7 +12,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            await this.mediator.Send(new NotificarAlteracaoNotaPosConselhoAgrupadaTurmaCommand());
+            await this.mediator.Send(new NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand());
 
             return true;
         }

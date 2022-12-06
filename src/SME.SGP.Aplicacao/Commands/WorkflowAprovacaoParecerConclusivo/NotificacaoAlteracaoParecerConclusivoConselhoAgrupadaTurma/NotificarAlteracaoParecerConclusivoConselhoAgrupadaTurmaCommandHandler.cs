@@ -98,6 +98,7 @@ namespace SME.SGP.Aplicacao
             msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
             msg.AppendLine("<tbody>");
             msg.AppendLine("<tr>");
+            msg.AppendLine("<td style='padding: 3px;'><strong>Componente curricular</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Estudante</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Parecer anterior</strong></td>");
             msg.AppendLine("<td style='padding: 3px;'><strong>Novo Parecer</strong></td>");
@@ -118,10 +119,15 @@ namespace SME.SGP.Aplicacao
         {
             var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseAluno.AlunoCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
-            
+            /*var componenteCurricular = new ObterComponentesCurricularesDoProfessorNaTurmaQuery(
+                aulaRecorrente.CodigoTurma,
+                usuario.CodigoRf,
+                usuarioLogado.PerfilAtual);*/
+
             return $@"<tr>
+                           <td style='padding: 3px;'>{""}</td> 
                            <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                           <td style='padding: 3px;'>{aprovacao.ConselhoClasseAluno.ConselhoClasseParecer.Nome}</td>
+                           <td style='padding: 3px;'>{aprovacao.ConselhoClasseAluno.ConselhoClasseParecer?.Nome}</td>
                            <td style='padding: 3px;'>{aprovacao.ConselhoClasseParecer.Nome}</td>
                            <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
                            <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>

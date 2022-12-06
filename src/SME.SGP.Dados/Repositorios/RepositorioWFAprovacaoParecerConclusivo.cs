@@ -110,8 +110,8 @@ namespace SME.SGP.Dados
 	                    , cc.*
 	                    , ft.*
 	                    , t.*
-                        , cca.*
-                        , ccp.*
+                        , cpa.*
+                        , cpp.*
                       from wf_aprovacao_parecer_conclusivo wa
                      join conselho_classe_aluno ca on ca.id = wa.conselho_classe_aluno_id
                     join conselho_classe cc on cc.id = ca.conselho_classe_id
