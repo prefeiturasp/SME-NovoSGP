@@ -7,15 +7,16 @@ namespace SME.SGP.Aplicacao.Queries
 {
     public class ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery : IRequest<IEnumerable<SecaoQuestionarioDto>>
     {
-        public ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery(List<int> etapas, long encaminhamentoNAAPAId)
+        public ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery(List<int> etapas, long encaminhamentoNAAPAId, int modalidade)
         {
             Etapas = etapas;
             EncaminhamentoNAAPAId = encaminhamentoNAAPAId;
+            Modalidade = modalidade;
         }
 
         public List<int> Etapas { get; set; }
         public long EncaminhamentoNAAPAId { get; }
-
+        public int Modalidade { get; }
     }
 
     public class ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryValidator : AbstractValidator<ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery>
@@ -23,8 +24,8 @@ namespace SME.SGP.Aplicacao.Queries
         public ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryValidator()
         {
             RuleFor(c => c.Etapas)
-            .NotEmpty()
-            .WithMessage("As Etapas devem ser informadas.");
+                .NotEmpty()
+                .WithMessage("As Etapas devem ser informadas.");
         }
     }
 

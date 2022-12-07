@@ -17,10 +17,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(long encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesPorEtapaDeEncaminhamento filtro)
         {
-            var listaEtapas = new List<int>() { (int)EtapaEncaminhamentoNAAPA.PrimeiraEtapa };
-            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery(listaEtapas, encaminhamentoNAAPAId));
+            var listaEtapas = new List<int> { (int)EtapaEncaminhamentoNAAPA.PrimeiraEtapa };
+
+            return await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery(listaEtapas,
+                filtro.EncaminhamentoNAAPAId, filtro.Modalidade));
         }
     }
 }
