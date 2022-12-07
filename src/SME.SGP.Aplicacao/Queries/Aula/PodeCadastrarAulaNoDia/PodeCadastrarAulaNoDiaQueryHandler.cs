@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,11 +66,30 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> ExisteAula(PodeCadastrarAulaNoDiaQuery request)
-            => await mediator.Send(new ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(
-                request.DataAula,
-                request.TurmaCodigo,
-                request.ComponenteCurricular.ToString(),
-                request.ProfessorRf,
-                request.TipoAula));
+        {
+            var existeAula =  await mediator.Send(new ExisteAulaNaDataTurmaDisciplinaProfessorRfQuery(
+                                                    request.DataAula,
+                                                    request.TurmaCodigo,
+                                                    request.ComponenteCurricular.ToString(),
+                                                    request.ProfessorRf,
+                                                    request.TipoAula));
+
+            if (existeAula)
+            {
+                var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
+                var aula = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponenteCurricular, request.ProfessorRf));
+
+                if (aula.Any())
+                {
+                    if (perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name() && !aula.Any(a => a.AulaCJ))
+                        return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+            
     }
 }
