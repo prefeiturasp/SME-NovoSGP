@@ -17,6 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         public const int QUESTAO_DATA_QUEIXA_ORDEM = 0;
         public const int QUESTAO_PRIORIDADE_ORDEM = 1;
         public const int SECAO_ETAPA_1 = 1;
+        public const int SECAO_INFORMACOES_ALUNO_ORDEM = 1;
 
         public RepositorioEncaminhamentoNAAPA(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
@@ -89,7 +90,7 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} and secao.etapa = {SECAO_ETAPA_1}
+                        where q.ordem = {QUESTAO_DATA_QUEIXA_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
                         ),
                         vw_resposta_prioridade as (
                         select ens.encaminhamento_naapa_id, 
@@ -101,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
                         join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id
                         left join opcao_resposta opr on opr.id = enr.resposta_id
-                        where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1}
+                        where q.ordem = {QUESTAO_PRIORIDADE_ORDEM} and secao.etapa = {SECAO_ETAPA_1} and secao.ordem = {SECAO_INFORMACOES_ALUNO_ORDEM}
                         )
                         select ";
             sql.AppendLine(sqlSelect);
