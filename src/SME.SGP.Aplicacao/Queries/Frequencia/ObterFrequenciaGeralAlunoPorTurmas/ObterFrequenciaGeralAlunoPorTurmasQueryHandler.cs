@@ -28,14 +28,15 @@ namespace SME.SGP.Aplicacao
 
             frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
             var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
-
+            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(request.CodigosTurmas));
+            var PeriodoEscolarAtual = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turmas.FirstOrDefault(), DateTime.Now));
             var aulasComponentesTurmas = await mediator.Send(new ObterAulasTurmaEBimestreEComponenteCurricularQuery(request.CodigosTurmas,
                                                                                                                     new string[] { request.CodigoAluno },
                                                                                                                     request.TipoCalendarioId,
                                                                                                                     new string[] { },
                                                                                                                     bimestres.ToArray(),
                                                                                                                     request.DataMatriculaTurmaFiltro,
-                                                                                                                    request.DataSituacaoAluno));
+                                                                                                                    PeriodoEscolarAtual.Bimestre == bimestres.Last()? PeriodoEscolarAtual.PeriodoFim : request.DataSituacaoAluno));
             int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
