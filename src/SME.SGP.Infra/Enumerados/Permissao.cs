@@ -688,5 +688,8 @@
 
         [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhAlteracao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
         NAAPA_A = 238,
+        
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, Url = "/relatorios/aee/plano", EhSubMenu = true, SubMenu = "Plano")]
+        RPAEE_C = 239,
     }
 }
