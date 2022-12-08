@@ -133,6 +133,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             
             retorno.AnoLetivo.ShouldBe(dataAtual.Year);
             retorno.Situacao.ShouldBe((int)SituacaoNAAPA.Rascunho);
+            retorno.DescricaoSituacao.ShouldBe(SituacaoNAAPA.Rascunho.Name());
+            retorno.Modalidade.ShouldBe((int)Modalidade.Fundamental);
         }
     }
 }
