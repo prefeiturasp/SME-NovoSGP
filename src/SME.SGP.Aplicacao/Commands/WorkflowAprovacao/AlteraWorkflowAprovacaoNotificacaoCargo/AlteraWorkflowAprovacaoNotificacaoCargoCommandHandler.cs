@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao.Commands
         }
         public async Task<bool> Handle(AlteraWorkflowAprovacaoNotificacaoCargoCommand request, CancellationToken cancellationToken)
         {
-            var wfAprovacao = repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
+            var wfAprovacao = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
+
             if (wfAprovacao == null)
                 throw new NegocioException("Não foi possível obter o workflow de aprovação.");
 
