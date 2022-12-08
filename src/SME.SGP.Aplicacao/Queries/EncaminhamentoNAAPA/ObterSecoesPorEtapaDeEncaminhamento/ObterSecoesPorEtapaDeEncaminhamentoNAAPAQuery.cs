@@ -25,7 +25,15 @@ namespace SME.SGP.Aplicacao.Queries
         {
             RuleFor(c => c.Etapas)
                 .NotEmpty()
-                .WithMessage("As Etapas devem ser informadas.");
+                .WithMessage("As Etapas devem ser informadas para obter as seções por etapa do encaminhamento NAAPA.");
+            
+            RuleFor(c => c.Modalidade)
+                .NotEmpty()
+                .WithMessage("A modalidade deve ser informada para obter as seções por etapa do encaminhamento NAAPA.");
+            
+            RuleFor(c => c.EncaminhamentoNAAPAId)
+                .NotEmpty()
+                .WithMessage("O identificador do encaminhamento deve ser informada para obter as seções por etapa do encaminhamento NAAPA.");
         }
     }
 
