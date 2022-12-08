@@ -6,7 +6,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioSecaoEncaminhamentoNAAPA : IRepositorioBase<SecaoEncaminhamentoNAAPA>
     {
-        Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoDtoPorEtapa(List<int> etapas, long encaminhamentoNAAPAId = 0);
-        Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorEtapa(List<int> etapas, long encaminhamentoNAAPAId = 0, int modalidade = 0);
+        Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoDtoPorEtapa(List<int> etapas, long? encaminhamentoNAAPAId = null);
+        Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorEtapaModalidade(List<int> etapas, int modalidade, long? encaminhamentoNAAPAId = null);
     }
 }

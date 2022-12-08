@@ -19,8 +19,8 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorEtapa(request.Etapas,
-                request.EncaminhamentoNAAPAId, request.Modalidade);
+            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorEtapaModalidade(request.Etapas,
+                request.Modalidade,request.EncaminhamentoNAAPAId);
 
             return MapearParaDto(secoes);
         }

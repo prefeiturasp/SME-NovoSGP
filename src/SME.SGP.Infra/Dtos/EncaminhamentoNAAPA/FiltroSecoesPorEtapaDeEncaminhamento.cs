@@ -2,7 +2,7 @@
 {
     public class FiltroSecoesPorEtapaDeEncaminhamento
     {
-        public long EncaminhamentoNAAPAId { get; set; }
+        public long? EncaminhamentoNAAPAId { get; set; }
         public int Modalidade { get; set; }
     }
 }
