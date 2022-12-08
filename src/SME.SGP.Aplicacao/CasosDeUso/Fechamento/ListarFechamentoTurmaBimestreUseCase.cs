@@ -330,7 +330,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplinaParaAdicionar in disciplinas)
                 {
                     var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == disciplinaParaAdicionar.CodigoComponenteCurricular
-                                                                    && a.AlunoCodigo == aluno.CodigoAluno);
+                                                                    && a.AlunoCodigo == aluno.CodigoAluno && !a.Bimestre.HasValue);
 
                     var notaConceitoTurma = new FechamentoConsultaNotaConceitoTurmaListaoDto()
                     {
@@ -409,6 +409,11 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoBimestreTurma.Any())
                     fechamentosTurmaDisciplina.AddRange(fechamentoBimestreTurma);
             }
+
+            //Busca fechamento final
+            var fechamentoFinal = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, 0));
+            if (fechamentoFinal.Any())
+                fechamentosTurmaDisciplina.AddRange(fechamentoFinal);
 
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
 
