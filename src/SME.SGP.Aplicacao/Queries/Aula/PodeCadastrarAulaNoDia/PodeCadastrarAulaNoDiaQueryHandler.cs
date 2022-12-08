@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                 var perfilAtual = await mediator.Send(new ObterPerfilAtualQuery());
                 var aula = await mediator.Send(new ObterAulasPorDataTurmaComponenteCurricularEProfessorQuery(request.DataAula, request.TurmaCodigo, request.ComponenteCurricular, request.ProfessorRf));
 
-                if (aula.Any())
+                if (aula.Any() || perfilAtual != Guid.Empty)
                 {
                     if (perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name() && !aula.Any(a => a.AulaCJ))
                         return false;
