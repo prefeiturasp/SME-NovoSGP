@@ -14,13 +14,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<IEnumerable<OpcaoRespostaSimplesDto>> ObterOpcoesRespostaPorQuestaoId(long QuestaoId)
+        public Task<IEnumerable<OpcaoRespostaSimplesDto>> ObterOpcoesRespostaPorQuestaoId(long QuestaoId)
         {
             var query = @"select or2.id, or2.ordem, or2.nome, or2.questao_id as questaoId, or2.observacao
                           from opcao_resposta or2
                           where or2.questao_id = @QuestaoId;";
            
-            return await database.Conexao.QueryAsync<OpcaoRespostaSimplesDto>(query, new { QuestaoId });
+            return database.Conexao.QueryAsync<OpcaoRespostaSimplesDto>(query, new { QuestaoId });
         }
     }
 }
