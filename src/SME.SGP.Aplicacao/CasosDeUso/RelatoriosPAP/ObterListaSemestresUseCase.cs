@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             bool temPermissao = VerificaSeBimestreAtualPossuiPermissaoEdicao(semestres, bimestreAtual);
 
-            if (tipoCalendarioTurmaId > 0 && !temPermissao)
+            if (tipoCalendarioTurmaId > 0 && (!temPermissao || semestres.Any(x => x.PodeEditar == false)))
             {
                 var semestresComReaberturaVigente = await mediator.Send(new ObterSemestresComReaberturaAtivaPAPQuery(DateTime.Now, tipoCalendarioTurmaId, turma.UeId, semestres));
 
