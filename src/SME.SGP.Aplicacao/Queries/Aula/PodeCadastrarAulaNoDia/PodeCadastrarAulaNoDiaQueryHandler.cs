@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
                 if (aula.Any() || perfilAtual != Guid.Empty)
                 {
-                    if (perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name() && !aula.Any(a => a.AulaCJ))
+                    if ((perfilAtual.ToString() == PerfilUsuario.CJ.Name() || perfilAtual.ToString() == PerfilUsuario.CJ_INFANTIL.Name()) && !aula.Any(a => a.AulaCJ))
                         return false;
                 }
 
