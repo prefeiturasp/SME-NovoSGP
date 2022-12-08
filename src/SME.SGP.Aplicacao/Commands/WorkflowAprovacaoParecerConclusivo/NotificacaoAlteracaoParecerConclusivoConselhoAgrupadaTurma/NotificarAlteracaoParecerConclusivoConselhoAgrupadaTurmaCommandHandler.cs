@@ -26,7 +26,9 @@ namespace SME.SGP.Aplicacao
         protected override async Task Handle(NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand request, CancellationToken cancellationToken)
         {
             var WFAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
-            if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
+            
+            if (WFAprovacoes == null || !WFAprovacoes.Any())
+                return;
 
             await CarregarInformacoesParaNotificacao(WFAprovacoes);
             var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.TurmaId);
@@ -53,17 +55,17 @@ namespace SME.SGP.Aplicacao
             
             var mensagem = ObterMensagem(turma, aprovacoesPorTurma);
             var conselhoClasseAlunoId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseAlunoId;
-            return await mediator.Send(new EnviarNotificacaoCommand(
-                                                                    ObterTitulo(turma),
-                                                                    mensagem,
-                                                                    NotificacaoCategoria.Workflow_Aprovacao,
-                                                                    NotificacaoTipo.Fechamento,
-                                                                    new Cargo[] { Cargo.CP, Cargo.Supervisor },
-                                                                    turma.Ue.Dre.CodigoDre,
-                                                                    turma.Ue.CodigoUe,
-                                                                    turma.CodigoTurma,
-                                                                    WorkflowAprovacaoTipo.AlteracaoParecerConclusivo,
-                                                                    conselhoClasseAlunoId));
+
+            return await mediator.Send(new EnviarNotificacaoCommand(ObterTitulo(turma),
+                mensagem,
+                NotificacaoCategoria.Workflow_Aprovacao,
+                NotificacaoTipo.Fechamento,
+                new[] { Cargo.CP, Cargo.Supervisor },
+                turma.Ue.Dre.CodigoDre,
+                turma.Ue.CodigoUe,
+                turma.CodigoTurma,
+                WorkflowAprovacaoTipo.AlteracaoParecerConclusivo,
+                conselhoClasseAlunoId));
         }
 
         protected override string ObterTextoCabecalho(Turma turma)
