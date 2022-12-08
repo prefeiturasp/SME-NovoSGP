@@ -1,22 +1,21 @@
 do $$
 declare
 	turma_db record;
-	periodo_db record;
+	periodo_db record;  
 begin	
-	raise notice 'Iniciando validação frenquência disciplina mensal';
+	raise notice 'Iniciando validaÃ§Ã£o frenquÃªncia disciplina mensal';
 	raise notice 'Limpando tabela';
-	TRUNCATE TABLE public.frequencia_aluno_disciplina_inconsistencia;
-	raise notice 'Iniciando carga das inconsistências';
-	for turma_db in 
-		select t.turma_id from turma t where ano_letivo = extract('Year' from now()) 
-  	loop
-  		for periodo_db in 
-			 select distinct pe.id perido_id 			 
+	TRUNCATE TABLE public.frequencia_aluno_disciplina_inconsistencia_log;
+	raise notice 'Iniciando carga das inconsistÃªncias';
+	for turma_db in 		
+		select distinct pe.id periodo_id, t.turma_id  			 
 			 from periodo_escolar pe 
 			 inner join aula a on pe.tipo_calendario_id  = a.tipo_calendario_id  
-			 where turma_id = turma_db.turma_id 
-  		loop
-			INSERT INTO frequencia_aluno_disciplina_inconsistencia (codigo_aluno, turma_id, bimestre)
+			 join turma t on t.turma_id = a.turma_id 		
+			 where ano_letivo = extract('Year' from now())	 
+  	loop	  		
+	  			  
+			INSERT INTO frequencia_aluno_disciplina_inconsistencia_log (codigo_aluno, turma_id, bimestre)
   			select diaria.codigo_aluno, diaria.turma_id, diaria.bimestre
 			from 
 			(select rfa.codigo_aluno, pe.bimestre, turma_id, 
@@ -33,7 +32,7 @@ begin
 			 and pe.periodo_inicio <= a.data_aula 
 			 and pe.periodo_fim >= a.data_aula 
 			 and turma_id = turma_db.turma_id
-			 and pe.id = periodo_db.perido_id
+			 and pe.id = turma_db.periodo_id
 			 group by rfa.codigo_aluno, pe.bimestre, turma_id, pe.id, disciplina_id) diaria 
 			 left join
 			 (select codigo_aluno, periodo_escolar_id, turma_id, disciplina_id, 
@@ -44,8 +43,8 @@ begin
 			 from frequencia_aluno  
 			 where not excluido 
 			 and tipo = 1 
-			 and periodo_escolar_id = periodo_db.perido_id
-			 and turma_id = turma_db.turma_id
+			 and periodo_escolar_id = turma_db.periodo_id
+			 and turma_id = turma_db.turma_id		     
 			 group by codigo_aluno, periodo_escolar_id, turma_id, disciplina_id) consolidado 
 			 on diaria.turma_id = consolidado.turma_id 
 			 and diaria.codigo_aluno = consolidado.codigo_aluno 
@@ -54,8 +53,8 @@ begin
 			 or totalCompareceu <> total_presencas 
 			 or totalRemoto <> total_remotos 
 			 or totalAula <> total_aulas;
-  		end loop;
+			
   	end loop;
-    raise notice 'Finalizando carga das inconsistências';
+    raise notice 'Finalizando carga das inconsistÃªncias';
     commit;  
 end $$ 
