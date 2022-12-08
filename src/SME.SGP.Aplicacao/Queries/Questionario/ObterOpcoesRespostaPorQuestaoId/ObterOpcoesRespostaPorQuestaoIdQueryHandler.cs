@@ -22,9 +22,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioOpcoesResposta = repositorioQuestionario ?? throw new ArgumentNullException(nameof(repositorioQuestionario));
         }
 
-        public async Task<IEnumerable<OpcaoRespostaSimplesDto>> Handle(ObterOpcoesRespostaPorQuestaoIdQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<OpcaoRespostaSimplesDto>> Handle(ObterOpcoesRespostaPorQuestaoIdQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioOpcoesResposta.ObterOpcoesRespostaPorQuestaoId(request.Id);
+            return repositorioOpcoesResposta.ObterOpcoesRespostaPorQuestaoId(request.Id);
         }
     }
 
