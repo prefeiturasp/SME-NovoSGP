@@ -76,11 +76,12 @@ namespace SME.SGP.Aplicacao
                     var turmasCodigos = new string[] { };
                     var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-                    if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+                    if (turma.DeveVerificarRegraRegulares() || (turmasitinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
                     {
                         var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
                         turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                        turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+                        if (turmasitinerarioEnsinoMedio != null)
+                            turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
                         turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
                     }
 
