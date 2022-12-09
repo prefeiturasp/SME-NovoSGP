@@ -68,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-                    if (!ImagemJaExistente(imagem.ToString()))
+                    if (!ImagemJaExistente(imagem.ToString()) && ImagemExisteTemp(imagem.ToString()))
                     {
                         var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
                         if (!string.IsNullOrEmpty(novoCaminho))
@@ -154,6 +154,7 @@ namespace SME.SGP.Aplicacao
 
         private bool ImagemJaExistente(string imagem)
         => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketArquivos}/");
-
+        private bool ImagemExisteTemp(string imagem)
+        => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketTemp}");
     }
 }
