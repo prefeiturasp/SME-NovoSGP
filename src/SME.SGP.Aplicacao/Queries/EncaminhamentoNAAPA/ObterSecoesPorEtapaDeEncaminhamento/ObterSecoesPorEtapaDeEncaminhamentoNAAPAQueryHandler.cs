@@ -2,7 +2,6 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,7 +19,8 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorEtapa(request.Etapas, request.EncaminhamentoNAAPAId);
+            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorEtapaModalidade(request.Etapas,
+                request.Modalidade,request.EncaminhamentoNAAPAId);
 
             return MapearParaDto(secoes);
         }

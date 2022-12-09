@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Dominio;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -10,4 +13,13 @@ namespace SME.SGP.Infra
         public string Nome { get; set; }
         public string Observacao { get; set; }
     }
+
+    public static class OpcaoRespostaDtoExtensao
+    {
+        public static bool NaoNuloEContemRegistros(this IEnumerable<OpcaoRespostaDto> opcoes)
+        {
+            return opcoes != null && opcoes.Any();
+        }
+    }
+
 }

@@ -244,7 +244,7 @@ pipeline {
         steps{
           withCredentials([string(credentialsId: "flyway_sgp_${branchname}", variable: 'url')]) {
             checkout scm
-            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+            sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
         }		
       }
@@ -275,7 +275,7 @@ pipeline {
             try {
                 withCredentials([string(credentialsId: "flyway_sgp_treinamento", variable: 'url')]) {
                 checkout scm
-                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts boxfuse/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
+                sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
                 }
             } 
             catch (err) {
