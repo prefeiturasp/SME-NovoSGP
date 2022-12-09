@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoParecerConclusivoCommand : IRequest
+    public class NotificarAprovacaoParecerConclusivoCommand : IRequest<bool>
     {
         public NotificarAprovacaoParecerConclusivoCommand(IEnumerable<WFAprovacaoParecerConclusivoDto> pareceresEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome, bool aprovado, string motivo = "")
         {
