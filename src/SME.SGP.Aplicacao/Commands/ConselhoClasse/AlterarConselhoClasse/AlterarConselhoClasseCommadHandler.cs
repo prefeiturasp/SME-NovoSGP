@@ -128,8 +128,6 @@ namespace SME.SGP.Aplicacao
             var consolidacaoTurma = new ConsolidacaoTurmaDto(request.Turma.Id, request.Bimestre ?? 0);
             var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
             
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid()), cancellationToken);
-
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
             {
