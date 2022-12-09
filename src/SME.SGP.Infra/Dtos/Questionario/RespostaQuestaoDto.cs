@@ -1,5 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
@@ -12,5 +14,13 @@ namespace SME.SGP.Infra
         public string Texto { get; set; }
         public DateTime? PeriodoInicio { get; set; }
         public DateTime? PeriodoFim { get; set; }
+    }
+
+    public static class RespostaQuestaoDtoExtensao
+    {
+        public static bool NaoNuloEContemRegistrosRespondidos(this IEnumerable<RespostaQuestaoDto> respostas)
+        {
+            return respostas != null && respostas.Any(resposta => !string.IsNullOrEmpty(resposta.Texto) || (resposta.OpcaoRespostaId ?? 0) != 0);
+        }
     }
 }
