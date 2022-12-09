@@ -126,7 +126,6 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(request.CodigoAluno, request.Turma.Id, request.Bimestre.Value, alunoFiltrado.Inativo), cancellationToken);
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(request.Turma.Id, request.Bimestre ?? 0);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
             
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
