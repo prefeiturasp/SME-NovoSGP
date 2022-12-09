@@ -156,5 +156,13 @@ namespace SME.SGP.Infra
         public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
             => DataMatricula.Date <= dataReferencia;
 
+        public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
+        {
+            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
+                return EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
+
+            return PodeEditarNotaConceito();
+        }
+
     }
 }

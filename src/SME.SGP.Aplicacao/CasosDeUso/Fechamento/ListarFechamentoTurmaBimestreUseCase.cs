@@ -164,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? VerificaSePodeEditarAluno(aluno, periodoAtual) : false;
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(periodoAtual) : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -281,14 +281,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return alunosFechamentoNotaConceito;
-        }
-
-        public bool VerificaSePodeEditarAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar periodoSelecionado)
-        {
-            if (!aluno.PodeEditarNotaConceito() && periodoSelecionado != null)
-                return aluno.EstaAtivo(periodoSelecionado.PeriodoFim);
-
-            return aluno.PodeEditarNotaConceito();
         }
 
         public async Task<IList<AlunosFechamentoNotaConceitoTurmaDto>> RetornaListagemAlunosFechamentoFinal(IEnumerable<AlunoPorTurmaResposta> alunos, List<DisciplinaDto> disciplinas,
