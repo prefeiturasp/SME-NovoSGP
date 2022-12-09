@@ -94,7 +94,7 @@ public class ObterNotificacaoPorIdUseCase : IObterNotificacaoPorIdUseCase
         switch (workflowAprovacao.Tipo)
         {
             case WorkflowAprovacaoTipo.AlteracaoParecerConclusivo:
-                return await MontarMensagemParecerConclusivo(workflowAprovacao.Id, notificacao);
+                return await MontarMensagemAlteracaoParecerConclusivo(workflowAprovacao.Id, notificacao);
             case WorkflowAprovacaoTipo.Basica:
             case WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional:
             case WorkflowAprovacaoTipo.ReposicaoAula:
@@ -108,56 +108,56 @@ public class ObterNotificacaoPorIdUseCase : IObterNotificacaoPorIdUseCase
         }
     }
 
-    private async Task<string> MontarMensagemParecerConclusivo(long workflowId, Notificacao notificacao)
+    private async Task<string> MontarMensagemAlteracaoParecerConclusivo(long workflowId, Notificacao notificacao)
     {
+        if (notificacao.Status is NotificacaoStatus.Aceita or NotificacaoStatus.Reprovada)
+            return notificacao.Mensagem;
+        
         var pareceresConclusivos =
             (await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(workflowId))).ToList();
 
         if (!pareceresConclusivos.Any())
-            return string.Empty;
+            return notificacao.Mensagem;
         
         var alunosCodigos = pareceresConclusivos.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
         var alunos = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(alunosCodigos))).ToList();
         
         var usuariosIds = pareceresConclusivos.Select(wf => wf.UsuarioSolicitanteId).Distinct().ToArray();
         var usuarios = (await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(usuariosIds))).ToList();
+        var parecerConclusivo = pareceresConclusivos.FirstOrDefault();
 
-        var msg = new StringBuilder();
-        var agrupamentoPorTurma = pareceresConclusivos.GroupBy(wf => wf.TurmaId);
+        if (parecerConclusivo == null)
+            return notificacao.Mensagem;
         
-        foreach (var grupoTurma in agrupamentoPorTurma)
+        var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(parecerConclusivo.TurmaId));
+        
+        var msg = new StringBuilder();
+        msg.AppendLine($"O parecer conclusivo dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.");
+        msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
+        msg.AppendLine("<tbody>");
+        msg.AppendLine("<tr>");
+        msg.AppendLine("<td style='padding: 3px;'><strong>Estudante</strong></td>");
+        msg.AppendLine("<td style='padding: 3px;'><strong>Parecer anterior</strong></td>");
+        msg.AppendLine("<td style='padding: 3px;'><strong>Novo Parecer</strong></td>");
+        msg.AppendLine("<td style='padding: 3px;'><strong>Usuário que alterou</strong></td>");
+        msg.AppendLine("<td style='padding: 3px;'><strong>Data da alteração</strong></td>");
+        msg.AppendLine("</tr>");        
+        
+        foreach (var item in pareceresConclusivos)
         {
-            var cabecalho = string.Empty; // TODO montar o cabeçalho
-            msg.AppendLine(cabecalho);
-            
-            msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
-            msg.AppendLine("<tbody>");
-            msg.AppendLine("<tr>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Estudante</strong></td>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Parecer anterior</strong></td>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Novo Parecer</strong></td>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Usuário que alterou</strong></td>");
-            msg.AppendLine("<td style='padding: 3px;'><strong>Data da alteração</strong></td>");
-            msg.AppendLine("</tr>");  
-            
-            foreach (var aprovacao in grupoTurma.ToList())
-            {
-                var aluno = alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo);
-                var usuario = usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
+            var aluno = alunos.Find(aluno => aluno.CodigoAluno.ToString() == item.AlunoCodigo);
+            var usuario = usuarios.Find(usuario => usuario.Id == item.UsuarioSolicitanteId);
 
-                msg.AppendLine($@"<tr>
-                    <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                    <td style='padding: 3px;'>{aprovacao.NomeParecerAnterior}</td>
-                    <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
-                    <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
-                    <td style='padding: 3px;'>{aprovacao.CriadoEm:dd/MM/yyy HH:mm}</td>
-                </tr>");
-            }
-            
-            var rodape = string.Empty; // TODO montar o rodapé
-            msg.AppendLine(rodape);
+            msg.AppendLine($@"<tr>
+                <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
+                <td style='padding: 3px;'>{item.NomeParecerAnterior}</td>
+                <td style='padding: 3px;'>{item.NomeParecerNovo}</td>
+                <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
+                <td style='padding: 3px;'>{item.CriadoEm:dd/MM/yyy HH:mm}</td>
+            </tr>");
         }
-
+        
+        msg.AppendLine("Você precisa aceitar esta notificação para que a alteração seja considerada válida.");
         return msg.ToString();
     }
     

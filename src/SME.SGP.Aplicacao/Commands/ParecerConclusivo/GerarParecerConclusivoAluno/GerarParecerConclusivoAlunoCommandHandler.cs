@@ -22,11 +22,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request, CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request,
+            CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
+            var alunosEol =
+                await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
             bool historico = turma.Historica;
 
@@ -34,13 +36,18 @@ namespace SME.SGP.Aplicacao
                 historico = alunoNaTurma.Inativo;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null,
+                    historico))
                 return new ParecerConclusivoDto();
 
             var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-            var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
+            var parecerConclusivo =
+                await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
+                    turma.CodigoTurma, pareceresDaTurma));
 
-            var emAprovacao = await EnviarParaAprovacao(turma);
+        
+
+        var emAprovacao = await EnviarParaAprovacao(turma);
             if (emAprovacao)
                 await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
