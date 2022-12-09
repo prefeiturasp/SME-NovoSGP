@@ -8,6 +8,6 @@ public class SalvarNotificacaoCommandValidator : AbstractValidator<SalvarNotific
     {
         RuleFor(c => c.Notificacao)
             .NotNull()
-            .WithMessage("Os dados da notificação deve ser informados para serem salvos.");
+            .WithMessage("Os dados da notificação devem ser informados para serem salvos.");
     }
 }
