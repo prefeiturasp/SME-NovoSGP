@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? VerificaSePodeEditarAluno(aluno, ultimoPeriodoEscolar) : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -210,6 +210,14 @@ namespace SME.SGP.Aplicacao
             retorno.PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
 
             return retorno;
+        }
+
+        public bool VerificaSePodeEditarAluno(AlunoPorTurmaResposta aluno, PeriodoEscolar ultimoPeriodoEscolar)
+        {
+            if (!aluno.PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
+                return aluno.EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
+
+            return aluno.PodeEditarNotaConceito();
         }
 
         private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
