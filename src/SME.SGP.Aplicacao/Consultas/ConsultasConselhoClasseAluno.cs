@@ -826,7 +826,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<NotaConceitoBimestreComponenteDto> notasFechamentoAluno, bool componenteLancaNota, bool visualizaNota, TurmaComplementarDto turmaComplementar = null)
         {
             // Busca nota do conselho de classe consultado
-            var notaComponente = notasConselhoClasseAluno.FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
+            var notaComponente = notasConselhoClasseAluno.OrderByDescending(x=> x.ConselhoClasseNotaId).FirstOrDefault(c => c.ComponenteCurricularCodigo == componenteCurricularCodigo);
             var notaComponenteId = notaComponente?.ConselhoClasseNotaId;
 
             if (notaComponente == null || !notaComponente.NotaConceito.HasValue)
