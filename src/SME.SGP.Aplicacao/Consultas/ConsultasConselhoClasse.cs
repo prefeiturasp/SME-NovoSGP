@@ -25,6 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
+        //private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
@@ -37,6 +38,7 @@ namespace SME.SGP.Aplicacao
                                        IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                        IConsultasPeriodoFechamento consultasPeriodoFechamento,
                                        IConsultasFechamentoTurma consultasFechamentoTurma,
+                                       //IConsultasConselhoClasse consultasConselhoClasse,
                                        IMediator mediator)
         {
             this.repositorioConselhoClasseConsulta = repositorioConselhoClasseConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseConsulta));
@@ -49,6 +51,7 @@ namespace SME.SGP.Aplicacao
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasFechamentoTurma = consultasFechamentoTurma ?? throw new ArgumentNullException(nameof(consultasFechamentoTurma));
+            //this.consultasConselhoClasse = consultasConselhoClasse ?? throw new ArgumentNullException(nameof(consultasConselhoClasse));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -124,6 +127,22 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
+            bool periodoAberto;
+
+            if (bimestre == 0)
+            {
+                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
+                {
+                    var validacaoConselhoFinal = await ValidaConselhoClasseUltimoBimestre(turma);
+                    if (!validacaoConselhoFinal.Item2)
+                        throw new NegocioException($"Para acessar esta aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
+                }
+
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
+            }
+            else
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma?.Id,
@@ -136,7 +155,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoFim = periodoFechamentoVigente?.PeriodoFechamentoFim,
                 TipoNota = tipoNota,
                 Media = mediaAprovacao,
-                AnoLetivo = turma.AnoLetivo
+                AnoLetivo = turma.AnoLetivo,
+                PeriodoAberto = periodoAberto
             };
         }
 
