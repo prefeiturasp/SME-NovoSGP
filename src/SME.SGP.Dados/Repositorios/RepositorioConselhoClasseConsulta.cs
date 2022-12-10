@@ -74,12 +74,12 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select c.* 
                             from conselho_classe c 
                            inner join fechamento_turma t on t.id = c.fechamento_turma_id
-                           where t.turma_id = @turmaId ");
+                           where t.turma_id = @turmaId 
+                           and not c.excluido");
 
-            if (periodoEscolarId.HasValue)
-                query.AppendLine(" and t.periodo_escolar_id = @periodoEscolarId");
-            else
-                query.AppendLine(" and t.periodo_escolar_id is null");
+            query.AppendLine(periodoEscolarId.HasValue
+                ? " and t.periodo_escolar_id = @periodoEscolarId"
+                : " and t.periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
