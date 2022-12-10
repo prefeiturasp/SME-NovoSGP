@@ -16,5 +16,6 @@ namespace SME.SGP.Infra
         public TipoNota TipoNota { get; set; }
         public double Media { get; set; }
         public int AnoLetivo { get; set; }
+        public bool? PeriodoAberto { get; set; }
     }
 }
