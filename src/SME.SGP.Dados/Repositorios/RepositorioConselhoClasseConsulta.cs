@@ -360,8 +360,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                           where  t.ano_letivo = {DateTime.Now.Year}
                           and dre.id = @dreId 
-                          and pe.bimestre in (1,2,3)
-                          and tc.id in (24,25,26,27)");
+                          and tc.modalidade in (1,2)");
 
             return await database.Conexao
                 .QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), new { dreId });
