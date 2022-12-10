@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
                                                                                                                     new string[] { },
                                                                                                                     bimestres.ToArray(),
                                                                                                                     request.DataMatriculaTurmaFiltro,
-                                                                                                                    PeriodoEscolarAtual.Bimestre == bimestres.Last()? PeriodoEscolarAtual.PeriodoFim : request.DataSituacaoAluno));
+                                                                                                                    PeriodoEscolarAtual != null && PeriodoEscolarAtual.Bimestre == bimestres.Last()? PeriodoEscolarAtual.PeriodoFim : request.DataSituacaoAluno));
             int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
