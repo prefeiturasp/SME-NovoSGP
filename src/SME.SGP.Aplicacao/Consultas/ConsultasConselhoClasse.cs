@@ -25,7 +25,6 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasFechamentoTurma consultasFechamentoTurma;
         private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
         private readonly IRepositorioConselhoClasseConsolidado repositorioConselhoClasseConsolidado;
-        //private readonly IConsultasConselhoClasse consultasConselhoClasse;
         private readonly IMediator mediator;
 
         public ConsultasConselhoClasse(IRepositorioConselhoClasseConsulta repositorioConselhoClasseConsulta,
