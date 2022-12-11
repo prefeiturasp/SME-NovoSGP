@@ -359,7 +359,7 @@ namespace SME.SGP.Aplicacao
                 Enumerable.Empty<RegistroFrequenciaAlunoBimestreDto>()).ToList();
 
             var gruposMatrizes = disciplinasDaTurma
-                .Where(c => c.GrupoMatrizNome != null && (c.LancaNota || c.RegistraFrequencia))
+                .Where(c => c.GrupoMatrizNome != null && c.LancaNota)
                 .OrderBy(d => d.GrupoMatrizId)
                 .GroupBy(c => c.GrupoMatrizId)
                 .ToList();
@@ -384,7 +384,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componentes = await mediator.Send(new ObterComponentesAreasConhecimentoQuery(grupoDisiplinasMatriz, areaConhecimento));
 
-                    foreach (var disciplina in componentes.Where(d => d.LancaNota || d.RegistraFrequencia).OrderBy(g => g.Nome).ToList())
+                    foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome).ToList())
                     {
                         var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
 
