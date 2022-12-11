@@ -49,15 +49,18 @@ namespace SME.SGP.Aplicacao
                 if (turma == null)
                     throw new NegocioException("Turma não encontrada.");
 
-                var turmasCodigos = new string[] { };
-                var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+                var turmasCodigos = Array.Empty<string>();
+                var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken);
 
-                if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+                if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
                 {
-                    var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
-                    turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                    turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
-                    turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
+                    var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                    var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                    tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                    tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                    
+                    
+                    turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta), cancellationToken);
                 }
 
                 if (!turmasCodigos.Any())

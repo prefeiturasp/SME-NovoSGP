@@ -31,8 +31,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request,CancellationToken cancellationToken)
         {
-            var fechamentoTurma = await mediator
-                .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
             // Se não existir conselho de classe para o fechamento gera
             if (request.ConselhoClasseAluno.ConselhoClasse.Id == 0)
@@ -45,7 +44,7 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAlunoId = await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
 
-            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo));
+            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
             return conselhoClasseAlunoId;
         }
