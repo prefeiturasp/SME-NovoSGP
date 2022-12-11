@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
         private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioFechamentoTurmaConsulta> repositorioFechamentoTurma;
         private readonly Mock<IConsultasTurma> consultasTurma;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
@@ -31,6 +32,7 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAlunoConsulta>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
+            repositorioFechamentoTurma = new Mock<IRepositorioFechamentoTurmaConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
@@ -42,8 +44,8 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
                                                                   repositorioConselhoClasseAluno.Object,
                                                                   repositorioPeriodoEscolar.Object,
                                                                   repositorioParametrosSistema.Object,
-                                                                  repositorioConselhoClasseConsolidado.Object,
                                                                   repositorioTipoCalendario.Object,
+                                                                  repositorioFechamentoTurma.Object,                                                                  
                                                                   consultasTurma.Object,
                                                                   consultasPeriodoEscolar.Object,
                                                                   consultasPeriodoFechamento.Object,

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -30,14 +29,14 @@ namespace SME.SGP.Aplicacao.Queries
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
-                var tiposTurmasParaConsulta = new List<int>{ (int)request.Turma.TipoTurma };
-
-                tiposTurmasParaConsulta.AddRange(request.Turma.ObterTiposRegularesDiferentes());
-                tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
+                var tiposTurmas = new List<int>();
+                
+                tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
+                tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
                 var turmasCodigosEOL = await mediator
                     .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo,
-                            request.AlunoCodigo, tiposTurmasParaConsulta, request.Historico,
+                            request.AlunoCodigo, tiposTurmas, request.Historico,
                             periodoEscolar?.PeriodoFim),
                         cancellationToken);
 
@@ -53,7 +52,7 @@ namespace SME.SGP.Aplicacao.Queries
                             turmasCodigos = turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray();
                     }
                     else
-                        turmasCodigos = new string[] { request.Turma.CodigoTurma };
+                        turmasCodigos = new[] { request.Turma.CodigoTurma };
                 }
                 else
                 {
