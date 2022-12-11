@@ -95,11 +95,11 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE);
 
-            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma).ToList();
-            if (!disciplinas.Any())
+            var disciplinas = (await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma));
+            if (disciplinas == null || !disciplinas.Any())
                 return null;
 
-            disciplinas = await MapearLancaNotaFrequenciaSgp(disciplinas);
+            disciplinas = (await MapearLancaNotaFrequenciaSgp(disciplinas)).ToList();
 
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                 .GroupBy(c => new { c.GrupoMatriz?.Id, c.GrupoMatriz?.Nome });
