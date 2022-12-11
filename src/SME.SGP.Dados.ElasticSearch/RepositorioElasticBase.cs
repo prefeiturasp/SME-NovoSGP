@@ -140,15 +140,18 @@ namespace SME.SGP.Dados.ElasticSearch
         {
             var nomeIndice = ObterNomeIndice(indice);
 
-            var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
-                     await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(nomeIndice)),
-                "Elastic",
-                $"Insert {entidade.GetType().Name}",
-                nomeIndice,
-                JsonConvert.SerializeObject(entidade));
+            if (!string.IsNullOrEmpty(nomeIndice))
+            {
+                var response = await servicoTelemetria.RegistrarComRetornoAsync<ISearchResponse<TEntidade>>(async () => 
+                         await _elasticClient.IndexAsync(entidade, descriptor => descriptor.Index(nomeIndice)),
+                    "Elastic",
+                    $"Insert {entidade.GetType().Name}",
+                    nomeIndice,
+                    JsonConvert.SerializeObject(entidade));
 
-            if (!response.IsValid)
-                throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+                if (!response.IsValid)
+                    throw new Exception(response.ServerError?.ToString(), response.OriginalException);
+            }
 
             return true;
         }
