@@ -128,13 +128,6 @@ namespace SME.SGP.Aplicacao
 
             if (bimestre == 0)
             {
-                if (fechamentoTurma.Turma.AnoLetivo != 2020 && !fechamentoTurma.Turma.Historica)
-                {
-                    var validacaoConselhoFinal = await ValidaConselhoClasseUltimoBimestre(turma);
-                    if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException($"Para acessar esta aba você precisa registrar o conselho de classe do {validacaoConselhoFinal.Item1}º bimestre");
-                }
-
                 periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
             }
             else
