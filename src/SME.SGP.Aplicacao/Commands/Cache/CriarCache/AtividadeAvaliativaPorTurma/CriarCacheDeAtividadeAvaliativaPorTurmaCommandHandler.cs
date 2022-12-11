@@ -24,6 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<NotaConceito>> Handle(CriarCacheDeAtividadeAvaliativaPorTurmaCommand request, CancellationToken cancellationToken)
         {
             var nomeChave = $"Atividade-Avaliativa-{request.CodigoTurma}";
+            
+            await repositorioCache.RemoverAsync(nomeChave);
 
             var atividadeAvaliativas = await repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(request.CodigoTurma);
             await repositorioCache.SalvarAsync(nomeChave, atividadeAvaliativas);
