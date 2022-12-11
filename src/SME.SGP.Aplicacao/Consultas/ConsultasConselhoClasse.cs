@@ -1,13 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations;
 using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
@@ -137,7 +135,16 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
-            return new ConselhoClasseAlunoResumoDto
+            bool periodoAberto;
+
+            if (bimestre == 0)
+            {
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
+            }
+            else
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+
+            return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma?.Id,
                 ConselhoClasseId = conselhoClasse?.Id,
@@ -149,7 +156,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoFim = periodoFechamentoVigente?.PeriodoFechamentoFim,
                 TipoNota = tipoNota,
                 Media = mediaAprovacao,
-                AnoLetivo = turma.AnoLetivo
+                AnoLetivo = turma.AnoLetivo,
+                PeriodoAberto = periodoAberto
             };
         }
 
