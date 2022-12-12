@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Aplicacao.Commands.Cache.CriarCache.AtividadeAvaliativaPorTurma;
 
 namespace SME.SGP.Dominio
 {
@@ -189,13 +190,15 @@ namespace SME.SGP.Dominio
                     repositorioNotasConceitos.Salvar(notaConceito);
 
                 unitOfWork.PersistirTransacao();
+
+                await mediator.Send(new AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma, notaConceitoParaInserir, notaConceitoParaAtualizar, notaConceitoParaRemover));
             }
             catch (Exception)
             {
                 unitOfWork.Rollback();
                 throw;
             }
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma));
+            
         }
 
         private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,bool gestorEscolar, Turma turma)
