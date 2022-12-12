@@ -5,24 +5,26 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
-namespace SME.SGP.Aplicacao.Queries.ObterNotificacaoPorId;
-
-public class ObterNotificacaoPorIdQueryHandler : IRequestHandler<ObterNotificacaoPorIdQuery, Notificacao>
+namespace SME.SGP.Aplicacao
 {
-    private readonly IRepositorioNotificacao repositorioNotificacao;
-
-    public ObterNotificacaoPorIdQueryHandler(IRepositorioNotificacao repositorioNotificacao)
+    public class ObterNotificacaoPorIdQueryHandler : IRequestHandler<ObterNotificacaoPorIdQuery, Notificacao>
     {
-        this.repositorioNotificacao = repositorioNotificacao ?? throw new ArgumentNullException(nameof(repositorioNotificacao));
+        private readonly IRepositorioNotificacao repositorioNotificacao;
+
+        public ObterNotificacaoPorIdQueryHandler(IRepositorioNotificacao repositorioNotificacao)
+        {
+            this.repositorioNotificacao = repositorioNotificacao ??
+                                          throw new ArgumentNullException(nameof(repositorioNotificacao));
+        }
+
+        public async Task<Notificacao> Handle(ObterNotificacaoPorIdQuery request, CancellationToken cancellationToken)
+        {
+            var notificacao = await repositorioNotificacao.ObterPorIdAsync(request.NotificacaoId);
+
+            if (notificacao == null)
+                throw new NegocioException($"Notificação de Id: '{request.NotificacaoId}' não localizada.");
+
+            return notificacao;
+        }
     }
-
-    public async Task<Notificacao> Handle(ObterNotificacaoPorIdQuery request, CancellationToken cancellationToken)
-    {
-        var notificacao = await repositorioNotificacao.ObterPorIdAsync(request.NotificacaoId);
-
-        if (notificacao == null)
-            throw new NegocioException($"Notificação de Id: '{request.NotificacaoId}' não localizada.");
-
-        return notificacao;
-    }    
 }
