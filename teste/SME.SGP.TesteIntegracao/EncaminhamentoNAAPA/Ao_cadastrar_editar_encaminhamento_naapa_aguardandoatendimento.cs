@@ -41,8 +41,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
             
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
@@ -121,9 +121,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
-
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
@@ -213,8 +212,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
 
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
@@ -298,9 +297,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
-
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
+            
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);

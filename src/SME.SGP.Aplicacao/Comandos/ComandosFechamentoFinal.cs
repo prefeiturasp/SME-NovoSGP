@@ -68,12 +68,13 @@ namespace SME.SGP.Aplicacao
             {
                 CodigoAluno = fechamentoFinal.AlunoRf, 
                 Nota = fechamentoFinal.Nota, 
-                ConceitoId = fechamentoFinal.ConceitoId
+                ConceitoId = fechamentoFinal.ConceitoId,
+                DiscplinaId = fechamentoFinal.ComponenteCurricularCodigo
             }).ToList();
             
             await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
                 fechamentoFinalSalvar.TurmaCodigo,
-                fechamentosNotasConceitos, emAprovacao, 0));
+                fechamentosNotasConceitos, emAprovacao, null));
         }
         
         private Task<Usuario> ObterUsuarioLogado()

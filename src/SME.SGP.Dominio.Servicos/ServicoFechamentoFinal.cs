@@ -306,7 +306,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task PersistirNotasFinaisNoCache(IEnumerable<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota,
             string codigoAluno, string codigoDisciplina, string codigoTurma, bool emAprovacao)
         {
-            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno);
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId);
 
             if (notaFinalAluno != null)
             {

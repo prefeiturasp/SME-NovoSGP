@@ -59,6 +59,7 @@ namespace SME.SGP.Aplicacao
                 cacheAluno.Nota = fechamentoNotaConceito.Nota;
                 cacheAluno.ConceitoId = fechamentoNotaConceito.ConceitoId;
                 cacheAluno.EmAprovacao = request.EmAprovacao;
+                cacheAluno.ComponenteCurricularId = fechamentoNotaConceito.DiscplinaId;
             }
 
             await repositorioCache.SalvarAsync(nomeChaveCache, retornoCacheMapeado);

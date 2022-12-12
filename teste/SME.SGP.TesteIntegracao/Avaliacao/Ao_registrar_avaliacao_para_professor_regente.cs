@@ -214,7 +214,7 @@ namespace SME.SGP.TesteIntegracao.AvaliacaoAula
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 DataInicio = DATA_03_01,
-                DataFim = DATA_29_04,
+                DataFim = DATA_28_04,
                 TipoAvaliacao = TipoAvaliacaoCodigo.AvaliacaoBimestral,
                 Bimestre = BIMESTRE_1
             };

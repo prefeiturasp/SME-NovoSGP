@@ -38,8 +38,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
@@ -76,7 +75,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Id.ShouldBe(1);
             retorno.Auditoria.ShouldNotBeNull();
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
-            (retorno.Auditoria.CriadoEm.Year == dataAtual.Year).ShouldBeTrue();
+            (retorno.Auditoria.CriadoEm.Year == dataQueixa.Year).ShouldBeTrue();
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
@@ -120,8 +119,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
             
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
             {
@@ -158,7 +156,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             retorno.Id.ShouldBe(1);
             retorno.Auditoria.ShouldNotBeNull();
             retorno.Auditoria.AlteradoEm.HasValue.ShouldBeFalse();
-            (retorno.Auditoria.CriadoEm.Year == dataAtual.Year).ShouldBeTrue();
+            (retorno.Auditoria.CriadoEm.Year == dataQueixa.Year).ShouldBeTrue();
             
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
@@ -207,9 +205,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
-
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
+            
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
 
             dataQueixa.AddDays(4);
@@ -298,11 +296,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
 
-            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
-            var dataQueixa = new DateTime(dataAtual.Year, 11, 18);
-
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+            dataQueixa.AddDays(-10);
             await GerarDadosEncaminhamentoNAAPA(dataQueixa);
-
+            
             dataQueixa.AddDays(4);
 
             var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()

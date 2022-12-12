@@ -1,13 +1,11 @@
-﻿using SME.SGP.Dominio;
-using SME.SGP.Infra;
+﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IConsultasWorkflowAprovacao
     {
-        WorkflowAprovacao ObtemPorId(long id);
-
-        List<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId);
+        Task<List<WorkflowAprovacaoTimeRespostaDto>> ObtemTimelinePorCodigoNotificacao(long notificacaoId);
     }
 }

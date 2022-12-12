@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirWorkflowNotificacoes(long id)
         {
-            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
+            var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
 
             if (workflow == null)
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");

@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dto;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,20 +12,42 @@ namespace SME.SGP.Aplicacao
     public class AprovarWorkflowAlteracaoParecerConclusivoCommandHandler : AsyncRequestHandler<AprovarWorkflowAlteracaoParecerConclusivoCommand>
     {
         private readonly IMediator mediator;
+        public readonly IUnitOfWork unitOfWork;
 
-        public AprovarWorkflowAlteracaoParecerConclusivoCommandHandler(IMediator mediator)
+        public AprovarWorkflowAlteracaoParecerConclusivoCommandHandler(IMediator mediator, IUnitOfWork unitOfWork)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         protected override async Task Handle(AprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var parecerEmAprovacao = await mediator.Send(new ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
-            if (parecerEmAprovacao != null)
-                await AtualizarParecerConclusivo(parecerEmAprovacao, request.TurmaCodigo, request.CriadorRf, request.CriadorNome);
+            var pareceresEmAprovacao = await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
+            if (pareceresEmAprovacao != null && pareceresEmAprovacao.ToArray().Any())
+            {
+                unitOfWork.IniciarTransacao();
+                try
+                {
+                    foreach (var parecerEmAprovacao in pareceresEmAprovacao)
+                        await AtualizarParecerConclusivo(parecerEmAprovacao, request.TurmaCodigo);
+
+                    await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(pareceresEmAprovacao,
+                                                                               request.TurmaCodigo,
+                                                                               request.CriadorRf,
+                                                                               request.CriadorNome,
+                                                                               true)); ;
+
+                    unitOfWork.PersistirTransacao();
+                }
+                catch
+                {
+                    unitOfWork.Rollback();
+                    throw;
+                }
+            }
         }
 
-        private async Task AtualizarParecerConclusivo(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
+        private async Task AtualizarParecerConclusivo(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo)
         {
             var persistirParecerConclusivoDto = new PersistirParecerConclusivoDto()
             {
@@ -39,17 +62,7 @@ namespace SME.SGP.Aplicacao
             await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
                         
             await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.WorkFlowAprovacaoId));
-
-            await NotificarAprovacao(parecerEmAprovacao, turmaCodigo, criadorRf, criadorNome);
         }
 
-        private async Task NotificarAprovacao(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome)
-        {
-            await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(parecerEmAprovacao,
-                                                                               turmaCodigo,
-                                                                               criadorRf,
-                                                                               criadorNome,
-                                                                               true));
-        }
     }
 }

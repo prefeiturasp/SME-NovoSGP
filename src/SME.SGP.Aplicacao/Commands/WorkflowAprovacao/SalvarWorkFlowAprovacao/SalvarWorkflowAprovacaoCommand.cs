@@ -1,9 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +21,6 @@ namespace SME.SGP.Aplicacao
             RuleFor(c => c.WorkflowAprovacao)
                .NotEmpty()
                .WithMessage("O workflow deve ser informado para registro na base de dados.");
-
         }
     }
 }
