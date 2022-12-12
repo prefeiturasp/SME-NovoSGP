@@ -11,9 +11,9 @@ namespace SME.SGP.Aplicacao
     public class AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand : IRequest<IEnumerable<NotaConceito>>
     {
         public AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand(string codigoTurma,
-                                                      List<NotaConceito> entidadesSalvar,
-                                                      List<NotaConceito> entidadesAlterar,
-                                                      List<NotaConceito> entidadesExcluir)
+                                                      IEnumerable<NotaConceito> entidadesSalvar,
+                                                      IEnumerable<NotaConceito> entidadesAlterar,
+                                                      IEnumerable<NotaConceito> entidadesExcluir)
         {
             EntidadesSalvar = entidadesSalvar;
             EntidadesAlterar = entidadesAlterar;
@@ -23,8 +23,8 @@ namespace SME.SGP.Aplicacao
 
         public string CodigoTurma { get; }
 
-        public List<NotaConceito> EntidadesSalvar { get; set; }
-        public List<NotaConceito> EntidadesAlterar { get; set; }
-        public List<NotaConceito> EntidadesExcluir { get; set; }
+        public IEnumerable<NotaConceito> EntidadesSalvar { get; set; }
+        public IEnumerable<NotaConceito> EntidadesAlterar { get; set; }
+        public IEnumerable<NotaConceito> EntidadesExcluir { get; set; }
     }
 }
