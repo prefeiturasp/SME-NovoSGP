@@ -100,10 +100,8 @@ namespace SME.SGP.Aplicacao
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
 
-                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(
-                    new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
-                        retornoConselhoBimestre.bimestre, fechamentoTurma?.Id));
-                
+                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, retornoConselhoBimestre.bimestre));
+
                 if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
                     throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
             }

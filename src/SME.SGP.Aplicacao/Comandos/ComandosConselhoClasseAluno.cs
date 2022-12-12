@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
 
             var existeConselhoClasseBimestre = await mediator.Send(
                 new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
-                    fechamentoTurma.Turma, bimestreParaValidacaoNotasPreenchidas, fechamentoTurma.Id, false, false, periodoEscolar));
+                    fechamentoTurma.Turma, bimestreParaValidacaoNotasPreenchidas, periodoEscolar: periodoEscolar));
 
             if (!existeConselhoClasseBimestre)
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTE_COMPONENTES_SEM_NOTA_INFORMADA);
