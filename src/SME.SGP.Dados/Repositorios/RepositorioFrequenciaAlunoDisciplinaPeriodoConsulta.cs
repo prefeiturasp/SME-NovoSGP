@@ -317,7 +317,7 @@ namespace SME.SGP.Dados
 	                                from (     
 		                                select 
 			                                    fa.*,
-			                                    row_number() over (partition by fa.codigo_aluno,fa.bimestre, fa.disciplina_id) sequencia
+			                                    row_number() over (partition by fa.id, fa.codigo_aluno, fa.bimestre, fa.disciplina_id order by fa.id desc) sequencia
 			                                from 
 			                                    frequencia_aluno fa 
 		                                    where
@@ -524,7 +524,7 @@ namespace SME.SGP.Dados
         }
         public async Task<bool> ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(string codigoTurma, string componenteCurricularId, long[] periodosEscolaresIds)
         {
-            const string sql = @"select distinct(1)
+            const string sql = @"select 1
                                    from registro_frequencia_aluno rfa
                                   inner join registro_frequencia rf on rfa.registro_frequencia_id = rf.id
                                   inner join aula a on a.id = rf.aula_id 
@@ -533,7 +533,8 @@ namespace SME.SGP.Dados
                                   where pe.id = ANY(@periodosEscolaresIds)
                                     and a.turma_id = @codigoTurma
                                     and a.disciplina_id = @componenteCurricularId
-                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim ";
+                                    and a.data_aula between pe.periodo_inicio and pe.periodo_fim 
+                                limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(sql, new { codigoTurma, componenteCurricularId, periodosEscolaresIds });
         }
@@ -624,12 +625,21 @@ namespace SME.SGP.Dados
             if (bimestres.Length > 0)
                 query.AppendLine(" and p.bimestre = any(@bimestres) ");
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
+            {
+                dataMatriculaAluno = Convert.ToDateTime(dataMatriculaAluno.Value.ToString("yyyy/MM/dd"));
+                dataSituacaoAluno = Convert.ToDateTime(dataSituacaoAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date between @dataMatriculaAluno and @dataSituacaoAluno");
+            }
             else if (dataMatriculaAluno.HasValue)
+            {
+                dataMatriculaAluno = Convert.ToDateTime(dataMatriculaAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno");
+            }
             else if (dataSituacaoAluno.HasValue)
+            {
+                dataSituacaoAluno = Convert.ToDateTime(dataSituacaoAluno.Value.ToString("yyyy/MM/dd"));
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
-
+            }
             query.AppendLine(" and a.turma_id = any(@turmasCodigo);");
 
             return await database.Conexao.QueryAsync<TurmaDataAulaComponenteQtdeAulasDto>(query.ToString(),

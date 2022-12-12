@@ -206,16 +206,17 @@ namespace SME.SGP.Aplicacao
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
             {
-                var tiposTurmasParaConsulta = new List<int> { (int)turma.TipoTurma };
-
-                tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
+                var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
                 if (alunoNaTurma != null)
                     consideraHistorico = alunoNaTurma.Inativo;
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo,
-                    tiposTurmasParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim, semestre: turma.Semestre));
+                    tiposParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
 
                 if (!turmasCodigos.Any())
                 {
@@ -350,7 +351,7 @@ namespace SME.SGP.Aplicacao
             var gruposMatrizesNotas = new List<ConselhoClasseAlunoNotasConceitosDto>();
 
             var frequenciasAluno = turmasComMatriculasValidas.Contains(codigoTurma) && alunoNaTurma != null ?
-                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, bimestre) :
+                await ObterFrequenciaAlunoRefatorada(disciplinasDaTurmaEol, periodoEscolar, alunoNaTurma, tipoCalendario.Id, bimestre, tipoCalendario.AnoLetivo) :
                 Enumerable.Empty<FrequenciaAluno>();
 
             var registrosFrequencia = (turmasComMatriculasValidas.Contains(codigoTurma) && alunoNaTurma != null ?
@@ -739,7 +740,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<FrequenciaAluno>> ObterFrequenciaAlunoRefatorada(IEnumerable<DisciplinaDto> disciplinasDaTurma, PeriodoEscolar periodoEscolar, AlunoPorTurmaResposta alunoTurma,
-            long tipoCalendarioId, int bimestre)
+            long tipoCalendarioId, int bimestre, int anoLetivo = 0)
         {
             var frequenciasAlunoRetorno = new List<FrequenciaAluno>();
             var disciplinasId = disciplinasDaTurma.Select(a => a.CodigoComponenteCurricular.ToString()).Distinct().ToArray();
@@ -781,6 +782,26 @@ namespace SME.SGP.Aplicacao
                         Bimestre = aulaComponenteTurma.Bimestre,
                         PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
                     });
+                }
+            }           
+
+            // Cálculo específico para 2020
+            if (periodoEscolar == null && anoLetivo.Equals(2020))
+            {
+                var frequenciasAlunoRetornoAgrupado = frequenciasAlunoRetorno
+                    .GroupBy(fa => (fa.TurmaId, fa.CodigoAluno, fa.DisciplinaId))
+                    .ToList();
+
+                foreach (var frequenciasAlunoAtual in frequenciasAlunoRetornoAgrupado)
+                {
+                    foreach (var bimestreAtual in bimestres)
+                    {
+                        foreach (var frequenciaAlunoAtual in frequenciasAlunoAtual)
+                        {
+                            frequenciaAlunoAtual.PercentuaisFrequenciaPorBimestre
+                                .Add((bimestreAtual, frequenciasAlunoAtual.SingleOrDefault(f => f.Bimestre == bimestreAtual)?.PercentualFrequencia ?? 100));
+                        }
+                    }
                 }
             }
 
@@ -902,7 +923,6 @@ namespace SME.SGP.Aplicacao
                 totalAulas = await mediator.Send(new ObterTotalAulasPorAlunoTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
             else if (!componentePermiteFrequencia && bimestre == (int)Bimestre.Final)
                 totalAulas = await mediator.Send(new ObterTotalAulasSemFrequenciaPorTurmaQuery(componenteCurricularCodigo.ToString(), turma.CodigoTurma));
-
 
             // Cálculo de frequência particular do ano de 2020
             if (periodoEscolar == null && turma.AnoLetivo.Equals(2020))

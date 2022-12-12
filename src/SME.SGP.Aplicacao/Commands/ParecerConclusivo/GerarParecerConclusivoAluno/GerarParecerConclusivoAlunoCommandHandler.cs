@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
             if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
                 return new ParecerConclusivoDto();
 
-            var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
+            var pareceresDaTurma = await ObterPareceresDaTurma(turma);
             var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
 
             var emAprovacao = await EnviarParaAprovacao(turma);
@@ -101,9 +101,9 @@ namespace SME.SGP.Aplicacao
             return parametro.Ativo;
         }
 
-        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
+        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(Turma turma)
         {
-            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosPorTurmaQuery(turmaId));
+            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosPorTurmaQuery(turma));
             if (pareceresConclusivos == null || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
 
@@ -125,7 +125,7 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
                 var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico));
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico, ueCodigo: turma.Ue.CodigoUe));
 
                 if (turma.Historica == true)
                 {

@@ -102,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and ea.situacao = @situacao ");
             if (!string.IsNullOrEmpty(responsavelRf))
                 sql.AppendLine(" and u.rf_codigo = @responsavelRf ");
-            if (turmasCodigos != null)
+            if (turmasCodigos != null && turmaId == 0)
                 sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
 
         }
