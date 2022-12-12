@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinas == null || !disciplinas.Any())
                 return null;
 
-            disciplinas = await MapearLancaNotaFrequenciaSgp(disciplinas);
+            disciplinas = (await MapearLancaNotaFrequenciaSgp(disciplinas)).ToList();
 
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
