@@ -90,13 +90,12 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"select c.* 
                             from conselho_classe c 
                            inner join fechamento_turma t on t.id = c.fechamento_turma_id
-                           inner join conselho_classe_aluno cca on cca.conselho_classe_id = c.id
-                           where t.turma_id = @turmaId ");
+                           inner join conselho_classe_aluno cca on cca.conselho_classe_id = c.id ");
 
             if (periodoEscolarId.HasValue)
-                query.AppendLine(" and t.periodo_escolar_id = @periodoEscolarId");
+                query.AppendLine("where t.periodo_escolar_id = @periodoEscolarId");
             else
-                query.AppendLine(" and t.periodo_escolar_id is null");
+                query.AppendLine("where t.periodo_escolar_id is null");
 
             if (!String.IsNullOrEmpty(alunoCodigo))
                 query.AppendLine(" and cca.aluno_codigo = @alunoCodigo");
