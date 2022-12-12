@@ -6,11 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public abstract class NotificacaoParecerConclusivoConselhoClasseCommandBase<T> : AsyncRequestHandler<T> where T : IRequest
+    public abstract class NotificacaoParecerConclusivoConselhoClasseCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> 
+        where TRequest : IRequest<TResponse>
     {
         protected readonly IMediator mediator;
         protected List<TurmasDoAlunoDto> Alunos;
@@ -34,6 +36,7 @@ namespace SME.SGP.Aplicacao
 
         protected abstract string ObterTextoCabecalho(Turma turma);
         protected abstract string ObterTextoRodape();
+        public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
         protected virtual string ObterTitulo(Turma turma)
         {
@@ -63,11 +66,11 @@ namespace SME.SGP.Aplicacao
             msg.AppendLine("</tr>");
 
             foreach (var aprovaco in aprovacoesPorTurma)
-            {
                 msg.AppendLine(ObterLinhaParecerAlterado(aprovaco));
-            }
+
             msg.AppendLine("<tbody>");
             msg.AppendLine("</table>");
+
             return msg.ToString();
         }
 
@@ -77,31 +80,30 @@ namespace SME.SGP.Aplicacao
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
 
             return $@"<tr>
-                           <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                           <td style='padding: 3px;'>{aprovacao.NomeParecerAnterior}</td>
-                           <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
-                           <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
-                           <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
-                      </tr>";
+                <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
+                <td style='padding: 3px;'>{aprovacao.NomeParecerAnterior}</td>
+                <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
+                <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
+                <td style='padding: 3px;'>{aprovacao.CriadoEm:dd/MM/yyyy HH:mm}</td>
+            </tr>";
         }
 
         private async Task CarregarTodosAlunos()
         {
             var codigos = WFAprovacoes.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
-
             Alunos = (await ObterAlunos(codigos)).ToList();
         }
+        
         private async Task CarregarTodosUsuarios()
         {
             var ids = WFAprovacoes.Select(wf => wf.UsuarioSolicitanteId).Distinct().ToArray();
-
             Usuarios = (await ObterUsuarios(ids)).ToList();
         }
 
         private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos)
                 => await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigos));
+        
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
-
     }
  }

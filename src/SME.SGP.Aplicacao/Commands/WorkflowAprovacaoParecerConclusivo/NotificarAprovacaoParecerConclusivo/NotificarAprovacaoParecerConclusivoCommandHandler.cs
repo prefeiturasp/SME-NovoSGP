@@ -1,25 +1,19 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoParecerConclusivoCommandHandler : NotificacaoParecerConclusivoConselhoClasseCommandBase<NotificarAprovacaoParecerConclusivoCommand>
+    public class NotificarAprovacaoParecerConclusivoCommandHandler : NotificacaoParecerConclusivoConselhoClasseCommandBase<NotificarAprovacaoParecerConclusivoCommand, bool>
     {
         private NotificarAprovacaoParecerConclusivoCommand request;
 
         public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator) : base(mediator)
         {}
-
-        protected override async Task Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
+        
+        public override async Task<bool> Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
             this.request = request;
             var wfAprovacoes = request.PareceresEmAprovacao;
@@ -31,15 +25,17 @@ namespace SME.SGP.Aplicacao
             foreach (var usuario in Usuarios)
             {
                 await mediator.Send(new NotificarUsuarioCommand(
-                                                                ObterTitulo(turma),
-                                                                mensagem,
-                                                                usuario.CodigoRf,
-                                                                NotificacaoCategoria.Aviso,
-                                                                NotificacaoTipo.Fechamento,
-                                                                turma.Ue.Dre.CodigoDre,
-                                                                turma.Ue.CodigoUe,
-                                                                turma.CodigoTurma));
+                    ObterTitulo(turma),
+                    mensagem,
+                    usuario.CodigoRf,
+                    NotificacaoCategoria.Aviso,
+                    NotificacaoTipo.Fechamento,
+                    turma.Ue.Dre.CodigoDre,
+                    turma.Ue.CodigoUe,
+                    turma.CodigoTurma), cancellationToken);
             }
+
+            return true;
         }
 
         protected override string ObterTextoCabecalho(Turma turma)

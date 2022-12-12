@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                     wf.AdicionarCargo(cargo);
             }
 
-            return await mediator.Send(new SalvarWorkflowAprovacaoCommand(wf));
+            return await mediator.Send(new SalvarWorkflowAprovacaoCommand(wf), cancellationToken);
         }
     }
 }
