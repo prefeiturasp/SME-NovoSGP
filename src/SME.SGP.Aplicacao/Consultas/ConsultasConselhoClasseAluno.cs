@@ -176,10 +176,13 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaResposta MapearLancaNotaFrequenciaSgp(DisciplinaResposta disciplinaEol, DisciplinaDto disciplinaSgp)
         {
-            disciplinaEol.LancaNota = disciplinaSgp.LancaNota;
-            disciplinaEol.RegistroFrequencia = disciplinaSgp.RegistraFrequencia;
-            disciplinaEol.Nome = disciplinaSgp.Nome;
-            disciplinaEol.NomeComponenteInfantil = disciplinaSgp.NomeComponenteInfantil;
+            if (disciplinaSgp != null)
+            {
+                disciplinaEol.LancaNota = disciplinaSgp.LancaNota;
+                disciplinaEol.RegistroFrequencia = disciplinaSgp.RegistraFrequencia;
+                disciplinaEol.Nome = disciplinaSgp.Nome;
+                disciplinaEol.NomeComponenteInfantil = disciplinaSgp.NomeComponenteInfantil;
+            }
             return disciplinaEol;
 
         }
