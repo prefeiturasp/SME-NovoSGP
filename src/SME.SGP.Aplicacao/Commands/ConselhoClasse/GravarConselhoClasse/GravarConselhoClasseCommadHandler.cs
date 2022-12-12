@@ -45,10 +45,10 @@ namespace SME.SGP.Aplicacao
             var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE);
-
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_CODIGO_ALUNO_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_CODIGO_ALUNO_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.CodigoAluno, request.Bimestre), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
-
+            
             return await Task.FromResult(conselhoClasseNotaRetorno);
         }
 
