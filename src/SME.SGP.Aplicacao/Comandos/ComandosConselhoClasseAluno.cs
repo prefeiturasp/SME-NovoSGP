@@ -17,6 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private const int BIMESTRE_FINAL_FUNDAMENTAL_MEDIO = 4;
         private const int BIMESTRE_FINAL_EJA = 2;
+        private const int BIMESTRE_FINAL_CONSULTA_NOTA = 0;
 
         public ComandosConselhoClasseAluno(IConsultasConselhoClasseAluno consultasConselhoClasseAluno,
                                            IConsultasConselhoClasse consultasConselhoClasse,
@@ -65,9 +66,11 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioAluno.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
 
+            var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
+
             var existeConselhoClasseBimestre = await mediator.Send(
                 new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
-                    fechamentoTurma.Turma, bimestre, fechamentoTurma.Id, false, false, periodoEscolar));
+                    fechamentoTurma.Turma, bimestreParaValidacaoNotasPreenchidas, periodoEscolar: periodoEscolar));
 
             if (!existeConselhoClasseBimestre)
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTE_COMPONENTES_SEM_NOTA_INFORMADA);

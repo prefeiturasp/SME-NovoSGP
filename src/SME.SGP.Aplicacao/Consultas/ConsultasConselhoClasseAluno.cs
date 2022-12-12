@@ -49,7 +49,7 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        private async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(long fechamentoTurmaId, Turma turma, string alunoCodigo)
+        private async Task<bool> ExisteConselhoClasseUltimoBimestreAsync(Turma turma, string alunoCodigo)
         {
             var periodoEscolar = await ObterPeriodoUltimoBimestre(turma);
 
@@ -58,8 +58,7 @@ namespace SME.SGP.Aplicacao
             if (conselhoClasseUltimoBimestre == null)
                 return false;
 
-            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
-                periodoEscolar.Bimestre, fechamentoTurmaId, turma.Historica));
+            return await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, periodoEscolar.Bimestre, turma.Historica));
         }
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
@@ -88,7 +87,7 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException(MensagemNegocioFechamentoTurma.NAO_EXISTE_FECHAMENTO_TURMA);
             }
 
-            if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
+            if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE);
 
             var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
@@ -608,7 +607,7 @@ namespace SME.SGP.Aplicacao
                 turma = fechamentoTurma.Turma;
             }
 
-            if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
+            if (turma.AnoLetivo != 2020 && !turma.EhAnoAnterior() && !await ExisteConselhoClasseUltimoBimestreAsync(turma, alunoCodigo))
                 return new ParecerConclusivoDto { EmAprovacao = false };
 
             var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasseId, alunoCodigo);
