@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using SME.SGP.Infra.Dtos;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,31 +20,21 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ReprovarWorkflowAlteracaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var parecerEmAprovacao = await mediator.Send(new ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
-            if (parecerEmAprovacao != null)
-                await ReprovarParecerConclusivo(parecerEmAprovacao, request);
-        }
+            var pareceresEmAprovacao = await mediator.Send(new ObterPareceresConclusivosDtoEmAprovacaoPorWorkflowQuery(request.WorkflowId));
+            if (pareceresEmAprovacao != null && pareceresEmAprovacao.Any())
+            {
+                foreach (var parecerEmAprovacao in pareceresEmAprovacao)
+                    await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));
 
-        private async Task ReprovarParecerConclusivo(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, ReprovarWorkflowAlteracaoParecerConclusivoCommand request)
-        {
-            await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.WorkFlowAprovacaoId));
-
-            await NotificarAprovacao(parecerEmAprovacao, request);
-        }
-
-        private async Task NotificarAprovacao(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, ReprovarWorkflowAlteracaoParecerConclusivoCommand request)
-        {
-            await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(parecerEmAprovacao,
+                await mediator.Send(new NotificarAprovacaoParecerConclusivoCommand(pareceresEmAprovacao,
                                                                                request.TurmaCodigo,
                                                                                request.CriadorRF,
                                                                                request.CriadorNome,
                                                                                false,
                                                                                request.Motivo));
+            }
         }
 
-
-        private async Task<WFAprovacaoParecerConclusivoDto> ObterParecerEmAprovacao(long workflowId)
-            => await mediator.Send(new ObterParecerConclusivoDtoEmAprovacaoPorWorkflowQuery(workflowId));
 
     }
 }

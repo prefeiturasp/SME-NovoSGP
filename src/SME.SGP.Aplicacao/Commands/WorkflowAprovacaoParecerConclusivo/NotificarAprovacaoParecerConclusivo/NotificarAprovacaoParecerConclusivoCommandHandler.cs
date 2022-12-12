@@ -1,54 +1,50 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoParecerConclusivoCommandHandler : AsyncRequestHandler<NotificarAprovacaoParecerConclusivoCommand>
+    public class NotificarAprovacaoParecerConclusivoCommandHandler : NotificacaoParecerConclusivoConselhoClasseCommandBase<NotificarAprovacaoParecerConclusivoCommand, bool>
     {
-        private readonly IMediator mediator;
+        private NotificarAprovacaoParecerConclusivoCommand request;
 
-        public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator)
+        public NotificarAprovacaoParecerConclusivoCommandHandler(IMediator mediator) : base(mediator)
+        {}
+        
+        public override async Task<bool> Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.request = request;
+            var wfAprovacoes = request.PareceresEmAprovacao;
+            await CarregarInformacoesParaNotificacao(wfAprovacoes);
+
+            var turma = await ObterTurma(wfAprovacoes.FirstOrDefault().TurmaId);
+            var mensagem = ObterMensagem(turma, wfAprovacoes.ToList());
+
+            foreach (var usuario in Usuarios)
+            {
+                await mediator.Send(new NotificarUsuarioCommand(
+                    ObterTitulo(turma),
+                    mensagem,
+                    usuario.CodigoRf,
+                    NotificacaoCategoria.Aviso,
+                    NotificacaoTipo.Fechamento,
+                    turma.Ue.Dre.CodigoDre,
+                    turma.Ue.CodigoUe,
+                    turma.CodigoTurma), cancellationToken);
+            }
+
+            return true;
         }
 
-        protected override async Task Handle(NotificarAprovacaoParecerConclusivoCommand request, CancellationToken cancellationToken)
+        protected override string ObterTextoCabecalho(Turma turma)
         {
-            var aprovacao = request.Aprovado ? "aprovada" : "recusada";
-            var turma = await ObterTurma(request.TurmaCodigo);
-            var nomeTurma = $"{turma.Nome} da {turma.Ue.TipoEscola.ShortName()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo}";
-            var aluno = await ObterAluno(request.ParecerEmAprovacao.AlunoCodigo, turma.AnoLetivo);
-            var nomeAluno = $"{aluno.Nome} ({aluno.CodigoAluno})";
-            var data = $"{request.ParecerEmAprovacao.CriadoEm:dd/MM/yyyy} às {request.ParecerEmAprovacao.CriadoEm:HH:mm}";
-            var usuarioSolicitante = await mediator.Send(new ObterUsuarioPorIdQuery(request.ParecerEmAprovacao.UsuarioSolicitanteId));
-
-            var parecerAnterior = !string.IsNullOrEmpty(request.ParecerEmAprovacao.NomeParecerAnterior) ? request.ParecerEmAprovacao.NomeParecerAnterior : "(Nenhum)";
-            var parecerNovo = request.ParecerEmAprovacao.NomeParecerNovo;
-
-            var titulo = $"Alteração de parecer conclusivo - Turma {turma.Nome} ({turma.AnoLetivo})";
-            var descricao = $"A alteração do parecer conclusivo do estudante {nomeAluno} da turma {nomeTurma} realizada pelo Professor {request.CriadorNome} ({request.CriadorRf}) em {data} de '{parecerAnterior}' para '{parecerNovo}' foi {aprovacao}.<br/>";
-            if (!request.Aprovado)
-                descricao += $"Motivo: {request.Motivo}.";
-
-            await mediator.Send(new NotificarUsuarioCommand(titulo,
-                                                            descricao,
-                                                            usuarioSolicitante.CodigoRf,
-                                                            NotificacaoCategoria.Aviso,
-                                                            NotificacaoTipo.Fechamento,
-                                                            turma.Ue.Dre.CodigoDre,
-                                                            turma.Ue.CodigoUe,
-                                                            turma.CodigoTurma));
+            var descricaoAprovadoRecusado = request.Aprovado ? "aprovada" : "recusada";
+            return $@"A alteração de pareceres conclusivos dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foi {descricaoAprovadoRecusado}. Motivo: {request.Motivo}.";
         }
 
-        private async Task<AlunoReduzidoDto> ObterAluno(string alunoCodigo, int anoLetivo)
-            => await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(alunoCodigo, anoLetivo));
-
-        private async Task<Turma> ObterTurma(string turmaCodigo)
-            => await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo));
+        protected override string ObterTextoRodape()
+        { return ""; }
     }
 }

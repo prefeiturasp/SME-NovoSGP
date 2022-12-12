@@ -42,9 +42,9 @@ namespace SME.SGP.Api.Controllers
         [Route("notificacoes/{id}/linha-tempo")]
         [ProducesResponseType(typeof(IEnumerable<WorkflowAprovacaoTimeRespostaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public IActionResult ObterLinhaDoTempo(long id)
+        public async Task<IActionResult> ObterLinhaDoTempo(long id)
         {
-            return Ok(consultasWorkflowAprovacao.ObtemTimelinePorCodigoNotificacao(id));
+            return Ok(await consultasWorkflowAprovacao.ObtemTimelinePorCodigoNotificacao(id));
         }
 
         [HttpPost]
