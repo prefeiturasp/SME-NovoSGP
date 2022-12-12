@@ -19,10 +19,15 @@ namespace SME.SGP.Aplicacao
 
             var pendenciaProfessorDisciplinaCache = new List<PendenciaProfessorComponenteCurricularDto>();
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.CodigoTurma));
-            long pendenciaId = 0;
+            long pendenciaId = 0;            
 
             if (turmaId == 0)
                 throw new NegocioException("Turma não encontrada.");
+
+            var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
+
+            if (ue.TipoEscola == TipoEscola.CEIDIRET || ue.TipoEscola == TipoEscola.CEIINDIR || ue.TipoEscola == TipoEscola.CEUCEI)
+                return true;
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {

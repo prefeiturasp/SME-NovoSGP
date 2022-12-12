@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -22,9 +21,11 @@ namespace SME.SGP.Aplicacao.Queries
 
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
-            string[] turmasCodigos;
+            var turmasCodigos = Array.Empty<string>();
             
-            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken)).ToList();
+            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken);
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.FechamentoTurmaId.GetValueOrDefault(), request.AlunoCodigo, request.Historico.GetValueOrDefault()), cancellationToken);
+            var periodoEscolar = fechamentoTurma?.PeriodoEscolar ?? await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(request.Turma, request.Bimestre.GetValueOrDefault()), cancellationToken);
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
@@ -32,72 +33,102 @@ namespace SME.SGP.Aplicacao.Queries
                 
                 tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
                 tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
-                
-                var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas, request.Historico), cancellationToken);
+
+                var turmasCodigosEOL = await mediator
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo,
+                            request.AlunoCodigo, tiposTurmas, request.Historico,
+                            periodoEscolar?.PeriodoFim),
+                        cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
                 {
-                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEol), cancellationToken);
+                    var turmasCodigosHistorico = await mediator.Send(new ObterTurmasPorCodigosQuery(turmasCodigosEOL), cancellationToken);
 
                     if (turmasCodigosHistorico.Any(x => x.EhTurmaHistorica))
                     {
-                        turmasCodigos = turmasCodigosEol;
-                        turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+                        turmasCodigos = turmasCodigosEOL;
+                        
+                        if (!turmasCodigos.Contains(request.Turma.CodigoTurma))
+                            turmasCodigos = turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray();
                     }
                     else
                         turmasCodigos = new[] { request.Turma.CodigoTurma };
                 }
                 else
-                    turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
+                {
+                    turmasCodigos = turmasCodigosEOL;
+                    
+                    if (!turmasCodigos.Contains(request.Turma.CodigoTurma))
+                        turmasCodigos = turmasCodigos.Concat(new[] { request.Turma.CodigoTurma }).ToArray();
+                }
             }
             else 
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
-            var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
+            var turmasComMatriculasValidas = await mediator.Send(new ObterTurmasComMatriculasValidasQuery(
+                request.AlunoCodigo, turmasCodigos, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim), cancellationToken);
+
+            if (turmasComMatriculasValidas.Any())
+                turmasCodigos = turmasComMatriculasValidas.ToArray();
+
+            var conselhosClassesIds = await mediator
+                .Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
 
             var notasParaVerificar = new List<NotaConceitoBimestreComponenteDto>();
-
+            
             if (conselhosClassesIds != null)
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken);
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId,
+                        request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken);
+
                     notasParaVerificar.AddRange(notasParaAdicionar);
                 }
             }
-
-            var todasAsNotas = (await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo), cancellationToken)).ToList();
+            
+            var todasAsNotas = await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo), cancellationToken);
 
             if ((request.Bimestre ?? 0) > 0)
             {
                 if (request.Turma.ModalidadeCodigo == Modalidade.EJA && request.Bimestre == 2)
                 {
-                    if (todasAsNotas.Any())
+                    if (todasAsNotas != null && todasAsNotas.Any())
                     {
-                        if (conselhosClassesIds != null && todasAsNotas.Any(t=> t.Bimestre == 2))
+                        if (conselhosClassesIds != null && todasAsNotas.Any(t => t.Bimestre == 2))
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == 2));
                         else
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
                     }
                     else
-                        notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken));
+                    {
+                        notasParaVerificar.AddRange(await mediator.Send(
+                            new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo,
+                                request.Bimestre ?? 0), cancellationToken));
+                    }
                 }
                 else
-                    notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken));
+                {
+                    notasParaVerificar.AddRange(await mediator.Send(
+                        new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo,
+                            request.Bimestre ?? 0), cancellationToken));
+                }
             }
             else
             {
-                if (todasAsNotas.Any())
+                if (todasAsNotas != null && todasAsNotas.Any())
                     notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
             }
 
             turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
-            var disciplinasDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()), cancellationToken);
+            var disciplinasDaTurma = await mediator
+                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurriculares.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()), cancellationToken);
 
             // Checa se todas as disciplinas da turma receberam nota
             var disciplinasLancamNota = disciplinasDaTurma.Where(c => c.LancaNota && c.GrupoMatrizNome != null);
+
             return disciplinasLancamNota.All(componenteCurricular => notasParaVerificar.Any(c => c.ComponenteCurricularCodigo == componenteCurricular.CodigoComponenteCurricular));
         }
 
@@ -135,7 +166,5 @@ namespace SME.SGP.Aplicacao.Queries
 
             return componentesTurma;
         }
-
-
     }
 }

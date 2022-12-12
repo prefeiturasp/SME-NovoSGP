@@ -75,7 +75,6 @@ namespace SME.SGP.Aplicacao
                 .ToList();
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disiplinaId, consideraHistorico);
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
 
         private NotaConceito ObterEntidadeEdicao(NotaConceitoDto dto, NotaConceito entidade)
@@ -110,7 +109,6 @@ namespace SME.SGP.Aplicacao
             notasSalvar.AddRange(notasInclusao);
 
             await servicosDeNotasConceitos.Salvar(notasSalvar, professorRf, turmaId, disciplinaId, consideraHistorico);
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(turmaId));
         }
     }
 }
