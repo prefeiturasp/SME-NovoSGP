@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Aplicacao.Commands.Cache.CriarCache.AtividadeAvaliativaPorTurma;
 
 namespace SME.SGP.Dominio
 {
@@ -324,7 +323,9 @@ namespace SME.SGP.Dominio
                                     DisciplinaId = atividade.DisciplinaId,
                                     Nota = notaConceito.Nota,
                                     ConceitoId = notaConceito.ConceitoId,
-                                    TipoNota = notaConceito.TipoNota
+                                    TipoNota = notaConceito.TipoNota,
+                                    AlteradoEm = notaConceito.AlteradoEm,
+                                    AlteradoPor = notaConceito.AlteradoPor,
                                 });
                             }
                         }

@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao.Commands.Cache.CriarCache.AtividadeAvaliativaPorTurma;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
@@ -25,7 +24,7 @@ namespace SME.SGP.Aplicacao
         {
             var nomeChave = $"Atividade-Avaliativa-{request.CodigoTurma}";
 
-            var atividadeAvaliativas = (await repositorioNotasConceitos.ObterNotasPorAlunosAtividadesAvaliativasPorTurmaAsync(request.CodigoTurma)).ToList();
+            var atividadeAvaliativas = await repositorioCache.ObterObjetoAsync<List<NotaConceito>>(nomeChave);
 
             foreach (var excluir in request.EntidadesExcluir)
                 atividadeAvaliativas.Remove(excluir);
@@ -41,6 +40,8 @@ namespace SME.SGP.Aplicacao
                 {
                     atividade.Nota = alterar.Nota;
                     atividade.ConceitoId = alterar.ConceitoId;
+                    atividade.AlteradoEm = alterar.AlteradoEm;
+                    atividade.AlteradoPor = alterar.AlteradoPor;
                 }
             }
 

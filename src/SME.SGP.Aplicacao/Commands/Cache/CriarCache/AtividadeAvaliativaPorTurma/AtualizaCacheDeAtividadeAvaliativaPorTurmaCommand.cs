@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Commands.Cache.CriarCache.AtividadeAvaliativaPorTurma
+namespace SME.SGP.Aplicacao
 {
     public class AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand : IRequest<IEnumerable<NotaConceito>>
     {
