@@ -124,6 +124,15 @@ namespace SME.SGP.Aplicacao
 
             var conselhoClasseAluno = conselhoClasse != null ? await repositorioConselhoClasseAluno.ObterPorConselhoClasseAlunoCodigoAsync(conselhoClasse.Id, alunoCodigo) : null;
 
+            bool periodoAberto;
+
+            if (bimestre == 0)
+            {
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today);
+            }
+            else
+                periodoAberto = await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(turma.CodigoTurma, DateTime.Today, bimestre);
+
             return new ConselhoClasseAlunoResumoDto()
             {
                 FechamentoTurmaId = fechamentoTurma?.Id,
@@ -136,7 +145,8 @@ namespace SME.SGP.Aplicacao
                 PeriodoFechamentoFim = periodoFechamentoVigente?.PeriodoFechamentoFim,
                 TipoNota = tipoNota,
                 Media = mediaAprovacao,
-                AnoLetivo = turma.AnoLetivo
+                AnoLetivo = turma.AnoLetivo,
+                PeriodoAberto = periodoAberto
             };
         }
 
