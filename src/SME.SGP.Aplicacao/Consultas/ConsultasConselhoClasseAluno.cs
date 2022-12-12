@@ -206,16 +206,17 @@ namespace SME.SGP.Aplicacao
 
             if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
             {
-                var tiposTurmasParaConsulta = new List<int> { (int)turma.TipoTurma };
-
-                tiposTurmasParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
+                var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
                 if (alunoNaTurma != null)
                     consideraHistorico = alunoNaTurma.Inativo;
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo,
-                    tiposTurmasParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim, semestre: turma.Semestre));
+                    tiposParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
 
                 if (!turmasCodigos.Any())
                 {

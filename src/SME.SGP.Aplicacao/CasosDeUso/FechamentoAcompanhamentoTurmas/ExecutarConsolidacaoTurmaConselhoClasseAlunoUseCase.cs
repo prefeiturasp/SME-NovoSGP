@@ -73,16 +73,20 @@ namespace SME.SGP.Aplicacao
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
-                    var turmasCodigos = new string[] { };
-                    var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+                    var turmasCodigos = Array.Empty<string>();
+                    var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-                    if (turma.DeveVerificarRegraRegulares() || (turmasitinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
+                    if (turma.DeveVerificarRegraRegulares() || (turmasItinerarioEnsinoMedio?.Any(a => a.Id == (int)turma.TipoTurma) ?? false))
                     {
-                        var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
-                        turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                        if (turmasitinerarioEnsinoMedio != null)
-                            turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
-                        turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
+                        var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                        var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                        tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+
+                        if (turmasItinerarioEnsinoMedio != null)
+                            tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));;
+                        
+                        turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, tiposParaConsulta));
                     }
 
                     if (turmasCodigos.Length == 0)
