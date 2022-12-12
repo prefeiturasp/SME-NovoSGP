@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 
-namespace SME.SGP.Aplicacao.Queries.ObterNotificacaoPorId;
-
-public class ObterNotificacaoPorIdQueryValidator : AbstractValidator<ObterNotificacaoPorIdQuery>
+namespace SME.SGP.Aplicacao
 {
-    public ObterNotificacaoPorIdQueryValidator()
+    public class ObterNotificacaoPorIdQueryValidator : AbstractValidator<ObterNotificacaoPorIdQuery>
     {
-        RuleFor(c => c.NotificacaoId)
-            .GreaterThan(0)
-            .WithMessage("O Id da notificação deve ser informado para obter a notificação");
+        public ObterNotificacaoPorIdQueryValidator()
+        {
+            RuleFor(c => c.NotificacaoId)
+                .GreaterThan(0)
+                .WithMessage("O Id da notificação deve ser informado para obter a notificação");
+        }
     }
 }
