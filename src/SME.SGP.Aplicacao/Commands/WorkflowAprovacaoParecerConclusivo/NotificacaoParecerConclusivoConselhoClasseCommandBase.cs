@@ -40,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
         protected virtual string ObterTitulo(Turma turma)
         {
-            return $@"Alteração de parecer conclusivo - {turma.Ue.Nome} (ano anterior)";
+            return $@"Alteração de parecer conclusivo - Turma {turma.Nome} (ano anterior) - {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) ";
         }
 
         protected string ObterMensagem(Turma turma, List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
