@@ -216,7 +216,7 @@ namespace SME.SGP.Aplicacao
                     consideraHistorico = alunoNaTurma.Inativo;
 
                 turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo,
-                    tiposParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim, semestre: turma.Semestre));
+                    tiposParaConsulta, consideraHistorico, periodoEscolar?.PeriodoFim));
 
                 if (!turmasCodigos.Any())
                 {
