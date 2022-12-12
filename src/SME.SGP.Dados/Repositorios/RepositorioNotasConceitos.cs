@@ -30,7 +30,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
-        public Task<bool> SalvarListaNotaConceito(List<NotaConceito> entidade, Usuario criadoPor)
+        public Task<bool> SalvarListaNotaConceito(IEnumerable<NotaConceito> entidade, Usuario criadoPor)
         {
 
             var lancaNota = entidade.First().Nota.HasValue;

@@ -99,8 +99,11 @@ namespace SME.SGP.Aplicacao
             if (bimestre == 0 && !consideraHistorico && !turma.EhAnoAnterior())
             {
                 var retornoConselhoBimestre = await mediator.Send(new ObterUltimoBimestreAlunoTurmaQuery(turma, alunoCodigo));
-                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma, retornoConselhoBimestre.bimestre));
 
+                var alunoPossuiNotasTodosComponentesCurriculares = await mediator.Send(
+                    new VerificaNotasTodosComponentesCurricularesQuery(alunoCodigo, turma,
+                        retornoConselhoBimestre.bimestre, fechamentoTurma?.Id));
+                
                 if (!retornoConselhoBimestre.possuiConselho || !alunoPossuiNotasTodosComponentesCurriculares)
                     throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_FINAL_SEM_CONCLUIR_CONSELHO_BIMESTRE, retornoConselhoBimestre.bimestre));
             }
