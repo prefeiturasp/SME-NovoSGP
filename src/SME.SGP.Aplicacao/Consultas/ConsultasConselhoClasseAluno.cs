@@ -91,7 +91,7 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo != 2020 && turma.AnoLetivo == DateTime.Now.Year && bimestre == 0 && !await ExisteConselhoClasseUltimoBimestreAsync(fechamentoTurmaId, turma, alunoCodigo))
                 throw new NegocioException(MensagemNegocioConselhoClasse.ALUNO_NAO_POSSUI_CONSELHO_CLASSE_ULTIMO_BIMESTRE);
 
-            var disciplinas = (await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma));
+            var disciplinas = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
             if (disciplinas == null || !disciplinas.Any())
                 return null;
 
@@ -177,12 +177,14 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaResposta MapearLancaNotaFrequenciaSgp(DisciplinaResposta disciplinaEol, DisciplinaDto disciplinaSgp)
         {
-            disciplinaEol.LancaNota = disciplinaSgp.LancaNota;
-            disciplinaEol.RegistroFrequencia = disciplinaSgp.RegistraFrequencia;
-            disciplinaEol.Nome = disciplinaSgp.Nome;
-            disciplinaEol.NomeComponenteInfantil = disciplinaSgp.NomeComponenteInfantil;
+            if (disciplinaSgp != null)
+            {
+                disciplinaEol.LancaNota = disciplinaSgp.LancaNota;
+                disciplinaEol.RegistroFrequencia = disciplinaSgp.RegistraFrequencia;
+                disciplinaEol.Nome = disciplinaSgp.Nome;
+                disciplinaEol.NomeComponenteInfantil = disciplinaSgp.NomeComponenteInfantil;
+            }
             return disciplinaEol;
-
         }
 
         public async Task<ConselhoClasseAlunoNotasConceitosRetornoDto> ObterNotasFrequencia(long conselhoClasseId,
