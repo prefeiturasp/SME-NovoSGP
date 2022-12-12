@@ -4,7 +4,6 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Threading.Tasks;
-using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Dados.Repositorios
 {
