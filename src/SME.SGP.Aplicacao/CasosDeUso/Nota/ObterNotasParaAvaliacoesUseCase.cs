@@ -155,9 +155,7 @@ namespace SME.SGP.Aplicacao
                            && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
-
             
-
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
