@@ -70,7 +70,7 @@ namespace SME.SGP.Aplicacao
                     CodigoAluno = encaminhamento.CodigoAluno,
                     NomeAluno = encaminhamento.NomeAluno,
                     Prioridade = encaminhamento.Prioridade,
-                    Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).ToString(),
+                    Situacao = ((SituacaoNAAPA)int.Parse(encaminhamento.Situacao)).Name(),
                     DataAberturaQueixaInicio = encaminhamento.DataAberturaQueixaInicio
                 });
             }
