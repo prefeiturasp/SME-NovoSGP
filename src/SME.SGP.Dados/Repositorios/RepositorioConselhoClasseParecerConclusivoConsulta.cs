@@ -110,8 +110,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"select wf.*, cp.* from wf_aprovacao_parecer_conclusivo wf
                             inner join conselho_classe_parecer cp on cp.id = wf.conselho_classe_parecer_id
-                            inner join wf_aprovacao wa ON wa.id = wf.wf_aprovacao_id 
-                            where not wa.excluido and wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
+                            left join wf_aprovacao wa ON wa.id = wf.wf_aprovacao_id 
+                            where (wf.wf_aprovacao_id is null or not wa.excluido) and wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
 
             return (await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
                 , (wfAprovacaoNota, conselhoClasseParecer) =>
