@@ -45,10 +45,10 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
                     turma.CodigoTurma, pareceresDaTurma));
 
-            var emAprovacao = await EnviarParaAprovacao(turma);
+            var emAprovacao = false;
 
-            if (emAprovacao)
-                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
+            if (await EnviarParaAprovacao(turma))
+                emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
                 var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
@@ -74,26 +74,26 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
+        private async Task<bool> GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
         {
             if (parecerConclusivoId == conselhoClasseAluno.ConselhoClasseParecerId)
-                return;
+                return false;
 
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var parecerAnterior = pareceresDaTurma.FirstOrDefault(a => a.Id == conselhoClasseAluno.ConselhoClasseParecerId)?.Nome;
             var parecerNovo = pareceresDaTurma.FirstOrDefault(a => a.Id == parecerConclusivoId).Nome;
 
             var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
-            if (pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId)) 
-                return;
+            if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId)) 
+                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
+                                                                                 turma,
+                                                                                 conselhoClasseAluno.AlunoCodigo,
+                                                                                 parecerConclusivoId,
+                                                                                 parecerAnterior,
+                                                                                 parecerNovo,
+                                                                                 usuarioSolicitanteId));
 
-            await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                             turma,
-                                                                             conselhoClasseAluno.AlunoCodigo,
-                                                                             parecerConclusivoId,
-                                                                             parecerAnterior,
-                                                                             parecerNovo,
-                                                                             usuarioSolicitanteId));
+            return true;
         }
 
         private async Task<bool> EnviarParaAprovacao(Turma turma)
