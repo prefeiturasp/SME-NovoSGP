@@ -1,13 +1,14 @@
 ﻿using MediatR;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterTipoRelatorioPorCodigoQuery : IRequest<int>
+namespace SME.SGP.Aplicacao
 {
-    public ObterTipoRelatorioPorCodigoQuery(string codigoRelatorio)
+    public class ObterTipoRelatorioPorCodigoQuery : IRequest<int>
     {
-        CodigoRelatorio = codigoRelatorio;
-    }
+        public ObterTipoRelatorioPorCodigoQuery(string codigoRelatorio)
+        {
+            CodigoRelatorio = codigoRelatorio;
+        }
 
-    public string CodigoRelatorio { get; }
+        public string CodigoRelatorio { get; }
+    }
 }

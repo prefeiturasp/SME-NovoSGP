@@ -1,14 +1,15 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao;
-
-public class SalvarNotificacaoCommand : IRequest<long>
+namespace SME.SGP.Aplicacao
 {
-    public SalvarNotificacaoCommand(Notificacao notificacao)
+    public class SalvarNotificacaoCommand : IRequest<long>
     {
-        Notificacao = notificacao;
-    }
+        public SalvarNotificacaoCommand(Notificacao notificacao)
+        {
+            Notificacao = notificacao;
+        }
 
-    public Notificacao Notificacao { get; }
+        public Notificacao Notificacao { get; }
+    }
 }
