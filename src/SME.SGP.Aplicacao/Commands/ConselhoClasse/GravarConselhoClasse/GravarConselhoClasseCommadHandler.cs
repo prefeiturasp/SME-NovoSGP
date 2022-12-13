@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
 
         public GravarConselhoClasseCommadHandler(
-                        IMediator mediator, 
+                        IMediator mediator,
                         IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -27,20 +27,20 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseNotaRetornoDto> Handle(GravarConselhoClasseCommad request, CancellationToken cancellationToken)
         {
             var conselhoClasseNotaRetorno = request.ConselhoClasseId == 0 ?
-                await mediator.Send(new InserirConselhoClasseNotaCommad(
+                mediator.Send(new InserirConselhoClasseNotaCommad(
                                             request.FechamentoTurma,
                                             request.CodigoAluno,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            request.Usuario), cancellationToken) :
-                await mediator.Send(new AlterarConselhoClasseCommad(
+                                            request.Usuario), cancellationToken).Result :
+                mediator.Send(new AlterarConselhoClasseCommad(
                                             request.ConselhoClasseId,
                                             request.FechamentoTurma.Id,
                                             request.CodigoAluno,
                                             request.FechamentoTurma.Turma,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            request.Usuario), cancellationToken);
+                                            request.Usuario), cancellationToken).Result;
 
             var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
             if (!situacaoConselhoAtualizada)
