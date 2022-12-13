@@ -24,9 +24,17 @@ namespace SME.SGP.Aplicacao
             var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, 
                                                                                                        request.RfLogado, 
                                                                                                        request.PerfilAtual, 
-                                                                                                       request.RealizarAgrupamentoComponente);
-            
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
+                                                                                                       request.RealizarAgrupamentoComponente,
+                                                                                                       true);
+
+            if(componentesCurricularesUsuarioLogado == null)
+                componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo,
+                                                                                                       request.RfLogado,
+                                                                                                       request.PerfilAtual,
+                                                                                                       request.RealizarAgrupamentoComponente,
+                                                                                                       false);
+
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.TerritorioSaber ? b.CodigoComponenteTerritorioSaber.ToString() : b.Codigo.ToString());            
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
                 if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
@@ -35,9 +43,9 @@ namespace SME.SGP.Aplicacao
             return componentesCurricularesParaVisualizar.ToArray();
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual, bool realizarAgrupamentoComponente)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual, bool realizarAgrupamentoComponente, bool checaMotivoDisponibilizacao)
         {
-            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual, realizarAgrupamentoComponente));
+            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual, realizarAgrupamentoComponente, checaMotivoDisponibilizacao));
         }
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {

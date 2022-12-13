@@ -140,7 +140,8 @@ namespace SME.SGP.Dados.Repositorios
                        fn.disciplina_id as ComponenteCurricularCodigo, 
                        fn.conceito_id as ConceitoId, 
                        fn.nota as Nota,
-                       fa.aluno_codigo as AlunoCodigo
+                       fa.aluno_codigo as AlunoCodigo,
+                       t.turma_id TurmaCodigo
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 

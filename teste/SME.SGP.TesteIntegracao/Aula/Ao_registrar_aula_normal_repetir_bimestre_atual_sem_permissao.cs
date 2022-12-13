@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
@@ -28,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
         [Fact]
         public async Task Ao_registrar_aula_normal_repetir_no_bimestre_atual_professor_nao_pode_fazer_alteracoes_modalidade_fundamental()
         {
-            var mensagemEsperada = "Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.";
+            var mensagemEsperada = $"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data}";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_2, false);
 
@@ -45,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

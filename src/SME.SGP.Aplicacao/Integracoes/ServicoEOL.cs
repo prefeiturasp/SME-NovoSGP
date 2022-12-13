@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -20,14 +18,12 @@ namespace SME.SGP.Aplicacao.Integracoes
 {
     public class ServicoEOL : IServicoEol
     {
-        private readonly IRepositorioCache cache;
         private readonly IMediator mediator;
         private readonly HttpClient httpClient;
 
-        public ServicoEOL(HttpClient httpClient, IRepositorioCache cache, IMediator mediator)
+        public ServicoEOL(HttpClient httpClient, IMediator mediator)
         {
             this.httpClient = httpClient;
-            this.cache = cache;
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -257,9 +253,9 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<List<AlunoPorTurmaResposta>>(json);
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(string codigoTurma, string login, Guid perfil, bool realizarAgrupamentoComponente = false, bool checaMotivoDisponibilizacao = true)
         {
-            return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfil, realizarAgrupamentoComponente));
+            return await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, login, perfil, realizarAgrupamentoComponente, checaMotivoDisponibilizacao));
         }
 
         public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesPorLoginEIdPerfil(string login, Guid idPerfil)
@@ -509,16 +505,20 @@ namespace SME.SGP.Aplicacao.Integracoes
             return null;
         }
 
-        public async Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
+        public async Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
         {
-            var resposta = await httpClient.GetAsync($"autenticacaoSgp/CarregarPermissoesPorPerfil/{perfilGuid}");
-
-            if (resposta.IsSuccessStatusCode)
-            {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<int[]>(json);
-            }
-            return null;
+            HttpResponseMessage resposta;
+            
+            if (administradorSuporte != null)
+                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}?loginAdm={administradorSuporte.Login}&nomeAdm={administradorSuporte.Nome}");
+            else
+                resposta = await httpClient.GetAsync($"AutenticacaoSgp/CarregarDadosAcesso/usuarios/{login}/perfis/{perfilGuid}");                
+            
+            if (!resposta.IsSuccessStatusCode) 
+                return null;
+            
+            var json = await resposta.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<RetornoDadosAcessoUsuarioSgpDto>(json);
         }
 
         public async Task<IEnumerable<ProfessorResumoDto>> ObterProfessoresAutoComplete(int anoLetivo, string dreId, string ueId, string nomeProfessor)
@@ -613,18 +613,56 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
-            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))
+            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || (!buscarPorTodasDre && (string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))))
                 throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
 
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}&buscarOutrosCargos={buscarOutrosCargos}");
+            string paramUeId = string.Empty, paramDreId = string.Empty;
+
+            if (!buscarPorTodasDre)
+            {
+                paramUeId = !string.IsNullOrWhiteSpace(ueId) ? $"ueId={ueId}&" : string.Empty;
+                paramDreId = !string.IsNullOrWhiteSpace(dreId) ? $"dreId={dreId}&" : string.Empty;
+            }            
+
+            var resposta = await httpClient
+                .GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                bool ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
+
+                if (dadosUsuarioLogado.EhProfessorCj())
+                {
+                    if (ehGestorEscolar)
+                    {
+                        var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId, new List<int>() { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                        bool ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
+                       
+                        if(ehFuncionarioGestorEscolarDaUe)
+                             return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }     
+                    else
+                    {
+                        var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+
+                        if (obterAtribuicoesCJAtivas.Any())
+                        {
+                            bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                            if (possuiAtribuicaoNaUE)
+                                return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                        }
+                    }                       
+                }
+                
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+            }
 
             var json = await resposta.Content.ReadAsStringAsync();
 
@@ -948,12 +986,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
             var parametros = JsonConvert.SerializeObject(ids);
-
-            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-
+            
+            var url = @"disciplinas/turma/";
+            if (codigoTurma != null)
+                url += $"?codigoTurma={codigoTurma}";
+            var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);

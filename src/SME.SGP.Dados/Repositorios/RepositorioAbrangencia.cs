@@ -794,7 +794,7 @@ namespace SME.SGP.Dados.Repositorios
                     resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
             }
 
-            return resultadoFiltrado;
+            return resultadoFiltrado.DistinctBy(p => new {p.Codigo, p.Nome});
         }
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)

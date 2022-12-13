@@ -1,8 +1,10 @@
-﻿using SME.SGP.Dominio;
+﻿using FluentValidation.Results;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +56,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<FechamentoTurma> ObterPorTurmaCodigoBimestreAsync(string turmaCodigo, int bimestre = 0)
         {
-            var query = new StringBuilder(@"select f.* 
+            var query = new StringBuilder(@"with fechamentos as (select f.*,
+                            row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia
                             from fechamento_turma f
                           inner join turma t on t.id = f.turma_id
                            left join periodo_escolar p on p.id = f.periodo_escolar_id
@@ -65,14 +68,15 @@ namespace SME.SGP.Dados.Repositorios
             else
                 query.AppendLine(" and f.periodo_escolar_id is null");
 
-            query.AppendLine(" order by f.excluido");
+            query.AppendLine(" order by f.excluido) select * from fechamentos where sequencia = 1;");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
-        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre)
+        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre)
         {
-            var query = new StringBuilder(@"select f.* 
+            var query = new StringBuilder(@"with fechamentos as (select f.*,
+                            row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia
                             from fechamento_turma f
                           inner join turma t on t.id = f.turma_id
                                 left JOIN conselho_classe cc ON cc.fechamento_turma_id  = f.id 
@@ -81,18 +85,23 @@ namespace SME.SGP.Dados.Repositorios
                           where t.turma_id = @turmaCodigo ");
             query.AppendLine(bimestre > 0 ? " and p.bimestre = @bimestre " : " and f.periodo_escolar_id is null");
 
+            query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
+
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
         public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0)
         {
-            var query = new StringBuilder(@"select * 
-                            from fechamento_turma 
-                           where turma_id = @turmaId ");
+            var query = new StringBuilder(@"with fechamentos as (select f.*,
+                            row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia
+                            from fechamento_turma f
+                           where f.turma_id = @turmaId ");
             if (periodoId > 0)
-                query.AppendLine(" and periodo_escolar_id = @periodoId");
+                query.AppendLine(" and f.periodo_escolar_id = @periodoId");
             else
-                query.AppendLine(" and periodo_escolar_id is null");
+                query.AppendLine(" and f.periodo_escolar_id is null");
+
+            query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaId, periodoId });
         }
@@ -115,9 +124,10 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
-                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
+                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id  
+                        left join componente_curricular cc on cc.id = fn.disciplina_id
                         where t.id = @turmaId 
-                        and f.disciplina_id = @componenteCurricularId
+                        and (f.disciplina_id = @componenteCurricularId or cc.id = @componenteCurricularId)
                         and ft.periodo_escolar_id = @periodoEscolarId                        
                         ORDER BY fn.alterado_em, fn.criado_em) select * from lista where sequencia = 1;";
 

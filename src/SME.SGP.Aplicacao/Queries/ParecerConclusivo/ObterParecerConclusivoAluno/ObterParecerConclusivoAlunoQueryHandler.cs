@@ -51,18 +51,22 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseParecerConclusivo> Handle(ObterParecerConclusivoAlunoQuery request, CancellationToken cancellationToken)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(request.TurmaCodigo));
-            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
             var alunosEol = await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma, true));
             var informacoesAluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == request.AlunoCodigo);
 
             string[] turmasCodigos;
 
-            if (!turma.Historica && (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
+            if (!turma.Historica && (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)))
             {
-                var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
-                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta, turma.Historica, ueCodigo: turma.Ue.CodigoUe));
+                var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                
+                
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta, turma.Historica, ueCodigo: turma.Ue.CodigoUe));
             }
             else
                 turmasCodigos = new string[1] { turma.CodigoTurma };
@@ -132,8 +136,6 @@ namespace SME.SGP.Aplicacao
 
             if (dataMatriculaAluno != null)
                 frequencias = frequencias.Where(f => f.PeriodoFim > dataMatriculaAluno);
-
-
 
             if (FrequenciaAnualPorComponenteCritica(AgruparValoresPorDisciplina(frequencias), parametroFrequenciaBaseNacional, turma.AnoLetivo))
                 return false;
@@ -271,6 +273,8 @@ namespace SME.SGP.Aplicacao
             var notasConselhoClasse = await mediator.Send(new ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery(turmasCodigos, alunoCodigo));
             if (notasConselhoClasse == null || !notasConselhoClasse.Any())
                 return (false, false);
+            else
+                notasConselhoClasse = notasConselhoClasse.OrderByDescending(c=> c.ConselhoClasseAlunoId).DistinctBy(c => c.ComponenteCurricularCodigo);
 
             var tipoNota = notasConselhoClasse.First().ConceitoId.HasValue ? TipoNota.Conceito : TipoNota.Nota;
             return (true, tipoNota == TipoNota.Nota ?

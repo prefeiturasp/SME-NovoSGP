@@ -29,7 +29,9 @@ namespace SME.SGP.Aplicacao
             var semestres = await mediator.Send(new ObterListaSemestresRelatorioPAPQuery(bimestreAtual));
             var tipoCalendarioTurmaId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
 
-            if(tipoCalendarioTurmaId > 0)
+            bool temPermissao = VerificaSeBimestreAtualPossuiPermissaoEdicao(semestres, bimestreAtual);
+
+            if (tipoCalendarioTurmaId > 0 && (!temPermissao || semestres.Any(x => x.PodeEditar == false)))
             {
                 var semestresComReaberturaVigente = await mediator.Send(new ObterSemestresComReaberturaAtivaPAPQuery(DateTime.Now, tipoCalendarioTurmaId, turma.UeId, semestres));
 
@@ -38,6 +40,19 @@ namespace SME.SGP.Aplicacao
             }
 
             return semestres;
+        }
+
+        private static bool VerificaSeBimestreAtualPossuiPermissaoEdicao(List<SemestreAcompanhamentoDto> semestres, int bimestreAtual)
+        {
+            if (semestres.Any())
+            {
+                if (bimestreAtual == 1 || bimestreAtual == 2)
+                    return semestres.FirstOrDefault(s => s.Semestre == 1).PodeEditar;
+                else if (bimestreAtual == 3 || bimestreAtual == 4)
+                    return semestres.FirstOrDefault(s => s.Semestre == 2).PodeEditar;
+            } 
+
+            return false;           
         }
     }
             

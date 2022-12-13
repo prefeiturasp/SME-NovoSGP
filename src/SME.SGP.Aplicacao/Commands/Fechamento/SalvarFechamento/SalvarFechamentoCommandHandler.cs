@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 using static SME.SGP.Aplicacao.GerarNotificacaoAlteracaoLimiteDiasUseCase;
 
@@ -482,7 +483,7 @@ namespace SME.SGP.Aplicacao
             var podePersistir = await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, dataAula, usuario));
 
             if (!usuario.EhProfessorCj() && !podePersistir)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
 
         private async Task<IEnumerable<FechamentoAluno>> AtualizaSinteseAlunos(long fechamentoTurmaDisciplinaId, DateTime dataReferencia, DisciplinaDto disciplina, int anoLetivo, string codigoTurma)
@@ -537,6 +538,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, int turmaAnoLetivo)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -550,6 +552,8 @@ namespace SME.SGP.Aplicacao
 
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                else
+                    indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
@@ -584,6 +588,9 @@ namespace SME.SGP.Aplicacao
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
+
+                if (indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
 
                 fechamentoAlunos.Add(fechamentoAluno);
             }

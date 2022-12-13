@@ -208,6 +208,8 @@ namespace SME.SGP.Aplicacao
 
                 var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendario.Id, periodoAtual.PeriodoFim);
 
+                alunos = alunos.Where(a => a.VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(bimestreDoPeriodo.PeriodoFim));
+
                 var alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                     .GroupBy(a => a.CodigoAluno)
                     .Select(a => a.OrderByDescending(i => i.DataSituacao).First())
@@ -289,7 +291,7 @@ namespace SME.SGP.Aplicacao
                         else
                         {
                             // Carrega notas do bimestre
-                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma.Id);
+                            var notasConceitoBimestre = notasConceitoBimestreRetorno.Where(x => x.CodigoAluno == aluno.CodigoAluno && x.FechamentoId == fechamentoTurma?.Id);
 
                             if (notasConceitoBimestre.Any())
                                 alunoDto.Notas = new List<FechamentoNotaRetornoDto>();

@@ -182,34 +182,40 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<FrequenciaAlunoAulaDto>(query, new { aulaId, codigoAluno });
         }
 
-
-        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, params string[] turmasId)
+        public async Task<int> ObterTotalAulasPorDisciplinaETurma(DateTime dataAula, string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null, params string[] turmasId)
         {
-            String query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId);
-            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(), new { dataAula, disciplinaId, turmasId });
+            var query = BuildQueryObterTotalAulasPorDisciplinaETurma(disciplinaId, dataMatriculaAluno, dataSituacaoAluno);
+            return await database.Conexao.QueryFirstOrDefaultAsync<int>(query.ToString(),
+                new { dataAula, disciplinaId, turmasId, dataMatriculaAluno = dataMatriculaAluno.HasValue ? dataMatriculaAluno.Value.Date : (DateTime?)null, dataSituacaoAluno = dataSituacaoAluno.HasValue ? dataSituacaoAluno.Value.Date : (DateTime?)null });
         }
 
-        private String BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId)
+        private string BuildQueryObterTotalAulasPorDisciplinaETurma(string disciplinaId, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select ");
-            query.AppendLine("COALESCE(SUM(a.quantidade),0) AS total");
-            query.AppendLine("from ");
-            query.AppendLine("aula a ");
-            query.AppendLine("inner join registro_frequencia rf on ");
-            query.AppendLine("rf.aula_id = a.id ");
-            query.AppendLine("inner join periodo_escolar p on ");
-            query.AppendLine("a.tipo_calendario_id = p.tipo_calendario_id ");
+            query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
+            query.AppendLine("  from aula a ");
+            query.AppendLine("      inner join periodo_escolar p on");
+            query.AppendLine("          a.tipo_calendario_id = p.tipo_calendario_id");
             query.AppendLine("where not a.excluido");
-            query.AppendLine("and p.periodo_inicio <= @dataAula ");
-            query.AppendLine("and p.periodo_fim >= @dataAula ");
-            query.AppendLine("and a.data_aula >= p.periodo_inicio");
-            query.AppendLine("and a.data_aula <= p.periodo_fim ");
+            query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
+            query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
 
             if (!string.IsNullOrWhiteSpace(disciplinaId))
-                query.AppendLine("and a.disciplina_id = @disciplinaId ");
+                query.AppendLine("and a.disciplina_id = @disciplinaId");
 
-            query.AppendLine("and a.turma_id = any(@turmasId) ");
+            if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
+                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno::date and @dataSituacaoAluno::date - 1");
+            else if (dataMatriculaAluno.HasValue)
+                query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno::date");
+            else if (dataSituacaoAluno.HasValue)
+                query.AppendLine("and a.data_aula::date < @dataSituacaoAluno::date");
+
+            query.AppendLine("and a.turma_id = any(@turmasId)");            
+            query.AppendLine("and exists (select 1");
+            query.AppendLine("				from registro_frequencia_aluno rfa");
+            query.AppendLine("			  where a.id = rfa.aula_id and");
+            query.AppendLine("				  not a.excluido);");
+
             return query.ToString();
         }
 
@@ -251,14 +257,14 @@ namespace SME.SGP.Dados.Repositorios
                                             and not rfa.excluido and not a.excluido 
                                             order by a.data_aula";
 
-            var parametros = new { turmaCodigo, alunoCodigo};
+            var parametros = new { turmaCodigo, alunoCodigo };
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoTurmaDto>(query, parametros);
         }
 
         public Task<IEnumerable<RegistroFrequenciaAluno>> ObterRegistrosAusenciaPorIdRegistro(long registroFrequenciaId)
         {
-	        var query = @"SELECT
+            var query = @"SELECT
 							id,
 							valor,
 							codigo_aluno,

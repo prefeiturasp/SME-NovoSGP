@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SME.SGP.Dominio.Constantes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -19,14 +20,45 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto dto)
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            if (dto.TextoSugerido)
-                await CopiarArquivo(dto);
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(acompanhamentoAlunoDto.TurmaId));
+            var parametroQuantidadeImagens = await ObterQuantidadeLimiteImagens(turma.AnoLetivo);
 
-            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(dto);
+            if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))
+                throw new NegocioException(String.Format(MensagemAcompanhamentoTurma.QUANTIDADE_DE_IMAGENS_PERMITIDAS_EXCEDIDA, parametroQuantidadeImagens));
+            
+            if (turma == null)
+                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
+            
+            var bimestre = acompanhamentoAlunoDto.Semestre == 1 ? 2 : 4;
+
+            var dataAtual = DateTimeExtension.HorarioBrasilia().Date;
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, dataAtual, bimestre,turma.AnoLetivo == dataAtual.Year));
+            
+            if (!temPeriodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+            
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEolQuery(acompanhamentoAlunoDto.AlunoCodigo, dataAtual.Year, true,false, turma.CodigoTurma));
+            if (aluno == null)
+                throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
+            
+            if (aluno.EstaInativo(dataAtual))
+                throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_INATIVO);
+            
+            if (acompanhamentoAlunoDto.TextoSugerido)
+                await CopiarArquivo(acompanhamentoAlunoDto);
+
+            var acompanhamentoSemestre = await MapearAcompanhamentoSemestre(acompanhamentoAlunoDto);
 
             return (AcompanhamentoAlunoSemestreAuditoriaDto)acompanhamentoSemestre;
+        }
+
+        private async Task<int> ObterQuantidadeLimiteImagens(int ano)
+        {
+            var parametroQuantidade = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.QuantidadeImagensPercursoIndividualCrianca, ano));
+            return parametroQuantidade == null ?
+                0 : int.Parse(parametroQuantidade.Valor);
         }
 
         private async Task CopiarArquivo(AcompanhamentoAlunoDto acompanhamentoAluno)
@@ -36,13 +68,17 @@ namespace SME.SGP.Aplicacao
                 foreach (var imagem in imagens)
                 {
                     var nomeArquivo = Regex.Match(imagem.ToString(), ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
-                    var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
-                    if (!string.IsNullOrEmpty(novoCaminho))
+                    if (!ImagemJaExistente(imagem.ToString()) && ImagemExisteTemp(imagem.ToString()))
                     {
-                        var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
-                        acompanhamentoAluno.PercursoIndividual = str;
-                    }
+                        var novoCaminho = nomeArquivo.Success ? await mediator.Send(new CopiarArquivoCommand(nomeArquivo.ToString(), TipoArquivo.AcompanhamentoAluno)) : string.Empty;
+                        if (!string.IsNullOrEmpty(novoCaminho))
+                        {
+                            var str = acompanhamentoAluno.PercursoIndividual.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+                            acompanhamentoAluno.PercursoIndividual = str;
+                        }
+                    }       
                 }
+
         }
 
         private async Task MoverRemoverExcluidosAlterar(string observacoes, string percursoIndividual, AcompanhamentoAlunoSemestre entidade)
@@ -115,5 +151,10 @@ namespace SME.SGP.Aplicacao
 
             return await mediator.Send(new GerarAcompanhamentoAlunoSemestreCommand(acompanhamentoAlunoId, dto.Semestre, dto.Observacoes, dto.PercursoIndividual));
         }
+
+        private bool ImagemJaExistente(string imagem)
+        => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketArquivos}/");
+        private bool ImagemExisteTemp(string imagem)
+        => imagem.Contains($@"/{configuracaoArmazenamentoOptions.Value.BucketTemp}");
     }
 }

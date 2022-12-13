@@ -56,6 +56,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
                         inner join turma t on ccpa.modalidade = t.modalidade_codigo 
 	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
+                                                                    and ((t.modalidade_codigo = 3 and t.etapa_eja = ccpa.etapa_eja) 
+	                              										 or (t.modalidade_codigo <> 3 and ccpa.etapa_eja is null))
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
 

@@ -4,9 +4,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Contexto;
+using SME.SGP.Infra.Interfaces;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -16,6 +20,8 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
     public class Ao_registrar_aula_verifica_se_pode_cadastrar_aula : AulaTeste
     {
         private const long TIPO_CALENDARIO_999999 = 999999;
+        private const string USUARIO_PROFESSOR_NOME_2222222 = "2222222";
+        private const string NOME_TOKEN_TESTE = "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiUHJvZmVzc29yIiwiSXNzdWVyIjoiSXNzdWVyIiwiVXNlcm5hbWUiOiJUZXN0ZVByb2Zlc3NvciIsImlhdCI6MTY3MDUyNTQyMSwicGVyZmlsIjoiNDBFMUUwNzQtMzdENi1FOTExLUFCRDYtRjgxNjU0RkU4OTVEIn0.da2rLBX_esGtdudii1bZpSG6SQK264bQ_oKm74BkA6M";
 
         private readonly DateTime DATA_19_06 = new(DateTimeExtension.HorarioBrasilia().Year, 06, 19);        
 
@@ -53,6 +59,8 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             var mensagemEsperada = "Não é possível cadastrar aula do tipo 'Normal' para o dia selecionado!";
 
             await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_08_07, BIMESTRE_1, false);
+ 
+            CriarClaimProfessorComToken();
 
             await InserirNaBase(new Dominio.Aula() 
             {
@@ -79,6 +87,19 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
             excecao.Message.ShouldNotBeNullOrEmpty();
 
             excecao.Message.ShouldBeEquivalentTo(mensagemEsperada);
+        }
+
+        private void CriarClaimProfessorComToken()
+        {
+            var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
+            var variaveis = new Dictionary<string, object>();
+            variaveis.Add("login", USUARIO_PROFESSOR_LOGIN_2222222);
+            variaveis.Add("TokenAtual", NOME_TOKEN_TESTE);
+            variaveis.Add("Claims", new List<InternalClaim> {
+                new InternalClaim { Value = USUARIO_PROFESSOR_CODIGO_RF_2222222, Type = "rf" },
+                new InternalClaim { Value = PerfilUsuario.PROFESSOR.Name(), Type = "perfil" },
+            });
+            contextoAplicacao.AdicionarVariaveis(variaveis);
         }
 
         [Fact]
@@ -335,7 +356,7 @@ namespace SME.SGP.TesteIntegracao.PodeCadastrarAula
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

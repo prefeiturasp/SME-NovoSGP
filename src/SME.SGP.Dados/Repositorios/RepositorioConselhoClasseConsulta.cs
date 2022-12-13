@@ -72,14 +72,15 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<ConselhoClasse> ObterPorTurmaEPeriodoAsync(long turmaId, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 
-                            from conselho_classe c 
-                           inner join fechamento_turma t on t.id = c.fechamento_turma_id
-                           where t.turma_id = @turmaId ");
+                                            from conselho_classe c 
+                                                inner join fechamento_turma t on t.id = c.fechamento_turma_id
+                                                    and not t.excluido
+                                            where t.turma_id = @turmaId 
+                                            and not c.excluido");
 
-            if (periodoEscolarId.HasValue)
-                query.AppendLine(" and t.periodo_escolar_id = @periodoEscolarId");
-            else
-                query.AppendLine(" and t.periodo_escolar_id is null");
+            query.AppendLine(periodoEscolarId.HasValue
+                ? " and t.periodo_escolar_id = @periodoEscolarId"
+                : " and t.periodo_escolar_id is null");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
@@ -359,8 +360,7 @@ namespace SME.SGP.Dados.Repositorios
                           inner join tipo_calendario tc on tc.id = pe.tipo_calendario_id
                           where  t.ano_letivo = {DateTime.Now.Year}
                           and dre.id = @dreId 
-                          and pe.bimestre in (1,2,3)
-                          and tc.id in (24,25,26,27)");
+                          and tc.modalidade in (1,2)");
 
             return await database.Conexao
                 .QueryAsync<objConsolidacaoConselhoAluno>(query.ToString(), new { dreId });

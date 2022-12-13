@@ -254,12 +254,10 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaFechamento.CodigoTurma));
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
             var alunosAtivos = from a in alunos
-                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) || !a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) && 
-                    !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && 
-                    a.DataSituacao >= periodoEscolar.PeriodoInicio
+                where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
                 orderby a.NomeValido(), a.NumeroAlunoChamada
                 select a;
 
@@ -476,6 +474,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -489,6 +488,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                else
+                    indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
@@ -524,7 +525,10 @@ namespace SME.SGP.Dominio.Servicos
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
-
+                
+                if(indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
+                
                 fechamentoAlunos.Add(fechamentoAluno);
             }
 
@@ -637,7 +641,7 @@ namespace SME.SGP.Dominio.Servicos
             var podePersistir = await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula);
 
             if (!usuario.EhProfessorCj() && !podePersistir)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

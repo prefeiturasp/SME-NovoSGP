@@ -34,7 +34,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     AlunoCodigo = "1234567",
                     Turma = new Turma()
                     {
-                        AnoLetivo = 2021
+                        AnoLetivo = 2021,
+                        Ue = new Ue()
+                        {
+                            CodigoUe = "0"
+                        }
                     }
                 });
 
@@ -68,7 +72,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     AlunoCodigo = "1234567",
                     Turma = new Turma()
                     {
-                        AnoLetivo = 2021
+                        AnoLetivo = 2021,
+                        Ue = new Ue()
+                        {
+                            CodigoUe = "0"
+                        }
                     }
                 });
 
@@ -110,7 +118,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     AlunoCodigo = "1234567",
                     Turma = new Turma()
                     {
-                        AnoLetivo = 2021
+                        AnoLetivo = 2021,
+                        Ue = new Ue()
+                        {
+                            CodigoUe = "0"
+                        }
                     }
                 });
 
@@ -153,7 +165,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     Turma = new Turma()
                     {
                         CodigoTurma = "123123",
-                        AnoLetivo = 2021
+                        AnoLetivo = 2021,
+                        Ue = new Ue()
+                        {
+                            CodigoUe = "0"
+                        }
                     }
                 });
 
@@ -191,7 +207,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     Situacao = Dominio.Enumerados.SituacaoAEE.Encaminhado,
                     Turma = new Turma()
                     {
-                        AnoLetivo = 2021
+                        AnoLetivo = 2021,
+                        Ue = new Ue()
+                        {
+                            CodigoUe = "0"
+                        }
                     }
                 });
 

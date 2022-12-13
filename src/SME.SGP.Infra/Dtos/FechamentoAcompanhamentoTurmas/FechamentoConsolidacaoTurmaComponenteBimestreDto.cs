@@ -2,7 +2,7 @@
 {
     public class FechamentoConsolidacaoTurmaComponenteBimestreDto
     {
-        public FechamentoConsolidacaoTurmaComponenteBimestreDto(long turmaId, int bimestre, long componenteCurricularId)
+        public FechamentoConsolidacaoTurmaComponenteBimestreDto(long turmaId, int? bimestre, long componenteCurricularId)
         {
             TurmaId = turmaId;
             Bimestre = bimestre;
@@ -10,7 +10,7 @@
         }
 
         public long TurmaId { get; }
-        public int Bimestre { get; }
+        public int? Bimestre { get; }
         public long ComponenteCurricularId { get; }
     }
 }

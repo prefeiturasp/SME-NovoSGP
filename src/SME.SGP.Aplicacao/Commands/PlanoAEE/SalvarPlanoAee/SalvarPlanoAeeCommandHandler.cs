@@ -80,7 +80,7 @@ namespace SME.SGP.Aplicacao.Commands
                     }
 
                     if (await ParametroGeracaoPendenciaAtivo() && plano?.Situacao != SituacaoPlanoAEE.Validado)
-                        await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId));
+                        await mediator.Send(new GerarPendenciaValidacaoPlanoAEECommand(planoId, PerfilUsuario.CP));
 
                     unitOfWork.PersistirTransacao();
 

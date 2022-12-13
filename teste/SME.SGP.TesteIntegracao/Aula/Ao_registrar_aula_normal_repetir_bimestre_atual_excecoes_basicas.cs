@@ -4,6 +4,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
@@ -32,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 
             excecao.Mensagens.FirstOrDefault().ShouldNotBeNullOrEmpty();
 
-            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Você não pode criar aulas para essa Turma.");
+            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma}");
         }
 
         [Fact]
@@ -52,7 +53,7 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 
             excecao.Mensagens.FirstOrDefault().ShouldNotBeNullOrEmpty();
 
-            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Você não pode criar aulas para essa Turma.");
+            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma}");
         }
 
         [Fact]
@@ -68,12 +69,12 @@ namespace SME.SGP.TesteIntegracao.AulaBimestreAtual
 
             excecao.Mensagens.FirstOrDefault().ShouldNotBeNullOrEmpty();
 
-            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: Você não pode criar aulas para essa Turma.");
+            excecao.Mensagens.FirstOrDefault().ShouldBeEquivalentTo($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma}");
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

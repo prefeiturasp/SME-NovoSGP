@@ -33,8 +33,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<long> Handle(SalvarConselhoClasseAlunoCommand request,CancellationToken cancellationToken)
         {
-            var fechamentoTurma = await mediator
-                .Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaPorIdAlunoCodigoQuery(request.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
             // Se não existir conselho de classe para o fechamento gera
             if (request.ConselhoClasseAluno.ConselhoClasse.Id == 0)
@@ -56,7 +55,7 @@ namespace SME.SGP.Aplicacao
                 throw new Exception("Erro ao salvar o conselho de classe do aluno.");
             }
 
-            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo));
+            await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
             return conselhoClasseAlunoId;
         }
@@ -77,13 +76,13 @@ namespace SME.SGP.Aplicacao
             var conselhoClasseExistente = await mediator.Send(new ObterConselhoClassePorTurmaEPeriodoQuery(fechamentoTurma.TurmaId, fechamentoTurma.PeriodoEscolarId));
 
             if (conselhoClasseExistente != null)
-               throw new NegocioException(String.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
+               throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.JA_EXISTE_CONSELHO_CLASSE_GERADO_PARA_TURMA, fechamentoTurma.Turma.Nome));
 
             if (fechamentoTurma.PeriodoEscolarId.HasValue)
             {
                 // Fechamento Bimestral
                 if (!await consultasPeriodoFechamento.TurmaEmPeriodoDeFechamento(fechamentoTurma.Turma, DateTime.Today, fechamentoTurma.PeriodoEscolar.Bimestre))
-                    throw new NegocioException(String.Format(MensagemNegocioFechamentoTurma.TURMA_NAO_ESTA_EM_PERIODO_FECHAMENTO_PARA_BIMESTRE, fechamentoTurma.Turma.Nome, fechamentoTurma.PeriodoEscolar.Bimestre));
+                    throw new NegocioException(string.Format(MensagemNegocioFechamentoTurma.TURMA_NAO_ESTA_EM_PERIODO_FECHAMENTO_PARA_BIMESTRE, fechamentoTurma.Turma.Nome, fechamentoTurma.PeriodoEscolar.Bimestre));
             }
             else
             {
@@ -92,14 +91,13 @@ namespace SME.SGP.Aplicacao
                 {
                     var validacaoConselhoFinal = await consultasConselhoClasse.ValidaConselhoClasseUltimoBimestre(fechamentoTurma.Turma);
                     if (!validacaoConselhoFinal.Item2)
-                        throw new NegocioException(String.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE, validacaoConselhoFinal.Item1));
+                        throw new NegocioException(string.Format(MensagemNegocioConselhoClasse.NAO_PERMITE_ACESSO_ABA_SEM_REGISTRAR_CONSELHO_BIMESTRE, validacaoConselhoFinal.Item1));
                 }
             }
 
             await repositorioConselhoClasse.SalvarAsync(conselhoClasse);
+
             return (AuditoriaDto)conselhoClasse;
         }
-        
-        
     }
 }

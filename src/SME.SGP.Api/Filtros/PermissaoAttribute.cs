@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SME.SGP.Infra;
-using System;
 using System.Linq;
 
 namespace SME.SGP.Api.Filtros
@@ -9,8 +8,8 @@ namespace SME.SGP.Api.Filtros
     {
         public PermissaoAttribute(params Permissao[] permissoes)
         {
-            var permissoesStrings = permissoes.Select(x => Enum.GetName(typeof(Permissao), x));
-            Roles = string.Join(",", permissoesStrings);
+            var permissoesIds = permissoes.Select(x => (int)x);
+            Roles = string.Join(",", permissoesIds);
         }
     }
 }

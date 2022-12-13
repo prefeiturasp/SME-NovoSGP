@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
             // Busca horas aula cadastradas para a disciplina na turma
             return ehExperienciaPedagogica ?
-                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(turma.CodigoTurma, semana) :
+                await repositorioAula.ObterQuantidadeAulasTurmaExperienciasPedagogicasSemana(turma.CodigoTurma, semana, componenteCurricular.ToString()) :
                 await repositorioAula.ObterQuantidadeAulasTurmaDisciplinaSemanaProfessor(turma.CodigoTurma, componenteCurricular.ToString(), semana, codigoRf, dataAula, ehGestor);
         }
     }

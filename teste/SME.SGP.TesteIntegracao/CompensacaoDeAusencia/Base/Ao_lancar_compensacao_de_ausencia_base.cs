@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
         {
             base.RegistrarFakes(services);
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryFake), ServiceLifetime.Scoped));            
         }
 
         protected async Task ExecuteTeste(CompensacaoDeAusenciaDBDto dtoDadoBase, List<string> listaDisciplinaRegente = null)
@@ -133,11 +133,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia.Base
             await CriaFrequenciaAluno(
                 dtoDadoBase,
                 DATA_03_01_INICIO_BIMESTRE_1,
-                DATA_29_04_FIM_BIMESTRE_1,
+                DATA_28_04_FIM_BIMESTRE_1,
                 codigoAluno,
                 totalPresenca,
                 totalAusencia,
-                PERIODO_ESCOLAR_ID_1);
+                PERIODO_ESCOLAR_ID_3);
         }
 
         private List<CompensacaoAusenciaAlunoDto> ObtenhaListaDeAlunos()

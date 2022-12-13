@@ -4,28 +4,7 @@
     {
         /*Retirar comentário após a implementação dos menus*/
         [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhConsulta = true)]
-        S_C = 1,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhInclusao = true)]
-        S_I = 2,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhExclusao = true)]
-        S_E = 3,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhAlteracao = true)]
-        S_A = 4,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_C = 5,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem",OrdemMenu = 2)]
-        //SR_I = 6,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_E = 7,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_A = 8,
+        S_C = 5,
 
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 4, Url = "/relatorios/diario-classe/boletim-simples", EhConsulta = true)]
         B_C = 9,

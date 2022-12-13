@@ -69,13 +69,13 @@ namespace SME.SGP.Dados.Repositorios
                             from componente_curricular cc 
                             where cc.id = @componenteCurricularId";
 
-            var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int>(obtempai, new { componenteCurricularId });
+            var componentePai = await database.Conexao.QueryFirstOrDefaultAsync<int?>(obtempai, new { componenteCurricularId });
 
-            var condicao = @" from registro_individual ri
+            var condicao = @$" from registro_individual ri
                                   inner join componente_curricular cc on ri.componente_curricular_id = cc.id
                                    where not ri.excluido 
                                     and ri.turma_id = @turmaId
-                                    and cc.componente_curricular_pai_id = @componentePai
+                                    {(componentePai != null? "and cc.componente_curricular_pai_id = @componentePai":"")}
                                     and ri.aluno_codigo = @alunoCodigo
                                     and ri.data_registro::date between @dataInicio and @dataFim ";
             var orderBy = "order by ri.data_registro desc";
@@ -243,7 +243,7 @@ namespace SME.SGP.Dados.Repositorios
 		                              inner join turma t on t.id = ri.turma_id
 		                              inner join ue on ue.id = t.ue_id
 		                              where data_registro between @dataInicial and now()
-			                            and t.ano <> '0'
+			                            and t.ano = '7'
 			                            and t.modalidade_codigo = @modalidade
                                         {condicaoDre}
 		                           group by t.ano, t.modalidade_codigo
@@ -256,7 +256,7 @@ namespace SME.SGP.Dados.Repositorios
 		                           inner join turma t on t.id = cmt.turma_id 
 		                           inner join ue on ue.id = t.ue_id 
 		                           where t.modalidade_codigo = @modalidade
-		                             and t.ano <> '0'
+		                             and t.ano = '7'
 		                             and t.ano_letivo = @anoLetivo
                                      {condicaoDre}	
 		                           group by t.ano, t.modalidade_codigo 
@@ -278,7 +278,7 @@ namespace SME.SGP.Dados.Repositorios
 		                               where data_registro between @dataInicial and now()
 			                             and t.modalidade_codigo = @modalidade
 		  	                             and t.ue_id = @ueId
-			                             and t.ano <> '0'
+			                             and t.ano = '7'
 		                            group by t.nome
 		                            union
 		                            select 0 as quantidade_registros,
@@ -289,7 +289,7 @@ namespace SME.SGP.Dados.Repositorios
 		                            where t.modalidade_codigo = @modalidade
 		                              and t.ue_id = @ueId
                                       and t.ano_letivo = @anoLetivo
-		                              and t.ano <> '0'
+		                              and t.ano = '7'
 		                            group by t.nome
 		                            )z
                             group by z.nome

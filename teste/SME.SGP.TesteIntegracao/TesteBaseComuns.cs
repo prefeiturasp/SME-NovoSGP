@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Infra;
@@ -82,6 +82,11 @@ namespace SME.SGP.TesteIntegracao
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_NOME = "'Regencia Classe SP Integral'";
         protected const string COMPONENTE_REG_CLASSE_SP_INTEGRAL_1A5_ANOS_EOL = "'REG CLASSE SP INTEGRAL 1A5 ANOS'";
 
+        protected const long COMPONENTE_CURRICULAR_512 = 512;
+        protected const string COMPONENTE_ED_INF_EMEI_4HS_NOME = "'ED.INF. EMEI 4 HS'";
+        protected const string COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME = "'Regência de Classe Infantil'";
+        protected const string COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME = "'REGÊNCIA INFANTIL EMEI 4H'";
+        
         protected const long COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214 = 1214;
         protected const string COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME = "'TERRIT SABER / EXP PEDAG 1'";
 
@@ -233,7 +238,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int TIPO_CALENDARIO_ID = 1;
 
         protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
-        protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
+        protected DateTime DATA_28_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
         protected DateTime DATA_08_07_FIM_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 08);
         protected DateTime DATA_25_07_INICIO_BIMESTRE_3 = new(DateTimeExtension.HorarioBrasilia().Year, 07, 25);
@@ -242,7 +247,7 @@ namespace SME.SGP.TesteIntegracao
         protected DateTime DATA_22_12_FIM_BIMESTRE_4 = new(DateTimeExtension.HorarioBrasilia().Year, 12, 22);
         
         protected DateTime DATA_03_01_INICIO_BIMESTRE_1_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 03);
-        protected DateTime DATA_29_04_FIM_BIMESTRE_1_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 04, 29);
+        protected DateTime DATA_28_04_FIM_BIMESTRE_1_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 04, 28);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 05, 02);
         protected DateTime DATA_08_07_FIM_BIMESTRE_2_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 07, 08);
         protected DateTime DATA_25_07_INICIO_BIMESTRE_3_ANO_ANTERIOR = new(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 07, 25);
@@ -260,7 +265,7 @@ namespace SME.SGP.TesteIntegracao
         protected string MEDIA_BIMESTRAL = "MEDIA_BIMESTRAL";
 
         protected DateTime DATA_03_01 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
-        protected DateTime DATA_29_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
+        protected DateTime DATA_28_04 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
 
         protected const int NUMERO_AULA_1 = 1;
         protected const int NUMERO_AULA_2 = 2;
@@ -1169,6 +1174,7 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_INFORMATICA_OIE_ID_1060.ToString(), NULO, CODIGO_3, NULO, COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_CURRICULAR_INFORMATICA_OIE_NOME, NULO);
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
+            await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)
@@ -1194,7 +1200,7 @@ namespace SME.SGP.TesteIntegracao
 
         protected async Task CriarPeriodoEscolarReabertura(long tipoCalendarioId)
         {
-            await CriarPeriodoEscolar(DATA_03_01, DATA_29_04, BIMESTRE_1, tipoCalendarioId);
+            await CriarPeriodoEscolar(DATA_03_01, DATA_28_04, BIMESTRE_1, tipoCalendarioId);
             await CriarPeriodoEscolar(DATA_02_05, DATA_08_07, BIMESTRE_2, tipoCalendarioId);
             await CriarPeriodoEscolar(DATA_25_07, DATA_30_09, BIMESTRE_3, tipoCalendarioId);
             await CriarPeriodoEscolar(DATA_03_10, DATA_22_12, BIMESTRE_4, tipoCalendarioId);
