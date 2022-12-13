@@ -340,7 +340,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private static string ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(string codigoTurma)
         {
-            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_CODIGO_ALUNO_BIMESTRE, codigoTurma, string.Empty, 0);
+            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, codigoTurma, 0);
         }
 
         private async Task PersistirNotaConceitoBimestreNoCache(List<NotaConceitoBimestreComponenteDto> notasConceitosFechamento,
