@@ -207,7 +207,7 @@ pipeline {
             steps {
                 script{
                   //if(testPassed){
-                        if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == 'release' ) {
+                        if ( env.branchname == 'main' ||  env.branchname == 'master' || env.branchname == 'homolog' || env.branchname == '_release' ) {
                             sendTelegram("🤩 [Deploy ${env.branchname}] Job Name: ${JOB_NAME} \nBuild: ${BUILD_DISPLAY_NAME} \nMe aprove! \nLog: \n${env.BUILD_URL}")
                                 
                             withCredentials([string(credentialsId: 'aprovadores-sgp', variable: 'aprovadores')]) {
