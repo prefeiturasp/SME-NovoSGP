@@ -134,8 +134,14 @@ namespace SME.SGP.Aplicacao
                         consolidadoTurmaAluno.ParecerConclusivoId = conselhoClasseAluno?.ConselhoClasseParecerId;
                     }
 
-                    var componentesComNotaFechamentoOuConselho = await mediator
-                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, request.TurmaId, request.Bimestre, request.AlunoCodigo));
+                    var componentesComNotaFechamentoOuConselho = new List<ComponenteCurricularDto>();
+
+                    foreach(var id in turmasCodigos)
+                    {
+                        var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(id));
+                        componentesComNotaFechamentoOuConselho.AddRange(await mediator
+                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmaId, request.Bimestre, request.AlunoCodigo)));
+                    }
 
                     if (componentesComNotaFechamentoOuConselho == null || !componentesComNotaFechamentoOuConselho.Any())
                         throw new NegocioException("Não foi encontrado componentes curriculares com nota fechamento");
