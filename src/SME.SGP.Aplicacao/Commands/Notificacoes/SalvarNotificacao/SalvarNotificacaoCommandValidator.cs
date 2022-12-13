@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 
-namespace SME.SGP.Aplicacao;
-
-public class SalvarNotificacaoCommandValidator : AbstractValidator<SalvarNotificacaoCommand>
+namespace SME.SGP.Aplicacao
 {
-    public SalvarNotificacaoCommandValidator()
+    public class SalvarNotificacaoCommandValidator : AbstractValidator<SalvarNotificacaoCommand>
     {
-        RuleFor(c => c.Notificacao)
-            .NotNull()
-            .WithMessage("Os dados da notificação devem ser informados para serem salvos.");
+        public SalvarNotificacaoCommandValidator()
+        {
+            RuleFor(c => c.Notificacao)
+                .NotNull()
+                .WithMessage("Os dados da notificação devem ser informados para serem salvos.");
+        }
     }
 }
