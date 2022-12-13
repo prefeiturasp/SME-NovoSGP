@@ -86,7 +86,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
 
-        public async Task<ConselhoClasse> ObterPorTurmaAlunoEPeriodoAsync(long turmaId, string alunoCodigo, long? periodoEscolarId = null)
+        public async Task<ConselhoClasse> ObterPorAlunoEPeriodoAsync(string alunoCodigo, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 
                             from conselho_classe c 
@@ -101,7 +101,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!String.IsNullOrEmpty(alunoCodigo))
                 query.AppendLine(" and cca.aluno_codigo = @alunoCodigo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { periodoEscolarId, alunoCodigo });
         }
 
         public async Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> ObterBimestreComConselhoClasseTurmaAsync(long turmaId)
