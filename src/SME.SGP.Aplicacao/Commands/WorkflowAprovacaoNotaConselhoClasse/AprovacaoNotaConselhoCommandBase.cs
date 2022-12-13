@@ -43,12 +43,12 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar;
             var descricao = new StringBuilder(ObterTexto(ue, turma, periodoEscolar));
 
-            descricao.Append(await ObterTabelaDosAlunos(aprovacoesPorTurma));
+            descricao.Append(await ObterTabelaDosAlunos(aprovacoesPorTurma, turma));
 
             return descricao.ToString();
         }
 
-        private async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma)
+        private async Task<string> ObterTabelaDosAlunos(List<WFAprovacaoNotaConselho> aprovacoesPorTurma, Turma turma)
         {
             var descricao = new StringBuilder();
             descricao.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -64,7 +64,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var aprovaco in aprovacoesPorTurma)
             {
-                descricao.AppendLine(await ObterLinhaDoAluno(aprovaco));
+                descricao.AppendLine(await ObterLinhaDoAluno(aprovaco, turma));
             }
 
             descricao.AppendLine("<tbody>");
@@ -73,9 +73,9 @@ namespace SME.SGP.Aplicacao
             return descricao.ToString();
         }
 
-        private async Task<string> ObterLinhaDoAluno(WFAprovacaoNotaConselho aprovacao)
+        private async Task<string> ObterLinhaDoAluno(WFAprovacaoNotaConselho aprovacao, Turma turma)
         {
-            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo);
+            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma);
             var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
             var notas = await ObterValoresNotasNovoAnterior(aprovacao);
@@ -147,8 +147,9 @@ namespace SME.SGP.Aplicacao
         private async Task CarregarTodosAlunos()
         {
             var codigos = WFAprovacoes.Select(wf => long.Parse(wf.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo)).ToArray();
+            var anoLetivo = WFAprovacoes.FirstOrDefault().ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma.AnoLetivo;
 
-            Alunos = (await ObterAlunos(codigos)).ToList();
+            Alunos = (await ObterAlunos(codigos, anoLetivo)).ToList();
         }
 
         private async Task CarregarTodosComponentes()
@@ -176,8 +177,8 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<ComponenteCurricularDescricaoDto>> ObterComponentes(long[] codigos)
             => await mediator.Send(new ObterDescricaoComponentesCurricularesPorIdsQuery(codigos));
 
-        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos)
-            => await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigos));
+        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos, int anoLetivo)
+            => await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigos, anoLetivo));
 
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
