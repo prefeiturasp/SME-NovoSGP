@@ -169,15 +169,18 @@ namespace SME.SGP.Dominio
             return retorno;
         }
 
-        private async Task SalvarNoBanco(List<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
+        private async Task SalvarNoBanco(IEnumerable<NotaConceito> EntidadesSalvar, Usuario criadoPor, string codigoTurma)
         {
+            var notaConceitoParaInserir = Enumerable.Empty<NotaConceito>();
+            var notaConceitoParaRemover = Enumerable.Empty<NotaConceito>();
+            var notaConceitoParaAtualizar = Enumerable.Empty<NotaConceito>();
+            
             unitOfWork.IniciarTransacao();
             try
             {
-
-                var notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && !String.IsNullOrEmpty(x.ObterNota())).ToList();
-                var notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
-                var notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
+                notaConceitoParaInserir = EntidadesSalvar.Where(x => x.Id == 0 && !String.IsNullOrEmpty(x.ObterNota())).ToList();
+                notaConceitoParaRemover = EntidadesSalvar.Where(x => x.Id >= 0 && x.ObterNota() == null).ToList();
+                notaConceitoParaAtualizar = EntidadesSalvar.Where(x => x.Id > 0 && x.ObterNota() != null).ToList();
 
                 foreach (var entidade in notaConceitoParaRemover)
                     await mediator.Send(new RemoverNotaConceitoCommand(entidade));
@@ -195,7 +198,8 @@ namespace SME.SGP.Dominio
                 unitOfWork.Rollback();
                 throw;
             }
-            await mediator.Send(new CriarCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma));
+            await mediator.Send(new AtualizaCacheDeAtividadeAvaliativaPorTurmaCommand(codigoTurma, notaConceitoParaInserir, notaConceitoParaAtualizar, notaConceitoParaRemover));
+            
         }
 
         private async Task ValidarAvaliacoes(IEnumerable<long> avaliacoesAlteradasIds,IEnumerable<AtividadeAvaliativa> atividadesAvaliativas, string professorRf, string disciplinaId,bool gestorEscolar, Turma turma)
@@ -321,7 +325,9 @@ namespace SME.SGP.Dominio
                                     DisciplinaId = atividade.DisciplinaId,
                                     Nota = notaConceito.Nota,
                                     ConceitoId = notaConceito.ConceitoId,
-                                    TipoNota = notaConceito.TipoNota
+                                    TipoNota = notaConceito.TipoNota,
+                                    AlteradoEm = notaConceito.AlteradoEm,
+                                    AlteradoPor = notaConceito.AlteradoPor,
                                 });
                             }
                         }

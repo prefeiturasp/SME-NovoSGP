@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var componentesComNotaFechamentoOuConselho = await mediator
-                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, request.TurmaId, request.Bimestre, request.AlunoCodigo));
+                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, request.Bimestre, request.AlunoCodigo));
 
                     if (componentesComNotaFechamentoOuConselho == null || !componentesComNotaFechamentoOuConselho.Any())
                         throw new NegocioException("Não foi encontrado componentes curriculares com nota fechamento");

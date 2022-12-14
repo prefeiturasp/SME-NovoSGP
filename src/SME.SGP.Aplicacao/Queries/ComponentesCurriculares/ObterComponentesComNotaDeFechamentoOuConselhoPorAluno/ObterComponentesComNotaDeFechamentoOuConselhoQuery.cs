@@ -7,16 +7,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesComNotaDeFechamentoOuConselhoQuery : IRequest<IEnumerable<ComponenteCurricularDto>>
     {
-        public ObterComponentesComNotaDeFechamentoOuConselhoQuery(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
+        public ObterComponentesComNotaDeFechamentoOuConselhoQuery(int anoLetivo, string[] turmasId, int? bimestre, string codigoAluno)
         {
             AnoLetivo = anoLetivo;
-            TurmaId = turmaId;
+            TurmasId = turmasId;
             Bimestre = bimestre;
             CodigoAluno = codigoAluno;
         }
 
         public int AnoLetivo;
-        public long TurmaId;
+        public string[] TurmasId;
         public int? Bimestre;
         public string CodigoAluno;
 
@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
                 RuleFor(a => a.AnoLetivo)
                     .NotEmpty()
                     .WithMessage("Necessário informar o ano letivo para obter os componententes.");
-                RuleFor(a => a.TurmaId)
+                RuleFor(a => a.TurmasId)
                    .NotEmpty()
                    .WithMessage("Necessário informar o código do aluno para  obter os componententes.");                
                 RuleFor(a => a.CodigoAluno)
