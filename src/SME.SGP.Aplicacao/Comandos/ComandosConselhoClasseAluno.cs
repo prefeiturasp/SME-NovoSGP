@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
             if (!periodoAberto)
                 throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            var periodoEscolar = fechamentoTurma?.PeriodoEscolar ?? 
+            var periodoEscolar = fechamentoTurma.PeriodoEscolar ?? 
                                  await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(fechamentoTurma.Turma, bimestre));
 
             if (periodoEscolar == null)
@@ -59,24 +59,18 @@ namespace SME.SGP.Aplicacao
             
             if (fechamentoTurma.Turma.AnoLetivo == dataAtual.Year && alunoConselho.EstaAtivo(periodoEscolar.PeriodoFim))
             {
-                var periodoReaberturaCorrespondente = await mediator.Send(new ObterFechamentoReaberturaPorDataTurmaQuery
-                {
-                    DataParaVerificar = dataAtual, 
-                    TipoCalendarioId = periodoEscolar.TipoCalendarioId, 
-                    UeId = fechamentoTurma.Turma.UeId
-                });
-                
                 var permiteEdicao = (alunoConselho.PossuiSituacaoAtiva() && alunoConselho.DataMatricula.Date <= periodoEscolar.PeriodoFim) ||
                                     (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoEscolar.PeriodoFim);
                 
                 if (!permiteEdicao)
-                       throw new NegocioException(MensagemNegocioFechamentoNota.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
+                    throw new NegocioException(MensagemNegocioAluno.ALUNO_INATIVO_ANTES_PERIODO_ESCOLAR);
             }
 
             var bimestreParaValidacaoNotasPreenchidas = fechamentoTurma.PeriodoEscolarId.HasValue ? bimestre : BIMESTRE_FINAL_CONSULTA_NOTA;
 
-            var existeConselhoClasseBimestre = await mediator
-                .Send(new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno, fechamentoTurma.Turma, bimestreParaValidacaoNotasPreenchidas, periodoEscolar: periodoEscolar));
+            var existeConselhoClasseBimestre = await mediator.Send(
+                new VerificaNotasTodosComponentesCurricularesQuery(alunoConselho.CodigoAluno,
+                    fechamentoTurma.Turma, bimestreParaValidacaoNotasPreenchidas, periodoEscolar: periodoEscolar));
 
             if (!existeConselhoClasseBimestre)
                 throw new NegocioException(MensagemNegocioFechamentoNota.EXISTE_COMPONENTES_SEM_NOTA_INFORMADA);
