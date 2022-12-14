@@ -85,23 +85,22 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId });
         }
 
-        public async Task<ConselhoClasse> ObterPorTurmaAlunoEPeriodoAsync(long turmaId, string alunoCodigo, long? periodoEscolarId = null)
+        public async Task<ConselhoClasse> ObterPorAlunoEPeriodoAsync(string alunoCodigo, long? periodoEscolarId = null)
         {
             var query = new StringBuilder(@"select c.* 
                             from conselho_classe c 
                            inner join fechamento_turma t on t.id = c.fechamento_turma_id
-                           inner join conselho_classe_aluno cca on cca.conselho_classe_id = c.id
-                           where t.turma_id = @turmaId ");
+                           inner join conselho_classe_aluno cca on cca.conselho_classe_id = c.id ");
 
             if (periodoEscolarId.HasValue)
-                query.AppendLine(" and t.periodo_escolar_id = @periodoEscolarId");
+                query.AppendLine("where t.periodo_escolar_id = @periodoEscolarId");
             else
-                query.AppendLine(" and t.periodo_escolar_id is null");
+                query.AppendLine("where t.periodo_escolar_id is null");
 
             if (!String.IsNullOrEmpty(alunoCodigo))
                 query.AppendLine(" and cca.aluno_codigo = @alunoCodigo");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { turmaId, periodoEscolarId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasse>(query.ToString(), new { periodoEscolarId, alunoCodigo });
         }
 
         public async Task<IEnumerable<BimestreComConselhoClasseTurmaDto>> ObterBimestreComConselhoClasseTurmaAsync(long turmaId)
