@@ -204,22 +204,14 @@ namespace SME.SGP.Dominio.Servicos
                     var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache);
 
                     if (notasFechamentoFinaisNoCache != null)
-                    {
-                        await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota,
-                            fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(),
-                            turma.CodigoTurma, emAprovacao);
-                    }
+                        await PersistirNotasFinaisNoCache(notasFechamentoFinaisNoCache, fechamentoNota,fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(), turma.CodigoTurma, emAprovacao);
 
                     nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(turma.CodigoTurma);
 
                     var notasConceitosFechamento = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
 
                     if (notasConceitosFechamento != null)
-                    {
-                        await PersistirNotaConceitoBimestreNoCache(notasConceitosFechamento,
-                            fechamentoNota, fechamentoAluno.AlunoCodigo, fechamentoFinal.DisciplinaId.ToString(),
-                            turma.CodigoTurma);
-                    }
+                        await PersistirNotaConceitoBimestreNoCache(notasConceitosFechamento, fechamentoNota, fechamentoAluno.AlunoCodigo, turma.CodigoTurma);
                 }
             }
         }
@@ -321,7 +313,7 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task PersistirNotasFinaisNoCache(List<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota,
-            string codigoAluno, string codigoDisciplina, string codigoTurma, bool emAprovacao)
+            string codigoAluno, string disciplinaId, string codigoTurma, bool emAprovacao)
         {
             var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId);
 
@@ -333,7 +325,7 @@ namespace SME.SGP.Dominio.Servicos
                     AlunoCodigo = codigoAluno,
                     ConceitoId = fechamentoNota.ConceitoId,
                     EmAprovacao = emAprovacao,
-                    ComponenteCurricularId = long.Parse(codigoDisciplina)
+                    ComponenteCurricularId = fechamentoNota.DisciplinaId
                 });
             }
             else
@@ -343,8 +335,7 @@ namespace SME.SGP.Dominio.Servicos
                 notaFinalAluno.EmAprovacao = emAprovacao;
             }
 
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(
-                        ObterChaveFechamentoNotaFinalComponenteTurma(codigoDisciplina, codigoTurma), notasFinais));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveFechamentoNotaFinalComponenteTurma(disciplinaId, codigoTurma), notasFinais));
         }
 
         private static string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
@@ -359,23 +350,20 @@ namespace SME.SGP.Dominio.Servicos
         }
 
         private async Task PersistirNotaConceitoBimestreNoCache(List<NotaConceitoBimestreComponenteDto> notasConceitosFechamento,
-            FechamentoNota fechamentoNota, string codigoAluno, string codigoDisciplina, string codigoTurma)
+            FechamentoNota fechamentoNota, string codigoAluno, string codigoTurma)
         {
             var notaConceitoFechamentoAluno = notasConceitosFechamento.FirstOrDefault(c => c.AlunoCodigo == codigoAluno &&
-                c.ComponenteCurricularCodigo.ToString() == codigoDisciplina &&
-                c.Bimestre is 0 or null);
+                c.ComponenteCurricularCodigo == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
             if (notaConceitoFechamentoAluno == null)
-            {
-                notasConceitosFechamento.Add(ObterNotaConceitoBimestreAluno(codigoAluno, long.Parse(codigoDisciplina), codigoTurma, fechamentoNota));
-            } else
+                notasConceitosFechamento.Add(ObterNotaConceitoBimestreAluno(codigoAluno, fechamentoNota.DisciplinaId, codigoTurma, fechamentoNota));
+            else
             {
                 notaConceitoFechamentoAluno.Nota = fechamentoNota.Nota;
                 notaConceitoFechamentoAluno.ConceitoId = fechamentoNota.ConceitoId;
             }
 
-            await mediator.Send(new SalvarCachePorValorObjetoCommand(
-                ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(codigoTurma), notasConceitosFechamento));
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaBimestreFinal(codigoTurma), notasConceitosFechamento));
         }
 
         private NotaConceitoBimestreComponenteDto ObterNotaConceitoBimestreAluno(string codigoAluno, 
