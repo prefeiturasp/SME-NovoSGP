@@ -27,22 +27,22 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseNotaRetornoDto> Handle(GravarConselhoClasseCommad request, CancellationToken cancellationToken)
         {
             var conselhoClasseNotaRetorno = request.ConselhoClasseId == 0 ?
-                mediator.Send(new InserirConselhoClasseNotaCommad(
+                await mediator.Send(new InserirConselhoClasseNotaCommad(
                                             request.FechamentoTurma,
                                             request.CodigoAluno,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            request.Usuario), cancellationToken).Result :
-                mediator.Send(new AlterarConselhoClasseCommad(
+                                            request.Usuario), cancellationToken) :
+                await mediator.Send(new AlterarConselhoClasseCommad(
                                             request.ConselhoClasseId,
                                             request.FechamentoTurma.Id,
                                             request.CodigoAluno,
                                             request.FechamentoTurma.Turma,
                                             request.ConselhoClasseNotaDto,
                                             request.Bimestre,
-                                            request.Usuario), cancellationToken).Result;
+                                            request.Usuario), cancellationToken);
 
-            var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
+            var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE);
 
