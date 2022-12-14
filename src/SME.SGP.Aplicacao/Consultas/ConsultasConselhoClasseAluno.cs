@@ -105,18 +105,6 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var frequenciaAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId,informacoesAluno != null ? informacoesAluno.DataMatricula : null, bimestre));
 
-            var periodoEscolar = fechamentoTurma?.PeriodoEscolar;
-
-            if (fechamentoTurma != null) turma = fechamentoTurma?.Turma;
-            else
-            {
-                if (bimestre > 0)
-                    periodoEscolar = await mediator.Send(new ObterPeriodoEscolarPorTurmaBimestreQuery(turma, bimestre));
-            }
-
-            if (fechamentoTurma != null)
-                turma = fechamentoTurma.Turma;
-
             if (fechamentoTurma != null)
                 turma = fechamentoTurma.Turma;
 
@@ -555,21 +543,6 @@ namespace SME.SGP.Aplicacao
         private bool MatriculaIgualDataConclusaoAlunoTurma(AlunoPorTurmaResposta alunoNaTurma)
         {
             return alunoNaTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && alunoNaTurma.DataMatricula.Date == alunoNaTurma.DataSituacao.Date;
-        }
-
-        public async Task<List<string>> ObterTurmasComMatriculasValidas(string alunoCodigo, string[] turmasCodigos, DateTime periodoInicio, DateTime periodoFim)
-        {
-            var turmasCodigosComMatriculasValidas = new List<string>();
-            foreach (string codTurma in turmasCodigos)
-            {
-                var matriculasAluno = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(codTurma, alunoCodigo));
-                if (matriculasAluno != null || matriculasAluno.Any())
-                {
-                    if ((matriculasAluno != null || matriculasAluno.Any()) && matriculasAluno.Any(m => m.PossuiSituacaoAtiva() || (!m.PossuiSituacaoAtiva() && m.DataSituacao >= periodoInicio && m.DataSituacao <= periodoFim) || (!m.PossuiSituacaoAtiva() && m.DataMatricula <= periodoFim && m.DataSituacao > periodoFim)))
-                        turmasCodigosComMatriculasValidas.Add(codTurma);
-                }
-            }
-            return turmasCodigosComMatriculasValidas;
         }
 
         private async Task<bool> VerificaSePossuiConselhoClasseAlunoAsync(long conselhoClasseId, string alunoCodigo)
