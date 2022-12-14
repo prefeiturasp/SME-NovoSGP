@@ -63,6 +63,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConselhoDeClasseGrupoMatrizDto>> ObterListagemDeSinteses(long conselhoClasseId, long fechamentoTurmaId, string alunoCodigo, string codigoTurma, int bimestre)
         {
+            var alunosEol = await mediator.Send(new ObterAlunosEolPorTurmaQuery(codigoTurma, true));
+            var informacoesAluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == alunoCodigo);
+            
             var totalCompensacoesComponenteSemNota = await mediator.Send(new ObterTotalCompensacoesComponenteNaoLancaNotaQuery(codigoTurma, bimestre));
             totalCompensacoesComponenteSemNota = totalCompensacoesComponenteSemNota.Where(x => x.CodigoAluno == alunoCodigo);
 
@@ -100,14 +103,7 @@ namespace SME.SGP.Aplicacao
                 .GroupBy(c => new { c.GrupoMatriz?.Id, c.GrupoMatriz?.Nome });
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-
-            var frequenciaAluno = (await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new[]
-            {
-                turma.CodigoTurma
-            }, tipoCalendarioId, bimestre))).ToList();
-
-            if (fechamentoTurma != null)
-                turma = fechamentoTurma.Turma;
+            var frequenciaAluno = await mediator.Send(new ObterFrequenciasAlunoComponentePorTurmasQuery(alunoCodigo, new string[] { turma.CodigoTurma }, tipoCalendarioId,informacoesAluno != null ? informacoesAluno.DataMatricula : null, bimestre));
 
             if (fechamentoTurma != null)
                 turma = fechamentoTurma.Turma;
