@@ -98,8 +98,6 @@ namespace SME.SGP.Aplicacao
             retorno.EhNota = tipoNota.EhNota();
             //Codigo aluno / NotaConceito / Código Disciplina / bimestre
 
-            var listaAlunosNotas = new List<(string, string, long, int)>();
-
             var disciplinas = new List<DisciplinaResposta>();
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
