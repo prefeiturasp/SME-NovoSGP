@@ -151,10 +151,11 @@ namespace SME.SGP.Aplicacao
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
 
             alunosAtivos = from a in alunos
-                           where a.DataMatricula.Date <= periodoFim.Date
+                           where a.DataMatricula.Date <= periodoFim.Date 
+                           && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
-
+            
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -227,7 +228,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma

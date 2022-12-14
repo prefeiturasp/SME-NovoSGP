@@ -23,16 +23,16 @@ namespace SME.SGP.Aplicacao.Queries
         public async Task<bool> Handle(VerificaNotasTodosComponentesCurricularesQuery request, CancellationToken cancellationToken)
         {
             string[] turmasCodigos;
-            
+
             var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken)).ToList();
 
             if (request.Turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)request.Turma.TipoTurma))
             {
                 var tiposTurmas = new List<int>();
-                
+
                 tiposTurmas.AddRange(request.Turma.ObterTiposRegularesDiferentes());
                 tiposTurmas.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
-                
+
                 var turmasCodigosEol = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(request.Turma.AnoLetivo, request.AlunoCodigo, tiposTurmas, request.Historico), cancellationToken);
 
                 if (request.Historico.HasValue && request.Historico.Value)
@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.Queries
                 else
                     turmasCodigos = !turmasCodigosEol.Contains(request.Turma.CodigoTurma) ? turmasCodigosEol.Concat(new[] { request.Turma.CodigoTurma }).ToArray() : turmasCodigosEol;
             }
-            else 
+            else
                 turmasCodigos = new[] { request.Turma.CodigoTurma };
 
             var conselhosClassesIds = await mediator.Send(new ObterConselhoClasseIdsPorTurmaEBimestreQuery(turmasCodigos, request.Bimestre), cancellationToken);
@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao.Queries
                 {
                     if (todasAsNotas.Any())
                     {
-                        if (conselhosClassesIds != null && todasAsNotas.Any(t=> t.Bimestre == 2))
+                        if (conselhosClassesIds != null && todasAsNotas.Any(t => t.Bimestre == 2))
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == 2));
                         else
                             notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
