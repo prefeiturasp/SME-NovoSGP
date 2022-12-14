@@ -68,29 +68,13 @@ namespace SME.SGP.Aplicacao.Queries
 
             var todasAsNotas = (await mediator.Send(new ObterNotasFinaisBimestresAlunoQuery(turmasCodigos, request.AlunoCodigo), cancellationToken)).ToList();
 
-            if ((request.Bimestre ?? 0) > 0)
+            if (todasAsNotas.Any())
             {
-                if (request.Turma.ModalidadeCodigo == Modalidade.EJA && request.Bimestre == 2)
-                {
-                    if (todasAsNotas.Any())
-                    {
-                        if (conselhosClassesIds != null && todasAsNotas.Any(t=> t.Bimestre == 2))
-                            notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == 2));
-                        else
-                            notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
-                    }
-                    else
-                        notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken));
-                }
-                else
-                    notasParaVerificar.AddRange(await mediator.Send(new ObterNotasFechamentosPorTurmasCodigosBimestreQuery(turmasCodigos, request.AlunoCodigo, request.Bimestre ?? 0), cancellationToken));
-            }
-            else
-            {
-                if (todasAsNotas.Any())
-                    notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == null));
-            }
+                var bimestre = request.Bimestre == 0 ? null : request.Bimestre;
 
+                notasParaVerificar.AddRange(todasAsNotas.Where(a => a.Bimestre == bimestre));
+            }
+                
             turmasCodigos = DefinirTurmasConsideradasDeAcordoComMatricula(request.AlunoCodigo, request.PeriodoEscolar, turmasCodigos);
 
             var componentesCurriculares = await ObterComponentesTurmas(turmasCodigos, request.Turma.EnsinoEspecial, request.Turma.TurnoParaComponentesCurriculares);
