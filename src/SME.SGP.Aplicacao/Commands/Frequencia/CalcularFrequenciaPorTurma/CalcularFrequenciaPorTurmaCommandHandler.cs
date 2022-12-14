@@ -259,7 +259,7 @@ namespace SME.SGP.Aplicacao
                                            totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0,
                                            TipoFrequenciaAluno.PorDisciplina,
                                            registroFrequenciaAluno?.TotalRemotos ?? 0,
-                                           registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina));
+                                           registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
                 }
             }
         }
