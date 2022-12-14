@@ -46,7 +46,7 @@ namespace SME.SGP.Aplicacao
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE);
 
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
