@@ -23,5 +23,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string NENHUMA_SECAO_ENCONTRADA = "Nenhuma seção foi encontrada";
         public const string NENHUMA_QUESTAO_FOI_ENCONTRADA_NA_SECAO_X = "Nenhuma questão foi encontrada na Seção {0}";
         public const string ARQUIVO_INF0RMADO_NAO_ENCONTRADO = "O arquivo informado não foi encontrado";
+        public const string NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO = "Não foi possível localizar o usuário.";
     }
 }
