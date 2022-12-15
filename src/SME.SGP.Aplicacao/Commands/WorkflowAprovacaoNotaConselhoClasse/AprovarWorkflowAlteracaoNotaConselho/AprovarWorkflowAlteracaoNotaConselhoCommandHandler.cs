@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task AlterarNota(WFAprovacaoNotaConselho notaEmAprovacao)
         {
-            var notaConselhoClasse = notaEmAprovacao.ConselhoClasseNota;
+            var notaConselhoClasse = notaEmAprovacao.ConselhoClasseNota.Clone();
 
             notaConselhoClasse.Nota = notaEmAprovacao.Nota;
 
