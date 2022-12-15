@@ -48,6 +48,9 @@ namespace SME.SGP.Aplicacao
 
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            if(request.Bimestre != 0)
+                await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma,(int)Bimestre.Final), cancellationToken);
+
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
         }
