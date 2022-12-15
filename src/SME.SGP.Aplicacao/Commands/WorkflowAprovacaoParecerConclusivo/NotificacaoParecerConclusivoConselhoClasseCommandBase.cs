@@ -14,6 +14,8 @@ namespace SME.SGP.Aplicacao
     public abstract class NotificacaoParecerConclusivoConselhoClasseCommandBase<TRequest, TResponse> : IRequestHandler<TRequest, TResponse> 
         where TRequest : IRequest<TResponse>
     {
+        protected const string MENSAGEM_DINAMICA_TABELA_POR_ALUNO = "<mensagemDinamicaTabelaPorAluno>";
+        
         protected readonly IMediator mediator;
         protected List<TurmasDoAlunoDto> Alunos;
         protected List<Usuario> Usuarios;
@@ -34,8 +36,8 @@ namespace SME.SGP.Aplicacao
             await CarregarTodosUsuarios();
         }
 
-        protected abstract string ObterTextoCabecalho(Turma turma);
-        protected abstract string ObterTextoRodape();
+        protected virtual string ObterTextoCabecalho(Turma turma) => string.Empty;
+        protected virtual string ObterTextoRodape() => string.Empty;
         public abstract Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken);
 
         protected virtual string ObterTitulo(Turma turma)
@@ -52,7 +54,7 @@ namespace SME.SGP.Aplicacao
             return msg.ToString();
         }
 
-        private string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, Turma turma)
+        protected virtual string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, Turma turma)
         {
             var msg = new StringBuilder();
             msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -76,7 +78,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterLinhaParecerAlterado(WFAprovacaoParecerConclusivoDto aprovacao, Turma turma)
         {
-            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma) ;
+            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma);
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
 
             return $@"<tr>
@@ -91,7 +93,12 @@ namespace SME.SGP.Aplicacao
         private async Task CarregarTodosAlunos()
         {
             var codigos = WFAprovacoes.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
-            var anoLetivo = WFAprovacoes.FirstOrDefault().AnoLetivo;
+            var wfAprovacaoParecerConclusivo = WFAprovacoes.FirstOrDefault();
+
+            if (wfAprovacaoParecerConclusivo == null)
+                return;
+            
+            var anoLetivo = wfAprovacaoParecerConclusivo.AnoLetivo;
             Alunos = (await ObterAlunos(codigos, anoLetivo)).ToList();
         }
         
@@ -102,7 +109,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos, int anoLetivo)
-                => await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigos, anoLetivo));
+            => await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigos, anoLetivo));
         
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));
