@@ -1,6 +1,8 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Logging;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,10 +64,13 @@ namespace SME.SGP.Aplicacao
             descricao.AppendLine("<td style='padding: 3px;'><strong>Data da alteração</strong></td>");
             descricao.AppendLine("</tr>");
 
-            foreach (var aprovaco in aprovacoesPorTurma)
-            {
-                descricao.AppendLine(await ObterLinhaDoAluno(aprovaco, turma));
-            }
+            var aprovacoesPorTurmaDto = aprovacoesPorTurma.Select(async aprovacao => await MapearParaDTO(aprovacao, turma))
+                                                          .Select(_task => _task.Result)
+                                                          .OrderBy(parecer => parecer.NomeAluno)
+                                                          .ThenBy(parecer => parecer.DescricaoComponenteCurricular);
+
+            foreach (var aprovacao in aprovacoesPorTurmaDto)
+                descricao.AppendLine(ObterLinhaDoAluno(aprovacao, turma));
 
             descricao.AppendLine("<tbody>");
             descricao.AppendLine("</table>");
@@ -73,68 +78,89 @@ namespace SME.SGP.Aplicacao
             return descricao.ToString();
         }
 
-        private async Task<string> ObterLinhaDoAluno(WFAprovacaoNotaConselho aprovacao, Turma turma)
+        private string ObterLinhaDoAluno(WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto aprovacao, Turma turma)
         {
-            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma);
-            var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
-            var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
-            var notas = await ObterValoresNotasNovoAnterior(aprovacao);
-
+            var notas = ObterValoresNotasNovoAnterior(aprovacao.ConceitoIdConselhoClasse, aprovacao.NotaConselhoClasse, aprovacao.ConceitoId, aprovacao.Nota);
             return $@"<tr>
-                           <td style='padding: 3px;'>{componenteCurricular.Descricao}</td>
-                           <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
+                           <td style='padding: 3px;'>{aprovacao.DescricaoComponenteCurricular}</td>
+                           <td style='padding: 3px;'>{aprovacao.NumeroAlunoChamada} - {aprovacao.NomeAluno} ({aprovacao.CodigoAluno})</td>
                            <td style='padding: 3px;'>{notas.Item1}</td>
                            <td style='padding: 3px;'>{notas.Item2}</td>
-                           <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
+                           <td style='padding: 3px;'>{aprovacao.NomeUsuarioSolicitante} ({aprovacao.CodigoRfUsuarioSolicitante})</td>
                            <td style='padding: 3px;'>{aprovacao.CriadoEm.ToString("dd/MM/yyy HH:mm")}</td>
                       </tr>";
         }
 
-        private async Task<(string, string)> ObterValoresNotasNovoAnterior(WFAprovacaoNotaConselho aprovacao)
+        private (string, string) ObterValoresNotasNovoAnterior(long? conceitoIdConselhoClasse, double? notaConselhoClasse, long? conceitoId, double? nota)
         {
             var valorAnterior = string.Empty;
             var valorNovo = string.Empty;
 
-            if (aprovacao.ConceitoId.HasValue || aprovacao.ConselhoClasseNota.ConceitoId.HasValue)
+            if (conceitoId.HasValue || conceitoIdConselhoClasse.HasValue)
             {
-                if (aprovacao.ConselhoClasseNota.ConceitoId.HasValue)
-                    valorAnterior = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConselhoClasseNota.ConceitoId)?.Valor;
+                if (conceitoIdConselhoClasse.HasValue)
+                    valorAnterior = Conceitos.FirstOrDefault(a => a.Id == conceitoIdConselhoClasse)?.Valor;
 
-                if (aprovacao.ConceitoId.HasValue)
-                    valorNovo = Conceitos.FirstOrDefault(a => a.Id == aprovacao.ConceitoId)?.Valor;
+                if (conceitoId.HasValue)
+                    valorNovo = Conceitos.FirstOrDefault(a => a.Id == conceitoId)?.Valor;
             }
             else
             {
-                valorAnterior = aprovacao.ConselhoClasseNota.Nota?.ToString() ?? string.Empty;
-                valorNovo = aprovacao.Nota?.ToString() ?? string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(valorAnterior))
-            {
-                valorAnterior = await ObterNotaConceitoFechamentoAluno(aprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
-                                                                                                          aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo,
-                                                                                                          aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
+                valorAnterior = notaConselhoClasse?.ToString() ?? string.Empty;
+                valorNovo = nota?.ToString() ?? string.Empty;
             }
 
             return (valorAnterior, valorNovo);
         }
 
-        private async Task<string> ObterNotaConceitoFechamentoAluno(long fechamentoTurmaId, string codigoAluno, long componenteCurricularId)
+        private async Task<(long?, double?)> ObterConceitoNotaFechamentoAluno(long fechamentoTurmaId, string codigoAluno, long componenteCurricularId)
         {
+
             var fechamentoNotas = await mediator.Send(new ObterPorFechamentoTurmaAlunoDisciplinaQuery(fechamentoTurmaId,
                                                                                                       codigoAluno,
                                                                                                       componenteCurricularId));
             if (fechamentoNotas != null && fechamentoNotas.Any())
             {
                 var fechamentoNota = fechamentoNotas.FirstOrDefault();
-                if (fechamentoNota.Nota.HasValue)
-                    return fechamentoNota.Nota.ToString();
-                else
-                if (fechamentoNota.ConceitoId.HasValue)
-                    return Conceitos.FirstOrDefault(conceito => conceito.Id == fechamentoNota.ConceitoId)?.Valor;
+                return (fechamentoNota.ConceitoId, fechamentoNota.Nota);
             }
 
-            return string.Empty;
+            return (null,null);
+        }
+
+        private async Task<WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto> MapearParaDTO(WFAprovacaoNotaConselho aprovacao, Turma turma)
+        {
+            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma);
+            var componenteCurricular = ComponentesCurriculares.Find(componente => componente.Id == aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
+            var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
+
+            var retorno = new WFAprovacaoNotaPosConselhoAlunoComponenteTurmaDto {
+                CriadoEm = aprovacao.CriadoEm,
+                UsuarioSolicitanteId = aprovacao.UsuarioSolicitanteId,
+                NomeUsuarioSolicitante = usuario.Nome,
+                CodigoRfUsuarioSolicitante = usuario.CodigoRf,
+                CodigoAluno = aluno.CodigoAluno,
+                NomeAluno = aluno.NomeAluno,
+                NumeroAlunoChamada = aluno.NumeroAlunoChamada,
+                CodigoTurma = turma.CodigoTurma,
+                CodigoComponenteCurricular = aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo,
+                DescricaoComponenteCurricular = componenteCurricular.Descricao,
+                Nota = aprovacao.Nota,
+                ConceitoId = aprovacao.ConceitoId,
+                NotaConselhoClasse = aprovacao.ConselhoClasseNota.Nota,
+                ConceitoIdConselhoClasse = aprovacao.ConselhoClasseNota.ConceitoId
+            };
+
+            if (!retorno.NotaConselhoClasse.HasValue && !retorno.ConceitoIdConselhoClasse.HasValue)
+            {
+                var notaConceitoFechamento = await ObterConceitoNotaFechamentoAluno(aprovacao.ConselhoClasseNota.ConselhoClasseAluno.ConselhoClasse.FechamentoTurmaId,
+                                                                                    aprovacao.ConselhoClasseNota.ConselhoClasseAluno.AlunoCodigo,
+                                                                                    aprovacao.ConselhoClasseNota.ComponenteCurricularCodigo);
+                retorno.ConceitoIdConselhoClasse = notaConceitoFechamento.Item1;
+                retorno.NotaConselhoClasse = notaConceitoFechamento.Item2;
+            }
+
+            return retorno;
         }
 
         private async Task CarregarTodasUes()
