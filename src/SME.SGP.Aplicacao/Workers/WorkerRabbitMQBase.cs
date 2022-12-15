@@ -65,10 +65,10 @@ namespace SME.SGP.Aplicacao.Workers
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
 
-            DeclararFilasSgp();
-
             Comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
+
+            DeclararFilasSgp();
         }
 
         protected Dictionary<string, ComandoRabbit> Comandos { get; }
@@ -88,26 +88,22 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected void DeclararFilasPorRota(string exchange, string exchangeDeadLetter = "")
         {
-            var args = new Dictionary<string, object>();
-
-            if (!string.IsNullOrEmpty(exchangeDeadLetter))
-                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
-
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
+                var args = ObterArgumentoDaFila(fila, exchangeDeadLetter);
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
                 if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
-                    var argsDlq = new Dictionary<string, object>();
-                    argsDlq.Add("x-dead-letter-exchange", exchange);
-                    argsDlq.Add("x-message-ttl", ExchangeSgpRabbit.SgpDeadLetterTTL);
-
+                    var argsDlq = ObterArgumentoDaFilaDeadLetter(fila, exchange);
                     var filaDeadLetter = $"{fila}.deadletter";
 
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+
+                    var argsLimbo = new Dictionary<string, object>();
+                    argsLimbo.Add("x-queue-mode", "lazy");
 
                     var queueLimbo = $"{fila}.limbo";
                     canalRabbit.QueueDeclare(
@@ -115,12 +111,37 @@ namespace SME.SGP.Aplicacao.Workers
                         durable: true,
                         exclusive: false,
                         autoDelete: false,
-                        arguments: null
+                        arguments: argsLimbo
                     );
 
                     canalRabbit.QueueBind(queueLimbo, exchangeDeadLetter, queueLimbo, null);
                 }
             }
+        }
+
+        private Dictionary<string, object> ObterArgumentoDaFila(string fila, string exchangeDeadLetter)
+        {
+            var args = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
+
+            if (Comandos.ContainsKey(fila) && Comandos[fila].ModeLazy)
+                args.Add("x-queue-mode", "lazy");
+            
+            return args;
+        }
+
+        private Dictionary<string, object> ObterArgumentoDaFilaDeadLetter(string fila, string exchange)
+        {
+            var argsDlq = new Dictionary<string, object>();
+            var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
+
+            argsDlq.Add("x-dead-letter-exchange", exchange);
+            argsDlq.Add("x-message-ttl", ttl);
+            argsDlq.Add("x-queue-mode", "lazy");
+
+            return argsDlq;
         }
 
         private ulong GetRetryCount(IBasicProperties properties)
