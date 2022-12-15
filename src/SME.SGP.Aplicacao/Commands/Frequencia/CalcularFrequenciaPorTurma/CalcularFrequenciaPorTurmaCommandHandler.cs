@@ -314,7 +314,7 @@ namespace SME.SGP.Aplicacao
                                  registroFrequenciaAluno.PeriodoInicio,
                                  registroFrequenciaAluno.PeriodoFim,
                                  registroFrequenciaAluno.Bimestre,
-                                 registroFrequenciaAluno.TotalAusencias,
+                                 registroFrequenciaAluno.TotalAusencias > totalAulasDaTurmaGeral ? totalAulasDaTurmaGeral : registroFrequenciaAluno.TotalAusencias,
                                  totalAulasDaTurmaGeral,
                                  registroFrequenciaAluno.TotalAusencias >= totalCompensacoesDoAlunoGeral ? totalCompensacoesDoAlunoGeral : registroFrequenciaAluno.TotalAusencias,
                                  TipoFrequenciaAluno.Geral,
