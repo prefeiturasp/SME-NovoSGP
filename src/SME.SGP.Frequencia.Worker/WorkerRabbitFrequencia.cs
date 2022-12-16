@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Frequencia.Worker
@@ -14,9 +15,10 @@ namespace SME.SGP.Frequencia.Worker
         private const int TENTATIVA_REPROCESSAR_10 = 10;
         public WorkerRabbitFrequencia(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFrequencia",
                 typeof(RotasRabbitSgpFrequencia))
         {

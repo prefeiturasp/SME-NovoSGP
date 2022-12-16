@@ -5,6 +5,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Fechamento.Worker
@@ -15,9 +16,10 @@ namespace SME.SGP.Fechamento.Worker
 
         public WorkerRabbitFechamento(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, 
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFechamento", 
                 typeof(RotasRabbitSgpFechamento))
         {
