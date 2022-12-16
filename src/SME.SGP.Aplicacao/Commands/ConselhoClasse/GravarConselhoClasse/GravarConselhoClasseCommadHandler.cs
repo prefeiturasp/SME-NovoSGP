@@ -88,6 +88,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 notaConceitoFechamentoAluno.Nota = conselhoClasseNota.Nota;
+                notaConceitoFechamentoAluno.ConceitoId = conselhoClasseNota.Conceito;
             }
 
             await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoConselhoClasseTurmaBimestre(codigoTurma,(int)Bimestre.Final), notasConceitosFechamento));
@@ -107,6 +108,7 @@ namespace SME.SGP.Aplicacao
             {
                 AlunoCodigo = codigoAluno,
                 Nota = conselhoClasseNota.Nota,
+                ConceitoId = conselhoClasseNota.Conceito,
                 ComponenteCurricularCodigo = codigoDisciplina,
                 TurmaCodigo = codigoTurma,
                 Bimestre = bimestre,
