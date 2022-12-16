@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 throw new NegocioException($"Não foi encontrado o ultimo periodo escolar para a turma {request.Turma.Nome}");
 
-            var conselhoClasseUltimoBimestre = await repositorioConselhoClasseConsulta.ObterPorTurmaAlunoEPeriodoAsync(request.Turma.Id, request.AlunoCodigo, periodoEscolar.Id);
+            var conselhoClasseUltimoBimestre = await repositorioConselhoClasseConsulta.ObterPorAlunoEPeriodoAsync(request.AlunoCodigo, periodoEscolar.Id);
 
             return (periodoEscolar.Bimestre, conselhoClasseUltimoBimestre != null, conselhoClasseUltimoBimestre is
             {

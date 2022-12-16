@@ -29,25 +29,24 @@ namespace SME.SGP.Aplicacao
             if (fechamentoTurma == null)
                 throw new NegocioException("Fechamento da turma não localizado");
 
-            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken);
+            var turmasItinerarioEnsinoMedio = (await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken)).ToList();
 
             //Se for dos tipos 2 e 7, deve utilizar o fechamento da turma do tipo 1.
             //Caso não exista, gerar;
-            if (fechamentoTurma != null && fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)fechamentoTurma.Turma.TipoTurma))
+            if (fechamentoTurma.Turma.EhTurmaEdFisicaOuItinerario() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)fechamentoTurma.Turma.TipoTurma))
             {
                 //Obter a turma do tipo 1 do aluno
-                var turmasCodigosParaConsulta = new List<int>() { (int)TipoTurma.Regular };
+                var tiposParaConsulta = new List<int>();
                 
-                turmasCodigosParaConsulta.AddRange(fechamentoTurma.Turma.ObterTiposRegularesDiferentes());
-                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+                tiposParaConsulta.AddRange(fechamentoTurma.Turma.ObterTiposRegularesDiferentes());
                 
-                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta), cancellationToken);
+                var turmasRegularesDoAluno = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(fechamentoTurma.Turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta), cancellationToken);
                 
-                if (turmasRegularesDoAluno == null && !turmasRegularesDoAluno.Any())
+                if (turmasRegularesDoAluno == null)
                     throw new NegocioException($"Não foi possível obter a turma Regular do aluno {request.AlunoCodigo}");
 
                 var turmaRegularCodigo = turmasRegularesDoAluno.FirstOrDefault();
-                var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo));
+                var turmaRegularId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(turmaRegularCodigo), cancellationToken);
 
                 if (turmaRegularId == 0)
                     throw new NegocioException($"Não foi possível obter a turma Regular do aluno {request.AlunoCodigo} na base do SGP");
@@ -65,7 +64,6 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException("Não foi possível gerar o fechamento para a turma Regular.");
 
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoParaUtilizarId);
-
                 }
                 else 
                     fechamentoTurma = await repositorioFechamentoTurma.ObterCompletoPorIdAsync(fechamentoDaTurmaRegular.Id);

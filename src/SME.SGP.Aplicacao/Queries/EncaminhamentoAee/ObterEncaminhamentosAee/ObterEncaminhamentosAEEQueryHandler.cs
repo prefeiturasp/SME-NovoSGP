@@ -34,8 +34,9 @@ namespace SME.SGP.Aplicacao
             List<string> turmasCodigos = new List<string>();
 
             var ueCodigo = mediator.Send(new ObterUePorIdQuery(request.UeId)).Result;
+            bool ehTurmaHistorica = request.AnoLetivo < DateTime.Now.Year;
 
-            var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0, periodo, false, DateTime.Now.Year, tipos, true));
+            var turmas = await mediator.Send(new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(ueCodigo.CodigoUe, 0, periodo, ehTurmaHistorica, request.AnoLetivo, tipos, true));
 
             if (turmas != null || turmas.Any())
             {

@@ -538,6 +538,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, int turmaAnoLetivo)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -551,6 +552,8 @@ namespace SME.SGP.Aplicacao
 
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                else
+                    indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
@@ -585,6 +588,9 @@ namespace SME.SGP.Aplicacao
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
+
+                if (indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
 
                 fechamentoAlunos.Add(fechamentoAluno);
             }
