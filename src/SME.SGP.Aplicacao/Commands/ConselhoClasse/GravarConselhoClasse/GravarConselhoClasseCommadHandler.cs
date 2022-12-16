@@ -8,6 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dados.Repositorios;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,13 +18,16 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IMediator mediator;
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
+        private readonly IRepositorioCache repositorioCache;
 
         public GravarConselhoClasseCommadHandler(
                         IMediator mediator,
-                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
+                        IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta,
+                        IRepositorioCache repositorioCache)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioConselhoClasseAlunoConsulta = repositorioConselhoClasseAlunoConsulta ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAlunoConsulta));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
         }
 
         public async Task<ConselhoClasseNotaRetornoDto> Handle(GravarConselhoClasseCommad request, CancellationToken cancellationToken)
@@ -48,9 +54,7 @@ namespace SME.SGP.Aplicacao
 
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
-            if(request.Bimestre != 0)
-                await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma,(int)Bimestre.Final), cancellationToken);
-
+            await AtualizarCache(request.ConselhoClasseNotaDto, request.FechamentoTurma.Turma, request.FechamentoTurma, request.CodigoAluno, request.Bimestre);
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
         }
@@ -58,6 +62,57 @@ namespace SME.SGP.Aplicacao
         private async Task RemoverCache(string nomeChave, CancellationToken cancellationToken)
         {
             await mediator.Send(new RemoverChaveCacheCommand(nomeChave), cancellationToken);
+        }
+
+        private async Task AtualizarCache(ConselhoClasseNotaDto conselhoClasseNota, Turma turma, FechamentoTurma fechamentoTurma, string codigoAluno, int? bimestre)
+        {
+            var nomeChaveCache = ObterChaveNotaConceitoConselhoClasseTurmaBimestre(turma.CodigoTurma,(int)Bimestre.Final);
+
+            var notasConceitosFechamento = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
+            if (notasConceitosFechamento != null)
+                await PersistirNotaConceitoConselhoClasseBimestreNoCache(notasConceitosFechamento, conselhoClasseNota, codigoAluno, turma.CodigoTurma, fechamentoTurma, bimestre);  
+        }
+        private static string ObterChaveNotaConceitoConselhoClasseTurmaBimestre(string codigoTurma, int bimestre)
+        {
+            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE,codigoTurma, bimestre);
+        }
+
+        private async Task PersistirNotaConceitoConselhoClasseBimestreNoCache(List<NotaConceitoBimestreComponenteDto> notasConceitosFechamento,
+          ConselhoClasseNotaDto conselhoClasseNota, string codigoAluno, string codigoTurma, FechamentoTurma fechamentoTurma, int? bimestre)
+        {
+            var notaConceitoFechamentoAluno = notasConceitosFechamento.FirstOrDefault(c => c.AlunoCodigo == codigoAluno &&
+                c.ComponenteCurricularCodigo == conselhoClasseNota.CodigoComponenteCurricular && c.Bimestre == bimestre);
+
+            if (notaConceitoFechamentoAluno == null)
+                notasConceitosFechamento.Add( await ObterNotaConceitoBimestreAluno(codigoAluno, conselhoClasseNota.CodigoComponenteCurricular, codigoTurma, conselhoClasseNota, fechamentoTurma, bimestre));
+            else
+            {
+                notaConceitoFechamentoAluno.Nota = conselhoClasseNota.Nota;
+            }
+
+            await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoConselhoClasseTurmaBimestre(codigoTurma,(int)Bimestre.Final), notasConceitosFechamento));
+        }
+
+        private async Task<NotaConceitoBimestreComponenteDto> ObterNotaConceitoBimestreAluno(string codigoAluno,
+                                                                                 long codigoDisciplina,
+                                                                                 string codigoTurma,
+                                                                                 ConselhoClasseNotaDto conselhoClasseNota,
+                                                                                 FechamentoTurma fechamentoTurma,
+                                                                                 int? bimestre)
+        {
+           var conselhosClasseAlunos = await mediator.Send(new ObterConselhoClasseAlunosNotaPorFechamentoIdQuery(fechamentoTurma.Id));
+            var conselho = conselhosClasseAlunos.ToList().Find(ca => ca.AlunoCodigo == codigoAluno &&
+                                                               ca.ComponenteCurricularCodigo == codigoDisciplina);
+            return new NotaConceitoBimestreComponenteDto
+            {
+                AlunoCodigo = codigoAluno,
+                Nota = conselhoClasseNota.Nota,
+                ComponenteCurricularCodigo = codigoDisciplina,
+                TurmaCodigo = codigoTurma,
+                Bimestre = bimestre,
+                ConselhoClasseNotaId = conselho != null ? conselho.ConselhoClasseNotaId : 0,
+                ConselhoClasseId = conselho != null ? conselho.ConselhoClasseId : 0
+            };
         }
 
     }
