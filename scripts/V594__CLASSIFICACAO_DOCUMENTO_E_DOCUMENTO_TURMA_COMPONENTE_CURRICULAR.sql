@@ -22,3 +22,9 @@ ALTER TABLE documento ADD CONSTRAINT documento_turma_fk FOREIGN KEY (turma_id) R
 --> Criando campo componente_curricular_id
 ALTER TABLE documento ADD column componente_curricular_id int8 NULL;
 ALTER TABLE documento ADD CONSTRAINT documento_componente_curricular_fk FOREIGN KEY (componente_curricular_id) REFERENCES componente_curricular(id);
+
+--> Removendo identity classificacao_documento
+ALTER TABLE classificacao_documento ALTER COLUMN id DROP IDENTITY IF EXISTS;
+
+--> Removendo identity tipo_documento
+ALTER TABLE tipo_documento ALTER COLUMN id DROP IDENTITY IF EXISTS;

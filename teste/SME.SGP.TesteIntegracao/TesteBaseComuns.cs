@@ -114,6 +114,9 @@ namespace SME.SGP.TesteIntegracao
         private const string AREA_DE_CONHECIMENTO_3 = "'Área de conhecimento 3'";
         private const string AREA_DE_CONHECIMENTO_4 = "'Área de conhecimento 4'";
         private const string AREA_DE_CONHECIMENTO_5 = "'Área de conhecimento 5'";
+        
+        protected const string CLASSIFICACAO_DOCUMENTO = "classificacao_documento";
+        protected const string TIPO_DOCUMENTO = "tipo_documento";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_CIENCIAS_NOME = "'CIENCIA'";
