@@ -7,6 +7,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Entidades;
 using SME.SGP.Aplicacao;
+using System.Text.RegularExpressions;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
@@ -20,17 +21,32 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
         protected const long ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_QUESTAO_TIPO_DOENCA_CRONICA = 5;
+
+        protected const long ID_QUESTAO_DATA_ATENDIMENTO = 7;
         protected const long ID_QUESTAO_TIPO_ATENDIMENTO = 8;
         protected const long ID_QUESTAO_PROCEDIMENTO_TRABALHO = 9;
-        protected const long ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO = 10;
+        protected const long ID_QUESTAO_DESCRICAO_ATENDIMENTO = 10;
+        protected const long ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO = 11;
+
         protected const long ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA = 5;
         protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 8;
         protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA = 11;
         protected const long ID_OPCAO_RESPOSTA_ASSADURA_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 6;
         protected const long ID_OPCAO_RESPOSTA_ANEMIA_FALCIFORME_QUESTAO_TIPO_DOENCA_CRONICA = 9;
+        protected const long ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL = 12;
+        protected const long ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA = 13;
+        protected const long ID_OPCAO_RESPOSTA_ACOES_LUDICAS = 14;
         protected const long ID_OPCAO_RESPOSTA_OUTRO_PROCEDIMENTO = 15;
+        protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_INFORMACOES_ESTUDANTE = 1;
+        protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_QUESTOES_APRESENTADAS_INFANTIL = 2;
+        protected const long ID_SECAO_ENCAMINHAMENTO_NAAPA_ITINERANCIA = 3;
 
+        protected const long ID_QUESTIONARIO_INFORMACOES_ESTUDANTE = 1;
+        protected const long ID_QUESTIONARIO_QUESTOES_APRESENTADAS_INFANTIL = 2;
+        protected const long ID_QUESTIONARIO_NAAPA_ITINERANCIA = 3;
+
+        
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
 
@@ -61,6 +77,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         private async Task CriarSecaoEncaminhamentoNAAPAQuestionario()
         {
+            //Id 1
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = 1,
@@ -69,6 +86,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Etapa = 1,Ordem = 1,
                 CriadoPor = SISTEMA_NOME,CriadoRF = SISTEMA_CODIGO_RF,CriadoEm = DateTime.Now
             });
+
+            //Id 2
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = 2,
@@ -80,6 +99,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+
+            //Id 3
             await InserirNaBase(new SecaoEncaminhamentoNAAPA()
             {
                 QuestionarioId = 3,
@@ -118,6 +139,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IRegistrarEncaminhamentoNAAPAUseCase ObterServicoRegistrarEncaminhamento()
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoNAAPAUseCase>();    
+        }
+
+        protected IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase ObterServicoListagemSecoesItineranciaEncaminhamentoNaapa()
+        {
+            return ServiceProvider.GetService<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
         }
 
         protected IExcluirEncaminhamentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
@@ -448,7 +474,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.Combo,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                NomeComponente = "DATA_DO_ATENDIMENTO"
             });
 
             //id 8
@@ -461,10 +488,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.Combo,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                NomeComponente = "TIPO_DO_ATENDIMENTO"
             });
 
-            //id 8
+            //id 9
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 3,
@@ -474,10 +502,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.Combo,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                NomeComponente = "PROCEDIMENTO_DE_TRABALHO"
             });
 
-            //id 9
+            //id 10
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 3,
@@ -487,10 +516,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.EditorTexto,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                NomeComponente = "DESCRICAO_DO_ATENDIMENTO"
             });
 
-            //id 10
+            //id 11
             await InserirNaBase(new Questao()
             {
                 QuestionarioId = 3,
@@ -500,7 +530,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 Tipo = TipoQuestao.Texto,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
-                CriadoEm = DateTime.Now
+                CriadoEm = DateTime.Now,
+                NomeComponente = "DESCRICAO_PROCEDIMENTO_TRABALHO"
             });
         }
 

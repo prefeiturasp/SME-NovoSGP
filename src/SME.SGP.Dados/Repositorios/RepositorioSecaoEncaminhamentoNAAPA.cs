@@ -85,12 +85,12 @@ namespace SME.SGP.Dados.Repositorios
                                             questaoDataAtendimento.DataAtendimento,
                                             questaoTipoAtendimento.TipoAtendimento,
                                             ens.id,
-                                            ens.Alterado_Em,
-                                            ens.Alterado_Por,
-                                            ens.Alterado_RF,
-                                            ens.Criado_Em,
-                                            ens.Criado_Por,
-                                            ens.Criado_RF
+                                            ens.Alterado_Em as AlteradoEm,
+                                            ens.Alterado_Por as AlteradoPor,
+                                            ens.Alterado_RF as AlteradoRF,
+                                            ens.Criado_Em as CriadoEm,
+                                            ens.Criado_Por as CriadoPor,
+                                            ens.Criado_RF as CriadoRF
                                             from encaminhamento_naapa en
                                             inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
                                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
