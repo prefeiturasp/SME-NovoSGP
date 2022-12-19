@@ -43,13 +43,16 @@ namespace SME.SGP.Aplicacao
                 var comunicadoDto = itens.FirstOrDefault(x => x.DocumentoId == item.DocumentoId);
 
                 if (comunicadoDto == null)
+                {
+                    item.TurmaComponenteCurricular = item.ObterTurmaComponenteCurricular();
                     itens.Add((DocumentoDto)item);
+                }
+                    
             }
 
             retornoPaginado.Items = itens;
 
             return retornoPaginado;
         }
-
     }
 }

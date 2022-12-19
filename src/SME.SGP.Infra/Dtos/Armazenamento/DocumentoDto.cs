@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
     public class DocumentoDto
     {
-        public DocumentoDto() { }
+        public DocumentoDto()
+        {}
 
         public DocumentoDto(string tipoDocumento, string classificacao, string usuario, DateTime dataUpload)
         {
@@ -23,7 +25,19 @@ namespace SME.SGP.Infra
         public string TipoDocumento { get; set; }
         public string Classificacao { get; set; }
         public Guid CodigoArquivo { get; set; }
-        public long TurmaId { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public string TurmaNome { get; set; }
+        public int AnoLetivo { get; set; }
+        public int Modalidade { get; set; }
+        public string ComponenteCurricularNome { get; set; }
+
+        public string TurmaComponenteCurricular{ get; set; }
+
+        public string ObterTurmaComponenteCurricular()
+        {
+            if (!string.IsNullOrEmpty(TurmaNome) && !string.IsNullOrEmpty(ComponenteCurricularNome))
+                return $"{((Modalidade)Modalidade).ShortName()} - {TurmaNome} - {ComponenteCurricularNome}";
+                
+            return string.Empty;
+        }
     }
 }
