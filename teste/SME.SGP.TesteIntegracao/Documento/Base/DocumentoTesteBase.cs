@@ -33,6 +33,11 @@ namespace SME.SGP.TesteIntegracao.Documento
             return ServiceProvider.GetService<IListarDocumentosUseCase>();
         }
 
+        protected ISalvarDocumentoUseCase ObterServicoSalvarDocumentoUseCase()
+        {
+            return ServiceProvider.GetService<ISalvarDocumentoUseCase>();
+        }
+
         protected async Task CriarDadosBasicos(FiltroDocumentoDto filtroDocumentoDto)
         {
             await CriarTipoCalendario(filtroDocumentoDto.TipoCalendario);
