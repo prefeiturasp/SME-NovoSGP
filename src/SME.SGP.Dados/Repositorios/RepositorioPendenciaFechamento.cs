@@ -134,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                                  inner join turma t on t.id = ft.turma_id
                                  inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                                  inner join pendencia p on p.id = pf.pendencia_id
-                                  where not p.excluido
+                                  where not p.excluido and not ftd.excluido
                                     and t.turma_id = @turmaCodigo ", fields));
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");
