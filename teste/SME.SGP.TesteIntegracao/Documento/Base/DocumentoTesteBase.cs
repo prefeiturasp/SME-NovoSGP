@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             }
         }
         
-        protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento)
+        protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento, long? componentecurricularId = null, bool inserirTurma = true)
         {
             var turmas = new List<long> { 1, 2, 3 };
 
@@ -84,7 +84,8 @@ namespace SME.SGP.TesteIntegracao.Documento
                         UeId = UE_ID_1,
                         AnoLetivo = DateTime.Now.Year,
                         ClassificacaoDocumentoId = (long)classificacaoDocumento,
-                        TurmaId = turma,
+                        TurmaId = inserirTurma ? turma : null,
+                        ComponenteCurricularId = componentecurricularId,
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
                     });                    
                 }

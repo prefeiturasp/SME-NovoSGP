@@ -80,26 +80,26 @@ namespace SME.SGP.Dados.Repositorios
             } 
             else
             {
-                sql.AppendLine("d.id as DocumentoId, ");
-                sql.AppendLine("a.nome as NomeArquivo, ");
-                sql.AppendLine("td.descricao as tipoDocumento, ");
-                sql.AppendLine("cd.descricao as classificacao, ");
-                sql.AppendLine("usuario_id as usuarioId, ");
-                sql.AppendLine("u.nome || ' (' || u.rf_codigo || ')' as usuario, ");
-                sql.AppendLine("case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload, ");
-                sql.AppendLine("a.codigo as CodigoArquivo, ");
-                sql.AppendLine("d.turma_id as TurmaId, ");
-                sql.AppendLine("d.componente_curricular_id as ComponenteCurricularId ");
+                sql.AppendLine(@"d.id as DocumentoId, 
+                                 a.nome as NomeArquivo, 
+                                 td.descricao as tipoDocumento,
+                                 cd.descricao as classificacao, 
+                                 usuario_id as usuarioId, 
+                                 u.nome || ' (' || u.rf_codigo || ')' as usuario, 
+                                 case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload, 
+                                 a.codigo as CodigoArquivo, 
+                                 t.nome as turmanome,
+                                 t.ano_letivo as anoletivo,
+                                 t.modalidade_codigo as modalidade,
+                                 coalesce(cc.descricao_infantil,cc.descricao_sgp) as componenteCurricularNome ");
             }
-            sql.AppendLine("from documento d ");
-            sql.AppendLine("inner join ");
-            sql.AppendLine("classificacao_documento cd on d.classificacao_documento_id = cd.id ");
-            sql.AppendLine("inner join ");
-            sql.AppendLine("tipo_documento td on cd.tipo_documento_id = td.id ");
-            sql.AppendLine("inner join ");
-            sql.AppendLine("arquivo a on d.arquivo_id = a.id ");
-            sql.AppendLine("inner join usuario u on ");
-            sql.AppendLine("d.usuario_id = u.id ");
+            sql.AppendLine(@"from documento d 
+                             inner join  classificacao_documento cd on d.classificacao_documento_id = cd.id 
+                             inner join  tipo_documento td on cd.tipo_documento_id = td.id 
+                             inner join  arquivo a on d.arquivo_id = a.id 
+                             inner join usuario u on d.usuario_id = u.id
+                             left join turma t on t.id = d.turma_id
+                             left join componente_curricular cc on cc.id = d.componente_curricular_id ");
         }
 
         private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
