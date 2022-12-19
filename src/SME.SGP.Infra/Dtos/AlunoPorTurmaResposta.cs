@@ -124,8 +124,7 @@ namespace SME.SGP.Infra
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.PendenteRematricula &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.Rematriculado &&
                 CodigoSituacaoMatricula != SituacaoMatriculaAluno.SemContinuidade &&
-                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido &&
-                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Transferido)
+                CodigoSituacaoMatricula != SituacaoMatriculaAluno.Concluido)
                 return false;
 
             return true;
@@ -154,6 +153,17 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         private bool ChecarSituacaoConcluidoEMatriculaNaMesmaData(DateTime dataReferencia)
             => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
+
+        public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
+            => DataMatricula.Date <= dataReferencia;
+
+        public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
+        {
+            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
+                return EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
+
+            return PodeEditarNotaConceito();
+        }
 
     }
 }

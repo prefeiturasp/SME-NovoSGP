@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<ConselhoClasseParecerConclusivoDto>> Handle(ObterPareceresConclusivosQuery request, CancellationToken cancellationToken)
         {
-            var pareceresConclusivos = await repositorioConselhoClasseParecerConclusivo.ObterListaVigente(DateTime.Now);
+            var pareceresConclusivos = await repositorioConselhoClasseParecerConclusivo.ObterListaVigente(request.DataVigente);
 
             if (pareceresConclusivos == null || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foi possível obter os pareceres conclusivos");

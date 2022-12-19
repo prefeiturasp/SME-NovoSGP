@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<ComponenteCurricularDto>> Handle(ObterComponentesComNotaDeFechamentoOuConselhoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioComponenteCurricular.ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(request.AnoLetivo, request.TurmaId, request.Bimestre, request.CodigoAluno);
+            return await repositorioComponenteCurricular.ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(request.AnoLetivo, request.TurmasId, request.Bimestre, request.CodigoAluno);
         }
     }
 }

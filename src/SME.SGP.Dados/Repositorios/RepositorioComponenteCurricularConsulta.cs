@@ -154,14 +154,13 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        componente_curricular WHERE id = @id;";
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
-        }
-
+        }        
         public async Task<bool> LancaNota(long id)
         {
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, string[] turmasId, int? bimestre, string codigoAluno)
         {
             var query = $@"	                        
                            select
@@ -200,7 +199,7 @@ namespace SME.SGP.Dados.Repositorios
                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId
+                           and t.turma_id = ANY(@turmasId)
                            union all
                            
                            select 
@@ -235,9 +234,9 @@ namespace SME.SGP.Dados.Repositorios
                             {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId ) x   ";
+                           and t.turma_id = ANY(@turmasId)) x   ";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmaId, codigoAluno, }));
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmasId, codigoAluno, }));
         }
 
         public async Task<string> ObterDescricaoPorId(long id)

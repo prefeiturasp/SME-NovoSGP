@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta;
 
         public GravarConselhoClasseCommadHandler(
-                        IMediator mediator, 
+                        IMediator mediator,
                         IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAlunoConsulta)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -42,11 +42,11 @@ namespace SME.SGP.Aplicacao
                                             request.Bimestre,
                                             request.Usuario), cancellationToken);
 
-            var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId), cancellationToken);
+            var situacaoConselhoAtualizada = await mediator.Send(new AtualizaSituacaoConselhoClasseCommand(conselhoClasseNotaRetorno.ConselhoClasseId, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             if (!situacaoConselhoAtualizada)
                 throw new NegocioException(MensagemNegocioConselhoClasse.ERRO_ATUALIZAR_SITUACAO_CONSELHO_CLASSE);
 
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.FechamentoTurma.Turma.CodigoTurma), cancellationToken);
             await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.FechamentoTurma.Turma.CodigoTurma, request.Bimestre), cancellationToken);
 
             return await Task.FromResult(conselhoClasseNotaRetorno);
