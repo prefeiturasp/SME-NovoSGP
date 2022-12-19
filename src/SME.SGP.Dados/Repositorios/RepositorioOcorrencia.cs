@@ -233,7 +233,8 @@ namespace SME.SGP.Dados
             sql.AppendLine(" where ");
             sql.AppendLine(" o.turma_id = @turmaId and ");
             sql.AppendLine(" oa.codigo_aluno = @codigoAluno and ");
-            sql.AppendLine(" o.criado_em::date between @periodoInicio and @periodoFim ");
+            sql.AppendLine(" o.data_ocorrencia::date between @periodoInicio and @periodoFim and");
+            sql.AppendLine(" not o.excluido");
         }
     }
 }

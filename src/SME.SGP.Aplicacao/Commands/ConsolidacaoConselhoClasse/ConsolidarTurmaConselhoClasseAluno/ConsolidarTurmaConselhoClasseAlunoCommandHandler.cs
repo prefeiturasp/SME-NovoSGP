@@ -61,6 +61,9 @@ namespace SME.SGP.Aplicacao
                     tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                    
                     
                     turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta), cancellationToken);
+
+                    if (!turmasCodigos.Any(t => t == turma.CodigoTurma))
+                        turmasCodigos = turmasCodigos.Append(turma.CodigoTurma).ToArray();
                 }
 
                 if (!turmasCodigos.Any())
