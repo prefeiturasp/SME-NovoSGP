@@ -20,12 +20,17 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
         protected const long ID_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_QUESTAO_TIPO_DOENCA_CRONICA = 5;
+        protected const long ID_QUESTAO_TIPO_ATENDIMENTO = 8;
+        protected const long ID_QUESTAO_PROCEDIMENTO_TRABALHO = 9;
+        protected const long ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO = 10;
         protected const long ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA = 5;
         protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 8;
         protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA = 11;
         protected const long ID_OPCAO_RESPOSTA_ASSADURA_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 6;
         protected const long ID_OPCAO_RESPOSTA_ANEMIA_FALCIFORME_QUESTAO_TIPO_DOENCA_CRONICA = 9;
+        protected const long ID_OPCAO_RESPOSTA_OUTRO_PROCEDIMENTO = 15;
+
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
 
@@ -71,6 +76,17 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 NomeComponente = "QUESTOES_APRESENTADAS_INFANTIL",
                 Etapa = 1,
                 Ordem = 2,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+            await InserirNaBase(new SecaoEncaminhamentoNAAPA()
+            {
+                QuestionarioId = 3,
+                Nome = "Itinerância",
+                NomeComponente = "QUESTOES_ITINERACIA",
+                Etapa = 1,
+                Ordem = 3,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -129,6 +145,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             {
                 OpcaoRespostaId = ID_OPCAO_RESPOSTA_DOENCA_CRONICA,
                 QuestaoComplementarId = ID_QUESTAO_TIPO_DOENCA_CRONICA,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            await InserirNaBase(new OpcaoQuestaoComplementar()
+            {
+                OpcaoRespostaId = ID_OPCAO_RESPOSTA_OUTRO_PROCEDIMENTO,
+                QuestaoComplementarId = ID_QUESTAO_DESCRICAO_PROCEDIMENTO_TRABALHO,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
@@ -253,6 +278,50 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+
+            //id 12
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 1,
+                Nome = "Atendimento não presencial",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 13
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_TIPO_ATENDIMENTO,
+                Ordem = 2,
+                Nome = "Grupo de Trabalho NAAPA",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 14
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 1,
+                Nome = "Ações Lúdicas",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 15
+            await InserirNaBase(new OpcaoResposta()
+            {
+                QuestaoId = ID_QUESTAO_PROCEDIMENTO_TRABALHO,
+                Ordem = 2,
+                Nome = "Outro procedimento",
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
 
         private async Task CriarQuestionario()
@@ -271,6 +340,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now
             });
+            await InserirNaBase(new Questionario()
+            {
+                Nome = "Questionário Encaminhamento NAAPA Etapa 1 Seção 3 - Itinerância",
+                Tipo = TipoQuestionario.EncaminhamentoNAAPA,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
         }
 
         private async Task CriarQuestoes()
@@ -359,7 +437,73 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTime.Now,
                 NomeComponente = "OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS"
             });
+
+            //id 7
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 1,
+                Nome = "Data do atendimento",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Combo,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 8
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 2,
+                Nome = "Tipo do atendimento",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Combo,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 8
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 3,
+                Nome = "Procedimento de trabalho",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Combo,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 9
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 4,
+                Nome = "Descrição do atendimento",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.EditorTexto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
+
+            //id 10
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 3,
+                Ordem = 1,
+                Nome = "Descrição do procedimento de trabalho",
+                Obrigatorio = true,
+                Tipo = TipoQuestao.Texto,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now
+            });
         }
+
         protected class FiltroNAAPADto
         {
             public FiltroNAAPADto()
