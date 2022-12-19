@@ -1,14 +1,19 @@
---> Aumentando o tamanho do campo 'descricao'
+﻿--> Aumentando o tamanho do campo 'descricao'
 ALTER TABLE classificacao_documento alter COLUMN descricao type varchar(50);
 
---> Criar o campo para indicar que a classifica��o permite mais de um registro.
+--> Criar o campo para indicar que a classificação permite mais de um registro.
 ALTER TABLE  alter COLUMN descricao type varchar(50);
 ALTER TABLE classificacao_documento ADD COLUMN IF NOT EXISTS ehRegistroMultiplo bool NOT NULL DEFAULT false;
 
+--> Carta Pedagógica
+insert into classificacao_documento (descricao, tipo_documento_id, ehRegistroMultiplo)
+select 'Carta Pedagógica', 2, true
+where not exists(select 1 from public.ocorrencia_tipo where descricao = 'Carta Pedagógica');
+
 --> Documentos da turma
 insert into classificacao_documento (descricao, tipo_documento_id, ehRegistroMultiplo)
-select 'Documentos da turma', 2, true
-where not exists(select 1 from public.ocorrencia_tipo where descricao = 'Documentos da turma');
+select 'Documentos da Turma', 2, true
+where not exists(select 1 from public.ocorrencia_tipo where descricao = 'Documentos da Turma');
 
 --> Criando campo turma_id
 ALTER TABLE documento ADD column turma_id int8 NULL;
