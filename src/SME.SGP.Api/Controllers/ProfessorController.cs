@@ -101,6 +101,7 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(retorno);
         }
+        
         [HttpGet("rfs/{codigoRf}/anos-letivos/{anoLetivo}/buscar")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
