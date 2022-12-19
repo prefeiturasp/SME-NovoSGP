@@ -93,20 +93,26 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var codigoAluno in alunosComFrequencia)
                     {
-                        var dadosMatriculaAluno = alunosDaTurma
-                            .FirstOrDefault(a => a.CodigoAluno.Equals(codigoAluno) && a.DataMatricula.Date <= periodoConsiderado.PeriodoFim);
+                        var dadosMatriculaAluno = alunosDaTurma.OrderBy(a => a.DataMatricula)
+                            .Where(a => a.CodigoAluno.Equals(codigoAluno) && a.DataMatricula.Date <= periodoConsiderado.PeriodoFim);
 
-                        if (dadosMatriculaAluno == null)
+                        if (dadosMatriculaAluno == null || !dadosMatriculaAluno.Any())
                             continue;
 
-                        var totalAulasNaDisciplinaParaAluno = await mediator
-                            .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, dadosMatriculaAluno.DataMatricula, dadosMatriculaAluno.EstaInativo(request.DataAula) ? dadosMatriculaAluno.DataSituacao : null, request.TurmaId));
+                        var totalAulasNaDisciplinaParaAluno = 0;
+                        var totalAulasParaAluno = 0;
+
+                        foreach (var matricula in dadosMatriculaAluno)
+                        {
+                            totalAulasNaDisciplinaParaAluno += await mediator
+                                .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, request.DisciplinaId, matricula.DataMatricula, matricula.EstaInativo(request.DataAula) ? matricula.DataSituacao : null, request.TurmaId));
+
+                            totalAulasParaAluno += await mediator
+                                .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, matricula.DataMatricula, matricula.EstaInativo(request.DataAula) ? matricula.DataSituacao : null, request.TurmaId));
+                        }                        
 
                         if (totalAulasNaDisciplinaParaAluno == 0)
                             excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno)).Select(s => s.Id));
-
-                        var totalAulasParaAluno = await mediator
-                            .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, dadosMatriculaAluno.DataMatricula, dadosMatriculaAluno.EstaInativo(request.DataAula) ? dadosMatriculaAluno.DataSituacao : null, request.TurmaId));
 
                         var ausenciasDoAluno = alunosComFrequencia.Where(a => a == codigoAluno).ToList();
 
