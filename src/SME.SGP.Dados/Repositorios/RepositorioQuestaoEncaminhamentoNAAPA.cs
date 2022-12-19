@@ -38,7 +38,17 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId)
         {
-            var query = @"select ren.Id
+            return await ObterRespostasEncaminhamento(encaminhamentoId, "ens.encaminhamento_naapa_id = @encaminhamentoId");
+        }
+
+        public async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasItinerarioEncaminhamento(long encaminhamentoSecaoId)
+        {
+            return await ObterRespostasEncaminhamento(encaminhamentoSecaoId, "ens.id = @encaminhamentoId");
+        }
+
+        private async Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId, string condicao)
+        {
+            var query = @$"select ren.Id
                             , qen.questao_id as QuestaoId
 	                        , ren.resposta_id as RespostaId
 	                        , ren.texto 
@@ -50,7 +60,7 @@ namespace SME.SGP.Dados.Repositorios
                          where not ens.excluido 
                            and not qen.excluido 
                            and not ren.excluido 
-                           and ens.encaminhamento_naapa_id = @encaminhamentoId ";
+                           and {condicao}";
 
             return await database.Conexao.QueryAsync<RespostaQuestaoEncaminhamentoNAAPADto, Arquivo, RespostaQuestaoEncaminhamentoNAAPADto>(query,
                 (resposta, arquivo) =>

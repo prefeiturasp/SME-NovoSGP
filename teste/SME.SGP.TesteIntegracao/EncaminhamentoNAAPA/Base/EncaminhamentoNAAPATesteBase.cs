@@ -30,10 +30,10 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         protected const long ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA = 4;
         protected const long ID_OPCAO_RESPOSTA_DOENCA_CRONICA = 5;
-        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 8;
-        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA = 11;
         protected const long ID_OPCAO_RESPOSTA_ASSADURA_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 6;
+        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_ADOECE_COM_FREQUENCIA = 8;
         protected const long ID_OPCAO_RESPOSTA_ANEMIA_FALCIFORME_QUESTAO_TIPO_DOENCA_CRONICA = 9;
+        protected const long ID_OPCAO_RESPOSTA_OUTRAS_QUESTAO_TIPO_DOENCA_CRONICA = 11;
         protected const long ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL = 12;
         protected const long ID_OPCAO_RESPOSTA_GRUPO_TRAB_NAAPA = 13;
         protected const long ID_OPCAO_RESPOSTA_ACOES_LUDICAS = 14;
@@ -154,6 +154,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAPorIdUseCase>();    
+        }
+
+        protected IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
         }
 
         private async Task CriarRespostasComplementares()

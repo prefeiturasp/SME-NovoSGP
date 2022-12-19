@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Aplicacao.CasosDeUso;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -128,6 +129,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpGet("questionarioItineratio")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionarioItinerario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoSecaoId, [FromServices] IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
         }
     }
 }
