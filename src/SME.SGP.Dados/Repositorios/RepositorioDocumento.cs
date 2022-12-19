@@ -60,9 +60,9 @@ namespace SME.SGP.Dados.Repositorios
 
         private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador = false, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
-            ObtenhaCabecalho(sql, contador);
+            ObterCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, tipoDocumentoId, classificacaoId);
+            ObterFiltro(sql, tipoDocumentoId, classificacaoId);
 
             if (!contador)
                 sql.AppendLine("order by d.id");
@@ -71,7 +71,7 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
         }
 
-        private static void ObtenhaCabecalho(StringBuilder sql, bool contador)
+        private static void ObterCabecalho(StringBuilder sql, bool contador)
         {
             sql.AppendLine("select ");
             if(contador)
@@ -87,7 +87,9 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("usuario_id as usuarioId, ");
                 sql.AppendLine("u.nome || ' (' || u.rf_codigo || ')' as usuario, ");
                 sql.AppendLine("case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload, ");
-                sql.AppendLine("a.codigo as CodigoArquivo ");
+                sql.AppendLine("a.codigo as CodigoArquivo, ");
+                sql.AppendLine("d.turma_id as TurmaId, ");
+                sql.AppendLine("d.componente_curricular_id as ComponenteCurricularId ");
             }
             sql.AppendLine("from documento d ");
             sql.AppendLine("inner join ");
@@ -100,7 +102,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("d.usuario_id = u.id ");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
+        private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
         {
             sql.AppendLine("where d.ue_id = @ueId ");
 
@@ -150,13 +152,17 @@ namespace SME.SGP.Dados.Repositorios
 	                        u.rf_codigo as ProfessorRf,
 	                        ue.ue_id as UeId,
 	                        dre.dre_id as DreId,
-	                        a2.codigo  as CodigoArquivo
+	                        a2.codigo  as CodigoArquivo,
+	                        d.turma_id as TurmaId,
+	                        t.turma_id as turmaCodigo,
+                            d.componente_curricular_id as ComponenteCurricularId 
 	                        from documento d
                         inner join usuario u on d.usuario_id = u.id
                         inner join ue on d.ue_id = ue.id
                         inner join arquivo a2 on d.arquivo_id = a2.id 
                         inner join classificacao_documento cd on d.classificacao_documento_id = cd.id 
                         inner join dre on ue.dre_id = dre.id 
+	                    left join turma t on t.id = d.turma_id 
                         WHERE d.id = @documentoId";
             return await database.Conexao.QueryFirstOrDefaultAsync<ObterDocumentoDto>(query, new { documentoId });
         }

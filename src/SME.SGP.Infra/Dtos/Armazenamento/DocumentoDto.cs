@@ -23,5 +23,7 @@ namespace SME.SGP.Infra
         public string TipoDocumento { get; set; }
         public string Classificacao { get; set; }
         public Guid CodigoArquivo { get; set; }
+        public long TurmaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 }
