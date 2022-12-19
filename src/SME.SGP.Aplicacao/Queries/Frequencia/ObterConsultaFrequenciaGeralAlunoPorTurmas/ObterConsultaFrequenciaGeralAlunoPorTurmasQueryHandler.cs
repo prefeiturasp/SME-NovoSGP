@@ -13,7 +13,7 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         public ObterConsultaFrequenciaGeralAlunoPorTurmasQueryHandler(
-                                            IMediator mediator, 
+                                            IMediator mediator,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -30,12 +30,10 @@ namespace SME.SGP.Aplicacao
                 return await CalculoFrequenciaGlobal2020(request.AlunoCodigo, turma);
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
+            var aluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));
+            var matriculasAluno = aluno.Select(a => ((DateTime?)a.DataMatricula, a.Inativo ? a.DataSituacao : (DateTime?)null, a.Inativo));
 
-            var aluno = alunosEol.FirstOrDefault(a => a.CodigoAluno == request.AlunoCodigo);
-            var dataMatriculaAluno = aluno?.DataMatricula;
-            var dataSituacao = aluno?.Inativo ?? false ? aluno.DataSituacao : (DateTime?)null;
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, dataMatriculaAluno, dataSituacao));
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, matriculasAluno));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)
