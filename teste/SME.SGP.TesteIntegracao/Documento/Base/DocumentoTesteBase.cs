@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             }
         }
         
-        protected async Task CriarDocumentos(Dominio.Enumerados.TipoDocumento tipoDocumento)
+        protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento)
         {
             var turmas = new List<long> { 1, 2, 3 };
 
@@ -83,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.Documento
                         ArquivoId = arquivo,
                         UeId = UE_ID_1,
                         AnoLetivo = DateTime.Now.Year,
-                        ClassificacaoDocumentoId = (long)tipoDocumento,
+                        ClassificacaoDocumentoId = (long)classificacaoDocumento,
                         TurmaId = turma,
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
                     });                    
