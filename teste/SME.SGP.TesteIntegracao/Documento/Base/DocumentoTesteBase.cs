@@ -93,77 +93,71 @@ namespace SME.SGP.TesteIntegracao.Documento
         private async Task CriarClassificacaoDocumento()
         {
             var tipoDocumentoPlanoTrabalho = new Dominio.TipoDocumento()
-            {
-                Id = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
-                Descricao = Dominio.Enumerados.TipoDocumento.PlanoTrabalho.GetDisplayName()
-            };
+            { Descricao = Dominio.Enumerados.TipoDocumento.PlanoTrabalho.GetDisplayName()};
             
             var tipoDocumentoDocumento = new Dominio.TipoDocumento()
-            {
-                Id = (long)Dominio.Enumerados.TipoDocumento.Documento,
-                Descricao = Dominio.Enumerados.TipoDocumento.Documento.GetDisplayName()
-            };
+            { Descricao = Dominio.Enumerados.TipoDocumento.Documento.GetDisplayName()};
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.PAEE.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.PAP.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.POA.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });     
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.POED.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });  
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.POEI.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });   
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.POSL.GetDisplayName(),
-                TipoDocumento = tipoDocumentoPlanoTrabalho,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.PEA.GetDisplayName(),
-                TipoDocumento = tipoDocumentoDocumento,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.PPP.GetDisplayName(),
-                TipoDocumento = tipoDocumentoDocumento,
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica.GetDisplayName(),
-                TipoDocumento = tipoDocumentoDocumento,
-                EhRegistroMultiplo = true
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento,
+                EhRegistroMultiplo = true,
             });
             
             await InserirNaBase(new Dominio.ClassificacaoDocumento()
             {
                 Descricao = Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName(),
-                TipoDocumento = tipoDocumentoDocumento,
-                EhRegistroMultiplo = true
+                TipoDocumentoId = (long)Dominio.Enumerados.TipoDocumento.Documento,
+                EhRegistroMultiplo = true,
             });
         }
 
