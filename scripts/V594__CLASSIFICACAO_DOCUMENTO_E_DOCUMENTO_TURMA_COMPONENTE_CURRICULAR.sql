@@ -2,7 +2,7 @@
 ALTER TABLE classificacao_documento alter COLUMN descricao type varchar(50);
 
 --> Criar o campo para indicar que a classificação permite mais de um registro.
-ALTER TABLE  alter COLUMN descricao type varchar(50);
+ALTER TABLE classificacao_documento alter COLUMN descricao type varchar(50);
 ALTER TABLE classificacao_documento ADD COLUMN IF NOT EXISTS ehRegistroMultiplo bool NOT NULL DEFAULT false;
 
 --> Carta Pedagógica
