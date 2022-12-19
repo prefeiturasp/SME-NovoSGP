@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using Dapper;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -51,6 +52,59 @@ namespace SME.SGP.Dados.Repositorios
                         secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
                         return secaoEncaminhamento;
                     }, new { etapas, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade });
+        }
+
+        public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaEncaminhamentoDto(long encaminhamentoNAAPAId)
+        {
+            var query = new StringBuilder(@"with vw_resposta_data as (
+                                            select ens.id encaminhamento_naapa_secao_id, 
+                                                   to_date(enr.texto,'yyyy-mm-dd') DataAtendimento    
+                                            from encaminhamento_naapa_secao ens   
+                                            join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                                            join questao q on enq.questao_id = q.id 
+                                            join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                                            left join opcao_resposta opr on opr.id = enr.resposta_id
+                                            where q.nome_componente  = 'DATA_DO_ATENDIMENTO' 
+                                            ),
+                                            vw_resposta_tipo_atendimento as (
+                                            select ens.id encaminhamento_naapa_secao_id,
+                                                    opr.nome as TipoAtendimento,
+                                                    enr.resposta_id  as TipoAtendimentoId
+                                            from encaminhamento_naapa_secao ens   
+                                            join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
+                                            join questao q on enq.questao_id = q.id 
+                                            join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
+                                            left join opcao_resposta opr on opr.id = enr.resposta_id
+                                            where q.nome_componente = 'TIPO_DO_ATENDIMENTO' 
+                                            )
+                                            select 
+                                            secao.Nome,
+                                            secao.questionario_id as QuestionarioId,
+                                            secao.Etapa,
+                                            secao.Ordem,
+                                            questaoDataAtendimento.DataAtendimento,
+                                            questaoTipoAtendimento.TipoAtendimento,
+                                            ens.id,
+                                            ens.Alterado_Em,
+                                            ens.Alterado_Por,
+                                            ens.Alterado_RF,
+                                            ens.Criado_Em,
+                                            ens.Criado_Por,
+                                            ens.Criado_RF
+                                            from encaminhamento_naapa en
+                                            inner join encaminhamento_naapa_secao ens on ens.encaminhamento_naapa_id = en.id
+                                            inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
+                                            inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
+                                            inner join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
+                                            where en.id = @encaminhamentoNAAPAId");
+
+            return await database.Conexao
+                .QueryAsync<EncaminhamentoNAAPASecaoItineranciaDto, AuditoriaDto, EncaminhamentoNAAPASecaoItineranciaDto>(
+                    query.ToString(), (encaminhamentoSecao, auditoria) =>
+                    {
+                        encaminhamentoSecao.Auditoria = auditoria;
+                        return encaminhamentoSecao;
+                    }, new { encaminhamentoNAAPAId });
         }
     }
 }
