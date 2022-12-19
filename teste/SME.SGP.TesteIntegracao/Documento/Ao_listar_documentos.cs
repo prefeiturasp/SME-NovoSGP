@@ -30,7 +30,12 @@ namespace SME.SGP.TesteIntegracao.Documento
             };
 
             await CriarDadosBasicos(filtro);
-            
+
+            await CriarDocumentos(Dominio.Enumerados.TipoDocumento.Documento);
+
+            var arquivos = ObterTodos<Arquivo>();
+            var documentos = ObterTodos<Dominio.Documento>();
+
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
             var retorno = await obterServicoListarDocumentosUse.Executar(UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma);
 

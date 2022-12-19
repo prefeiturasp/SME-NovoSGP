@@ -34,6 +34,10 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_NOME_1 = "Turma Nome 1";
         protected const string TURMA_ANO_2 = "2";
 
+        protected const string TURMA_NOME_3 = "Turma Nome 3";
+        protected const string TURMA_CODIGO_3 = "3";
+        protected const string TURMA_ANO_3 = "3";
+        
         protected const long TURMA_ID_1 = 1;
         protected const long TURMA_ID_2 = 2;
 
@@ -182,6 +186,9 @@ namespace SME.SGP.TesteIntegracao
         
         protected const string UE_CODIGO_2 = "2";
         protected const string UE_NOME_2 = "UE 2";
+        
+        protected const string UE_CODIGO_3 = "3";
+        protected const string UE_NOME_3 = "UE 3";
 
         protected const string DRE_CODIGO_1 = "1";
         protected const string DRE_NOME_1 = "DRE 1";
@@ -781,6 +788,32 @@ namespace SME.SGP.TesteIntegracao
                 Nome = TURMA_NOME_1,
                 TipoTurma = TipoTurma.Regular
             });
+            
+            await InserirNaBase(new Turma
+            {
+                UeId = 2,
+                Ano = TURMA_ANO_2,
+                CodigoTurma = TURMA_CODIGO_2,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_2,
+                TipoTurma = TipoTurma.Regular
+            });
+            
+            await InserirNaBase(new Turma
+            {
+                UeId = 3,
+                Ano = TURMA_ANO_3,
+                CodigoTurma = TURMA_CODIGO_3,
+                Historica = turmaHistorica,
+                ModalidadeCodigo = modalidade,
+                AnoLetivo = turmaHistorica ? ANO_LETIVO_ANO_ANTERIOR_NUMERO : ANO_LETIVO_Ano_Atual_NUMERO,
+                Semestre = SEMESTRE_1,
+                Nome = TURMA_NOME_3,
+                TipoTurma = TipoTurma.Regular
+            });
         }
 
         protected async Task CriarTurma(Modalidade modalidade, string anoTurma, bool turmaHistorica = false, 
@@ -1081,6 +1114,20 @@ namespace SME.SGP.TesteIntegracao
                 CodigoUe = UE_CODIGO_1,
                 DreId = 1,
                 Nome = UE_NOME_1,
+            });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_2,
+                DreId = 1,
+                Nome = UE_NOME_2,
+            });
+            
+            await InserirNaBase(new Ue
+            {
+                CodigoUe = UE_CODIGO_3,
+                DreId = 1,
+                Nome = UE_NOME_3,
             });
             
             await InserirNaBase(new Dre
