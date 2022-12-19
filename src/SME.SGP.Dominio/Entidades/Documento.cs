@@ -12,6 +12,8 @@ namespace SME.SGP.Dominio
         public long AnoLetivo { get; set; }
         public long? ArquivoId { get; set; }
         public Arquivo Arquivo { get; set; }
+        public long? TurmaId { get; set; }
+        public long? ComponenteCurricularId { get; set; }
 
     }
 }
