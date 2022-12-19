@@ -200,7 +200,7 @@ namespace SME.SGP.Aplicacao
         private bool FrequenciaAnualPorComponenteCritica(IEnumerable<FrequenciaAluno> frequenciasComponentes, double parametroFrequenciaBaseNacional, int anoLetivo)
         {
             if (anoLetivo != 2020)
-                return frequenciasComponentes.Any(f => f.PercentualFrequencia < parametroFrequenciaBaseNacional);
+                return frequenciasComponentes.Any(f => f.TotalAulas > 0 && f.PercentualFrequencia < parametroFrequenciaBaseNacional);
             else
                 return false;
         }
