@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.OpenApi.Extensions;
 using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
@@ -31,17 +32,18 @@ namespace SME.SGP.TesteIntegracao.Documento
 
             await CriarDadosBasicos(filtro);
 
-            await CriarDocumentos(Dominio.Enumerados.TipoDocumento.Documento);
+            await CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma);
 
             var arquivos = ObterTodos<Arquivo>();
             var documentos = ObterTodos<Dominio.Documento>();
+            var classificacao = ObterTodos<Dominio.ClassificacaoDocumento>();
 
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
             var retorno = await obterServicoListarDocumentosUse.Executar(UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma);
-
-            // var verificarExistenciaPlanoAee = ObterServicoVerificarExistenciaPlanoAEEPorEstudanteUseCase();
-            // var ex = await Assert.ThrowsAsync<NegocioException>(() => verificarExistenciaPlanoAee.Executar(aluno.Items.FirstOrDefault().Codigo));
-            // ex.Message.ShouldNotBeNullOrEmpty();
+            retorno.ShouldNotBeNull();
+            retorno.TotalRegistros.ShouldBeEquivalentTo(30);
+            retorno.Items.Any(a=> a.TipoDocumento.Equals(Dominio.Enumerados.TipoDocumento.Documento.GetDisplayName())).ShouldBeTrue();
+            retorno.Items.Any(a=> a.TipoDocumento.Equals(Dominio.Enumerados.TipoDocumento.PlanoTrabalho.GetDisplayName())).ShouldBeFalse();
         }
     }
 }
