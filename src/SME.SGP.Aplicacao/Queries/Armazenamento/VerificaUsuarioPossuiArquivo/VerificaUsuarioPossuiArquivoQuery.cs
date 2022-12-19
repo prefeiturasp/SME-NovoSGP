@@ -1,9 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,6 +13,7 @@ namespace SME.SGP.Aplicacao
             UeId = ueId;
             DocumentoId = documentoId;
         }
+
         public long DocumentoId { get; set; }
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
@@ -29,21 +26,20 @@ namespace SME.SGP.Aplicacao
         public VerificaUsuarioPossuiArquivoQueryValidator()
         {
             RuleFor(c => c.TipoDocumentoId)
-            .NotEmpty()
-            .WithMessage("O id do tipo de documento deve ser informado.");
+                .NotEmpty()
+                .WithMessage("O id do tipo de documento deve ser informado.");
 
             RuleFor(c => c.ClassificacaoId)
-            .NotEmpty()
-            .WithMessage("O id da classificacao de documento deve ser informada.");
+                .NotEmpty()
+                .WithMessage("O id da classificacao de documento deve ser informada.");
             
             RuleFor(c => c.UsuarioId)
-            .NotEmpty()
-            .WithMessage("O id do usuario deve ser informado.");
+                .NotEmpty()
+                .WithMessage("O id do usuario deve ser informado.");
 
             RuleFor(c => c.UeId)
-           .NotEmpty()
-           .WithMessage("O id do UE deve ser informado.");
-
+               .NotEmpty()
+               .WithMessage("O id do UE deve ser informado.");
         }
     }
 }

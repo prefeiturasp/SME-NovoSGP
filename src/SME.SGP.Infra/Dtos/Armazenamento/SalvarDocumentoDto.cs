@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -8,9 +6,9 @@ namespace SME.SGP.Infra
     {
         public SalvarDocumentoDto() { }
 
-        public SalvarDocumentoDto(Guid arquivoCodigo, long ueId, long tipoDocumentoId, long classificacaoId, long usuarioId)
+        public SalvarDocumentoDto(Guid[] arquivosCodigos, long ueId, long tipoDocumentoId, long classificacaoId, long usuarioId)
         {
-            ArquivoCodigo = arquivoCodigo;
+            ArquivosCodigos = arquivosCodigos;
             UeId = ueId;
             TipoDocumentoId = tipoDocumentoId;
             ClassificacaoId = classificacaoId;
@@ -22,6 +20,8 @@ namespace SME.SGP.Infra
         public long TipoDocumentoId { get; set; }
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
-        public Guid ArquivoCodigo { get; set; }
+        public Guid[] ArquivosCodigos { get; set; }
+        public long TurmaId { get; set; }
+        public long ComponenteCurricularId { get; set; }
     }
 }
