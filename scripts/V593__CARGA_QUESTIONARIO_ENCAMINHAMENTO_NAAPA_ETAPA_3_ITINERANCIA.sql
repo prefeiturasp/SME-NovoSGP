@@ -17,8 +17,8 @@ begin
 		values ('Questionário Encaminhamento NAAPA Etapa 1 Seção 3 - Itinerância', false, NOW(), 'SISTEMA', '0', 5)
 		RETURNING id INTO questionarioId;
 		
-	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf)
-		values(questionarioId, 'Itinerância', 1, 3, NOW(), 'SISTEMA', '0');	
+	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf, nome_componente)
+		values(questionarioId, 'Itinerância', 1, 3, NOW(), 'SISTEMA', '0', 'QUESTOES_ITINERACIA');	
 		
 	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
 		values(questionarioId, 0, 'Data do atendimento', '', true, 14, '', NOW(), 'SISTEMA', '0', 6, 'Data', 'DATA_DO_ATENDIMENTO');	
