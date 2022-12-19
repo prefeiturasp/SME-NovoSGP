@@ -16,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
             
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecaoEncaminhamentoDtoPorEtapa(List<int> etapas, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> ObterSecoesQuestionarioDto(long? encaminhamentoNAAPAId)
         {
             var query = @"SELECT sea.id
 	                            , sea.nome
@@ -28,20 +28,19 @@ namespace SME.SGP.Dados.Repositorios
                          FROM secao_encaminhamento_naapa sea
                         left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId and eas.secao_encaminhamento_id = sea.id
                          WHERE not sea.excluido 
-                           AND sea.etapa = ANY(@etapas)
                          ORDER BY sea.etapa, sea.ordem ";
 
-            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { etapas, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
+            return await database.Conexao.QueryAsync<SecaoQuestionarioDto>(query, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0 });
         }
 
-        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorEtapaModalidade(List<int> etapas, int modalidade, long? encaminhamentoNAAPAId)
+        public async Task<IEnumerable<SecaoEncaminhamentoNAAPA>> ObterSecoesEncaminhamentoPorModalidade(int modalidade, long? encaminhamentoNAAPAId)
         {
             var query = new StringBuilder(@"SELECT sea.*, eas.*
                                             FROM secao_encaminhamento_naapa sea 
                                                 left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
                                                 left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
-                                            WHERE not sea.excluido AND sea.etapa = ANY(@etapas) 
+                                            WHERE not sea.excluido 
                                                   AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
                                             ORDER BY sea.etapa, sea.ordem; ");
 
@@ -51,10 +50,10 @@ namespace SME.SGP.Dados.Repositorios
                     {
                         secaoEncaminhamento.EncaminhamentoNAAPASecao = encaminhamentoSecao;
                         return secaoEncaminhamento;
-                    }, new { etapas, encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade });
+                    }, new { encaminhamentoNAAPAId = encaminhamentoNAAPAId ?? 0, modalidade });
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaEncaminhamentoDto(long encaminhamentoNAAPAId)
+        public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> ObterSecoesItineranciaDto(long encaminhamentoNAAPAId)
         {
             var query = new StringBuilder(@"with vw_resposta_data as (
                                             select ens.id encaminhamento_naapa_secao_id, 

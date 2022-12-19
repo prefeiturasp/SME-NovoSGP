@@ -9,21 +9,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase : IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase
+    public class ObterSecoesEncaminhamentosSecaoNAAPAUseCase : IObterSecoesEncaminhamentosSecaoNAAPAUseCase
     {
         private readonly IMediator mediator;
 
-        public ObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase(IMediator mediator)
+        public ObterSecoesEncaminhamentosSecaoNAAPAUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesPorEtapaDeEncaminhamento filtro)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> Executar(FiltroSecoesDeEncaminhamento filtro)
         {
-            var listaEtapas = new List<int> { (int)EtapaEncaminhamentoNAAPA.PrimeiraEtapa };
-
-            var secoesQuestionario = (await mediator.Send(new ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery(listaEtapas,
-                filtro.EncaminhamentoNAAPAId, filtro.Modalidade))).ToList();
+            var secoesQuestionario = (await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(filtro.Modalidade, filtro.EncaminhamentoNAAPAId))).ToList();
 
             if (filtro.EncaminhamentoNAAPAId != 0) 
                 return secoesQuestionario;

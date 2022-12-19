@@ -19,7 +19,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> Handle(ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesItineranciaEncaminhamentoDto(request.EncaminhamentoNAAPAId);
+            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesItineranciaDto(request.EncaminhamentoNAAPAId);
             return secoes;
         }
 

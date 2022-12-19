@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepcional
 {
-    public class ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery, IEnumerable<SecaoQuestionarioDto>>
+    public class ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler : IRequestHandler<ObterSecoesEncaminhamentosSecaoNAAPAQuery, IEnumerable<SecaoQuestionarioDto>>
     {
         private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
 
-        public ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
+        public ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
         {
             this.repositorioSecaoEncaminhamentoNAPPA = repositorioSecaoEncaminhamentoNAPPA ?? throw new System.ArgumentNullException(nameof(repositorioSecaoEncaminhamentoNAPPA));
         }
 
-        public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesPorEtapaDeEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesEncaminhamentosSecaoNAAPAQuery request, CancellationToken cancellationToken)
         {
-            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorEtapaModalidade(request.Etapas,
-                request.Modalidade,request.EncaminhamentoNAAPAId);
+            var secoes = await repositorioSecaoEncaminhamentoNAPPA.ObterSecoesEncaminhamentoPorModalidade(request.Modalidade,request.EncaminhamentoNAAPAId);
 
             return MapearParaDto(secoes);
         }
