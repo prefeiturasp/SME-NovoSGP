@@ -10,6 +10,7 @@ using SME.SGP.Aula.Worker;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
@@ -43,11 +44,13 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var scope = new WorkerServiceScopeFactoryFake(ServiceProvider);
             var telemetria = ServiceProvider.GetService<IServicoTelemetria>();
+            var mensageria = ServiceProvider.GetService<IServicoMensageriaSGP>();
             var connection = new ConnectionFactoryFake();
 
             var worker = new WorkerRabbitAula(
                 scope,
                 telemetria,
+                mensageria,
                 Options.Create(new TelemetriaOptions()),
                 Options.Create(new ConsumoFilasOptions()),
                 connection);

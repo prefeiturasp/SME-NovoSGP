@@ -39,13 +39,13 @@ namespace SME.SGP.Aplicacao
                 var cacheAluno = retornoCacheMapeado.FirstOrDefault(c =>
                     c.AlunoCodigo == fechamentoNotaConceito.CodigoAluno &&
                     c.ComponenteCurricularId == fechamentoNotaConceito.DiscplinaId &&
-                    c.Bimestre == request.Bimestre);
+                    (c.Bimestre == request.Bimestre || !c.Bimestre.HasValue));
 
                 if (cacheAluno == null)
                 {
                     retornoCacheMapeado.Add(new FechamentoNotaAlunoAprovacaoDto
                     {
-                        Bimestre = request.Bimestre,
+                        Bimestre = request.Bimestre == 0 ? null : request.Bimestre,
                         Nota = fechamentoNotaConceito.Nota,
                         AlunoCodigo = fechamentoNotaConceito.CodigoAluno,
                         ConceitoId = fechamentoNotaConceito.ConceitoId,
