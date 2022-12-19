@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
         public long ClassificacaoId { get; set; }
         public long UsuarioId { get; set; }
         public Guid[] ArquivosCodigos { get; set; }
-        public long TurmaId { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public long? TurmaId { get; set; }
+        public long? ComponenteCurricularId { get; set; }
     }
 }
