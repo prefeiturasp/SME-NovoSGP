@@ -131,7 +131,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(encaminhamentoId));
         }
 
-        [HttpGet("questionarioItineratio")]
+        [HttpGet("questionarioItinerario")]
         [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
