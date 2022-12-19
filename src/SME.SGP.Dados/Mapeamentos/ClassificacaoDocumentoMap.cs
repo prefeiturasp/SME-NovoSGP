@@ -11,7 +11,6 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.Id).ToColumn("id");
             Map(c => c.TipoDocumentoId).ToColumn("tipo_documento_id");
             Map(c => c.Descricao).ToColumn("descricao");
-            Map(c => c.Descricao).ToColumn("descricao");
             Map(c => c.EhRegistroMultiplo).ToColumn("ehregistromultiplo");
         }
     }
