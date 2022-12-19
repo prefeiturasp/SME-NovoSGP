@@ -57,13 +57,9 @@ namespace SME.SGP.Aplicacao
         private static void CalcularQuantidadeEstimadaDeDevolutivas(ConsolidacaoDevolutivaTurmaDTO consolidacaoDevolutivaTurma, string periodoDeDiasDevolutivas, int quantidadeDiarioBordoRegistrado)
         {
             if (quantidadeDiarioBordoRegistrado >= int.Parse(periodoDeDiasDevolutivas))
-            {
                 consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas = (quantidadeDiarioBordoRegistrado / int.Parse(periodoDeDiasDevolutivas));
-            }
             else
-            {
                 consolidacaoDevolutivaTurma.QuantidadeEstimadaDevolutivas = 0;
-            }
         }
 
         private async Task RegistraConsolidacaoDevolutivasTurma(long turmaId, int quantidadeEstimadaDevolutivas, int quantidadeRegistradaDevolutivas)

@@ -103,7 +103,7 @@ namespace SME.SGP.Aplicacao
             else if (aulasComponentesTurmas.Any())
                 return "100";
 
-            return "0";
+            return "";
         }
 
         private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)
@@ -131,6 +131,6 @@ namespace SME.SGP.Aplicacao
             }
 
             return frequenciaGeralObtida;
-        }
+        }        
     }
 }

@@ -46,7 +46,7 @@ namespace SME.SGP.Notificacoes.Hub
             var context = Context.GetHttpContext();
             var usuarioRf = context.User.Claims.FirstOrDefault(x => x.Type.Equals(ClaimTypes.Name))?.Value;
             if (!string.IsNullOrEmpty(usuarioRf))
-                await repositorioUsuario.Excluir(usuarioRf);
+                await repositorioUsuario.Excluir(usuarioRf, Context.ConnectionId);
 
             await base.OnDisconnectedAsync(exception);
         }
