@@ -635,38 +635,50 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-                bool ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
+                var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
 
-                if (dadosUsuarioLogado.EhProfessorCj())
-                {
-                    if (ehGestorEscolar)
-                    {
-                        var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId, new List<int>() { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
-                        bool ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
-                       
-                        if(ehFuncionarioGestorEscolarDaUe)
-                             return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
-                    }     
-                    else
-                    {
-                        var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
-
-                        if (obterAtribuicoesCJAtivas.Any())
-                        {
-                            bool possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
-
-                            if (possuiAtribuicaoNaUE)
-                                return new ProfessorResumoDto() { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
-                        }
-                    }                       
-                }
+                if (!dadosUsuarioLogado.EhProfessorCj())
+                    throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
                 
+                if (ehGestorEscolar)
+                {
+                    var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId,
+                        new List<int> { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                    
+                    var ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
+
+                    if (ehFuncionarioGestorEscolarDaUe)
+                    {
+                        return new ProfessorResumoDto
+                            { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                }     
+                else
+                {
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+
+                    if (!obterAtribuicoesCJAtivas.Any())
+                        throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+                    
+                    var possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                    if (possuiAtribuicaoNaUE)
+                    {
+                        return new ProfessorResumoDto
+                            { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                }
+
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
             }
 
             var json = await resposta.Content.ReadAsStringAsync();
+            var retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
 
-            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
+            retorno.UsuarioId = usuario.Id;
+
+            return retorno;
         }
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
