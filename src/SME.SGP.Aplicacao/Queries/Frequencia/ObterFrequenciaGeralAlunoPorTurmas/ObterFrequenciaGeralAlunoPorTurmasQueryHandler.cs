@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,16 +27,26 @@ namespace SME.SGP.Aplicacao
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
             var disciplinasAluno = new string[] { };
 
-            frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
-            var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
+            frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo
+                .ObterFrequenciaGeralAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId));
 
-            var aulasComponentesTurmas = await mediator.Send(new ObterAulasTurmaEBimestreEComponenteCurricularQuery(request.CodigosTurmas,
-                                                                                                                    new string[] { request.CodigoAluno },
-                                                                                                                    request.TipoCalendarioId,
-                                                                                                                    new string[] { },
-                                                                                                                    bimestres.ToArray(),
-                                                                                                                    request.DataMatriculaTurmaFiltro,
-                                                                                                                    request.DataSituacaoAluno));
+            var bimestres = await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
+            var turmas = await mediator.Send(new ObterTurmasPorCodigosQuery(request.CodigosTurmas));
+            var periodoEscolarAtual = await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turmas.FirstOrDefault(), DateTime.Now));
+            var aulasComponentesTurmas = new List<TurmaDataAulaComponenteQtdeAulasDto>();
+
+            foreach (var matricula in request.MatriculasAlunoNaTurma.OrderBy(m => m.dataMatricula))
+            {
+                aulasComponentesTurmas.AddRange(await mediator
+                    .Send(new ObterAulasTurmaEBimestreEComponenteCurricularQuery(request.CodigosTurmas,
+                                                                                 new string[] { request.CodigoAluno },
+                                                                                 request.TipoCalendarioId,
+                                                                                 new string[] { },
+                                                                                 bimestres.ToArray(),
+                                                                                 matricula.dataMatricula,
+                                                                                 !matricula.inativo && periodoEscolarAtual != null && periodoEscolarAtual.Bimestre == bimestres.Last() ? periodoEscolarAtual.PeriodoFim : matricula.dataSituacao)));
+            }
+
             int quantidadeTotalAulas = aulasComponentesTurmas.Sum(a => a.AulasQuantidade);
 
             foreach (var aulaComponenteTurma in aulasComponentesTurmas)
@@ -66,20 +77,29 @@ namespace SME.SGP.Aplicacao
             if (aulasComponentesTurmas.Any())
                 disciplinasAluno = aulasComponentesTurmas.Select(a => a.ComponenteCurricularCodigo).Distinct().ToArray();
 
-            var frequenciaAlunoObtidoIndividual = await ObterTotalSomadoIndividualmente(request.CodigosTurmas, request.TipoCalendarioId, request.CodigoAluno, frequenciaAluno, disciplinasAluno, request.DataMatriculaTurmaFiltro);
+            var frequenciaAlunoObtidoIndividual = new List<FrequenciaAluno>();
+            foreach (var matricula in request.MatriculasAlunoNaTurma)
+            {
+                frequenciaAlunoObtidoIndividual
+                    .Add(await ObterTotalSomadoIndividualmente(request.CodigosTurmas, request.TipoCalendarioId, request.CodigoAluno, frequenciaAluno, disciplinasAluno, matricula.dataMatricula));
+            }
 
-            if (frequenciaAluno.TotalAulas >= frequenciaAlunoObtidoIndividual.TotalAulas)
-                frequenciaAluno = frequenciaAlunoObtidoIndividual;
+            if (frequenciaAluno.TotalAulas >= frequenciaAlunoObtidoIndividual.Sum(f => f.TotalAulas))
+            {
+                frequenciaAluno = new FrequenciaAluno()
+                {
+                    TotalAulas = frequenciaAlunoObtidoIndividual.Sum(f => f.TotalAulas),
+                    TotalAusencias = frequenciaAlunoObtidoIndividual.Sum(f => f.TotalAusencias),
+                    TotalCompensacoes = frequenciaAlunoObtidoIndividual.Sum(f => f.TotalCompensacoes)
+                };
+            }                
 
             if (frequenciaAluno == null && aulasComponentesTurmas == null || aulasComponentesTurmas.Count() == 0)
                 return "0";
-
             else if (frequenciaAluno?.PercentualFrequencia > 0)
                 return frequenciaAluno.PercentualFrequencia.ToString();
-
             else if (frequenciaAluno?.PercentualFrequencia == 0 && frequenciaAluno?.TotalAulas == frequenciaAluno?.TotalAusencias && frequenciaAluno?.TotalCompensacoes == 0)
                 return "0";
-
             else if (aulasComponentesTurmas.Any())
                 return "100";
 
@@ -94,7 +114,8 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolaresTipoCalendario.Any())
                 periodos = periodosEscolaresTipoCalendario.Select(p => p.Id).ToArray();
 
-            var frequenciasDoAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterPorAlunoTurmasDisciplinasDataAsync(codigoAluno, TipoFrequenciaAluno.PorDisciplina, disciplinasAluno, turmasCodigo, new int[] { }, !periodos.Any() ? null : periodos);
+            var frequenciasDoAluno = await repositorioFrequenciaAlunoDisciplinaPeriodo
+                .ObterPorAlunoTurmasDisciplinasDataAsync(codigoAluno, TipoFrequenciaAluno.PorDisciplina, disciplinasAluno, turmasCodigo, new int[] { }, !periodos.Any() ? null : periodos);
 
             if (dataMatriculaTurmaFiltro.HasValue)
                 frequenciasDoAluno = frequenciasDoAluno.Where(f => f.PeriodoFim > dataMatriculaTurmaFiltro);

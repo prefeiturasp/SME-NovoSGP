@@ -4,6 +4,7 @@ using RabbitMQ.Client;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.AEE.Worker
@@ -11,10 +12,11 @@ namespace SME.SGP.AEE.Worker
     public class WorkerRabbitAEE : WorkerRabbitMQBase
     {
         public WorkerRabbitAEE(IServiceScopeFactory serviceScopeFactory,
-            IServicoTelemetria servicoTelemetria, 
+            IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
             IOptions<TelemetriaOptions> telemetriaOptions, 
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
-            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
                 telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitAEE",
                 typeof(RotasRabbitSgpAEE))
         {

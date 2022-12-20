@@ -103,6 +103,8 @@ namespace SME.SGP.Aplicacao
 
                 var bimestreDoPeriodo = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, periodoAtual.PeriodoFim));
 
+                alunos = alunos.Where(a => a.VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(bimestreDoPeriodo.PeriodoFim));
+
                 alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                                                       .OrderBy(a => a.NomeAluno)
                                                       .ThenBy(a => a.NomeValido());
@@ -162,7 +164,7 @@ namespace SME.SGP.Aplicacao
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceitoNoPeriodo(periodoAtual, usuarioEPeriodoPodeEditar) : false;
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(periodoAtual) : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -330,7 +332,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplinaParaAdicionar in disciplinas)
                 {
                     var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == disciplinaParaAdicionar.CodigoComponenteCurricular
-                                                                    && a.AlunoCodigo == aluno.CodigoAluno);
+                                                                    && a.AlunoCodigo == aluno.CodigoAluno && !a.Bimestre.HasValue);
 
                     var notaConceitoTurma = new FechamentoConsultaNotaConceitoTurmaListaoDto()
                     {
@@ -409,6 +411,11 @@ namespace SME.SGP.Aplicacao
                 if (fechamentoBimestreTurma.Any())
                     fechamentosTurmaDisciplina.AddRange(fechamentoBimestreTurma);
             }
+
+            //Busca fechamento final
+            var fechamentoFinal = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, 0));
+            if (fechamentoFinal.Any())
+                fechamentosTurmaDisciplina.AddRange(fechamentoFinal);
 
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
 

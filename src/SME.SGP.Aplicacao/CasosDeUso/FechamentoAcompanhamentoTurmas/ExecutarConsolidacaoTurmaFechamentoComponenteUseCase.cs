@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
                     TurmaId = filtro.TurmaId,
                     ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
-                    ProfessorRf = professorComponente?.ProfessorRf
+                    ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty,                    
                 };
             }
 

@@ -147,6 +147,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception)
             {
+                throw;
             }
         }
 
@@ -175,6 +176,7 @@ namespace SME.SGP.Dados.Repositorios
             }
             catch (Exception)
             {
+                throw;
             }
         }
 
