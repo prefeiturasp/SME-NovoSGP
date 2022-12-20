@@ -15,6 +15,7 @@ namespace SME.SGP.Aplicacao
     public class RegistrarEncaminhamentoNAAPAUseCase : IRegistrarEncaminhamentoNAAPAUseCase
     {
         private const string SECAO_QUESTOES_APRESENTADAS = "QUESTOES_APRESENTADAS_INFANTIL";
+        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
         private const string QUESTAO_OBSERVACOES_AGRUPAMENTO_PROMOCAO_CUIDADOS = "OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS";
         private const string QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         private const string QUESTAO_TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS = "TIPO_ADOECE_COM_FREQUENCIA_SEM_CUIDADOS_MEDICOS";
@@ -38,7 +39,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
             ICollection<dynamic> questoesObrigatoriasAConsistir = new List<dynamic>();
-            await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, questoesObrigatoriasAConsistir);
+            await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, (int)turma.ModalidadeCodigo, questoesObrigatoriasAConsistir);
             
             if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
             {
@@ -294,9 +295,9 @@ namespace SME.SGP.Aplicacao
             return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
         }
 
-        private async Task ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, ICollection<dynamic> questoesObrigatoriasAConsistir)
+        private async Task ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade, ICollection<dynamic> questoesObrigatoriasAConsistir)
         {
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery());
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade, new string[] { SECAO_ITINERANCIA }));
 
             var respostasPersistidas = encaminhamentoNAAPADto.Id.HasValue
                 ? (await mediator.Send(

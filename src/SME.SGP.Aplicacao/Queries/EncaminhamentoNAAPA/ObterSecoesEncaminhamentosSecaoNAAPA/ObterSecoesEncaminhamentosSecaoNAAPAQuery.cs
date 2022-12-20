@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries
         {
             RuleFor(c => c.Modalidade)
                 .NotEmpty()
-                .WithMessage("A modalidade deve ser informada para obter as seções por etapa do encaminhamento NAAPA.");
+                .WithMessage("A modalidade deve ser informada para obter as seções/encaminhamentos seção do encaminhamento NAAPA.");
         }
     }
 
