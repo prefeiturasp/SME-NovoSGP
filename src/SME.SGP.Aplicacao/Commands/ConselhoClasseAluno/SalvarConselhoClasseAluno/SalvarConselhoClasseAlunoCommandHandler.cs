@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using Npgsql;
+using SME.SGP.Dominio.Enumerados;
 
 namespace SME.SGP.Aplicacao
 {
@@ -42,11 +44,31 @@ namespace SME.SGP.Aplicacao
             else
                 await repositorioConselhoClasse.SalvarAsync(request.ConselhoClasseAluno.ConselhoClasse);
 
-            var conselhoClasseAlunoId = await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
+            long conselhoClasseAlunoId;
+            try
+            {
+                conselhoClasseAlunoId = await repositorioConselhoClasseAluno.SalvarAsync(request.ConselhoClasseAluno);
+            }
+            catch (PostgresException ex)
+            {
+                await LogarExcecao(ex);
+                throw new Exception("Erro ao salvar o conselho de classe do aluno.");
+            }
 
             await mediator.Send(new InserirTurmasComplementaresCommand(fechamentoTurma.TurmaId, conselhoClasseAlunoId, request.ConselhoClasseAluno.AlunoCodigo), cancellationToken);
 
             return conselhoClasseAlunoId;
+        }
+
+        private Task LogarExcecao(PostgresException ex)
+        {
+            var mensagem = $"ConselhoClasseAluno: Coluna[{ex.ColumnName}] Restrição[{ex.ConstraintName}] Erro:{ex.Message}";
+            return mediator.Send(new SalvarLogViaRabbitCommand(mensagem,
+                                                               LogNivel.Critico,
+                                                               LogContexto.Fechamento,
+                                                               ex.Detail,
+                                                               rastreamento: ex.StackTrace,
+                                                               excecaoInterna: ex.InnerException?.Message));
         }
 
         public async Task<AuditoriaDto> GerarConselhoClasse(ConselhoClasse conselhoClasse, FechamentoTurma fechamentoTurma)

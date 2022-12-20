@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Npgsql;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -65,10 +67,17 @@ namespace SME.SGP.Aplicacao
 
                 auditoria = (AuditoriaDto)conselhoClasseNota;
             }
-            catch(Exception e)
+            catch(PostgresException ex)
             {
                 unitOfWork.Rollback();
-                throw e;
+
+                await LogarExcecao(ex);
+                throw new Exception("Erro ao inserir o conselho de classe");
+            }
+            catch (Exception e)
+            {
+                unitOfWork.Rollback();
+                throw;
             }
 
             //Tratar após o fechamento da transação
@@ -97,6 +106,16 @@ namespace SME.SGP.Aplicacao
             };
             return conselhoClasseNotaRetorno;
         }
-        
+
+        private Task LogarExcecao(PostgresException ex)
+        {
+            var mensagem = $"ConselhoClasseAluno: Coluna[{ex.ColumnName}] Restrição[{ex.ConstraintName}] Erro:{ex.Message}";
+            return mediator.Send(new SalvarLogViaRabbitCommand(mensagem,
+                                                               LogNivel.Critico,
+                                                               LogContexto.Fechamento,
+                                                               ex.Detail,
+                                                               rastreamento: ex.StackTrace,
+                                                               excecaoInterna: ex.InnerException?.Message));
+        }
     }
 }
