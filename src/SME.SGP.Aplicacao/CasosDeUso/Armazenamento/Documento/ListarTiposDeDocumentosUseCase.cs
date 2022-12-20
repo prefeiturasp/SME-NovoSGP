@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
             var tipoPerfil = usuario.ObterTipoPerfilAtual();
 
-            if (usuario.EhGestorEscolar() ||)
+            if (tipoPerfil == Dominio.TipoPerfil.UE)
             {
                 var tiposDocumentos =  await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(
                     usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray()
