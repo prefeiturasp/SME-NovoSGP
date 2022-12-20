@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,7 +25,19 @@ namespace SME.SGP.Aplicacao
                     cancellationToken)).ToList();
 
             if (arquivos == null || !arquivos.Any())
-                throw new NegocioException("Não foram encontrados arquivos com estes códigos.");
+                throw new NegocioException(MensagemNegocioDocumento.NAO_FORAM_ENCONTRADOS_ARQUIVOS_COM_ESTES_CODIGOS);
+
+            var classificacaoDocumento =
+                await mediator.Send(
+                    new ObterClassificacaoDocumentoPorIdQuery(request.SalvarDocumentoDto.ClassificacaoId),
+                    cancellationToken);
+
+            if (!classificacaoDocumento.EhRegistroMultiplo && arquivos.Count > 1)
+            {
+                throw new NegocioException(string.Format(
+                    MensagemNegocioDocumento.NAO_EH_PERMITIDO_MULTIPLOS_ARQUIVOS_CLASSIFICACAO_DOCUMENTO,
+                    classificacaoDocumento.Descricao));
+            }
 
             var existeArquivo = await mediator.Send(
                 new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId,
@@ -32,7 +45,7 @@ namespace SME.SGP.Aplicacao
                     request.SalvarDocumentoDto.UeId), cancellationToken);
             
             if (existeArquivo)
-                throw new NegocioException("Este usuário já possui um arquivo.");
+                throw new NegocioException(MensagemNegocioDocumento.ESTE_USUARIO_JA_POSSUI_ARQUIVO);
 
             if (request.SalvarDocumentoDto.TipoDocumentoId == 1)
             {
@@ -44,7 +57,7 @@ namespace SME.SGP.Aplicacao
                     .FirstOrDefault(c => c.Id == request.SalvarDocumentoDto.ClassificacaoId);
 
                 if (!usuario.Perfis.Any(u => classificacao != null && u.NomePerfil == classificacao.Classificacao))
-                    throw new NegocioException("O usuário vinculado a este documento não possui o perfil que corresponde ao tipo de plano selecionado.");
+                    throw new NegocioException(MensagemNegocioDocumento.USUARIO_VINCULADO_DOCUMENTO_NAO_POSSUIR_PERFIL_CORRESPONDE_TIPO_PLANO_SELECIONADO);
             }
 
             if (await mediator.Send(
@@ -53,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 && await mediator.Send(new ValidarUeEducacaoInfantilQuery(request.SalvarDocumentoDto.UeId),
                     cancellationToken))
             {
-                throw new NegocioException("Escolas de educação infantíl não podem fazer upload de Plano de Trabalho!");
+                throw new NegocioException(MensagemNegocioDocumento.ESCOLAR_EDUCACAO_INFANTIL_NAO_PODEM_FAZER_UPLOAD_PLANO_TRABALHO);
             }
 
             foreach (var documento in arquivos.Select(arquivo => new Documento
