@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao.Queries
         public int Modalidade { get; }
     }
 
-    public class ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryValidator : AbstractValidator<ObterSecoesEncaminhamentosSecaoNAAPAQuery>
+    public class ObterSecoesEncaminhamentosSecaoNAAPAQueryValidator : AbstractValidator<ObterSecoesEncaminhamentosSecaoNAAPAQuery>
     {
-        public ObterSecoesPorEtapaDeEncaminhamentoNAAPAQueryValidator()
+        public ObterSecoesEncaminhamentosSecaoNAAPAQueryValidator()
         {
             RuleFor(c => c.Modalidade)
                 .NotEmpty()
