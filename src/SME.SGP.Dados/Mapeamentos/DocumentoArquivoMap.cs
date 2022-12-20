@@ -8,7 +8,7 @@ namespace SME.SGP.Dados.Mapeamentos
         public DocumentoArquivoMap()
         {
             ToTable("documento_arquivo");
-            Map(c => c.Id).ToColumn("id");
+            Map(c => c.Id).ToColumn("id").IsKey();
             Map(c => c.DocumentoId).ToColumn("documento_arquivo_id");
             Map(c => c.ArquivoId).ToColumn("arquivo_id");
         }
