@@ -73,8 +73,7 @@ namespace SME.SGP.Aplicacao
                      {
                          ClassificacaoDocumentoId = request.SalvarDocumentoDto.ClassificacaoId,
                          UsuarioId = request.SalvarDocumentoDto.UsuarioId,
-                         UeId = request.SalvarDocumentoDto.UeId,
-                         ArquivoId = arquivo.Id,
+                         UeId = request.SalvarDocumentoDto.UeId,                         
                          AnoLetivo = request.SalvarDocumentoDto.AnoLetivo,
                          TurmaId = request.SalvarDocumentoDto.TurmaId,
                          ComponenteCurricularId = request.SalvarDocumentoDto.ComponenteCurricularId

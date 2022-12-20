@@ -85,7 +85,6 @@ namespace SME.SGP.TesteIntegracao.Documento
                     await InserirNaBase(new Dominio.Documento()
                     {
                         UsuarioId = USUARIO_ID_1,
-                        ArquivoId = arquivo,
                         UeId = UE_ID_1,
                         AnoLetivo = DateTime.Now.Year,
                         ClassificacaoDocumentoId = (long)classificacaoDocumento,

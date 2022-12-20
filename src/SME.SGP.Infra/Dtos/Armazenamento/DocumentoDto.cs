@@ -25,19 +25,5 @@ namespace SME.SGP.Infra
         public string TipoDocumento { get; set; }
         public string Classificacao { get; set; }
         public Guid CodigoArquivo { get; set; }
-        public string TurmaNome { get; set; }
-        public int AnoLetivo { get; set; }
-        public int Modalidade { get; set; }
-        public string ComponenteCurricularNome { get; set; }
-
-        public string TurmaComponenteCurricular{ get; set; }
-
-        public string ObterTurmaComponenteCurricular()
-        {
-            if (!string.IsNullOrEmpty(TurmaNome) && !string.IsNullOrEmpty(ComponenteCurricularNome))
-                return $"{((Modalidade)Modalidade).ShortName()} - {TurmaNome} - {ComponenteCurricularNome}";
-                
-            return string.Empty;
-        }
     }
 }
