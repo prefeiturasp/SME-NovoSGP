@@ -139,5 +139,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
         }
+
+        [HttpDelete("secao-itinerancia/{secaoItineranciaId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirSecaoItinerancia(long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(secaoItineranciaId));
+        }
     }
 }
