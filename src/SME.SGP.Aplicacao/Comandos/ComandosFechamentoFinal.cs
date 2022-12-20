@@ -47,8 +47,6 @@ namespace SME.SGP.Aplicacao
             var auditoria = await servicoFechamentoFinal.SalvarAsync(fechamentoTurmaDisciplina, turma, usuarioLogado,
                 fechamentoFinalSalvarDto.Itens, emAprovacao);
 
-            await InserirOuAtualizarCache(fechamentoFinalSalvarDto, emAprovacao);
-
             if (!auditoria.EmAprovacao)
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
@@ -59,24 +57,6 @@ namespace SME.SGP.Aplicacao
             return auditoria;
         }
 
-        private async Task InserirOuAtualizarCache(FechamentoFinalSalvarDto fechamentoFinalSalvar, bool emAprovacao)
-        {
-            var componenteCurricularId = fechamentoFinalSalvar.EhRegencia ? long.Parse(fechamentoFinalSalvar.DisciplinaId) :
-                fechamentoFinalSalvar.Itens.First().ComponenteCurricularCodigo;
-
-            var fechamentosNotasConceitos = fechamentoFinalSalvar.Itens.Select(fechamentoFinal => new FechamentoNotaConceitoDto
-            {
-                CodigoAluno = fechamentoFinal.AlunoRf, 
-                Nota = fechamentoFinal.Nota, 
-                ConceitoId = fechamentoFinal.ConceitoId,
-                DiscplinaId = fechamentoFinal.ComponenteCurricularCodigo
-            }).ToList();
-            
-            await mediator.Send(new InserirOuAtualizarCacheFechamentoNotaConceitoCommand(componenteCurricularId,
-                fechamentoFinalSalvar.TurmaCodigo,
-                fechamentosNotasConceitos, emAprovacao, null));
-        }
-        
         private Task<Usuario> ObterUsuarioLogado()
             => mediator.Send(new ObterUsuarioLogadoQuery());
 

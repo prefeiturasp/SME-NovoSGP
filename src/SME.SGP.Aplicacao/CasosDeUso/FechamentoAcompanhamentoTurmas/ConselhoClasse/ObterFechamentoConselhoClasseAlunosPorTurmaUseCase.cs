@@ -42,15 +42,15 @@ namespace SME.SGP.Aplicacao
                     alunosEol = alunosEol.Where(a => !a.Inativo || a.Inativo && a.DataSituacao >= periodoFechamento.InicioDoFechamento);
             }
 
-            return await MontarRetorno(alunosEol.DistinctBy(a => a.CodigoAluno), consolidadoConselhosClasses, turma.CodigoTurma, turma.Id, periodoEscolar.Bimestre, param.SituacaoConselhoClasse);
+            return await MontarRetorno(alunosEol.DistinctBy(a => a.CodigoAluno), consolidadoConselhosClasses, turma.CodigoTurma, turma.Id, periodoEscolar, param.SituacaoConselhoClasse);
         }
 
-        private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<AlunoPorTurmaResposta> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma, long turmaId, int bimestre, int situacaoConselhoClasse)
+        private async Task<IEnumerable<ConselhoClasseAlunoDto>> MontarRetorno(IEnumerable<AlunoPorTurmaResposta> alunos, IEnumerable<ConselhoClasseConsolidadoTurmaAluno> consolidadoConselhosClasses, string codigoTurma, long turmaId, PeriodoEscolar periodoEscolar, int situacaoConselhoClasse)
         {
             List<ConselhoClasseAlunoDto> lista = new List<ConselhoClasseAlunoDto>();
-            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosQuery());
+            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosQuery(periodoEscolar.PeriodoFim));
 
-            var dadosStatusAlunoConselhoConsolidado = await mediator.Send(new ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestreQuery(turmaId, bimestre));
+            var dadosStatusAlunoConselhoConsolidado = await mediator.Send(new ObterAlunoEStatusConselhoClasseConsolidadoPorTurmaEBimestreQuery(turmaId, periodoEscolar.Bimestre));
 
             foreach (var aluno in alunos)
             {

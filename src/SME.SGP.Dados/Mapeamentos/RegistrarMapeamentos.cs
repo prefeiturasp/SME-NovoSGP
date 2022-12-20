@@ -134,6 +134,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoNotaFechamentoMap());
                config.AddMap(new HistoricoNotaConselhoClasseMap());
                config.AddMap(new ClassificacaoDocumentoMap());
+               config.AddMap(new DocumentoArquivoMap());
                config.AddMap(new TipoDocumentoMap());
                config.AddMap(new DocumentoMap());
                config.AddMap(new PendenciaUsuarioMap());

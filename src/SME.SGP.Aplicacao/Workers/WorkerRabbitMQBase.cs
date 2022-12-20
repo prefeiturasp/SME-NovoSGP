@@ -11,6 +11,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Excecoes;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao.Workers
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
         private readonly TelemetriaOptions telemetriaOptions;
         private readonly IMediator mediator;
         private readonly string apmTransactionType;
@@ -36,6 +38,7 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
@@ -44,6 +47,7 @@ namespace SME.SGP.Aplicacao.Workers
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
 
             if (consumoFilasOptions == null)
@@ -193,14 +197,13 @@ namespace SME.SGP.Aplicacao.Workers
                 {
                     transacao?.CaptureException(ex);
  
-                    var retryCount = GetRetryCount(ea.BasicProperties);
-                    if (retryCount >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
+                    var rejeicoes = GetRetryCount(ea.BasicProperties);
+                    if (++rejeicoes >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
                     {
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
 
-                        var queueLimbo = $"{ea.RoutingKey}.limbo";
-                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbo, null, ea.Body.ToArray());
-
+                        var filaLimbo = $"{ea.RoutingKey}.limbo";
+                        await servicoMensageria.Publicar(mensagemRabbit, filaLimbo, ExchangeSgpRabbit.SgpDeadLetter, "PublicarDeadLetter");
                     }
                     else canalRabbit.BasicReject(ea.DeliveryTag, false);
 
@@ -279,7 +282,7 @@ namespace SME.SGP.Aplicacao.Workers
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };

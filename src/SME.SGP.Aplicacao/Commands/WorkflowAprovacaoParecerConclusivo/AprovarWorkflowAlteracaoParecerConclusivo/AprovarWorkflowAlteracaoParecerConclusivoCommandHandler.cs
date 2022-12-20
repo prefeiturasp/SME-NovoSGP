@@ -60,8 +60,7 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = parecerEmAprovacao.AnoLetivo
             };
             await mediator.Send(new PersistirParecerConclusivoCommand(persistirParecerConclusivoDto));
-                        
-            await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.WorkFlowAprovacaoId));
+            await mediator.Send(new ExcluirWfAprovacaoParecerConclusivoCommand(parecerEmAprovacao.Id));
         }
 
     }

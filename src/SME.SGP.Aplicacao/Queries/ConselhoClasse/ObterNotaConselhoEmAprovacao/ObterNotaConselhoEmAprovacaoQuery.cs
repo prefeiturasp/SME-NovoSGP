@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaConselhoEmAprovacaoQuery : IRequest<double>
+    public class ObterNotaConselhoEmAprovacaoQuery : IRequest<double?>
     {
         public ObterNotaConselhoEmAprovacaoQuery(long conselhoClasseNotaId)
         {

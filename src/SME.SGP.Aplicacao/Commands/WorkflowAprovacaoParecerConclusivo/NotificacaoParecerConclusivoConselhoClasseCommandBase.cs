@@ -40,19 +40,19 @@ namespace SME.SGP.Aplicacao
 
         protected virtual string ObterTitulo(Turma turma)
         {
-            return $@"Alteração de parecer conclusivo - {turma.Ue.Nome} (ano anterior)";
+            return $@"Alteração de parecer conclusivo - Turma {turma.Nome} (ano anterior) - {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) ";
         }
 
         protected string ObterMensagem(Turma turma, List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
         {
             var msg = new StringBuilder();
             msg.Append(ObterTextoCabecalho(turma));
-            msg.Append(ObterTabelaPareceresAlterados(aprovacoesPorTurma));
+            msg.Append(ObterTabelaPareceresAlterados(aprovacoesPorTurma, turma));
             msg.Append(ObterTextoRodape());
             return msg.ToString();
         }
 
-        private string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
+        private string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, Turma turma)
         {
             var msg = new StringBuilder();
             msg.AppendLine("<table style='margin-left: auto; margin-right: auto; margin-top: 10px' border='2' cellpadding='5'>");
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             msg.AppendLine("</tr>");
 
             foreach (var aprovaco in aprovacoesPorTurma)
-                msg.AppendLine(ObterLinhaParecerAlterado(aprovaco));
+                msg.AppendLine(ObterLinhaParecerAlterado(aprovaco, turma));
 
             msg.AppendLine("<tbody>");
             msg.AppendLine("</table>");
@@ -74,14 +74,14 @@ namespace SME.SGP.Aplicacao
             return msg.ToString();
         }
 
-        private string ObterLinhaParecerAlterado(WFAprovacaoParecerConclusivoDto aprovacao)
+        private string ObterLinhaParecerAlterado(WFAprovacaoParecerConclusivoDto aprovacao, Turma turma)
         {
-            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo);
+            var aluno = Alunos.Find(aluno => aluno.CodigoAluno.ToString() == aprovacao.AlunoCodigo && aluno.CodigoTurma.ToString() == turma.CodigoTurma) ;
             var usuario = Usuarios.Find(usuario => usuario.Id == aprovacao.UsuarioSolicitanteId);
 
             return $@"<tr>
                 <td style='padding: 3px;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>
-                <td style='padding: 3px;'>{aprovacao.NomeParecerAnterior}</td>
+                <td style='padding: 3px;'>{(aprovacao.NomeParecerAnterior?? "")}</td>
                 <td style='padding: 3px;'>{aprovacao.NomeParecerNovo}</td>
                 <td style='padding: 3px;'>{usuario.Nome} ({usuario.CodigoRf})</td>
                 <td style='padding: 3px;'>{aprovacao.CriadoEm:dd/MM/yyyy HH:mm}</td>
@@ -91,7 +91,8 @@ namespace SME.SGP.Aplicacao
         private async Task CarregarTodosAlunos()
         {
             var codigos = WFAprovacoes.Select(wf => long.Parse(wf.AlunoCodigo)).ToArray();
-            Alunos = (await ObterAlunos(codigos)).ToList();
+            var anoLetivo = WFAprovacoes.FirstOrDefault().AnoLetivo;
+            Alunos = (await ObterAlunos(codigos, anoLetivo)).ToList();
         }
         
         private async Task CarregarTodosUsuarios()
@@ -100,8 +101,8 @@ namespace SME.SGP.Aplicacao
             Usuarios = (await ObterUsuarios(ids)).ToList();
         }
 
-        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos)
-                => await mediator.Send(new ObterAlunosEolPorCodigosQuery(codigos));
+        private async Task<IEnumerable<TurmasDoAlunoDto>> ObterAlunos(long[] codigos, int anoLetivo)
+                => await mediator.Send(new ObterAlunosEolPorCodigosEAnoQuery(codigos, anoLetivo));
         
         private async Task<IEnumerable<Usuario>> ObterUsuarios(long[] ids)
             => await mediator.Send(new ObterUsuarioPorIdsSemPerfilQuery(ids));

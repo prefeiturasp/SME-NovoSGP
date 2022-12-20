@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoDto>> Executar(long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0)
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Executar(long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
             return await mediator.Send(new ObterDocumentosPorUeETipoEClassificacaoQuery(ueId, tipoDocumentoId, classificacaoId));
         }
