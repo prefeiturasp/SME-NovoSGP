@@ -148,5 +148,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(secaoItineranciaId));
         }
+
+        [HttpPost("salvarItinerario")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> RegistrarEncaminhamentoItinerario([FromBody] EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto, [FromServices] IRegistrarEncaminhamentoItinerarioNAAPAUseCase registrarEncaminhamentoItinerarioNAAPAUseCase)
+        {
+            return Ok(await registrarEncaminhamentoItinerarioNAAPAUseCase.Executar(encaminhamentoNAAPAItineranciaDto));
+        }
     }
 }

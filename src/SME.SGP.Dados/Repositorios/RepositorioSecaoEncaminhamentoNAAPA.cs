@@ -110,5 +110,19 @@ namespace SME.SGP.Dados.Repositorios
                         return encaminhamentoSecao;
                     }, new { encaminhamentoNAAPAId });
         }
+
+        public async Task<SecaoQuestionarioDto> ObterSecaoQuestionarioDtoPorId(long secaoId)
+        {
+            var query = @"SELECT sea.id
+	                            , sea.nome
+	                            , sea.questionario_id as questionarioId
+	                            , sea.etapa
+                                , sea.ordem
+                                , sea.nome_componente as nomeComponente
+                         FROM secao_encaminhamento_naapa sea
+                         WHERE sea.id = @secaoId";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<SecaoQuestionarioDto>(query, new { secaoId });
+        }
     }
 }
