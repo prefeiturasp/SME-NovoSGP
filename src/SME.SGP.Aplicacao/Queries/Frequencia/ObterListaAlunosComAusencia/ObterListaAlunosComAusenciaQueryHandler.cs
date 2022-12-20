@@ -36,9 +36,11 @@ namespace SME.SGP.Aplicacao
             // Busca periodo
             var periodo = await BuscaPeriodo(turma, request.Bimestre);
 
-            var alunosEOL = await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaId));
+            var alunosEOL = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
 
-            var alunosAtivos = alunosEOL.Where(a => !a.Inativo && a.DataMatricula < periodo.PeriodoFim || (a.Inativo && a.DataSituacao.Date > periodo.PeriodoInicio.Date)).ToList();
+            var alunosAtivos = alunosEOL.Where(a => !a.Inativo && a.DataMatricula < periodo.PeriodoFim
+                                || (a.Inativo && a.DataSituacao.Date > periodo.PeriodoInicio.Date))
+                                .DistinctBy(a => a.CodigoAluno).ToList();
 
             var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { long.Parse(request.DisciplinaId) });
             if (disciplinasEOL == null || !disciplinasEOL.Any())
