@@ -10,9 +10,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterQuestoesObrigatoriasNaoRespondidasQuery : IRequest<IEnumerable<QuestaoObrigatoriaNaoRespondidaDto>>
     {
-        /*public delegate void AddQuestoesObrigatoriasNaoPreenchidasEspecificas(SecaoQuestionarioDto secaoAValidar, IEnumerable<QuestaoDto> questoes, 
-                                                                              List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasNaoRespondidas);*/
-
+       
         public ObterQuestoesObrigatoriasNaoRespondidasQuery(SecaoQuestionarioDto secaoAValidar, 
                                                             IEnumerable<RespostaQuestaoObrigatoriaDto> respostas,
                                                             Func<SecaoQuestionarioDto, IEnumerable<QuestaoDto>, List<QuestaoObrigatoriaNaoRespondidaDto>, Task> addQuestoesObrigatoriasNaoPreenchidasEspecificas = null)
