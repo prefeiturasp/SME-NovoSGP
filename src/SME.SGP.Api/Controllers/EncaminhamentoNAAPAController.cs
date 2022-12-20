@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(filtro));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/secao-itinerancia")]
+        [HttpGet("{encaminhamentoNAAPAId}/secoes-itinerancia")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
@@ -140,7 +140,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
         }
 
-        [HttpDelete("secao-itinerancia/{secaoItineranciaId}")]
+        [HttpDelete("secoes-itinerancia/{secaoItineranciaId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]

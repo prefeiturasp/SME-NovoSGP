@@ -28,6 +28,7 @@ namespace SME.SGP.Dados.Repositorios
                          FROM secao_encaminhamento_naapa sea
                          left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId 
                                                                  and eas.secao_encaminhamento_id = sea.id
+                                                                 and not eas.excluido   
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                          WHERE not sea.excluido 
                         AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
@@ -42,6 +43,7 @@ namespace SME.SGP.Dados.Repositorios
                                             FROM secao_encaminhamento_naapa sea 
                                                 left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId
                                                                                         and eas.secao_encaminhamento_id = sea.id
+                                                                                        and not eas.excluido   
                                                 left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                                             WHERE not sea.excluido 
                                                   AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
@@ -98,7 +100,7 @@ namespace SME.SGP.Dados.Repositorios
                                             inner join secao_encaminhamento_naapa secao on secao.id = ens.secao_encaminhamento_id 
                                             inner join vw_resposta_data questaoDataAtendimento on questaoDataAtendimento.encaminhamento_naapa_secao_id = ens.id
                                             inner join vw_resposta_tipo_atendimento questaoTipoAtendimento on questaoTipoAtendimento.encaminhamento_naapa_secao_id = ens.id
-                                            where en.id = @encaminhamentoNAAPAId");
+                                            where en.id = @encaminhamentoNAAPAId and not ens.excluido ");
 
             return await database.Conexao
                 .QueryAsync<EncaminhamentoNAAPASecaoItineranciaDto, AuditoriaDto, EncaminhamentoNAAPASecaoItineranciaDto>(
