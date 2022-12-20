@@ -98,8 +98,6 @@ namespace SME.SGP.Aplicacao
             retorno.EhNota = tipoNota.EhNota();
             //Codigo aluno / NotaConceito / Código Disciplina / bimestre
 
-            var listaAlunosNotas = new List<(string, string, long, int)>();
-
             var disciplinas = new List<DisciplinaResposta>();
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
             var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
@@ -197,7 +195,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(ultimoPeriodoEscolar) : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }

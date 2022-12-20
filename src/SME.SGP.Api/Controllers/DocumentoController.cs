@@ -19,7 +19,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ValidacaoUsua(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
+        public async Task<IActionResult> ValidacaoUsuario(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
         {
             return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId, documentoId)));
         }
