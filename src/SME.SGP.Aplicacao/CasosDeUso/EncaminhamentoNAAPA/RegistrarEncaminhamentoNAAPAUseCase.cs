@@ -296,7 +296,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, ICollection<dynamic> questoesObrigatoriasAConsistir)
         {
-            var secoesEtapa = await mediator.Send(new ObterSecoesEncaminhamentoNAAPADtoPorEtapaQuery(1));
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery());
 
             var respostasPersistidas = encaminhamentoNAAPADto.Id.HasValue
                 ? (await mediator.Send(
