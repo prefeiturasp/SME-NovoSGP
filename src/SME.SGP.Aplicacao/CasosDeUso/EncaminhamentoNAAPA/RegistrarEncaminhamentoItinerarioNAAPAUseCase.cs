@@ -96,19 +96,18 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
         {
             var secao = await mediator.Send(new ObterSecaoQuestionarioEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPASecaoDto.SecaoId));
             var respostasEncaminhamento = encaminhamentoNAAPASecaoDto.Questoes
-                                             .Select(questao => new EncaminhamentoNAAPASecaoQuestaoDto()
+                                             .Select(questao => new RespostaQuestaoObrigatoriaDto()
                                              {
                                                  QuestaoId = questao.QuestaoId,
-                                                 Resposta = questao.Resposta,
-                                                 RespostaEncaminhamentoId = questao.RespostaEncaminhamentoId
+                                                 Resposta = questao.Resposta
                                              })
                                              .Where(questao => !string.IsNullOrEmpty(questao.Resposta));
-            var questoesObrigatorias = await mediator.Send(new ObterQuestoesObrigatoriasNaoPreechidasQuery(secao, respostasEncaminhamento));
+            var questoesObrigatorias = await mediator.Send(new ObterQuestoesObrigatoriasNaoRespondidasQuery(secao, respostasEncaminhamento));
 
             if (questoesObrigatorias.Any())
             {
-                var mensagem = questoesObrigatorias.GroupBy(questao => questao.NomeSecao).Select(secao =>
-                        $"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]")
+                var mensagem = questoesObrigatorias.GroupBy(questao => questao.SecaoNome).Select(secao =>
+                        $"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.QuestaoOrdem).Distinct().ToArray())}]")
                     .ToList();
 
                 throw new NegocioException(string.Format(
