@@ -37,11 +37,11 @@ namespace SME.SGP.Aplicacao
                 if (arquivo == null)
                     throw new NegocioException($"O código de arquivo informado não foi encontrado!");
 
-                if (documento.ArquivoId != null)
-                    arquivoAntigoId = documento.ArquivoId.GetValueOrDefault();
-
-
-                documento.ArquivoId = arquivo.Id;
+                // if (documento.ArquivoId != null)
+                //     arquivoAntigoId = documento.ArquivoId.GetValueOrDefault();
+                //
+                //
+                // documento.ArquivoId = arquivo.Id;
 
                 if (arquivoAntigoId != 0)
                 {

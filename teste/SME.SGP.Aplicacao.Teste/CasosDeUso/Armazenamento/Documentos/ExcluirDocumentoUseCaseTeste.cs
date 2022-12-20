@@ -33,7 +33,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var documento = new Documento()
             {
                 Id = 1,
-                ArquivoId = 1
             };
 
             //fileNameGuid
@@ -71,7 +70,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var documento = new Documento()
             {
                 Id = 1,
-                ArquivoId = null
             };
 
             //fileNameGuid

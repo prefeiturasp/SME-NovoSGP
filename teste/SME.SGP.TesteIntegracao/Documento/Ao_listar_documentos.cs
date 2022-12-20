@@ -41,6 +41,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName())).ShouldBeTrue();
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica.GetDisplayName())).ShouldBeFalse();
             retorno.Items.Any(a=> !string.IsNullOrEmpty(a.TurmaComponenteCurricular)).ShouldBeTrue();
+            retorno.Items.Any(c => c.Arquivos.Any(a=> string.IsNullOrEmpty(a.Nome))).ShouldBeFalse();
         }
         
         [Fact(DisplayName = "Documento - Listando documentos sem turma e componente")]
