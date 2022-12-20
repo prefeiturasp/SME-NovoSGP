@@ -38,13 +38,12 @@ namespace SME.SGP.Aplicacao
             if (aluno == null)
                 throw new NegocioException(MensagemNegocioAluno.ESTUDANTE_NAO_ENCONTRADO);
 
-            ICollection<dynamic> questoesObrigatoriasAConsistir = new List<dynamic>();
-            await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, (int)turma.ModalidadeCodigo, questoesObrigatoriasAConsistir);
+            List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = await ObterQuestoesObrigatoriasNaoPreechidas(encaminhamentoNAAPADto, (int)turma.ModalidadeCodigo);
             
             if (questoesObrigatoriasAConsistir.Any() && encaminhamentoNAAPADto.Situacao != SituacaoNAAPA.Rascunho)
             {
-                var mensagem = questoesObrigatoriasAConsistir.GroupBy(questao => questao.Secao).Select(secao =>
-                        $"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.Ordem).Distinct().ToArray())}]")
+                var mensagem = questoesObrigatoriasAConsistir.GroupBy(questao => questao.SecaoNome).Select(secao =>
+                        $"Seção: {secao.Key} Questões: [{string.Join(", ", secao.Select(questao => questao.QuestaoOrdem).Distinct().ToArray())}]")
                     .ToList();
 
                 throw new NegocioException(string.Format(
@@ -211,39 +210,13 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private bool EhQuestaoObrigatoriaNaoRespondida(QuestaoDto questao)
+        private async Task ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(SecaoQuestionarioDto secaoAValidar, IEnumerable<QuestaoDto> questoes,
+                                                                              List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasNaoRespondidas)
         {
-            return questao.Obrigatorio && !questao.Resposta.NaoNuloEContemRegistrosRespondidos();
-        }
-        
-        private void ValidaRecursivo(SecaoQuestionarioDto secao, string questaoPaiOrdem, IEnumerable<QuestaoDto> questoes, ICollection<dynamic> questoesObrigatoriasAConsistir)
-        {
-            foreach (var questao in questoes)
-            {
-                var ordem = questaoPaiOrdem != "" ? $"{questaoPaiOrdem}.{questao.Ordem.ToString()}" : questao.Ordem.ToString();
+            if (secaoAValidar.NomeComponente != SECAO_QUESTOES_APRESENTADAS)
+                return;
 
-                if (EhQuestaoObrigatoriaNaoRespondida(questao)) {
-                    questoesObrigatoriasAConsistir.Add(new { SecaoId = secao.Id, Secao = secao.Nome, Ordem = ordem });
-                }
-                else
-                if (questao.OpcaoResposta.NaoNuloEContemRegistros() && questao.Resposta.NaoNuloEContemRegistrosRespondidos())
-                {
-                    foreach (var resposta in questao.Resposta)
-                    {
-                        var opcao = questao.OpcaoResposta.FirstOrDefault(opcao => opcao.Id == Convert.ToInt64(resposta.Texto));
-                        
-                        if (opcao != null && opcao.QuestoesComplementares.Any())
-                        {
-                            ValidaRecursivo(secao, ordem, opcao.QuestoesComplementares, questoesObrigatoriasAConsistir);
-                        }
-                    }
-                }
-            }
-        }
-
-        private async Task ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(SecaoQuestionarioDto secao, IEnumerable<QuestaoDto> questoes, ICollection<dynamic> questoesObrigatoriasNaoRespondidas)
-        {
-            var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
+                var questaoObservacoes = ObterQuestaoObservacoesAgrupamentoPromocaoCuidadosNaoPreenchida(questoes);
             if (questaoObservacoes != null)
             {
                 var questaoAgrupamentoPromocaoCuidados = ObterQuestaoAgrupamentoPromocaoCuidados(questoes);
@@ -255,14 +228,14 @@ namespace SME.SGP.Aplicacao
                 {
                     var opcaoOutras_QuestaoAdoeceComFrequencia = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoAdoeceComFrequencia.Id))).FirstOrDefault(opcao => opcao.Nome == "Outras");
                     if (questaoAdoeceComFrequencia.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoAdoeceComFrequencia.Id.ToString()))
-                        questoesObrigatoriasNaoRespondidas.Add(new { SecaoId = secao.Id, Secao = secao.Nome, Ordem = questaoObservacoes.Ordem });
+                        questoesObrigatoriasNaoRespondidas.Add(new QuestaoObrigatoriaNaoRespondidaDto(secaoAValidar.Id, secaoAValidar.Nome, questaoObservacoes.Ordem.ToString()));
                 }
 
                 if (questaoDoencaCronica != null)
                 { 
                     var opcaoOutras_QuestaoDoencaCronica = (await mediator.Send(new ObterOpcoesRespostaPorQuestaoIdQuery(questaoDoencaCronica.Id))).FirstOrDefault(opcao => opcao.Nome == "Outras");
                     if (questaoDoencaCronica.Resposta.Any(resposta => resposta.Texto == opcaoOutras_QuestaoDoencaCronica.Id.ToString()))
-                        questoesObrigatoriasNaoRespondidas.Add(new { SecaoId = secao.Id, Secao = secao.Nome, Ordem = questaoObservacoes.Ordem });
+                        questoesObrigatoriasNaoRespondidas.Add(new QuestaoObrigatoriaNaoRespondidaDto(secaoAValidar.Id, secaoAValidar.Nome, questaoObservacoes.Ordem.ToString()));
                 }
             }
         }
@@ -295,56 +268,52 @@ namespace SME.SGP.Aplicacao
             return questoesComplementares.Where(questaoComplementar => questaoComplementar.NomeComponente == QUESTAO_TIPO_DOENCA_CRONICA_TRATAMENTO_LONGA_DURACAO).FirstOrDefault();
         }
 
-        private async Task ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade, ICollection<dynamic> questoesObrigatoriasAConsistir)
+        private async Task<IEnumerable<RespostaQuestaoObrigatoriaDto>> ObterRespostasEncaminhamentoNAAPA(long? encaminhamentoNAAPAId)
         {
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade, new string[] { SECAO_ITINERANCIA }));
-
-            var respostasPersistidas = encaminhamentoNAAPADto.Id.HasValue
-                ? (await mediator.Send(
-                    new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id.Value)))
-                .Select(resposta => new EncaminhamentoNAAPASecaoQuestaoDto
+            return encaminhamentoNAAPAId.HasValue ? (await mediator.Send(
+                    new ObterQuestaoRespostaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId.Value)))
+                .Select(resposta => new RespostaQuestaoObrigatoriaDto
                 {
                     QuestaoId = resposta.QuestaoId,
                     Resposta = (resposta.RespostaId ?? 0) != 0 ? resposta.RespostaId?.ToString() : resposta.Texto,
-                    RespostaEncaminhamentoId = resposta.Id
+                    Persistida = true
                 })
-                : Enumerable.Empty<EncaminhamentoNAAPASecaoQuestaoDto>();
+                : Enumerable.Empty<RespostaQuestaoObrigatoriaDto>();
+        }
+            private async Task<List<QuestaoObrigatoriaNaoRespondidaDto>> ObterQuestoesObrigatoriasNaoPreechidas(EncaminhamentoNAAPADto encaminhamentoNAAPADto, int codigoModalidade)
+
+        {
+            List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade, new string[] { SECAO_ITINERANCIA }));
+            IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 
             foreach (var secao in secoesEtapa)
             {
                 var secaoPresenteDto = encaminhamentoNAAPADto.Secoes.FirstOrDefault(secaoDto => secaoDto.SecaoId == secao.Id);
 
-                IEnumerable<EncaminhamentoNAAPASecaoQuestaoDto> respostasEncaminhamento;
+                IEnumerable<RespostaQuestaoObrigatoriaDto> respostasEncaminhamento;
                 if (secaoPresenteDto != null && secaoPresenteDto.Questoes.Any())
                 {
                     respostasEncaminhamento = secaoPresenteDto.Questoes
-                        .Select(questao => new EncaminhamentoNAAPASecaoQuestaoDto()
+                        .Select(questao => new RespostaQuestaoObrigatoriaDto()
                         {
                             QuestaoId = questao.QuestaoId,
-                            Resposta = questao.Resposta,
-                            RespostaEncaminhamentoId = questao.RespostaEncaminhamentoId
+                            Resposta = questao.Resposta
                         })
                         .Where(questao => !string.IsNullOrEmpty(questao.Resposta));
                 }
-                else respostasEncaminhamento = respostasPersistidas;
+                else
+                {
+                    if (respostasPersistidas == null)
+                        respostasPersistidas = await ObterRespostasEncaminhamentoNAAPA(encaminhamentoNAAPADto.Id);
+                    respostasEncaminhamento = respostasPersistidas;
+                }
 
-                var respostaEncaminhamentoQuestao = respostasEncaminhamento;
-                var questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId,
-                    questaoId =>
-                        respostaEncaminhamentoQuestao.Where(c => c.QuestaoId == questaoId)
-                            .Select(respostaQuestao => new RespostaQuestaoDto
-                            {
-                                Id = GetHashCode(),
-                                OpcaoRespostaId = 0,
-                                Texto = respostaQuestao.Resposta,
-                                Arquivo = null
-                            })));
 
-                if (secao.NomeComponente == SECAO_QUESTOES_APRESENTADAS)
-                    await ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados(secao, questoes, questoesObrigatoriasAConsistir);
-                
-                ValidaRecursivo(secao, "", questoes, questoesObrigatoriasAConsistir);
+                questoesObrigatoriasAConsistir.AddRange(await mediator.Send(new ObterQuestoesObrigatoriasNaoRespondidasQuery(secao, respostasEncaminhamento, ValidaQuestaoObservacaoAgrupamentoPromocaoCuidados)));
             }
+
+            return questoesObrigatoriasAConsistir;
         }
     }
 }
