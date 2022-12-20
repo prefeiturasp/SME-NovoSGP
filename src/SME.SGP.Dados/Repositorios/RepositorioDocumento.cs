@@ -24,82 +24,99 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, 
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, 
             long classificacaoId, Paginacao paginacao)
         {
-            var retorno = new PaginacaoResultadoDto<DocumentoDto>();
-
             var sql = MontaQueryCompleta(paginacao, tipoDocumentoId, classificacaoId);
 
             var parametros = new { ueId, tipoDocumentoId, classificacaoId };
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(sql, parametros))
-            {
-                retorno.Items = multi.Read<DocumentoDto>().ToList();
-                retorno.TotalRegistros = multi.ReadFirst<int>();
-            }
+            var documentos = await database.Conexao.QueryAsync<DocumentoCompletoDto>(sql, parametros);
+            
+            var documentosAgrupados = documentos.GroupBy(g => new
+            { 
+                g.DocumentoId,
+                g.Classificacao,
+                g.TipoDocumento,
+                g.Usuario,
+                g.Data,
+                g.TurmaNome,
+                g.Modalidade,
+                g.ComponenteCurricularNome
+            }, (key, group) => 
+                new DocumentoResumidoDto { 
+                    DocumentoId = key.DocumentoId,
+                    Classificacao = key.Classificacao,
+                    TipoDocumento = key.TipoDocumento,
+                    Usuario = key.Usuario,
+                    Data = key.Data,
+                    TurmaComponenteCurricular = ObterTurmaComponenteCurricular(key.TurmaNome,key.ComponenteCurricularNome, key.Modalidade),
+                    Arquivos = group.Select(s=>
+                        new ArquivoResumidoDto
+                        {
+                            Codigo = s.CodigoArquivo,
+                            Nome = s.NomeArquivo
+                        }).ToList()
+                })
+                .OrderBy(o=> o.TurmaComponenteCurricular)
+                .ThenBy(p=> p.DocumentoId)
+                .ToList();
 
+            var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
+            retorno.TotalRegistros = retorno.Items.Count();
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
 
         }
 
+        private string ObterTurmaComponenteCurricular(string turmaNome, string componenteCurricularNome, int modalidade)
+        {
+            if (!string.IsNullOrEmpty(turmaNome) && !string.IsNullOrEmpty(componenteCurricularNome))
+                return $"{((Modalidade)modalidade).ShortName()} - {turmaNome} - {componenteCurricularNome}";
+                
+            return string.Empty;
+        }
+
         private static string MontaQueryCompleta(Paginacao paginacao, long tipoDocumentoId, long classificacaoId)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, tipoDocumentoId, classificacaoId);
-
-            sql.AppendLine(";");
-
-            MontaQueryConsulta(paginacao, sql, contador: true, tipoDocumentoId, classificacaoId);
+            MontaQueryConsulta(paginacao, sql, tipoDocumentoId, classificacaoId);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador = false, long tipoDocumentoId = 0, long classificacaoId = 0)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
-            ObterCabecalho(sql, contador);
+            ObterCabecalho(sql);
 
             ObterFiltro(sql, tipoDocumentoId, classificacaoId);
 
-            if (!contador)
-                sql.AppendLine("order by d.id");
-
-            if (paginacao.QuantidadeRegistros > 0 && !contador)
+            if (paginacao.QuantidadeRegistros > 0)
                 sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
         }
 
-        private static void ObterCabecalho(StringBuilder sql, bool contador)
+        private static void ObterCabecalho(StringBuilder sql)
         {
-            sql.AppendLine("select ");
-            if(contador)
-            {
-                sql.AppendLine("count(*) ");
-            } 
-            else
-            {
-                sql.AppendLine(@"d.id as DocumentoId, 
-                                 a.nome as NomeArquivo, 
-                                 td.descricao as tipoDocumento,
-                                 cd.descricao as classificacao, 
-                                 usuario_id as usuarioId, 
-                                 u.nome || ' (' || u.rf_codigo || ')' as usuario, 
-                                 case when d.alterado_em is not null then d.alterado_em else d.criado_em end as dataUpload, 
-                                 a.codigo as CodigoArquivo, 
-                                 t.nome as turmanome,
-                                 t.ano_letivo as anoletivo,
-                                 t.modalidade_codigo as modalidade,
-                                 coalesce(cc.descricao_infantil,cc.descricao_sgp) as componenteCurricularNome ");
-            }
-            sql.AppendLine(@"from documento d 
-                             inner join  classificacao_documento cd on d.classificacao_documento_id = cd.id 
-                             inner join  tipo_documento td on cd.tipo_documento_id = td.id 
-                             inner join  arquivo a on d.arquivo_id = a.id 
-                             inner join usuario u on d.usuario_id = u.id
-                             left join turma t on t.id = d.turma_id
-                             left join componente_curricular cc on cc.id = d.componente_curricular_id ");
+            sql.AppendLine(@"select d.id as DocumentoId,      
+                                  cd.descricao as classificacao, 
+                                  td.descricao as tipoDocumento,
+                                  t.nome as turmanome,
+                                  t.modalidade_codigo as modalidade,
+                                  coalesce(cc.descricao_infantil,cc.descricao_sgp) as componenteCurricularNome,
+                                  a.codigo as CodigoArquivo, 
+                                  a.nome as NomeArquivo, 
+                                  u.nome || ' (' || u.rf_codigo || ')' as Usuario,
+                                  case when d.alterado_em is not null then d.alterado_em else d.criado_em end as Data 
+                            from documento d 
+                               join  classificacao_documento cd on d.classificacao_documento_id = cd.id 
+                               join  tipo_documento td on cd.tipo_documento_id = td.id       
+                               join usuario u on d.usuario_id = u.id
+                               left join turma t on t.id = d.turma_id
+                               left join componente_curricular cc on cc.id = d.componente_curricular_id
+                               left join documento_arquivo da on da.documento_id = d.id 
+                               left join arquivo a on a.id = da.arquivo_id  ");
         }
 
         private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
