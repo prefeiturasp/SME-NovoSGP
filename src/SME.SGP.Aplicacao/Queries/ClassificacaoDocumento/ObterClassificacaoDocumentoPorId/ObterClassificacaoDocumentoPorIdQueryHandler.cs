@@ -7,8 +7,7 @@ using SME.SGP.Dominio.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterClassificacaoDocumentoPorIdQueryHandler : IRequestHandler<ObterClassificacaoDocumentoPorIdQuery,
-            ClassificacaoDocumento>
+    public class ObterClassificacaoDocumentoPorIdQueryHandler : IRequestHandler<ObterClassificacaoDocumentoPorIdQuery, ClassificacaoDocumento>
     {
         private readonly IRepositorioClassificacaoDocumento repositorioClassificacaoDocumento;
 
