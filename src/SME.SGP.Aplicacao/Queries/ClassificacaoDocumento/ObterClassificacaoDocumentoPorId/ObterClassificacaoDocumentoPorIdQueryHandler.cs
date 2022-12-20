@@ -5,19 +5,25 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterClassificacaoDocumentoPorIdQueryHandler : IRequestHandler<ObterClassificacaoDocumentoPorIdQuery, ClassificacaoDocumento>
+namespace SME.SGP.Aplicacao
 {
-    private readonly IRepositorioClassificacaoDocumento repositorioClassificacaoDocumento;
-
-    public ObterClassificacaoDocumentoPorIdQueryHandler(IRepositorioClassificacaoDocumento repositorioClassificacaoDocumento)
+    public class ObterClassificacaoDocumentoPorIdQueryHandler : IRequestHandler<ObterClassificacaoDocumentoPorIdQuery,
+            ClassificacaoDocumento>
     {
-        this.repositorioClassificacaoDocumento = repositorioClassificacaoDocumento ?? throw new ArgumentNullException(nameof(repositorioClassificacaoDocumento));
-    }
+        private readonly IRepositorioClassificacaoDocumento repositorioClassificacaoDocumento;
 
-    public async Task<ClassificacaoDocumento> Handle(ObterClassificacaoDocumentoPorIdQuery request, CancellationToken cancellationToken)
-    {
-        return await repositorioClassificacaoDocumento.ObterPorIdAsync(request.ClassificacaoId);
+        public ObterClassificacaoDocumentoPorIdQueryHandler(
+            IRepositorioClassificacaoDocumento repositorioClassificacaoDocumento)
+        {
+            this.repositorioClassificacaoDocumento = repositorioClassificacaoDocumento ??
+                                                     throw new ArgumentNullException(
+                                                         nameof(repositorioClassificacaoDocumento));
+        }
+
+        public async Task<ClassificacaoDocumento> Handle(ObterClassificacaoDocumentoPorIdQuery request,
+            CancellationToken cancellationToken)
+        {
+            return await repositorioClassificacaoDocumento.ObterPorIdAsync(request.ClassificacaoId);
+        }
     }
 }
