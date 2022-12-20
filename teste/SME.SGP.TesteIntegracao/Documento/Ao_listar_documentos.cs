@@ -1,16 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Extensions;
 using Shouldly;
-using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
-using SME.SGP.Infra;
-using SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes;
-using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -37,7 +29,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
             var retorno = await obterServicoListarDocumentosUse.Executar(UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma);
             retorno.ShouldNotBeNull();
-            retorno.TotalRegistros.ShouldBeEquivalentTo(30);
+            retorno.TotalRegistros.ShouldBeEquivalentTo(3);
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName())).ShouldBeTrue();
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica.GetDisplayName())).ShouldBeFalse();
             retorno.Items.Any(a=> !string.IsNullOrEmpty(a.TurmaComponenteCurricular)).ShouldBeTrue();
@@ -61,10 +53,11 @@ namespace SME.SGP.TesteIntegracao.Documento
             var obterServicoListarDocumentosUse = ObterServicoListarDocumentosUseCase();
             var retorno = await obterServicoListarDocumentosUse.Executar(UE_ID_1, (long)Dominio.Enumerados.TipoDocumento.Documento, (long)Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica);
             retorno.ShouldNotBeNull();
-            retorno.TotalRegistros.ShouldBeEquivalentTo(30);
+            retorno.TotalRegistros.ShouldBeEquivalentTo(3);
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName())).ShouldBeFalse();
             retorno.Items.Any(a=> a.Classificacao.Equals(Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica.GetDisplayName())).ShouldBeTrue();
             retorno.Items.Any(a=> string.IsNullOrEmpty(a.TurmaComponenteCurricular)).ShouldBeTrue();
+            retorno.Items.Any(c => c.Arquivos.Any(a=> string.IsNullOrEmpty(a.Nome))).ShouldBeFalse();
         }
     }
 }

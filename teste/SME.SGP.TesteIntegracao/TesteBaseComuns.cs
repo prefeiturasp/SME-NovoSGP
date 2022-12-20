@@ -117,6 +117,7 @@ namespace SME.SGP.TesteIntegracao
         
         protected const string CLASSIFICACAO_DOCUMENTO = "classificacao_documento";
         protected const string TIPO_DOCUMENTO = "tipo_documento";
+        protected const string DOCUMENTO_ARQUIVO = "documento_arquivo";
 
         protected const string COMPONENTE_CIENCIAS_ID_89 = "89";
         protected const string COMPONENTE_CIENCIAS_NOME = "'CIENCIA'";

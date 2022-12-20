@@ -77,21 +77,38 @@ namespace SME.SGP.TesteIntegracao.Documento
         protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento, long? componentecurricularId = null, bool inserirTurma = true)
         {
             var turmas = new List<long> { 1, 2, 3 };
+            long documentoId = 0;
+            long arquivoId = 0;
+            var camposDocumentoArquivo = new [] { "documento_id", "arquivo_id" };
 
             foreach (var turma in turmas)
             {
+                await InserirNaBase(new Dominio.Documento()
+                {
+                    UsuarioId = USUARIO_ID_1,
+                    UeId = UE_ID_1,
+                    AnoLetivo = DateTime.Now.Year,
+                    ClassificacaoDocumentoId = (long)classificacaoDocumento,
+                    TurmaId = inserirTurma ? turma : null,
+                    ComponenteCurricularId = componentecurricularId,
+                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
+                });
+                documentoId++;
+                
                 foreach (var arquivo in Arquivos)
                 {
-                    await InserirNaBase(new Dominio.Documento()
+                    await InserirNaBase(new Arquivo()
                     {
-                        UsuarioId = USUARIO_ID_1,
-                        UeId = UE_ID_1,
-                        AnoLetivo = DateTime.Now.Year,
-                        ClassificacaoDocumentoId = (long)classificacaoDocumento,
-                        TurmaId = inserirTurma ? turma : null,
-                        ComponenteCurricularId = componentecurricularId,
+                        Codigo = Guid.NewGuid(),
+                        Nome = $"Arquivo - {arquivo}",
+                        Tipo = TipoArquivo.Geral,
+                        TipoConteudo = "application/pdf",
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
-                    });                    
+                    });
+                    arquivoId++;
+
+                    var valoresDocumentoArquivo = new[] { documentoId.ToString(), arquivoId.ToString() };
+                    await InserirNaBase(DOCUMENTO_ARQUIVO, camposDocumentoArquivo, valoresDocumentoArquivo);
                 }
             }
         }

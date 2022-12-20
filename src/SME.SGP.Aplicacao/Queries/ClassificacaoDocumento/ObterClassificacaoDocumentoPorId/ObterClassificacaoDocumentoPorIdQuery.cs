@@ -1,14 +1,15 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterClassificacaoDocumentoPorIdQuery : IRequest<ClassificacaoDocumento>
+namespace SME.SGP.Aplicacao
 {
-    public ObterClassificacaoDocumentoPorIdQuery(long classificacaoId)
+    public class ObterClassificacaoDocumentoPorIdQuery : IRequest<ClassificacaoDocumento>
     {
-        ClassificacaoId = classificacaoId;
-    }
+        public ObterClassificacaoDocumentoPorIdQuery(long classificacaoId)
+        {
+            ClassificacaoId = classificacaoId;
+        }
 
-    public long ClassificacaoId { get; }
+        public long ClassificacaoId { get; }
+    }
 }
