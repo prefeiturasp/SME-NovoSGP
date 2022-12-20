@@ -51,7 +51,7 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(filtro));
         }
 
-        [HttpGet("{encaminhamentoNAAPAId}/secao-itinerancia")]
+        [HttpGet("{encaminhamentoNAAPAId}/secoes-itinerancia")]
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
@@ -138,6 +138,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterQuestionarioItinerario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoSecaoId, [FromServices] IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
+        }
+
+        [HttpDelete("secoes-itinerancia/{secaoItineranciaId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirSecaoItinerancia(long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(secaoItineranciaId));
         }
     }
 }

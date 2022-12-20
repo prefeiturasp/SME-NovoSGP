@@ -146,6 +146,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase>();
         }
 
+        protected IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase ObterServicoExcluirSecaoItineranciaEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IExcluirEncaminhamentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
         {
             return ServiceProvider.GetService<IExcluirEncaminhamentoNAAPAUseCase>();
