@@ -20,11 +20,11 @@ begin
 	insert into secao_encaminhamento_naapa (questionario_id, nome, etapa, ordem, criado_em, criado_por, criado_rf, nome_componente)
 		values(questionarioId, 'Itinerância', 1, 3, NOW(), 'SISTEMA', '0', 'QUESTOES_ITINERACIA');	
 		
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, placeholder, nome_componente)
-		values(questionarioId, 0, 'Data do atendimento', '', true, 14, '', NOW(), 'SISTEMA', '0', 6, 'Data', 'DATA_DO_ATENDIMENTO');	
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 0, 'Data do atendimento', '', true, 14, '{"desabilitarDataFutura":true}', NOW(), 'SISTEMA', '0', 6, 'DATA_DO_ATENDIMENTO', 'Data do atendimento');	
 		
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 1, 'Tipo do atendimento', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, 'TIPO_DO_ATENDIMENTO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 1, 'Tipo de atendimento', '', true, 4, '', NOW(), 'SISTEMA', '0', 6, 'TIPO_DO_ATENDIMENTO', 'Tipo de atendimento')
 		RETURNING id INTO questaoId;
 
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
@@ -48,8 +48,8 @@ begin
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
 		values(questaoId, 10, 'Reunião Compartilhada', NOW(), 'SISTEMA', '0');		
 
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 2, 'Procedimento de trabalho', '', true, 4, '', NOW(), 'SISTEMA', '0', 8, 'PROCEDIMENTO_DE_TRABALHO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 2, 'Procedimento de trabalho', '', true, 4, '', NOW(), 'SISTEMA', '0', 8, 'PROCEDIMENTO_DE_TRABALHO', 'Procedimento de trabalho')
 		RETURNING id INTO questaoId;	
 		
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
@@ -73,15 +73,15 @@ begin
 		values(questaoId, 9, 'Projeto Tecer', NOW(), 'SISTEMA', '0');
 		
 	--Questoes complementares descrição do trabalho
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 1, 'Descrição do procedimento de trabalho', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_PROCEDIMENTO_TRABALHO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 1, 'Descrição do procedimento de trabalho', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_PROCEDIMENTO_TRABALHO', 'Descrição do procedimento de trabalho')
 		RETURNING id INTO questaoComplementar_descricaoProcedimentoTrabalhoId;
 	
 	insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
 		values(opcaoresposta_outro_procedimento, questaoComplementar_descricaoProcedimentoTrabalhoId, NOW(), 'SISTEMA', '0');
 	
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 3, 'Rede de proteção articulada (Dentro da rede de Educação)', '', false, 9, '', NOW(), 'SISTEMA', '0', 8, 'DENTRO_REDE_PROTECAO_EDUCACAO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 3, 'Rede de proteção articulada (Dentro da rede de Educação)', '', false, 9, '', NOW(), 'SISTEMA', '0', 8, 'DENTRO_REDE_PROTECAO_EDUCACAO', 'Selecione')
 		RETURNING id INTO questaoId;	
 		
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
@@ -109,15 +109,15 @@ begin
 		RETURNING id INTO opcaoresposta_outros_rede_dentro_educacao;
 	
 	--Questoes complementares outros rede educação
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 1, 'Descrição', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_OUTROS_DENTRO_REDE_EDUCACAO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 1, 'Descrição', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_OUTROS_DENTRO_REDE_EDUCACAO', 'Descrição')
 		RETURNING id INTO questaoComplementar_descricaoRedeDentroEducacaoId;
 	
 	insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
 		values(opcaoresposta_outros_rede_dentro_educacao, questaoComplementar_descricaoRedeDentroEducacaoId, NOW(), 'SISTEMA', '0');	
 		
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 4, 'Rede de proteção articulada (Fora da rede de educação)', '', false, 9, '', NOW(), 'SISTEMA', '0', 8, 'FORA_REDE_PROTECAO_EDUCACAO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 4, 'Rede de proteção articulada (Fora da rede de educação)', '', false, 9, '', NOW(), 'SISTEMA', '0', 8, 'FORA_REDE_PROTECAO_EDUCACAO', 'Selecione')
 		RETURNING id INTO questaoId;	
 		
 	insert into opcao_resposta (questao_id, ordem, nome, criado_em, criado_por, criado_rf)
@@ -167,8 +167,8 @@ begin
 		RETURNING id INTO opcaoresposta_outros_fora_rede_educacao;
 		
 	--Questoes complementares outros fora rede educação
-	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente)
-		values(questionarioId, 1, 'Descrição', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_OUTROS_FORA_REDE_EDUCACAO')
+	insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf, dimensao, nome_componente, placeholder)
+		values(questionarioId, 1, 'Descrição', '', true, 2, '', NOW(), 'SISTEMA', '0', 12, 'DESCRICAO_OUTROS_FORA_REDE_EDUCACAO', 'Descrição')
 		RETURNING id INTO questaoComplementar_descricaoForaRedeEducacaoId;
 	
 	insert into opcao_questao_complementar (opcao_resposta_id, questao_complementar_id, criado_em, criado_por, criado_rf)
