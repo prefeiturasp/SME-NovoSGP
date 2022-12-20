@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             ValidarQuestao(secaoDto);
 
-            var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, encaminhamentoNAAPAItineranciaDto.SecaoId, true));
+            var secaoEncaminhamento = await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoCommand(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId, secaoDto.SecaoId, true));
 
             foreach (var questao in secaoDto.Questoes)
             {
