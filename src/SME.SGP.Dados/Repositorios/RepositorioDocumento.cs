@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,7 +66,6 @@ namespace SME.SGP.Dados.Repositorios
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
 
             return retorno;
-
         }
 
         private string ObterTurmaComponenteCurricular(string turmaNome, string componenteCurricularNome, int modalidade)
@@ -131,10 +129,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)
         {
-            var query = @"update documento set arquivo_id = null where id = @documentoId and arquivo_id = @arquivoId";
-
+            const string query = @"delete from documento_arquivo where documento_id = @documentoId and arquivo_id = @arquivoId";
             await database.Conexao.ExecuteAsync(query, new { documentoId, arquivoId });
-
             return true;
         }
 

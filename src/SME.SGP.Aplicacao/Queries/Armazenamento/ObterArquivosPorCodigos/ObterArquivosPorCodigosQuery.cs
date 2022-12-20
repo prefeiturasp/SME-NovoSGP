@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
         public ObterArquivosPorCodigosQueryValidator()
         {
             RuleFor(c => c.Codigos)
-                .NotEmpty()
+                .NotNull()
                 .WithMessage("Os códigos dos arquivos devem ser informados para obter seus dados.");
         }
     }
