@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
 using SME.SGP.Dominio;
@@ -16,11 +17,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<Arquivo> ObterPorCodigo(Guid codigo)
         {
-            var query = @"select * 
-                            from arquivo
-                           where codigo = @codigo";
+            const string query = @"select * 
+                                    from arquivo
+                                    where codigo = @codigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Arquivo>(query, new { codigo });
+        }
+
+        public async Task<IEnumerable<Arquivo>> ObterPorCodigos(Guid[] codigos)
+        {
+            const string query = @"select * 
+                                    from arquivo
+                                    where codigo = ANY(@codigos)";
+
+            return await database.Conexao.QueryAsync<Arquivo>(query, new { codigos });
         }
 
         public async Task<bool> ExcluirArquivoPorCodigo(Guid codigoArquivo)
