@@ -16,6 +16,7 @@ using SME.SGP.TesteIntegracao.PlanoAula.Base;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio.Enumerados;
 using ClassificacaoDocumento = SME.SGP.Dominio.ClassificacaoDocumento;
+using TipoDocumento = SME.SGP.Dominio.Enumerados.TipoDocumento;
 
 namespace SME.SGP.TesteIntegracao.Documento
 {
@@ -37,6 +38,11 @@ namespace SME.SGP.TesteIntegracao.Documento
         {
             return ServiceProvider.GetService<ISalvarDocumentoUseCase>();
         }
+        
+        protected IExcluirDocumentoUseCase ObterServicoExcluirDocumentoUseCase()
+        {
+            return ServiceProvider.GetService<IExcluirDocumentoUseCase>();
+        }
 
         protected async Task CriarDadosBasicos(FiltroDocumentoDto filtroDocumentoDto)
         {
@@ -54,6 +60,7 @@ namespace SME.SGP.TesteIntegracao.Documento
 
             await CriarTurma(filtroDocumentoDto.Modalidade);
 
+            await CriarTipoDocumento();
             await CriarClassificacaoDocumento();
 
             await CriarArquivos();
@@ -113,76 +120,102 @@ namespace SME.SGP.TesteIntegracao.Documento
             }
         }
 
+        private async Task CriarTipoDocumento()
+        {
+            var camposTipoDocumento = new[] { "descricao" };
+
+            var valoresTipoDocumento = new[] { $"'{Dominio.Enumerados.TipoDocumento.PlanoTrabalho.GetDisplayName()}'"};
+            await InserirNaBase(TIPO_DOCUMENTO, camposTipoDocumento, valoresTipoDocumento);
+
+            valoresTipoDocumento = new[] { $"'{Dominio.Enumerados.TipoDocumento.Documento.GetDisplayName()}'"};
+            await InserirNaBase(TIPO_DOCUMENTO, camposTipoDocumento, valoresTipoDocumento);
+
+            var tipoDocumento = ObterTodos<Dominio.TipoDocumento>();
+        }
+        
         private async Task CriarClassificacaoDocumento()
         {
-            await InserirNaBase(TIPO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                $"'{Dominio.Enumerados.TipoDocumento.PlanoTrabalho.GetDisplayName()}'");
-            
-            await InserirNaBase(TIPO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.TipoDocumento.Documento).ToString(),
-                $"'{Dominio.Enumerados.TipoDocumento.Documento.GetDisplayName()}'");
-            
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.PAEE).ToString(),
+            var camposClassificacaoDocumento = new[] { "descricao", "tipo_documento_id", "ehRegistroMultiplo" };
+
+            var valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.PAEE.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
 
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.PAP).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.PAP.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.POA).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.POA.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
-             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.POED).ToString(),
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
+            
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.POED.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.POEI).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.POEI.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.POSL).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.POSL.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.PlanoTrabalho).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.PEA).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.PEA.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.Documento).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.PPP).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.PPP.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.Documento).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.CartaPedagogica.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.Documento).ToString(),
-                FALSE);
+                FALSE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
             
-            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, 
-                ((long)Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma).ToString(),
+            valoresClassificacaoDocumento = new[]
+            {
                 $"'{Dominio.Enumerados.ClassificacaoDocumento.DocumentosTurma.GetDisplayName()}'",
                 ((long)Dominio.Enumerados.TipoDocumento.Documento).ToString(),
-                TRUE);
-              
+                TRUE
+            };
+            await InserirNaBase(CLASSIFICACAO_DOCUMENTO, camposClassificacaoDocumento,valoresClassificacaoDocumento);
         }
 
         protected async Task CriarPeriodoEscolarTodosBimestres()

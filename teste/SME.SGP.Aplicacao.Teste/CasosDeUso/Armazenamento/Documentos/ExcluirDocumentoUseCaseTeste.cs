@@ -12,11 +12,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
     {
         private readonly Mock<IMediator> mediator;
         private readonly ExcluirDocumentoUseCase useCase;
+        private readonly Mock<IUnitOfWork> unitOfWork;
 
         public ExcluirDocumentoUseCaseTeste()
         {
             mediator = new Mock<IMediator>();
-            useCase = new ExcluirDocumentoUseCase(mediator.Object);
+            unitOfWork = new Mock<IUnitOfWork>();
+            useCase = new ExcluirDocumentoUseCase(mediator.Object,unitOfWork.Object);
         }
 
         [Fact]

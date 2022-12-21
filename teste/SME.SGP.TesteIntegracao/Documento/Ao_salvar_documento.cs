@@ -72,6 +72,19 @@ namespace SME.SGP.TesteIntegracao.Documento
             };
 
             (await useCase.Executar(salvarDocumento)).ShouldBeTrue();
+
+            var documentos = ObterTodos<Dominio.Documento>();
+            documentos.ShouldNotBeNull();
+
+            var documentoSalvo = documentos.FirstOrDefault();
+            documentoSalvo.ShouldNotBeNull();
+
+            var documentosArquivos = ObterTodos<DocumentoArquivo>();
+            documentosArquivos.ShouldNotBeNull();
+
+            var arquivosDoDocumento = documentosArquivos.Where(c => c.DocumentoId == documentoSalvo.Id).ToList();
+            arquivosDoDocumento.ShouldNotBeNull();
+            arquivosDoDocumento.Count.ShouldBe(10);
         }
         
         [Fact(DisplayName = "Deve falhar ao salvar com mais de um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
@@ -198,6 +211,19 @@ namespace SME.SGP.TesteIntegracao.Documento
             };
             
             (await useCase.Executar(salvarDocumento)).ShouldBeTrue();
+            
+            var documentos = ObterTodos<Dominio.Documento>();
+            documentos.ShouldNotBeNull();
+
+            var documentoSalvo = documentos.FirstOrDefault();
+            documentoSalvo.ShouldNotBeNull();
+
+            var documentosArquivos = ObterTodos<DocumentoArquivo>();
+            documentosArquivos.ShouldNotBeNull();
+
+            var arquivosDoDocumento = documentosArquivos.Where(c => c.DocumentoId == documentoSalvo.Id).ToList();
+            arquivosDoDocumento.ShouldNotBeNull();
+            arquivosDoDocumento.Count.ShouldBe(1);            
         }        
     }
 }

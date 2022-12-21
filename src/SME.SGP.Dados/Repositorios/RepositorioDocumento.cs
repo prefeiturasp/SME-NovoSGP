@@ -4,7 +4,6 @@ using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -63,11 +62,11 @@ namespace SME.SGP.Dados.Repositorios
                 .ToList();
 
             var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
-            retorno.TotalRegistros = retorno.Items.Count();
+            retorno.TotalRegistros = retorno.Items != null && retorno.Items.Any() ? retorno.Items.Count() : 0;
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.Items = retorno.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
 
             return retorno;
-
         }
 
         private string ObterTurmaComponenteCurricular(string turmaNome, string componenteCurricularNome, int modalidade)
@@ -92,9 +91,6 @@ namespace SME.SGP.Dados.Repositorios
             ObterCabecalho(sql);
 
             ObterFiltro(sql, tipoDocumentoId, classificacaoId);
-
-            if (paginacao.QuantidadeRegistros > 0)
-                sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
         }
 
         private static void ObterCabecalho(StringBuilder sql)
@@ -131,10 +127,8 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)
         {
-            var query = @"update documento set arquivo_id = null where id = @documentoId and arquivo_id = @arquivoId";
-
+            const string query = @"delete from documento_arquivo where documento_id = @documentoId and arquivo_id = @arquivoId";
             await database.Conexao.ExecuteAsync(query, new { documentoId, arquivoId });
-
             return true;
         }
 
@@ -154,37 +148,85 @@ namespace SME.SGP.Dados.Repositorios
                 new { tipoDocumentoId, classificacaoId, usuarioId, ueId, documentoId });
         }
 
-        public async Task<ObterDocumentoDto> ObterPorIdCompleto(long documentoId)
+        public async Task<ObterDocumentoResumidoDto> ObterPorIdCompleto(long documentoId)
         {
-            var query = @"select 
-                            d.id as Id,
-                            d.arquivo_id as arquivoId,
-                            a2.nome as NomeArquivo,
-	                        d.alterado_em,
-	                        d.alterado_por ,
-	                        d.alterado_rf ,
-	                        d.criado_em ,
-	                        d.criado_por ,
-	                        d.criado_rf ,
-                            d.ano_letivo as AnoLetivo,
-	                        d.classificacao_documento_id as ClassificacaoId,
-	                        cd.tipo_documento_id as TipoDocumentoId,
-	                        u.rf_codigo as ProfessorRf,
-	                        ue.ue_id as UeId,
-	                        dre.dre_id as DreId,
-	                        a2.codigo  as CodigoArquivo,
-	                        d.turma_id as TurmaId,
-	                        t.turma_id as turmaCodigo,
-                            d.componente_curricular_id as ComponenteCurricularId 
-	                        from documento d
-                        inner join usuario u on d.usuario_id = u.id
-                        inner join ue on d.ue_id = ue.id
-                        inner join arquivo a2 on d.arquivo_id = a2.id 
-                        inner join classificacao_documento cd on d.classificacao_documento_id = cd.id 
-                        inner join dre on ue.dre_id = dre.id 
-	                    left join turma t on t.id = d.turma_id 
-                        WHERE d.id = @documentoId";
-            return await database.Conexao.QueryFirstOrDefaultAsync<ObterDocumentoDto>(query, new { documentoId });
+            const string query = @"select 
+                                        d.id as Id,                            
+                                        a.nome as NomeArquivo,
+                                        a.codigo as CodigoArquivo,
+                                        d.alterado_em,
+                                        d.alterado_por ,
+                                        d.alterado_rf ,
+                                        d.criado_em ,
+                                        d.criado_por ,
+                                        d.criado_rf ,
+                                        d.ano_letivo as AnoLetivo,
+                                        d.classificacao_documento_id as ClassificacaoId,
+                                        cd.tipo_documento_id as TipoDocumentoId,
+                                        u.rf_codigo as ProfessorRf,
+                                        ue.ue_id as UeId,
+                                        ue.nome as UeNome,
+                                        dre.dre_id as DreId,
+                                        dre.nome as DreNome,
+                                        d.turma_id as TurmaId,
+                                        t.turma_id as turmaCodigo,
+                                        t.nome as TurmaNome,
+                                        t.semestre,
+                                        t.modalidade_codigo as modalidade,
+                                        d.componente_curricular_id as ComponenteCurricularId,
+                                        cc.descricao as ComponenteCurricularDescricao
+                                    from documento d
+                                        inner join usuario u on d.usuario_id = u.id
+                                        inner join ue on d.ue_id = ue.id 
+                                        inner join classificacao_documento cd on d.classificacao_documento_id = cd.id 
+                                        inner join dre on ue.dre_id = dre.id 
+                                        left join turma t on t.id = d.turma_id 
+                                        left join documento_arquivo da on da.documento_id = d.id 
+                                        left join arquivo a on a.id = da.arquivo_id 
+                                        left join componente_curricular cc on cc.id = d.componente_curricular_id
+                                    WHERE d.id = @documentoId";
+            
+            var documentosCompleto = (await database.Conexao.QueryAsync<ObterDocumentoCompletoDto>(query, new { documentoId })).ToList();
+
+            var documentoCompleto = documentosCompleto.FirstOrDefault();
+
+            if (documentoCompleto == null)
+                return new ObterDocumentoResumidoDto();
+            
+            var documentoResumido = new ObterDocumentoResumidoDto
+            {
+                Id = documentoCompleto.Id,
+                AlteradoEm = documentoCompleto.AlteradoEm,
+                AlteradoPor = documentoCompleto.AlteradoPor,
+                AlteradoRF = documentoCompleto.AlteradoRF,
+                CriadoPor = documentoCompleto.CriadoPor,
+                CriadoRF = documentoCompleto.CriadoRF,
+                CriadoEm = documentoCompleto.CriadoEm,
+                AnoLetivo = documentoCompleto.AnoLetivo,
+                ClassificacaoId = documentoCompleto.ClassificacaoId,
+                TipoDocumentoId = documentoCompleto.TipoDocumentoId,
+                ProfessorRf = documentoCompleto.ProfessorRf,
+                UeId = documentoCompleto.UeId,
+                UeNome = documentoCompleto.UeNome,
+                DreId = documentoCompleto.DreId,
+                DreNome = documentoCompleto.DreNome,
+                TurmaId = documentoCompleto.TurmaId,
+                TurmaCodigo = documentoCompleto.TurmaCodigo,
+                TurmaNome = documentoCompleto.TurmaNome,
+                Modalidade = documentoCompleto.Modalidade,
+                ModalidadeNome = documentoCompleto.Modalidade == null ? null : ((Modalidade)documentoCompleto.Modalidade).Name(), 
+                Semestre = documentoCompleto.Semestre,
+                ComponenteCurricularId = documentoCompleto.ComponenteCurricularId,
+                ComponenteCurricularDescricao = documentoCompleto.ComponenteCurricularDescricao
+            };
+
+            documentoResumido.Arquivos.AddRange(documentosCompleto.ToList().Select(s => new ArquivoResumidoDto
+            {
+                Codigo = s.CodigoArquivo,
+                Nome = s.NomeArquivo
+            }));
+
+            return documentoResumido;
         }
     }
 }

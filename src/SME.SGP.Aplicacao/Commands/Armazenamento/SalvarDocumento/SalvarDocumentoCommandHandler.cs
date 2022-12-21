@@ -12,10 +12,17 @@ namespace SME.SGP.Aplicacao
     public class SalvarDocumentoCommandHandler : AbstractUseCase, IRequestHandler<SalvarDocumentoCommand, bool>
     {
         private readonly IRepositorioDocumento repositorioDocumento;
+        private readonly IRepositorioDocumentoArquivo repositorioDocumentoArquivo;
+        private readonly IUnitOfWork unitOfWork;
 
-        public SalvarDocumentoCommandHandler(IRepositorioDocumento repositorioDocumento, IMediator mediator) : base(mediator)
+        public SalvarDocumentoCommandHandler(IRepositorioDocumento repositorioDocumento,
+            IRepositorioDocumentoArquivo repositorioDocumentoArquivo,
+            IMediator mediator,
+            IUnitOfWork unitOfWork) : base(mediator)
         {
             this.repositorioDocumento = repositorioDocumento ?? throw new ArgumentNullException(nameof(repositorioDocumento));
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            this.repositorioDocumentoArquivo = repositorioDocumentoArquivo;
         }
 
         public async Task<bool> Handle(SalvarDocumentoCommand request, CancellationToken cancellationToken)
@@ -69,17 +76,36 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(MensagemNegocioDocumento.ESCOLAR_EDUCACAO_INFANTIL_NAO_PODEM_FAZER_UPLOAD_PLANO_TRABALHO);
             }
 
-            foreach (var documento in arquivos.Select(arquivo => new Documento
-                     {
-                         ClassificacaoDocumentoId = request.SalvarDocumentoDto.ClassificacaoId,
-                         UsuarioId = request.SalvarDocumentoDto.UsuarioId,
-                         UeId = request.SalvarDocumentoDto.UeId,                         
-                         AnoLetivo = request.SalvarDocumentoDto.AnoLetivo,
-                         TurmaId = request.SalvarDocumentoDto.TurmaId,
-                         ComponenteCurricularId = request.SalvarDocumentoDto.ComponenteCurricularId
-                     }))
+            unitOfWork.IniciarTransacao();
+            try
             {
-                await repositorioDocumento.SalvarAsync(documento);
+                var documento = new Documento
+                {
+                    ClassificacaoDocumentoId = request.SalvarDocumentoDto.ClassificacaoId,
+                    UsuarioId = request.SalvarDocumentoDto.UsuarioId,
+                    UeId = request.SalvarDocumentoDto.UeId,
+                    AnoLetivo = request.SalvarDocumentoDto.AnoLetivo,
+                    TurmaId = request.SalvarDocumentoDto.TurmaId,
+                    ComponenteCurricularId = request.SalvarDocumentoDto.ComponenteCurricularId
+                };
+                
+                var documentoId = await repositorioDocumento.SalvarAsync(documento);
+
+                foreach (var documentoArquivo in arquivos.Select(arquivo => new DocumentoArquivo
+                         {
+                             ArquivoId = arquivo.Id,
+                             DocumentoId = documentoId
+                         }))
+                {
+                    await repositorioDocumentoArquivo.SalvarAsync(documentoArquivo);
+                }
+
+                unitOfWork.PersistirTransacao();
+            }
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
             }
 
             return true;
