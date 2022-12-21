@@ -56,15 +56,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var retorno = await obterSecoesItineranciaEncaminhamentoNaapaUseCase.Executar(1);
 
             retorno.ShouldNotBeNull("Nenhuma seção de itinerância registrada para o Encaminhamento NAAPA");
-            retorno.Count().ShouldBe(2, "Qdade registros seções itinerância Encaminhamento NAAPA inválida");
+            retorno.Items.Count().ShouldBe(2, "Qdade registros seções itinerância Encaminhamento NAAPA inválida");
 
-            var primeiraSecaoItinerancia = retorno.OrderBy(secao => secao.Auditoria.Id).FirstOrDefault();
+            var primeiraSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).FirstOrDefault();
             primeiraSecaoItinerancia.ShouldNotBeNull("1º Seção de itinerância não registrada para o Encaminhamento NAAPA");
             primeiraSecaoItinerancia.DataAtendimento.ShouldBe(DateTimeExtension.HorarioBrasilia().Date);
             primeiraSecaoItinerancia.TipoAtendimento.ShouldBe("Atendimento não presencial");
             primeiraSecaoItinerancia.Auditoria.CriadoPor.ShouldNotBeNull("Usuário criador não preenchido em auditoria 1º Seção de itinerância");
 
-            var segundaSecaoItinerancia = retorno.OrderBy(secao => secao.Auditoria.Id).LastOrDefault();
+            var segundaSecaoItinerancia = retorno.Items.OrderBy(secao => secao.Auditoria.Id).LastOrDefault();
             segundaSecaoItinerancia.ShouldNotBeNull("2º Seção de itinerância não registrada para o Encaminhamento NAAPA");
             segundaSecaoItinerancia.DataAtendimento.ShouldBe(DateTimeExtension.HorarioBrasilia().Date.AddDays(4));
             segundaSecaoItinerancia.TipoAtendimento.ShouldBe("Grupo de Trabalho NAAPA");

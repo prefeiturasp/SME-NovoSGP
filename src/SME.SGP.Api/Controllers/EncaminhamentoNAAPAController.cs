@@ -52,7 +52,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("{encaminhamentoNAAPAId}/secoes-itinerancia")]
-        [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterSecoesItineranciaDeEncaminhamentoNAAPA(long encaminhamentoNAAPAId,

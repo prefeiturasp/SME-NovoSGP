@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
-    public interface IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase
-    {
-        Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId);
-    }
+    public interface IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase : IUseCase<long, PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>>
+    {}
+
 }

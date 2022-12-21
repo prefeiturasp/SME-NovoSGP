@@ -18,10 +18,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>> Executar(long encaminhamentoNAAPAId)
         {
-            var secoesQuestionario = await mediator.Send(new ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
-            return secoesQuestionario;
+            return await mediator.Send(new ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
         }
     }
 }

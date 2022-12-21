@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao.Queries
 {
-    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery : IRequest<IEnumerable<EncaminhamentoNAAPASecaoItineranciaDto>>
+    public class ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery : IRequest<PaginacaoResultadoDto<EncaminhamentoNAAPASecaoItineranciaDto>>
     {
         public ObterSecoesItineranciaDeEncaminhamentoNAAPAQuery(long encaminhamentoNAAPAId)
         {
