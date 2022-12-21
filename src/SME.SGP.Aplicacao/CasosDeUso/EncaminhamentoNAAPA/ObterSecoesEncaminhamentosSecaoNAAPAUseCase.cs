@@ -12,6 +12,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     public class ObterSecoesEncaminhamentosSecaoNAAPAUseCase : IObterSecoesEncaminhamentosSecaoNAAPAUseCase
     {
         private readonly IMediator mediator;
+        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
 
         public ObterSecoesEncaminhamentosSecaoNAAPAUseCase(IMediator mediator)
         {
@@ -27,8 +28,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             
             foreach (var secao in secoesQuestionario)
             {
-                var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
-                secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
+                if (secao.NomeComponente == SECAO_ITINERANCIA)
+                    secao.Concluido = true;
+                else
+                {
+                    var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
+                    secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
+                }
             }
             
             return secoesQuestionario;
