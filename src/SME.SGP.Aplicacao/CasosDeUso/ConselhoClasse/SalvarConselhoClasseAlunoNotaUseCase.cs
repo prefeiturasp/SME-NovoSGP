@@ -118,14 +118,6 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var periodoReabertura = await ObtenhaPeriodoDeAbertura(periodoEscolar, turma, periodoInicio);
-
-            if (periodoReabertura != null)
-            {
-                periodoInicio = periodoReabertura.Inicio.Date;
-                periodoFim = periodoReabertura.Fim.Date;
-            }
-
             var visualizaNotas = (periodoEscolar is null && !alunoConselho.Inativo) ||
                 (!alunoConselho.Inativo && alunoConselho.DataMatricula.Date <= periodoFim) ||
                 (alunoConselho.Inativo && alunoConselho.DataSituacao.Date > periodoInicio);
