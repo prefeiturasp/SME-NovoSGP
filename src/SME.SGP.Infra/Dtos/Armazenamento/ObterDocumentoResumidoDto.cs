@@ -14,12 +14,19 @@ namespace SME.SGP.Infra
         public long ClassificacaoId { get; set; }
         public long TipoDocumentoId { get; set; }
         public string UeId { get; set; }
+        public string UeNome { get; set; }
         public string DreId { get; set; }
+        public string DreNome { get; set; }
         public long AnoLetivo { get; set; }
         public string ProfessorRf { get; set; }
         public long? TurmaId { get; set; }
         public string TurmaCodigo { get; set; }
+        public string TurmaNome { get; set; }
+        public int? Modalidade { get; set; }
+        public string ModalidadeNome { get; set; }
+        public int? Semestre { get; set; }
         public long? ComponenteCurricularId { get; set; }
+        public string ComponenteCurricularDescricao { get; set; }
         public List<ArquivoResumidoDto> Arquivos { get; set; }
     }
 }
