@@ -62,8 +62,9 @@ namespace SME.SGP.Dados.Repositorios
                 .ToList();
 
             var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
-            retorno.TotalRegistros = retorno.Items.Count();
+            retorno.TotalRegistros = retorno.Items != null && retorno.Items.Any() ? retorno.Items.Count() : 0;
             retorno.TotalPaginas = (int)Math.Ceiling((double)retorno.TotalRegistros / paginacao.QuantidadeRegistros);
+            retorno.Items = retorno.Items.Skip(paginacao.QuantidadeRegistrosIgnorados).Take(paginacao.QuantidadeRegistros);
 
             return retorno;
         }
@@ -90,9 +91,6 @@ namespace SME.SGP.Dados.Repositorios
             ObterCabecalho(sql);
 
             ObterFiltro(sql, tipoDocumentoId, classificacaoId);
-
-            if (paginacao.QuantidadeRegistros > 0)
-                sql.AppendLine($"OFFSET {paginacao.QuantidadeRegistrosIgnorados} ROWS FETCH NEXT {paginacao.QuantidadeRegistros} ROWS ONLY");
         }
 
         private static void ObterCabecalho(StringBuilder sql)
