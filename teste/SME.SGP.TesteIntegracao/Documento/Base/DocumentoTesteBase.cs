@@ -38,6 +38,11 @@ namespace SME.SGP.TesteIntegracao.Documento
         {
             return ServiceProvider.GetService<ISalvarDocumentoUseCase>();
         }
+        
+        protected IExcluirDocumentoUseCase ObterServicoExcluirDocumentoUseCase()
+        {
+            return ServiceProvider.GetService<IExcluirDocumentoUseCase>();
+        }
 
         protected async Task CriarDadosBasicos(FiltroDocumentoDto filtroDocumentoDto)
         {

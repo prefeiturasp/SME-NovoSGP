@@ -6,19 +6,23 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterDocumentosArquivosPorDocumentoIdQueryHandler : IRequestHandler<ObterDocumentosArquivosPorDocumentoIdQuery, IEnumerable<DocumentoArquivo>>
+namespace SME.SGP.Aplicacao
 {
-    private readonly IRepositorioDocumentoArquivo repositorioDocumentoArquivo;
-
-    public ObterDocumentosArquivosPorDocumentoIdQueryHandler(IRepositorioDocumentoArquivo repositorioDocumentoArquivo)
+    public class ObterDocumentosArquivosPorDocumentoIdQueryHandler : IRequestHandler<ObterDocumentosArquivosPorDocumentoIdQuery, IEnumerable<DocumentoArquivo>>
     {
-        this.repositorioDocumentoArquivo = repositorioDocumentoArquivo ?? throw new ArgumentNullException(nameof(repositorioDocumentoArquivo));
-    }
+        private readonly IRepositorioDocumentoArquivo repositorioDocumentoArquivo;
 
-    public async Task<IEnumerable<DocumentoArquivo>> Handle(ObterDocumentosArquivosPorDocumentoIdQuery request, CancellationToken cancellationToken)
-    {
-        return await repositorioDocumentoArquivo.ObterDocumentosArquivosPorDocumentoIdAsync(request.DocumentoId);
+        public ObterDocumentosArquivosPorDocumentoIdQueryHandler(
+            IRepositorioDocumentoArquivo repositorioDocumentoArquivo)
+        {
+            this.repositorioDocumentoArquivo = repositorioDocumentoArquivo ??
+                                               throw new ArgumentNullException(nameof(repositorioDocumentoArquivo));
+        }
+
+        public async Task<IEnumerable<DocumentoArquivo>> Handle(ObterDocumentosArquivosPorDocumentoIdQuery request,
+            CancellationToken cancellationToken)
+        {
+            return await repositorioDocumentoArquivo.ObterDocumentosArquivosPorDocumentoIdAsync(request.DocumentoId);
+        }
     }
 }

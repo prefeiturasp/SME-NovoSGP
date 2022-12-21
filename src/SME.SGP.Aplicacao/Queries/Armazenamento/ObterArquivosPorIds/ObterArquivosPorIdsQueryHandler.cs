@@ -6,19 +6,21 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterArquivosPorIdsQueryHandler : IRequestHandler<ObterArquivosPorIdsQuery, IEnumerable<Arquivo>>
+namespace SME.SGP.Aplicacao
 {
-    private readonly IRepositorioArquivo repositorioArquivo;
-
-    public ObterArquivosPorIdsQueryHandler(IRepositorioArquivo repositorioArquivo)
+    public class ObterArquivosPorIdsQueryHandler : IRequestHandler<ObterArquivosPorIdsQuery, IEnumerable<Arquivo>>
     {
-        this.repositorioArquivo = repositorioArquivo ?? throw new ArgumentNullException(nameof(repositorioArquivo));
-    }
+        private readonly IRepositorioArquivo repositorioArquivo;
 
-    public async Task<IEnumerable<Arquivo>> Handle(ObterArquivosPorIdsQuery request, CancellationToken cancellationToken)
-    {
-        return await repositorioArquivo.ObterPorIds(request.Ids);
+        public ObterArquivosPorIdsQueryHandler(IRepositorioArquivo repositorioArquivo)
+        {
+            this.repositorioArquivo = repositorioArquivo ?? throw new ArgumentNullException(nameof(repositorioArquivo));
+        }
+
+        public async Task<IEnumerable<Arquivo>> Handle(ObterArquivosPorIdsQuery request,
+            CancellationToken cancellationToken)
+        {
+            return await repositorioArquivo.ObterPorIds(request.Ids);
+        }
     }
 }

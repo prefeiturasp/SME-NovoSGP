@@ -1,13 +1,14 @@
 ﻿using FluentValidation;
 
-namespace SME.SGP.Aplicacao;
-
-public class ObterArquivosPorIdsQueryValidator : AbstractValidator<ObterArquivosPorIdsQuery>
+namespace SME.SGP.Aplicacao
 {
-    public ObterArquivosPorIdsQueryValidator()
+    public class ObterArquivosPorIdsQueryValidator : AbstractValidator<ObterArquivosPorIdsQuery>
     {
-        RuleFor(c => c.Ids)
-            .NotNull()
-            .WithMessage("Os Ids dos arquivos devem ser informados para obter seus dados.");        
+        public ObterArquivosPorIdsQueryValidator()
+        {
+            RuleFor(c => c.Ids)
+                .NotNull()
+                .WithMessage("Os Ids dos arquivos devem ser informados para obter seus dados.");
+        }
     }
 }
