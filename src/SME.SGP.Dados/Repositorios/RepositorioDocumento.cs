@@ -57,8 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                             Nome = s.NomeArquivo
                         }).ToList()
                 })
-                .OrderBy(o=> o.TurmaComponenteCurricular)
-                .ThenBy(p=> p.DocumentoId)
+                .OrderByDescending(o=> o.Data)
+                .ThenBy(o=> o.TurmaComponenteCurricular)
                 .ToList();
 
             var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
