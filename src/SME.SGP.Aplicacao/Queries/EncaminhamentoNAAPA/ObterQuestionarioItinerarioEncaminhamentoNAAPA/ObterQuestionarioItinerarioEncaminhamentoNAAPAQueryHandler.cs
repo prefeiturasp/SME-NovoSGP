@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -9,24 +10,33 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery, IEnumerable<QuestaoDto>>
+    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler : IRequestHandler<ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery, EncaminhamentoNAAPASecaoItineranciaQuestoesDto>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento;
+        private readonly IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao;
 
-        public ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler(IMediator mediator, IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento, IRepositorioQuestionario repositorioQuestionario)
+        public ObterQuestionarioItinerarioEncaminhamentoNAAPAQueryHandler(
+                                                        IMediator mediator, 
+                                                        IRepositorioQuestaoEncaminhamentoNAAPA repositorioQuestaoEncaminhamento,
+                                                        IRepositorioEncaminhamentoNAAPASecao repositorioEncaminhamentoNAAPASecao)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.repositorioQuestaoEncaminhamento = repositorioQuestaoEncaminhamento ?? throw new ArgumentNullException(nameof(repositorioQuestaoEncaminhamento));
+            this.repositorioEncaminhamentoNAAPASecao = repositorioEncaminhamentoNAAPASecao ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPASecao));
         }
 
-        public async Task<IEnumerable<QuestaoDto>> Handle(ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
+        public async Task<EncaminhamentoNAAPASecaoItineranciaQuestoesDto> Handle(ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery request, CancellationToken cancellationToken)
         {
+            var encaminhamento = new EncaminhamentoNAAPASecaoItineranciaQuestoesDto();
             var respostasEncaminhamento = request.EncaminhamentoSecaoId.HasValue ?
                                         await repositorioQuestaoEncaminhamento.ObterRespostasItinerarioEncaminhamento(request.EncaminhamentoSecaoId.Value) :
                                         Enumerable.Empty<RespostaQuestaoEncaminhamentoNAAPADto>();
 
-            return await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
+            if (respostasEncaminhamento.Any())
+                encaminhamento.Auditoria = await repositorioEncaminhamentoNAAPASecao.ObterAuditoriaEncaminhamentoNaapaSecao(request.EncaminhamentoSecaoId.Value);
+                
+            encaminhamento.Questoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(request.QuestionarioId, questaoId =>
                 respostasEncaminhamento.Where(c => c.QuestaoId == questaoId)
                 .Select(respostaEncaminhamento =>
                 {
@@ -38,6 +48,8 @@ namespace SME.SGP.Aplicacao
                         Arquivo = respostaEncaminhamento.Arquivo
                     };
                 })));
+
+            return encaminhamento;
         }
     }
 }
