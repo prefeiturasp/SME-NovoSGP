@@ -4,15 +4,14 @@ using System.Text;
 
 namespace SME.SGP.Infra
 {
-    public class ObterDocumentoDto : AuditoriaDto
+    public class ObterDocumentoCompletoDto : AuditoriaDto
     {
-        public ObterDocumentoDto() { }
+        public ObterDocumentoCompletoDto() { }
 
         public long ClassificacaoId { get; set; }
         public long TipoDocumentoId { get; set; }
         public string UeId { get; set; }
         public string DreId { get; set; }
-        public long ArquivoId { get; set; }
         public long AnoLetivo { get; set; }
         public string ProfessorRf { get; set; }
         public string NomeArquivo { get; set; }

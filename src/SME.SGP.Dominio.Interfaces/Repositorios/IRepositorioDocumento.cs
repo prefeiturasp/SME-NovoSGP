@@ -11,6 +11,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, long classificacaoId, Paginacao paginacao);
         Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId);
         Task<bool> ExcluirDocumentoPorId(long id);
-        Task<ObterDocumentoDto> ObterPorIdCompleto(long documentoId);
+        Task<ObterDocumentoResumidoDto> ObterPorIdCompleto(long documentoId);
     }
 }

@@ -150,37 +150,68 @@ namespace SME.SGP.Dados.Repositorios
                 new { tipoDocumentoId, classificacaoId, usuarioId, ueId, documentoId });
         }
 
-        public async Task<ObterDocumentoDto> ObterPorIdCompleto(long documentoId)
+        public async Task<ObterDocumentoResumidoDto> ObterPorIdCompleto(long documentoId)
         {
             var query = @"select 
-                            d.id as Id,
-                            d.arquivo_id as arquivoId,
-                            a2.nome as NomeArquivo,
-	                        d.alterado_em,
-	                        d.alterado_por ,
-	                        d.alterado_rf ,
-	                        d.criado_em ,
-	                        d.criado_por ,
-	                        d.criado_rf ,
+                            d.id as Id,                            
+                            a.nome as NomeArquivo,
+                            a.codigo as CodigoArquivo,
+                            d.alterado_em,
+                            d.alterado_por ,
+                            d.alterado_rf ,
+                            d.criado_em ,
+                            d.criado_por ,
+                            d.criado_rf ,
                             d.ano_letivo as AnoLetivo,
-	                        d.classificacao_documento_id as ClassificacaoId,
-	                        cd.tipo_documento_id as TipoDocumentoId,
-	                        u.rf_codigo as ProfessorRf,
-	                        ue.ue_id as UeId,
-	                        dre.dre_id as DreId,
-	                        a2.codigo  as CodigoArquivo,
-	                        d.turma_id as TurmaId,
-	                        t.turma_id as turmaCodigo,
+                            d.classificacao_documento_id as ClassificacaoId,
+                            cd.tipo_documento_id as TipoDocumentoId,
+                            u.rf_codigo as ProfessorRf,
+                            ue.ue_id as UeId,
+                            dre.dre_id as DreId,    
+                            d.turma_id as TurmaId,
+                            t.turma_id as turmaCodigo,
                             d.componente_curricular_id as ComponenteCurricularId 
-	                        from documento d
+                            from documento d
                         inner join usuario u on d.usuario_id = u.id
-                        inner join ue on d.ue_id = ue.id
-                        inner join arquivo a2 on d.arquivo_id = a2.id 
+                        inner join ue on d.ue_id = ue.id 
                         inner join classificacao_documento cd on d.classificacao_documento_id = cd.id 
                         inner join dre on ue.dre_id = dre.id 
-	                    left join turma t on t.id = d.turma_id 
+                        left join turma t on t.id = d.turma_id 
+                        left join documento_arquivo da on da.documento_id = d.id 
+                        left join arquivo a on a.id = da.arquivo_id 
                         WHERE d.id = @documentoId";
-            return await database.Conexao.QueryFirstOrDefaultAsync<ObterDocumentoDto>(query, new { documentoId });
+            
+            var documentosCompleto = await database.Conexao.QueryAsync<ObterDocumentoCompletoDto>(query, new { documentoId });
+
+            var documentoCompleto = documentosCompleto.FirstOrDefault();
+            
+            var documentoResumido = new ObterDocumentoResumidoDto
+            {
+                Id = documentoCompleto.Id,
+                AlteradoEm = documentoCompleto.AlteradoEm,
+                AlteradoPor = documentoCompleto.AlteradoPor,
+                AlteradoRF = documentoCompleto.AlteradoRF,
+                CriadoPor = documentoCompleto.CriadoPor,
+                CriadoRF = documentoCompleto.CriadoRF,
+                CriadoEm = documentoCompleto.CriadoEm,
+                AnoLetivo = documentoCompleto.AnoLetivo,
+                ClassificacaoId = documentoCompleto.ClassificacaoId,
+                TipoDocumentoId = documentoCompleto.TipoDocumentoId,
+                ProfessorRf = documentoCompleto.ProfessorRf,
+                UeId = documentoCompleto.UeId,
+                DreId = documentoCompleto.DreId,
+                TurmaId = documentoCompleto.TurmaId,
+                TurmaCodigo = documentoCompleto.TurmaCodigo,
+                ComponenteCurricularId = documentoCompleto.ComponenteCurricularId
+            };
+            
+            documentoResumido.Arquivos.AddRange(documentosCompleto.ToList().Select(s=> new ArquivoResumidoDto
+            {
+                Codigo = s.CodigoArquivo,
+                Nome = s.NomeArquivo
+            }));
+
+            return documentoResumido;
         }
     }
 }

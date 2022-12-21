@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDocumentoPorIdCompletoQuery : IRequest<ObterDocumentoDto>
+    public class ObterDocumentoPorIdCompletoQuery : IRequest<ObterDocumentoResumidoDto>
     {
         public ObterDocumentoPorIdCompletoQuery(long documentoId)
         {
