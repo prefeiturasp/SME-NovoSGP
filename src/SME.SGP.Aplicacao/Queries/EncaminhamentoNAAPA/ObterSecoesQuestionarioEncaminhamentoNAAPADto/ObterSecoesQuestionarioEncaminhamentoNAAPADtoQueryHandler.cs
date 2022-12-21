@@ -22,12 +22,7 @@ namespace SME.SGP.Aplicacao.Queries
         
         public async Task<IEnumerable<SecaoQuestionarioDto>> Handle(ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery request, CancellationToken cancellationToken)
         {
-            var retorno = await repositorioSecaoNAAPA.ObterSecoesQuestionarioDto(request.Modalidade);
-
-            if (request.NomesComponentesSecoesIgnoradas != null)
-                retorno = retorno.Where(secao => !request.NomesComponentesSecoesIgnoradas.Any(x => x == secao.NomeComponente));
-            return retorno;
-
+            return await repositorioSecaoNAAPA.ObterSecoesQuestionarioDto(request.Modalidade);
         }
     }
 }

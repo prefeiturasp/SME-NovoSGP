@@ -284,7 +284,7 @@ namespace SME.SGP.Aplicacao
 
         {
             List<QuestaoObrigatoriaNaoRespondidaDto> questoesObrigatoriasAConsistir = new List<QuestaoObrigatoriaNaoRespondidaDto>();
-            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade, new string[] { SECAO_ITINERANCIA }));
+            var secoesEtapa = await mediator.Send(new ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(codigoModalidade));
             IEnumerable<RespostaQuestaoObrigatoriaDto> respostasPersistidas = null;
 
             foreach (var secao in secoesEtapa)

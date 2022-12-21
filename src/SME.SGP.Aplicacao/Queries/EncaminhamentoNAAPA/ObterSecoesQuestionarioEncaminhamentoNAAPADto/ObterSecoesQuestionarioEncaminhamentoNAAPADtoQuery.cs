@@ -9,13 +9,11 @@ namespace SME.SGP.Aplicacao.Queries
     public class ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery : IRequest<IEnumerable<SecaoQuestionarioDto>>
     {
 
-        public ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(int modalidade, string?[] nomesComponentesSecoesIgnoradas)
+        public ObterSecoesQuestionarioEncaminhamentoNAAPADtoQuery(int modalidade)
         {
             Modalidade = modalidade;
-            NomesComponentesSecoesIgnoradas = nomesComponentesSecoesIgnoradas;
         }
 
-        public string?[] NomesComponentesSecoesIgnoradas { get; }
         public int Modalidade { get; }
     }
 

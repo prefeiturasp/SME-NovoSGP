@@ -31,6 +31,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = @encaminhamentoNAAPAId 
                                                                  and eas.secao_encaminhamento_id = sea.id
                                                                  and not eas.excluido   
+                                                                 and sea.nome_componente <> 'QUESTOES_ITINERACIA'
                          left join secao_encaminhamento_naapa_modalidade senm on senm.secao_encaminhamento_id = sea.id 
                          WHERE not sea.excluido 
                         AND ((senm.modalidade_codigo = @modalidade) or (senm.modalidade_codigo is null)) 
