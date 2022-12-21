@@ -162,7 +162,9 @@ namespace SME.SGP.Dados.Repositorios
                                         d.criado_rf ,
                                         d.ano_letivo as AnoLetivo,
                                         d.classificacao_documento_id as ClassificacaoId,
+                                        cd.descricao as ClassificacaoDescricao,
                                         cd.tipo_documento_id as TipoDocumentoId,
+                                        td.descricao as TipoDocumentoDescricao,
                                         u.rf_codigo as ProfessorRf,
                                         ue.ue_id as UeId,
                                         ue.nome as UeNome,
@@ -170,7 +172,7 @@ namespace SME.SGP.Dados.Repositorios
                                         dre.nome as DreNome,
                                         d.turma_id as TurmaId,
                                         t.turma_id as turmaCodigo,
-                                        t.nome as TurmaNome,
+                                        t.nome_filtro as TurmaNome,
                                         t.semestre,
                                         t.modalidade_codigo as modalidade,
                                         d.componente_curricular_id as ComponenteCurricularId,
@@ -184,6 +186,7 @@ namespace SME.SGP.Dados.Repositorios
                                         left join documento_arquivo da on da.documento_id = d.id 
                                         left join arquivo a on a.id = da.arquivo_id 
                                         left join componente_curricular cc on cc.id = d.componente_curricular_id
+                                        inner join tipo_documento td on td.id = cd.tipo_documento_id
                                     WHERE d.id = @documentoId";
             
             var documentosCompleto = (await database.Conexao.QueryAsync<ObterDocumentoCompletoDto>(query, new { documentoId })).ToList();
@@ -204,7 +207,9 @@ namespace SME.SGP.Dados.Repositorios
                 CriadoEm = documentoCompleto.CriadoEm,
                 AnoLetivo = documentoCompleto.AnoLetivo,
                 ClassificacaoId = documentoCompleto.ClassificacaoId,
+                ClassificacaoDescricao = documentoCompleto.ClassificacaoDescricao,
                 TipoDocumentoId = documentoCompleto.TipoDocumentoId,
+                TipoDocumentoDescricao = documentoCompleto.TipoDocumentoDescricao,
                 ProfessorRf = documentoCompleto.ProfessorRf,
                 UeId = documentoCompleto.UeId,
                 UeNome = documentoCompleto.UeNome,
