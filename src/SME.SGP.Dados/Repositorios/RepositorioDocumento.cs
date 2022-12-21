@@ -170,7 +170,7 @@ namespace SME.SGP.Dados.Repositorios
                                         dre.nome as DreNome,
                                         d.turma_id as TurmaId,
                                         t.turma_id as turmaCodigo,
-                                        t.nome as TurmaNome,
+                                        t.nome_filtro as TurmaNome,
                                         t.semestre,
                                         t.modalidade_codigo as modalidade,
                                         d.componente_curricular_id as ComponenteCurricularId,
