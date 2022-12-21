@@ -25,5 +25,6 @@ namespace SME.SGP.Infra
         public int? Semestre { get; set; }
         public long? ComponenteCurricularId { get; set; }
         public string ComponenteCurricularDescricao { get; set; }
+        public int TipoEscola { get; set; }
     }
 }

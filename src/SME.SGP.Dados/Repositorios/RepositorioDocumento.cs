@@ -168,6 +168,7 @@ namespace SME.SGP.Dados.Repositorios
                                         u.rf_codigo as ProfessorRf,
                                         ue.ue_id as UeId,
                                         ue.nome as UeNome,
+                                        ue.tipo_escola as TipoEscola,
                                         dre.dre_id as DreId,
                                         dre.nome as DreNome,
                                         d.turma_id as TurmaId,
@@ -195,7 +196,7 @@ namespace SME.SGP.Dados.Repositorios
 
             if (documentoCompleto == null)
                 return new ObterDocumentoResumidoDto();
-            
+
             var documentoResumido = new ObterDocumentoResumidoDto
             {
                 Id = documentoCompleto.Id,
@@ -212,14 +213,18 @@ namespace SME.SGP.Dados.Repositorios
                 TipoDocumentoDescricao = documentoCompleto.TipoDocumentoDescricao,
                 ProfessorRf = documentoCompleto.ProfessorRf,
                 UeId = documentoCompleto.UeId,
-                UeNome = documentoCompleto.UeNome,
+                UeNome = (TipoEscola)documentoCompleto.TipoEscola == TipoEscola.Nenhum
+                    ? documentoCompleto.UeNome
+                    : $"{((TipoEscola)documentoCompleto.TipoEscola).ShortName()} {documentoCompleto.UeNome}",
                 DreId = documentoCompleto.DreId,
                 DreNome = documentoCompleto.DreNome,
                 TurmaId = documentoCompleto.TurmaId,
                 TurmaCodigo = documentoCompleto.TurmaCodigo,
                 TurmaNome = documentoCompleto.TurmaNome,
                 Modalidade = documentoCompleto.Modalidade,
-                ModalidadeNome = documentoCompleto.Modalidade == null ? null : ((Modalidade)documentoCompleto.Modalidade).Name(), 
+                ModalidadeNome = documentoCompleto.Modalidade == null
+                    ? null
+                    : ((Modalidade)documentoCompleto.Modalidade).Name(),
                 Semestre = documentoCompleto.Semestre,
                 ComponenteCurricularId = documentoCompleto.ComponenteCurricularId,
                 ComponenteCurricularDescricao = documentoCompleto.ComponenteCurricularDescricao
