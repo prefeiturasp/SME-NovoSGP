@@ -11,6 +11,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
     public class ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler : IRequestHandler<ObterSecoesEncaminhamentosSecaoNAAPAQuery, IEnumerable<SecaoQuestionarioDto>>
     {
         private readonly IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA;
+        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
 
         public ObterSecoesEncaminhamentosSecaoNAAPAQueryHandler(IRepositorioSecaoEncaminhamentoNAAPA repositorioSecaoEncaminhamentoNAPPA)
         {
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
 
         private IEnumerable<SecaoQuestionarioDto> MapearParaDto(IEnumerable<SecaoEncaminhamentoNAAPA> secoes)
         {
-            foreach(var secao in secoes)
+            foreach (var secao in secoes)
             {
                 yield return new SecaoQuestionarioDto()
                 {
@@ -34,7 +35,7 @@ namespace SME.SGP.Aplicacao.Queries.Evento.ObterDataPossuiEventoLiberacaoExcepci
                     Nome = secao.Nome,
                     QuestionarioId = secao.QuestionarioId,
                     Etapa = secao.Etapa,
-                    Concluido = secao.EncaminhamentoNAAPASecao?.Concluido ?? false,
+                    Concluido = (secao.NomeComponente == SECAO_ITINERANCIA) || (secao.EncaminhamentoNAAPASecao?.Concluido ?? false),
                     NomeComponente = secao.NomeComponente,
                     Auditoria = (AuditoriaDto)secao.EncaminhamentoNAAPASecao
                 };
