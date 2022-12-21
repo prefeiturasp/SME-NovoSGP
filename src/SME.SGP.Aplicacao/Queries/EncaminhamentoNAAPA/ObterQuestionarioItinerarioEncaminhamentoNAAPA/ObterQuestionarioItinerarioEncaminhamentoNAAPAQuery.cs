@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery : IRequest<IEnumerable<QuestaoDto>>
+    public class ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery : IRequest<EncaminhamentoNAAPASecaoItineranciaQuestoesDto>
     {
         public ObterQuestionarioItinerarioEncaminhamentoNAAPAQuery(long questionarioId, long? encaminhamentoSecaoId)
         {

@@ -49,16 +49,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var retorno = await useCase.Executar(3, null);
             retorno.ShouldNotBeNull();
-            var questao1 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DATA_ATENDIMENTO);
+
+            var questoes = retorno.Questoes;
+            questoes.ShouldNotBeNull();
+
+            var questao1 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DATA_ATENDIMENTO);
             questao1.ShouldNotBeNull();
   
-            var questao2 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_TIPO_ATENDIMENTO);
+            var questao2 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_TIPO_ATENDIMENTO);
             questao2.ShouldNotBeNull();
 
-            var questao3 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
+            var questao3 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
             questao3.ShouldNotBeNull();
        
-            var questao4 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DESCRICAO_ATENDIMENTO);
+            var questao4 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DESCRICAO_ATENDIMENTO);
             questao4.ShouldNotBeNull();
         }
 
@@ -187,28 +191,32 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var retorno = await useCase.Executar(3, 1);
             retorno.ShouldNotBeNull();
-            var questao1 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DATA_ATENDIMENTO);
+
+            var questoes = retorno.Questoes;
+            questoes.ShouldNotBeNull();
+
+            var questao1 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DATA_ATENDIMENTO);
             questao1.ShouldNotBeNull();
             questao1.Resposta.ShouldNotBeNull();
             var respostaQuestao1 = questao1.Resposta.FirstOrDefault();
             respostaQuestao1.ShouldNotBeNull();
             respostaQuestao1.Texto.ShouldBe(dataQueixa.ToString("dd/MM/yyyy"));
 
-            var questao2 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_TIPO_ATENDIMENTO);
+            var questao2 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_TIPO_ATENDIMENTO);
             questao2.ShouldNotBeNull();
             questao2.Resposta.ShouldNotBeNull();
             var respostaQuestao2 = questao2.Resposta.FirstOrDefault();
             respostaQuestao2.ShouldNotBeNull();
             respostaQuestao2.OpcaoRespostaId.ShouldBe(ID_OPCAO_RESPOSTA_ATENDIMENTO_NAO_PRESENCIAL);
 
-            var questao3 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
+            var questao3 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_PROCEDIMENTO_TRABALHO);
             questao3.ShouldNotBeNull();
             questao3.Resposta.ShouldNotBeNull();
             var respostaQuestao3 = questao3.Resposta.FirstOrDefault();
             respostaQuestao3.ShouldNotBeNull();
             respostaQuestao3.OpcaoRespostaId.ShouldBe(ID_OPCAO_RESPOSTA_ACOES_LUDICAS);
 
-            var questao4 = retorno.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DESCRICAO_ATENDIMENTO);
+            var questao4 = questoes.FirstOrDefault(questao => questao.Id == ID_QUESTAO_DESCRICAO_ATENDIMENTO);
             questao4.ShouldNotBeNull();
             questao4.Resposta.ShouldNotBeNull();
             var respostaQuestao4 = questao4.Resposta.FirstOrDefault();

@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
         private async Task<bool> Alterar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
         {
             var secaoDto = encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao;
-            var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(secao => secao.SecaoEncaminhamentoNAAPAId == encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId);
+            var secaoExistente = encaminhamentoNAAPA.Secoes.FirstOrDefault(secao => secao.Id == encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId);
 
             ValidarAlteracao(secaoExistente, secaoDto);
 
