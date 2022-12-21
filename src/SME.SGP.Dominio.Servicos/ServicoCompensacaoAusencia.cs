@@ -1,19 +1,17 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Utilitarios;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Dominio.Servicos
 {
@@ -59,7 +57,7 @@ namespace SME.SGP.Dominio.Servicos
         public async Task Salvar(long id, CompensacaoAusenciaDto compensacaoDto)
         {
             try
-            {               
+            {
                 // Busca dados da turma
                 var turma = await BuscaTurma(compensacaoDto.TurmaId);
 
@@ -81,7 +79,7 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (id > 0)
                     compensacaoBanco = await repositorioCompensacaoAusencia.ObterPorIdAsync(id);
-                
+
                 var permiteRegistroFrequencia = await mediator.Send(
                     new ObterComponenteRegistraFrequenciaQuery(long.Parse(compensacaoDto.DisciplinaId)));
 
@@ -97,20 +95,23 @@ namespace SME.SGP.Dominio.Servicos
                 var compensacao = MapearEntidade(compensacaoDto, compensacaoBanco);
                 compensacao.TurmaId = turma.Id;
                 compensacao.AnoLetivo = turma.AnoLetivo;
-                
+
                 unitOfWork.IniciarTransacao();
-                
+
                 await repositorioCompensacaoAusencia.SalvarAsync(compensacao);
                 await GravarDisciplinasRegencia(id > 0, compensacao.Id, compensacaoDto.DisciplinasRegenciaIds, usuario);
 
                 var codigosAlunosCompensacao = await GravarCompensacaoAlunos(id > 0, compensacao.Id, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId, compensacaoDto.Alunos, periodo, usuario);
-                
+
                 unitOfWork.PersistirTransacao();
-                
+
                 await MoverRemoverExcluidos(compensacaoDto.Descricao, descricaoAtual);
 
                 if (codigosAlunosCompensacao.Any())
+                {
+                    Task.Delay(TimeSpan.FromSeconds(5)).Wait();
                     await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(codigosAlunosCompensacao, periodo.PeriodoFim, compensacaoDto.TurmaId, compensacaoDto.DisciplinaId));
+                }
 
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCompensacaoAusencia, new FiltroNotificacaoCompensacaoAusenciaDto(compensacao.Id), Guid.NewGuid(), usuario));
             }
@@ -135,7 +136,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task ConsisteDisciplina(long disciplinaId, IEnumerable<string> disciplinasRegenciaIds, bool registroMigrado)
         {
-            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] {disciplinaId});
+            var disciplinasEOL = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId });
 
             if (!disciplinasEOL.Any())
                 throw new NegocioException("Componente curricular não encontrado no EOL.");
@@ -169,7 +170,7 @@ namespace SME.SGP.Dominio.Servicos
                 var turmaEmPeriodoAberto =
                     await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, bimestre, false,
                         tipoCalendario.Id));
-                    
+
                 if (!turmaEmPeriodoAberto)
                     throw new NegocioException($"Período do {bimestre}º Bimestre não está aberto.");
             }
@@ -409,6 +410,7 @@ namespace SME.SGP.Dominio.Servicos
 
                     if (alunosDaCompensacao.Any())
                     {
+                        Task.Delay(TimeSpan.FromSeconds(5)).Wait();
                         await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(listaAlunos,
                             periodo.PeriodoFim, turma.CodigoTurma, compensacaoExcluir.DisciplinaId));
                     }
