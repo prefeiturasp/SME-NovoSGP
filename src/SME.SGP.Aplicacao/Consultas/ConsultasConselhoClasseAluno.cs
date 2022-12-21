@@ -230,7 +230,8 @@ namespace SME.SGP.Aplicacao
                 turmasCodigosEOL = new string[] { turmasComplementaresFiltradas?.CodigoTurma ?? turma.CodigoTurma };
             }
 
-            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
+            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) 
+                && !(bimestre == 0 && turma.EhEJA() && !turma.EhTurmaRegular()))
             {
                 var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
                 var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
