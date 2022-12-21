@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public interface IObterDocumentoUseCase : IUseCase<long, ObterDocumentoDto>
+    public interface IObterDocumentoUseCase : IUseCase<long, ObterDocumentoResumidoDto>
     {
     }
 }
