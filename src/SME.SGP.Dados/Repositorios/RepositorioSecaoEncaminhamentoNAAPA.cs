@@ -167,7 +167,6 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
-                        left join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.nome_componente  = 'DATA_DO_ATENDIMENTO' 
                         ),
                         vw_resposta_tipo_atendimento as (
@@ -178,7 +177,7 @@ namespace SME.SGP.Dados.Repositorios
                         join encaminhamento_naapa_questao enq on ens.id = enq.encaminhamento_naapa_secao_id  
                         join questao q on enq.questao_id = q.id 
                         join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id 
-                        left join opcao_resposta opr on opr.id = enr.resposta_id
+                        join opcao_resposta opr on opr.id = enr.resposta_id
                         where q.nome_componente = 'TIPO_DO_ATENDIMENTO' 
                         )
                         select ";
