@@ -41,6 +41,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
             ValidarAlteracao(secaoExistente, secaoDto);
 
+            await mediator.Send(new AlterarEncaminhamentoNAAPASecaoCommand(secaoExistente));
+
             return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoCommand(secaoDto, secaoExistente));
         }
 
