@@ -7,7 +7,9 @@ namespace SME.SGP.Infra
         public ObterDocumentoCompletoDto() { }
 
         public long ClassificacaoId { get; set; }
+        public string ClassificacaoDescricao { get; set; }
         public long TipoDocumentoId { get; set; }
+        public string TipoDocumentoDescricao { get; set; }
         public string UeId { get; set; }
         public string UeNome { get; set; }
         public string DreId { get; set; }
