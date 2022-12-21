@@ -62,7 +62,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> UploadDocumentos([FromForm] IFormFile file, [FromServices] IUploadDocumentoUseCase useCase)
         {
             if (file.Length > 0)
-                return Ok(await useCase.Executar(file, Dominio.TipoConteudoArquivo.PDF));
+                return Ok(await useCase.Executar(file));
 
             return BadRequest();
         }
