@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Dados.Repositorios
 {
@@ -25,13 +26,14 @@ namespace SME.SGP.Dados.Repositorios
             return documentoArquivo.Id;
         }
 
-        public async Task<IEnumerable<DocumentoArquivo>> ObterDocumentosArquivosPorDocumentoIdAsync(long documentoId)
+        public async Task<IEnumerable<DocumentoArquivoDto>> ObterDocumentosArquivosPorDocumentoIdAsync(long documentoId)
         {
-            const string query = @"select *
-                                    from documento_arquivo
+            const string query = @"select da.*, a.codigo  
+                                   from documento_arquivo da 
+                                     join arquivo a on da.arquivo_id = a.id 
                                     where documento_id = @documentoId";
 
-            return await database.Conexao.QueryAsync<DocumentoArquivo>(query, new { documentoId });
+            return await database.Conexao.QueryAsync<DocumentoArquivoDto>(query, new { documentoId });
         }
     }
 }
