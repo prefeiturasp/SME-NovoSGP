@@ -437,6 +437,8 @@ namespace SME.SGP.TesteIntegracao
 
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_NOME = "PercentualFrequenciaCritico";
         protected readonly string PERCENTUAL_FREQUENCIA_CRITICO_DESCRICAO = "Percentual de frequência para definir aluno em situação crítica";
+        protected readonly string NUMERO_PAGINA = "NumeroPagina";
+        protected readonly string NUMERO_REGISTROS = "NumeroRegistros";
 
         protected readonly CollectionFixture collectionFixture;
 
@@ -448,8 +450,8 @@ namespace SME.SGP.TesteIntegracao
         protected void CriarClaimUsuario(string perfil)
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
-            var variaveis = ObterVariaveisPorPerfil(perfil);
-            contextoAplicacao.AdicionarVariaveis(variaveis);
+            
+            contextoAplicacao.AdicionarVariaveis(ObterVariaveisPorPerfil(perfil));
         }
 
         private Dictionary<string, object> ObterVariaveisPorPerfil(string perfil)
@@ -462,6 +464,8 @@ namespace SME.SGP.TesteIntegracao
                 { USUARIO_LOGADO_CHAVE, rfLoginPerfil },
                 { USUARIO_RF_CHAVE, rfLoginPerfil },
                 { USUARIO_LOGIN_CHAVE, rfLoginPerfil },
+                { NUMERO_PAGINA, "0" },
+                { NUMERO_REGISTROS, "10" },
 
                 {
                     USUARIO_CLAIMS_CHAVE,
