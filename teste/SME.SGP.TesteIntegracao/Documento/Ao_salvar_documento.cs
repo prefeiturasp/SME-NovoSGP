@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.Documento
         {
         }
 
-        [Fact(DisplayName = "Deve salvar com mais de um arquivo para a classificacao de documento que permite múltiplos arquivos")]
+        [Fact(DisplayName = "Documento - Deve salvar com mais de um arquivo para a classificacao de documento que permite múltiplos arquivos")]
         public async Task Deve_salvar_com_mais_de_um_arquivo_classificacao_documento_permite_multiplos_arquivos()
         {
             var filtro = new FiltroDocumentoDto
@@ -87,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             arquivosDoDocumento.Count.ShouldBe(10);
         }
         
-        [Fact(DisplayName = "Deve falhar ao salvar com mais de um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
+        [Fact(DisplayName = "Documento - Deve falhar ao salvar com mais de um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
         public async Task Deve_falhar_salvar_com_mais_de_um_arquivo_classificacao_documento_nao_permite_multiplos_arquivos()
         {
             var filtro = new FiltroDocumentoDto
@@ -152,7 +152,7 @@ namespace SME.SGP.TesteIntegracao.Documento
             await Should.ThrowAsync<NegocioException>(DoExecutarSalvar);            
         }
         
-        [Fact(DisplayName = "Deve salvar com um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
+        [Fact(DisplayName = "Documento - Deve salvar com um arquivo para a classificacao de documento que não permite múltiplos arquivos")]
         public async Task Deve_salvar_com_um_arquivo_classificacao_documento_nao_permite_multiplos_arquivos()
         {
             var filtro = new FiltroDocumentoDto
