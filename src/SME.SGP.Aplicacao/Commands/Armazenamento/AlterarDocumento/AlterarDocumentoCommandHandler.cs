@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -42,13 +43,15 @@ namespace SME.SGP.Aplicacao
                 if (arquivos == null || !arquivos.Any())
                     throw new NegocioException(MensagemNegocioDocumento.CODIGOS_ARQUIVOS_INFORMADOS_NAO_ENCONTRADOS);
 
-                var documentosArquivos = await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(request.DocumentoId), cancellationToken);
+                var documentosArquivos = (await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(request.DocumentoId), cancellationToken)).ToList();
 
-                if (documentosArquivos != null)
+                var documentosArquivosExcluir = documentosArquivos.Where(w => !request.ArquivosCodigos.Contains(w.Codigo));
+
+                if (documentosArquivosExcluir != null && documentosArquivosExcluir.Any())
                 {
                     var arquivosAntigos =
                         await mediator.Send(
-                            new ObterArquivosPorIdsQuery(documentosArquivos.Select(c => c.ArquivoId).ToArray()),
+                            new ObterArquivosPorIdsQuery(documentosArquivosExcluir.Select(c => c.ArquivoId).ToArray()),
                             cancellationToken);
 
                     foreach (var arquivoAntigo in arquivosAntigos)
@@ -65,15 +68,13 @@ namespace SME.SGP.Aplicacao
                 
                 await repositorioDocumento.SalvarAsync(documento);
 
-                foreach (var documentoArquivo in arquivos.Select(arquivo => new DocumentoArquivo
-                         {
-                             ArquivoId = arquivo.Id,
-                             DocumentoId = request.DocumentoId
-                         }))
-                {
-                    await repositorioDocumentoArquivo.SalvarAsync(documentoArquivo);
-                }
-                
+                var arquivosNovos = arquivos.Select(s => s.Id).ToArray();
+                var arquivosantigos = documentosArquivos.Select(s => s.ArquivoId).ToArray();
+                var arquivosNovosParaInserir = arquivosNovos.Except(arquivosantigos);
+
+                foreach (var arquivo in arquivos.Where(w=> arquivosNovosParaInserir.Contains(w.Id)))
+                    await repositorioDocumentoArquivo.SalvarAsync(new DocumentoArquivo{DocumentoId = request.DocumentoId, ArquivoId = arquivo.Id}); 
+
                 unitOfWork.PersistirTransacao();
                 
                 return (AuditoriaDto)documento;
