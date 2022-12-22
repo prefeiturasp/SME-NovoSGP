@@ -133,9 +133,9 @@ namespace SME.SGP.Aplicacao
 
                 foreach (var componenteCurricular in grupoDisiplinasMatriz.Where(x => !x.LancaNota))
                 {
+                    var codigoComponenteCurricular = ObterCodigoComponenteCurricular(componenteCurricular);
                     if (componenteCurricular.TerritorioSaber)
                         componenteCurricular.Nome = disciplinas.First(d => d.CodigoComponenteCurricular == componenteCurricular.CodigoComponenteCurricular).Nome;
-                    var codigoComponenteCurricular = componenteCurricular.TerritorioSaber ? (long)componenteCurricular.CodigoComponenteTerritorioSaber : componenteCurricular.CodigoComponenteCurricular;
                     var componentePermiteFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(codigoComponenteCurricular));
 
                     if (bimestre == (int)Bimestre.Final && componentePermiteFrequencia)
