@@ -28,7 +28,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DocumentoArquivoDto>> ObterDocumentosArquivosPorDocumentoIdAsync(long documentoId)
         {
-            const string query = @"select da.*, a.codigo  
+            const string query = @"select da.Id, da.documento_id documentoId, da.arquivo_id arquivoId, a.codigo  
                                    from documento_arquivo da 
                                      join arquivo a on da.arquivo_id = a.id 
                                     where documento_id = @documentoId";

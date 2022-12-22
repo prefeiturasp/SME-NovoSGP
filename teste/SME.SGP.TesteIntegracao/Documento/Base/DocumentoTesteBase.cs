@@ -84,8 +84,8 @@ namespace SME.SGP.TesteIntegracao.Documento
         protected async Task CriarDocumentos(Dominio.Enumerados.ClassificacaoDocumento classificacaoDocumento, long? componentecurricularId = null, bool inserirTurma = true)
         {
             var turmas = new List<long> { 1, 2, 3 };
-            long documentoId = 0;
-            long arquivoId = 0;
+            long documentoId = 1;
+            long arquivoId = 1;
             var camposDocumentoArquivo = new [] { "documento_id", "arquivo_id" };
 
             foreach (var turma in turmas)
@@ -100,7 +100,6 @@ namespace SME.SGP.TesteIntegracao.Documento
                     ComponenteCurricularId = componentecurricularId,
                     CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
                 });
-                documentoId++;
                 
                 foreach (var arquivo in Arquivos)
                 {
@@ -112,11 +111,13 @@ namespace SME.SGP.TesteIntegracao.Documento
                         TipoConteudo = "application/pdf",
                         CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF,
                     });
-                    arquivoId++;
 
                     var valoresDocumentoArquivo = new[] { documentoId.ToString(), arquivoId.ToString() };
                     await InserirNaBase(DOCUMENTO_ARQUIVO, camposDocumentoArquivo, valoresDocumentoArquivo);
+                    
+                    arquivoId++;
                 }
+                documentoId++;
             }
         }
 

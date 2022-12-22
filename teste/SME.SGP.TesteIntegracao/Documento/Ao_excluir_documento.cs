@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.Documento
         {
         }
 
-        [Fact(DisplayName = "Deve excluir um documento e suas dependências em documento_arquivo e arquivo")]
+        [Fact(DisplayName = "Documento - Deve excluir um documento e suas dependências em documento_arquivo e arquivo")]
         public async Task Deve_excluir_um_documento_suas_dependencias_em_documento_arquivo_arquivo()
         {
             var filtro = new FiltroDocumentoDto
