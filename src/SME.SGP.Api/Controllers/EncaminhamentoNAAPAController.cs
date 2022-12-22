@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Aplicacao.CasosDeUso;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -44,10 +45,20 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(IEnumerable<SecaoQuestionarioDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterSecoesPorEtapaDeEncaminhamentoNAAPA([FromQuery] FiltroSecoesPorEtapaDeEncaminhamento filtro,
-            [FromServices] IObterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase obterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase)
+        public async Task<IActionResult> ObterSecoesDeEncaminhamentoNAAPA([FromQuery] FiltroSecoesDeEncaminhamento filtro,
+            [FromServices] IObterSecoesEncaminhamentosSecaoNAAPAUseCase obterSecoesDeEncaminhamentoNAAPAUseCase)
         {
-            return Ok(await obterSecoesPorEtapaDeEncaminhamentoNAAPAUseCase.Executar(filtro));
+            return Ok(await obterSecoesDeEncaminhamentoNAAPAUseCase.Executar(filtro));
+        }
+
+        [HttpGet("{encaminhamentoNAAPAId}/secoes-itinerancia")]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<SecaoQuestionarioDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSecoesItineranciaDeEncaminhamentoNAAPA(long encaminhamentoNAAPAId,
+            [FromServices] IObterSecoesItineranciaDeEncaminhamentoNAAPAUseCase obterSecoesItineranciaDeEncaminhamentoNAAPAUseCase)
+        {
+            return Ok(await obterSecoesItineranciaDeEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPAId));
         }
 
         [HttpGet("questionario")]
@@ -118,6 +129,33 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterEncaminhamento(long encaminhamentoId, [FromServices] IObterEncaminhamentoNAAPAPorIdUseCase useCase)
         {
             return Ok(await useCase.Executar(encaminhamentoId));
+        }
+
+        [HttpGet("questionarioItinerario")]
+        [ProducesResponseType(typeof(IEnumerable<QuestaoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterQuestionarioItinerario([FromQuery] long questionarioId, [FromQuery] long? encaminhamentoSecaoId, [FromServices] IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
+        }
+
+        [HttpDelete("secoes-itinerancia/{secaoItineranciaId}")]
+        [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
+        public async Task<IActionResult> ExcluirSecaoItinerancia(long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(secaoItineranciaId));
+        }
+
+        [HttpPost("salvarItinerario")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_I, Policy = "Bearer")]
+        public async Task<IActionResult> RegistrarEncaminhamentoItinerario([FromBody] EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto, [FromServices] IRegistrarEncaminhamentoItinerarioNAAPAUseCase registrarEncaminhamentoItinerarioNAAPAUseCase)
+        {
+            return Ok(await registrarEncaminhamentoItinerarioNAAPAUseCase.Executar(encaminhamentoNAAPAItineranciaDto));
         }
     }
 }
