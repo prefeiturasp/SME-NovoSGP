@@ -271,7 +271,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurmaTipoCalendario(filtroConselhoClasse);
 
             if (filtroConselhoClasse.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroConselhoClasse);
+                await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
 
             await CriarAula(filtroConselhoClasse.ComponenteCurricular, filtroConselhoClasse.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 
