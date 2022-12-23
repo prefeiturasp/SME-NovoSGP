@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IListarDocumentosUseCase
     {
-        Task<PaginacaoResultadoDto<DocumentoDto>> Executar(long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0);
+        Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Executar(long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0);
     }
 }

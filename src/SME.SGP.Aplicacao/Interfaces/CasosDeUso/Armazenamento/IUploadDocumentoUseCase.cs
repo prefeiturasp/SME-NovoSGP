@@ -9,6 +9,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IUploadDocumentoUseCase
     {
-        Task<Guid> Executar(IFormFile file, TipoConteudoArquivo tipoConteudoArquivo = TipoConteudoArquivo.Indefinido);
+        Task<Guid> Executar(IFormFile file);
     }
 }

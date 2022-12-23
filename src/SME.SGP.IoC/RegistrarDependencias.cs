@@ -395,6 +395,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioHistoricoNotaConselhoClasse, RepositorioHistoricoNotaConselhoClasse>();
             services.TryAddScoped<IRepositorioHistoricoNotaFechamento, RepositorioHistoricoNotaFechamento>();
             services.TryAddScoped<IRepositorioDocumento, RepositorioDocumento>();
+            services.TryAddScoped<IRepositorioDocumentoArquivo, RepositorioDocumentoArquivo>();
             services.TryAddScoped<IRepositorioClassificacaoDocumento, RepositorioClassificacaoDocumento>();
             services.TryAddScoped<IRepositorioTipoDocumento, RepositorioTipoDocumento>();
             services.TryAddScoped<IRepositorioRemoveConexaoIdle, RepositorioRemoveConexaoIdle>();
