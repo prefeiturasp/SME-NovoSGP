@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         }
 
 
-        [Fact(DisplayName = "Cópia de plano de aula para outra aula da mesma turma e componente curricular - Sem sobrescrever o plano existente")]
+        [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra aula da mesma turma e componente curricular - Sem sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_sem_sobrescrever()
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
@@ -61,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         }
 
-        [Fact(DisplayName = "Cópia de plano de aula para outra aula da mesma turma e componente curricular - Com sobrescrever o plano existente")]
+        [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra aula da mesma turma e componente curricular - Com sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_com_sobrescrever()
         {
             var dataAula = DateTimeExtension.HorarioBrasilia();
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         }
 
         
-        [Fact(DisplayName = "Cópia de plano de aula para outra turma com o mesmo componente curricular")]
+        [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra turma com o mesmo componente curricular")]
         public async Task Copiar_plano_para_outra_turma_com_o_mesmo_componente_curricular()
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
@@ -121,7 +121,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         }
 
-        [Fact(DisplayName = "Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
+        [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
         public async Task Copiar_plano_para_outra_turma_de_componente_direferente()
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
