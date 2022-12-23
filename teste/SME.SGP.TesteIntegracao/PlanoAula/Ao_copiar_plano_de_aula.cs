@@ -139,10 +139,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
             
-            // var retorno = await  servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
-            // retorno.ShouldBeTrue();
-            var ex = await Assert.ThrowsAsync<NegocioException>(() =>  servicoMigrarPlano.Executar(dtoMigrarPlanoAula));
-            ex.Message.ShouldNotBeNullOrEmpty();
+            var retorno = await  servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
+            retorno.ShouldBeTrue();
+            //TODO: Ver com Marlon sobre essa regra
+            // var ex = await Assert.ThrowsAsync<NegocioException>(() =>  servicoMigrarPlano.Executar(dtoMigrarPlanoAula));
+            // ex.Message.ShouldNotBeNullOrEmpty();
         }
 
         private async Task CriarPlanoDeAula(Modalidade modalidade)
