@@ -22,9 +22,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        protected readonly DateTime DATA_02_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 02);
-        private const string SITUACAO_15 = "15";
-
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
