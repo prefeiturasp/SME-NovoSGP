@@ -38,8 +38,13 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_CODIGO_3 = "3";
         protected const string TURMA_ANO_3 = "3";
         
+        protected const string TURMA_NOME_4 = "Turma Nome 4";
+        protected const string TURMA_CODIGO_4 = "4";
+        protected const string TURMA_ANO_4 = "4";
+        
         protected const long TURMA_ID_1 = 1;
         protected const long TURMA_ID_2 = 2;
+        protected const long TURMA_ID_4 = 4;
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
