@@ -106,6 +106,8 @@ namespace SME.SGP.TesteIntegracao.Listao
             await CriarMotivoAusencia();
             await CriarFrequenciaPreDefinida(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
+            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
+
             var frequenciasSalvar = new List<FrequenciaSalvarAulaAlunosDto>();
             frequenciasSalvar.Add(
                 new FrequenciaSalvarAulaAlunosDto
