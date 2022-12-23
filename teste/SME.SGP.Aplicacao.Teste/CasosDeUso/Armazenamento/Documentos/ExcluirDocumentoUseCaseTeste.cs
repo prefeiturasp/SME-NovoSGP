@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
             var documento = new Documento()
             {
-                Id = 1,
+                Id = 1
             };
 
             //fileNameGuid

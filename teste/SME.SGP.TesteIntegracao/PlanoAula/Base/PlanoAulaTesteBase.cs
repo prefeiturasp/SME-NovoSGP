@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 {
@@ -42,6 +43,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
+
+            services.Replace(new ServiceDescriptor(
+                typeof(IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>),
+                typeof(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected ISalvarPlanoAulaUseCase ObterServicoISalvarPlanoAulaUseCase()
