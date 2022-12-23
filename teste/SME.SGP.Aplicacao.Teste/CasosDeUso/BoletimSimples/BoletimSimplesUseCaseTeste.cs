@@ -41,7 +41,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.Fundamental,
                 Modelo = ModeloBoletim.Simples,
-                ConsideraHistorico = true
+                ConsideraHistorico = true,
+                QuantidadeBoletimPorPagina = 1
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ValidaSeExisteUePorCodigoQuery>(), It.IsAny<CancellationToken>()))
@@ -92,7 +93,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.Medio,
                 Modelo = ModeloBoletim.Simples,
-                ConsideraHistorico = true
+                ConsideraHistorico = true,
+                QuantidadeBoletimPorPagina = 1
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ValidaSeExisteUePorCodigoQuery>(), It.IsAny<CancellationToken>()))
@@ -143,7 +145,8 @@ namespace SME.SGP.Aplicacao
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.EJA,
                 Modelo = ModeloBoletim.Simples,
-                ConsideraHistorico = true
+                ConsideraHistorico = true,
+                QuantidadeBoletimPorPagina = 1
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ValidaSeExisteUePorCodigoQuery>(), It.IsAny<CancellationToken>()))
