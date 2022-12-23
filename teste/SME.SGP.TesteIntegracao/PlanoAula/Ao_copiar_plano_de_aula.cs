@@ -91,7 +91,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             await CriarPlanoDeAula(Modalidade.Fundamental);
 
-            var dataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 3);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
             await CriarTurma(Modalidade.Medio);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
@@ -132,12 +132,15 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             
             var planoAula = ObterTodos<Dominio.PlanoAula>().FirstOrDefault();
+            var planoAulas = ObterTodos<Dominio.PlanoAula>();
+            var aulas = ObterTodos<Dominio.Aula>();
             
             var dtoMigrarPlanoAula = ObterMigrarPlanoAulaDto(aula,planoAula.Id,dataAula);
-            
-            
+
             var servicoMigrarPlano = ObterServicoMigrarPlanoAulaUseCase();
             
+            // var retorno = await  servicoMigrarPlano.Executar(dtoMigrarPlanoAula);
+            // retorno.ShouldBeTrue();
             var ex = await Assert.ThrowsAsync<NegocioException>(() =>  servicoMigrarPlano.Executar(dtoMigrarPlanoAula));
             ex.Message.ShouldNotBeNullOrEmpty();
         }
@@ -175,13 +178,11 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         {
             return new FiltroPlanoAula()
             {
-                Bimestre = BIMESTRE_2,
+                Bimestre = BIMESTRE_4,
                 Modalidade = modalidade,
                 Perfil = perfil,
                 QuantidadeAula = 1,
-                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 5, 2),
-                DataInicio = DATA_02_05_INICIO_BIMESTRE_2,
-                DataFim = DATA_08_07_FIM_BIMESTRE_2,
+                DataAula = DateTimeExtension.HorarioBrasilia(),
                 CriarPeriodoEscolarBimestre = false,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
