@@ -38,8 +38,13 @@ namespace SME.SGP.TesteIntegracao
         protected const string TURMA_CODIGO_3 = "3";
         protected const string TURMA_ANO_3 = "3";
         
+        protected const string TURMA_NOME_4 = "Turma Nome 4";
+        protected const string TURMA_CODIGO_4 = "4";
+        protected const string TURMA_ANO_4 = "4";
+        
         protected const long TURMA_ID_1 = 1;
         protected const long TURMA_ID_2 = 2;
+        protected const long TURMA_ID_4 = 4;
 
         protected const long DRE_ID_1 = 1;
         protected const long UE_ID_1 = 1;
@@ -354,6 +359,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string CODIGO_ALUNO_12 = "12";
         protected const string CODIGO_ALUNO_13 = "13";
         protected const string CODIGO_ALUNO_14 = "14";
+        protected const string CODIGO_ALUNO_15 = "15";
         protected const int TOTAL_AUSENCIAS_1 = 1;
         protected const int TOTAL_AUSENCIAS_3 = 3;
         protected const int TOTAL_AUSENCIAS_7 = 7;
@@ -1251,6 +1257,19 @@ namespace SME.SGP.TesteIntegracao
 
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_ID_1214.ToString(), NULO, CODIGO_4, NULO, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, COMPONENTE_TERRITORIO_SABER_EXP_PEDAG_NOME, NULO);
             await InserirNaBase(COMPONENTE_CURRICULAR, COMPONENTE_CURRICULAR_512.ToString(), COMPONENTE_CURRICULAR_512.ToString(), CODIGO_1, NULO, COMPONENTE_ED_INF_EMEI_4HS_NOME, TRUE, FALSE, FALSE, FALSE, TRUE, FALSE, COMPONENTE_REGENCIA_CLASSE_INFANTIL_NOME, COMPONENTE_REGENCIA_INFANTIL_EMEI_4H_NOME);
+        }
+        
+        protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
+        {
+            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-115), dataReferencia.AddDays(-40), BIMESTRE_3, TIPO_CALENDARIO_1);
+
+            await CriarPeriodoEscolar(dataReferencia.AddDays(-20), periodoEscolarValido ? dataReferencia : dataReferencia.AddDays(-5), BIMESTRE_4, TIPO_CALENDARIO_1);
         }
 
         protected async Task CriarAula(DateTime dataAula, RecorrenciaAula recorrenciaAula, TipoAula tipoAula, string professorRf, string turmaCodigo, string ueCodigo, string disciplinaCodigo, long tipoCalendarioId, bool aulaCJ = false)

@@ -22,7 +22,6 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
-
             var plano = new PlanoAEEDto();
 
             PlanoAEEVersaoDto ultimaVersao = null;
@@ -149,13 +148,7 @@ namespace SME.SGP.Aplicacao
 
             plano.QuestionarioId = questionarioId;
 
-            var periodoEscolarId = plano.Questoes.Any() && plano.Id > 0 ? plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto : null;
             var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            
-            var periodoEscolar = periodoEscolarId != null 
-                ? await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId))) 
-                : await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now.Date)); ;
 
             if (plano.Situacao != SituacaoPlanoAEE.Encerrado &&
                 plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente &&

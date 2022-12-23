@@ -150,6 +150,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var dtoRetorno = await comando.Executar(salvarConselhoClasseAlunoNotaDto);
             dtoRetorno.ShouldNotBeNull();
 
+            var consolidacaoNotaAluno = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
 
@@ -271,7 +272,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurmaTipoCalendario(filtroConselhoClasse);
 
             if (filtroConselhoClasse.CriarPeriodoEscolar)
-                await CriarPeriodoEscolar(filtroConselhoClasse);
+                await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
 
             await CriarAula(filtroConselhoClasse.ComponenteCurricular, filtroConselhoClasse.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 
@@ -1233,17 +1234,19 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         }
 
         protected async Task CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
-                                                               TipoNota tipoNota = TipoNota.Nota,
-                                                               bool gerarConselhoBimestreFinal = false)
+            TipoNota tipoNota = TipoNota.Nota, bool gerarConselhoBimestreFinal = false, bool ehEja = false)
         {
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_1, BIMESTRE_1));
 
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
+            if (!ehEja)
+            {
+                await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
+                    tipoNota, FECHAMENTO_TURMA_ID_2, BIMESTRE_2));
 
-            await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
-                tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
+                await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
+                    tipoNota, FECHAMENTO_TURMA_ID_3, BIMESTRE_3));
+            }
 
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(componenteCurricular,
                 tipoNota, FECHAMENTO_TURMA_ID_4, BIMESTRE_4));
