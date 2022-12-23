@@ -163,13 +163,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
-            
-            await InserirNaBase(new PlanejamentoAnualPeriodoEscolar()
+
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+
+            foreach (var periodoEscolar in periodosEscolares)
             {
-                PeriodoEscolarId = 2,
-                PlanejamentoAnualId = 1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+                await InserirNaBase(new PlanejamentoAnualPeriodoEscolar
+                {
+                    PeriodoEscolarId = periodoEscolar.Id,
+                    PlanejamentoAnualId = 1,
+                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                });                
+            }
         }
         
         protected async Task CriarPlanejamentoAnualTodosBimestres(string componenteCurricularCodigo)
