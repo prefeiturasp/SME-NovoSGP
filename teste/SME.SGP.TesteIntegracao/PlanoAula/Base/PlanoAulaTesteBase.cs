@@ -43,10 +43,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionarioCoreSSOPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionarioCoreSSOPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosPorPerfilDreQuery, IEnumerable<UsuarioEolRetornoDto>>), typeof(ObterFuncionariosPorPerfilDreQueryHandlerFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(
-                typeof(IRequestHandler<ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery, PlanejamentoAnual>),
-                typeof(ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected ISalvarPlanoAulaUseCase ObterServicoISalvarPlanoAulaUseCase()
