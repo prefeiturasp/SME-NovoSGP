@@ -150,6 +150,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var dtoRetorno = await comando.Executar(salvarConselhoClasseAlunoNotaDto);
             dtoRetorno.ShouldNotBeNull();
 
+            var consolidacaoNotaAluno = ObterTodos<ConselhoClasseConsolidadoTurmaAluno>();
             var conselhosClasse = ObterTodos<ConselhoClasse>();
             conselhosClasse.ShouldNotBeNull();
 
