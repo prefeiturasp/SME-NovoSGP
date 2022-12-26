@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();
             respostaEncaminhamentoNAAPA.Where(encaminhamentoResposta => !encaminhamentoResposta.Excluido).Count().ShouldBe(7);
 
-            var retorno = await excluirSecaoItineranciaEncaminhamentoNAAPA.Executar(2);
+            var retorno = await excluirSecaoItineranciaEncaminhamentoNAAPA.Executar(1, 2);
             retorno.ShouldBeTrue();
 
             var encaminhamentoNAAPASecoesExcluidas = ObterTodos<EncaminhamentoNAAPASecao>();

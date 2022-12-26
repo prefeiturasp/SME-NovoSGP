@@ -1,6 +1,7 @@
 using Dapper;
 using Minio.DataModel;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -249,6 +250,21 @@ namespace SME.SGP.Dados.Repositorios
                     
                     return encaminhamentoNAAPA;
                 }, new { encaminhamentoId })).FirstOrDefault();
+        }
+
+        public async Task<SituacaoDto> ObterSituacao(long id)
+        {
+            var query = @" select id, situacao
+                            from encaminhamento_naapa 
+                           where id = @id";
+
+            var situacao = await database.Conexao.QueryFirstAsync<int>(query, new { id });
+
+            return new SituacaoDto
+            {
+                Codigo = situacao,
+                Descricao = ((SituacaoNAAPA)situacao).ObterNome()
+            };
         }
     }
 }
