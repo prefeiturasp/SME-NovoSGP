@@ -1,11 +1,9 @@
-﻿using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase : IUseCase<long, bool>
+    public interface IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase 
     {
+        Task<bool> Executar(long encaminhamentoNAAPAId, long secaoItineranciaId);
     }
 }

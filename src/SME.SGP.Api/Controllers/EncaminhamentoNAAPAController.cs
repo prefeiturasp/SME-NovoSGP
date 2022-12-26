@@ -140,13 +140,13 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(questionarioId, encaminhamentoSecaoId));
         }
 
-        [HttpDelete("secoes-itinerancia/{secaoItineranciaId}")]
+        [HttpDelete("{encaminhamentoNAAPAId}/secoes-itinerancia/{secaoItineranciaId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPADto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.NAAPA_E, Policy = "Bearer")]
-        public async Task<IActionResult> ExcluirSecaoItinerancia(long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase useCase)
+        public async Task<IActionResult> ExcluirSecaoItinerancia(long encaminhamentoNAAPAId, long secaoItineranciaId, [FromServices] IExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase useCase)
         {
-            return Ok(await useCase.Executar(secaoItineranciaId));
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId, secaoItineranciaId));
         }
 
         [HttpPost("salvarItinerario")]
@@ -156,6 +156,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> RegistrarEncaminhamentoItinerario([FromBody] EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto, [FromServices] IRegistrarEncaminhamentoItinerarioNAAPAUseCase registrarEncaminhamentoItinerarioNAAPAUseCase)
         {
             return Ok(await registrarEncaminhamentoItinerarioNAAPAUseCase.Executar(encaminhamentoNAAPAItineranciaDto));
+        }
+
+        [HttpGet("{encaminhamentoNAAPAId}/situacao")]
+        [ProducesResponseType(typeof(SituacaoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterSituacao(long encaminhamentoNAAPAId, [FromServices] IObterSituacaoEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
     }
 }

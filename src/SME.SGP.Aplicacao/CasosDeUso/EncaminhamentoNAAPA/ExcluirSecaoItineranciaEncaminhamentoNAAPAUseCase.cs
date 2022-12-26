@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
-using System.Linq;
-using System.Threading.Tasks;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -14,8 +11,27 @@ namespace SME.SGP.Aplicacao
         public ExcluirSecaoItineranciaEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
         {}
 
-        public async Task<bool> Executar(long encaminhamentoSecaoNAAPAId) => await mediator.Send(new ExcluirSecaoEncaminhamentoNAAPACommand(encaminhamentoSecaoNAAPAId));
-    }
+        public async Task<bool> Executar(long encaminhamentoNAAPAId, long encaminhamentoSecaoNAAPAId)
+        {
+            await mediator.Send(new ExcluirSecaoEncaminhamentoNAAPACommand(encaminhamentoSecaoNAAPAId));
 
-     
+            await AlterarSituacaoDoAtendimento(encaminhamentoNAAPAId);
+
+            return true;
+        }
+
+        private async Task AlterarSituacaoDoAtendimento(long encaminhamentoNAAPAId)
+        {
+            var existeSecao = await mediator.Send(new ExisteSecaoDeItineranciaNoEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
+            
+            if (!existeSecao)
+            {
+                var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAId));
+
+                encaminhamentoNAAPA.Situacao = SituacaoNAAPA.AguardandoAtendimento;
+
+                await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+            }
+        }
+    }
 }
