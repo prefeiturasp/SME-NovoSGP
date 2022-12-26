@@ -254,17 +254,20 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<SituacaoDto> ObterSituacao(long id)
         {
-            var query = @" select id, situacao
+            var query = @" select situacao
                             from encaminhamento_naapa 
                            where id = @id";
 
-            var situacao = await database.Conexao.QueryFirstAsync<int>(query, new { id });
+            var situacao = await database.Conexao.QueryFirstAsync<int?>(query, new { id });
 
-            return new SituacaoDto
-            {
-                Codigo = situacao,
-                Descricao = ((SituacaoNAAPA)situacao).ObterNome()
-            };
+            if (situacao.HasValue)
+                return new SituacaoDto
+                {
+                    Codigo = situacao.Value,
+                    Descricao = ((SituacaoNAAPA)situacao.Value).ObterNome()
+                };
+
+            return new SituacaoDto();
         }
     }
 }
