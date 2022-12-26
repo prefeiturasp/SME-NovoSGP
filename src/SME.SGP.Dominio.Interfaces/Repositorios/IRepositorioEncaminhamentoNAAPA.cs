@@ -15,5 +15,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
 
         Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId);
+
+        Task<SituacaoDto> ObterSituacao(long id);
     }
 }

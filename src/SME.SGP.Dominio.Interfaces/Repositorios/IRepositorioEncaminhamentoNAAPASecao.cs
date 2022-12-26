@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task<IEnumerable<long>> ObterIdsSecoesPorEncaminhamentoNAAPAId(long encaminhamentoNAAPAId);
         Task<AuditoriaDto> ObterAuditoriaEncaminhamentoNaapaSecao(long id);
+        Task<bool> ExisteSecoesDeItineracia(long encaminhamentoNAAPAId);
     }
 }
