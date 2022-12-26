@@ -7,6 +7,7 @@ using System;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Dtos.Notas;
 
 namespace SME.SGP.Dados
 {
@@ -27,5 +28,16 @@ namespace SME.SGP.Dados
 
             return await database.QueryFirstOrDefaultAsync<NotaParametro>(sql, parametros);
         }
+        public async Task<NotaParametroDto> ObterDtoPorDataAvaliacao(DateTime dataAvaliacao)
+        {
+            var sql = @"select id, valor_maximo as Maxima, valor_medio as Media, valor_minimo as Minima, incremento, ativo
+                        from notas_parametros where inicio_vigencia <= @dataAvaliacao
+                        and(ativo = true or fim_vigencia >= @dataAvaliacao)";
+
+            var parametros = new { dataAvaliacao };
+
+            return await database.QueryFirstOrDefaultAsync<NotaParametroDto>(sql, parametros);
+        }
+
     }
 }
