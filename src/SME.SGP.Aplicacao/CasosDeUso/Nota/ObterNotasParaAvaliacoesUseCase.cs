@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             this.consultasDisciplina = consultasDisciplina;
             this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
-            this.repositorioNotaParametro = repositorioNotaParametro;
+            this.repositorioNotaParametro = repositorioNotaParametro ?? throw new ArgumentNullException(nameof(repositorioNotaParametro));
         }
 
         public async Task<NotasConceitosRetornoDto> Executar(ListaNotasConceitosDto filtro)
