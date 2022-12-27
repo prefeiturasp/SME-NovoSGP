@@ -30,7 +30,7 @@ namespace SME.SGP.Dados
         }
         public async Task<NotaParametroDto> ObterDtoPorDataAvaliacao(DateTime dataAvaliacao)
         {
-            var sql = @"select id, valor_maximo as Maxima, valor_medio as Media, valor_minimo as Minima, incremento, ativo
+            var sql = @"select id, valor_maximo as Maxima, valor_minimo as Minima, incremento
                         from notas_parametros where inicio_vigencia <= @dataAvaliacao
                         and(ativo = true or fim_vigencia >= @dataAvaliacao)";
 
