@@ -109,7 +109,7 @@ namespace SME.SGP.Aplicacao
 
                             totalAulasParaAluno += await mediator
                                 .Send(new ObterTotalAulasPorDisciplinaETurmaQuery(request.DataAula, string.Empty, matricula.DataMatricula, matricula.EstaInativo(request.DataAula) ? matricula.DataSituacao : null, request.TurmaId));
-                        }                        
+                        }
 
                         if (totalAulasNaDisciplinaParaAluno == 0)
                             excluirFrequenciaAlunoIds.AddRange(frequenciaDosAlunos.Where(w => w.DisciplinaId.Equals(request.DisciplinaId) && w.CodigoAluno.Equals(codigoAluno)).Select(s => s.Id));
@@ -133,13 +133,13 @@ namespace SME.SGP.Aplicacao
             {
                 var periodoRegistrosLancados = registrosLancados
                     .Select(rl => rl.PeriodoEscolarId)
-                    .Distinct().SingleOrDefault() ?? 0;
+                    .Distinct();
 
-                if (periodoRegistrosLancados == 0)
+                if (!periodoRegistrosLancados.Any())
                     return;
 
                 var frequenciasParaRealizarExclusao = frequenciasConsolidadas
-                    .Where(f => f.PeriodoEscolarId == periodoRegistrosLancados &&
+                    .Where(f => periodoRegistrosLancados.Contains(f.PeriodoEscolarId) &&
                                 f.Tipo == TipoFrequenciaAluno.PorDisciplina &&
                                 !registrosLancados.Any(r => r.AlunoCodigo == f.CodigoAluno && r.ComponenteCurricularId == f.DisciplinaId))
                     .Select(f => f.Id).ToList();
