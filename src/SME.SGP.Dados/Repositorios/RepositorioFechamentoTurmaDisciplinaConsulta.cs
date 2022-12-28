@@ -138,8 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
                         where t.turma_id = @turmaCodigo
-                          and f.disciplina_id = @disciplinaId 
-                          and f.situacao != 0 ");
+                          and f.disciplina_id = @disciplinaId");
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre ");
 

@@ -230,7 +230,8 @@ namespace SME.SGP.Aplicacao
                 turmasCodigosEOL = new string[] { turmasComplementaresFiltradas?.CodigoTurma ?? turma.CodigoTurma };
             }
 
-            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) && !(bimestre == 0 && turma.EhEJA()))
+            if ((turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma)) 
+                && !(bimestre == 0 && turma.EhEJA() && !turma.EhTurmaRegular()))
             {
                 var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
                 var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
@@ -738,6 +739,9 @@ namespace SME.SGP.Aplicacao
             var codigoComponenteCurricular = ObterCodigoComponenteCurricular(componenteCurricular);
 
             var frequenciaComponente = frequenciaAluno.FirstOrDefault(a => a.DisciplinaId == codigoComponenteCurricular.ToString());
+
+            frequenciaComponente = VerificaTotalAulasParaCalcularPercentualFrequencia(frequenciaComponente, totalAulas);
+
             var percentualFrequencia = CalcularPercentualFrequenciaComponente(frequenciaComponente, componenteCurricular, anoLetivo);
 
             var parecerFinal = bimestre == 0 && EhEjaCompartilhada(componenteCurricular, modalidade) == false
@@ -755,6 +759,22 @@ namespace SME.SGP.Aplicacao
             return anoLetivo == 2020 ?
                 frequenciaComponente?.PercentualFrequenciaFinal.ToString() ?? "0" :
                 frequenciaComponente?.PercentualFrequencia.ToString() ?? "0";
+        }
+
+        private FrequenciaAluno VerificaTotalAulasParaCalcularPercentualFrequencia(FrequenciaAluno frequenciaAluno, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas)
+        {
+            if (frequenciaAluno != null)
+            {
+                var dadosAulasComponente = totalAulas.FirstOrDefault(t => t.DisciplinaId == Convert.ToInt64(frequenciaAluno.DisciplinaId));
+
+                if(dadosAulasComponente != null)
+                {
+                    int totalAulasComponente = Convert.ToInt32(dadosAulasComponente.TotalAulas);
+                    frequenciaAluno.TotalAulas = frequenciaAluno.TotalAulas == totalAulasComponente ? frequenciaAluno.TotalAulas : totalAulasComponente;
+                }  
+            }
+
+            return frequenciaAluno;
         }
 
         private bool EhEjaCompartilhada(DisciplinaResposta componenteCurricular, Modalidade modalidade)

@@ -29,11 +29,12 @@ namespace SME.SGP.Aplicacao
             if (turma.AnoLetivo.Equals(2020))
                 return await CalculoFrequenciaGlobal2020(request.AlunoCodigo, turma);
 
-            var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-            var aluno = (await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)))).Where(w=> w.CodigoAluno.Equals(request.AlunoCodigo));
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
+
+            var aluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));
             var matriculasAluno = aluno.Select(a => ((DateTime?)a.DataMatricula, a.Inativo ? a.DataSituacao : (DateTime?)null, a.Inativo));
 
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendarioId, matriculasAluno));
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendario.Id, matriculasAluno));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)
