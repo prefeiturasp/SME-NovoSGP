@@ -133,6 +133,8 @@ namespace SME.SGP.Aplicacao
             fechamentoNotaConceitoTurma.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
             fechamentoNotaConceitoTurma.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
 
+            fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
+
             return fechamentoNotaConceitoTurma;
         }
 
