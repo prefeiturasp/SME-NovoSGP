@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Utilitarios;
-using SME.SGP.Dados;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {

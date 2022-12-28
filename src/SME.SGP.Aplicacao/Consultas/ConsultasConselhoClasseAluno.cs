@@ -3,7 +3,6 @@ using SME.SGP.Aplicacao.Commands;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Aplicacao.Queries;
-using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
