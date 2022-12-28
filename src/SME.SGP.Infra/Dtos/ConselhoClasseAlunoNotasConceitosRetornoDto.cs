@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SME.SGP.Infra.Dtos.Notas;
+using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {
@@ -9,6 +10,6 @@ namespace SME.SGP.Infra
         public bool PodeEditarNota { get; set; }
 
         public bool TemConselhoClasseAluno { get; set; }
-
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }
