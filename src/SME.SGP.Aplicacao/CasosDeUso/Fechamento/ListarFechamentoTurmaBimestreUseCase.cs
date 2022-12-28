@@ -134,12 +134,12 @@ namespace SME.SGP.Aplicacao
             fechamentoNotaConceitoTurma.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
             fechamentoNotaConceitoTurma.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
 
-            await ObterDadosDoArredondamento(fechamentoNotaConceitoTurma);
+            await AtribuirDadosDoArredondamento(fechamentoNotaConceitoTurma);
 
             return fechamentoNotaConceitoTurma;
         }
 
-        private async Task ObterDadosDoArredondamento(FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma) 
+        private async Task AtribuirDadosDoArredondamento(FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma) 
             => fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
 
         private Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoId)
