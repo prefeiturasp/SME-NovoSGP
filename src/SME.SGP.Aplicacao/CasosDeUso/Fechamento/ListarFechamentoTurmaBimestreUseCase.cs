@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
@@ -133,10 +134,13 @@ namespace SME.SGP.Aplicacao
             fechamentoNotaConceitoTurma.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
             fechamentoNotaConceitoTurma.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
 
-            fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
+            await ObterDadosDoArredondamento(fechamentoNotaConceitoTurma);
 
             return fechamentoNotaConceitoTurma;
         }
+
+        private async Task ObterDadosDoArredondamento(FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma) 
+            => fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
 
         private Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoId)
             => mediator.Send(new ObterCodigosAlunosComAnotacaoNoFechamentoQuery(fechamentoId));
