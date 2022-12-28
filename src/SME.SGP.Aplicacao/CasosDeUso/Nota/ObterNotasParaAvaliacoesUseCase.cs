@@ -368,7 +368,7 @@ namespace SME.SGP.Aplicacao
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
                     EhCJ = avaliacao.EhCj,
-                    DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(avaliacao.DataAvaliacao)); 
+                    DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
