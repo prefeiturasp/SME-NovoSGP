@@ -11,7 +11,8 @@ namespace SME.SGP.Dominio.Interfaces
             string codigoUe, string nomeAluno, DateTime? dataAberturaQueixaInicio, DateTime? dataAberturaQueixaFim, 
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao);
 
-        Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long requestId);
+        Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
+        Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorIdESecao(long id, long secaoId);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
 
         Task<IEnumerable<EncaminhamentoNAAPACodigoArquivoDto>> ObterCodigoArquivoPorEncaminhamentoNAAPAId(long encaminhamentoId);

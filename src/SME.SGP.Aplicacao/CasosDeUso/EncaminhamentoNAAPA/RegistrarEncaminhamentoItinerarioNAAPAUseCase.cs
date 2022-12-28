@@ -22,16 +22,27 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
 
         public async Task<bool> Executar(EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId));
+            Dominio.EncaminhamentoNAAPA encaminhamentoNaapa;
 
-            await Validar(encaminhamentoNAAPA, encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao);
+            if (!encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.HasValue)
+            {
+                encaminhamentoNaapa =
+                    await mediator.Send(
+                        new ObterEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPAItineranciaDto.EncaminhamentoId));
+            }
+            else
+            {
+                encaminhamentoNaapa = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdESecaoQuery(
+                    encaminhamentoNAAPAItineranciaDto.EncaminhamentoId,
+                    encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.GetValueOrDefault()));                
+            }
+            
+            await Validar(encaminhamentoNaapa, encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecao);
 
             if (encaminhamentoNAAPAItineranciaDto.EncaminhamentoNAAPASecaoId.HasValue)
-            {
-                return await Alterar(encaminhamentoNAAPA, encaminhamentoNAAPAItineranciaDto);
-            }
+                return await Alterar(encaminhamentoNaapa, encaminhamentoNAAPAItineranciaDto);
 
-            return await Salvar(encaminhamentoNAAPA, encaminhamentoNAAPAItineranciaDto);
+            return await Salvar(encaminhamentoNaapa, encaminhamentoNAAPAItineranciaDto);
         }
 
         private async Task<bool> Alterar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPAItineranciaDto encaminhamentoNAAPAItineranciaDto)
