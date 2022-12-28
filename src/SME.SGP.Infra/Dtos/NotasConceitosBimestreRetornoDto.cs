@@ -1,4 +1,5 @@
 ﻿using SME.SGP.Dominio;
+using SME.SGP.Infra.Dtos.Notas;
 using System;
 using System.Collections.Generic;
 
@@ -24,5 +25,6 @@ namespace SME.SGP.Infra
         public SituacaoFechamento Situacao { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }
