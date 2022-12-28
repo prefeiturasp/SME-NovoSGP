@@ -86,7 +86,8 @@ namespace SME.SGP.Aplicacao
                 Descricao = $"{filtro.Bimestre}º Bimestre",
                 Numero = filtro.Bimestre,
                 PeriodoInicio = periodoInicio,
-                PeriodoFim = periodoFim
+                PeriodoFim = periodoFim,
+                DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(periodoFim))
             };
 
             var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
