@@ -29,15 +29,16 @@ namespace SME.SGP.Aplicacao
             
             foreach (var estudante in estudantes.Where(w=> w.CodigoTipoTurma == (int)TipoTurma.Programa))
             {
-                if (ue == null || !estudante.CodigoEscola.Equals(ue.CodigoUe))
-                    ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(estudante.CodigoEscola));
-
                 if (turma == null || !estudante.CodigoTurma.ToString().Equals(turma.CodigoTurma))
                 {
                     turma = await mediator.Send(new ObterTurmaPorCodigoQuery(estudante.CodigoTurma.ToString()));
-                
+                    if (turma == null) continue;
+
                     componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorTurmaCodigoQuery(estudante.CodigoTurma.ToString()));
                 }
+
+                if (ue == null || !estudante.CodigoEscola.Equals(ue.CodigoUe))
+                    ue = await mediator.Send(new ObterUeComDrePorCodigoQuery(estudante.CodigoEscola));
 
                 var local = ue.TipoEscola != TipoEscola.Nenhum ? $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}" : $"{ue.Nome}";
 
