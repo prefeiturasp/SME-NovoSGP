@@ -23,11 +23,11 @@ namespace SME.SGP.Aplicacao
         public AlterarEncaminhamentoNAAPASecaoQuestaoCommandValidator()
         {
             RuleFor(a => a.EncaminhamentoNAAPASecaoDto)
-                   .NotEmpty()
-                   .WithMessage("A seção dto deve ser informada para a alteração do encaminhamento NAAPA itinerário!");
+               .NotNull()
+               .WithMessage("A seção dto deve ser informada para a alteração do encaminhamento NAAPA itinerário!");
 
             RuleFor(a => a.EncaminhamentoNAAPASecaoObj)
-               .NotEmpty()
+               .NotNull()
                .WithMessage("A seção objeto deve ser informada para a alteração do encaminhamento NAAPA itinerário!");
         }
     }

@@ -1,11 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
-using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,9 +19,8 @@ namespace SME.SGP.Aplicacao
         public ObterEncaminhamentoNAAPAPorIdQueryValidator()
         {
             RuleFor(c => c.Id)
-            .NotEmpty()
-            .WithMessage("O Id do encaminhamento naapa deve ser informado para a pesquisa");
-
+                .GreaterThan(0)
+                .WithMessage("O Id do encaminhamento NAAPA deve ser informado para a pesquisa.");
         }
     }
 }

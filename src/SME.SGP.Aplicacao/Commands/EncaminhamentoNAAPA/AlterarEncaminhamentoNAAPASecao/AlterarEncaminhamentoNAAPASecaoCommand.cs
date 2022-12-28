@@ -2,9 +2,6 @@
 using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,7 +12,7 @@ namespace SME.SGP.Aplicacao
             Secao = secao;
         }
 
-        public EncaminhamentoNAAPASecao Secao { get; set; }
+        public EncaminhamentoNAAPASecao Secao { get; }
     }
 
     public class AlterarEncaminhamentoNAAPASecaoCommandValidator : AbstractValidator<AlterarEncaminhamentoNAAPASecaoCommand>
@@ -23,8 +20,8 @@ namespace SME.SGP.Aplicacao
         public AlterarEncaminhamentoNAAPASecaoCommandValidator()
         {
             RuleFor(a => a.Secao)
-                   .NotEmpty()
-                   .WithMessage("A seção deve ser informada para a alteração do encaminhamento NAAPA!");
+               .NotEmpty()
+               .WithMessage("A seção deve ser informada para a alteração do encaminhamento NAAPA!");
         }
     }
 }
