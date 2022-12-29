@@ -1,9 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -14,9 +10,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Executar(long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0)
+        public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Executar(int? anoLetivo, long ueId = 0, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
-            return await mediator.Send(new ObterDocumentosPorUeETipoEClassificacaoQuery(ueId, tipoDocumentoId, classificacaoId));
+            return await mediator.Send(new ObterDocumentosPorUeETipoEClassificacaoQuery(ueId, tipoDocumentoId, classificacaoId, anoLetivo));
         }
     }
 }
