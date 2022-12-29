@@ -49,9 +49,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId, [FromQuery] long classificacaoId, [FromServices] IListarDocumentosUseCase useCase)
+        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId,
+            [FromQuery] long classificacaoId, [FromQuery] int? anoLetivo, [FromServices] IListarDocumentosUseCase useCase)
         {
-            return Ok(await useCase.Executar(ueId, tipoDocumentoId, classificacaoId));
+            return Ok(await useCase.Executar(anoLetivo, ueId, tipoDocumentoId, classificacaoId));
         }
 
         [HttpPost("upload")]

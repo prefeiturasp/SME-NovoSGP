@@ -24,11 +24,11 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> ObterPorUeTipoEClassificacaoPaginada(long ueId, long tipoDocumentoId, 
-            long classificacaoId, Paginacao paginacao)
+            long classificacaoId, int? anoLetivo, Paginacao paginacao)
         {
-            var sql = MontaQueryCompleta(paginacao, tipoDocumentoId, classificacaoId);
+            var sql = MontaQueryCompleta(tipoDocumentoId, classificacaoId, anoLetivo);
 
-            var parametros = new { ueId, tipoDocumentoId, classificacaoId };
+            var parametros = new { ueId, tipoDocumentoId, classificacaoId, anoLetivo };
 
             var documentos = await database.Conexao.QueryAsync<DocumentoCompletoDto>(sql, parametros);
             
@@ -77,20 +77,20 @@ namespace SME.SGP.Dados.Repositorios
             return string.Empty;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long tipoDocumentoId, long classificacaoId)
+        private static string MontaQueryCompleta(long tipoDocumentoId, long classificacaoId, int? anoLetivo)
         {
-            StringBuilder sql = new StringBuilder();
+            var sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, tipoDocumentoId, classificacaoId);
+            MontaQueryConsulta(sql, anoLetivo, tipoDocumentoId, classificacaoId);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, long tipoDocumentoId = 0, long classificacaoId = 0)
+        private static void MontaQueryConsulta(StringBuilder sql, int? anoLetivo, long tipoDocumentoId = 0, long classificacaoId = 0)
         {
             ObterCabecalho(sql);
 
-            ObterFiltro(sql, tipoDocumentoId, classificacaoId);
+            ObterFiltro(sql, tipoDocumentoId, classificacaoId, anoLetivo);
         }
 
         private static void ObterCabecalho(StringBuilder sql)
@@ -115,7 +115,7 @@ namespace SME.SGP.Dados.Repositorios
                                left join arquivo a on a.id = da.arquivo_id  ");
         }
 
-        private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId)
+        private static void ObterFiltro(StringBuilder sql, long tipoDocumentoId, long classificacaoId, int? anoLetivo)
         {
             sql.AppendLine("where d.ue_id = @ueId ");
 
@@ -123,6 +123,9 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine("and td.id = @tipoDocumentoId ");
             if (classificacaoId > 0)
                 sql.AppendLine("and cd.id = @classificacaoId ");
+
+            if (anoLetivo != null)
+                sql.AppendLine("and d.ano_letivo = @anoLetivo");
         }
 
         public async Task<bool> RemoverReferenciaArquivo(long documentoId, long arquivoId)

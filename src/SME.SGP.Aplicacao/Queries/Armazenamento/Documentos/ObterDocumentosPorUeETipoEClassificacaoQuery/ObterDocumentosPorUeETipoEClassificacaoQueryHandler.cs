@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -23,7 +22,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<DocumentoResumidoDto>> Handle(ObterDocumentosPorUeETipoEClassificacaoQuery request, CancellationToken cancellationToken)
         {
-            var documentos = await repositorioDocumento.ObterPorUeTipoEClassificacaoPaginada(request.UeId, request.TipoDocumentoId, request.ClassificacaoId, Paginacao);
+            var documentos = await repositorioDocumento.ObterPorUeTipoEClassificacaoPaginada(request.UeId, request.TipoDocumentoId, request.ClassificacaoId, request.AnoLetivo, Paginacao);
             return MapearParaDtoPaginado(documentos);
         }
 
