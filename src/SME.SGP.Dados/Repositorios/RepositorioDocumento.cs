@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
                     TipoDocumento = key.TipoDocumento,
                     Usuario = key.Usuario,
                     Data = key.Data,
-                    TurmaComponenteCurricular = ObterTurmaComponenteCurricular(key.TurmaNome,key.ComponenteCurricularNome, key.Modalidade),
+                    TurmaComponenteCurricular = ObterTurmaComponenteCurricular(key.TurmaNome, key.ComponenteCurricularNome, key.Modalidade),
                     Arquivos = group.Select(s=>
                         new ArquivoResumidoDto
                         {
@@ -57,8 +57,8 @@ namespace SME.SGP.Dados.Repositorios
                             Nome = s.NomeArquivo
                         }).ToList()
                 })
-                .OrderByDescending(o=> o.Data)
-                .ThenBy(o=> o.TurmaComponenteCurricular)
+                .OrderBy(o => o.TurmaComponenteCurricular)
+                .ThenByDescending(o => o.Data)
                 .ToList();
 
             var retorno = new PaginacaoResultadoDto<DocumentoResumidoDto> { Items = documentosAgrupados };
