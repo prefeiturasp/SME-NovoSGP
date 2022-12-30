@@ -6,6 +6,6 @@ namespace SME.SGP.Aplicacao
 {
     public interface IObterFiltroRelatoriosUesPorAbrangenciaUseCase
     {
-        Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, bool consideraNovasUEs = false);
+        Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, bool consideraNovasUEs = false, bool consideraHistorico = false);
     }
 }
