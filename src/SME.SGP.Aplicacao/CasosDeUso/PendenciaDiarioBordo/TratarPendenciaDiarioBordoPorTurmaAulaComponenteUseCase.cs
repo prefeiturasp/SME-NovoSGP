@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,18 +17,19 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var filtro = param.ObterObjetoMensagem<FiltroPendenciaDiarioBordoTurmaAulaDto>();
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.CodigoTurma));
+
+            if (turma.Id == 0)
+                throw new NegocioException(MensagemAcompanhamentoTurma.TURMA_NAO_ENCONTRADA);
+
+            var tipoEscola = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(turma.Ue.CodigoUe));
+
+            // Não gerar pendências para turmas de escolas do tipo CEI.
+            if (tipoEscola == TipoEscola.CEIDIRET || tipoEscola == TipoEscola.CEIINDIR || tipoEscola == TipoEscola.CEUCEI)
+                return false;
 
             var pendenciaProfessorDisciplinaCache = new List<PendenciaProfessorComponenteCurricularDto>();
-            var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(filtro.CodigoTurma));
-            long pendenciaId = 0;            
-
-            if (turmaId == 0)
-                throw new NegocioException("Turma não encontrada.");
-
-            var ue = await mediator.Send(new ObterUEPorTurmaIdQuery(turmaId));
-
-            if (ue.TipoEscola == TipoEscola.CEIDIRET || ue.TipoEscola == TipoEscola.CEIINDIR || ue.TipoEscola == TipoEscola.CEUCEI)
-                return true;
+            long pendenciaId = 0;
 
             foreach (var item in filtro.AulasProfessoresComponentesCurriculares)
             {
@@ -39,7 +41,7 @@ namespace SME.SGP.Aplicacao
                     pendenciaId = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(item.ComponenteCurricularId, item.ProfessorRf, item.PeriodoEscolarId, filtro.CodigoTurma));
 
                     if (pendenciaId == 0)
-                        pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola, turmaId));
+                        pendenciaId = await mediator.Send(MapearPendencia(TipoPendencia.DiarioBordo, item.DescricaoComponenteCurricular, filtro.TurmaComModalidade, filtro.NomeEscola, turma.Id));
 
                     pendenciaProfessorDisciplinaCache.Add(new PendenciaProfessorComponenteCurricularDto()
                     {
