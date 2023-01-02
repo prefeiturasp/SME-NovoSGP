@@ -30,6 +30,8 @@ namespace SME.SGP.Aplicacao
                 return await CalculoFrequenciaGlobal2020(request.AlunoCodigo, turma);
 
             var tipoCalendario = await mediator.Send(new ObterTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.AnoLetivo, turma.ModalidadeTipoCalendario, turma.Semestre));
+            if (tipoCalendario == null)
+                throw new NegocioException("Tipo calendário não encontrado para obtenção de frequência geral do aluno por turma!");
 
             var aluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));
             var matriculasAluno = aluno.Select(a => ((DateTime?)a.DataMatricula, a.Inativo ? a.DataSituacao : (DateTime?)null, a.Inativo));
