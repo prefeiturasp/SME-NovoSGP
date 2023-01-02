@@ -33,6 +33,8 @@ namespace SME.SGP.Aplicacao
         protected async Task IniciarAprovacao(IEnumerable<WFAprovacaoNotaConselho> wfAprovacoes)
         {
             WFAprovacoes = wfAprovacoes.ToList();
+            if (WFAprovacoes == null || !WFAprovacoes.Any()) return;
+
             await CarregarTodasUes();
             await CarregarTodosAlunos();
             await CarregarTodosComponentes();
