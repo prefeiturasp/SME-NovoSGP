@@ -23,9 +23,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet("dres/{codigoDre}/ues")]
-        public async Task<IActionResult> ObterUesPorDreComAbrangencia(string codigoDre, [FromQuery] bool consideraNovasUEs, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
+        public async Task<IActionResult> ObterUesPorDreComAbrangencia(string codigoDre, [FromQuery] bool consideraNovasUEs,[FromQuery] bool consideraHistorico, [FromServices] IObterFiltroRelatoriosUesPorAbrangenciaUseCase obterFiltroRelatoriosUesPorAbrangenciaUseCase)
         {
-            return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoDre, consideraNovasUEs));
+            return Ok(await obterFiltroRelatoriosUesPorAbrangenciaUseCase.Executar(codigoDre, consideraNovasUEs, consideraHistorico));
         }
 
         [HttpGet("ues/{codigoUe}/modalidades")]

@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
             var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoReferencia));
             var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
 
-            var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE))?.ToList();
+            var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, consideraHistorico: request.ConsideraHistorico, ignorarTiposUE: novosTiposUE))?.ToList();
 
             var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
