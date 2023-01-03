@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SME.SGP.Infra.Dtos
 {
-    public class AlunoReduzidoDto
+    public class AlunoTurmaReduzidoDto
     {
         public string CodigoAluno { get; set; }
         public string Nome { get; set; }        
@@ -21,5 +21,6 @@ namespace SME.SGP.Infra.Dtos
         public string CelularResponsavel { get; set; }
         public DateTime? DataAtualizacaoContato { get; set; }
         public bool EhAtendidoAEE { get; set; }
+        public string Frequencia { get; set; }
     }
 }
