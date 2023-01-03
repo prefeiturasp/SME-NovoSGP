@@ -19,6 +19,7 @@
         Endereco = 15,
         ContatoResponsaveis = 16,
         AtividadesContraturno = 17,
-        EditorTexto = 18
+        EditorTexto = 18,
+        InformacoesSrm = 20
     }
 }
