@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -250,6 +251,8 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
+                if (turma.TipoTurma == TipoTurma.Programa)
+                    continue;
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
                 var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
