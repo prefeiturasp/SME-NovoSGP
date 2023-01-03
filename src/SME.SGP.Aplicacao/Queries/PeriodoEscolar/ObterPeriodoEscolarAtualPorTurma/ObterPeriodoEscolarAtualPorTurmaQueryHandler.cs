@@ -16,6 +16,8 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<PeriodoEscolar> Handle(ObterPeriodoEscolarAtualPorTurmaQuery request, CancellationToken cancellationToken)
-            => await repositorioPeriodoEscolar.ObterPeriodoEscolarAtualPorTurmaIdAsync(request.Turma.CodigoTurma, request.Turma.ModalidadeTipoCalendario, request.DataReferencia);
+            => await repositorioPeriodoEscolar.ObterPeriodoEscolarAtualPorTurmaIdAsync(request.Turma.CodigoTurma, request.Turma.ModalidadeTipoCalendario, request.DataReferencia) ??
+               await repositorioPeriodoEscolar.ObterPeriodoEscolarAtualPorTurmaIdAsync(request.Turma.CodigoTurma, request.Turma.ModalidadeTipoCalendario, request.DataReferencia, true) ??
+               await repositorioPeriodoEscolar.ObterPeriodoEscolarAtualPorTurmaIdAsync(request.Turma.CodigoTurma, request.Turma.ModalidadeTipoCalendario, request.DataReferencia, false);
     }
 }

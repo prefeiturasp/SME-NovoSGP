@@ -178,7 +178,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
                         var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
-                                                                        && a.AlunoCodigo == aluno.CodigoAluno);
+                                                                        && a.AlunoCodigo == aluno.CodigoAluno && (a.Bimestre is null || a.Bimestre == (int)Bimestre.Final));
 
                         string notaParaAdicionar = nota == null ? string.Empty :
                                                    tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""

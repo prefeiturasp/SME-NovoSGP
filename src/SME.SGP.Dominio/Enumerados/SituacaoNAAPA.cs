@@ -7,6 +7,8 @@ namespace SME.SGP.Dominio.Enumerados
         [Display(Name = "Rascunho")]
         Rascunho = 1,
         [Display(Name = "Aguardando atendimento")]
-        AguardandoAtendimento = 2
+        AguardandoAtendimento = 2,
+        [Display(Name = "Em atendimento")]
+        EmAtendimento = 3
     }
 }

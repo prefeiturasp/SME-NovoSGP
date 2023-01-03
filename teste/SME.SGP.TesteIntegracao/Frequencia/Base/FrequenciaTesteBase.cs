@@ -557,7 +557,7 @@ namespace SME.SGP.TesteIntegracao
                 PeriodoInicio = DATA_02_05,
                 PeriodoFim = DATA_07_08,
                 Bimestre = 2,
-                TotalAulas = 3,
+                TotalAulas = 12,
                 TotalAusencias = totalAusencia,
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
                 CriadoPor = "Sistema",

@@ -54,6 +54,12 @@ namespace SME.SGP.Dados.Repositorios
             const string query = "delete from Arquivo where id = @id";
             return await database.Conexao.ExecuteScalarAsync<bool>(query, new { id });
         }
+        
+        public async Task<bool> ExcluirArquivosPorIds(long[] ids)
+        {
+            const string query = "delete from Arquivo where id = ANY(@ids)";
+            return await database.Conexao.ExecuteScalarAsync<bool>(query, new { ids });
+        }
 
         public async Task<long> ObterIdPorCodigo(Guid arquivoCodigo)
         {

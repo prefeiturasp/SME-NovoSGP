@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoNAAPASecaoId);
         Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasEncaminhamento(long encaminhamentoId);
         Task<IEnumerable<PrioridadeEncaminhamentoNAAPADto>> ObterPrioridadeEncaminhamento();
+        Task<IEnumerable<RespostaQuestaoEncaminhamentoNAAPADto>> ObterRespostasItinerarioEncaminhamento(long encaminhamentoSecaoId);
     }
 }

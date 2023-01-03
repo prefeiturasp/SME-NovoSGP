@@ -31,8 +31,6 @@ namespace SME.SGP.Aplicacao
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
-            var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
-
             var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));

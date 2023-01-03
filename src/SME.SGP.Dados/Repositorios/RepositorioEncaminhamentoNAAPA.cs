@@ -1,6 +1,6 @@
 using Dapper;
-using Minio.DataModel;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -163,50 +163,127 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id)
         {
-            var query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
-                        from encaminhamento_naapa ea
-                        inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
-                        inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id 
-                        inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
-                        inner join questao q on q.id = qea.questao_id
-                        inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
-                         left join opcao_resposta op on op.id = rea.resposta_id
-                        where ea.id = @id";
+            const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
+                                    from encaminhamento_naapa ea
+                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
+                                        and not eas.excluido
+                                    inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
+                                        and not sea.excluido
+                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                        and not qea.excluido
+                                    inner join questao q on q.id = qea.questao_id
+                                        and not q.excluido
+                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                        and not rea.excluido
+                                    left join opcao_resposta op on op.id = rea.resposta_id
+                                        and not op.excluido
+                                    where ea.id = @id
+                                    and not ea.excluido";
 
             var encaminhamento = new EncaminhamentoNAAPA();
 
-            await database.Conexao.QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(query
-                , (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento, secaoEncaminhamento, questao, opcaoResposta) =>
-            {
-                if (encaminhamento.Id == 0)
-                    encaminhamento = encaminhamentoNAAPA;
+            await database.Conexao
+                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
+                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
+                    query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
+                        secaoEncaminhamento, questao, opcaoResposta) =>
+                    {
+                        if (encaminhamento.Id == 0)
+                            encaminhamento = encaminhamentoNAAPA;
 
-                var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
-                if (secao == null)
-                {
-                    encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
-                    secao = encaminhamentoSecao;
-                    encaminhamento.Secoes.Add(secao);
-                }
+                        var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
+                        
+                        if (secao == null)
+                        {
+                            encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
+                            secao = encaminhamentoSecao;
+                            encaminhamento.Secoes.Add(secao);
+                        }
 
-                var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
-                if (questaoEncaminhamento == null)
-                {
-                    questaoEncaminhamento = questaoEncaminhamentoNAAPA;
-                    questaoEncaminhamento.Questao = questao;
-                    secao.Questoes.Add(questaoEncaminhamento);
-                }
+                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
+                        
+                        if (questaoEncaminhamento == null)
+                        {
+                            questaoEncaminhamento = questaoEncaminhamentoNAAPA;
+                            questaoEncaminhamento.Questao = questao;
+                            secao.Questoes.Add(questaoEncaminhamento);
+                        }
 
-                var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
-                if (resposta == null)
-                {
-                    resposta = respostaEncaminhamento;
-                    resposta.Resposta = opcaoResposta;
-                    questaoEncaminhamento.Respostas.Add(resposta);
-                }
+                        var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+                        
+                        if (resposta == null)
+                        {
+                            resposta = respostaEncaminhamento;
+                            resposta.Resposta = opcaoResposta;
+                            questaoEncaminhamento.Respostas.Add(resposta);
+                        }
 
-                return encaminhamento;
-            }, new { id });
+                        return encaminhamento;
+                    }, new { id });
+
+            return encaminhamento;
+        }
+
+        public async Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorIdESecao(long id, long secaoId)
+        {
+            const string query = @"select ea.*, eas.*, qea.*, rea.*, sea.*, q.*, op.*
+                                    from encaminhamento_naapa ea
+                                    inner join encaminhamento_naapa_secao eas on eas.encaminhamento_naapa_id = ea.id
+                                        and not eas.excluido
+                                    inner join secao_encaminhamento_naapa sea on sea.id = eas.secao_encaminhamento_id
+                                        and not sea.excluido
+                                    inner join encaminhamento_naapa_questao qea on qea.encaminhamento_naapa_secao_id = eas.id
+                                        and not qea.excluido
+                                    inner join questao q on q.id = qea.questao_id
+                                        and not q.excluido
+                                    inner join encaminhamento_naapa_resposta rea on rea.questao_encaminhamento_id = qea.id
+                                        and not rea.excluido
+                                    left join opcao_resposta op on op.id = rea.resposta_id
+                                        and not op.excluido
+                                    where ea.id = @id
+                                    and qea.encaminhamento_naapa_secao_id = @secaoId
+                                    and not ea.excluido";
+
+            var encaminhamento = new EncaminhamentoNAAPA();
+
+            await database.Conexao
+                .QueryAsync<EncaminhamentoNAAPA, EncaminhamentoNAAPASecao, QuestaoEncaminhamentoNAAPA,
+                    RespostaEncaminhamentoNAAPA, SecaoEncaminhamentoNAAPA, Questao, OpcaoResposta, EncaminhamentoNAAPA>(
+                    query, (encaminhamentoNAAPA, encaminhamentoSecao, questaoEncaminhamentoNAAPA, respostaEncaminhamento,
+                        secaoEncaminhamento, questao, opcaoResposta) =>
+                    {
+                        if (encaminhamento.Id == 0)
+                            encaminhamento = encaminhamentoNAAPA;
+
+                        var secao = encaminhamento.Secoes.FirstOrDefault(c => c.Id == encaminhamentoSecao.Id);
+                        
+                        if (secao == null)
+                        {
+                            encaminhamentoSecao.SecaoEncaminhamentoNAAPA = secaoEncaminhamento;
+                            secao = encaminhamentoSecao;
+                            encaminhamento.Secoes.Add(secao);
+                        }
+
+                        var questaoEncaminhamento = secao.Questoes.FirstOrDefault(c => c.Id == questaoEncaminhamentoNAAPA.Id);
+                        
+                        if (questaoEncaminhamento == null)
+                        {
+                            questaoEncaminhamento = questaoEncaminhamentoNAAPA;
+                            questaoEncaminhamento.Questao = questao;
+                            secao.Questoes.Add(questaoEncaminhamento);
+                        }
+
+                        var resposta = questaoEncaminhamento.Respostas.FirstOrDefault(c => c.Id == respostaEncaminhamento.Id);
+
+                        if (resposta != null) 
+                            return encaminhamento;
+                        
+                        resposta = respostaEncaminhamento;
+                        resposta.Resposta = opcaoResposta;
+                        questaoEncaminhamento.Respostas.Add(resposta);
+
+                        return encaminhamento;
+                    }, new { id, secaoId });
 
             return encaminhamento;
         }
@@ -249,6 +326,24 @@ namespace SME.SGP.Dados.Repositorios
                     
                     return encaminhamentoNAAPA;
                 }, new { encaminhamentoId })).FirstOrDefault();
+        }
+
+        public async Task<SituacaoDto> ObterSituacao(long id)
+        {
+            var query = @" select situacao
+                            from encaminhamento_naapa 
+                           where id = @id";
+
+            var situacao = await database.Conexao.QueryFirstAsync<int?>(query, new { id });
+
+            if (situacao.HasValue)
+                return new SituacaoDto
+                {
+                    Codigo = situacao.Value,
+                    Descricao = ((SituacaoNAAPA)situacao.Value).ObterNome()
+                };
+
+            return new SituacaoDto();
         }
     }
 }

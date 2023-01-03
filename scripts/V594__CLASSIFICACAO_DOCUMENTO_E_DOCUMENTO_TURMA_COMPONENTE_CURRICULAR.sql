@@ -7,7 +7,7 @@ ALTER TABLE classificacao_documento ADD COLUMN IF NOT EXISTS ehRegistroMultiplo 
 
 --> Carta Pedagógica
 insert into classificacao_documento (descricao, tipo_documento_id, ehRegistroMultiplo)
-select 'Carta Pedagógica', 2, true
+select 'Carta Pedagógica', 2, false
 where not exists(select 1 from public.ocorrencia_tipo where descricao = 'Carta Pedagógica');
 
 --> Documentos da turma
