@@ -101,6 +101,7 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisPAAIPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - PAAI por DRE", typeof(IRemoverAtribuicaoResponsaveisPAAIPorDreUseCase)));
             Comandos.Add(RotasRabbitSgp.RemoverAtribuicaoResponsaveisASPPorDre, new ComandoRabbit("Remover Atribuição de Responsaveis - Assistente Social, Psicólogo ou Psicopedagogo por DRE", typeof(IRemoverAtribuicaoResponsaveisASPPPorDreUseCase)));
             Comandos.Add(RotasRabbitSgp.RemoverArquivoArmazenamento, new ComandoRabbit("Excluir Arquivo Armazenado no Minio", typeof(IExcluirArmazenamentoPorAquivoUseCase)));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA, new ComandoRabbit("Atualiza informações do encaminhamento NAAPA", typeof(IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase)));
         }
     }
 }
