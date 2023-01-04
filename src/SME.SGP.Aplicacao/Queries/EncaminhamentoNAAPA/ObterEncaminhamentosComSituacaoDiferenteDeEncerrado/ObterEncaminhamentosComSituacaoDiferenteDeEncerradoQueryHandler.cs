@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    internal class ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQueryHandler : IRequestHandler<ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery, IEnumerable<EncaminhamentoNAAPADto>>
+    public class ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQueryHandler : IRequestHandler<ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery, IEnumerable<EncaminhamentoNAAPADto>>
     {
         private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNaapa;
 
