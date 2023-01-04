@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class Ao_atualizar_endereco_residencial_aluno_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
-        private const string ENDERECO_RESIDENCIAL_ALUNO_NAAPA_DIFERENTE = "[{\"numero\":\"64\",\"complemento\":\"CASA 04\",\"bairro\":\"JARDIM CAMPO LIMPO ZONA NORTE\",\"tipoLogradouro\":\"Rua\",\"logradouro\":\"SANTO ANDRÉ CORSINI\"}]";
+        private const string ENDERECO_RESIDENCIAL_ALUNO_NAAPA_DIFERENTE = "[{\"numero\":\"140\",\"complemento\":\"Casa 02\",\"bairro\":\"Interior\",\"tipoLogradouro\":\"Rua\",\"logradouro\":\"Rua das melancias\"}]";
         private const string ENDERECO_RESIDENCIAL_ALUNO_NAAPA_IGUAL = "[{\"numero\":\"142\",\"complemento\":\"Casa\",\"bairro\":\"Centro\",\"tipoLogradouro\":\"Rua\",\"logradouro\":\"Rua das maçãs\"}]";
         private const string ENDERECO_RESIDENCIAL_ALUNO_EOL = "[{\"numero\":\"142\",\"complemento\":\"Casa\",\"bairro\":\"Centro\",\"tipoLogradouro\":\"Rua\",\"logradouro\":\"Rua das maçãs\"}]";
 
