@@ -14,14 +14,16 @@ namespace SME.SGP.Aplicacao
         public string Login { get; set; }
         public Guid Perfil { get; set; }
         public bool ConsideraHistorico { get; set; }
+        public int AnoLetivo { get; set; }
 
-        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas, bool consideraHistorico = false)
+        public ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(string codigoUe, string login, Guid perfil, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas, bool consideraHistorico = false, int anoLetivo = 0)
         {
             CodigoUe = codigoUe;
             Login = login;
             Perfil = perfil;
             ModalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradas;
             ConsideraHistorico = consideraHistorico;
+            AnoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year;
         }
     }
 
