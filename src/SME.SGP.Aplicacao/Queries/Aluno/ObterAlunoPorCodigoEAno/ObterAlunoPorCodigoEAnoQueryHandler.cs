@@ -29,8 +29,6 @@ namespace SME.SGP.Aplicacao
             if (alunoPorTurmaResposta == null)
                 throw new NegocioException("Aluno não localizado");
 
-            var frequencia = await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoPorTurmaResposta.CodigoAluno, alunoPorTurmaResposta.CodigoTurma.ToString()));
-            
             var alunoReduzido = new AlunoReduzidoDto()
             {
                 Nome = !string.IsNullOrEmpty(alunoPorTurmaResposta.NomeAluno) ? alunoPorTurmaResposta.NomeAluno : alunoPorTurmaResposta.NomeSocialAluno,
@@ -45,8 +43,7 @@ namespace SME.SGP.Aplicacao
                 CelularResponsavel = alunoPorTurmaResposta.CelularResponsavel,
                 NomeResponsavel = alunoPorTurmaResposta.NomeResponsavel,
                 DataAtualizacaoContato = alunoPorTurmaResposta.DataAtualizacaoContato,
-                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel,
-                Frequencia = frequencia
+                TipoResponsavel = alunoPorTurmaResposta.TipoResponsavel
             };
 
             return alunoReduzido;
