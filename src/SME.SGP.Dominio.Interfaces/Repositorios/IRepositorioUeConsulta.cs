@@ -49,5 +49,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<DreUeCodigoDto> ObterCodigosDreUePorId(long ueId);
         Task<IEnumerable<long>> ObterTodosIds();
         Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0);
+        Task<IEnumerable<Ue>> ObterUEsComDREsPorCodigoUes(string[]codigoUes);
     }
 }
