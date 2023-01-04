@@ -355,7 +355,7 @@ namespace SME.SGP.Dados.Repositorios
                         aluno_nome as AlunoNome,
                         situacao
                         from encaminhamento_naapa 
-                        where situacao <> @situacao";
+                        where situacao <> @situacao and not excluido";
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
         }
