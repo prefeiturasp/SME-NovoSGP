@@ -1,4 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.Notas;
+using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
 
