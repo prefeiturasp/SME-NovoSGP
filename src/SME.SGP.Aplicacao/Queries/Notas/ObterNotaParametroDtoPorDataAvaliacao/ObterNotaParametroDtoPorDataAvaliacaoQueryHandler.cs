@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao.Queries
+namespace SME.SGP.Aplicacao
 {
     public class ObterNotaParametroDtoPorDataAvaliacaoQueryHandler : IRequestHandler<ObterNotaParametroDtoPorDataAvaliacaoQuery, NotaParametroDto>
     {
