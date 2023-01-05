@@ -3,7 +3,7 @@ using MediatR;
 using SME.SGP.Infra.Dtos.Notas;
 using System;
 
-namespace SME.SGP.Aplicacao.Queries
+namespace SME.SGP.Aplicacao
 {
     public class ObterNotaParametroDtoPorDataAvaliacaoQuery : IRequest<NotaParametroDto>
     {
