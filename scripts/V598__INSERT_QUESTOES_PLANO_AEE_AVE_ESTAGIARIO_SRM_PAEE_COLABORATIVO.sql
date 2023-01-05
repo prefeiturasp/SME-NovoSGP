@@ -34,6 +34,10 @@ insert into opcao_resposta (questao_id, ordem, nome, observacao, criado_em, cria
 insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf,somente_leitura,nome_componente)
 values((select id from questionario where nome = 'Questionário Plano AEE'), 13, 'Informações da matrícula em SRM', '', true, 20, '', NOW(), 'SISTEMA', '0',true,'MATRICULA_SRM');
 
+-- Resposta Questão Informações da matrícula em SRM (Sem resposta é uma tabela na tela com dados do EOL)
+insert into opcao_resposta (questao_id, ordem, nome, observacao, criado_em, criado_por, criado_rf)
+values(questaoId, 2, '[{"DreUe":"","TurmaTurno":"","ComponenteCurricular":""}]', '', NOW(), 'SISTEMA', '0');
+
 
 -- Questão Possui assistência do PAEE Colaborativo
 insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf,nome_componente)
