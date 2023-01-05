@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
+using SME.SGP.Infra.Dtos.Notas;
 
 namespace SME.SGP.Infra
 {
@@ -20,6 +21,7 @@ namespace SME.SGP.Infra
         public List<string> Observacoes { get; set; }
         public SituacaoFechamento Situacao { get; set; }
         public string SituacaoNome { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
 
         public FechamentoNotaConceitoTurmaDto()
         {
