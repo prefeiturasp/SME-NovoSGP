@@ -5,7 +5,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosSrmPaeeColaborativoEolQuery : IRequest<IEnumerable<DadosSrmPaeeColaborativoEolDto>>
+    public class ObterDadosSrmPaeeColaborativoEolQuery : IRequest<IEnumerable<SrmPaeeColaborativoSgpDto>>
     {
         public ObterDadosSrmPaeeColaborativoEolQuery(long codigoAluno)
         {
