@@ -37,7 +37,7 @@ values((select id from questionario where nome = 'Questionário Plano AEE'), 13,
 
 -- Questão Possui assistência do PAEE Colaborativo
 insert into questao(questionario_id, ordem, nome, observacao, obrigatorio, tipo, opcionais, criado_em, criado_por, criado_rf,nome_componente)
-values((select id from questionario where nome = 'Questionário Plano AEE'), 13, 'Possui assistência do PAEE Colaborativo', '', true, 3, '', NOW(), 'SISTEMA', '0','POSSUI_PAEE_COLABORATIVO')
+values((select id from questionario where nome = 'Questionário Plano AEE'), 14, 'Possui assistência do PAEE Colaborativo', '', true, 3, '', NOW(), 'SISTEMA', '0','POSSUI_PAEE_COLABORATIVO')
 RETURNING id INTO questaoId;
 
 -- Resposta Questão Possui assistência do PAEE Colaborativo
@@ -48,6 +48,3 @@ insert into opcao_resposta (questao_id, ordem, nome, observacao, criado_em, cria
  values(questaoId, 2, 'Não', '', NOW(), 'SISTEMA', '0');
 
 end $$;
-
-
-select * from questao

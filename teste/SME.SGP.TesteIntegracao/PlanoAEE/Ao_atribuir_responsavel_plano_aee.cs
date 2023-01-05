@@ -42,7 +42,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
             var idPlano = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.ParecerPAAI);
             
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano,TURMA_CODIGO_1,1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
@@ -81,7 +81,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             
             var idPlano = await CriarPlanoAeePorSituacao(SituacaoPlanoAEE.ParecerPAAI);
             
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(idPlano,TURMA_CODIGO_1,1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
