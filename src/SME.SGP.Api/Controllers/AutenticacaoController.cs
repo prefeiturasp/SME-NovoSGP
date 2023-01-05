@@ -61,12 +61,19 @@ namespace SME.SGP.Api.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Autenticar(AutenticacaoDto autenticacaoDto)
         {
-            var retornoAutenticacao = await comandosUsuario.Autenticar(autenticacaoDto.Login, autenticacaoDto.Senha);
+            try
+            {
+                var retornoAutenticacao = await comandosUsuario.Autenticar(autenticacaoDto.Login, autenticacaoDto.Senha);
 
-            if (!retornoAutenticacao.Autenticado)
-                return StatusCode(401);
+                if (!retornoAutenticacao.Autenticado)
+                    return StatusCode(401);
 
-            return Ok(retornoAutenticacao);
+                return Ok(retornoAutenticacao);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }            
         }
 
         [HttpGet("{login}/perfis/listar")]
