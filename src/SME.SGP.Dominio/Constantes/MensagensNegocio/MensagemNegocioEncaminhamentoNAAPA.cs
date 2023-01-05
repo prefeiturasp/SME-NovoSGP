@@ -11,5 +11,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string SITUACAO_ENCAMINHAMENTO_DEVE_SER_DIFERENTE_RASCUNHO = "A situação do encaminhamento deve ser diferente de rascunho";
 
         public const string SECAO_NAO_ENCONTRADA = "Seção não encontrada";
+        public const string SECAO_NAO_VALIDA_ITINERANCIA = "Seção inválida para o lançamento de atendimentos!";
     }
 }
