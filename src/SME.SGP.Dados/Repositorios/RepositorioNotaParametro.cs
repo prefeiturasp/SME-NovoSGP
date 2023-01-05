@@ -7,7 +7,7 @@ using System;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Dtos.Notas;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Dados
 {
