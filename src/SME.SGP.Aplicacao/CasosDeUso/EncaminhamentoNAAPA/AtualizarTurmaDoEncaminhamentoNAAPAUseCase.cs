@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
         {
             var turmaId = await mediator.Send(new ObterTurmaIdPorCodigoQuery(alunoTurma.CodigoTurma.ToString()));
 
-            if (turmaId != encaminhamento.TurmaId)
+            if (turmaId != 0 && turmaId != encaminhamento.TurmaId)
             {
                 await AtualizarEncaminhamento(encaminhamento.Id.GetValueOrDefault(), turmaId);
             }
