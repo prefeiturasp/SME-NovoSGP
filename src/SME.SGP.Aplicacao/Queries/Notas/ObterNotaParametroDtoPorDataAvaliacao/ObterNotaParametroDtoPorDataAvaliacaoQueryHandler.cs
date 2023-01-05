@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
             this.repositorio = repositorio ?? throw new ArgumentNullException(nameof(repositorio));
         }
         
-        public async Task<NotaParametroDto> Handle(ObterNotaParametroDtoPorDataAvaliacaoQuery request, CancellationToken cancellationToken)
+        public Task<NotaParametroDto> Handle(ObterNotaParametroDtoPorDataAvaliacaoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorio.ObterDtoPorDataAvaliacao(request.DataAvaliacao);
+            return repositorio.ObterDtoPorDataAvaliacao(request.DataAvaliacao);
         }
     }
 }
