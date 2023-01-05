@@ -23,10 +23,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
             var secoesQuestionario = (await mediator.Send(new ObterSecoesEncaminhamentosSecaoNAAPAQuery(filtro.Modalidade, filtro.EncaminhamentoNAAPAId))).ToList();
 
-            if (filtro.EncaminhamentoNAAPAId != 0) 
-                return secoesQuestionario;
-            
-            foreach (var secao in secoesQuestionario.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA))
+            foreach (var secao in secoesQuestionario.Where(secao => secao.NomeComponente != SECAO_ITINERANCIA && secao.Auditoria == null))
             {
                 var listaQuestoes = await mediator.Send(new ObterQuestoesPorQuestionarioPorIdQuery(secao.QuestionarioId));
                 secao.Concluido = !listaQuestoes.Any(c => c.Obrigatorio);
