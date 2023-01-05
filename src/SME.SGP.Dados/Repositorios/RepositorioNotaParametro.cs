@@ -29,7 +29,7 @@ namespace SME.SGP.Dados
         {
             var sql = @"select id, valor_maximo as Maxima, valor_minimo as Minima, incremento
                         from notas_parametros where inicio_vigencia <= @dataAvaliacao
-                        and(ativo = true or fim_vigencia >= @dataAvaliacao)";
+                        and(fim_vigencia is null or fim_vigencia >= @dataAvaliacao)";
 
             var parametros = new { dataAvaliacao };
 

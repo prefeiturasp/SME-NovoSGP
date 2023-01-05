@@ -3,6 +3,7 @@ using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {

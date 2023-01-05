@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos.Notas;
 using System;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
