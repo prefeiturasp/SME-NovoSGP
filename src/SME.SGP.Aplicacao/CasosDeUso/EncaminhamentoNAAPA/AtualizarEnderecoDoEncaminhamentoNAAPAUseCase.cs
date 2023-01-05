@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
             
             var enderecosResidenciaisNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostasEnderecoResidencialNAAPA.Texto);
             var enderecoResidencialNAAPA = enderecosResidenciaisNAAPA?.FirstOrDefault();
-            if (enderecoResidencialNAAPA.Equals(enderecoResidencialAluno)) return false;
+            if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA)) return false;
 
             var respostaEnderecoAtualizado = MapearDTO(respostasEnderecoResidencialNAAPA, enderecoResidencialAluno);
             return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostasEnderecoResidencialNAAPA,
