@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.Nota
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Parametros arredondamento nota - Deve ser encontrado vigente para ano atual")]
+        [Fact(DisplayName = "Parametros arredondamento nota - Deve ser encontrado vigente para ano atual e ano anterior conforme data base informada")]
         public async Task Deve_encontrar_parametros_ano_atual_e_anterior()
         {
             var mediator = ServiceProvider.GetService<IMediator>();
