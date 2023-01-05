@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
             retorno.FrequenciaMedia = await mediator.Send(new ObterFrequenciaMediaQuery(disciplinaEOL, turma.AnoLetivo));
             retorno.PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
-            retorno.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(ultimoPeriodoEscolar.PeriodoFim));
+            retorno.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(ultimoPeriodoEscolar.PeriodoFim));
             return retorno;
         }
 

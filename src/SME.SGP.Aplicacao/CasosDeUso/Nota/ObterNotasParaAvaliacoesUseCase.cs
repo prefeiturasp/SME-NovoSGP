@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                 Numero = filtro.Bimestre,
                 PeriodoInicio = periodoInicio,
                 PeriodoFim = periodoFim,
-                DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(periodoFim))
+                DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim))
             };
 
             var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
@@ -368,7 +368,7 @@ namespace SME.SGP.Aplicacao
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
                     EhCJ = avaliacao.EhCj,
-                    DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
+                    DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
