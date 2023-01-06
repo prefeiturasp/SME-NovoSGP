@@ -170,24 +170,34 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
-            if(novaVersao)
-               await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano);
+            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
 
             return plano;
         }
 
-        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano)
+        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
         {
-           var questaoSrm = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
-           var opcaoResposta = new List<OpcaoRespostaDto>();
-           var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
-
-            if (dadoSrm.Count > 0)
+            var questaoSrm = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
+            if (novaVersao)
             {
-                var json = JsonConvert.SerializeObject(dadoSrm);
-                opcaoResposta.Add(new OpcaoRespostaDto() {Nome = json});
+                
+                var opcaoResposta = new List<OpcaoRespostaDto>();
+                var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
 
-                questaoSrm!.OpcaoResposta = opcaoResposta.ToArray();
+                if (dadoSrm.Count > 0)
+                {
+                    var json = JsonConvert.SerializeObject(dadoSrm);
+                    opcaoResposta.Add(new OpcaoRespostaDto() {Nome = json});
+
+                    questaoSrm!.OpcaoResposta = opcaoResposta.ToArray();
+                    plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = questaoSrm.Resposta;
+                }
+            }
+            else
+            {
+                var resposta = new List<RespostaQuestaoDto>();
+                resposta.Add(new RespostaQuestaoDto(){Texto = questaoSrm!.OpcaoResposta.FirstOrDefault()!.Nome});
+                questaoSrm!.Resposta = resposta;
                 plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = questaoSrm.Resposta;
             }
         }
