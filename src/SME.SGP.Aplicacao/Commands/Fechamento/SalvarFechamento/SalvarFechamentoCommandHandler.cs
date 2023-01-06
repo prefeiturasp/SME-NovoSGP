@@ -239,19 +239,20 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid()), cancellationToken);
                 }
 
-                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                    turma.CodigoTurma,
-                    turma.Nome,
-                    periodoEscolar.PeriodoInicio,
-                    periodoEscolar.PeriodoFim,
-                    periodoEscolar.Bimestre,
-                    usuarioLogado,
-                    fechamentoTurmaDisciplina.Id,
-                    fechamentoTurmaDisciplina.Justificativa,
-                    fechamentoTurmaDisciplina.CriadoRF,
-                    fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
-                    fechamentoTurma.ComponenteSemNota,
-                    disciplina.RegistraFrequencia);
+                if (turma.TipoTurma != TipoTurma.Programa)
+                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                        turma.CodigoTurma,
+                        turma.Nome,
+                        periodoEscolar.PeriodoInicio,
+                        periodoEscolar.PeriodoFim,
+                        periodoEscolar.Bimestre,
+                        usuarioLogado,
+                        fechamentoTurmaDisciplina.Id,
+                        fechamentoTurmaDisciplina.Justificativa,
+                        fechamentoTurmaDisciplina.CriadoRF,
+                        fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
+                        fechamentoTurma.ComponenteSemNota,
+                        disciplina.RegistraFrequencia);
 
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoTurmaDisciplina.DisciplinaId, fechamentoTurmaDisciplina.FechamentoTurma.TurmaId, periodoEscolar, usuarioLogado, fechamentoTurma.EhFinal);
