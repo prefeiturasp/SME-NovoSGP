@@ -1,7 +1,6 @@
 ﻿using SME.SGP.Dominio;
 using System;
 using System.Collections.Generic;
-using SME.SGP.Infra.Dtos.Notas;
 
 namespace SME.SGP.Infra
 {

@@ -1,5 +1,4 @@
 ﻿using SME.SGP.Dominio;
-using SME.SGP.Infra.Dtos.Notas;
 using System;
 using System.Collections.Generic;
 

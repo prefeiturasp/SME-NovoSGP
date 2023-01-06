@@ -1,13 +1,13 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos.Notas;
 using System;
+using SME.SGP.Infra;
 
-namespace SME.SGP.Aplicacao.Queries
+namespace SME.SGP.Aplicacao
 {
-    public class ObterNotaParametroDtoPorDataAvaliacaoQuery : IRequest<NotaParametroDto>
+    public class ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery : IRequest<NotaParametroDto>
     {
-        public ObterNotaParametroDtoPorDataAvaliacaoQuery(DateTime dataAvaliacao)
+        public ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(DateTime dataAvaliacao)
         {
             DataAvaliacao = dataAvaliacao;
         }
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao.Queries
         public DateTime DataAvaliacao { get; set; }
     }
 
-    public class ObterNotaParametroDtoPorDataAvaliacaoQueryValidator : AbstractValidator<ObterNotaParametroDtoPorDataAvaliacaoQuery>
+    public class ObterNotaParametroDtoPorDataAvaliacaoQueryValidator : AbstractValidator<ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery>
     {
         public ObterNotaParametroDtoPorDataAvaliacaoQueryValidator()
         {

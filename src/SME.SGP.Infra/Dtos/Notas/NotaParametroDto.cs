@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Infra.Dtos.Notas
+namespace SME.SGP.Infra
 {
     public class NotaParametroDto
     {
