@@ -69,7 +69,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterPlanoAee(long? planoAeeId,long codigoAluno ,[FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo,codigoAluno)));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId,turmaCodigo,codigoAluno)));
         }
 
         [HttpGet]
