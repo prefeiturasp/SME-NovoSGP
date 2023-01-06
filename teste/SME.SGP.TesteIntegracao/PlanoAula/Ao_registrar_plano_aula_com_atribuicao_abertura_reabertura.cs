@@ -143,8 +143,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
 
         private FiltroPlanoAula ObterFiltroPlanoAula(string componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario tipoCalendario)
         {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
+            var dataReferencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
+
             return new FiltroPlanoAula()
             {
                 Bimestre = BIMESTRE_4,

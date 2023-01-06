@@ -201,7 +201,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
         
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
+            var dataReferencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 12, 31);
             
             await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
 
