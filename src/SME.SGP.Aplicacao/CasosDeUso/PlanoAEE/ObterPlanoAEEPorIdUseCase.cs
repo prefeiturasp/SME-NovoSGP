@@ -183,7 +183,7 @@ namespace SME.SGP.Aplicacao
         {
             var questaoSrm = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
             var resposta = new List<RespostaQuestaoDto>();
-            if (!novaVersao)
+            if (novaVersao)
             {
                 
                 var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
