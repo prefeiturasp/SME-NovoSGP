@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConselhoAlunoAsync(string alunoCodigo, string[] turmasCodigos, long? periodoEscolarId = null);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasAsync(string alunoCodigo, IEnumerable<string> turmasCodigos, long? periodoEscolarId);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null);
-        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int? bimestre,DateTime? dataMatricula = null, DateTime? dataSituacao = null);
+        Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int? bimestre,DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null);
         Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasBimestresAluno(string alunoCodigo, string ueCodigo, string turmaCodigo, int[] bimestres);
         Task<double?> VerificaNotaConselhoEmAprovacao(long conselhoClasseNotaId);
         Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoWf(long workFlowId);
