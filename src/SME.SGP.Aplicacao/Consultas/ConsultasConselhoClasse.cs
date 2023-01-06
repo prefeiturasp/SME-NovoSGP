@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
             var turma = await ObterTurma(turmaCodigo);
 
             var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre, tipoCalendarioTurma));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreTipoCalendarioQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre, tipoCalendarioTurma));
 
             switch (fechamentoTurma)
             {
