@@ -691,5 +691,8 @@
         
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, Url = "/relatorios/aee/plano", EhSubMenu = true, SubMenu = "Plano")]
         RPAEE_C = 239,
+
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        REAEE_C = 240,
     }
 }
