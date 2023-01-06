@@ -53,8 +53,9 @@ namespace SME.SGP.Aplicacao
         public async Task<ConselhoClasseAlunoResumoDto> ObterConselhoClasseTurma(string turmaCodigo, string alunoCodigo, int bimestre = 0, bool ehFinal = false, bool consideraHistorico = false)
         {
             var turma = await ObterTurma(turmaCodigo);
-            
-            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre));
+
+            var tipoCalendarioTurma = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
+            var fechamentoTurma = await mediator.Send(new ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestreQuery(bimestre, turma.CodigoTurma, turma.AnoLetivo, turma.Semestre, tipoCalendarioTurma));
 
             switch (fechamentoTurma)
             {
