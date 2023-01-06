@@ -280,7 +280,7 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("encaminhamento-aee")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        [Permissao(Permissao.REAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> EncaminhamentoAee([FromBody] FiltroRelatorioEncaminhamentoAEEDto filtroRelatorioEncaminhamentoAeeDto, [FromServices] IRelatorioEncaminhamentoAEEUseCase relatorioEncaminhamentoAeeUseCase)
         {
             return Ok(await relatorioEncaminhamentoAeeUseCase.Executar(filtroRelatorioEncaminhamentoAeeDto));
