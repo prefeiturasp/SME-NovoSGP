@@ -140,7 +140,7 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task AtribuirDadosDoArredondamento(FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma) 
-            => fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterNotaParametroDtoPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
+            => fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
 
         private Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoId)
             => mediator.Send(new ObterCodigosAlunosComAnotacaoNoFechamentoQuery(fechamentoId));

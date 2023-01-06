@@ -1,5 +1,4 @@
-﻿using SME.SGP.Infra.Dtos.Notas;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace SME.SGP.Infra
 {

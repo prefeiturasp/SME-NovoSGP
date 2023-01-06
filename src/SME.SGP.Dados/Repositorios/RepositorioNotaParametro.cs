@@ -1,13 +1,10 @@
-﻿using Dapper;
-using SME.SGP.Dados.Contexto;
-using SME.SGP.Dados.Repositorios;
+﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Interface;
-using SME.SGP.Infra.Dtos.Notas;
 
 namespace SME.SGP.Dados
 {
@@ -28,15 +25,15 @@ namespace SME.SGP.Dados
 
             return await database.QueryFirstOrDefaultAsync<NotaParametro>(sql, parametros);
         }
-        public async Task<NotaParametroDto> ObterDtoPorDataAvaliacao(DateTime dataAvaliacao)
+        public Task<NotaParametroDto> ObterParametrosArredondamentoNotaPorDataAvaliacao(DateTime dataAvaliacao)
         {
             var sql = @"select id, valor_maximo as Maxima, valor_minimo as Minima, incremento
                         from notas_parametros where inicio_vigencia <= @dataAvaliacao
-                        and(ativo = true or fim_vigencia >= @dataAvaliacao)";
+                        and(fim_vigencia is null or fim_vigencia >= @dataAvaliacao)";
 
             var parametros = new { dataAvaliacao };
 
-            return await database.QueryFirstOrDefaultAsync<NotaParametroDto>(sql, parametros);
+            return database.QueryFirstOrDefaultAsync<NotaParametroDto>(sql, parametros);
         }
 
     }

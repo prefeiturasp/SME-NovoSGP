@@ -1,4 +1,3 @@
-﻿using SME.SGP.Infra.Dtos.Notas;
 using System;
 
 namespace SME.SGP.Infra
