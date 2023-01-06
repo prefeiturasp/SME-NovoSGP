@@ -35,6 +35,10 @@ namespace SME.SGP.Aplicacao
                 var entidadePlano = await mediator
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
+                
+                if(entidadePlano == null)
+                    throw new NegocioException("Plano AEE não encontrado");
+                
                 alunoCodigo = int.Parse(entidadePlano.AlunoCodigo);
                 var alunoTurma = await mediator
                     .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, DateTime.Today.Year, true));
@@ -178,28 +182,32 @@ namespace SME.SGP.Aplicacao
         private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
         {
             var questaoSrm = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm);
-            if (novaVersao)
+            var resposta = new List<RespostaQuestaoDto>();
+            if (!novaVersao)
             {
                 
-                var opcaoResposta = new List<OpcaoRespostaDto>();
                 var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
 
                 if (dadoSrm.Count > 0)
                 {
-                    var json = JsonConvert.SerializeObject(dadoSrm);
-                    opcaoResposta.Add(new OpcaoRespostaDto() {Nome = json});
-
-                    questaoSrm!.OpcaoResposta = opcaoResposta.ToArray();
+                    var json = JsonConvert.SerializeObject(dadoSrm); 
+                    resposta.Add(new RespostaQuestaoDto() {Texto = json});
+                    
+                    questaoSrm!.Resposta = resposta;
                     plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = questaoSrm.Resposta;
                 }
             }
             else
             {
-                var resposta = new List<RespostaQuestaoDto>();
-                resposta.Add(new RespostaQuestaoDto(){Texto = questaoSrm!.OpcaoResposta.FirstOrDefault()!.Nome});
+                var respostaExiste = !questaoSrm!.Resposta.Any() ? null : questaoSrm.Resposta.FirstOrDefault()!.Texto;
+                
+                if(respostaExiste != null)
+                   resposta.Add(new RespostaQuestaoDto(){Texto = respostaExiste});
+                
                 questaoSrm!.Resposta = resposta;
                 plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = questaoSrm.Resposta;
             }
+            plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.OpcaoResposta = new []{new OpcaoRespostaDto()};
         }
         
         public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
