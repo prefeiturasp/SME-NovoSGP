@@ -137,7 +137,7 @@ namespace SME.SGP.Dados
                     
             query += $@"), lista2 as (
                     select *,
-                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id) sequencia
+                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
                     from lista1)
                     select {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 1) TotalPresencas,")}
                     	   count(0) filter (where tmp.valor = 2) TotalAusencias,
