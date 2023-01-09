@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using Shouldly;
 using SME.SGP.Dominio;
@@ -137,13 +138,15 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
         {
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
-            await CriarDadosBasicos(ObterFiltroRegistroIndividualDto());
+            await CriarDadosBasicos(ObterFiltroRegistroIndividualDto(true));
+            var dataReferencia = DATA_DESISTENCIA_ALUNO_REGISTRO_INDIVIDUAL.AddDays(1);
+            await CriarPeriodoEscolar(dataReferencia, dataReferencia.AddDays(10), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
             {
                 TurmaId = TURMA_ID_1,
                 AlunoCodigo = long.Parse(ALUNO_CODIGO_5),
-                Data = DateTimeExtension.HorarioBrasilia().Date,
+                Data = dataReferencia,
                 ComponenteCurricularId = COMPONENTE_CURRICULAR_CODIGO_512,
                 Registro = DESCRICAO_REGISTRO_INDIVIDUAL
             };
@@ -151,13 +154,14 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var retorno = await inserirRegistroIndividualUseCase.Executar(planoAeePersistenciaDto);
             retorno.ShouldBeNull();
         }
-        private FiltroRegistroIndividualDto ObterFiltroRegistroIndividualDto()
+        private FiltroRegistroIndividualDto ObterFiltroRegistroIndividualDto(bool naoCriarPeriodosEscolares = false)
         {
             return new FiltroRegistroIndividualDto()
             {
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.EducacaoInfantil,
-                TipoCalendario = ModalidadeTipoCalendario.Infantil
+                TipoCalendario = ModalidadeTipoCalendario.Infantil,
+                NaoCriarPeriodosEscolares = naoCriarPeriodosEscolares
             };
         }
 
