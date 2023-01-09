@@ -302,7 +302,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo, bimestre));
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, alunoCodigo, bimestre, tipoCalendario: tipoCalendario.Id));
                     notasConselhoClasseAluno.AddRange(notasParaAdicionar);
                 }
             }
