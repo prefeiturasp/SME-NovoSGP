@@ -73,37 +73,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
-        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre)
+        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre, long? tipoCalendario = null)
         {
-            var dataReferenciaSemestre = new DateTime(anoLetivoTurma, 07, 01);
-            var query = new StringBuilder();
-
-            query.AppendLine("with fechamentos as (select ft.*,");
-            query.AppendLine("row_number() over (partition by ft.id, ft.turma_id order by ft.id desc) sequencia");
-            query.AppendLine("	from fechamento_turma ft");
-            query.AppendLine("		inner join turma t");
-            query.AppendLine("			on ft.turma_id = t.id");
-            query.AppendLine("where not ft.excluido and");
-            query.AppendLine("	  t.turma_id = @turmaCodigo");
-            if (bimestre > 0)
-            {
-                query.AppendLine(" and exists (select 1");
-                query.AppendLine("	 		     from periodo_escolar pe");
-                query.AppendLine("	 		    	inner join tipo_calendario tc");
-                query.AppendLine("	 		    		on pe.tipo_calendario_id = tc.id");
-                query.AppendLine("	 		   where pe.id = ft.periodo_escolar_id and");
-                query.AppendLine("	 		  		 pe.bimestre = @bimestre and");
-                query.AppendLine("	 		 		 not tc.excluido");
-                if (semestre.HasValue && semestre.Value > 0)
-                    query.AppendLine($"	 		 		and pe.periodo_inicio {(semestre.Value.Equals(1) ? "<" : ">=")} @dataReferenciaSemestre");
-                query.AppendLine(")");
-            }
-            else
-                query.AppendLine("	  and ft.periodo_escolar_id is null");
-
+            var query = new StringBuilder(@"with fechamentos as (select f.*,
+                            row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia
+                            from fechamento_turma f
+                          inner join turma t on t.id = f.turma_id
+                                left JOIN conselho_classe cc ON cc.fechamento_turma_id  = f.id 
+                           left join periodo_escolar p on p.id = f.periodo_escolar_id
+                           left join tipo_calendario tp on tp.id = p.tipo_calendario_id and not tp.excluido
+                          where t.turma_id = @turmaCodigo ");
+            query.AppendLine(bimestre > 0 ? " and p.bimestre = @bimestre " : " and f.periodo_escolar_id is null");
+            query.AppendLine(bimestre > 0 && tipoCalendario.HasValue ? " and tp.id =@tipoCalendario" : string.Empty);
             query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre, dataReferenciaSemestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre, tipoCalendario });
         }
 
         public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0)
