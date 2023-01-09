@@ -28,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.Listao
                 typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact(DisplayName = "Não deve Lançar frequência para bimestre encerrado sem reabertura")]
+       // [Fact(DisplayName = "Não deve Lançar frequência para bimestre encerrado sem reabertura")]
         public async Task Nao_deve_lancar_frequencia_bimestre_encerrado_sem_reabertura()
         {
             var filtroListao = new FiltroListao

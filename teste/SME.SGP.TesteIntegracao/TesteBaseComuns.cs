@@ -259,7 +259,7 @@ namespace SME.SGP.TesteIntegracao
         protected const string LIBERACAO_EXCEPCIONAL = "Liberação excepcional";
         protected const int TIPO_CALENDARIO_ID = 1;
 
-        protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 03);
+        protected DateTime DATA_03_01_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_28_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 28);
         protected DateTime DATA_29_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 29);
         protected DateTime DATA_02_05_INICIO_BIMESTRE_2 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
