@@ -261,6 +261,7 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
+                    var totalCompensacoesDisciplinas = totalCompensacoesDisciplinaAluno?.Compensacoes ?? 0;
                     frequenciaParaTratar
                         .DefinirFrequencia(totalAusencias > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalAusencias,
                                            totalAulasNaDisciplina,

@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
@@ -250,6 +251,7 @@ namespace SME.SGP.Aplicacao
             foreach (var turmaCodigo in turmasComponentes.Items.GroupBy(a => a.TurmaCodigo))
             {
                 var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(turmaCodigo.Key.ToString()));
+                
                 var ehTurmaInfantil = turma.EhTurmaInfantil;
 
                 var periodoFechamentoIniciado = !ehTurmaInfantil && !usuario.EhProfessorCj() &&
@@ -279,7 +281,7 @@ namespace SME.SGP.Aplicacao
                     turmaComponente.PendenciaAvaliacoes = pendencias?.PendenciaAvaliacoes ?? false;
                     turmaComponente.PendenciaFrequencia = pendencias?.PendenciaFrequencia ?? false;
                     turmaComponente.PendenciaPlanoAula = pendencias?.PendenciaPlanoAula ?? false;
-                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento && turmaComponente.LancaNota;
+                    turmaComponente.PendenciaFechamento = periodoFechamentoIniciado && !possuiFechamento && turmaComponente.LancaNota && turma.TipoTurma != TipoTurma.Programa;
                     turmaComponente.PeriodoFechamentoIniciado = periodoFechamentoIniciado;
 
                     itensComPendencias.Add(turmaComponente);
