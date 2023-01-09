@@ -69,7 +69,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual.ServicosFakes
                     DataMatricula = DateTimeExtension.HorarioBrasilia().AddYears(-1).Date,
                     CodigoSituacaoMatricula = SituacaoMatriculaAluno.Desistente,
                     SituacaoMatricula = "DESISTENTE",
-                    DataSituacao = DateTimeExtension.HorarioBrasilia().AddDays(-1),
+                    DataSituacao = DateTimeExtension.HorarioBrasilia().AddDays(-5),
                     DataNascimento = DateTimeExtension.HorarioBrasilia().AddYears(-1).Date,
                     NumeroAlunoChamada = 5
                 },

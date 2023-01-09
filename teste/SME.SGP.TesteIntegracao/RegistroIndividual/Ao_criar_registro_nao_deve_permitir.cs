@@ -139,7 +139,7 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
             var inserirRegistroIndividualUseCase = ObterServicoInserirRegistroIndividualUseCase();
 
             await CriarDadosBasicos(ObterFiltroRegistroIndividualDto(true));
-            var dataReferencia = DATA_DESISTENCIA_ALUNO_REGISTRO_INDIVIDUAL.AddDays(1);
+            var dataReferencia = DATA_DESISTENCIA_ALUNO_5_REGISTRO_INDIVIDUAL.AddDays(5);
             await CriarPeriodoEscolar(dataReferencia, dataReferencia.AddDays(10), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             var planoAeePersistenciaDto = new InserirRegistroIndividualDto()
