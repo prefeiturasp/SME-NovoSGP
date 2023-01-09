@@ -84,7 +84,7 @@ namespace SME.SGP.Dados.Repositorios
                            left join tipo_calendario tp on tp.id = p.tipo_calendario_id and not tp.excluido
                           where t.turma_id = @turmaCodigo ");
             query.AppendLine(bimestre > 0 ? " and p.bimestre = @bimestre " : " and f.periodo_escolar_id is null");
-            query.AppendLine(tipoCalendario.HasValue ? " and tp.id =@tipoCalendario" : string.Empty);
+            query.AppendLine(bimestre > 0 && tipoCalendario.HasValue ? " and tp.id =@tipoCalendario" : string.Empty);
             query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre, tipoCalendario });
