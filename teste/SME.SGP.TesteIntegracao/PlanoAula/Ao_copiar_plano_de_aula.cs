@@ -35,8 +35,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra aula da mesma turma e componente curricular - Sem sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_sem_sobrescrever()
         {
-            var dataAula = DATA_INICIO_BIMESTRE_2.AddDays(new Random().Next((DATA_FIM_BIMESTRE_2 - DATA_INICIO_BIMESTRE_2).Days));
-            await CriarPlanoDeAula(Modalidade.Fundamental, dataAula);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
             
@@ -63,8 +63,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra aula da mesma turma e componente curricular - Com sobrescrever o plano existente")]
         public async Task Copiar_plano_para_outra_aula_da_mesma_turma_e_componente_com_sobrescrever()
         {
-            var dataAula = DATA_INICIO_BIMESTRE_2.AddDays(new Random().Next((DATA_FIM_BIMESTRE_2 - DATA_INICIO_BIMESTRE_2).Days));
-            await CriarPlanoDeAula(Modalidade.Fundamental, dataAula);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             
             var aula = ObterTodos<Dominio.Aula>().FirstOrDefault();
             var planoAula = ObterTodos<Dominio.PlanoAula>();
@@ -88,8 +88,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra turma com o mesmo componente curricular")]
         public async Task Copiar_plano_para_outra_turma_com_o_mesmo_componente_curricular()
         {
-            var dataAula = DATA_INICIO_BIMESTRE_2.AddDays(new Random().Next((DATA_FIM_BIMESTRE_2 - DATA_INICIO_BIMESTRE_2).Days));
-            await CriarPlanoDeAula(Modalidade.Fundamental, dataAula);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             await CriarTurma(Modalidade.Medio);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,
                 USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "138", 1, false);
@@ -122,8 +122,8 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
         [Fact(DisplayName = "Plano de Aula - Cópia de plano de aula para outra turma e componente curricular diferente (não deve permitir)")]
         public async Task Copiar_plano_para_outra_turma_de_componente_direferente()
         {
-            var dataAula = DATA_INICIO_BIMESTRE_2.AddDays(new Random().Next((DATA_FIM_BIMESTRE_2 - DATA_INICIO_BIMESTRE_2).Days));
-            await CriarPlanoDeAula(Modalidade.Fundamental, dataAula);
+            var dataAula = DateTimeExtension.HorarioBrasilia();
+            await CriarPlanoDeAula(Modalidade.Fundamental);
             
             await CriarTurma(Modalidade.Medio);
             await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal,USUARIO_PROFESSOR_LOGIN_2222222, "1", "1", "139", 1, false);
@@ -144,10 +144,10 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
             // ex.Message.ShouldNotBeNullOrEmpty();
         }
 
-        private async Task CriarPlanoDeAula(Modalidade modalidade, DateTime dataAula)
+        private async Task CriarPlanoDeAula(Modalidade modalidade)
         {
             var planoAulaDto = ObterPlanoAula();
-            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor(),Modalidade.Fundamental, dataAula);
+            var filtroPlanoAulaDiretor = ObterFiltroPlanoAulaPorPerfil(ObterPerfilProfessor(),Modalidade.Fundamental);
             await CriarDadosBasicos(filtroPlanoAulaDiretor);
 
             var salvarPlanoAulaUseCase = ObterServicoSalvarPlanoAulaUseCase();
@@ -173,7 +173,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 MigrarObjetivos = true
             };
         }
-        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil,Modalidade modalidade, DateTime dataAula)
+        private FiltroPlanoAula ObterFiltroPlanoAulaPorPerfil(string perfil,Modalidade modalidade)
         {
             return new FiltroPlanoAula()
             {
@@ -181,7 +181,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula
                 Modalidade = modalidade,
                 Perfil = perfil,
                 QuantidadeAula = 1,
-                DataAula = dataAula,
+                DataAula = DateTimeExtension.HorarioBrasilia(),
                 CriarPeriodoEscolarBimestre = false,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138,
