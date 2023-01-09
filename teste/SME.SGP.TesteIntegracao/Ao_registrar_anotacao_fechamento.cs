@@ -119,7 +119,7 @@ namespace SME.SGP.TesteIntegracao.AnotacaoFechamentoAluno
             {
                 Id = 1,
                 FechamentoTurmaDisciplinaId = 1,
-                AlunoCodigo = "7071720",
+                AlunoCodigo = "123123",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01),
                 CriadoPor = "",
                 CriadoRF = ""

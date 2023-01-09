@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 
             //Act
             var controller = new Api.Controllers.ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasPorAlunoTurma("5854736", "2123463", useCase);
+            var retorno = await controller.ObterTotalAulasPorAlunoTurma("123123", "111", useCase);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -45,9 +45,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
             await InserirNaBase(new Usuario
             {
                 Id = 27695,
-                Login = "7495048",
-                CodigoRf = "7495048",
-                Nome = "FABIANA ROBERTA GUIMARAES REGO",
+                Login = TesteBaseComuns.USUARIO_LOGADO_RF,
+                CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
+                Nome = TesteBaseComuns.USUARIO_LOGADO_NOME,
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
@@ -57,13 +57,13 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "FABIANA ROBERTA GUIMARAES REGO");
-            variaveis.Add("UsuarioLogado", "7495048");
-            variaveis.Add("RF", "7495048");
-            variaveis.Add("login", "7495048");
+            variaveis.Add("NomeUsuario", TesteBaseComuns.USUARIO_LOGADO_NOME);
+            variaveis.Add("UsuarioLogado", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("RF", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("login", TesteBaseComuns.USUARIO_LOGADO_RF);
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "7495048", Type = "rf" },
-                new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+                new InternalClaim { Value = TesteBaseComuns.USUARIO_LOGADO_RF, Type = "rf" },
+                new InternalClaim { Value = Perfis.PERFIL_PROFESSOR.ToString(), Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
             });
             await InserirNaBase(new Dominio.FrequenciaAluno
             {
-                Id = 25510725,
+                Id = 1,
                 PeriodoInicio = new DateTime(2020, 02, 05),
                 PeriodoFim = new DateTime(2020, 04, 30),
                 Bimestre = 1,
@@ -120,8 +120,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoClasseController
                 TotalPresencas = 0,
                 TotalRemotos = 0,
                 DisciplinaId = "1061",
-                CodigoAluno = "5854736",
-                TurmaId = "2123463",
+                CodigoAluno = "123123",
+                TurmaId = "111",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
             });
         }

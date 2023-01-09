@@ -50,14 +50,14 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retornoObter.Situacao.ShouldBeEquivalentTo(SituacaoPlanoAEE.ParecerPAAI);
 
             var servicoAtribuicaoResponsavel = ObterServicoAtribuirResponsavelPlanoAEEUseCase();
-            var retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_4444444);
+            var retornoAtribuicaoUsuarioPaai = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_LOGIN_PAAI);
             retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
 
             var retornoObterPlanoAlterado = ObterTodos<Dominio.PlanoAEE>();
             var usuarios = ObterTodos<Usuario>();
             retornoObterPlanoAlterado.ShouldNotBeNull();
             
-            var paaiAtribuido = usuarios.FirstOrDefault(x => x.CodigoRf == USUARIO_PAAI_LOGIN_4444444);
+            var paaiAtribuido = usuarios.FirstOrDefault(x => x.CodigoRf == USUARIO_LOGIN_PAAI);
             retornoObterPlanoAlterado.FirstOrDefault()!.ResponsavelPaaiId.ShouldBeEquivalentTo(paaiAtribuido!.Id);
 
             var pendencias = ObterTodos<Pendencia>();
@@ -93,7 +93,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retornoAtribuicaoUsuarioPaai.ShouldBeTrue();
 
             //Aterar o PAAI
-            var retornoAtribuicaoUsuarioPaaiAlterar = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_PAAI_LOGIN_4444444);
+            var retornoAtribuicaoUsuarioPaaiAlterar = await servicoAtribuicaoResponsavel.Executar(retornoObter.Id,USUARIO_LOGIN_PAAI);
             retornoAtribuicaoUsuarioPaaiAlterar.ShouldBeTrue();
             
 

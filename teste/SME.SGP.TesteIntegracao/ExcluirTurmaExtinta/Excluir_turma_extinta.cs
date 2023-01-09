@@ -23,27 +23,27 @@ namespace SME.SGP.TesteIntegracao
 
         private const string Turma_4A_ANO4_Nome = "4A - 4º ANO";
         private const string Turma_4A_ANO4_Ano = "4";
-        private const string Turma_4A_ANO4_Codigo = "2362749";
+        private const string Turma_4A_ANO4_Codigo = "444";
 
         private const string Turma_5B_ANO5_Nome = "5B - 5º ANO";
         private const string Turma_5B_ANO5_Ano = "5";
-        private const string Turma_5B_ANO5_Codigo = "2362877";
+        private const string Turma_5B_ANO5_Codigo = "555";
 
         private const string Turma_6B_ANO6_Nome = "6B - 6º ANO";
         private const string Turma_6B_ANO6_Ano = "6";
-        private const string Turma_6B_ANO6_Codigo = "2362889";
+        private const string Turma_6B_ANO6_Codigo = "666";
 
         private const string Turma_8B_ANO8_Nome = "8B - 8º ANO";
         private const string Turma_8B_ANO8_Ano = "8";
-        private const string Turma_8B_ANO8_Codigo = "2362962";
+        private const string Turma_8B_ANO8_Codigo = "888";
 
         private const string Turma_9A_ANO9_Nome = "9A - 9º ANO";
         private const string Turma_9A_ANO9_Ano = "9";
-        private const string Turma_9A_ANO9_Codigo = "2362970";
+        private const string Turma_9A_ANO9_Codigo = "999";
 
         private const string Turma_9B_ANO9_Nome = "9B - 9º ANO";
         private const string Turma_9B_ANO9_Ano = "9";
-        private const string Turma_9B_ANO9_Codigo = "2362980";
+        private const string Turma_9B_ANO9_Codigo = "999B";
 
         private const string Calendario_Teste_2022 = "Calendário Teste 2022";
 
