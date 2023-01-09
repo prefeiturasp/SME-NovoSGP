@@ -374,7 +374,7 @@ namespace SME.SGP.TesteIntegracao
         protected const int TOTAL_PRESENCAS_4 = 4;
         protected const int TOTAL_REMOTOS_0 = 0;
 
-        protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
+        protected DateTime DATA_01_02_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
         protected DateTime DATA_25_04_FIM_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 04, 25);
         protected const string REABERTURA_GERAL = "Reabrir Geral";
         protected DateTime DATA_INICIO_BIMESTRE_1 = new(DateTimeExtension.HorarioBrasilia().Year, 05, 02);
