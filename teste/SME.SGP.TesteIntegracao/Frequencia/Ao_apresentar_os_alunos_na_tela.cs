@@ -68,19 +68,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
         }
 
-        private async Task InserirPeriodoEscolarTodosBimestres()
-        {
-            var dataReferencia = DateTimeExtension.HorarioBrasilia();
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(-45), dataReferencia.AddDays(+30), BIMESTRE_1, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(40), dataReferencia.AddDays(115), BIMESTRE_2, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(125), dataReferencia.AddDays(200), BIMESTRE_3, TIPO_CALENDARIO_1);
-
-            await CriarPeriodoEscolar(dataReferencia.AddDays(210), dataReferencia.AddDays(285), BIMESTRE_4, TIPO_CALENDARIO_1);
-        }
-
         private async Task InserirPeriodoEscolarCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
