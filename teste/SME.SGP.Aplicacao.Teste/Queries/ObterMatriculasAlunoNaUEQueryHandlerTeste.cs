@@ -31,14 +31,14 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             //-> Arrange
             var alunoPorUe = new AlunoPorUeDto()
             {
-                CodigoAluno = "4824410",
-                NomeAluno = "NICOLAS DOS SANTOS ALMEIDA SILVA",
+                CodigoAluno = "111",
+                NomeAluno = "ALUNO TESTE",
                 NomeSocialAluno = String.Empty,
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Transferido,
                 SituacaoMatricula = "Transferido",
                 DataSituacao = DateTime.UtcNow.AddDays(-1),
-                CodigoTurma = 2369048,
-                CodigoMatricula = 36099185,
+                CodigoTurma = 1,
+                CodigoMatricula = 1,
                 AnoLetivo = 2022
             };
 
@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
                 .Returns(httpClient);
 
             //-> Act
-            var retorno = await _obterMatriculasAlunoNaUEQueryHandler.Handle(new ObterMatriculasAlunoNaUEQuery("094668", "4824410"), new CancellationToken());
+            var retorno = await _obterMatriculasAlunoNaUEQueryHandler.Handle(new ObterMatriculasAlunoNaUEQuery("1", "111"), new CancellationToken());
 
             //-> Assert
             Assert.True(retorno.Any(), "Falha ao consultar matriculas do aluno no EOL.");

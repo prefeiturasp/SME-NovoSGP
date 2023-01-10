@@ -200,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Id = retornoObter.Id,
                 TurmaCodigo = retornoObter.Turma.Codigo,
                 AlunoCodigo = retornoObter.Aluno.CodigoAluno,
-                ResponsavelRF = USUARIO_LOGIN_CP999999
+                ResponsavelRF = USUARIO_LOGIN_CP
             };
             var salvarEditar = await salvarPlanoAeeUseCase.Executar(planoAeeEditado);
 

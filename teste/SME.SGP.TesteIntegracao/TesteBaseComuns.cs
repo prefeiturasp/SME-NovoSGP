@@ -210,14 +210,18 @@ namespace SME.SGP.TesteIntegracao
 
         private const string EVENTO_NOME_FESTA = "Festa";
 
-        protected const string USUARIO_LOGIN_CP999999 = "CP999999";
-        protected const string USUARIO_LOGIN_DIRETOR999998 = "DIR999998";
-        protected const string USUARIO_LOGIN_AD999997 = "AD999997";
+        public const string USUARIO_LOGADO_NOME = "João Usuário";
+        public const string USUARIO_LOGADO_RF = "2222222";
+        public const string USUARIO_ADMIN_RF = "9999999";
+
+        public const string USUARIO_LOGIN_CP = "CP999999";
+        public const string USUARIO_LOGIN_DIRETOR = "DIR999998";
+        public const string USUARIO_LOGIN_AD = "AD999997";
         
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
-        protected const string USUARIO_PAAI_LOGIN_4444444 = "4444444";
+        public const string USUARIO_LOGIN_PAAI = "4444444";
         protected const string USUARIO_PAAI_LOGIN_5555555 = "5555555";
         protected const string USUARIO_PAEE_LOGIN_5555555 = "5555555";
         protected const string USUARIO_CP_CODIGO_RF_3333333 = "3333333";
@@ -489,13 +493,13 @@ namespace SME.SGP.TesteIntegracao
                 return USUARIO_PROFESSOR_LOGIN_2222222;
 
             if (perfil.Equals(ObterPerfilDiretor()))
-                return USUARIO_LOGIN_DIRETOR999998;
+                return USUARIO_LOGIN_DIRETOR;
             
             if (perfil.Equals(ObterPerfilAD()))
-                return USUARIO_LOGIN_AD999997;
+                return USUARIO_LOGIN_AD;
 
             if (perfil.Equals(ObterPerfilPaai()))
-                return USUARIO_PAAI_LOGIN_4444444;
+                return USUARIO_LOGIN_PAAI;
             
             if (perfil.Equals(ObterPerfilPaee()))
                 return USUARIO_PAAI_LOGIN_5555555;
@@ -737,9 +741,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_CP999999,
-                Login = USUARIO_LOGIN_CP999999,
-                Nome = USUARIO_LOGIN_CP999999,
+                CodigoRf = USUARIO_LOGIN_CP,
+                Login = USUARIO_LOGIN_CP,
+                Nome = USUARIO_LOGIN_CP,
                 PerfilAtual = Guid.Parse(PerfilUsuario.CP.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -748,9 +752,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_DIRETOR999998,
-                Login = USUARIO_LOGIN_DIRETOR999998,
-                Nome = USUARIO_LOGIN_DIRETOR999998,
+                CodigoRf = USUARIO_LOGIN_DIRETOR,
+                Login = USUARIO_LOGIN_DIRETOR,
+                Nome = USUARIO_LOGIN_DIRETOR,
                 PerfilAtual = Guid.Parse(PerfilUsuario.DIRETOR.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -759,9 +763,9 @@ namespace SME.SGP.TesteIntegracao
             
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_LOGIN_AD999997,
-                Login = USUARIO_LOGIN_AD999997,
-                Nome = USUARIO_LOGIN_AD999997,
+                CodigoRf = USUARIO_LOGIN_AD,
+                Login = USUARIO_LOGIN_AD,
+                Nome = USUARIO_LOGIN_AD,
                 PerfilAtual = Guid.Parse(PerfilUsuario.AD.ObterNome()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -769,9 +773,9 @@ namespace SME.SGP.TesteIntegracao
             });
             await InserirNaBase(new Usuario()
             {
-                CodigoRf = USUARIO_PAAI_LOGIN_4444444,
-                Login = USUARIO_PAAI_LOGIN_4444444,
-                Nome = USUARIO_PAAI_LOGIN_4444444,
+                CodigoRf = USUARIO_LOGIN_PAAI,
+                Login = USUARIO_LOGIN_PAAI,
+                Nome = USUARIO_LOGIN_PAAI,
                 PerfilAtual = Guid.Parse(PerfilUsuario.PAAI.ObterNome()),
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF,

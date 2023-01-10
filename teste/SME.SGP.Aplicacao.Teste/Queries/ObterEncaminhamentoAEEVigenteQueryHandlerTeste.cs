@@ -26,13 +26,13 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             //-> Arrange
             var encaminhamentoAEEVigente = new EncaminhamentoAEEVigenteDto()
             {
-                EncaminhamentoId = 1983,
-                AlunoCodigo = "4824410",
-                TurmaId = 869773,
-                TurmaCodigo = "2369048",
+                EncaminhamentoId = 1,
+                AlunoCodigo = "111",
+                TurmaId = 2,
+                TurmaCodigo = "222",
                 AnoLetivo = 2022,
-                UeId = 276,
-                UeCodigo = "094668"
+                UeId = 3,
+                UeCodigo = "333"
             };
 
             var listaRetorno = new List<EncaminhamentoAEEVigenteDto>
