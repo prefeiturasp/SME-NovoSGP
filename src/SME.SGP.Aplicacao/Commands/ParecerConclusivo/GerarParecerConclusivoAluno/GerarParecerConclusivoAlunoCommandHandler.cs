@@ -45,8 +45,16 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
                     turma.CodigoTurma, pareceresDaTurma));
 
-            var emAprovacao = false;
+            if (parecerConclusivo.Id == conselhoClasseAluno.ConselhoClasseParecerId)
+                return new ParecerConclusivoDto()
+                {
+                    Id = parecerConclusivo?.Id ?? 0,
+                    Nome = parecerConclusivo?.Nome,
+                    EmAprovacao = parecerConclusivo.Aprovado ? false : true
+                };
 
+
+            var emAprovacao = await EnviarParaAprovacao(turma);
             if (await EnviarParaAprovacao(turma))
                 emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
