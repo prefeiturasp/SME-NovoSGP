@@ -521,7 +521,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-        protected async Task InserirParametroSistema()
+        protected async Task InserirParametroSistema(bool inserirParametrosAnoAnterior = false)
         {
             await InserirNaBase(new ParametrosSistema()
             {
@@ -548,6 +548,35 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = ""
             });
+
+            if (inserirParametrosAnoAnterior)
+            {
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaCritico",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                    Descricao = "",
+                    Valor = "75",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaAlerta",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
+                    Descricao = "",
+                    Valor = "80",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+            }
         }
 
         protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)

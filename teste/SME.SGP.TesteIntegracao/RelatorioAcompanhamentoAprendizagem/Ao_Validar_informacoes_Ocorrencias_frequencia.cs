@@ -54,10 +54,11 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             var useCaseOcorrencia = InserirOcorrenciaUseCase();
             var obterOcorrenciasPorAlunoUseCase = ObterOcorrenciasPorAlunoUseCase();
             await CriarDadosBasicos();
-            
+
+            var semestre = 1;
             var dtoOcorrencia = new InserirOcorrenciaDto
             {
-                DataOcorrencia = new DateTime(2022,10,27),
+                DataOcorrencia = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 02),
                 Descricao = OCORRENCIA,
                 OcorrenciaTipoId = OCORRENCIA_TIPO_INCIDENTE,
                 Titulo = TITULO_OCORRENCIA,
@@ -73,7 +74,7 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             obeterOcorrencias.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
             obeterOcorrencias.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(dtoOcorrencia.Titulo);
 
-            var ocorrenciaAluno = await obterOcorrenciasPorAlunoUseCase.Executar(new FiltroTurmaAlunoSemestreDto(dtoOcorrencia.TurmaId.GetValueOrDefault(), dtoOcorrencia.CodigosAlunos.First(), 2));
+            var ocorrenciaAluno = await obterOcorrenciasPorAlunoUseCase.Executar(new FiltroTurmaAlunoSemestreDto(dtoOcorrencia.TurmaId.GetValueOrDefault(), dtoOcorrencia.CodigosAlunos.First(), semestre));
             ocorrenciaAluno.Items.Count().ShouldBeEquivalentTo(1);
             ocorrenciaAluno.Items.FirstOrDefault()?.DataOcorrencia.ShouldBeEquivalentTo(dtoOcorrencia.DataOcorrencia);
             ocorrenciaAluno.Items.FirstOrDefault()?.Titulo.ShouldBeEquivalentTo(dtoOcorrencia.Titulo);

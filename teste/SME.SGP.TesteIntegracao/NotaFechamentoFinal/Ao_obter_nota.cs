@@ -144,7 +144,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
         private async Task CriaAula(string componente)
         {
             await CriarAula(
-                    DATA_01_02_INICIO_BIMESTRE_1,
+                    DATA_INICIO_BIMESTRE_4,
                     RecorrenciaAula.AulaUnica,
                     TipoAula.Normal,
                     USUARIO_PROFESSOR_CODIGO_RF_2222222,

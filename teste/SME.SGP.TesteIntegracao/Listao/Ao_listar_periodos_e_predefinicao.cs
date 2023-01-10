@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.Listao
             var useCase = ObterPeriodosPorComponenteUseCase();
 
             var listaPeriodo = (await useCase.Executar(TURMA_CODIGO_1, filtroListao.ComponenteCurricularId, true,
-                filtroListao.Bimestre)).ToList();
+                filtroListao.Bimestre, true)).ToList();
             
             listaPeriodo.ShouldNotBeNull();
 
