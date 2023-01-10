@@ -160,13 +160,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_4,
-                AnoTurma = ANO_7
+                AnoTurma = ANO_7,
+                ConsiderarAnoAnterior = true
             };
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(filtroConselhoClasse);
-            
-            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
-            
+
             await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
 
             await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);
