@@ -2,8 +2,6 @@
 using MediatR;
 using SME.SGP.Dominio;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,9 +20,8 @@ namespace SME.SGP.Aplicacao
         public ObterArquivoPorCodigoQueryValidator()
         {
             RuleFor(c => c.Codigo)
-            .NotEmpty()
-            .WithMessage("O código do arquivo deve ser informado para obter seus dados.");
-
+                .NotEmpty()
+                .WithMessage("O código do arquivo deve ser informado para obter seus dados.");
         }
     }
 }

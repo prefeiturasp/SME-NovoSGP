@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -234,5 +235,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(planoAeeId));
         }
+        
+        [HttpPost("imprimir")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirConselhoTurma([FromBody] FiltroRelatorioPlanoAeeDto filtro, [FromServices] IImpressaoPlanoAeeUseCase useCase)
+            => Ok(await useCase.Executar(filtro));        
     }
 }

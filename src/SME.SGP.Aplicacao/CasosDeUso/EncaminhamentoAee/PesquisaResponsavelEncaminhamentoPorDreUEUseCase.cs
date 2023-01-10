@@ -20,10 +20,16 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<UsuarioEolRetornoDto>> Executar(FiltroPesquisaFuncionarioDto request)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var (codigoDRE, codigoUE) = await ObterCodigos(request.CodigoTurma, usuario);
+
+            var codigoDre = request.CodigoDRE;
+            var codigoUe = request.CodigoUE;
+
+            if (!string.IsNullOrEmpty(request.CodigoTurma))
+                (codigoDre, codigoUe) = await ObterCodigos(request.CodigoTurma, usuario);
+            
             var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario.PerfilAtual);
 
-            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDRE, codigoUE, usuario: usuario));
+            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDre, codigoUe, usuario: usuario));
 
             var limite = request.Limite > 0 ? request.Limite : 10;
 

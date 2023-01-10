@@ -19,9 +19,9 @@ namespace SME.SGP.Aplicacao
             Concluido = concluido;
         }
     }
-    public class RegistrarEncaminhamentoAEESecaoCommandCommandValidator : AbstractValidator<RegistrarEncaminhamentoAEESecaoCommand>
+    public class RegistrarEncaminhamentoAEESecaoCommandValidator : AbstractValidator<RegistrarEncaminhamentoAEESecaoCommand>
     {
-        public RegistrarEncaminhamentoAEESecaoCommandCommandValidator()
+        public RegistrarEncaminhamentoAEESecaoCommandValidator()
         {
             RuleFor(x => x.EncaminhamentoAEEId)
                    .GreaterThan(0)

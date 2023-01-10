@@ -18,6 +18,11 @@ namespace SME.SGP.Dados
             Map(c => c.Tipo).ToColumn("tipo");
             Map(c => c.Opcionais).ToColumn("opcionais");
             Map(c => c.SomenteLeitura).ToColumn("somente_leitura");
+            Map(c => c.Dimensao).ToColumn("dimensao");
+            Map(c => c.Tamanho).ToColumn("tamanho");
+            Map(c => c.Mascara).ToColumn("mascara");
+            Map(c => c.PlaceHolder).ToColumn("placeholder");
+            Map(c => c.NomeComponente).ToColumn("nome_componente");
         }
     }
 }

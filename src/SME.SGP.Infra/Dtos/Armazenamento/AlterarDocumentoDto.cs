@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -8,13 +6,13 @@ namespace SME.SGP.Infra
     {
         public AlterarDocumentoDto() { }
 
-        public AlterarDocumentoDto(long documentoId, Guid codigoArquivo)
+        public AlterarDocumentoDto(long documentoId, Guid[] arquivosCodigos)
         {
             DocumentoId = documentoId;
-            CodigoArquivo = codigoArquivo;
+            ArquivosCodigos = arquivosCodigos;
         }
 
         public long DocumentoId { get; set; }
-        public Guid CodigoArquivo { get; set; }
+        public Guid[] ArquivosCodigos { get; set; }
     }
 }

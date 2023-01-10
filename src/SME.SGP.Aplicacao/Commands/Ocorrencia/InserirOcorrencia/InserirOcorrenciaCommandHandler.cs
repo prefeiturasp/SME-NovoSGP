@@ -1,13 +1,13 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Utilitarios;
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
-using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,16 +16,19 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
         private readonly IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo;
         private readonly IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno;
+        private readonly IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor;
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
         private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
 
         public InserirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia, IRepositorioOcorrenciaTipo repositorioOcorrenciaTipo,
-            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno, IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
+            IRepositorioOcorrenciaAluno repositorioOcorrenciaAluno,IRepositorioOcorrenciaServidor ocorrenciaServidor, 
+            IMediator mediator, IUnitOfWork unitOfWork,IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
             this.repositorioOcorrenciaTipo = repositorioOcorrenciaTipo ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaTipo));
             this.repositorioOcorrenciaAluno = repositorioOcorrenciaAluno ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaAluno));
+            this.repositorioOcorrenciaServidor = ocorrenciaServidor ?? throw new ArgumentNullException(nameof(ocorrenciaServidor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
@@ -37,9 +40,8 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-                    if (turma is null)
-                        throw new NegocioException("A turma da ocorrência informada não foi encontrada.");
+                    if (request.DataOcorrencia > DateTimeExtension.HorarioBrasilia())
+                        throw new NegocioException(MensagemNegocioOcorrencia.Data_da_ocorrencia_nao_pode_ser_futura);
 
                     var ocorrenciaTipo = await repositorioOcorrenciaTipo.ObterPorIdAsync(request.OcorrenciaTipoId);
                     if (ocorrenciaTipo is null)
@@ -50,7 +52,9 @@ namespace SME.SGP.Aplicacao
                                                     request.Titulo, 
                                                     request.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos),
                                                     ocorrenciaTipo,
-                                                    turma);
+                                                    request.TurmaId,
+                                                    request.UeId);
+
                     ocorrencia.Id = await repositorioOcorrencia.SalvarAsync(ocorrencia);
 
                     ocorrencia.AdiconarAlunos(request.CodigosAlunos);
@@ -58,7 +62,13 @@ namespace SME.SGP.Aplicacao
                     {
                         await repositorioOcorrenciaAluno.SalvarAsync(ocorrenciaAluno);
                     }
-
+                    
+                    ocorrencia.AdicionarServidores(request.CodigosServidores);
+                    foreach (var ocorrenciaServidor in ocorrencia.Servidores)
+                    {
+                        await repositorioOcorrenciaServidor.SalvarAsync(ocorrenciaServidor);
+                    }
+                    
                     unitOfWork.PersistirTransacao();
                     await MoverArquivos(request);
                     return (AuditoriaDto)ocorrencia;
@@ -74,7 +84,7 @@ namespace SME.SGP.Aplicacao
         {
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
-                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
+                await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.Ocorrencia, string.Empty, novo.Descricao));
             }
         }
     }

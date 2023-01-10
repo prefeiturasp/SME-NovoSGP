@@ -18,20 +18,14 @@ namespace SME.SGP.Aplicacao
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var tipoPerfil = usuario.ObterTipoPerfilAtual();
+            if (usuario.EhGestorEscolar())
+                return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
 
-            if (tipoPerfil == Dominio.TipoPerfil.UE)
-            {
-                var tiposDocumentos =  await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(
-                    usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray()
-                    ));
+            var perfil = usuario.Perfis.Where(x => x.CodigoPerfil == usuario.PerfilAtual).Select(p => p.NomePerfil).ToArray();
+            
+            var tiposDocumentos =  await mediator.Send(new ObterTipoDocumentoClassificacaoPorPerfilUsuarioLogadoQuery(perfil));
 
-                if (tiposDocumentos != null && tiposDocumentos.Any())
-                    return tiposDocumentos;
-
-            }
-
-            return await mediator.Send(new ObterTipoDocumentoClassificacaoQuery());
+            return tiposDocumentos;
         }
     }
 }

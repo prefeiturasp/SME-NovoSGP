@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -27,6 +28,7 @@ namespace SME.SGP.Infra
         public long? EventoId { get; set; }
         public AuditoriaDto Auditoria { get; set; }
         public string StatusWorkflow { get; set; }
+        public TipoQuestao TipoQuestao { get; set; }
         public bool PodeEditar { get; set; }
         public bool PossuiAlunos { get => Alunos != null && Alunos.Any(); }
         public bool PossuiObjetivos { get => ObjetivosVisita != null && ObjetivosVisita.Any(); }

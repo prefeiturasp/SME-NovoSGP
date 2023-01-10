@@ -15,6 +15,7 @@ namespace SME.SGP.Dados
             Map(c => c.Ordem).ToColumn("ordem");
             Map(c => c.Etapa).ToColumn("etapa");
             Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.NomeComponente).ToColumn("nome_componente");
         }
     }
 }
