@@ -120,7 +120,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 TipoOcorrencia = tipoOcorrencia
             };
@@ -138,7 +138,7 @@ namespace SME.SGP.TesteIntegracao.Ocorrencia
 
             var dtoFiltro = new FiltroOcorrenciaListagemDto()
             {
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 UeId = UE_ID_1,
                 DataOcorrenciaInicio = DateTimeExtension.HorarioBrasilia().Date
             };
