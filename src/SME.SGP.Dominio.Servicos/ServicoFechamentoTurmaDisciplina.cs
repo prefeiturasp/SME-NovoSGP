@@ -5,6 +5,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -187,7 +188,8 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
 
             var usuarioLogado = usuario ?? await servicoUsuario.ObterUsuarioLogado();
-            await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+            if (turma.TipoTurma != TipoTurma.Programa)
+                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                             turma.CodigoTurma,
                                             turma.Nome,
                                             periodoEscolar.PeriodoInicio,
@@ -367,7 +369,8 @@ namespace SME.SGP.Dominio.Servicos
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
                 }
 
-                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                if (turma.TipoTurma != TipoTurma.Programa)
+                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                                 turmaFechamento.CodigoTurma,
                                                 turmaFechamento.Nome,
                                                 periodoEscolar.PeriodoInicio,
