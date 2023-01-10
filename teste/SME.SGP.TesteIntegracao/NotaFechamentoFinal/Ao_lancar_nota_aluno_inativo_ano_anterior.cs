@@ -39,28 +39,27 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Nota Fechamento Final - Não deve lançar nota para aluno inativo")]
         public async Task Nao_deve_lancar_nota_para_aluno_inativo()
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, false));
             await CriaFechamento();
-
+            
             var consulta = ServiceProvider.GetService<IConsultasFechamentoFinal>();
-            var dto = new FechamentoFinalConsultaFiltroDto()
+            var filtro = new FechamentoFinalConsultaFiltroDto()
             {
                 DisciplinaCodigo = COMPONENTE_CURRICULAR_ARTES_ID_139,
                 EhRegencia = false,
                 TurmaCodigo = TURMA_CODIGO_1,
                 Semestre = SEMESTRE_1
             };
-            var retorno = await consulta.ObterFechamentos(dto);
+            var retorno = await consulta.ObterFechamentos(filtro);
             retorno.ShouldNotBeNull();
-            var aluno = retorno.Alunos.FirstOrDefault(aluno => aluno.Codigo == ALUNO_INATIVO_11);
-            aluno.ShouldNotBeNull();
-            aluno.PodeEditar.ShouldBeFalse();
+            retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_CODIGO_9).ShouldBeTrue();
+            retorno.Alunos.Any(aluno => aluno.Codigo == ALUNO_INATIVO_11).ShouldBeFalse();
         }
 
-        [Fact]
+        [Fact(DisplayName = "Nota Fechamento Final - Deve lançar nota no ano anterior em aprovação")]
         public async Task Deve_lancar_nota_do_ano_anterior_em_aprovacao()
         {
             await CriarDadosBase(ObterFiltroNotas(ObterPerfilProfessor(), ANO_3, COMPONENTE_CURRICULAR_ARTES_ID_139.ToString(), TipoNota.Conceito, Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, true));

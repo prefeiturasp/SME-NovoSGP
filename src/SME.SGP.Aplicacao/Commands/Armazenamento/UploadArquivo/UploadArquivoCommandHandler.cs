@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
@@ -22,7 +23,7 @@ namespace SME.SGP.Aplicacao
             if (request.TipoConteudo != TipoConteudoArquivo.Indefinido)
             {
                 if (request.Arquivo.ContentType != request.TipoConteudo.Name())
-                    throw new NegocioException("O formato de arquivo enviado não é aceito");
+                    throw new NegocioException(MensagemNegocioComuns.FORMATO_ARQUIVO_NAO_ACEITO);
             }
 
             var nomeArquivo = request.Arquivo.FileName;

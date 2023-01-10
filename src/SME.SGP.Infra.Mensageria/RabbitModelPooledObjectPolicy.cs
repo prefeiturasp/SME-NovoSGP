@@ -21,7 +21,7 @@ namespace SME.SGP.Infra
                 HostName = configuracaoRabbit.HostName,
                 UserName = configuracaoRabbit.UserName,
                 Password = configuracaoRabbit.Password,
-                VirtualHost = configuracaoRabbit.VirtualHost,
+                VirtualHost = configuracaoRabbit.VirtualHost
             };
 
             return factory.CreateConnection();

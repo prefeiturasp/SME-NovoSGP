@@ -20,10 +20,7 @@ namespace SME.SGP.Aplicacao
         {
             var wfAprovacaoNotas = await repositorioWFAprovacaoNotaConselho.ObterWorkflowAprovacaoNota(request.ConselhoClasseNotaId);
             foreach(var wfAprovacaoNota in wfAprovacaoNotas)
-            {
                 await mediator.Send(new ExcluirWfAprovacaoNotaConselhoClasseCommand(wfAprovacaoNota.Id));
-                await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoNota.WfAprovacaoId));
-            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
             await CriarAulaComFrequencia();
 
             //Act
-            var retorno = await repositorio.ObterTotalAulasPorTurmaDisciplinaAluno("1106", "2370993", "5854736");
+            var retorno = await repositorio.ObterTotalAulasPorTurmaDisciplinaAluno("1106", "111", "123123");
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -85,8 +85,8 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 TotalPresencas = 0,
                 TotalRemotos = 0,
                 DisciplinaId = "1061",
-                CodigoAluno = "5854736",
-                TurmaId = "2123463",
+                CodigoAluno = "123123",
+                TurmaId = "111",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
             });
         }

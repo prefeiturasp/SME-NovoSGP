@@ -1,4 +1,5 @@
 ﻿using System;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Infra
 {
@@ -10,6 +11,10 @@ namespace SME.SGP.Infra
         public string EstudanteNome { get; set; }
         public string TurmaNome { get; set; }
         public string Situacao { get; set; }
+        public TipoQuestao TipoQuestao { get; set; }
+        public long ArquivoId { get; set; }
+        public string ArquivoNome { get; set; }
+        public Guid ArquivoCodigo { get; set; }
         public string CriadoPor { get; set; }
     }
 }

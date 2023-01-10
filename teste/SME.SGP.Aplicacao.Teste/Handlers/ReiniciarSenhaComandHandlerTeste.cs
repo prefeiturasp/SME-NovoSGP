@@ -23,10 +23,10 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         }
 
         [Theory]
-        [InlineData("caique.amcom", "", "", "Sgpmcom")]
-        [InlineData("7944560", "", "", "Sgp4560")]
-        [InlineData("7924488", "", "", "Sgp4488")]
-        [InlineData("6940145", "", "", "Sgp0145")]
+        [InlineData("user.test", "", "", "Sgptest")]
+        [InlineData("111111", "", "", "Sgp1111")]
+        [InlineData("222222", "", "", "Sgp2222")]
+        [InlineData("333333", "", "", "Sgp3333")]
         public async Task Deve_Reiniciar_A_Senha(string codigoRf, string dreCodigo, string ueCodigo, string resultadoSenha)
         {
             //Arrange

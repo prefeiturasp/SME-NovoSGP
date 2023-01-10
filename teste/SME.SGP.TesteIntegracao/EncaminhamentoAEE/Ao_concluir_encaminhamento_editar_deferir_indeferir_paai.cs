@@ -116,7 +116,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
 
-            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAAI_LOGIN_4444444);
+            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_LOGIN_PAAI);
             
         }
         
@@ -218,7 +218,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoAee
             encaminhamento.Situacao.ShouldBe(SituacaoAEE.Indeferido);
             var notificacao = ObterTodos<Notificacao>();
             notificacao.ShouldNotBeNull();
-            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_PAAI_LOGIN_4444444);
+            notificacao.FirstOrDefault().CriadoRF.ShouldBe(USUARIO_LOGIN_PAAI);
             
             pendenciasPaee = ObterTodos<Pendencia>();
             pendenciasPaee.ShouldNotBeNull();

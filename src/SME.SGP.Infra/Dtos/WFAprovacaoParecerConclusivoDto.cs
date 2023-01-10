@@ -4,6 +4,7 @@ namespace SME.SGP.Infra.Dtos
 {
     public class WFAprovacaoParecerConclusivoDto
     {
+        public long Id { get; set; }
         public DateTime CriadoEm { get; set; }
         public long UsuarioSolicitanteId { get; set; }
         public long ConselhoClasseAlunoId { get; set; }

@@ -90,7 +90,6 @@ namespace SME.SGP.Aplicacao
         public async Task<UsuarioAutenticacaoRetornoDto> Autenticar(string login, string senha)
         {
             login = login.Trim().ToLower();
-
             var retornoAutenticacaoEol = await servicoAutenticacao.AutenticarNoEol(login, senha);
 
             return await ObterAutenticacao(retornoAutenticacaoEol, login);

@@ -267,5 +267,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(filtro));
         }
+        
+        [HttpPost("planos-aee")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> PlanosAee([FromBody] FiltroRelatorioPlanosAEEDto filtroRelatorioPlanosAeeDto, [FromServices] IRelatorioPlanosAEEUseCase relatorioPlanosAeeUseCase)
+        {
+            return Ok(await relatorioPlanosAeeUseCase.Executar(filtroRelatorioPlanosAeeDto));
+        }
     }
 }

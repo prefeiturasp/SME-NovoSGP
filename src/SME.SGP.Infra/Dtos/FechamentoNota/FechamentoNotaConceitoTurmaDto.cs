@@ -20,6 +20,7 @@ namespace SME.SGP.Infra
         public List<string> Observacoes { get; set; }
         public SituacaoFechamento Situacao { get; set; }
         public string SituacaoNome { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
 
         public FechamentoNotaConceitoTurmaDto()
         {

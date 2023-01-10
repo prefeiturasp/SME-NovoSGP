@@ -157,6 +157,21 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
         }
 
+        public async Task<PeriodoEscolar> ObterPeriodoEscolarAtualPorTurmaIdAsync(string codigoTurma, ModalidadeTipoCalendario modalidade, DateTime dataReferencia, bool anteriorAoPrimeiroBimestre)
+        {
+            var sql = @$"select pe.*
+                            from periodo_escolar pe
+                                inner join tipo_calendario tc 
+                                    on pe.tipo_calendario_id = tc.id 
+                                inner join turma t 
+                                    on t.ano_letivo = tc.ano_letivo and turma_id = @codigoTurma
+                         where tc.modalidade = @modalidade
+                         and {(anteriorAoPrimeiroBimestre ? " @dataReferencia < pe.periodo_inicio " : " @dataReferencia > pe.periodo_fim ")}
+                         and not tc.excluido ";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<PeriodoEscolar>(sql, new { codigoTurma, modalidade = (int)modalidade, dataReferencia });
+        }
+
         public async Task<bool> PeriodoEmAbertoAsync(long tipoCalendarioId, DateTime dataReferencia, int bimestre = 0, bool ehAnoLetivo = false, bool ehModalidadeInfantil = false)
         {
             var query = new StringBuilder(@"select count(pe.Id)
