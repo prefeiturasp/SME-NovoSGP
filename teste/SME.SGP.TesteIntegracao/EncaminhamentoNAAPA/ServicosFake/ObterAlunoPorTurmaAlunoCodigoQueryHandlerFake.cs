@@ -8,7 +8,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 
-namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
+namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes
 {
     public class ObterAlunoPorTurmaAlunoCodigoQueryHandlerFakeNAAPA: IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>
     {

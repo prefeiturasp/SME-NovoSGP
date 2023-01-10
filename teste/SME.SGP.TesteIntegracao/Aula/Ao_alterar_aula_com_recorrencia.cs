@@ -54,9 +54,9 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             retorno.ShouldNotBeNull();
 
             TimeSpan diasDiferenca = DATA_08_07 - dataAula;
-            int totalDiasRecorrencia = diasDiferenca.Days / 7;
+            int totalAulasPorSemanasRecorrencia = diasDiferenca.Days / 7;
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalDiasRecorrencia+1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia+1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
         }
 
         [Fact]
@@ -84,9 +84,9 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             listaNotificao.ShouldNotBeEmpty();
 
             TimeSpan diasDiferenca = DATA_22_12_FIM_BIMESTRE_4 - dataAula;
-            int totalDiasRecorrencia = diasDiferenca.Days / 7;
+            int totalAulasPorSemanasRecorrencia = diasDiferenca.Days / 7;
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalDiasRecorrencia + 1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia + 1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
         }
 
