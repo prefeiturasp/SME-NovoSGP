@@ -170,7 +170,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
         }
-        
         private async Task CriarRespostasComplementares()
         {
             await InserirNaBase(new OpcaoQuestaoComplementar()
@@ -548,7 +547,6 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTime.Now,
                 NomeComponente = "DESCRICAO_PROCEDIMENTO_TRABALHO"
             });
-            
         }
 
         protected class FiltroNAAPADto

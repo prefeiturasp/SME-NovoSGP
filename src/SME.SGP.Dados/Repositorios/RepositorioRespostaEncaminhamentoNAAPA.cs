@@ -45,6 +45,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(query, new { questaoEncaminhamentoNAAPAId });
         }
-        
     }
 }
