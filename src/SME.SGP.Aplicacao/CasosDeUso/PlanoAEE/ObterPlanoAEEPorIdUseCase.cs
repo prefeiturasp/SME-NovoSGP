@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             var plano = new PlanoAEEDto();
 
             PlanoAEEVersaoDto ultimaVersao = null;
-            Turma turma = null;
+            Turma turma;
 
             if (filtro.PlanoAEEId.HasValue && filtro.PlanoAEEId > 0)
             {
@@ -33,7 +33,8 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
                 var alunoTurma = await mediator
-                    .Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, DateTime.Today.Year, true));
+                    .Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(entidadePlano.AlunoCodigo,
+                        DateTimeExtension.HorarioBrasilia().Year, true)); 
 
                 alunoTurma ??= await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
@@ -51,8 +52,8 @@ namespace SME.SGP.Aplicacao
                     case SituacaoMatriculaAluno.Rematriculado:
                     case SituacaoMatriculaAluno.Concluido:
                         {
-                            if (entidadePlano.AlteradoEm?.Year != null)
-                                anoLetivo = (int)entidadePlano.AlteradoEm?.Year;
+                            if (entidadePlano.AlteradoEm != null)
+                                anoLetivo = entidadePlano.AlteradoEm.GetValueOrDefault().Year;
                             break;
                         }
                 }
@@ -61,15 +62,19 @@ namespace SME.SGP.Aplicacao
                     anoLetivo = entidadePlano.Turma.AnoLetivo;
 
                 var alunoPorTurmaResposta = await mediator
-                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo != DateTime.Today.Year && entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
+                    .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo != DateTimeExtension.HorarioBrasilia().Year && entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
+
 
                 if (alunoPorTurmaResposta == null && entidadePlano.Situacao == SituacaoPlanoAEE.EncerradoAutomaticamente)
                 {
                     alunoPorTurmaResposta = await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
                 }
-                else if ((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) || !SituacaoAtivaPlanoAEE(entidadePlano))
+                else if ((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) ||
+                         !SituacaoAtivaPlanoAEE(entidadePlano))
+                {
                     alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, anoLetivo);
+                }
 
                 if (alunoPorTurmaResposta == null)
                     throw new NegocioException("Aluno não localizado");
@@ -98,8 +103,7 @@ namespace SME.SGP.Aplicacao
 
                 plano.Id = filtro.PlanoAEEId.Value;
                 plano.Auditoria = (AuditoriaDto)entidadePlano;
-                plano.Versoes = await mediator
-                    .Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoAEEId.Value));
+                plano.Versoes = await mediator.Send(new ObterVersoesPlanoAEEQuery(filtro.PlanoAEEId.Value));
                 plano.Aluno = aluno;
                 plano.Situacao = entidadePlano.Situacao;
                 plano.SituacaoDescricao = entidadePlano.Situacao.Name();
@@ -143,23 +147,20 @@ namespace SME.SGP.Aplicacao
 
             plano.QuestionarioId = questionarioId;
 
-            var periodoEscolarId = plano.Questoes.Any() && plano.Id > 0 ? plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto : null;
             var periodoAtual = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-            var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-
-            var periodoEscolar = periodoEscolarId != null
-                ? await mediator.Send(new ObterPeriodoEscolarePorIdQuery(long.Parse(periodoEscolarId)))
-                : await mediator.Send(new ObterPeriodoEscolarAtualPorTurmaQuery(turma, DateTime.Now.Date));
 
             if (plano.Situacao != SituacaoPlanoAEE.Encerrado &&
                 plano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente &&
                 turma != null &&
                 plano.Questoes != null &&
                 plano.Questoes.Any() &&
-                turma.AnoLetivo.Equals(DateTime.Today.Year) &&
-                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar &&
-                x.Resposta.Any()) && VerificaSeUltimaVersaoPlanoEDoAnoAtual(plano))
-                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto = periodoAtual.Id.ToString();
+                turma.AnoLetivo.Equals(DateTimeExtension.HorarioBrasilia().Year) &&
+                periodoAtual != null && plano.Questoes.Any(x => x.TipoQuestao == TipoQuestao.PeriodoEscolar && x.Resposta.Any()) &&
+                VerificaSeUltimaVersaoPlanoEDoAnoAtual(plano))
+            {
+                plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Single().Texto =
+                    periodoAtual.Id.ToString();
+            }
             else
                 CriarRespostaPeriodoEscolarParaPlanoASerCriado(plano, periodoAtual);
 
@@ -169,14 +170,21 @@ namespace SME.SGP.Aplicacao
             return plano;
         }
 
-        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
+        private void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
         {
+            if (periodoAtual == null)
+                return;
+            
             var questaoPeriodoEscolar = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
-            var resposta = new List<RespostaQuestaoDto>();
-            resposta.Add(new RespostaQuestaoDto() { Texto = periodoAtual.Id.ToString() });
+            var resposta = new List<RespostaQuestaoDto> { new() { Texto = periodoAtual.Id.ToString() } };
             questaoPeriodoEscolar.Resposta = resposta;
 
-            plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta = questaoPeriodoEscolar.Resposta;
+            var questao = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+
+            if (questao == null)
+                return;
+            
+            questao.Resposta = questaoPeriodoEscolar.Resposta;
         }
 
         public bool VerificaSeUltimaVersaoPlanoEDoAnoAtual(PlanoAEEDto plano)

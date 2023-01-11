@@ -43,13 +43,14 @@ namespace SME.SGP.TesteIntegracao.Setup
                 ModalidadeCodigo = Modalidade.Fundamental,
                 TipoTurma = TipoTurma.Regular,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
-                Nome = "Turma Teste 1"
+                Nome = "Turma Teste 1",
+                TipoTurno = 2
             });
 
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 1,
-                CodigoPerfil = new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
+                CodigoPerfil = Perfis.PERFIL_PROFESSOR,
                 NomePerfil = "Professor",
                 Ordem = 290,
                 Tipo = TipoPerfil.UE,
@@ -60,7 +61,7 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 2,
-                CodigoPerfil = new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                CodigoPerfil = Perfis.PERFIL_CJ,
                 NomePerfil = "Professor CJ",
                 Ordem = 320,
                 Tipo = TipoPerfil.UE,
@@ -85,9 +86,9 @@ namespace SME.SGP.TesteIntegracao.Setup
             await _teste.InserirNaBase(new Usuario
             {
                 Id = 29,
-                Login = "2222222",
-                CodigoRf = "2222222",
-                Nome = "João Usuário",
+                Login = TesteBaseComuns.USUARIO_LOGADO_RF,
+                CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
+                Nome = TesteBaseComuns.USUARIO_LOGADO_NOME,
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
@@ -101,7 +102,8 @@ namespace SME.SGP.TesteIntegracao.Setup
                 ModalidadeCodigo = Modalidade.EJA,
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Semestre = 2,
-                Nome = "Turma Nome 1"
+                Nome = "Turma Nome 1",
+                TipoTurno = 2
             });
 
             await _teste.InserirNaBase(new TipoCalendario
@@ -124,7 +126,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 DisciplinaId = "1114",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "2222222",
+                ProfessorRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                 Quantidade = 1,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
@@ -144,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 UeId = 1,
                 TurmaId = 1,
                 Historico = true,
-                Perfil = new Guid("41e1e074-37d6-e911-abd6-f81654fe895d")
+                Perfil = Perfis.PERFIL_CJ
             });
         }
 
@@ -156,7 +158,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 DisciplinaId = "1106",
                 TurmaId = "1",
                 TipoCalendarioId = 1,
-                ProfessorRf = "2222222",
+                ProfessorRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                 Quantidade = 1,
                 DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
@@ -199,18 +201,18 @@ namespace SME.SGP.TesteIntegracao.Setup
         {
             var contextoAplicacao = _teste.ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "João Usuário");
-            variaveis.Add("UsuarioLogado", "2222222");
-            variaveis.Add("RF", "2222222");
-            variaveis.Add("login", "2222222");
+            variaveis.Add("NomeUsuario", TesteBaseComuns.USUARIO_LOGADO_NOME);
+            variaveis.Add("UsuarioLogado", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("RF", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("login", TesteBaseComuns.USUARIO_LOGADO_RF);
 
             if (incluirAdm)
             {
-                variaveis.Add("Administrador", "7924488");
+                variaveis.Add("Administrador", TesteBaseComuns.USUARIO_ADMIN_RF);
             }
 
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "2222222", Type = "rf" },
+                new InternalClaim { Value = TesteBaseComuns.USUARIO_LOGADO_RF, Type = "rf" },
                 new InternalClaim { Value = "41e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
@@ -223,7 +225,7 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TurmaId = "1",
                 DreId = "1",
                 UeId = "1",
-                ProfessorRf = "2222222",
+                ProfessorRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                 DisciplinaId = 1106,
                 Modalidade = Modalidade.CIEJA,
                 Substituir = true,

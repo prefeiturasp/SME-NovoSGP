@@ -15,5 +15,10 @@ namespace SME.SGP.Infra
         public string Opcionais { get; set; }
         public OpcaoRespostaDto[] OpcaoResposta { get; set; }
         public IEnumerable<RespostaQuestaoDto> Resposta { get; set; }
+        public int Dimensao { get; set; }
+        public int? Tamanho { get; set; }
+        public string? Mascara { get; set; }
+        public string? PlaceHolder { get; set; }
+        public string? NomeComponente { get; set; }
     }
 }

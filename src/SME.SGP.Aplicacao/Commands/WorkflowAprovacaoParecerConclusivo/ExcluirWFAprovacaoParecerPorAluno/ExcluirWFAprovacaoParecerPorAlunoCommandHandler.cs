@@ -19,12 +19,9 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirWFAprovacaoParecerPorAlunoCommand request, CancellationToken cancellationToken)
         {
-            var wfAprovacaoParecer = await repositorioWFAprovacaoParecerConclusivo.ObterPorConselhoClasseAlunoId(request.ConselhoClasseAlunoId);
-            if (wfAprovacaoParecer != null)
-            {
+            var wfAprovacaoPareceres = await repositorioWFAprovacaoParecerConclusivo.ObterPorConselhoClasseAlunoId(request.ConselhoClasseAlunoId);
+            foreach (var wfAprovacaoParecer in wfAprovacaoPareceres)
                 await repositorioWFAprovacaoParecerConclusivo.Excluir(wfAprovacaoParecer.Id);
-                await mediator.Send(new ExcluirWorkflowCommand(wfAprovacaoParecer.WfAprovacaoId));
-            }
         }
     }
 }

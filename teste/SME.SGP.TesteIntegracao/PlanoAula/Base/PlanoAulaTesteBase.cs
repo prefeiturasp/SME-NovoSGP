@@ -9,6 +9,7 @@ using SME.SGP.TesteIntegracao.Setup;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using SME.SGP.TesteIntegracao.PlanoAula.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.PlanoAula.Base
 {
@@ -86,9 +87,9 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             await CriarTurma(filtroPlanoAula.Modalidade);
             
             await CriarAula(filtroPlanoAula.ComponenteCurricularCodigo, filtroPlanoAula.DataAula, RecorrenciaAula.AulaUnica, filtroPlanoAula.QuantidadeAula);
-            
+
             if (filtroPlanoAula.CriarPeriodoEscolarTodosBimestres)
-                await CriarPeriodoEscolarTodosBimestres();
+                await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
             
             if (filtroPlanoAula.CriarPeriodoReabertura)
                 await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
@@ -162,13 +163,18 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 ComponenteCurricularId = long.Parse(componenteCurricularCodigo),
                 CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
             });
-            
-            await InserirNaBase(new PlanejamentoAnualPeriodoEscolar()
+
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+
+            foreach (var periodoEscolar in periodosEscolares)
             {
-                PeriodoEscolarId = 2,
-                PlanejamentoAnualId = 1,
-                CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
-            });
+                await InserirNaBase(new PlanejamentoAnualPeriodoEscolar
+                {
+                    PeriodoEscolarId = periodoEscolar.Id,
+                    PlanejamentoAnualId = 1,
+                    CriadoEm = DateTime.Now, CriadoPor = SISTEMA_NOME, CriadoRF = SISTEMA_CODIGO_RF
+                });                
+            }
         }
         
         protected async Task CriarPlanejamentoAnualTodosBimestres(string componenteCurricularCodigo)
@@ -196,7 +202,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
         protected async Task CriarPeriodoEscolarCustomizadoQuartoBimestre(bool periodoEscolarValido = false)
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
-            
+
             await CriarPeriodoEscolar(dataReferencia.AddDays(-285), dataReferencia.AddDays(-210), BIMESTRE_1, TIPO_CALENDARIO_1);
 
             await CriarPeriodoEscolar(dataReferencia.AddDays(-200), dataReferencia.AddDays(-125), BIMESTRE_2, TIPO_CALENDARIO_1);
@@ -260,17 +266,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
             await InserirNaBase(ObterAula(componenteCurricularCodigo, dataAula, recorrencia, quantidadeAula, rf));
         }
 
-        protected async Task CriarPeriodoEscolarTodosBimestres()
-        {
-            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-        }
-
         private Dominio.Aula ObterAula(string componenteCurricularCodigo, DateTime dataAula, RecorrenciaAula recorrencia, int quantidadeAula, string rf = USUARIO_PROFESSOR_LOGIN_2222222)
         {
             return new Dominio.Aula
@@ -291,19 +286,6 @@ namespace SME.SGP.TesteIntegracao.PlanoAula.Base
                 Migrado = false,
                 AulaCJ = false
             };
-        }
-
-        protected async Task CriarPeriodoEscolarEAberturaPadrao()
-        {
-            await CriarPeriodoEscolar(DATA_01_02_INICIO_BIMESTRE_1, DATA_25_04_FIM_BIMESTRE_1, BIMESTRE_1);
-
-            await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
-
-            await CriarPeriodoEscolar(DATA_25_07_INICIO_BIMESTRE_3, DATA_30_09_FIM_BIMESTRE_3, BIMESTRE_3);
-
-            await CriarPeriodoEscolar(DATA_03_10_INICIO_BIMESTRE_4, DATA_22_12_FIM_BIMESTRE_4, BIMESTRE_4);
-
-            await CriarPeriodoReabertura(TIPO_CALENDARIO_1);
         }
     }
 }

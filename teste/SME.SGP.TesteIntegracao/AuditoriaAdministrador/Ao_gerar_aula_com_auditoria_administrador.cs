@@ -13,10 +13,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.AulaUnica
 {
-    public class Ao_gerar_aula_com_auditoria_administrador : TesteBase
+    public class Ao_gerar_aula_com_auditoria_administrador : TesteBaseComuns
     {
         private ItensBasicosBuilder _buider;
-        private const string USUARIO_ADMINISTRADOR_AUDITORIA = "7924488";
         
         public Ao_gerar_aula_com_auditoria_administrador(CollectionFixture testFixture) : base(testFixture)
         {
@@ -57,7 +56,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var auditoria = ServicoAuditoriaFake.Auditoria;
             auditoria.ShouldNotBeNull();
-            (auditoria.Administrador == USUARIO_ADMINISTRADOR_AUDITORIA).ShouldBeTrue();
+            (auditoria.Administrador == USUARIO_ADMIN_RF).ShouldBeTrue();
         }
     }
 }

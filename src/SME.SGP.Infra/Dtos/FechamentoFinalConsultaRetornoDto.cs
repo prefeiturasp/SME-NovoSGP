@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -20,5 +20,6 @@ namespace SME.SGP.Infra
         public double FrequenciaMedia { get; set; }
         public double NotaMedia { get; set; }
         public bool PeriodoAberto { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }

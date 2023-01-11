@@ -155,8 +155,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ANO_7,
                 TipoFrequenciaAluno.PorDisciplina,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(),
-                false,
-                true);
+                true,
+                false);
 
             filtroFechamentoNota.PeriodoEscolarValido = true;
 

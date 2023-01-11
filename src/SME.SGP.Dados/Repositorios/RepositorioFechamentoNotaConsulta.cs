@@ -88,6 +88,17 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo });
         }
 
+        public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterPorFechamentoTurmaAlunoEDisciplinaAsync(long fechamentoTurmaId, string alunoCodigo, long componenteCurricularId)
+        {
+            var query = $@"{queryNotasFechamento}
+                           and ftd.fechamento_turma_id = @fechamentoTurmaId
+                           and fa.aluno_codigo = @alunoCodigo
+                           and fn.disciplina_id = @componenteCurricularId) select * from lista where sequencia = 1;";
+
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { fechamentoTurmaId, alunoCodigo, componenteCurricularId });
+        }
+        
+
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasAlunoPorTurmasCodigosBimestreAsync(string[] turmasCodigos, string alunoCodigo, int bimestre, DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
         {
             var query = $@"{queryNotasConceitoFechamento}

@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using SME.SGP.IoC;
 using SME.SGP.Worker.RabbitMQ;
 using System;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Worker.Rabbbit
 {
@@ -31,6 +32,8 @@ namespace SME.SGP.Worker.Rabbbit
             registrarDependencias.RegistrarCasoDeUsoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitMQ>();
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,6 +42,9 @@ namespace SME.SGP.Worker.Rabbbit
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

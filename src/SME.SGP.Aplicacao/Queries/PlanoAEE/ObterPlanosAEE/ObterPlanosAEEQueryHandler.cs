@@ -94,6 +94,7 @@ namespace SME.SGP.Aplicacao
                     NomeReponsavel = planoAEE.NomeReponsavel,
                     RfPaaiReponsavel = planoAEE.RfPaaiReponsavel,
                     NomePaaiReponsavel = planoAEE.NomePaaiReponsavel,
+                    PlanoAeeVersaoId = planoAEE.PlanoAeeVersaoId
                 };
             }
         }

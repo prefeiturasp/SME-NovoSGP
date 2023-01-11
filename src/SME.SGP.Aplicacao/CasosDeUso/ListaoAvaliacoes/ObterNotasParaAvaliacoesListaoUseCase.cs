@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Dados;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -219,7 +222,8 @@ namespace SME.SGP.Aplicacao
                     Data = avaliacao.DataAvaliacao,
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
-                    EhCJ = avaliacao.EhCj
+                    EhCJ = avaliacao.EhCj,
+                    DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim)),
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);

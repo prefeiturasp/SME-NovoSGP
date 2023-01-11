@@ -28,8 +28,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 new TurmaDTO()
                 {
-                    TurmaCodigo = "2387335",
-                    TurmaId = 1527109
+                    TurmaCodigo = "123123",
+                    TurmaId = 111
                 }
             };
 

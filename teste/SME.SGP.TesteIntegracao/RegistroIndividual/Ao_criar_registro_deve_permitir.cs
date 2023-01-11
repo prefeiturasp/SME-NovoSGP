@@ -89,7 +89,8 @@ namespace SME.SGP.TesteIntegracao.RegistroIndividual
                 Perfil = ObterPerfilProfessor(),
                 Modalidade = Modalidade.EducacaoInfantil,
                 TipoCalendario = ModalidadeTipoCalendario.Infantil,
-                BimestreEncerrado = true
+                BimestreEncerrado = true,
+                CriarPeriodoReabertura = true
             };
             
             var dataReferencia = DateTimeExtension.HorarioBrasilia().AddDays(-20);

@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { workflowId });
         }
 
-        public WorkflowAprovacao ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0)
+        public async Task<WorkflowAprovacao> ObterEntidadeCompleta(long workflowId = 0, long notificacaoId = 0)
         {
             var query = new StringBuilder();
             query.AppendLine("select wf.*, wfn.*, n.*, u.*");
@@ -54,7 +54,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var lookup = new Dictionary<long, WorkflowAprovacao>();
 
-            database.Conexao.Query<WorkflowAprovacao, WorkflowAprovacaoNivel, Notificacao, Usuario, WorkflowAprovacao>(query.ToString(),
+            await database.Conexao.QueryAsync<WorkflowAprovacao, WorkflowAprovacaoNivel, Notificacao, Usuario, WorkflowAprovacao>(query.ToString(),
                  (workflow, workflowNivel, notificacao, usuario) =>
                 {
                     WorkflowAprovacao workflowAprovacao;
@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
 
             return lookup.Values.FirstOrDefault();
         }
-
+        
         public async Task<WorkflowAprovacao> ObterEntidadeCompletaPorId(long workflowId)
         {
             var query = new StringBuilder();

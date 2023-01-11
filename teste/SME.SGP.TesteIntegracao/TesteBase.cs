@@ -81,6 +81,12 @@ namespace SME.SGP.TesteIntegracao
             _collectionFixture.Database.Inserir(nomeTabela, campos);
             return Task.CompletedTask;
         }
+        
+        public Task InserirNaBase(string nomeTabela, string[] campos, string[] valores)
+        {
+            _collectionFixture.Database.Inserir(nomeTabela, campos, valores);
+            return Task.CompletedTask;
+        }
 
         public List<T> ObterTodos<T>() where T : class, new()
         {

@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             var notaConceitoMensagem = lancaNota ? "nota(s)" : "conceito(s)";
             var mensagem = await MontaMensagemWfAprovacao(dados, lancaNota, turma);
 
-            var wfAprovacao = new WorkflowAprovacaoDto()
+            var wfAprovacao = new WorkflowAprovacaoDto
             {
                 Ano = DateTime.Today.Year,
                 NotificacaoCategoria = NotificacaoCategoria.Workflow_Aprovacao,
