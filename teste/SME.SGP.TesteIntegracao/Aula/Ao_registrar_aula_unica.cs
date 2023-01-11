@@ -103,7 +103,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
-            dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 08);
+            dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 01);
+            dto.DataAula = dto.DataAula.AddDays(7 - (int) dto.DataAula.DayOfWeek);
 
             await CriarPeriodoEscolarEAbertura();
 
@@ -164,7 +165,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

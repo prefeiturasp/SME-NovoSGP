@@ -31,15 +31,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 new Turma()
                 {
-                    CodigoTurma = "2386241",
+                    CodigoTurma = "123123",
                     ModalidadeCodigo = Modalidade.EducacaoInfantil,
                     Ue = new Ue()
                     {
                         TipoEscola = TipoEscola.CEMEI,
-                        Nome = "CAPAO REDONDO ",
+                        Nome = "CEMEI TESTE",
                         Dre = new Dre()
                         {
-                            Abreviacao = "DRE - CL"
+                            Abreviacao = "DRE"
                         }
                     }
                 }
@@ -62,13 +62,13 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 new ProfessorTitularDisciplinaEol
                 {
-                    ProfessorRf = "8269149",
+                    ProfessorRf = "111",
                     DisciplinaId = 138,
                     TurmaId = 1
                 },
                 new ProfessorTitularDisciplinaEol
                 {
-                    ProfessorRf = "7941706",
+                    ProfessorRf = "222",
                     DisciplinaId = 138,
                     TurmaId = 1
                 }
@@ -93,8 +93,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var aulaComponente = new List<AulaComComponenteDto>();
             aulaComponente.Add(new AulaComComponenteDto()
             {
-                Id = 53724092,
-                TurmaId = "2386241"
+                Id = 1,
+                TurmaId = "123123"
             });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))

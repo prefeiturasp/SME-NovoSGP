@@ -592,9 +592,194 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids, string codigoTurma = null)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(new List<DisciplinaDto>
+            {
+                new DisciplinaDto
+                {
+                    Id = 1217,
+                    CodigoComponenteCurricular = 1217,
+                    GrupoMatrizId = 4,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 1",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = false,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 1",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 138,
+                    CodigoComponenteCurricular = 138,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 2",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 6,
+                    CodigoComponenteCurricular = 6,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 3",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 2,
+                    CodigoComponenteCurricular = 2,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 4",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 7,
+                    CodigoComponenteCurricular = 7,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 5",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+
+                },
+                new DisciplinaDto
+                {
+                    Id = 139,
+                    CodigoComponenteCurricular = 139,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 6",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1105,
+                    CodigoComponenteCurricular = 1105,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 7",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1114,
+                    CodigoComponenteCurricular = 1114,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 8",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 1061,
+                    CodigoComponenteCurricular = 1061,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 9",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = true,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+                new DisciplinaDto
+                {
+                    Id = 512,
+                    CodigoComponenteCurricular = 512,
+                    GrupoMatrizId = 1,
+                    CdComponenteCurricularPai = null,
+                    Compartilhada = false,
+                    Nome = "Teste 10",
+                    NomeComponenteInfantil = null,
+                    PossuiObjetivos = false,
+                    Regencia = false,
+                    RegistraFrequencia = false,
+                    TerritorioSaber = false,
+                    LancaNota = true,
+                    ObjetivosAprendizagemOpcionais = false,
+                    GrupoMatrizNome = "Teste 2",
+                    TurmaCodigo = "1"
+                },
+            }.Where(x => ids.Contains(x.Id)));
         }
 
         public Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsSemAgrupamento(long[] ids)
@@ -784,17 +969,17 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
+        public Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
         {
             var listaUsuarios = new List<PerfisApiEolDto>
             {
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "2222222",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                     Perfis = new List<Guid>
                     {
-                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                        Perfis.PERFIL_PROFESSOR,
+                        Perfis.PERFIL_CJ
                     }
                 },
                 new PerfisApiEolDto
@@ -802,8 +987,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoRf = "6737544",
                     Perfis = new List<Guid>
                     {
-                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                        Perfis.PERFIL_PROFESSOR,
+                        Perfis.PERFIL_CJ
                     }
                 },
                 new PerfisApiEolDto
@@ -811,43 +996,43 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoRf = "1111111",
                     Perfis = new List<Guid>
                     {
-                        new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),
+                        Perfis.PERFIL_CP,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "CP999999",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_CP,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.CP.Name())
+                        Perfis.PERFIL_CP,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "DIR999998",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_DIRETOR,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.DIRETOR.Name())
+                        Perfis.PERFIL_DIRETOR,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "AD999997",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_AD,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.AD.Name())
+                        Perfis.PERFIL_AD,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "4444444",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_PAAI,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.PAAI.Name())
+                        Perfis.PERFIL_PAAI,
                     }
                 },
             };
-            return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
+            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault());
         }
 
         public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
@@ -915,7 +1100,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
             throw new NotImplementedException();
         }

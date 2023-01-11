@@ -5,6 +5,7 @@ using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +15,11 @@ namespace SME.SGP.Dados
 {
     public class RepositorioRegistroFrequenciaAluno : RepositorioBase<RegistroFrequenciaAluno>, IRepositorioRegistroFrequenciaAluno
     {
-        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        private readonly ISgpContextConsultas sgpContextConsultas;
+
+        public RepositorioRegistroFrequenciaAluno(ISgpContext conexao, IServicoAuditoria servicoAuditoria, ISgpContextConsultas sgpContextConsultas) : base(conexao, servicoAuditoria)
         {
+            this.sgpContextConsultas = sgpContextConsultas ?? throw new ArgumentNullException(nameof(sgpContextConsultas));
         }
 
         public async Task RemoverPorRegistroFrequenciaId(long registroFrequenciaId, string[] alunosComFrequenciaRegistrada)
@@ -133,7 +137,7 @@ namespace SME.SGP.Dados
                     
             query += $@"), lista2 as (
                     select *,
-                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id) sequencia
+                           row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
                     from lista1)
                     select {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 1) TotalPresencas,")}
                     	   count(0) filter (where tmp.valor = 2) TotalAusencias,
@@ -153,7 +157,7 @@ namespace SME.SGP.Dados
                         	 tmp.codigo_aluno,
                         	 tmp.disciplina_id;";
 
-            return await database.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId });
+            return await sgpContextConsultas.Conexao.QueryAsync<RegistroFrequenciaPorDisciplinaAlunoDto>(query, new { dataAula, turmasId }, commandTimeout: 120);
         }
     }
 }

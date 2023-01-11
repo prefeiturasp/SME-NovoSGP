@@ -59,10 +59,12 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id 
                         inner join turma t on t.id = ft.turma_id
                         inner join fechamento_aluno fa on f.id = fa.fechamento_turma_disciplina_id
+                        left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                        left join componente_curricular cc on cc.id = fn.disciplina_id
                         where t.id = @turmaId ");
 
             if (disciplinasId != null && disciplinasId.Length > 0)
-                query.AppendLine("and f.disciplina_id = ANY(@disciplinasId)");
+                query.AppendLine("and (f.disciplina_id = ANY(@disciplinasId) or cc.id = ANY(@disciplinasId))");
 
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre ");
@@ -136,8 +138,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join periodo_escolar p on p.id = ft.periodo_escolar_id
                         inner join turma t on t.id = ft.turma_id
                         where t.turma_id = @turmaCodigo
-                          and f.disciplina_id = @disciplinaId 
-                          and f.situacao != 0 ");
+                          and f.disciplina_id = @disciplinaId");
             if (bimestre > 0)
                 query.AppendLine(" and p.bimestre = @bimestre ");
 

@@ -22,11 +22,13 @@ namespace SME.SGP.Aplicacao
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
-        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request, CancellationToken cancellationToken)
+        public async Task<ParecerConclusivoDto> Handle(GerarParecerConclusivoAlunoCommand request,
+            CancellationToken cancellationToken)
         {
             var conselhoClasseAluno = request.ConselhoClasseAluno;
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
-            var alunosEol = await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
+            var alunosEol =
+                await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
             bool historico = turma.Historica;
 
@@ -34,15 +36,27 @@ namespace SME.SGP.Aplicacao
                 historico = alunoNaTurma.Inativo;
 
             // Se não possui notas de fechamento nem de conselho retorna um Dto vazio
-            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null, historico))
+            if (!await VerificaNotasTodosComponentesCurriculares(conselhoClasseAluno.AlunoCodigo, turma, null,
+                    historico))
                 return new ParecerConclusivoDto();
 
-            var pareceresDaTurma = await ObterPareceresDaTurma(turma.Id);
-            var parecerConclusivo = await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo, turma.CodigoTurma, pareceresDaTurma));
+            var pareceresDaTurma = await ObterPareceresDaTurma(turma);
+            var parecerConclusivo =
+                await mediator.Send(new ObterParecerConclusivoAlunoQuery(conselhoClasseAluno.AlunoCodigo,
+                    turma.CodigoTurma, pareceresDaTurma));
+
+            if (parecerConclusivo.Id == conselhoClasseAluno.ConselhoClasseParecerId)
+                return new ParecerConclusivoDto()
+                {
+                    Id = parecerConclusivo?.Id ?? 0,
+                    Nome = parecerConclusivo?.Nome,
+                    EmAprovacao = parecerConclusivo.Aprovado ? false : true
+                };
+
 
             var emAprovacao = await EnviarParaAprovacao(turma);
             if (await EnviarParaAprovacao(turma))
-                await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
+                emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
             {
                 var bimestre = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar == null ? (int?)null : conselhoClasseAluno.ConselhoClasse.FechamentoTurma.PeriodoEscolar.Bimestre;
@@ -68,22 +82,26 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
+        private async Task<bool> GerarWFAprovacao(ConselhoClasseAluno conselhoClasseAluno, long parecerConclusivoId, IEnumerable<ConselhoClasseParecerConclusivo> pareceresDaTurma, long usuarioSolicitanteId)
         {
             if (parecerConclusivoId == conselhoClasseAluno.ConselhoClasseParecerId)
-                return;
+                return false;
 
             var turma = conselhoClasseAluno.ConselhoClasse.FechamentoTurma.Turma;
             var parecerAnterior = pareceresDaTurma.FirstOrDefault(a => a.Id == conselhoClasseAluno.ConselhoClasseParecerId)?.Nome;
             var parecerNovo = pareceresDaTurma.FirstOrDefault(a => a.Id == parecerConclusivoId).Nome;
 
-            await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
-                                                                             turma,
-                                                                             conselhoClasseAluno.AlunoCodigo,
-                                                                             parecerConclusivoId,
-                                                                             parecerAnterior,
-                                                                             parecerNovo,
-                                                                             usuarioSolicitanteId));
+            var pareceresEmAprovacaoAtual = await mediator.Send(new ObterParecerConclusivoEmAprovacaoPorConselhoClasseAlunoQuery(conselhoClasseAluno.Id));
+            if (!pareceresEmAprovacaoAtual.Any(parecer => parecer.ConselhoClasseParecerId == parecerConclusivoId)) 
+                await mediator.Send(new GerarWFAprovacaoParecerConclusivoCommand(conselhoClasseAluno.Id,
+                                                                                 turma,
+                                                                                 conselhoClasseAluno.AlunoCodigo,
+                                                                                 parecerConclusivoId,
+                                                                                 parecerAnterior,
+                                                                                 parecerNovo,
+                                                                                 usuarioSolicitanteId));
+
+            return true;
         }
 
         private async Task<bool> EnviarParaAprovacao(Turma turma)
@@ -101,9 +119,9 @@ namespace SME.SGP.Aplicacao
             return parametro.Ativo;
         }
 
-        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(long turmaId)
+        private async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterPareceresDaTurma(Turma turma)
         {
-            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosPorTurmaQuery(turmaId));
+            var pareceresConclusivos = await mediator.Send(new ObterPareceresConclusivosPorTurmaQuery(turma));
             if (pareceresConclusivos == null || !pareceresConclusivos.Any())
                 throw new NegocioException("Não foram encontrados pareceres conclusivos para a turma!");
 
@@ -125,7 +143,7 @@ namespace SME.SGP.Aplicacao
                 tiposTurmasParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id));
 
                 var turmasCodigosEOL = await mediator
-                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico));
+                    .Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, alunoCodigo, tiposTurmasParaConsulta, historico, ueCodigo: turma.Ue.CodigoUe));
 
                 if (turma.Historica == true)
                 {

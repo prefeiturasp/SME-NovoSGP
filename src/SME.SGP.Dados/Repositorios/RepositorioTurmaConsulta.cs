@@ -45,8 +45,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select t.id 
                         from turma t
                         inner join ue u on t.ue_id = u.id
-                        where t.turma_id = @turmaCodigo
-                            and u.tipo_escola not in (10, 11, 18)";
+                        where t.turma_id = @turmaCodigo";
             
             return await contexto.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaCodigo });
         }
@@ -93,8 +92,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre d on
 	                        u.dre_id = d.id
                         where
-	                        turma_id = @turmaCodigo
-                            and u.tipo_escola not in (10, 11, 18)";
+	                        turma_id = @turmaCodigo";
 
             contexto.AbrirConexao();
 
@@ -151,6 +149,13 @@ namespace SME.SGP.Dados.Repositorios
                 turma.AdicionarUe(ue);
                 return turma;
             }, new { turmaId }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
+        }
+        
+        public async Task<Turma> ObterSomenteTurmaPorId(long turmaId)
+        {
+            var query = @"select t.*  from turma t where t.id = @turmaId";
+            
+            return (await contexto.Conexao.QueryAsync<Turma>(query.ToString(), new { turmaId })).FirstOrDefault();
         }
 
         public async Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo)
@@ -793,7 +798,8 @@ namespace SME.SGP.Dados.Repositorios
                        inner join ue on ue.id = t.ue_id
                        where t.modalidade_codigo = 1 
                          and ue.ue_id = @ueCodigo
-                         and t.ano_letivo = @anoLetivo ";
+                         and t.ano_letivo = @anoLetivo
+                         and t.ano = '7'";
 
             return await contexto.QueryAsync<TurmaDTO>(query, new { anoLetivo, ueCodigo });
         }

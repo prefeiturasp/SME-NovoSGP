@@ -6,6 +6,7 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.ServicosFakes.AulaRecorrenteFake;
 using SME.SGP.TesteIntegracao.ServicosFakes.Query;
@@ -65,8 +66,9 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaCalcularFrequenciaPorTurmaCommand, bool>), typeof(IncluirFilaCalcularFrequenciaPorTurmaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<IncluirFilaConsolidarDashBoardFrequenciaCommand, bool>), typeof(IncluirFilaConsolidarDashBoardFrequenciaCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -519,7 +521,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-        protected async Task InserirParametroSistema()
+        protected async Task InserirParametroSistema(bool inserirParametrosAnoAnterior = false)
         {
             await InserirNaBase(new ParametrosSistema()
             {
@@ -546,6 +548,35 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = ""
             });
+
+            if (inserirParametrosAnoAnterior)
+            {
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaCritico",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                    Descricao = "",
+                    Valor = "75",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaAlerta",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
+                    Descricao = "",
+                    Valor = "80",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+            }
         }
 
         protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)
@@ -555,7 +586,7 @@ namespace SME.SGP.TesteIntegracao
                 PeriodoInicio = DATA_02_05,
                 PeriodoFim = DATA_07_08,
                 Bimestre = 2,
-                TotalAulas = 3,
+                TotalAulas = 12,
                 TotalAusencias = totalAusencia,
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
                 CriadoPor = "Sistema",

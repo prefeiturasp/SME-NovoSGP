@@ -58,7 +58,9 @@ namespace SME.SGP.Aplicacao
                 await MoverJustificativaConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseNota == null ? string.Empty : conselhoClasseNota.Justificativa);
 
                 if (conselhoClasseNota == null)
+                {
                     conselhoClasseNota = ObterConselhoClasseNota(request.ConselhoClasseNotaDto, conselhoClasseAlunoId);
+                }
                 else
                 {
                     notaAnterior = conselhoClasseNota.Nota;
@@ -74,11 +76,11 @@ namespace SME.SGP.Aplicacao
                         conselhoClasseNota.Nota = request.ConselhoClasseNotaDto.Nota.Value;
                     }
                     else conselhoClasseNota.Nota = null;
-                    
+
                     // Gera histórico de alteração
                     if (request.ConselhoClasseNotaDto.Conceito.HasValue)
                     {
-                        if (conselhoClasseNota.ConceitoId != null &&  conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
+                        if (conselhoClasseNota.ConceitoId != null && conselhoClasseNota.ConceitoId != request.ConselhoClasseNotaDto.Conceito.Value)
                             await mediator.Send(new SalvarHistoricoConceitoConselhoClasseCommand(conselhoClasseNota.Id, conselhoClasseNota.ConceitoId, request.ConselhoClasseNotaDto.Conceito.Value), cancellationToken);
                     }
                     else
@@ -111,9 +113,9 @@ namespace SME.SGP.Aplicacao
                 unitOfWork.Rollback();
             }
             
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);
-            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);            
-
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, request.Turma.CodigoTurma), cancellationToken);
+            await RemoverCache(string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_CONSELHO_CLASSE_TURMA_BIMESTRE, request.Turma.CodigoTurma, request.Bimestre), cancellationToken);
+            
             var alunos = await mediator
                 .Send(new ObterAlunosPorTurmaQuery(request.Turma.CodigoTurma, consideraInativos: true), cancellationToken);
 
@@ -126,10 +128,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ConsolidarTurmaConselhoClasseAlunoCommand(request.CodigoAluno, request.Turma.Id, request.Bimestre.Value, alunoFiltrado.Inativo), cancellationToken);
 
             var consolidacaoTurma = new ConsolidacaoTurmaDto(request.Turma.Id, request.Bimestre ?? 0);
-            var mensagemParaPublicar = JsonConvert.SerializeObject(consolidacaoTurma);
             
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, mensagemParaPublicar, Guid.NewGuid()), cancellationToken);
-
             //Tratar após o fechamento da transação - ano letivo e turmaId
             if (!enviarAprovacao)
             {

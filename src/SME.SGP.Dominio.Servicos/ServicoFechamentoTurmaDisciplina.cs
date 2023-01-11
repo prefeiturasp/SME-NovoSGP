@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dados.Repositorios;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Entidades;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
@@ -37,6 +40,7 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
+        private readonly IRepositorioCache repositorioCache;
         private readonly IUnitOfWork unitOfWork;
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
@@ -63,6 +67,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioEvento repositorioEvento,
                                                 IRepositorioEventoTipo repositorioEventoTipo,
                                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
+                                                IRepositorioCache repositorioCache,
                                                 IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -86,6 +91,7 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
+            this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -182,7 +188,8 @@ namespace SME.SGP.Dominio.Servicos
             repositorioFechamentoTurmaDisciplina.Salvar(fechamentoTurmaDisciplina);
 
             var usuarioLogado = usuario ?? await servicoUsuario.ObterUsuarioLogado();
-            await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+            if (turma.TipoTurma != TipoTurma.Programa)
+                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                             turma.CodigoTurma,
                                             turma.Nome,
                                             periodoEscolar.PeriodoInicio,
@@ -254,12 +261,10 @@ namespace SME.SGP.Dominio.Servicos
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEAnoLetivoQuery(turmaFechamento.CodigoTurma));
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
             var alunosAtivos = from a in alunos
-                where a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) || !a.EstaAtivo(periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim) && 
-                    !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && 
-                    a.DataSituacao >= periodoEscolar.PeriodoInicio
+                where a.DataMatricula.Date <= periodoEscolar.PeriodoFim.Date
                 orderby a.NomeValido(), a.NumeroAlunoChamada
                 select a;
 
@@ -345,6 +350,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 unitOfWork.PersistirTransacao();
 
+                await PersistirCache(turma, entidadeDto.Bimestre, fechamentoAlunos.ToList());
+
                 foreach (var consolidacaoNotaAlunoDto in consolidacaoNotasAlunos)
                     await mediator.Send(new ConsolidacaoNotaAlunoCommand(consolidacaoNotaAlunoDto));
 
@@ -362,7 +369,8 @@ namespace SME.SGP.Dominio.Servicos
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid(), null));
                 }
 
-                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                if (turma.TipoTurma != TipoTurma.Programa)
+                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
                                                 turmaFechamento.CodigoTurma,
                                                 turmaFechamento.Nome,
                                                 periodoEscolar.PeriodoInicio,
@@ -393,6 +401,65 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task PersistirCache(Turma turma,
+                                         int bimestre,
+                                         List<FechamentoAluno> fechamentosAlunos)
+        {
+            var nomeChaveCache = ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma);
+            var notasFechamentoFinaisNoCache = await repositorioCache.ObterObjetoAsync<List<NotaConceitoBimestreComponenteDto>>(nomeChaveCache);
+
+            if (notasFechamentoFinaisNoCache != null)
+            {
+                foreach (var fechamentoAluno in fechamentosAlunos)
+                {
+                    foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
+                    {
+                        AtualizarNotasFinaisParaCache(notasFechamentoFinaisNoCache,
+                                                      fechamentoNota,
+                                                      bimestre,
+                                                      fechamentoAluno.AlunoCodigo,
+                                                      turma.CodigoTurma);
+                    }
+                }
+
+                await mediator.Send(new SalvarCachePorValorObjetoCommand(ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(turma.CodigoTurma), notasFechamentoFinaisNoCache));
+            }
+        }
+
+        private void AtualizarNotasFinaisParaCache(List<NotaConceitoBimestreComponenteDto> notasFinais, 
+                                                   FechamentoNota fechamentoNota,
+                                                   int bimestre,
+                                                   string codigoAluno, 
+                                                   string codigoTurma)
+        {
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && 
+                                                                 c.ComponenteCurricularCodigo == fechamentoNota.DisciplinaId &&
+                                                                 c.Bimestre == bimestre);
+
+            if (notaFinalAluno == null)
+            {
+                notasFinais.Add(new NotaConceitoBimestreComponenteDto
+                {
+                    AlunoCodigo = codigoAluno,
+                    Nota = fechamentoNota.Nota,
+                    ConceitoId = fechamentoNota.ConceitoId,
+                    ComponenteCurricularCodigo = fechamentoNota.DisciplinaId,
+                    TurmaCodigo =  codigoTurma,
+                    Bimestre = bimestre
+                });
+            }
+            else
+            {
+                notaFinalAluno.Nota = fechamentoNota.Nota;
+                notaFinalAluno.ConceitoId = fechamentoNota.ConceitoId;
+            }
+        }
+
+        private static string ObterChaveNotaConceitoFechamentoTurmaTodosBimestresEFinal(string codigoTurma)
+        {
+            return string.Format(NomeChaveCache.CHAVE_NOTA_CONCEITO_FECHAMENTO_TURMA_TODOS_BIMESTRES_E_FINAL, codigoTurma);
         }
 
         private static void ConsolidacaoNotasAlunos(int bimestre, List<ConsolidacaoNotaAlunoDto> consolidacaoNotasAlunos, Turma turma, string AlunoCodigo, FechamentoNota fechamentoNota)
@@ -476,6 +543,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -489,6 +557,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                else
+                    indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
@@ -524,7 +594,10 @@ namespace SME.SGP.Dominio.Servicos
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
-
+                
+                if(indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
+                
                 fechamentoAlunos.Add(fechamentoAluno);
             }
 

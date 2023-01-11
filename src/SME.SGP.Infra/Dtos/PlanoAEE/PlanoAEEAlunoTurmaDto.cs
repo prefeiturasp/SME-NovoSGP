@@ -23,6 +23,7 @@ namespace SME.SGP.Infra
         public string NomeReponsavel { get; set; }
         public string RfPaaiReponsavel { get; set; }
         public string NomePaaiReponsavel { get; set; }
+        public long PlanoAeeVersaoId { get; set; }
 
         public string ObterVersaoPlano()
             => $"v{Versao} ({DataVersao:dd/MM/yyyy})";

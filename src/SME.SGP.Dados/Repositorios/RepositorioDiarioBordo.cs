@@ -245,14 +245,14 @@ namespace SME.SGP.Dados.Repositorios
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";
+            var query = $"select count(0) from (select distinct on (a.id, a.data_aula, db.componente_curricular_id) db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                new { turmaId, componenteCurricularPaiCodigo, componenteCurricularFilhoCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = "select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, " +
+            query = "select distinct on (a.id, a.data_aula, db.componente_curricular_id) db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, " +
                     "db.inserido_cj InseridoCJ, " +
                     $"case when db.id is null then true else false end Pendente {condicao} order by dataaula desc {offSet} ";
 

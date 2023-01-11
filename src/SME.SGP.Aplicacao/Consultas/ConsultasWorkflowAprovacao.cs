@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,15 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
         }
 
-        public WorkflowAprovacao ObtemPorId(long id)
+        public async Task<List<WorkflowAprovacaoTimeRespostaDto>> ObtemTimelinePorCodigoNotificacao(long notificacaoId)
         {
-            var wf = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, id);
-            return wf;
-        }
-
-        public List<WorkflowAprovacaoTimeRespostaDto> ObtemTimelinePorCodigoNotificacao(long notificacaoId)
-        {
-            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
+            var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
 
             if (workflow == null)
                 throw new NegocioException($"Não foi possível obter o workflow através da mensagem de id {notificacaoId}");

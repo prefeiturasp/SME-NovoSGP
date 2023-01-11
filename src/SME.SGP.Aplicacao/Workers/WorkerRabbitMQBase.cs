@@ -11,6 +11,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Contexto;
 using SME.SGP.Infra.Excecoes;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using SME.SGP.Infra.Utilitarios;
 using System;
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao.Workers
         private readonly IConnection conexaoRabbit;
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly IServicoTelemetria servicoTelemetria;
+        private readonly IServicoMensageriaSGP servicoMensageria;
         private readonly TelemetriaOptions telemetriaOptions;
         private readonly IMediator mediator;
         private readonly string apmTransactionType;
@@ -36,6 +38,7 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected WorkerRabbitMQBase(IServiceScopeFactory serviceScopeFactory,
             IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
             IOptions<TelemetriaOptions> telemetriaOptions,
             IOptions<ConsumoFilasOptions> consumoFilasOptions,
             IConnectionFactory factory,
@@ -44,6 +47,7 @@ namespace SME.SGP.Aplicacao.Workers
         {
             this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory), "Service Scope Factory não localizado");
             this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
             this.telemetriaOptions = telemetriaOptions.Value ?? throw new ArgumentNullException(nameof(telemetriaOptions));
 
             if (consumoFilasOptions == null)
@@ -65,10 +69,10 @@ namespace SME.SGP.Aplicacao.Workers
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
             canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
 
-            DeclararFilasSgp();
-
             Comandos = new Dictionary<string, ComandoRabbit>();
             RegistrarUseCases();
+
+            DeclararFilasSgp();
         }
 
         protected Dictionary<string, ComandoRabbit> Comandos { get; }
@@ -88,26 +92,22 @@ namespace SME.SGP.Aplicacao.Workers
 
         protected void DeclararFilasPorRota(string exchange, string exchangeDeadLetter = "")
         {
-            var args = new Dictionary<string, object>();
-
-            if (!string.IsNullOrEmpty(exchangeDeadLetter))
-                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
-
             foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
             {
+                var args = ObterArgumentoDaFila(fila, exchangeDeadLetter);
                 canalRabbit.QueueDeclare(fila, true, false, false, args);
                 canalRabbit.QueueBind(fila, exchange, fila, null);
 
                 if (!string.IsNullOrEmpty(exchangeDeadLetter))
                 {
-                    var argsDlq = new Dictionary<string, object>();
-                    argsDlq.Add("x-dead-letter-exchange", exchange);
-                    argsDlq.Add("x-message-ttl", ExchangeSgpRabbit.SgpDeadLetterTTL);
-
+                    var argsDlq = ObterArgumentoDaFilaDeadLetter(fila, exchange);
                     var filaDeadLetter = $"{fila}.deadletter";
 
                     canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, argsDlq);
                     canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
+
+                    var argsLimbo = new Dictionary<string, object>();
+                    argsLimbo.Add("x-queue-mode", "lazy");
 
                     var queueLimbo = $"{fila}.limbo";
                     canalRabbit.QueueDeclare(
@@ -115,12 +115,37 @@ namespace SME.SGP.Aplicacao.Workers
                         durable: true,
                         exclusive: false,
                         autoDelete: false,
-                        arguments: null
+                        arguments: argsLimbo
                     );
 
                     canalRabbit.QueueBind(queueLimbo, exchangeDeadLetter, queueLimbo, null);
                 }
             }
+        }
+
+        private Dictionary<string, object> ObterArgumentoDaFila(string fila, string exchangeDeadLetter)
+        {
+            var args = new Dictionary<string, object>();
+
+            if (!string.IsNullOrEmpty(exchangeDeadLetter))
+                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
+
+            if (Comandos.ContainsKey(fila) && Comandos[fila].ModeLazy)
+                args.Add("x-queue-mode", "lazy");
+            
+            return args;
+        }
+
+        private Dictionary<string, object> ObterArgumentoDaFilaDeadLetter(string fila, string exchange)
+        {
+            var argsDlq = new Dictionary<string, object>();
+            var ttl = Comandos.ContainsKey(fila) ? Comandos[fila].TTL : ExchangeSgpRabbit.SgpDeadLetterTTL;
+
+            argsDlq.Add("x-dead-letter-exchange", exchange);
+            argsDlq.Add("x-message-ttl", ttl);
+            argsDlq.Add("x-queue-mode", "lazy");
+
+            return argsDlq;
         }
 
         private ulong GetRetryCount(IBasicProperties properties)
@@ -193,14 +218,13 @@ namespace SME.SGP.Aplicacao.Workers
                 {
                     transacao?.CaptureException(ex);
  
-                    var retryCount = GetRetryCount(ea.BasicProperties);
-                    if (retryCount >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
+                    var rejeicoes = GetRetryCount(ea.BasicProperties);
+                    if (++rejeicoes >= comandoRabbit.QuantidadeReprocessamentoDeadLetter)
                     {
                         canalRabbit.BasicAck(ea.DeliveryTag, false);
 
-                        var queueLimbo = $"{ea.RoutingKey}.limbo";
-                        canalRabbit.BasicPublish(ExchangeSgpRabbit.SgpDeadLetter, queueLimbo, null, ea.Body.ToArray());
-
+                        var filaLimbo = $"{ea.RoutingKey}.limbo";
+                        await servicoMensageria.Publicar(mensagemRabbit, filaLimbo, ExchangeSgpRabbit.SgpDeadLetter, "PublicarDeadLetter");
                     }
                     else canalRabbit.BasicReject(ea.DeliveryTag, false);
 
@@ -279,7 +303,7 @@ namespace SME.SGP.Aplicacao.Workers
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag} - {ea.RoutingKey}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
                     canalRabbit.BasicReject(ea.DeliveryTag, false);
                 }
             };

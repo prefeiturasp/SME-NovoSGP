@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Infra;
 using System.Collections.Generic;
 using SME.SGP.TesteIntegracao.ServicosFakes;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
 
 namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 {
@@ -27,6 +29,8 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaEDataMatriculaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosPorTurmaEDataMatriculaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterValorParametroSistemaTipoEAnoQuery, string>), typeof(ObterValorParametroSistemaTipoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         [Fact]
@@ -37,7 +41,7 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriarDadosBase(dtoDadoBase);
             await CriaFrequenciaAlunos(dtoDadoBase);
 
-            var listaDeAusencia = await mediator.Send(new ObterListaAlunosComAusenciaQuery(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), BIMESTRE_1));
+            var listaDeAusencia = await mediator.Send(new ObterListaAlunosComAusenciaQuery(TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), BIMESTRE_3));
             listaDeAusencia.ShouldNotBeNull();
             listaDeAusencia.ToList().Exists(aluno => aluno.Id == CODIGO_ALUNO_1).ShouldBeTrue();
             listaDeAusencia.ToList().Exists(aluno => aluno.Id == CODIGO_ALUNO_2).ShouldBeTrue();
@@ -90,11 +94,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
             await CriaFrequenciaAluno(
                         dtoDadoBase,
                         DATA_03_01_INICIO_BIMESTRE_1,
-                        DATA_29_04_FIM_BIMESTRE_1,
+                        DATA_28_04_FIM_BIMESTRE_1,
                         codigoAluno,
                         totalPresenca,
                         totalAusencia,
-                        PERIODO_ESCOLAR_ID_1);
+                        PERIODO_ESCOLAR_ID_3);
         }
 
         private CompensacaoDeAusenciaDBDto ObtenhaDtoDadoBase(string perfil, string componente)
@@ -104,11 +108,11 @@ namespace SME.SGP.TesteIntegracao.CompensacaoDeAusencia
                 Perfil = perfil,
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                Bimestre = BIMESTRE_1,
+                Bimestre = BIMESTRE_3,
                 ComponenteCurricular = componente,
                 TipoCalendarioId = TIPO_CALENDARIO_1,
                 AnoTurma = ANO_5,
-                DataReferencia = DATA_03_01_INICIO_BIMESTRE_1,
+                DataReferencia = DATA_25_07_INICIO_BIMESTRE_3,
                 QuantidadeAula = QUANTIDADE_AULA_4
             };
         }

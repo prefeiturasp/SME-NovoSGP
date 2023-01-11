@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using SME.SGP.Infra;
 using SME.SGP.IoC;
 
 namespace SME.SGP.Fechamento.Worker
@@ -28,6 +29,8 @@ namespace SME.SGP.Fechamento.Worker
             registrarDependencias.RegistrarCasoDeUsoFechamentoRabbitSgp(services);
 
             services.AddHostedService<WorkerRabbitFechamento>();
+            services.AddHealthChecks();
+            services.AddHealthChecksUiSgp();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,6 +39,9 @@ namespace SME.SGP.Fechamento.Worker
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
                 new HttpDiagnosticsSubscriber());
+            
+            app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
 
             if (env.IsDevelopment())
             {

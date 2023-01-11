@@ -8,13 +8,13 @@ namespace SME.SGP.Aplicacao
 {
     public class SalvarListaNotaConceitoCommand : IRequest<bool>
     {
-        public SalvarListaNotaConceitoCommand(List<NotaConceito> listaNotasConceitos, Usuario criadoPor)
+        public SalvarListaNotaConceitoCommand(IEnumerable<NotaConceito> listaNotasConceitos, Usuario criadoPor)
         {
             ListaNotasConceitos = listaNotasConceitos;
             CriadoPor = criadoPor;
         }
 
-        public List<NotaConceito> ListaNotasConceitos { get; set; }
+        public IEnumerable<NotaConceito> ListaNotasConceitos { get; set; }
         public Usuario CriadoPor { get; set; }
     }
 

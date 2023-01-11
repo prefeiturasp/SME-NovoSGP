@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra.Interface;
 using Xunit;
+using SME.SGP.Infra;
 
 namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 {
@@ -26,7 +27,8 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IServicoAuditoria),typeof(ServicoAuditoriaFake), ServiceLifetime.Scoped));
-            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterPodeCadastrarAulaPorDataQuery, PodeCadastrarAulaPorDataRetornoDto>), typeof(ObterPodeCadastrarAulaPorDataQueryHandlerFake), ServiceLifetime.Scoped));
+
         }
 
         [Fact]
@@ -38,10 +40,9 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
 
-            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, DATA_02_05);
-
-            aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 06, 27);
-
+            var dataAula = DATA_02_05.AddDays(7);
+            dataAula = dataAula.AddDays(5 - (int)dataAula.DayOfWeek);
+            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirBimestreAtual, 138, dataAula);
             aula.Id = 1;
 
             await CriarPeriodoEscolarEAbertura();
@@ -52,7 +53,10 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             retorno.ShouldNotBeNull();
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 2 aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            TimeSpan diasDiferenca = DATA_08_07 - dataAula;
+            int totalAulasPorSemanasRecorrencia = diasDiferenca.Days / 7;
+
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia+1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
         }
 
         [Fact]
@@ -63,11 +67,10 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
             await CriaAulaRecorrentePortugues(RecorrenciaAula.RepetirTodosBimestres);
 
             var usecase = ServiceProvider.GetService<IAlterarAulaUseCase>();
-            
-            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, DATA_02_05);
-            
-            aula.DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 08, 26);
-            
+
+            var dataAula = DATA_02_05.AddDays(7);
+            dataAula = dataAula.AddDays(5 - (int)dataAula.DayOfWeek);
+            var aula = ObterAula(TipoAula.Normal, RecorrenciaAula.RepetirTodosBimestres, 138, dataAula);
             aula.Id = 1;
 
             await CriarPeriodoEscolarEAbertura();
@@ -80,13 +83,16 @@ namespace SME.SGP.TesteIntegracao.AulaRecorrencia
 
             listaNotificao.ShouldNotBeEmpty();
 
-            listaNotificao.FirstOrDefault().Mensagem.ShouldContain("Foram alteradas 17 aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
+            TimeSpan diasDiferenca = DATA_22_12_FIM_BIMESTRE_4 - dataAula;
+            int totalAulasPorSemanasRecorrencia = diasDiferenca.Days / 7;
+
+            listaNotificao.FirstOrDefault().Mensagem.ShouldContain($"Foram alteradas {totalAulasPorSemanasRecorrencia + 1} aulas do componente curricular Língua Portuguesa para a turma Turma Nome 1 da Nome da UE (DRE 1).");
 
         }
 
         private async Task CriarPeriodoEscolarEAbertura()
         {
-            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_29_04_FIM_BIMESTRE_1, BIMESTRE_1);
+            await CriarPeriodoEscolar(DATA_03_01_INICIO_BIMESTRE_1, DATA_28_04_FIM_BIMESTRE_1, BIMESTRE_1);
 
             await CriarPeriodoEscolar(DATA_02_05_INICIO_BIMESTRE_2, DATA_08_07_FIM_BIMESTRE_2, BIMESTRE_2);
 

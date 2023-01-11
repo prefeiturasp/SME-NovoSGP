@@ -9,6 +9,6 @@ namespace SME.SGP.Infra
         public bool PodeEditarNota { get; set; }
 
         public bool TemConselhoClasseAluno { get; set; }
-
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }

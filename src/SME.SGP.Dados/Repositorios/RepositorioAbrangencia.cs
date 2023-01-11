@@ -611,17 +611,11 @@ namespace SME.SGP.Dados.Repositorios
             return dados.OrderBy(x => x.Descricao);
         }
 
-        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas, bool consideraHistorico = false)
+        public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUeAbrangencia(string codigoUe, string login, Guid perfilAtual, IEnumerable<Modalidade> modadlidadesQueSeraoIgnoradas, bool consideraHistorico = false, int anoLetivo = 0)
         {
             var query = "";
             if (consideraHistorico)
-            {
-                query = @"select distinct vau.modalidade_codigo from v_abrangencia_historica vau 
-                            where vau.login = @login
-                            and usuario_perfil  = @perfilAtual
-                            and vau.ue_codigo = @codigoUe
-                            and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
-            }
+                query = @"select f_abrangencia_modalidades(@login, @perfilAtual, true, @anoLetivo, @modalidadesQueSeraoIgnoradasArray::int4[], @codigoUe) modalidade_codigo order by 1";
             else
             {
                 query = @"select distinct vau.modalidade_codigo from v_abrangencia_usuario vau 
@@ -632,8 +626,7 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
-
-            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray });
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -794,7 +787,7 @@ namespace SME.SGP.Dados.Repositorios
                     resultadoFiltrado = resultadoFiltrado.Where(r => !anosInfantilDesconsiderar.Contains(r.Ano));
             }
 
-            return resultadoFiltrado.DistinctBy(p => new {p.Nome});
+            return resultadoFiltrado.DistinctBy(p => new {p.Codigo, p.Nome});
         }
 
         public async Task<IEnumerable<string>> ObterLoginsAbrangenciaUePorPerfil(long ueId, Guid perfil, bool historica = false)

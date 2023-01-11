@@ -49,15 +49,21 @@ namespace SME.SGP.Aplicacao
                 if (turma == null)
                     throw new NegocioException("Turma não encontrada.");
 
-                var turmasCodigos = new string[] { };
-                var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+                var turmasCodigos = Array.Empty<string>();
+                var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery(), cancellationToken);
 
-                if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+                if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
                 {
-                    var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
-                    turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                    turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
-                    turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, turmasCodigosParaConsulta));
+                    var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                    var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                    tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                    tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));                    
+                    
+                    turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, request.AlunoCodigo, tiposParaConsulta), cancellationToken);
+
+                    if (!turmasCodigos.Any(t => t == turma.CodigoTurma))
+                        turmasCodigos = turmasCodigos.Append(turma.CodigoTurma).ToArray();
                 }
 
                 if (!turmasCodigos.Any())
@@ -103,13 +109,12 @@ namespace SME.SGP.Aplicacao
 
                             if (disciplinaEol.Regencia)
                             {
-                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(disciplina.CodigoComponenteCurricular, turma);
+                                conselhoClasseAlunoNotas.ComponenteRegencia = await ObterComponenteRegencia(turma);
                             }
                             else
                             {
                                 conselhoClasseAlunoNotas.ComponentesCurriculares.Add(await ObterComponenteCurricular(disciplina.Nome,
-                                                                                                                    disciplina.CodigoComponenteCurricular,
-                                                                                                                    turma));
+                                                                                                                    disciplina.CodigoComponenteCurricular));
                             }
                         }
                     }
@@ -132,7 +137,7 @@ namespace SME.SGP.Aplicacao
                     }
 
                     var componentesComNotaFechamentoOuConselho = await mediator
-                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, request.TurmaId, request.Bimestre, request.AlunoCodigo));
+                        .Send(new ObterComponentesComNotaDeFechamentoOuConselhoQuery(turma.AnoLetivo, turmasCodigos, request.Bimestre, request.AlunoCodigo));
 
                     if (componentesComNotaFechamentoOuConselho == null || !componentesComNotaFechamentoOuConselho.Any())
                         throw new NegocioException("Não foi encontrado componentes curriculares com nota fechamento");
@@ -184,7 +189,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteFrequenciaDto> ObterComponenteCurricular(string componenteCurricularNome, long componenteCurricularCodigo)
         {
             var conselhoClasseComponente = new ConselhoClasseComponenteFrequenciaDto()
             {
@@ -194,7 +199,7 @@ namespace SME.SGP.Aplicacao
             return conselhoClasseComponente;
         }
 
-        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(long componenteCurricularCodigo, Turma turma)
+        private async Task<ConselhoClasseComponenteRegenciaFrequenciaDto> ObterComponenteRegencia(Turma turma)
         {
             var componentesRegencia = await consultasDisciplina.ObterComponentesRegencia(turma);
 

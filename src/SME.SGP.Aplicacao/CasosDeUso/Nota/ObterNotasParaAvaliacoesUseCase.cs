@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-
+        
         public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -51,7 +52,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAtividadesAvaliativasPorCCTurmaPeriodoQuery(componentesCurriculares.Select(a => a.ToString()).ToArray(), filtro.TurmaCodigo, periodoInicio, periodoFim));
 
             var alunos = await mediator
-                .Send(new ObterAlunosPorTurmaEAnoLetivoQuery(filtro.TurmaCodigo));
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(filtro.TurmaCodigo)));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
@@ -85,7 +86,8 @@ namespace SME.SGP.Aplicacao
                 Descricao = $"{filtro.Bimestre}º Bimestre",
                 Numero = filtro.Bimestre,
                 PeriodoInicio = periodoInicio,
-                PeriodoFim = periodoFim
+                PeriodoFim = periodoFim,
+                DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim))
             };
 
             var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
@@ -104,10 +106,10 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AusenciaAlunoDto> ausenciasDasAtividadesAvaliativas = null;
 
             var atividadesAvaliativasId = atividadesAvaliativasdoBimestre.Select(a => a.Id)?.Distinct().ToArray() ?? new long[0];
-            
-            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(),turmaCompleta.CodigoTurma));
+
+            notas = await mediator.Send(new ObterNotasPorAlunosAtividadesAvaliativasQuery(atividadesAvaliativasId, alunosIds, filtro.DisciplinaCodigo.ToString(), turmaCompleta.CodigoTurma));
             var datasDasAtividadesAvaliativas = atividadesAvaliativasdoBimestre.Select(a => a.DataAvaliacao).Distinct().ToArray();
-            
+
             ausenciasDasAtividadesAvaliativas = await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasQuery(filtro.TurmaCodigo, datasDasAtividadesAvaliativas, filtro.DisciplinaCodigo.ToString(), alunosIds));
 
             IEnumerable<DisciplinaResposta> disciplinasRegencia = null;
@@ -126,10 +128,10 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     var disciplinasRegenciaEol = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamento(filtro.TurmaCodigo, usuario.CodigoRf, usuario.PerfilAtual);
-                    
+
                     if (disciplinasRegenciaEol == null || !disciplinasRegenciaEol.Any(d => !d.TerritorioSaber && d.Regencia))
                         throw new NegocioException("Não foram encontradas disciplinas de regência no EOL");
-                    
+
                     // Excessão de disciplina ED. Fisica para modalidade EJA
                     if (turmaCompleta.EhEJA())
                         disciplinasRegencia = MapearParaDto(disciplinasRegenciaEol.Where(d => !d.TerritorioSaber && d.Regencia && d.Codigo != 6));
@@ -146,17 +148,16 @@ namespace SME.SGP.Aplicacao
                 .Select(a => a.Id);
 
             var listaFechamentoNotaEmAprovacao = await mediator.Send(new ObterNotaEmAprovacaoPorFechamentoNotaIdQuery() { IdsFechamentoNota = idsFechamentoNota });
-           
+
             //Obter alunos ativos
             IOrderedEnumerable<AlunoPorTurmaResposta> alunosAtivos = null;
 
             alunosAtivos = from a in alunos
-                           where a.EstaAtivo(periodoInicio, periodoFim) 
-                           || !a.EstaAtivo(periodoInicio, periodoFim) 
-                           && VerificaSeEsteveAtivoUmDiaNaTurma(a, periodoInicio)
+                           where a.DataMatricula.Date <= periodoFim.Date 
+                           && (!a.Inativo || a.Inativo && a.DataSituacao >= periodoInicio.Date)
                            orderby a.NomeValido(), a.NumeroAlunoChamada
                            select a;
-
+            
             var alunosAtivosCodigos = alunosAtivos
                 .Select(a => a.CodigoAluno).Distinct().ToArray();
 
@@ -221,7 +222,7 @@ namespace SME.SGP.Aplicacao
                     };
 
                     notasAvaliacoes.Add(notaAvaliacao);
-                }                
+                }
 
                 notaConceitoAluno.PodeEditar =
                        (aluno.Inativo == false || (aluno.Inativo && (aluno.DataSituacao >= periodoFechamentoBimestre?.PeriodoFechamentoInicio.Date ||
@@ -231,7 +232,7 @@ namespace SME.SGP.Aplicacao
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
 
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
-                
+
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma
                                        from fa in ft.FechamentoAlunos
                                        where fa.AlunoCodigo.Equals(aluno.CodigoAluno)
@@ -284,14 +285,14 @@ namespace SME.SGP.Aplicacao
                             if (notaRegencia != null)
                             {
                                 nota.NotaConceito = (notaRegencia.ConceitoId.HasValue ? notaRegencia.ConceitoId.Value : notaRegencia.Nota);
-                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;                             
+                                nota.EhConceito = notaRegencia.ConceitoId.HasValue;
                                 var listaFiltrada = listaFechamentoNotaEmAprovacao.FirstOrDefault(i => i.Id == notaRegencia.Id);
                                 if (listaFiltrada != null)
                                 {
                                     double notaConceitoWF = listaFiltrada.NotaEmAprovacao;
                                     VerificaNotaEmAprovacao(notaConceitoWF, nota);
                                 }
-                            }                            
+                            }
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
@@ -308,7 +309,7 @@ namespace SME.SGP.Aplicacao
                                    notaConceitoBimestre.ConceitoId.Value :
                                    notaConceitoBimestre.Nota,
                                 EhConceito = notaConceitoBimestre.ConceitoId.HasValue
-                            };                         
+                            };
 
                             if (listaFechamentoNotaEmAprovacao.Any())
                             {
@@ -322,7 +323,7 @@ namespace SME.SGP.Aplicacao
 
                             notaConceitoAluno.NotasBimestre.Add(nota);
                         }
-                           
+
                     }
                 }
                 else if (componenteReferencia.Regencia && componenteReferencia != null)
@@ -348,7 +349,7 @@ namespace SME.SGP.Aplicacao
                                                    "";
                 listaAlunosDoBimestre.Add(notaConceitoAluno);
             }
-            
+
             IEnumerable<DisciplinaDto> disciplinas;
             var disciplinasNaoRegencia = Enumerable.Empty<DisciplinaDto>();
 
@@ -366,7 +367,8 @@ namespace SME.SGP.Aplicacao
                     Data = avaliacao.DataAvaliacao,
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
-                    EhCJ = avaliacao.EhCj
+                    EhCJ = avaliacao.EhCj,
+                    DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);
@@ -417,7 +419,7 @@ namespace SME.SGP.Aplicacao
             {
                 var notaTipo = await mediator.Send(new ObterTipoNotaPorTurmaQuery(turmaCompleta, new DateTime(filtro.AnoLetivo, 3, 1)));
                 retorno.NotaTipo = notaTipo;
-                
+
                 ObterValoresDeAuditoria(dataUltimaNotaConceitoInserida, dataUltimaNotaConceitoAlterada, usuarioRfUltimaNotaConceitoInserida, usuarioRfUltimaNotaConceitoAlterada,
                     notaTipo, retorno, nomeAvaliacaoAuditoriaInclusao, nomeAvaliacaoAuditoriaAlteracao);
             }
@@ -434,16 +436,16 @@ namespace SME.SGP.Aplicacao
 
         private bool ChecarSeProfessorCJTitularPodeEditarNota(Usuario dadosUsuario, AtividadeAvaliativa dadosAvaliacao)
         {
-            if(dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
+            if (dadosUsuario.EhProfessor() || dadosUsuario.EhProfessorCj())
                 return dadosUsuario.EhProfessorCj() && dadosAvaliacao.EhCj || dadosUsuario.EhProfessor() && !dadosAvaliacao.EhCj;
 
             return true;
         }
 
-        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio)
+        private bool VerificaSeEsteveAtivoUmDiaNaTurma(AlunoPorTurmaResposta aluno, DateTime periodoInicio, DateTime periodoFim)
         {
             return !aluno.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) && aluno.DataSituacao >= periodoInicio
-                   && aluno.DataMatricula <= periodoInicio;
+                   && aluno.DataMatricula <= periodoFim;
         }
 
         private void VerificaNotaEmAprovacao(double notaConceitoAprovacaoWf, FechamentoNotaRetornoDto notasConceito)

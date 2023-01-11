@@ -1,14 +1,15 @@
 ﻿using FluentValidation;
 using MediatR;
 using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificarAprovacaoParecerConclusivoCommand : IRequest
+    public class NotificarAprovacaoParecerConclusivoCommand : IRequest<bool>
     {
-        public NotificarAprovacaoParecerConclusivoCommand(WFAprovacaoParecerConclusivoDto parecerEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome, bool aprovado, string motivo = "")
+        public NotificarAprovacaoParecerConclusivoCommand(IEnumerable<WFAprovacaoParecerConclusivoDto> pareceresEmAprovacao, string turmaCodigo, string criadorRf, string criadorNome, bool aprovado, string motivo = "")
         {
-            ParecerEmAprovacao = parecerEmAprovacao;
+            PareceresEmAprovacao = pareceresEmAprovacao;
             TurmaCodigo = turmaCodigo;
             CriadorRf = criadorRf;
             CriadorNome = criadorNome;
@@ -16,7 +17,7 @@ namespace SME.SGP.Aplicacao
             Motivo = motivo;
         }
 
-        public WFAprovacaoParecerConclusivoDto ParecerEmAprovacao { get; }
+        public IEnumerable<WFAprovacaoParecerConclusivoDto> PareceresEmAprovacao { get; }
         public string TurmaCodigo { get; }
         public string CriadorRf { get; }
         public string CriadorNome { get; }
@@ -28,9 +29,9 @@ namespace SME.SGP.Aplicacao
     {
         public NotificarAprovacaoParecerConclusivoCommandValidator()
         {
-            RuleFor(a => a.ParecerEmAprovacao)
+            RuleFor(a => a.PareceresEmAprovacao)
                 .NotEmpty()
-                .WithMessage("O parecer conclusivo em aprovação deve ser informado para notificação de sua aprovação");
+                .WithMessage("Os pareceres conclusivos em aprovação devem ser informados para notificação de sua aprovação");
 
             RuleFor(a => a.TurmaCodigo)
                 .NotEmpty()

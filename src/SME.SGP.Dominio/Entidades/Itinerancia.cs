@@ -60,7 +60,6 @@ namespace SME.SGP.Dominio
             if (!questoes.Any(q => q.Id == questao.Id))
                 questoes.Add(questao);            
         }
-
         public void AdicionarObjetivo(ItineranciaObjetivo objetivo)
         {
             if (!objetivos.Any(o => o.Id == objetivo.Id))

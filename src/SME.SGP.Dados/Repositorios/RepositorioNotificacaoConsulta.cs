@@ -78,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and n.tipo = @tipoId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and u.rf_codigo = @usuarioRf or u.login = @usuarioRf");
+                query.AppendLine("and (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)");
 
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
@@ -189,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     return notificacao;
                 }, param: new { codigo });
-            
+
             return notificacoes.FirstOrDefault();
         }
 
@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by codigo desc");
             query.AppendLine("limit 1");
 
-            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano });
+            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano }, commandTimeout: 90);
             return codigos.FirstOrDefault();
         }
 

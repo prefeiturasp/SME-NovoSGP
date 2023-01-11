@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos;
+using SME.SGP.TesteIntegracao.Nota.ServicosFakes;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.Nota
@@ -30,6 +32,8 @@ namespace SME.SGP.TesteIntegracao.Nota
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(SME.SGP.TesteIntegracao.Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>), typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));
         }
 
         //[Fact]
@@ -192,7 +196,7 @@ namespace SME.SGP.TesteIntegracao.Nota
                 TurmaCodigo = TURMA_CODIGO_1,
                 TurmaHistorico = false,
                 PeriodoInicioTicks = filtroNota.ConsiderarAnoAnterior ? DATA_03_01_INICIO_BIMESTRE_1.AddYears(-1).Ticks : DATA_03_01_INICIO_BIMESTRE_1.Ticks,
-                PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_29_04_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_29_04_FIM_BIMESTRE_1.Ticks,
+                PeriodoFimTicks = filtroNota.ConsiderarAnoAnterior ? DATA_28_04_FIM_BIMESTRE_1.AddYears(-1).Ticks : DATA_28_04_FIM_BIMESTRE_1.Ticks,
             };
         }
         private ListaNotasConceitosDto ObterNotaConceitoListar(FiltroNotasDto filtroNota, DateTime periodoInicio, DateTime periodoFim)

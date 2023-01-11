@@ -7,12 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAulasPrevistasPorCodigoUeQuery : IRequest<IEnumerable<AulaPrevista>>
     {
-        public ObterAulasPrevistasPorCodigoUeQuery(long codigoUe)
+        public ObterAulasPrevistasPorCodigoUeQuery(long codigoUe, bool obterPorCache = true)
         {
             CodigoUe = codigoUe;
+            ObterPorCache = obterPorCache;
         }
 
         public long CodigoUe { get; set; }
+        public bool ObterPorCache { get; set; }
     }
 
     public class ObterAulasPrevistasPorCodigoUeQueryValidator : AbstractValidator<ObterAulasPrevistasPorCodigoUeQuery>

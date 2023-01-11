@@ -10,8 +10,6 @@ namespace SME.SGP.Aplicacao
 
         Task<IEnumerable<NotificacaoBasicaDto>> ListarPorAnoLetivoRf(int anoLetivo, string usuarioRf, int limite = 5);
 
-        Task<NotificacaoDetalheDto> Obter(long notificacaoId);
-
         IEnumerable<EnumeradoRetornoDto> ObterCategorias();
 
         Task<NotificacaoBasicaListaDto> ObterNotificacaoBasicaLista(int anoLetivo, string usuarioRf);

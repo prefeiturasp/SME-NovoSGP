@@ -613,22 +613,72 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
         }
 
-        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false)
+        public async Task<ProfessorResumoDto> ObterProfessorPorRFUeDreAnoLetivo(string codigoRF, int anoLetivo, string dreId, string ueId, bool buscarOutrosCargos = false, bool buscarPorTodasDre = false)
         {
-            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))
+            if (string.IsNullOrWhiteSpace(codigoRF) || anoLetivo == 0 || (!buscarPorTodasDre && (string.IsNullOrWhiteSpace(dreId) || string.IsNullOrWhiteSpace(ueId))))
                 throw new NegocioException("É necessario informar o codigoRF Dre, UE e o ano letivo");
 
-            var resposta = await httpClient.GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?ueId={ueId}&dreId={dreId}&buscarOutrosCargos={buscarOutrosCargos}");
+            string paramUeId = string.Empty, paramDreId = string.Empty;
+
+            if (!buscarPorTodasDre)
+            {
+                paramUeId = !string.IsNullOrWhiteSpace(ueId) ? $"ueId={ueId}&" : string.Empty;
+                paramDreId = !string.IsNullOrWhiteSpace(dreId) ? $"dreId={dreId}&" : string.Empty;
+            }            
+
+            var resposta = await httpClient
+                .GetAsync($"professores/{codigoRF}/BuscarPorRfDreUe/{anoLetivo}?{string.Concat(paramUeId, paramDreId)}buscarOutrosCargos={buscarOutrosCargos}");
 
             if (!resposta.IsSuccessStatusCode)
                 throw new NegocioException("Ocorreu uma falha ao consultar o professor");
 
             if (resposta.StatusCode == HttpStatusCode.NoContent)
+            {
+                var dadosUsuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+                var ehGestorEscolar = dadosUsuarioLogado.PossuiPerfilGestorEscolar();
+
+                if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
+                    throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+                
+                if (ehGestorEscolar)
+                {
+                    var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId,
+                        new List<int> { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                    
+                    var ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
+
+                    if (ehFuncionarioGestorEscolarDaUe)
+                    {
+                        return new ProfessorResumoDto
+                            { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                }     
+                else
+                {
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+
+                    if (!obterAtribuicoesCJAtivas.Any())
+                        throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+                    
+                    var possuiAtribuicaoNaUE = obterAtribuicoesCJAtivas.Any(a => a.UeId == ueId);
+
+                    if (possuiAtribuicaoNaUE)
+                    {
+                        return new ProfessorResumoDto
+                            { CodigoRF = codigoRF, Nome = dadosUsuarioLogado.Nome, UsuarioId = dadosUsuarioLogado.Id };
+                    }
+                }
+
                 throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
+            }
 
             var json = await resposta.Content.ReadAsStringAsync();
+            var retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
 
-            return JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
+            var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
+            retorno.UsuarioId = usuario.Id;
+
+            return retorno;
         }
 
         public IEnumerable<SupervisoresRetornoDto> ObterSupervisoresPorCodigo(string[] codigoSupervisores)
@@ -948,12 +998,15 @@ namespace SME.SGP.Aplicacao.Integracoes
             return JsonConvert.DeserializeObject<bool>(json);
         }
 
-        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids)
+        public async Task<IEnumerable<DisciplinaDto>> ObterDisciplinasPorIdsAgrupadas(long[] ids,string codigoTurma = null)
         {
             var parametros = JsonConvert.SerializeObject(ids);
-
-            var resposta = await httpClient.PostAsync("disciplinas", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
-
+            
+            var url = @"disciplinas/turma/";
+            if (codigoTurma != null)
+                url += $"?codigoTurma={codigoTurma}";
+            var resposta = await httpClient.PostAsync(url, new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);

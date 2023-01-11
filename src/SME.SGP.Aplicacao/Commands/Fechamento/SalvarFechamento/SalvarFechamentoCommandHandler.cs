@@ -239,19 +239,20 @@ namespace SME.SGP.Aplicacao
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, dados, Guid.NewGuid()), cancellationToken);
                 }
 
-                await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
-                    turma.CodigoTurma,
-                    turma.Nome,
-                    periodoEscolar.PeriodoInicio,
-                    periodoEscolar.PeriodoFim,
-                    periodoEscolar.Bimestre,
-                    usuarioLogado,
-                    fechamentoTurmaDisciplina.Id,
-                    fechamentoTurmaDisciplina.Justificativa,
-                    fechamentoTurmaDisciplina.CriadoRF,
-                    fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
-                    fechamentoTurma.ComponenteSemNota,
-                    disciplina.RegistraFrequencia);
+                if (turma.TipoTurma != TipoTurma.Programa)
+                    await GerarPendenciasFechamento(fechamentoTurmaDisciplina.DisciplinaId,
+                        turma.CodigoTurma,
+                        turma.Nome,
+                        periodoEscolar.PeriodoInicio,
+                        periodoEscolar.PeriodoFim,
+                        periodoEscolar.Bimestre,
+                        usuarioLogado,
+                        fechamentoTurmaDisciplina.Id,
+                        fechamentoTurmaDisciplina.Justificativa,
+                        fechamentoTurmaDisciplina.CriadoRF,
+                        fechamentoTurmaDisciplina.FechamentoTurma.TurmaId,
+                        fechamentoTurma.ComponenteSemNota,
+                        disciplina.RegistraFrequencia);
 
                 if (!emAprovacao)
                     await ExcluirPendenciaAusenciaFechamento(fechamentoTurmaDisciplina.DisciplinaId, fechamentoTurmaDisciplina.FechamentoTurma.TurmaId, periodoEscolar, usuarioLogado, fechamentoTurma.EhFinal);
@@ -538,6 +539,7 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, int turmaAnoLetivo)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
+            int indiceFechamentoAntigo = -1;
 
             if (fechamentoTurmaDisciplinaId > 0)
             {
@@ -551,6 +553,8 @@ namespace SME.SGP.Aplicacao
 
                 if (fechamentoAluno == null)
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                else
+                    indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
                 foreach (var fechamentoNotaDto in agrupamentoNotasAluno)
                 {
@@ -585,6 +589,9 @@ namespace SME.SGP.Aplicacao
                     else
                         fechamentoAluno.AdicionarNota(MapearParaEntidade(fechamentoNotaDto));
                 }
+
+                if (indiceFechamentoAntigo >= 0 && fechamentoAlunos.Any())
+                    fechamentoAlunos.RemoveAt(indiceFechamentoAntigo);
 
                 fechamentoAlunos.Add(fechamentoAluno);
             }

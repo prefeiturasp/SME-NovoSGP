@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Infra.Utilitarios;
+using SME.SGP.Aplicacao.Queries;
 
 namespace SME.SGP.Aplicacao
 {
@@ -29,6 +30,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IMediator mediator;
         private readonly IRepositorioCache repositorioCache;
+        
         public ConsultasFechamentoFinal(IRepositorioTurmaConsulta repositorioTurma, IRepositorioTipoCalendarioConsulta repositorioTipoCalendario,
                             IRepositorioPeriodoEscolarConsulta repositorioPeriodoEscolar, IRepositorioFechamentoTurmaDisciplinaConsulta repositorioFechamentoTurmaDisciplina,
                             IServicoEol servicoEOL, IRepositorioFechamentoNotaConsulta repositorioFechamentoNota,
@@ -97,8 +99,6 @@ namespace SME.SGP.Aplicacao
 
             retorno.EhNota = tipoNota.EhNota();
             //Codigo aluno / NotaConceito / Código Disciplina / bimestre
-
-            var listaAlunosNotas = new List<(string, string, long, int)>();
 
             var disciplinas = new List<DisciplinaResposta>();
             var disciplinaEOL = await consultasDisciplina.ObterDisciplina(filtros.DisciplinaCodigo);
@@ -180,7 +180,7 @@ namespace SME.SGP.Aplicacao
                     {
                         var codigoComponenteCurricular = disciplina.CodigoComponenteCurricular;
                         var nota = notasFechamentosFinais?.FirstOrDefault(a => a.ComponenteCurricularId == codigoComponenteCurricular
-                                                                        && a.AlunoCodigo == aluno.CodigoAluno);
+                                                                        && a.AlunoCodigo == aluno.CodigoAluno && (a.Bimestre is null || a.Bimestre == (int)Bimestre.Final));
 
                         string notaParaAdicionar = nota == null ? string.Empty :
                                                    tipoNota.EhNota() ? nota.Nota.HasValue ? nota.Nota.Value.ToString() : ""
@@ -197,7 +197,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                fechamentoFinalAluno.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(ultimoPeriodoEscolar) : false;
                 fechamentoFinalAluno.Codigo = aluno.CodigoAluno;
                 retorno.Alunos.Add(fechamentoFinalAluno);
             }
@@ -208,7 +208,7 @@ namespace SME.SGP.Aplicacao
             retorno.NotaMedia = double.Parse(await mediator.Send(new ObterValorParametroSistemaTipoEAnoQuery(TipoParametroSistema.MediaBimestre, turma.AnoLetivo)));
             retorno.FrequenciaMedia = await mediator.Send(new ObterFrequenciaMediaQuery(disciplinaEOL, turma.AnoLetivo));
             retorno.PeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, ultimoPeriodoEscolar.Bimestre, turma.AnoLetivo == DateTime.Today.Year));
-
+            retorno.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(ultimoPeriodoEscolar.PeriodoFim));
             return retorno;
         }
 

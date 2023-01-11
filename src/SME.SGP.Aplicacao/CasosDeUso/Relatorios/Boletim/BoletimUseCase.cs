@@ -6,6 +6,7 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -13,6 +14,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private const int DOIS_BOLETIM = 2;
 
         public BoletimUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork)
@@ -23,6 +25,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= 0)
+                throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
+            
             bool existeUe = await mediator
                 .Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
 
@@ -48,6 +53,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var usuarioLogado = await mediator
                 .Send(new ObterUsuarioLogadoQuery());
+            
 
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
 
@@ -61,7 +67,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             bool retorno;
 
-            if (filtroRelatorioBoletimDto.Modelo == ModeloBoletim.Detalhado)
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= DOIS_BOLETIM)
             {
                 retorno = await mediator
                     .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));

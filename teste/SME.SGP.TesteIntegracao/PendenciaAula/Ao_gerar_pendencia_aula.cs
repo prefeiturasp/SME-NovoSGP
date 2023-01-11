@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace SME.SGP.TesteIntegracao.PendenciaAula
 {
-    public class Ao_gerar_pendencia_aula : TesteBase
+    public class Ao_gerar_pendencia_aula : TesteBaseComuns
     {
         public Ao_gerar_pendencia_aula(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
         {
             var useCase = ServiceProvider.GetService<IPendenciaAulaUseCase>();
 
-            var valorData = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 01);
+            var valorData = DateTimeExtension.HorarioBrasilia().AddDays(-1);
 
             await InserirNaBase(new ParametrosSistema
             {
@@ -103,7 +103,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
             await InserirNaBase(new Turma()
             {
                 Nome = "7P",
-                CodigoTurma = "2372753",
+                CodigoTurma = "111",
                 Ano = "1",
                 AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 TipoTurma = Dominio.Enumerados.TipoTurma.Regular,
@@ -137,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Quantidade = 1,
                 TipoAula = TipoAula.Normal,
                 UeId = "1",
-                TurmaId = "2372753",
+                TurmaId = "111",
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01),
@@ -153,9 +153,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
             await InserirNaBase(new Usuario()
             {
                 Id = 1,
-                CodigoRf = "7111111",
-                Login = "7111111",
-                Nome = "Usuario Teste",
+                CodigoRf = USUARIO_LOGADO_RF,
+                Login = USUARIO_LOGADO_RF,
+                Nome = USUARIO_LOGADO_NOME,
                 PerfilAtual = Guid.Parse(PerfilUsuario.PROFESSOR.Name()),
                 CriadoPor = "",
                 CriadoRF = "",
@@ -193,7 +193,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
             await InserirNaBase("componente_curricular", "513", "512", "1", "1", "'ED.INF. EMEI 2 HS'", "false", "false", "true", "false", "false", "true", "'Regência de Classe Infantil'", "'REGÊNCIA INFANTIL EMEI 2H'");
 
 
-            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, "7111111", 1, TipoPendencia.PlanoAula, "2372753", 1));
+            var retorno = await mediator.Send(new ObterPendenciaIdPorComponenteProfessorBimestreQuery(512, USUARIO_LOGADO_RF, 1, TipoPendencia.PlanoAula, "111", 1));
 
             retorno.Any().ShouldBeTrue();
 

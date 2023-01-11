@@ -24,8 +24,14 @@ namespace SME.SGP.Aplicacao
         public async Task<string> Handle(MoverArquivosTemporariosCommand request, CancellationToken cancellationToken)
         {
             var regex = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO);
+            var regexImagensPasta = new Regex(ArmazenamentoObjetos.EXPRESSAO_NOME_ARQUIVO_COM_PASTA);
+
             var novo = regex.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
-            var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual)?request.TextoEditorAtual:string.Empty).Cast<Match>().Select(c => c.Value).ToList();
+            var atual = regex.Matches(!string.IsNullOrEmpty(request.TextoEditorAtual) ? request.TextoEditorAtual : string.Empty).Cast<Match>().Select(c => c.Value).ToList();
+
+            var imagensEditorNovo = regexImagensPasta.Matches(request.TextoEditorNovo).Cast<Match>().Select(c => c.Value).ToList();
+
+            novo = imagensEditorNovo.Any() ? RetornaImagensTemporariasParaMover(imagensEditorNovo) : novo;
             var diferenca = novo.Any() ? novo.Except(atual) : new  List<string>();
 
             foreach (var item in diferenca)
@@ -35,6 +41,26 @@ namespace SME.SGP.Aplicacao
             }
             
             return request.TextoEditorNovo;
+        }
+
+        public List<string> RetornaImagensTemporariasParaMover(List<string> novosArquivosTextoNovo)
+        {
+            var imagensParaMover = new List<string>();
+
+            foreach(var arquivo in novosArquivosTextoNovo)
+            {
+                bool jaExisteImagem = arquivo.Contains($@"/{configuracaoArmazenamentoOptions.BucketArquivos}/");
+
+                if (!jaExisteImagem)
+                {
+                    var separaArquivoParaMover = arquivo.Split('/');
+
+                    if(separaArquivoParaMover.Length == 3)
+                        imagensParaMover.Add(separaArquivoParaMover[2]);
+                }                  
+            }
+
+            return imagensParaMover;
         }
     }
 }
