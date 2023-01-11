@@ -185,12 +185,13 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre,
-            DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null)
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, int? anoLetivo = null, long? tipoCalendario = null)
         {
             var query = $@"{queryNotasFechamento} 
                             and t.turma_id = @turmaCodigo
                             and pe.bimestre = @bimestre";
-
+            if(tipoCalendario.HasValue)
+                query += " and pe.tipo_calendario_id = @tipoCalendario ";
             if (dataMatricula.HasValue && (anoLetivo != null || anoLetivo == DateTime.Now.Year))
                 query += " and @dataMatricula <= pe.periodo_fim";
 
@@ -209,7 +210,8 @@ namespace SME.SGP.Dados.Repositorios
                 turmaCodigo,
                 bimestre,
                 dataMatricula,
-                dataSituacao
+                dataSituacao,
+                tipoCalendario
             });
         }
 

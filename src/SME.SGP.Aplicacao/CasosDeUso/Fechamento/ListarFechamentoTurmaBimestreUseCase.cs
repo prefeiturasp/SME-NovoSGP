@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                 disciplinas.Add(new DisciplinaDto() { Nome = componenteCurricularSelecionado.Nome, CodigoComponenteCurricular = componenteCurricularSelecionado.CodigoComponenteCurricular });
 
             var alunosComAnotacao = Enumerable.Empty<string>();
-            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre);
+            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre, tipoCalendario.Id);
             if (fechamentosTurma != null && fechamentosTurma.Any())
             {
                 fechamentoNotaConceitoTurma.FechamentoId = fechamentosTurma.First().Id;
@@ -367,10 +367,10 @@ namespace SME.SGP.Aplicacao
             return alunosFechamentoNotaConceito;
         }
 
-        private async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre)
+        private async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre, long? tipoCalendario = null)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            return await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { Convert.ToInt64(disciplinaId) }, bimestre));
+            return await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { Convert.ToInt64(disciplinaId) }, bimestre, tipoCalendario));
         }
 
         private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma)
@@ -402,11 +402,12 @@ namespace SME.SGP.Aplicacao
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
             var fechamentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> notasBimestrais = new List<FechamentoNotaAlunoAprovacaoDto>();
 
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentoBimestreTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre));
+                var fechamentoBimestreTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre, tipoCalendario));
 
                 if (fechamentoBimestreTurma.Any())
                     fechamentosTurmaDisciplina.AddRange(fechamentoBimestreTurma);
