@@ -113,11 +113,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(grausParentesco);
         }
         [HttpGet]
-        [Route("local-atividade")]
-        [ProducesResponseType(typeof(IEnumerable<AlunoLocalAtividadeDto>), 200)]
+        [Route("turmas-programa")]
+        [ProducesResponseType(typeof(IEnumerable<AlunoTurmaProgramaDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        public async Task<IActionResult> ObterLocalAtividadeAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteLocalAtividadeUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
+        public async Task<IActionResult> ObterTurmasProgramaAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteTurmasProgramaUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
         {
             return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
         }
