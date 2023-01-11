@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             {
                 if (questaoBase.Tipo == TipoQuestionario.RegistroItinerancia)
                 {
-                    var questao = new ItineranciaQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome, Obrigatorio = questaoBase.Obrigatorio };
+                    var questao = new ItineranciaQuestaoDto() { QuestaoId = questaoBase.Id, Descricao = questaoBase.Nome, Obrigatorio = questaoBase.Obrigatorio, TipoQuestao = questaoBase.TipoQuestao };
                     listaQuestao.Add(questao);
                 }
                 else

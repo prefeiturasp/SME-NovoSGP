@@ -3,35 +3,33 @@ using MediatR;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
     public class InserirOcorrenciaCommand : IRequest<AuditoriaDto>
     {
+        public long UeId { get; set; }
         public DateTime DataOcorrencia { get; set; }
         public string HoraOcorrencia { get; set; }
         public string Titulo { get; set; }
         public string Descricao { get; set; }
         public long OcorrenciaTipoId { get; set; }
-        public long TurmaId { get; set; }
+        public long? TurmaId { get; set; }
         public IEnumerable<long> CodigosAlunos { get; set; }
+        public IEnumerable<string> CodigosServidores { get; set; }
 
-        public InserirOcorrenciaCommand()
+        public InserirOcorrenciaCommand(InserirOcorrenciaDto dto)
         {
-            CodigosAlunos = new List<long>();
-        }
-
-        public InserirOcorrenciaCommand(DateTime dataOcorrencia, string horaOcorrencia, 
-                                        string titulo, string descricao, long ocorrenciaTipoId, long turmaId, 
-                                        IEnumerable<long> codigosAlunos)
-        {
-            DataOcorrencia = dataOcorrencia;
-            HoraOcorrencia = horaOcorrencia;
-            Titulo = titulo;
-            Descricao = descricao;
-            OcorrenciaTipoId = ocorrenciaTipoId;
-            TurmaId = turmaId;
-            CodigosAlunos = codigosAlunos;
+            DataOcorrencia = dto.DataOcorrencia;
+            HoraOcorrencia = dto.HoraOcorrencia;
+            Titulo = dto.Titulo;
+            Descricao = dto.Descricao;
+            OcorrenciaTipoId = dto.OcorrenciaTipoId;
+            TurmaId = dto.TurmaId;
+            CodigosAlunos = dto.CodigosAlunos;
+            UeId = dto.UeId;
+            CodigosServidores = dto.CodigosServidores;
         }
     }
 
@@ -59,18 +57,11 @@ namespace SME.SGP.Aplicacao
             RuleFor(x => x.Titulo)
                 .NotEmpty()
                 .WithMessage("O título da ocorrência deve ser informado.");
-
-            RuleFor(x => x.TurmaId)
+            
+            RuleFor(x => x.UeId)
                 .NotEmpty()
-                .WithMessage("A turma da ocorrência deve ser informada.");
+                .WithMessage("A Ue da ocorrência deve ser informada para inserir a ocorrência");
 
-            RuleFor(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Os alunos envolvidos na ocorrência devem ser informados.");
-
-            RuleForEach(x => x.CodigosAlunos)
-                .NotEmpty()
-                .WithMessage("Um ou mais alunos selecionados são inválidos.");
         }
     }
 }

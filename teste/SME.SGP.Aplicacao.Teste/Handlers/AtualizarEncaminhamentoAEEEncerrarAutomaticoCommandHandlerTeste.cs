@@ -27,18 +27,18 @@ namespace SME.SGP.Aplicacao.Teste.Handlers
             //-> Arrange
             var encaminhamentoAEE = new EncaminhamentoAEE
             { 
-                Id = 1983,
-                TurmaId = 869773,
-                AlunoCodigo = "4824410",
+                Id = 1,
+                TurmaId = 111,
+                AlunoCodigo = "123",
                 Excluido = false,
                 CriadoEm = DateTime.Now,
-                CriadoPor = "PAULO ROBERTO ANTUNES OLIVEIRA MANOEL",
+                CriadoPor = "TESTE",
                 AlteradoEm = DateTime.Now,
-                AlteradoPor = "PAULO ROBERTO ANTUNES OLIVEIRA MANOEL",
-                CriadoRF = "8425825",
-                AlteradoRF = "8425825",
+                AlteradoPor = "TESTE",
+                CriadoRF = "999",
+                AlteradoRF = "999",
                 Situacao = SituacaoAEE.Rascunho,
-                AlunoNome = "NICOLAS DOS SANTOS ALMEIDA SILVA"
+                AlunoNome = "ALUNO TESTE"
             };
 
             _repositorioEncaminhamentoAEE.Setup(c => c.ObterEncaminhamentoPorId(1983))

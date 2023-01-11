@@ -1,10 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Dominio;
 using SME.SGP.Infra;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,25 +19,25 @@ namespace SME.SGP.Aplicacao
     {
         public SalvarDocumentoCommandValidator()
         {
-            RuleFor(c => c.SalvarDocumentoDto.ArquivoCodigo)
-            .NotEmpty()
-            .WithMessage("O código do arquivo deve ser informado.");
+            RuleFor(c => c.SalvarDocumentoDto.ArquivosCodigos)
+                .NotEmpty()
+                .WithMessage("Os códigos dos arquivos devem ser informados.");
 
             RuleFor(c => c.SalvarDocumentoDto.UsuarioId)
-            .NotEmpty()
-            .WithMessage("O id do usuario deve ser informado.");
+                .NotEmpty()
+                .WithMessage("O id do usuario deve ser informado.");
 
             RuleFor(c => c.SalvarDocumentoDto.UeId)
-            .NotEmpty()
-            .WithMessage("O id da UE deve ser informada.");
+                .NotEmpty()
+                .WithMessage("O id da UE deve ser informada.");
 
             RuleFor(c => c.SalvarDocumentoDto.TipoDocumentoId)
-            .NotEmpty()
-            .WithMessage("O id do tipo de documento deve ser informado.");
+                .NotEmpty()
+                .WithMessage("O id do tipo de documento deve ser informado.");
 
             RuleFor(c => c.SalvarDocumentoDto.ClassificacaoId)
-            .NotEmpty()
-            .WithMessage("O id da classificação deve ser informada.");
+                .NotEmpty()
+                .WithMessage("O id da classificação deve ser informada.");
         }
     }
 }

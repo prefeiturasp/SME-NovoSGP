@@ -33,8 +33,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 {
                     Id = 12456,
                     DisciplinaId = "512",
-                    Turma = new Turma() { Id = 512456, AnoLetivo = 2022, Ano = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil },
-                    TurmaId = "512456"
+                    Turma = new Turma() { Id = 111, AnoLetivo = 2022, Ano = "1", ModalidadeCodigo = Modalidade.EducacaoInfantil },
+                    TurmaId = "111"
                 }
             };
 

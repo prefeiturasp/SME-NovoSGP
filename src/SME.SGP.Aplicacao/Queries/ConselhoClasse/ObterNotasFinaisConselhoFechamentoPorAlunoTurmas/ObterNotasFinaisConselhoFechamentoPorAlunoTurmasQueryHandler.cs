@@ -10,16 +10,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler : IRequestHandler<ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery, IEnumerable<NotaConceitoFechamentoConselhoFinalDto>>
     {
-        private readonly IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno;
+        private readonly IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno;
 
-        public ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler(IRepositorioConselhoClasseAlunoConsulta repositorioConselhoClasseAluno)
+        public ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQueryHandler(IRepositorioConselhoClasseAluno repositorioConselhoClasseAluno)
         {
             this.repositorioConselhoClasseAluno = repositorioConselhoClasseAluno ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseAluno));
         }
 
         public async Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> Handle(ObterNotasFinaisConselhoFechamentoPorAlunoTurmasQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioConselhoClasseAluno.ObterNotasFinaisAlunoAsync(request.TurmasCodigos, request.AlunoCodigo, request.ValidaNota, request.ValidaConceito);
+            return await repositorioConselhoClasseAluno.ObterNotasFinaisAlunoAsync(request.TurmasCodigos, request.AlunoCodigo);
         }
     }
 }

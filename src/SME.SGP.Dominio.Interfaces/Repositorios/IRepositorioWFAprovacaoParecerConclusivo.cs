@@ -1,14 +1,17 @@
-﻿using SME.SGP.Infra.Dtos;
+﻿using Elastic.Apm.Api;
+using SME.SGP.Infra.Dtos;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioWFAprovacaoParecerConclusivo
+    public interface IRepositorioWFAprovacaoParecerConclusivo : IRepositorioBase<WFAprovacaoParecerConclusivo>
     {
-        Task Salvar(WFAprovacaoParecerConclusivo entidade);
         Task<WFAprovacaoParecerConclusivo> ObterPorWorkflowId(long workflowId);
-        Task<WFAprovacaoParecerConclusivo> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId);
+        Task<IEnumerable<WFAprovacaoParecerConclusivo>> ObterPorConselhoClasseAlunoId(long conselhoClasseAlunoId);
         Task Excluir(long id);
-        Task<WFAprovacaoParecerConclusivoDto> ObterAprovacaoParecerConclusivoPorWorkflowId(long workflowId);
+        Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterAprovacaoPareceresConclusivosPorWorkflowId(long workflowId);
+
+        Task<IEnumerable<WFAprovacaoParecerConclusivoDto>> ObterPareceresAguardandoAprovacaoSemWorkflow();
     }
 }

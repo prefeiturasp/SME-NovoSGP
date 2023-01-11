@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
@@ -17,7 +18,7 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasDisciplina consultasDisciplina;
         private readonly IServicoEol servicoEOL;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
-
+        
         public ObterNotasParaAvaliacoesUseCase(IMediator mediator, IConsultasDisciplina consultasDisciplina, IServicoEol servicoEOL, IConsultasPeriodoFechamento consultasPeriodoFechamento)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
@@ -85,7 +86,8 @@ namespace SME.SGP.Aplicacao
                 Descricao = $"{filtro.Bimestre}º Bimestre",
                 Numero = filtro.Bimestre,
                 PeriodoInicio = periodoInicio,
-                PeriodoFim = periodoFim
+                PeriodoFim = periodoFim,
+                DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(periodoFim))
             };
 
             var listaAlunosDoBimestre = new List<NotasConceitosAlunoRetornoDto>();
@@ -364,7 +366,8 @@ namespace SME.SGP.Aplicacao
                     Data = avaliacao.DataAvaliacao,
                     Descricao = avaliacao.DescricaoAvaliacao,
                     Nome = avaliacao.NomeAvaliacao,
-                    EhCJ = avaliacao.EhCj
+                    EhCJ = avaliacao.EhCj,
+                    DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(avaliacao.DataAvaliacao))
                 };
 
                 avaliacaoDoBimestre.EhInterdisciplinar = avaliacao.Categoria.Equals(CategoriaAtividadeAvaliativa.Interdisciplinar);

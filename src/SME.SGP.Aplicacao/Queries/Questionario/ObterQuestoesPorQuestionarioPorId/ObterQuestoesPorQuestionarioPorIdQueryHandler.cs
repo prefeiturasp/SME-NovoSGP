@@ -61,6 +61,11 @@ namespace SME.SGP.Aplicacao
                 Observacao = questao.Observacao,
                 Opcionais = questao.Opcionais,
                 SomenteLeitura = questao.SomenteLeitura,
+                Dimensao = questao.Dimensao,
+                Tamanho = questao.Tamanho,
+                PlaceHolder = questao.PlaceHolder,
+                Mascara = questao.Mascara,
+                NomeComponente = questao.NomeComponente,
                 OpcaoResposta = questao.OpcoesRespostas.Select(opcaoResposta =>
                 {
                     return new OpcaoRespostaDto()

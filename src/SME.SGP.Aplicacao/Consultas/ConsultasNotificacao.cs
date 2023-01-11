@@ -75,24 +75,6 @@ namespace SME.SGP.Aplicacao
             });
         }
 
-        public async Task<NotificacaoDetalheDto> Obter(long notificacaoId)
-        {
-            var notificacao = repositorioNotificacao.ObterPorId(notificacaoId);
-
-            if (notificacao == null)
-                throw new NegocioException($"Notificação de Id: '{notificacaoId}' não localizada.");
-
-            if (notificacao.Status != NotificacaoStatus.Lida && notificacao.MarcarComoLidaAoObterDetalhe())
-            {
-                repositorioNotificacao.Salvar(notificacao);
-                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
-            }
-
-            var retorno = await MapearEntidadeParaDetalheDto(notificacao);
-
-            return retorno;
-        }
-
         public IEnumerable<EnumeradoRetornoDto> ObterCategorias()
         {
             return EnumExtensao.ListarDto<NotificacaoCategoria>();

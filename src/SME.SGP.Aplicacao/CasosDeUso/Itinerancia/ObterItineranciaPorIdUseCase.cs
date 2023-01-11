@@ -37,7 +37,7 @@ namespace SME.SGP.Aplicacao
                 DataVisita = itinerancia.DataVisita,
                 DataRetornoVerificacao = itinerancia.DataRetornoVerificacao,
                 ObjetivosVisita = MontarObjetivosItinerancia(itinerancia),
-                Questoes = MontarQuestoesItinerancia(itinerancia, questoesBase),
+                Questoes = await MontarQuestoesItinerancia(itinerancia, questoesBase),
                 TipoCalendarioId = await ObterTipoCalendario(itinerancia.EventoId),
                 DreId = itinerancia.DreId,
                 UeId = itinerancia.UeId,
@@ -119,23 +119,42 @@ namespace SME.SGP.Aplicacao
              });
         }
 
-        private IEnumerable<ItineranciaQuestaoDto> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
-        {
-            return itinerancia.Questoes.Select(questao =>
-            {
-                var descricao = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId)?.Descricao;
-                var obrigatorio = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId)?.Obrigatorio;
+        private async Task<IEnumerable<ItineranciaQuestaoDto>> MontarQuestoesItinerancia(Itinerancia itinerancia, ItineranciaQuestoesBaseDto questoesBase)
+        {            
+            var tiposQuestoes = await mediator.Send(new ObterTipoDaQuestaoItineranciaQuery(itinerancia.Id));
+            var questoesItinerancia = itinerancia.Questoes.Select(questao => {
+                var questaoBase = questoesBase.ItineranciaQuestao.FirstOrDefault(q => q.QuestaoId == questao.QuestaoId);
+                var arquivo = (questaoBase?.TipoQuestao == TipoQuestao.Upload) ? tiposQuestoes.FirstOrDefault(x => x.QuestaoId == questao.Id) : null;
+
                 return new ItineranciaQuestaoDto
                 {
                     Id = questao.Id,
                     QuestaoId = questao.QuestaoId,
-                    Descricao = descricao,
+                    Descricao = questaoBase?.Descricao,
                     ItineranciaId = questao.ItineranciaId,
                     Resposta = questao.Resposta,
-                    Obrigatorio = obrigatorio
+                    Obrigatorio = questaoBase?.Obrigatorio,
+                    TipoQuestao = (questaoBase?.TipoQuestao ?? TipoQuestao.Texto),
+                    ArquivoId = arquivo?.ArquivoId,
+                    ArquivoNome = arquivo?.ArquivoNome
+            };
+            }).ToList();
 
-                };
-            });
+            var questoesUploadNaoRespondidas = questoesBase.ItineranciaQuestao.Where(questaoBase => !itinerancia.Questoes.Any(questao => questao.QuestaoId == questaoBase.QuestaoId));
+            if (questoesUploadNaoRespondidas.Any())
+            {
+                questoesItinerancia.AddRange(questoesUploadNaoRespondidas.Select(questao => new ItineranciaQuestaoDto
+                {
+                    Id = questao.Id,
+                    QuestaoId = questao.QuestaoId,
+                    Descricao = questao.Descricao,
+                    ItineranciaId = itinerancia.Id,
+                    Resposta = questao.Resposta,
+                    Obrigatorio = questao.Obrigatorio,
+                    TipoQuestao = questao.TipoQuestao
+                }));
+            }
+            return questoesItinerancia;
         }
 
         private IEnumerable<ItineranciaObjetivoDto> MontarObjetivosItinerancia(Itinerancia itinerancia)

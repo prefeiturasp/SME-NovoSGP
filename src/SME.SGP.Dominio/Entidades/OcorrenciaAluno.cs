@@ -13,7 +13,7 @@
             SetOcorrencia(ocorrencia);
         }
 
-        protected OcorrenciaAluno()
+        public OcorrenciaAluno()
         {
         }
 
