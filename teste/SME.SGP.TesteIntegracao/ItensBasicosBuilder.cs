@@ -47,6 +47,19 @@ namespace SME.SGP.TesteIntegracao.Setup
                 TipoTurno = 2
             });
 
+            await _teste.InserirNaBase(new Turma
+            {
+                UeId = 1,
+                Ano = "9",
+                CodigoTurma = "9",
+                Historica = false,
+                ModalidadeCodigo = Modalidade.Fundamental,
+                TipoTurma = TipoTurma.Programa,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
+                Nome = "Turma Programa",
+                TipoTurno = 2
+            });
+
             await _teste.InserirNaBase(new PrioridadePerfil
             {
                 Id = 1,
