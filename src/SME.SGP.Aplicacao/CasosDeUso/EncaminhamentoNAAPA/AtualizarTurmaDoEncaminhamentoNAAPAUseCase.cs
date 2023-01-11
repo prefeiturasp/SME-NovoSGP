@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -17,12 +18,14 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(new[] { long.Parse(encaminhamento.AlunoCodigo) } ));
-            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular)
+            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
+                                                      && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
+                                                      && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
                                       .OrderByDescending(turma => turma.AnoLetivo)
                                       .ThenByDescending(turma => turma.DataSituacao)
                                       .FirstOrDefault(); 
 
-            if (alunoTurma != null && alunoTurma.AnoLetivo == DateTime.Now.Year && alunoTurma.DataSituacao.Date <= DateTime.Now.Date)
+            if (alunoTurma != null) 
                await AtualizarTurmaDoEncaminhamento(encaminhamento, alunoTurma);
 
             return true;

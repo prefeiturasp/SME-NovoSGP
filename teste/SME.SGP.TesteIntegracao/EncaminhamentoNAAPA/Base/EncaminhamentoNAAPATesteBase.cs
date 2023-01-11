@@ -119,7 +119,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected async Task CriarTurmaTipoCalendario(FiltroNAAPADto filtro)
         {
             await CriarTipoCalendario(filtro.TipoCalendario, filtro.ConsiderarAnoAnterior);
-            await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior, tipoTurno:2);
+            if (filtro.CriarTurmaPadrao)
+                await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior, tipoTurno:2);
         }
 
         protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
@@ -582,6 +583,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 ConsiderarAnoAnterior = false;
                 CriarPeriodoEscolar = true;
+                CriarTurmaPadrao = true;
             }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
@@ -597,6 +599,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             public int Prioridade { get; set; }
             public DateTime? DataAberturaQueixaInicio { get; set; }
             public DateTime? DataAberturaQueixaFim { get; set; }
+            public bool CriarTurmaPadrao { get; set; }
         }
     }
 }
