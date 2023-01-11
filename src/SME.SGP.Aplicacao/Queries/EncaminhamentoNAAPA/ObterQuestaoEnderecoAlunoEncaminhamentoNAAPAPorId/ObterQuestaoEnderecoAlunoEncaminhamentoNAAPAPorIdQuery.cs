@@ -5,9 +5,9 @@ using SME.SGP.Dto;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterRespostaEnderecoAlunoEncaminhamentoNAAPAPorIdQuery : IRequest<RespostaEncaminhamentoNAAPA>
+    public class ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery : IRequest<QuestaoEncaminhamentoNAAPA>
     {
-        public ObterRespostaEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(long encaminhamentoNAAPAId)
+        public ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(long encaminhamentoNAAPAId)
         {
             EncaminhamentoNAAPAId = encaminhamentoNAAPAId;
         }
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long EncaminhamentoNAAPAId { get; }
     }
 
-    public class ObterEnderecoAlunoEncaminhamentoNAAPAPorIdQueryValidator : AbstractValidator<ObterRespostaEnderecoAlunoEncaminhamentoNAAPAPorIdQuery>
+    public class ObterEnderecoAlunoEncaminhamentoNAAPAPorIdQueryValidator : AbstractValidator<ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery>
     {
         public ObterEnderecoAlunoEncaminhamentoNAAPAPorIdQueryValidator()
         {
