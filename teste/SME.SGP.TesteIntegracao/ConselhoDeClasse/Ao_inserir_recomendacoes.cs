@@ -4,7 +4,6 @@ using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.TesteIntegracao.Setup;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -128,13 +127,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_4,
-                AnoTurma = ANO_7
+                AnoTurma = ANO_7,
+                CriarPeriodoEscolar = false
             };
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(filtroConselhoClasse);
-            
-            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
-            
+
             await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
 
             var comando = ServiceProvider.GetService<IComandosConselhoClasseAluno>();
@@ -162,13 +160,12 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
                 Bimestre = BIMESTRE_4,
-                AnoTurma = ANO_7
+                AnoTurma = ANO_7,
+                ConsiderarAnoAnterior = true
             };
 
             await CriarDadosBaseSemFechamentoTurmaSemAberturaReabertura(filtroConselhoClasse);
-            
-            await CriarPeriodoEscolarCustomizadoQuartoBimestre();
-            
+
             await CriarFechamentoTurmaDisciplinaAlunoNota(filtroConselhoClasse);
 
             await CriarPeriodoAberturaCustomizadoQuartoBimestre(false);

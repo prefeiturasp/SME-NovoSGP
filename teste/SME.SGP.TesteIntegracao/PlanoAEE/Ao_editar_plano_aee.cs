@@ -26,7 +26,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoPlanoAeeQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoPlanoAeeQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmasAlunoPorFiltroQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmasAlunoPorFiltroQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterVersoesPlanoAEEQuery, IEnumerable<PlanoAEEVersaoDto>>), typeof(ObterVersoesPlanoAEEQueryHandlerFake), ServiceLifetime.Scoped));
@@ -200,7 +200,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Id = retornoObter.Id,
                 TurmaCodigo = retornoObter.Turma.Codigo,
                 AlunoCodigo = retornoObter.Aluno.CodigoAluno,
-                ResponsavelRF = USUARIO_LOGIN_CP999999
+                ResponsavelRF = USUARIO_LOGIN_CP
             };
             var salvarEditar = await salvarPlanoAeeUseCase.Executar(planoAeeEditado);
 

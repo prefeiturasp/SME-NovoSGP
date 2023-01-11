@@ -1044,7 +1044,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterEstudanteFotoUseCase, ObterEstudanteFotoUseCase>();
             services.TryAddScoped<ISalvarFotoEstudanteUseCase, SalvarFotoEstudanteUseCase>();
             services.TryAddScoped<IExcluirEstudanteFotoUseCase, ExcluirEstudanteFotoUseCase>();
-            services.TryAddScoped<IObterEstudanteLocalAtividadeUseCase, ObterEstudanteLocalAtividadeUseCase>();
+            services.TryAddScoped<IObterEstudanteTurmasProgramaUseCase, ObterEstudanteTurmasProgramaUseCase>();
 
             services.TryAddScoped<IObterEncaminhamentoAEESituacoesUseCase, ObterEncaminhamentoAEESituacoesUseCase>();
             services.TryAddScoped<IObterPlanoAEESituacoesUseCase, ObterPlanoAEESituacoesUseCase>();

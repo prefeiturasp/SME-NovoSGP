@@ -43,7 +43,8 @@ namespace SME.SGP.Aplicacao
                                                                                                                    request.Usuario.EhProfessorInfantilOuCjInfantil());
 
                 if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => (c.Codigo == request.ComponenteCurricularCodigo && !c.TerritorioSaber
-                                                                                     || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber)))
+                    || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber))
+                    && !componentesCurricularesDoProfessor.Any(r => r.Regencia && r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo))
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
                 if (!request.Usuario.EhGestorEscolar())

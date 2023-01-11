@@ -34,10 +34,10 @@ namespace SME.SGP.Aplicacao
 
             var filtroBoletim = new FiltroRelatorioBoletimDto()
             {
-                DreCodigo = "108800",
-                UeCodigo = "094765",
+                DreCodigo = "111",
+                UeCodigo = "222",
                 Semestre = 0,
-                TurmaCodigo = "2117443",
+                TurmaCodigo = "333",
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.Fundamental,
                 Modelo = ModeloBoletim.Simples,
@@ -52,9 +52,9 @@ namespace SME.SGP.Aplicacao
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma()
                 {
-                    CodigoTurma = "2117443",
-                    Id = 310712,
-                    Nome = "7B",
+                    CodigoTurma = "333",
+                    Id = 123123,
+                    Nome = "X",
                     Ano = "7",
                     AnoLetivo = 2020,
                     ModalidadeCodigo = Modalidade.Fundamental
@@ -62,8 +62,8 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = new Usuario()
             {
-                CodigoRf = "6769195",
-                Nome = "Adalgisa"
+                CodigoRf = "11111",
+                Nome = "Professor"
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
@@ -86,10 +86,10 @@ namespace SME.SGP.Aplicacao
 
             var filtroBoletim = new FiltroRelatorioBoletimDto()
             {
-                DreCodigo = "109000",
-                UeCodigo = "094609",
+                DreCodigo = "111",
+                UeCodigo = "222",
                 Semestre = 0,
-                TurmaCodigo = "2112419",
+                TurmaCodigo = "333",
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.Medio,
                 Modelo = ModeloBoletim.Simples,
@@ -104,9 +104,9 @@ namespace SME.SGP.Aplicacao
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma()
                 {
-                    CodigoTurma = "2112419",
-                    Id = 312783,
-                    Nome = "1A",
+                    CodigoTurma = "333",
+                    Id = 123123,
+                    Nome = "A",
                     Ano = "1",
                     AnoLetivo = 2020,
                     ModalidadeCodigo = Modalidade.Medio
@@ -114,8 +114,8 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = new Usuario()
             {
-                CodigoRf = "7924488",
-                Nome = "Gabriella"
+                CodigoRf = "222222",
+                Nome = "Admin"
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
@@ -138,10 +138,10 @@ namespace SME.SGP.Aplicacao
 
             var filtroBoletim = new FiltroRelatorioBoletimDto()
             {
-                DreCodigo = "108400",
-                UeCodigo = "094340",
+                DreCodigo = "111",
+                UeCodigo = "222",
                 Semestre = 0,
-                TurmaCodigo = "2222401",
+                TurmaCodigo = "333",
                 AnoLetivo = 2020,
                 Modalidade = Modalidade.EJA,
                 Modelo = ModeloBoletim.Simples,
@@ -156,9 +156,9 @@ namespace SME.SGP.Aplicacao
             mediator.Setup(a => a.Send(It.IsAny<ObterTurmaPorCodigoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Turma()
                 {
-                    CodigoTurma = "2222401",
-                    Id = 310712,
-                    Nome = "3B",
+                    CodigoTurma = "333",
+                    Id = 123123,
+                    Nome = "B",
                     Ano = "3",
                     AnoLetivo = 2020,
                     EtapaEJA = 2,
@@ -167,8 +167,8 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = new Usuario()
             {
-                CodigoRf = "7924488",
-                Nome = "Gabriella"
+                CodigoRf = "222222",
+                Nome = "Admin"
             };
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>()))
