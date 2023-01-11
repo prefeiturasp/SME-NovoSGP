@@ -22,14 +22,6 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
     {
         private ItensBasicosBuilder _builder;
         private const string CODIGO_ALUNO = "11223344";
-        private const int ANO_2022 = 2022;
-        private const string CODIGO_TURMA_1 = "1";
-        private const string CODIGO_TURMA_2 = "2";
-        private const string NOME_TURMA_1 = "Turma Nome 1";
-        private const string NOME_TURMA_2 = "Turma Nome 2";
-        private const int ID_UE = 1;
-        private const string TIPO_TURNO_TARDE = "Tarde";
-        private const string TIPO_TURNO_INTERMEDIARIO = "Intermediário";
 
         protected override void RegistrarFakes(IServiceCollection services)
         {
@@ -62,12 +54,6 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
             retorno.FirstOrDefault().Turma.ShouldBe("EF - Turma Programa - Intermediário");
             retorno.FirstOrDefault().DreUe.ShouldBe("DRE AB Nome da UE");
             retorno.FirstOrDefault().ComponenteCurricular.ShouldBe("RECUPERAÇÃO DE APRENDIZAGENS");
-        }
-
-
-        private string ObterNomeTurma(string nome, string turno)
-        {
-            return $"{Modalidade.EJA.ShortName()} - {nome} - {turno}";
         }
     }
 }
