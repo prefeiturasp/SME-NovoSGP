@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,9 +21,8 @@ namespace SME.SGP.Aplicacao
 
             if (notificacao == null)
                 return string.Empty;
-
-            if (notificacao.Status is NotificacaoStatus.Aceita or NotificacaoStatus.Reprovada)
-                return notificacao.Mensagem;
+            
+            var mensagem = notificacao.Mensagem;
 
             var pareceresConclusivos =
                 (await mediator.Send(
@@ -34,23 +32,20 @@ namespace SME.SGP.Aplicacao
             var parecerConclusivo = pareceresConclusivos.FirstOrDefault();
 
             if (parecerConclusivo == null)
-                return notificacao.Mensagem;
+                return mensagem;
 
+            var ehMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
+
+            if (!ehMensagemDinamica) 
+                return mensagem;
+            
             await CarregarInformacoesParaNotificacao(pareceresConclusivos);
-
+                
             var turma = await ObterTurma(parecerConclusivo.TurmaId);
-            return ObterMensagem(turma, pareceresConclusivos);
-        }
 
-        protected override string ObterTextoCabecalho(Turma turma)
-        {
-            return
-                $"O parecer conclusivo dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.";
-        }
+            mensagem = mensagem.Replace(MENSAGEM_DINAMICA_TABELA_POR_ALUNO, ObterTabelaPareceresAlterados(pareceresConclusivos, turma));
 
-        protected override string ObterTextoRodape()
-        {
-            return "Você precisa aceitar esta notificação para que a alteração seja considerada válida.";
+            return mensagem;
         }
     }
 }
