@@ -20,9 +20,12 @@ namespace SME.SGP.Aplicacao
             this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
+        public async Task<AcompanhamentoAlunoSemestreAuditoriaDto> 
+            
+            
+            Executar(AcompanhamentoAlunoDto acompanhamentoAlunoDto)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(acompanhamentoAlunoDto.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(acompanhamentoAlunoDto.TurmaId));
             var parametroQuantidadeImagens = await ObterQuantidadeLimiteImagens(turma.AnoLetivo);
 
             if (acompanhamentoAlunoDto.PercursoIndividual.ExcedeuQuantidadeImagensPermitidas(parametroQuantidadeImagens))

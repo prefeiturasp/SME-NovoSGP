@@ -11,7 +11,8 @@ namespace SME.SGP.Dados.Mapeamentos
             Map(c => c.UsuarioId).ToColumn("usuario_id");
             Map(c => c.UeId).ToColumn("ue_id");
             Map(c => c.AnoLetivo).ToColumn("ano_letivo");
-            Map(c => c.ArquivoId).ToColumn("arquivo_id");
+            Map(c => c.TurmaId).ToColumn("turma_id");
+            Map(c => c.ComponenteCurricularId).ToColumn("componente_curricular_id");
         }
     }
 }

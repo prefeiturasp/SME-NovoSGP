@@ -49,7 +49,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             var parecerDto = ObterPlanoAEECadastroParecerDto();
 
             var servicoAtribuirResponsavelPlano = ObterServicoAtribuirResponsavelPlanoAEEUseCase();
-            var retornoAtribuicao = await servicoAtribuirResponsavelPlano.Executar(retorno.Items.FirstOrDefault().Id, USUARIO_PAAI_LOGIN_4444444);
+            var retornoAtribuicao = await servicoAtribuirResponsavelPlano.Executar(retorno.Items.FirstOrDefault().Id, USUARIO_LOGIN_PAAI);
 
             var servicoCadastrarParecerPAAI = ObterServicoCadastrarParecerPAAIPlanoAEEUseCase();
             await servicoCadastrarParecerPAAI.Executar(retorno.Items.FirstOrDefault().Id, parecerDto);
@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
                 Situacao = SituacaoPlanoAEE.Validado,
                 TurmaCodigo = TURMA_ID_1.ToString(),
                 TurmaId = TURMA_ID_1,
-                ResponsavelRF = USUARIO_PAAI_LOGIN_4444444,
+                ResponsavelRF = USUARIO_LOGIN_PAAI,
                 Questoes = ObterPlanoAeeQuestoes()
             };
         }

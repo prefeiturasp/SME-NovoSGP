@@ -12,5 +12,10 @@
 
         public bool Excluido { get; set; }
         public bool Migrado { get; set; }
+
+        public ConselhoClasseNota Clone()
+        {
+            return (ConselhoClasseNota)this.MemberwiseClone();
+        }
     }
 }

@@ -969,17 +969,17 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             throw new NotImplementedException();
         }
 
-        public async Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
+        public Task<PerfisApiEolDto> ObterPerfisPorLogin(string login)
         {
             var listaUsuarios = new List<PerfisApiEolDto>
             {
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "2222222",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                     Perfis = new List<Guid>
                     {
-                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                        Perfis.PERFIL_PROFESSOR,
+                        Perfis.PERFIL_CJ
                     }
                 },
                 new PerfisApiEolDto
@@ -987,8 +987,8 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoRf = "6737544",
                     Perfis = new List<Guid>
                     {
-                        new Guid("40e1e074-37d6-e911-abd6-f81654fe895d"),
-                        new Guid("41e1e074-37d6-e911-abd6-f81654fe895d"),
+                        Perfis.PERFIL_PROFESSOR,
+                        Perfis.PERFIL_CJ
                     }
                 },
                 new PerfisApiEolDto
@@ -996,43 +996,43 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     CodigoRf = "1111111",
                     Perfis = new List<Guid>
                     {
-                        new Guid("44E1E074-37D6-E911-ABD6-F81654FE895D"),
+                        Perfis.PERFIL_CP,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "CP999999",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_CP,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.CP.Name())
+                        Perfis.PERFIL_CP,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "DIR999998",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_DIRETOR,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.DIRETOR.Name())
+                        Perfis.PERFIL_DIRETOR,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "AD999997",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_AD,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.AD.Name())
+                        Perfis.PERFIL_AD,
                     }
                 },
                 new PerfisApiEolDto
                 {
-                    CodigoRf = "4444444",
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_PAAI,
                     Perfis = new List<Guid>
                     {
-                        new Guid(PerfilUsuario.PAAI.Name())
+                        Perfis.PERFIL_PAAI,
                     }
                 },
             };
-            return listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault();
+            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault());
         }
 
         public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)

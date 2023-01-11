@@ -1,11 +1,14 @@
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
-using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem.ServicosFake;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -16,6 +19,13 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
         public Ao_registrar_percurso_individual(CollectionFixture collectionFixture) : base(collectionFixture)
         {}
 
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>),
+                typeof(ObterAlunoPorCodigoEolQueryHandlerAlunoAtivoFake), ServiceLifetime.Scoped));
+        }
         [Fact(DisplayName = "Relatorio Acompanhamento Aprendizagem - Deve registrar o percurso individual no 1º semestre")]
         public async Task Deve_registrar_percurso_individual_para_primeiro_semestre()
         {
@@ -41,14 +51,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            acompanhamentoAluno.FirstOrDefault()?.TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault()?.AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
-            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault()!.Id);
         }
 
         
@@ -77,14 +87,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            acompanhamentoAluno.FirstOrDefault()?.TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault()?.AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
-            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.Semestre.ShouldBe(SEGUNDO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
         }
         
         
@@ -116,14 +126,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            acompanhamentoAluno.FirstOrDefault()?.TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault()?.AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
-            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.Semestre.ShouldBe(SEGUNDO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault()!.Id);
         }
         
         
@@ -201,14 +211,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            acompanhamentoAluno.FirstOrDefault()?.TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault()?.AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(SEGUNDO_SEMESTRE);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
-            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.Semestre.ShouldBe(SEGUNDO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.PercursoIndividual.ShouldBe(TEXTO_PADRAO_PERCURSO_INDIVIDUAL);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault()!.Id);
         }
         
         
@@ -281,14 +291,14 @@ namespace SME.SGP.TesteIntegracao.RelatorioAcompanhamentoAprendizagem
             
             var acompanhamentoAluno = ObterTodos<AcompanhamentoAluno>();
             acompanhamentoAluno.ShouldNotBeNull();
-            acompanhamentoAluno.FirstOrDefault().TurmaId.ShouldBe(TURMA_ID_1);
-            acompanhamentoAluno.FirstOrDefault().AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
+            acompanhamentoAluno.FirstOrDefault()?.TurmaId.ShouldBe(TURMA_ID_1);
+            acompanhamentoAluno.FirstOrDefault()?.AlunoCodigo.ShouldBe(ALUNO_CODIGO_1);
             
             var acompanhamentoAlunoSemestres = ObterTodos<AcompanhamentoAlunoSemestre>();
             acompanhamentoAlunoSemestres.ShouldNotBeNull();
-            acompanhamentoAlunoSemestres.FirstOrDefault().Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
-            acompanhamentoAlunoSemestres.FirstOrDefault().PercursoIndividual.ShouldBe(TEXTO_PADRAO_COM_2_IMAGENS);
-            acompanhamentoAlunoSemestres.FirstOrDefault().AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault().Id);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.Semestre.ShouldBe(PRIMEIRO_SEMESTRE);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.PercursoIndividual.ShouldBe(TEXTO_PADRAO_COM_2_IMAGENS);
+            acompanhamentoAlunoSemestres.FirstOrDefault()?.AcompanhamentoAlunoId.ShouldBe(acompanhamentoAluno.FirstOrDefault()!.Id);
         }
     }
 }

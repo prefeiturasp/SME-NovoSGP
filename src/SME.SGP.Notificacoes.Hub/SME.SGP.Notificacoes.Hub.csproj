@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SME.SGP.Dados.Cache\SME.SGP.Dados.Cache.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.HealthCheck\SME.SGP.Infra.HealthCheck.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra.Polly\SME.SGP.Infra.Polly.csproj" />
     <ProjectReference Include="..\SME.SGP.Notificacoes.Hub.Interface\SME.SGP.Notificacoes.Hub.Interface.csproj" />
   </ItemGroup>

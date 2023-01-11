@@ -28,7 +28,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(ExcluirWorkflowCommand request, CancellationToken cancellationToken)
         {
-            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
+            var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(request.WorkflowId);
 
             if (workflow == null)
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");

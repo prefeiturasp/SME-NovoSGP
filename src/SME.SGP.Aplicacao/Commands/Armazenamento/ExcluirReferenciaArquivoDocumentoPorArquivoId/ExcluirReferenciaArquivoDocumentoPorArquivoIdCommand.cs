@@ -1,8 +1,5 @@
 ﻿using FluentValidation;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,13 +20,12 @@ namespace SME.SGP.Aplicacao
         public ExcluirReferenciaArquivoDocumentoPorCodigoArquivoCommandValidator()
         {
             RuleFor(c => c.ArquivoId)
-            .NotEmpty()
-            .WithMessage("O id do documento  deve ser informado para exclusão.");
+                .NotEmpty()
+                .WithMessage("O id do documento deve ser informado para exclusão.");
 
             RuleFor(c => c.ArquivoId)
-            .NotEmpty()
-            .WithMessage("O id do arquivo  deve ser informado para exclusão.");
-
+                .NotEmpty()
+                .WithMessage("O id do arquivo deve ser informado para exclusão.");
         }
     }
 }

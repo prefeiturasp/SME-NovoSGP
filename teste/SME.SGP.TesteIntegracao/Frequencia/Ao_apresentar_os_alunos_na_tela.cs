@@ -22,9 +22,6 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         {
         }
 
-        protected readonly DateTime DATA_02_09 = new(DateTimeExtension.HorarioBrasilia().Year, 09, 02);
-        private const string SITUACAO_15 = "15";
-
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
@@ -70,7 +67,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
             
             (retornoAluno.FirstOrDefault(f=> f.CodigoAluno.Equals(ALUNO_CODIGO_13)) == null).ShouldBeTrue();
         }
-        
+
         private async Task InserirPeriodoEscolarCustomizado()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
@@ -90,7 +87,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
                 ModalidadeTipoCalendario.FundamentalMedio, DateTimeExtension.HorarioBrasilia().Date,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), NUMERO_AULAS_1);
 
-            await InserirParametroSistema();
+            await InserirParametroSistema(true);
 
             await InserirPeriodoEscolarCustomizado();
 

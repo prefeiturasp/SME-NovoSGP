@@ -73,8 +73,15 @@ namespace SME.SGP.Dominio
 
         [Display(Name ="registro/poa")]
         RegistroPOA = 23,
+        
+        [Display(Name = "itinerancia")]
+        Itinerancia = 24,
+
+        [Display(Name = "encaminhamento/naapa")]
+        EncaminhamentoNAAPA = 25,
 
         [Display(Name = "temp")]
         temp = 99
+
     }
 }

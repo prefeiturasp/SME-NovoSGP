@@ -1,46 +1,64 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using MediatR;
 using SME.SGP.Dominio;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
     public class ExcluirDocumentoUseCase : AbstractUseCase, IExcluirDocumentoUseCase
     {
-        public ExcluirDocumentoUseCase(IMediator mediator) : base(mediator)
+        private readonly IUnitOfWork unitOfWork;
+        
+        public ExcluirDocumentoUseCase(IMediator mediator,IUnitOfWork unitOfWork) : base(mediator)
         {
+            this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
         public async Task<bool> Executar(long documentoId)
         {
-            var entidadeDocumento = await mediator.Send(new ObterDocumentoPorIdQuery(documentoId));
-
-            if (entidadeDocumento == null)
-                throw new NegocioException("O documento informado não foi encontrado");
-
-            if(entidadeDocumento.ArquivoId != null)
+            unitOfWork.IniciarTransacao();
+            try
             {
-                var entidadeArquivo = await mediator.Send(new ObterArquivoPorIdQuery(entidadeDocumento.ArquivoId.GetValueOrDefault()));
+                var entidadeDocumento = await mediator.Send(new ObterDocumentoPorIdQuery(documentoId));
 
-                if (entidadeArquivo == null)
-                    throw new NegocioException("O arquivo relacionado não foi encontrado");
+                if (entidadeDocumento == null)
+                    throw new NegocioException(MensagemNegocioDocumento.DOCUMENTO_INFORMADO_NAO_EXISTE);
 
-                await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(documentoId, entidadeArquivo.Id));
-                await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
-                
-                
-                var extencao = Path.GetExtension(entidadeArquivo.Nome);
+                var documentosArquivos = await mediator.Send(new ObterDocumentosArquivosPorDocumentoIdQuery(documentoId));
 
-                var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = entidadeArquivo.Codigo.ToString() + extencao};
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
+                if (documentosArquivos != null)
+                {
+                    var arquivosAntigos =
+                        await mediator.Send(
+                            new ObterArquivosPorIdsQuery(documentosArquivos.Select(c => c.ArquivoId).ToArray()));
+
+                    foreach (var arquivoAntigo in arquivosAntigos)
+                    {
+                        await mediator.Send(new ExcluirReferenciaArquivoDocumentoPorArquivoIdCommand(documentoId, arquivoAntigo.Id));
+                        await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(arquivoAntigo.Id));
+                            
+                        var extencao = Path.GetExtension(arquivoAntigo.Nome);
+                            
+                        var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = $"{arquivoAntigo.Codigo}{extencao}"};
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid()));
+                    }
+                }
+
+                await mediator.Send(new ExcluirDocumentoPorIdCommand(documentoId));
+
+                unitOfWork.PersistirTransacao();
                 
+                return true;
             }
-
-            await mediator.Send(new ExcluirDocumentoPorIdCommand(documentoId));
-
-            return true;
+            catch
+            {
+                unitOfWork.Rollback();
+                throw;
+            }
         }
     }
 }

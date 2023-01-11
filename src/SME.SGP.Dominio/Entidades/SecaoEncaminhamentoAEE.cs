@@ -13,7 +13,7 @@ namespace SME.SGP.Dominio
         public int Ordem { get; set; }
         public int Etapa { get; set; }
         public bool Excluido { get; set; }
-
+        public string? NomeComponente { get; set; }
         public EncaminhamentoAEESecao EncaminhamentoAEESecao { get; set; }
     }
 }

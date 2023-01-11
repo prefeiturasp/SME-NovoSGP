@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace SME.SGP.Infra
 {
@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public bool EhInterdisciplinar { get; set; }
         public bool EhCJ { get; set; }
         public string[] Disciplinas { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }
