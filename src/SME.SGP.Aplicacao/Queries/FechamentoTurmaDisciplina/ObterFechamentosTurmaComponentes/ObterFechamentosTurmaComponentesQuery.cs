@@ -6,16 +6,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentosTurmaComponentesQuery : IRequest<IEnumerable<Dominio.FechamentoTurmaDisciplina>>
     {
-        public ObterFechamentosTurmaComponentesQuery(long turmaId, long[] componentesCurricularesId, int bimestre)
+        public ObterFechamentosTurmaComponentesQuery(long turmaId, long[] componentesCurricularesId, int bimestre, long? tipoCalendario = null)
         {
             TurmaId = turmaId;
             ComponentesCurricularesId = componentesCurricularesId;
             Bimestre = bimestre;
+            TipoCalendario = tipoCalendario;
         }
 
         public long TurmaId { get; set; }
         public long[] ComponentesCurricularesId { get; set; }
         public int Bimestre { get; set; }
+        public long? TipoCalendario { get; set; }
     }
 
     public class ObterFechamentosTurmaComponentesQueryValidator : AbstractValidator<ObterFechamentosTurmaComponentesQuery>

@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurmaDisciplina = repositorio;
         }
         public async  Task<IEnumerable<FechamentoTurmaDisciplina>> Handle(ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery request, CancellationToken cancellationToken)
-            => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(request.TurmaId, request.DisciplinasId, request.Bimestre);
+            => await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(request.TurmaId, request.DisciplinasId, request.Bimestre, request.TipoCalendario);
     }
 }
