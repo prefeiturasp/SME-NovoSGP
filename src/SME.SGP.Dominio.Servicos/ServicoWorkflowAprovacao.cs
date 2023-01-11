@@ -88,7 +88,7 @@ namespace SME.SGP.Dominio.Servicos
             else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
 
             foreach (var notificacao in nivel.Notificacoes)
-                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao));
+                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao, notificacao.Usuario.CodigoRf));
         }
 
         public async Task ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
@@ -254,8 +254,8 @@ namespace SME.SGP.Dominio.Servicos
 
                     fechamentoNota.ConceitoId = notaEmAprovacao.WfAprovacao.ConceitoId;
                 }
-                    repositorioFechamentoNota.Salvar(fechamentoNota);
-               
+                repositorioFechamentoNota.Salvar(fechamentoNota);
+
             }
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
@@ -519,9 +519,9 @@ namespace SME.SGP.Dominio.Servicos
             int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
 
-            var usuariosRfs = notasEmAprovacao.Select(n=> n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
+            var usuariosRfs = notasEmAprovacao.Select(n => n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
 
-            foreach(var usuarioRf in usuariosRfs.Distinct())
+            foreach (var usuarioRf in usuariosRfs.Distinct())
             {
                 var dadosUsuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
 
@@ -542,7 +542,7 @@ namespace SME.SGP.Dominio.Servicos
                         usuarioId: dadosUsuario.Id));
                 }
             }
-            
+
         }
 
         private async Task ExcluirWfNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao)
@@ -588,7 +588,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 mensagem.AppendLine("<tr>");
-                
+
 
                 if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue)
                 {
@@ -646,10 +646,10 @@ namespace SME.SGP.Dominio.Servicos
 
             var mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
                             Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
-                            Descrição: { fechamentoReabertura.Descricao} <br/>
-                            Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                            Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                            Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}";
+                            Descrição: {fechamentoReabertura.Descricao} <br/>
+                            Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                            Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
+                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
 
             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
                 isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
@@ -674,10 +674,10 @@ namespace SME.SGP.Dominio.Servicos
             bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
 
             var mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
-                            Descrição: { fechamentoReabertura.Descricao} <br/>
-                            Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                            Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                            Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}";
+                            Descrição: {fechamentoReabertura.Descricao} <br/>
+                            Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                            Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
+                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
 
             var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
                 isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
@@ -713,7 +713,7 @@ namespace SME.SGP.Dominio.Servicos
                 aula.TurmaId,
                 aula.CriadoEm.Year,
                 codigoDaNotificacao,
-                usuarioId: usuario.Id ));
+                usuarioId: usuario.Id));
         }
 
         private async Task NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
@@ -733,9 +733,9 @@ namespace SME.SGP.Dominio.Servicos
                 turma.Ue?.Dre?.CodigoDre,
                 aula.UeId,
                 aula.TurmaId,
-                aula.CriadoEm.Year, 
+                aula.CriadoEm.Year,
                 codigoDaNotificacao,
-                usuarioId : usuario.Id));
+                usuarioId: usuario.Id));
         }
 
         private async Task NotificarCriadorEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
@@ -779,7 +779,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.UeId,
                 ano: evento.CriadoEm.Year,
                 codigo: codigoDaNotificacao,
-                usuarioId: usuario.Id ));
+                usuarioId: usuario.Id));
         }
 
         private async Task NotificarCriadorEventoLiberacaoExcepcionalAprovado(Evento evento, long codigoDaNotificacao)
@@ -802,7 +802,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.UeId,
                 ano: evento.CriadoEm.Year,
                 codigo: codigoDaNotificacao,
-                usuarioId: usuario.Id ));
+                usuarioId: usuario.Id));
         }
 
         private async Task NotificarDiretorUeEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
@@ -830,7 +830,7 @@ namespace SME.SGP.Dominio.Servicos
                     evento.UeId,
                     ano: evento.CriadoEm.Year,
                     codigo: codigoDaNotificacao,
-                    usuarioId: usuario.Id ));
+                    usuarioId: usuario.Id));
             }
         }
 
@@ -846,7 +846,7 @@ namespace SME.SGP.Dominio.Servicos
                 evento.UeId,
                 ano: evento.CriadoEm.Year,
                 codigo: codigoDaNotificacao,
-                usuarioId: usuario.Id ));
+                usuarioId: usuario.Id));
         }
 
         private async Task ReprovarNivel(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou, WorkflowAprovacaoNivel nivel)
