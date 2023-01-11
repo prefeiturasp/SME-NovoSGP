@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and not apb.excluido
                          where not a.excluido
                            and now() between pe.periodo_inicio and pe.periodo_fim
-                           and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias
+                           and DATE_PART('day', age(pe.periodo_fim, date(now()))) = @limiteDias
                            and t.modalidade_codigo <> 1
                            and a.tipo_aula = 1
 
