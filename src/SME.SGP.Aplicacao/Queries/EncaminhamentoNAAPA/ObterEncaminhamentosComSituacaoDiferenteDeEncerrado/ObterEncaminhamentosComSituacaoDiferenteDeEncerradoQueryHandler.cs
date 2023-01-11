@@ -17,9 +17,9 @@ namespace SME.SGP.Aplicacao
             this.repositorioEncaminhamentoNaapa = repositorioEncaminhamentoNaapa ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNaapa));
         }
 
-        public async Task<IEnumerable<EncaminhamentoNAAPADto>> Handle(ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery request, CancellationToken cancellationToken)
+        public Task<IEnumerable<EncaminhamentoNAAPADto>> Handle(ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery request, CancellationToken cancellationToken)
         {
-            return await this.repositorioEncaminhamentoNaapa.ObterEncaminhamentosComSituacaoDiferenteDeEncerrado();
+            return this.repositorioEncaminhamentoNaapa.ObterEncaminhamentosComSituacaoDiferenteDeEncerrado();
         }
     }
 }
