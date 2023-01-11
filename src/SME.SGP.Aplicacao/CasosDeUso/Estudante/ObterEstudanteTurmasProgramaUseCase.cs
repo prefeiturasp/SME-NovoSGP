@@ -11,23 +11,23 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterEstudanteLocalAtividadeUseCase : AbstractUseCase, IObterEstudanteLocalAtividadeUseCase
+    public class ObterEstudanteTurmasProgramaUseCase : AbstractUseCase, IObterEstudanteTurmasProgramaUseCase
     {
-        public ObterEstudanteLocalAtividadeUseCase(IMediator mediator) : base(mediator)
+        public ObterEstudanteTurmasProgramaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
-        public async Task<IEnumerable<AlunoLocalAtividadeDto>> Executar(string codigoAluno, int? anoLetivo,bool filtrarSituacaoMatricula)
+        public async Task<IEnumerable<AlunoTurmaProgramaDto>> Executar(string codigoAluno, int? anoLetivo,bool filtrarSituacaoMatricula)
         {
-            var estudantes = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, filtrarSituacaoMatricula, false));
-
-            var alunosLocaisAtividades = new List<AlunoLocalAtividadeDto>();
-
+            var turmasProgramaAlunos = new List<AlunoTurmaProgramaDto>();
             Ue ue = null;
             Turma turma = null;
             IEnumerable<DisciplinaResposta> componentesCurriculares = null;
-            
-            foreach (var estudante in estudantes.Where(w=> w.CodigoTipoTurma == (int)TipoTurma.Programa))
+
+            var estudantes = await mediator.Send(new ObterTurmasAlunoPorFiltroQuery(codigoAluno, anoLetivo, filtrarSituacaoMatricula, false));
+            estudantes = estudantes.Where(w => w.CodigoTipoTurma == (int)TipoTurma.Programa);
+                        
+            foreach (var estudante in estudantes)
             {
                 if (turma == null || !estudante.CodigoTurma.ToString().Equals(turma.CodigoTurma))
                 {
@@ -42,14 +42,15 @@ namespace SME.SGP.Aplicacao
 
                 var local = ue.TipoEscola != TipoEscola.Nenhum ? $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}" : $"{ue.Nome}";
 
-                alunosLocaisAtividades.AddRange(componentesCurriculares.Select(componenteCurricular=> new AlunoLocalAtividadeDto()
+                turmasProgramaAlunos.AddRange(componentesCurriculares.Select(componenteCurricular=> new AlunoTurmaProgramaDto()
                 {
-                    Local = $"{ue.Dre.Abreviacao} {local}",
-                    Atividade = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} - {componenteCurricular.Nome}"
+                    DreUe = $"{ue.Dre.Abreviacao} {local}",
+                    Turma = $"{turma.ModalidadeCodigo.ShortName()} - {turma.Nome} - { ((TipoTurnoEOL)turma.TipoTurno).Name()}",
+                    ComponenteCurricular = componenteCurricular.Nome
                 }));
             }
 
-            return alunosLocaisAtividades;
+            return turmasProgramaAlunos.DistinctBy(turmaPrograma => new { turmaPrograma.DreUe, turmaPrograma.Turma, turmaPrograma.ComponenteCurricular });
         }
     }
 }
