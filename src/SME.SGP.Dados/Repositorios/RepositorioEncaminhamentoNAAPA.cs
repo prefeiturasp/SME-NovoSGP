@@ -345,6 +345,5 @@ namespace SME.SGP.Dados.Repositorios
 
             return new SituacaoDto();
         }
-        
     }
 }
