@@ -44,7 +44,6 @@ namespace SME.SGP.TesteIntegracao
         
         protected const long TURMA_ID_1 = 1;
         protected const long TURMA_ID_2 = 2;
-        protected const long TURMA_ID_3 = 3;
         protected const long TURMA_ID_4 = 4;
 
         protected const long DRE_ID_1 = 1;
