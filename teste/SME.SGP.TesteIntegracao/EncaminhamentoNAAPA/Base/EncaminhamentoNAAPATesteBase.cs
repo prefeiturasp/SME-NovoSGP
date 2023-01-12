@@ -173,6 +173,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
         }
+
         protected IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarEnderecoDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();

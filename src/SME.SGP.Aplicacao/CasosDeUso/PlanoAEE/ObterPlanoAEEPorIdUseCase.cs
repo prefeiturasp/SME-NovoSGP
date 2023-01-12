@@ -6,14 +6,15 @@ using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAEEPorIdUseCase : AbstractUseCase, IObterPlanoAEEPorIdUseCase
     {
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
-
         public ObterPlanoAEEPorIdUseCase(IMediator mediator,
                                          IConsultasPeriodoEscolar consultasPeriodoEscolar) : base(mediator)
         {
@@ -23,6 +24,8 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
             var plano = new PlanoAEEDto();
+            bool novaVersao = false;
+            var alunoCodigo = 0;
 
             PlanoAEEVersaoDto ultimaVersao = null;
             Turma turma;
@@ -32,6 +35,11 @@ namespace SME.SGP.Aplicacao
                 var entidadePlano = await mediator
                     .Send(new ObterPlanoAEEComTurmaPorIdQuery(filtro.PlanoAEEId.Value));
 
+                
+                if(entidadePlano == null)
+                    throw new NegocioException("Plano AEE não encontrado");
+                
+                alunoCodigo = int.Parse(entidadePlano.AlunoCodigo);
                 var alunoTurma = await mediator
                     .Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(entidadePlano.AlunoCodigo,
                         DateTimeExtension.HorarioBrasilia().Year, true)); 
@@ -133,7 +141,8 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                plano.Responsavel = await ObtenhaResponsavel();
+                novaVersao = true;
+                plano.Responsavel = await ObterResponsavel();
                 turma = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo));
             }
 
@@ -167,10 +176,30 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
 
+            await BuscarDadosSrmPaee((filtro.CodigoAluno > 0 ?  filtro.CodigoAluno :alunoCodigo),plano,novaVersao);
+
             return plano;
         }
 
-        private void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
+        private async Task BuscarDadosSrmPaee(long codigoAluno,PlanoAEEDto plano,bool novaVersao)
+        {
+            if (novaVersao)
+            {
+                var resposta = new List<RespostaQuestaoDto>();
+                var dadoSrm = (await mediator.Send(new ObterDadosSrmPaeeColaborativoEolQuery(codigoAluno))).ToList();
+
+                if (dadoSrm.Count > 0)
+                {
+                    var json = JsonConvert.SerializeObject(dadoSrm); 
+                    resposta.Add(new RespostaQuestaoDto() {Texto = json});
+                    
+                    plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.InformacoesSrm)!.Resposta = resposta;
+                }
+            }
+            
+        }
+        
+        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
         {
             if (periodoAtual == null)
                 return;
@@ -269,7 +298,7 @@ namespace SME.SGP.Aplicacao
             return responsavel;
         }
 
-        private async Task<ResponsavelDto> ObtenhaResponsavel()
+        private async Task<ResponsavelDto> ObterResponsavel()
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
 
