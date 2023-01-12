@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var encaminhamento = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
-            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(new[] { long.Parse(encaminhamento.AlunoCodigo) } ));
+            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamento.AlunoCodigo), true));
             var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular 
                                                       && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
                                                       && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
