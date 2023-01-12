@@ -32,6 +32,8 @@ namespace SME.SGP.Aplicacao.Queries.Aluno.ObterAlunosEolPorCodigos
                 var json = await resposta.Content.ReadAsStringAsync();
                 alunos = JsonConvert.DeserializeObject<List<TurmasDoAlunoDto>>(json);
             }
+            if (request.TodasMatriculas)
+              return alunos;
             return alunos.GroupBy(x => x.CodigoAluno).SelectMany(y => y.OrderByDescending(a => a.DataSituacao).Take(1));
         }
     }
