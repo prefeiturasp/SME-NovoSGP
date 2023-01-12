@@ -43,19 +43,20 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<int>> VerificaAnosAnterioresComConsolidacao(List<int> anosAtivos)
         {
-            var listaAnos = anosAtivos.GetRange(0, anosAtivos.Count);
+            var anosAtivosRemover = new List<int>();
 
-            foreach (var ano in anosAtivos)
+            foreach (var ano in anosAtivos.Where(ano => ano < DateTimeExtension.HorarioBrasilia().Year))
             {
-                if (ano < DateTime.Now.Year)
-                {
-                    bool existeConsolidacao = await mediator.Send(new ExisteConsolidacaoRegistroPedagogicoPorAnoQuery(ano));
-                    if (existeConsolidacao)
-                        listaAnos.Remove(ano);
-                }
+                var existeConsolidacao = await mediator.Send(new ExisteConsolidacaoRegistroPedagogicoPorAnoQuery(ano));
+                    
+                if (existeConsolidacao)
+                    anosAtivosRemover.Add(ano);
             }
 
-            return listaAnos;
+            foreach (var anoRemover in anosAtivosRemover)
+                anosAtivos.Remove(anoRemover);
+
+            return anosAtivos;
         }
 
         private async Task ConsolidarRegistrosPedagogicos(List<int> anosParaConsolidar)
