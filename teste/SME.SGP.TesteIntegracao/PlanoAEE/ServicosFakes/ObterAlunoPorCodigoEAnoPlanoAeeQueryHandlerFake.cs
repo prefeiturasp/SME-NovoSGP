@@ -8,9 +8,9 @@ using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.TesteIntegracao.PlanoAEE.ServicosFakes
 {
-    public class ObterAlunoPorCodigoEAnoQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>
+    public class ObterAlunoPorCodigoEAnoPlanoAeeQueryHandlerFake : IRequestHandler<ObterAlunoPorCodigoEAnoPlanoAeeQuery, AlunoReduzidoDto>
     {
-        public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoQuery request, CancellationToken cancellationToken)
+        public async Task<AlunoReduzidoDto> Handle(ObterAlunoPorCodigoEAnoPlanoAeeQuery request, CancellationToken cancellationToken)
         {
             return new AlunoReduzidoDto()
             {

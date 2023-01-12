@@ -14,6 +14,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
     public class RegistrarEncaminhamentoItinerarioNAAPAUseCase : IRegistrarEncaminhamentoItinerarioNAAPAUseCase
     {
         private readonly IMediator mediator;
+        private const string SECAO_ITINERANCIA = "QUESTOES_ITINERACIA";
 
         public RegistrarEncaminhamentoItinerarioNAAPAUseCase(IMediator mediator)
         {
@@ -101,7 +102,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
         private async Task Validar(Dominio.EncaminhamentoNAAPA encaminhamentoNAAPA, EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
         {
             ValidarEncaminhamento(encaminhamentoNAAPA);
-
             await ValidarCamposObrigatorios(encaminhamentoNAAPASecaoDto);
         }
 
@@ -114,9 +114,16 @@ namespace SME.SGP.Aplicacao.CasosDeUso.EncaminhamentoNAAPA
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SITUACAO_ENCAMINHAMENTO_DEVE_SER_DIFERENTE_RASCUNHO);
         }
 
+        private void ValidarSecaoItinerancia(SecaoQuestionarioDto secaoQuestionarioDto)
+        {
+            if (secaoQuestionarioDto.NomeComponente != SECAO_ITINERANCIA)
+                throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.SECAO_NAO_VALIDA_ITINERANCIA);
+        }
+
         private async Task ValidarCamposObrigatorios(EncaminhamentoNAAPASecaoDto encaminhamentoNAAPASecaoDto)
         {
             var secao = await mediator.Send(new ObterSecaoQuestionarioEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPASecaoDto.SecaoId));
+            ValidarSecaoItinerancia(secao);
             var respostasEncaminhamento = encaminhamentoNAAPASecaoDto.Questoes
                                              .Select(questao => new RespostaQuestaoObrigatoriaDto()
                                              {

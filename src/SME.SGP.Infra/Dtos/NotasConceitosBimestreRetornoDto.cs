@@ -24,5 +24,6 @@ namespace SME.SGP.Infra
         public SituacaoFechamento Situacao { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }

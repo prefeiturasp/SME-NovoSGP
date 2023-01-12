@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
             if (EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Frase, TipoQuestao.Texto, TipoQuestao.EditorTexto, 
                                                                                TipoQuestao.Data, TipoQuestao.Numerico, TipoQuestao.Endereco,
-                                                                               TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno }))
+                                                                               TipoQuestao.ContatoResponsaveis, TipoQuestao.AtividadesContraturno, TipoQuestao.TurmasPrograma }))
                 resposta.Texto = request.Resposta;
 
             if (!String.IsNullOrEmpty(request.Resposta) && EnumExtension.EhUmDosValores(request.TipoQuestao, new Enum[] { TipoQuestao.Upload }))

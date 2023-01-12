@@ -34,18 +34,18 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             _mediator.Setup(c => c.Send(It.IsAny<AtualizarEncaminhamentoAEEEncerrarAutomaticoCommand>(), new CancellationToken()))
                 .ReturnsAsync(new EncaminhamentoAEE
                 {
-                    Id = 1983,
-                    TurmaId = 869773,
-                    AlunoCodigo = "4824410",
+                    Id = 1,
+                    TurmaId = 111,
+                    AlunoCodigo = "123",
                     Excluido = false,
                     CriadoEm = DateTime.Now,
-                    CriadoPor = "PAULO ROBERTO ANTUNES OLIVEIRA MANOEL",
+                    CriadoPor = "Teste",
                     AlteradoEm = DateTime.Now,
-                    AlteradoPor = "PAULO ROBERTO ANTUNES OLIVEIRA MANOEL",
-                    CriadoRF = "8425825",
-                    AlteradoRF = "8425825",
+                    AlteradoPor = "Teste",
+                    CriadoRF = "999",
+                    AlteradoRF = "999",
                     Situacao = SituacaoAEE.EncerradoAutomaticamente,
-                    AlunoNome = "NICOLAS DOS SANTOS ALMEIDA SILVA"
+                    AlunoNome = "ALUNO 1"
                 });
 
             _mediator.Setup(c => c.Send(It.IsAny<ObterPendenciasDoEncaminhamentoAEEPorIdQuery>(), new CancellationToken()))
@@ -54,11 +54,11 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                     new PendenciaEncaminhamentoAEE
                     {
                         Id = 1,
-                        EncaminhamentoAEEId = 1983,
+                        EncaminhamentoAEEId = 1,
                         PendenciaId = 1,
                         CriadoEm = DateTime.UtcNow.AddHours(-1),
-                        CriadoPor = "ELIANE DA SILVA ROSA",
-                        CriadoRF = "7956029"
+                        CriadoPor = "Teste",
+                        CriadoRF = "999"
                     }
                 });
 
@@ -79,8 +79,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             return new MensagemRabbit(json)
             {
                 Action = "sgp/encaminhamento/aee/encerrar/automatico/encerrar",
-                UsuarioLogadoNomeCompleto = "MILENA PEDROSO RUELLA MARTINS",
-                UsuarioLogadoRF = "7707533"
+                UsuarioLogadoNomeCompleto = "Teste",
+                UsuarioLogadoRF = "999"
             };
         }
     }

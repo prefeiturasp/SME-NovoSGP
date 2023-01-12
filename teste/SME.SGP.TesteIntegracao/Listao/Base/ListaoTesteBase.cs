@@ -124,20 +124,24 @@ namespace SME.SGP.TesteIntegracao.Listao
 
         private async Task CriarAulas(long componenteCurricularId, int bimestre, bool turmaHistorica)
         {
-            var datasAulasIncluidas = Array.Empty<DateTime?>();
-            
+            var datasAulasIncluidas = new List<DateTime>();
+            var hoje = DateTimeExtension.HorarioBrasilia().Date;
+
             var (dataInicio, dataFim) = await DefinirDataInicioFimBimestre(bimestre, turmaHistorica);
             var range = dataFim.Subtract(dataInicio).Days;
-            
-            for (var i = 0; i < QTDE_AULAS_A_SEREM_LANCADAS; i++)
+            if (hoje > dataInicio && hoje <= dataFim) 
+                range = hoje.Subtract(dataInicio).Days;
+
+            for (var i = 0; i < Math.Min(QTDE_AULAS_A_SEREM_LANCADAS, range); i++)
             {
                 var dataAula = dataInicio.AddDays(new Random().Next(0, range));
-                
-                while (datasAulasIncluidas.Contains(dataAula) || dataAula > DateTimeExtension.HorarioBrasilia())
+                while (datasAulasIncluidas.Contains(dataAula) || (dataAula > hoje && hoje >= dataInicio))
                     dataAula = dataInicio.AddDays(new Random().Next(0, range));
                 
                 await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_LOGIN_2222222,
-                    TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);                
+                    TURMA_CODIGO_1, UE_CODIGO_1, componenteCurricularId.ToString(), TIPO_CALENDARIO_1);
+
+                datasAulasIncluidas.Add(dataAula);
             }
         }
         

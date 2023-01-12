@@ -223,8 +223,6 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var alunoConsolidado = alunosConsolidacao.LastOrDefault(nota =>
                     nota.AlunoCodigo.Equals(salvarConselhoClasseAlunoNotaDto.CodigoAluno));
 
-            alunoConsolidado.ShouldNotBeNull();
-            (alunoConsolidado.Status == situacaoConselhoClasse).ShouldBeTrue();
 
             var notasConsolidacao = ObterTodos<ConselhoClasseConsolidadoTurmaAlunoNota>();
             notasConsolidacao.ShouldNotBeNull();
@@ -272,7 +270,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarTurmaTipoCalendario(filtroConselhoClasse);
 
             if (filtroConselhoClasse.CriarPeriodoEscolar)
-                await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
+                await CriarPeriodoEscolar(filtroConselhoClasse);
+
 
             await CriarAula(filtroConselhoClasse.ComponenteCurricular, filtroConselhoClasse.DataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
 

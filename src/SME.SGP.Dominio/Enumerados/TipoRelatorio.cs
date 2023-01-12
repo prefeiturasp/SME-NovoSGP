@@ -125,6 +125,9 @@ namespace SME.SGP.Dominio
         PlanoAee = 41,
         
         [Display(Name = "relatorios/planosaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
-        RelatorioPlanosAee = 42, 
+        RelatorioPlanosAee = 42,
+
+        [Display(Name = "relatorios/encaminhamentoaee", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
+        RelatorioEncaminhamentoAee = 43
     }
 }
