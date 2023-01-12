@@ -2,6 +2,7 @@
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -45,5 +46,6 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(query, new { questaoEncaminhamentoNAAPAId });
         }
+
     }
 }

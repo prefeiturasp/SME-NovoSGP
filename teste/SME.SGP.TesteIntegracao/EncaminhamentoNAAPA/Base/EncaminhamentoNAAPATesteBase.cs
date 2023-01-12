@@ -16,6 +16,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const int NORMAL = 1;
         protected const int PRIORITARIA = 2;
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
+        protected const long ID_QUESTAO_ENDERECO_RESIDENCIAL = 12;
         protected const  long ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = 3;
         protected const long ID_QUESTAO_PRIORIDADE = 2;
         protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
@@ -49,6 +50,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
+        protected const string NOME_COMPONENTE_QUESTAO_ENDERECO_RESIDENCIAL = "ENDERECO_RESIDENCIAL";
 
         public EncaminhamentoNAAPATesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -117,7 +119,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected async Task CriarTurmaTipoCalendario(FiltroNAAPADto filtro)
         {
             await CriarTipoCalendario(filtro.TipoCalendario, filtro.ConsiderarAnoAnterior);
-            await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior, tipoTurno:2);
+            if (filtro.CriarTurmaPadrao)
+                await CriarTurma(filtro.Modalidade, filtro.AnoTurma, filtro.ConsiderarAnoAnterior, tipoTurno:2);
         }
 
         protected async Task CriarPeriodoEscolar(bool considerarAnoAnterior = false)
@@ -169,6 +172,15 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase ObterServicoObterQuestionarioItinerarioEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<IObterQuestionarioItinerarioEncaminhamentoNAAPAUseCase>();
+        }
+        protected IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarEnderecoDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
+        }
+
+        protected IAtualizarTurmaDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
         }
 
         private async Task CriarRespostasComplementares()
@@ -548,6 +560,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoEm = DateTime.Now,
                 NomeComponente = "DESCRICAO_PROCEDIMENTO_TRABALHO"
             });
+
+            //id 12
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 6,
+                Nome = "Endereço residencial",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.Endereco,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "ENDERECO_RESIDENCIAL"
+            });
         }
 
         protected class FiltroNAAPADto
@@ -557,6 +583,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 TipoCalendarioId = TIPO_CALENDARIO_1;
                 ConsiderarAnoAnterior = false;
                 CriarPeriodoEscolar = true;
+                CriarTurmaPadrao = true;
             }
             public string Perfil { get; set; }
             public Modalidade Modalidade { get; set; }
@@ -572,6 +599,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             public int Prioridade { get; set; }
             public DateTime? DataAberturaQueixaInicio { get; set; }
             public DateTime? DataAberturaQueixaFim { get; set; }
+            public bool CriarTurmaPadrao { get; set; }
         }
     }
 }
