@@ -3,7 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -41,19 +41,21 @@ namespace SME.SGP.Aplicacao
             return listaAnosAtivos;
         }
 
-        private async Task<List<int>> VerificaAnosAnterioresComConsolidacao(List<int> anosAtivos) 
+        private async Task<List<int>> VerificaAnosAnterioresComConsolidacao(List<int> anosAtivos)
         {
-            foreach(var ano in anosAtivos)
+            var anosAtivosRemover = new List<int>();
+
+            foreach (var ano in anosAtivos.Where(ano => ano < DateTimeExtension.HorarioBrasilia().Year))
             {
-                if(ano < DateTime.Now.Year)
-                {
-                    bool existeConsolidacao = await mediator.Send(new ExisteConsolidacaoRegistroPedagogicoPorAnoQuery(ano));
-                    if (existeConsolidacao)
-                    {
-                        anosAtivos.Remove(ano);
-                    }
-                }
+                var existeConsolidacao = await mediator.Send(new ExisteConsolidacaoRegistroPedagogicoPorAnoQuery(ano));
+                    
+                if (existeConsolidacao)
+                    anosAtivosRemover.Add(ano);
             }
+
+            foreach (var anoRemover in anosAtivosRemover)
+                anosAtivos.Remove(anoRemover);
+
             return anosAtivos;
         }
 
