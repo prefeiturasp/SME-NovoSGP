@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(NotificarLeituraNotificacaoCommand request, CancellationToken cancellationToken)
         {
-            var usuarioRf = await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value));
+            var usuarioRf = request.UsuarioRf ?? await mediator.Send(new ObterUsuarioRfPorIdQuery(request.Notificacao.UsuarioId.Value));
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpNotificacoes.Leitura,
                                                            new MensagemLeituraNotificacaoDto(request.Notificacao.Codigo,

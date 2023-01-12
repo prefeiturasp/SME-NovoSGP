@@ -59,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
             query.AppendLine("select * from usuario");
-            query.AppendLine("where rf_codigo = @codigoRf");
+            query.AppendLine("where upper(rf_codigo) = upper(@codigoRf)");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Usuario>(query.ToString(), new { codigoRf });
         }
