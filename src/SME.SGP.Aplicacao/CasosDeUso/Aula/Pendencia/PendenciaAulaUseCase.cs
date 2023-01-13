@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -19,9 +20,9 @@ namespace SME.SGP.Aplicacao
             
             if(dadosParametroGeracaoPendencias != null)
             {
-                DateTime dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor);
+                var dataDefinida = Convert.ToDateTime(dadosParametroGeracaoPendencias.Valor, CultureInfo.GetCultureInfo("pt-BR"));
 
-                if (DateTimeExtension.HorarioBrasilia() >= dataDefinida)
+                if (DateTimeExtension.HorarioBrasilia().Date >= dataDefinida)
                 {
                     var dres = await mediator.Send(new ObterIdsDresQuery());
 
