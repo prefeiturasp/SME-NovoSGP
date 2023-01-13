@@ -264,11 +264,11 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseParecerId == PROMOVIDO).ShouldBeTrue();
         }
-        
-        //[Theory]
-        //[InlineData(ANO_3)]
-        //[InlineData(ANO_6)]
-        //[InlineData(ANO_9)]
+
+        [Theory]
+        [InlineData(ANO_3)]
+        [InlineData(ANO_6)]
+        [InlineData(ANO_9)]
         public async Task Ao_validar_situacao_parecer_conclusivo_promovido_pelo_conselho_por_estudante_com_nota_numerica_superior_a_5_frequencia_acima_75_por_cento(string ano)
         {
             await CriarDadosNotas(ObterPerfilProfessor(),
