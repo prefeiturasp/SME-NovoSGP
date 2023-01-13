@@ -18,10 +18,10 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes
             {
                 CodigoAluno = "1",
                 NomeAluno = "Nome aluno 1",
-                DataMatricula = dataReferencia.AddDays(-120),
+                DataMatricula = dataReferencia.AddDays(-2),
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Ativo,
                 SituacaoMatricula = "ATIVO",
-                DataSituacao = dataReferencia.AddDays(-5),
+                DataSituacao = dataReferencia,
                 DataNascimento = new DateTime(1959, 01, 16, 00, 00, 00),
                 NumeroAlunoChamada = 1
             };

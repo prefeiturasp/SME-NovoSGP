@@ -24,7 +24,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
         private const int RETIDO_POR_FREQUENCIA = 5;
         private const int PROMOVIDO = 1;
         private const int PROMOVIDO_PELO_CONSELHO = 2;
-            
+
         public Ao_validar_situacao_do_parecer_conclusivo(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
@@ -137,7 +137,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaTurmaFechamentoAtual(TipoNota.Conceito, null, NAO_SATISFATORIO_ID_3);
 
             await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-        
+
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
             
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
@@ -163,7 +163,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
             await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
             
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
@@ -219,6 +219,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
 
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
+
+            await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
             
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
             parecerConclusivo.Any(f=> f.ConselhoClasseId == CONSELHO_CLASSE_ID_1 && f.ConselhoClasseParecerId == RETIDO).ShouldBeTrue();
@@ -258,7 +260,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_8, null);
 
             await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
-            
+
+            await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
+
             await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
             
             var parecerConclusivo = ObterTodos<ConselhoClasseAluno>();
@@ -285,6 +289,8 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriaTurmaFechamentoAtual(TipoNota.Nota, NOTA_4, null);
 
             await CriarFrequenciaAluno(TipoFrequenciaAluno.Geral,COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
+
+            await ExecutarReprocessamentoParacerConclusivo(ObterConselhoClasseFechamentoAluno());
 
             await ExecutarTesteSemValidacao(ObterSalvarConselhoClasseAlunoNotaDto(COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
                                                                                   TipoNota.Nota,
@@ -419,7 +425,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
                                       SituacaoConselhoClasse situacaoConselhoClasse = SituacaoConselhoClasse.NaoIniciado, 
                                       bool criarFechamentoDisciplinaAlunoNota = false)
         {
-            var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DateTimeExtension.HorarioBrasilia().Date;
+            var dataAula = anoAnterior ? DATA_02_05_INICIO_BIMESTRE_2.AddYears(-1) : DateTimeExtension.HorarioBrasilia().Date.AddDays(-1);
 
             var filtroNota = new FiltroConselhoClasseDto()
             {
@@ -441,9 +447,9 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
 
             await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
             await CriarDadosBase(filtroNota);
-            await CriarAula(filtroNota.ComponenteCurricular, DateTimeExtension.HorarioBrasilia().Date, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
+            await CriarAula(filtroNota.ComponenteCurricular, dataAula, RecorrenciaAula.AulaUnica, NUMERO_AULA_1);
             await CrieTipoAtividade();
-            await CriarAtividadeAvaliativa(DateTimeExtension.HorarioBrasilia().Date, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
+            await CriarAtividadeAvaliativa(dataAula, filtroNota.ComponenteCurricular, USUARIO_PROFESSOR_LOGIN_1111111, true, ATIVIDADE_AVALIATIVA_1);
         }
         
         private async Task<IEnumerable<SalvarConselhoClasseAlunoNotaDto>> CriarConselhoClasseTodosBimestres(long componenteCurricular = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
