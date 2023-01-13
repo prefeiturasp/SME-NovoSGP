@@ -36,7 +36,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
                 Ativo = true,
                 CriadoPor = "",
                 CriadoRF = "",
-                Valor = valorData.ToString("dd/MM/yyyy"),
+                Valor = valorData.ToString("yyyy/MM/dd"),
                 Nome = "DataInicioGeracaoPendencias",
                 Ano = DateTimeExtension.HorarioBrasilia().Year,
                 Descricao = "Data de início da geração de pendências"
