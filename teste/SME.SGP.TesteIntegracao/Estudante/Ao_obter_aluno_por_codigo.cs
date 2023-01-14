@@ -86,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.TestarEstudante
 
         private string ObterNomeTurma(string nome, string turno)
         {
-            return $"{Modalidade.EJA.ShortName()} - {nome} - {turno}";
+            return $"{Modalidade.Fundamental.ShortName()} - {nome} - {turno}";
         }
     }
 }

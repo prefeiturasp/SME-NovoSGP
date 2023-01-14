@@ -220,7 +220,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             dto.Alunos.ShouldNotBeNull();
             var aluno = dto.Alunos.FirstOrDefault(aluno => aluno.Codigo == codigoAluno);
             aluno.ShouldNotBeNull();
-            aluno.FrequenciaValor.ShouldBe(percentual);
+            aluno.FrequenciaValor.ShouldBe(Math.Round(percentual));
             aluno.TotalFaltas.ShouldBe(totalFalta);
             aluno.TotalAusenciasCompensadas.ShouldBe(totalAusenciasCompensadas);
             aluno.NotasConceitoFinal.ShouldNotBeNull();
