@@ -38,10 +38,9 @@ namespace SME.SGP.Aplicacao
                 else
                 {
                     string erro = $"Não foi possível obter as matrículas/turma do aluno no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
-
                     await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
                     var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : erro;
-                    throw new NegocioException(respostaErro);
+                    throw new Exception(respostaErro);
                 }
             }
             catch (Exception e)
