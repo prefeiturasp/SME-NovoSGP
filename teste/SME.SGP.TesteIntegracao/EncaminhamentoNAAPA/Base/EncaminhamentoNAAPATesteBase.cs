@@ -16,7 +16,9 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const int NORMAL = 1;
         protected const int PRIORITARIA = 2;
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
+        protected const long ID_QUESTAO_DATA_ENTRADA_QUEIXA = 1;
         protected const long ID_QUESTAO_ENDERECO_RESIDENCIAL = 12;
+        protected const long ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA = 13;
         protected const  long ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = 3;
         protected const long ID_QUESTAO_PRIORIDADE = 2;
         protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
@@ -574,6 +576,20 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoEm = DateTime.Now,
                 NomeComponente = "ENDERECO_RESIDENCIAL"
+            });
+
+            //id 13
+            await InserirNaBase(new Questao()
+            {
+                QuestionarioId = 1,
+                Ordem = 15,
+                Nome = "Turmas de programa",
+                Obrigatorio = false,
+                Tipo = TipoQuestao.TurmasPrograma,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF,
+                CriadoEm = DateTime.Now,
+                NomeComponente = "TURMAS_PROGRAMA"
             });
         }
 
