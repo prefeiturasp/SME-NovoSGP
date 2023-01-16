@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Polly;
 using SME.SGP.Api.Filtros;
+using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
@@ -120,6 +123,13 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTurmasProgramaAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteTurmasProgramaUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
         {
             return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
+        }
+
+        [HttpGet("{codigoAluno}/matriculasTurma")]
+        public async Task<IActionResult> ObterMatriculasTurmaAluno(string codigoAluno, DateTime? dataAula, int? anoLetivo, [FromServices] IMediator mediator)
+        {
+            var matriculasTurmaDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(codigoAluno, dataAula, anoLetivo));
+            return Ok(matriculasTurmaDoAluno);
         }
     }
 }
