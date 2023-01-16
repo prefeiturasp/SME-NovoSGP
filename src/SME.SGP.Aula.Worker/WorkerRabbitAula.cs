@@ -44,7 +44,9 @@ namespace SME.SGP.Aula.Worker
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula, new ComandoRabbit("Executa exclusão de pendências da aula", typeof(IExecutarExclusaoPendenciasAulaUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula, new ComandoRabbit("Executa exclusão de pendencias de diário de bordo por aula", typeof(IExcluirPendenciaDiarioBordoPorAulaIdUseCase)));
             Comandos.Add(RotasRabbitSgpAula.RotaAlterarAulaFrequenciaTratar, new ComandoRabbit("Normaliza as frequências quando há uma alteração de aula única", typeof(IAlterarAulaFrequenciaTratarUseCase)));
-            Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Conciliação de frequência da turma buscar", typeof(INotificarAlunosFaltososUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltososDre, new ComandoRabbit("Notificação de alunos faltosos por DRE", typeof(INotificarAlunosFaltososDreUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltososDreUe, new ComandoRabbit("Notificação de alunos faltosos da UE por DRE", typeof(INotificarAlunosFaltososDreUeUseCase), true));
+            Comandos.Add(RotasRabbitSgpAula.RotaNotificacaoAlunosFaltosos, new ComandoRabbit("Notificação de alunos faltosos", typeof(INotificarAlunosFaltososUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.CarregarDadosUeTurmaRegenciaAutomaticamente, new ComandoRabbit("Carregar dados referentes a ue e turmas de regencia", typeof(ICarregarUesTurmasRegenciaAulaAutomaticaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.SincronizarDadosUeTurmaRegenciaAutomaticamente, new ComandoRabbit("Sincronizar dados referentes a ue e turmas de regencia", typeof(ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase), true));
             Comandos.Add(RotasRabbitSgpAula.SincronizarAulasRegenciaAutomaticamente, new ComandoRabbit("Sincronizar aulas automáticas de regência", typeof(ISincronizarAulasRegenciaAutomaticamenteUseCase)));
