@@ -125,11 +125,6 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
         }
 
-        [HttpGet("{codigoAluno}/matriculasTurma")]
-        public async Task<IActionResult> ObterMatriculasTurmaAluno(string codigoAluno, DateTime? dataAula, int? anoLetivo, [FromServices] IMediator mediator)
-        {
-            var matriculasTurmaDoAluno = await mediator.Send(new ObterMatriculasTurmaPorCodigoAlunoQuery(codigoAluno, dataAula, anoLetivo));
-            return Ok(matriculasTurmaDoAluno);
-        }
+       
     }
 }

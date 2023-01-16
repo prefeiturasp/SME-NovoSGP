@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
             var queryParam = $"{(request.AnoLetivo.HasValue ? $"anoLetivo={request.AnoLetivo.Value}{(request.AnoLetivo.HasValue ? $"&" : string.Empty)}" : string.Empty)}";
-            queryParam = queryParam + $"{(request.DataAula.HasValue ? $"dataAula={request.DataAula.Value}" : string.Empty)}";
+            queryParam = queryParam + $"{(request.DataAula.HasValue ? $"dataAulaTicks={request.DataAula.Value.Ticks}" : string.Empty)}";
             var url = $"/api/turmas/alunos/{request.CodigoAluno}{(!string.IsNullOrEmpty(queryParam) ? $"?{queryParam}" : string.Empty)}";
             try
             {
