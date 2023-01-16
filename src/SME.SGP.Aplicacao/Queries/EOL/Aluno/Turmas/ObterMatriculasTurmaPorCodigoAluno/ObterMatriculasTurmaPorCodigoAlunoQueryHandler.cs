@@ -37,16 +37,17 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
-                    string erro = $"Não foi possível obter as matrículas/turma do aluno no EOL - HttpCode {(int)resposta.StatusCode} - erro: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
-                    await mediator.Send(new SalvarLogViaRabbitCommand(erro, LogNivel.Negocio, LogContexto.Turma, string.Empty));
-                    var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : erro;
+                    string respostaHttp = $"HttpCode {(int)resposta.StatusCode} - HttpMessage: {JsonConvert.SerializeObject(resposta.RequestMessage)}";
+                    var respostaErro = resposta?.Content != null ? resposta?.Content?.ReadAsStringAsync()?.Result.ToString() : respostaHttp;
                     throw new Exception(respostaErro);
                 }
             }
             catch (Exception e)
             {
 
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Código:{request.CodigoAluno}, Ano:{request.AnoLetivo}, Data Aula:{request.DataAula} - Erro:{e.Message}", LogNivel.Negocio, LogContexto.Turma, e.Message));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter as matrículas/turma do aluno no EOL - Aluno: {request.CodigoAluno} - Erro: {e.Message}", 
+                                                                    LogNivel.Critico, 
+                                                                    LogContexto.Turma, e.Message));
                 throw e;
             }
         }
