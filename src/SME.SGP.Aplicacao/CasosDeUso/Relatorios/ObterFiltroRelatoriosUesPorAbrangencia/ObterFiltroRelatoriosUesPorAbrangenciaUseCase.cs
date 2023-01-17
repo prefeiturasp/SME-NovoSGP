@@ -1,6 +1,6 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,10 +12,10 @@ namespace SME.SGP.Aplicacao
 
         public ObterFiltroRelatoriosUesPorAbrangenciaUseCase(IMediator mediator)
         {
-            this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        
-        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, bool consideraNovasUEs = false, bool consideraHistorico = false)
+
+        public async Task<IEnumerable<AbrangenciaUeRetorno>> Executar(string codigoDre, int anoLetivo, bool consideraNovasUEs = false, bool consideraHistorico = false)
         {
             var ues = new List<AbrangenciaUeRetorno>();
             if (!string.IsNullOrWhiteSpace(codigoDre) && codigoDre == "-99")
@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             }
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            return await mediator.Send(new ObterFiltroRelatoriosUesPorAbrangenciaQuery(usuarioLogado, codigoDre, consideraNovasUEs, consideraHistorico));
+            return await mediator.Send(new ObterFiltroRelatoriosUesPorAbrangenciaQuery(usuarioLogado, codigoDre, anoLetivo, consideraNovasUEs, consideraHistorico));
         }
     }
 }
