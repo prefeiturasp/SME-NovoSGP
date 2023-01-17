@@ -31,6 +31,7 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, consideraInativos: true));
             var alunoNaTurma = alunosEol.FirstOrDefault(a => a.CodigoAluno == conselhoClasseAluno.AlunoCodigo);
             bool historico = turma.Historica;
+            var emAprovacao = await EnviarParaAprovacao(turma);
 
             if (alunoNaTurma != null)
                 historico = alunoNaTurma.Inativo;
@@ -50,11 +51,9 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = parecerConclusivo?.Id ?? 0,
                     Nome = parecerConclusivo?.Nome,
-                    EmAprovacao = parecerConclusivo.Aprovado ? false : true
+                    EmAprovacao = emAprovacao
                 };
 
-
-            var emAprovacao = await EnviarParaAprovacao(turma);
             if (await EnviarParaAprovacao(turma))
                 emAprovacao = await GerarWFAprovacao(conselhoClasseAluno, parecerConclusivo.Id, pareceresDaTurma, request.UsuarioSolicitanteId);
             else
