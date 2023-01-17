@@ -164,10 +164,6 @@ namespace SME.SGP.Api.Controllers
             var turmas = await mediator.Send(
                 new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
                     periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
-            
-            if((turmas == null || !turmas.Any()) && !ConsideraHistorico)
-                turmas = await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 
 
             if (!turmas.Any())
                 return NoContent();
