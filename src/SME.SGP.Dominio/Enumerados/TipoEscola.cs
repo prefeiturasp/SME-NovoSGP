@@ -74,6 +74,12 @@ namespace SME.SGP.Dominio
         CECI = 30,
 
         [Display(Name = "Centro Unificado de Educação - Centro Municipal de Educação Infantil", ShortName = "CEU CEMEI")]
-        CEUCEMEI = 31
+        CEUCEMEI = 31,
+
+        [Display(Name = "ESCOLA MUNICIPAL DE ENSINO FUNDAMENTAL PRIVADA FOMENTO", ShortName = "EMEF P FOM")]
+        EMEFPFOM = 32,
+
+        [Display(Name = "ESCOLA MUNICIPAL DE EDUCACAO INFANTIL PRIVADA FOMENTO", ShortName = "EMEI P FOM")]
+        EMEIPFOM = 31
     }
 }
