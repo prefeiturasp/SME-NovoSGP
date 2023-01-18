@@ -35,6 +35,7 @@ namespace SME.SGP.Infra
         public void VerificarSomenteLeitura(string disciplinaId)
         {
             SomenteLeitura = string.IsNullOrWhiteSpace(disciplinaId) || !DisciplinaId.Equals(disciplinaId);
+            SomenteLeitura = string.IsNullOrWhiteSpace(disciplinaId) || !DisciplinaId.Equals(disciplinaId);
         }
     }
 }

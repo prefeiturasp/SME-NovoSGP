@@ -23,7 +23,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(string turmaCodigo, long componenteCurricularId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds);
         Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string codigoRf, int? mes = null, int? semanaAno = null, string disciplinaId = null);
 
-        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularCJ(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ);
+        Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo);
 
         Task<IEnumerable<AulaDto>> ObterAulas(long tipoCalendarioId, string turmaId, string ueId, string codigoRf);
 
