@@ -15,6 +15,12 @@ namespace SME.SGP.Api.Controllers
     [ValidaDto]
     public class AulaIntegracaoController : ControllerBase
     {
+        /// <summary>
+        /// Retorno das aulas cadastradas no dia de acordo com componente e turma.
+        /// </summary>
+        /// <response code="200">A consulta foi realizada com sucesso.</response>
+        /// <response code="500">Ocorreu um erro inesperado durante a consulta.</response>
+        /// <response code="601">Houve uma falha de validação durante a consulta.</response>
         [HttpGet("turma/{turmaCodigo}/componente-curricular/{componenteCurricular}/data/{dataAulaTicks}")]
         [ChaveIntegracaoSgpApi]
         [ProducesResponseType(typeof(IEnumerable<AulaQuantidadeTipoDto>), 200)]
