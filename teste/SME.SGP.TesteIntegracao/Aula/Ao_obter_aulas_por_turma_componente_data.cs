@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnicaGrade
         [Fact]
         public async Task Obter_aulas()
         {
-            await CriarDadosBasicosAula(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
+            await CriarDadosBasicosAulaSemPeriodoEscolar(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio);
 
             await CriarPeriodoEscolarCustomizadoQuartoBimestre(true);
 
