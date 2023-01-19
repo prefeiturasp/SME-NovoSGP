@@ -159,7 +159,7 @@ namespace SME.SGP.Aplicacao
             if (!aula.Any())
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
             
-            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao);
+            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao.Date);
 
             var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
 
