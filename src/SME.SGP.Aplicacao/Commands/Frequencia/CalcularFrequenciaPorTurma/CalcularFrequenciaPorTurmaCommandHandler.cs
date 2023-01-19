@@ -358,7 +358,8 @@ namespace SME.SGP.Aplicacao
                 var frequenciaGeralAluno = await mediator
                     .Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno, periodoConsiderado.Bimestre, TipoFrequenciaAluno.Geral, request.TurmaId));
 
-                await ExcluirFrequenciaAluno(new long[] { frequenciaGeralAluno.Id }.ToList());
+                if (frequenciaGeralAluno != null)
+                    await ExcluirFrequenciaAluno(new long[] { frequenciaGeralAluno.Id }.ToList());
             }
         }
     }

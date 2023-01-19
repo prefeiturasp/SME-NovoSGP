@@ -129,12 +129,12 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosFechamentoPorTurmaCodigoEBimestreAsync(string turmaCodigo, int bimestre = 0,
-            DateTime? dataMatricula = null, DateTime? dataSituacao = null)
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null)
         {
             var condicaoBimestre = bimestre > 0 ? "and bimestre = @bimestre" : string.Empty;
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
-
+            var condicaoTipoCalendario = tipoCalendario.HasValue ? $"and (pe.tipo_calendario_id =@tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
             var query = $@"select distinct * from (
                 select pe.bimestre, 
                        fn.disciplina_id as ComponenteCurricularCodigo, 
@@ -148,13 +148,14 @@ namespace SME.SGP.Dados.Repositorios
                  inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                  inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                  inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id 
-                 where t.turma_id = @turmaCodigo
+                 where not ftd.excluido and t.turma_id = @turmaCodigo
+                   {condicaoTipoCalendario}
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
             ) x";
 
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao, tipoCalendario });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasFinaisBimestresAlunoAsync(string alunoCodigo, string[] turmasCodigo, int bimestre = 0, DateTime? dataMatricula = null, DateTime? dataSituacao = null, bool validaMatricula = true)
@@ -205,11 +206,12 @@ namespace SME.SGP.Dados.Repositorios
 
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasConceitosConselhoClassePorTurmaCodigoEBimestreAsync(string turmaCodigo, int? bimestre,
-            DateTime? dataMatricula = null, DateTime? dataSituacao = null)
+            DateTime? dataMatricula = null, DateTime? dataSituacao = null, long? tipoCalendario = null)
         {
             var condicaoBimestre = bimestre.HasValue ? bimestre > 0 ? "and bimestre = @bimestre" : "and ft.periodo_escolar_id is null" : string.Empty;
             var condicaoDataMatricula = dataMatricula.HasValue ? $"and (@dataMatricula <= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
             var condicaoDataSituacao = dataSituacao.HasValue ? $"and (@dataSituacao >= pe.periodo_fim {(bimestre == 0 ? "or pe.id is null" : string.Empty)})" : string.Empty;
+            var condicaoTipoCalendario = tipoCalendario.HasValue ? $"and (pe.tipo_calendario_id =@tipoCalendario or pe.tipo_calendario_id is null)" : string.Empty;
             
             var query = $@"select distinct * from (
                 select pe.bimestre,
@@ -226,12 +228,13 @@ namespace SME.SGP.Dados.Repositorios
                  inner join conselho_classe_aluno cca on cca.conselho_classe_id  = cc.id
                  inner join conselho_classe_nota ccn on ccn.conselho_classe_aluno_id = cca.id
                  where t.turma_id = @turmaCodigo
+                   {condicaoTipoCalendario}
                    {condicaoBimestre}
                    {condicaoDataMatricula}
                    {condicaoDataSituacao}
             ) x ";
             
-            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao });
+            return await database.Conexao.QueryAsync<NotaConceitoBimestreComponenteDto>(query, new { turmaCodigo, bimestre, dataMatricula, dataSituacao, tipoCalendario });
         }
 
         public async Task<IEnumerable<NotaConceitoBimestreComponenteDto>> ObterNotasBimestresAluno(string alunoCodigo, string ueCodigo, string turmaCodigo, int[] bimestres)
