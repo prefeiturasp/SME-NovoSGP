@@ -2,7 +2,7 @@
 
 namespace SME.SGP.Aplicacao.Interfaces
 {
-    public interface ILancarFrequenciaAulaSgaUseCase : IRabbitUseCase
+    public interface ILancarFrequenciaAulaUseCase : IRabbitUseCase
     {
     }
 }

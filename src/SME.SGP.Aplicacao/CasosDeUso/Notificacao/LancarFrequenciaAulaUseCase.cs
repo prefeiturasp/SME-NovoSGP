@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class LancarFrequenciaAulaSgaUseCase : AbstractUseCase, ILancarFrequenciaAulaSgaUseCase
+    public class LancarFrequenciaAulaUseCase : AbstractUseCase, ILancarFrequenciaAulaUseCase
     {
-        public LancarFrequenciaAulaSgaUseCase(IMediator mediator) : base(mediator)
+        public LancarFrequenciaAulaUseCase(IMediator mediator) : base(mediator)
         {
         }
 
