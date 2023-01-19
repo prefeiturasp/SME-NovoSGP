@@ -27,14 +27,5 @@ namespace SME.SGP.Aplicacao
                 EhCj = s.AulaCJ
             });
         }
-
-        private async Task<bool> AlterandoDataAula(long aulaId, DateTime dataAula)
-        {
-            var dataOriginalAula = await mediator.Send(new ObterDataAulaQuery(aulaId));
-            return dataAula != dataOriginalAula;
-        }
-
-        private static bool CriandoAula(long aulaId)
-            => aulaId == 0;
     }
 }
