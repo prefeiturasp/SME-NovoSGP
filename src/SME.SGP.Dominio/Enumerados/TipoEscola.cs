@@ -80,6 +80,6 @@ namespace SME.SGP.Dominio
         EMEFPFOM = 32,
 
         [Display(Name = "ESCOLA MUNICIPAL DE EDUCACAO INFANTIL PRIVADA FOMENTO", ShortName = "EMEI P FOM")]
-        EMEIPFOM = 31
+        EMEIPFOM = 33
     }
 }
