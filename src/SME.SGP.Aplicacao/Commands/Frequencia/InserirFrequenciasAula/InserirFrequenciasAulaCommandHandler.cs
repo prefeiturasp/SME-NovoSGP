@@ -29,17 +29,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
 
-            Usuario usuario;
-            
-            try
-            {
-                usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-            
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId), cancellationToken);
 
             if (aula == null)
