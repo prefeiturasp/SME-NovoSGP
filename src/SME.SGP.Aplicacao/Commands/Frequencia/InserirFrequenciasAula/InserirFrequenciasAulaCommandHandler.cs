@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Usuario = SME.SGP.Dominio.Usuario;
 
 namespace SME.SGP.Aplicacao
 {
@@ -28,7 +29,17 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            Usuario usuario;
+            
+            try
+            {
+                usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+            
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId), cancellationToken);
 
             if (aula == null)

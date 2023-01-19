@@ -40,5 +40,7 @@
         public const string RotaTratarCargaRegistroFrequenciaAlunoAula = "sgp.frequencia.tratar.carga.referencia.registro.aluno.aula";
         public const string RotaTratarCargaRegistroFrequenciaAlunoProcessamento = "sgp.frequencia.tratar.carga.referencia.registro.aluno.processa";
         public const string RotaTratarFrequenciaRegistradaAlunosInativos = "sgp.frequencia.tratar.frequencia.registrada.alunos.inativos";
+        
+        public const string RotaFrequenciaLancamentoAulaSgaSync = "sgp.frequencia.lancamento.aula.sga.sync";
     }
 }
