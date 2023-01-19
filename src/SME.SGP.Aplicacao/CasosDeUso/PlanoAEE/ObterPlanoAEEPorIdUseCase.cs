@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");
+                    throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
@@ -218,6 +218,9 @@ namespace SME.SGP.Aplicacao
                 if (turmasAluno.Count() > 0)
                 {
                     var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
+
+                    if (alunoComMatriculaAtiva == null)
+                        return null;
 
                     return await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
