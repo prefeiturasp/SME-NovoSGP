@@ -7,17 +7,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFrequenciaGeralAlunoPorTurmasQuery : IRequest<string>
     {
-        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, long tipoCalendarioId = 0, IEnumerable<(DateTime? dataMatricula, DateTime? dataSituacaoAluno, bool inativo)> matriculasAlunoNaTurma = null)
+        public ObterFrequenciaGeralAlunoPorTurmasQuery(string codigoAluno, string[] codigosTurmas, string[] codigosDisciplinasTurma, long tipoCalendarioId = 0, IEnumerable<(DateTime? dataMatricula, DateTime? dataSituacaoAluno, bool inativo)> matriculasAlunoNaTurma = null)
         {
             CodigoAluno = codigoAluno;
             CodigosTurmas = codigosTurmas;
             TipoCalendarioId = tipoCalendarioId;
             MatriculasAlunoNaTurma = matriculasAlunoNaTurma;
+            CodigosDisciplinasTurma = codigosDisciplinasTurma;
         }
 
         public string CodigoAluno { get; }
         public string[] CodigosTurmas { get; }
         public long TipoCalendarioId { get; }
+        public string[] CodigosDisciplinasTurma { get; set; }
         public IEnumerable<(DateTime? dataMatricula, DateTime? dataSituacao, bool inativo)> MatriculasAlunoNaTurma { get; set; }        
     }
 
