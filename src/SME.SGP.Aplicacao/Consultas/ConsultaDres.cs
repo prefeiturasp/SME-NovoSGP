@@ -58,6 +58,7 @@ namespace SME.SGP.Aplicacao
 
         private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
         {
+            var listaDeRemovida = new List<UnidadeEscolarSemAtribuicaolDto>();
             var novaLista = new List<UnidadeEscolarSemAtribuicaolDto>();
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
             .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
@@ -66,7 +67,7 @@ namespace SME.SGP.Aplicacao
             foreach (var ue in uesParaAtribuicao.ToList())
             {
                 var codUE = ue.Codigo;
-                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
+                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE).ToList();
                 var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
                 if (quantidadeTipos.Count() < tipos.Count())
                 {
@@ -84,13 +85,15 @@ namespace SME.SGP.Aplicacao
                         uesParaAtribuicao.Add(registro);
                     }
                 }
+                var listaAtribuicaoRemover = uesParaAtribuicaoDto.FindAll(atribuicao => atribuicao.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel);
+                if (listaAtribuicaoRemover.Count > 1 && listaAtribuicaoRemover.Exists(atribuicao => !atribuicao.AtribuicaoExcluida))
+                    listaDeRemovida.AddRange(listaAtribuicaoRemover.FindAll(atribuicao => atribuicao.AtribuicaoExcluida));
             }
 
-            var uesAgrupadasPorTipoAtribuicaoCodigo = uesParaAtribuicao.GroupBy(u => new { u.Codigo, u.TipoAtribuicao });
-            var uesAtribuir = uesAgrupadasPorTipoAtribuicaoCodigo.Where(a => a.Count(c => c.AtribuicaoExcluida) == a.Count())
-                                                                 .Select(a => a.FirstOrDefault()).ToList();
+            foreach (var atribuicao in listaDeRemovida)
+                uesParaAtribuicao.Remove(atribuicao);
 
-            var retorno = uesAtribuir.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
+            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
             return retorno.OrderBy(x => x.Nome).ToList();
         }
 
