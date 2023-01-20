@@ -13,14 +13,12 @@ namespace SME.SGP.Aplicacao
     public class ObterConsultaFrequenciaGeralAlunoPorTurmasQueryHandler : IRequestHandler<ObterConsultaFrequenciaGeralAlunoPorTurmasQuery, string>
     {
         private readonly IMediator mediator;
-        private readonly IServicoEol servicoEOL;
         private readonly IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo;
         public ObterConsultaFrequenciaGeralAlunoPorTurmasQueryHandler(
-                                            IMediator mediator, IServicoEol servicoEOL,
+                                            IMediator mediator,
                                             IRepositorioFrequenciaAlunoDisciplinaPeriodoConsulta repositorioFrequenciaAlunoDisciplinaPeriodo)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.repositorioFrequenciaAlunoDisciplinaPeriodo = repositorioFrequenciaAlunoDisciplinaPeriodo ?? throw new ArgumentNullException(nameof(repositorioFrequenciaAlunoDisciplinaPeriodo));
         }
 
@@ -42,7 +40,7 @@ namespace SME.SGP.Aplicacao
 
             var turmaCodigo = new string[] { turma.CodigoTurma };
 
-            var disciplinasTurma = await servicoEOL.ObterDisciplinasPorCodigoTurma(turma.CodigoTurma);
+            var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
 
             string[] codigoDisciplinasTurma = disciplinasTurma.Any()
                 ? disciplinasTurma.Select(d => d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.ToString() : d.CodigoComponenteCurricular.ToString()).ToArray() 
