@@ -7,23 +7,25 @@ using System.Text;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterAulasPorDataTurmaComponenteCurricularQuery : IRequest<IEnumerable<AulaConsultaDto>>
+    public class ObterAulasPorDataTurmaComponenteCurricularCJQuery : IRequest<IEnumerable<AulaConsultaDto>>
     {
-        public ObterAulasPorDataTurmaComponenteCurricularQuery(DateTime dataAula, string codigoTurma, long codigoComponenteCurricular)
+        public ObterAulasPorDataTurmaComponenteCurricularCJQuery(DateTime dataAula, string codigoTurma, long codigoComponenteCurricular, bool aulaCJ)
         {
             DataAula = dataAula;
             CodigoTurma = codigoTurma;
             CodigoComponenteCurricular = codigoComponenteCurricular;
+            AulaCJ = aulaCJ;
         }
 
         public DateTime DataAula { get; private set; }
         public string CodigoTurma { get; private set; }
         public long CodigoComponenteCurricular { get; private set; }
+        public bool AulaCJ { get; private set; }
     }
 
-    public class ObterAulasPorDataTurmaComponenteCurricularQueryValidator : AbstractValidator<ObterAulasPorDataTurmaComponenteCurricularQuery>
+    public class ObterAulasPorDataTurmaComponenteCurricularCJQueryValidator : AbstractValidator<ObterAulasPorDataTurmaComponenteCurricularCJQuery>
     {
-        public ObterAulasPorDataTurmaComponenteCurricularQueryValidator()
+        public ObterAulasPorDataTurmaComponenteCurricularCJQueryValidator()
         {
             RuleFor(c => c.DataAula)
                 .NotEmpty()
