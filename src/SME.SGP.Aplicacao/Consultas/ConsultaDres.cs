@@ -86,7 +86,11 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
+            var uesAgrupadasPorTipoAtribuicaoCodigo = uesParaAtribuicao.GroupBy(u => new { u.Codigo, u.TipoAtribuicao });
+            var uesAtribuir = uesAgrupadasPorTipoAtribuicaoCodigo.Where(a => a.Count(c => c.AtribuicaoExcluida) == a.Count())
+                                                                 .Select(a => a.FirstOrDefault()).ToList();
+
+            var retorno = uesAtribuir.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
             return retorno.OrderBy(x => x.Nome).ToList();
         }
 
