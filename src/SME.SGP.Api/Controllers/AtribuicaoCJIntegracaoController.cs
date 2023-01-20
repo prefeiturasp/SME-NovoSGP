@@ -12,12 +12,11 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/atribuicoes/cjs/integracoes")]
-    [ChaveIntegracaoSgpApi]
+    //[ChaveIntegracaoSgpApi]
     [ValidaDto]
     public class AtribuicaoCJIntegracaoController : ControllerBase
     {
         [HttpGet]
-        [ChaveIntegracaoSgpApi]
         [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
