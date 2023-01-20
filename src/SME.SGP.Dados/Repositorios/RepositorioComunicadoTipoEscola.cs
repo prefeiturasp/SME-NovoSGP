@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -18,10 +19,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public virtual async Task<long> SalvarAsync(ComunicadoTipoEscola comunicadoTipoEscola)
         {
+            var sqlQuery = new StringBuilder();
+
             if (comunicadoTipoEscola.Id > 0)
                 await database.Conexao.UpdateAsync(comunicadoTipoEscola);
             else
-                comunicadoTipoEscola.Id = (long)(await database.Conexao.InsertAsync(comunicadoTipoEscola));
+            {
+                sqlQuery.AppendLine("insert into comunicado_tipo_escola (comunicado_id, tipo_escola, excluido)");
+                sqlQuery.AppendLine("values (@comunicadoId, @tipoEscola, @excluido)");
+                sqlQuery.AppendLine("returning id;");
+
+                comunicadoTipoEscola.Id = (long)await database.Conexao
+                    .ExecuteScalarAsync(sqlQuery.ToString(),
+                    new
+                    {
+                        comunicadoId = comunicadoTipoEscola.ComunicadoId,
+                        tipoEscola = comunicadoTipoEscola.TipoEscola,
+                        excluido = false
+                    });
+            }
 
             return comunicadoTipoEscola.Id;
         }

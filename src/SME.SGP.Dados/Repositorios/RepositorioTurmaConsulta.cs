@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
@@ -877,10 +877,12 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<int>> BuscarAnosLetivosComTurmasVigentes(string codigoUe)
         {
-            var query = @"select distinct ano_letivo
-                        from turma
-                        inner join ue u on u.ue_id = @codigoUe
-                        where historica = false";
+            var query = @"select distinct t.ano_letivo
+	                        from turma t
+		                        inner join ue
+			                        on t.ue_id = ue.id
+                          where not t.historica and
+	                        ue.ue_id = @codigoUe;";
 
             return await contexto.QueryAsync<int>(query, new { codigoUe });
         }

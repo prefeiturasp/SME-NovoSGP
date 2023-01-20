@@ -75,7 +75,8 @@ namespace SME.SGP.Aplicacao
             };
 
             if (aulasComponentesTurmas.Any())
-                disciplinasAluno = aulasComponentesTurmas.Select(a => a.ComponenteCurricularCodigo).Distinct().ToArray();
+                disciplinasAluno = aulasComponentesTurmas.Where(a=> request.CodigosDisciplinasTurma.Any(c=> c == a.ComponenteCurricularCodigo))
+                                                         .Select(a => a.ComponenteCurricularCodigo).Distinct().ToArray();
 
             var frequenciaAlunoObtidoIndividual = new List<FrequenciaAluno>();
             foreach (var matricula in request.MatriculasAlunoNaTurma)
@@ -103,7 +104,7 @@ namespace SME.SGP.Aplicacao
             else if (aulasComponentesTurmas.Any())
                 return "100";
 
-            return "0";
+            return "";
         }
 
         private async Task<FrequenciaAluno> ObterTotalSomadoIndividualmente(string[] turmasCodigo, long tipoCalendarioId, string codigoAluno, FrequenciaAluno frequenciaGeralObtida, string[] disciplinasAluno, DateTime? dataMatriculaTurmaFiltro)
@@ -124,13 +125,13 @@ namespace SME.SGP.Aplicacao
             {
                 return new FrequenciaAluno()
                 {
-                    TotalAulas = frequenciaGeralObtida.TotalAulas,
+                    TotalAulas = frequenciasDoAluno.Sum(f=> f.TotalAulas),
                     TotalAusencias = frequenciasDoAluno.Sum(f => f.TotalAusencias),
-                    TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes)
+                    TotalCompensacoes = frequenciasDoAluno.Sum(f => f.TotalCompensacoes > f.TotalAusencias ? f.TotalAusencias : f.TotalCompensacoes)
                 };
             }
 
             return frequenciaGeralObtida;
-        }
+        }        
     }
 }
