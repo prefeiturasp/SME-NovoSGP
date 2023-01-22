@@ -12,17 +12,17 @@ namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/atribuicoes/cjs/integracoes")]
-    //[ChaveIntegracaoSgpApi]
+    [ChaveIntegracaoSgpApi]
     [ValidaDto]
     public class AtribuicaoCJIntegracaoController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("{ueId}/{anoLetivo}")]
         [ProducesResponseType(typeof(IEnumerable<AtribuicaoCJListaRetornoDto>), 200)]
         [ProducesResponseType(204)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Get([FromQuery]AtribuicaoCJListaFiltroDto atribuicaoCJListaFiltroDto, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
+        public async Task<IActionResult> Get(string ueId,int anoLetivo, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
         {
-            return Ok(await useCase.Executar(atribuicaoCJListaFiltroDto));
+            return Ok(await useCase.Executar(new AtribuicaoCJListaFiltroDto{UeId = ueId,AnoLetivo = anoLetivo}));
         }
 
     }
