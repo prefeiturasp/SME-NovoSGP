@@ -271,7 +271,10 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirTurmaExtintaAsync(long turmaId)
         {
-            var sqlExcluirTurma = @"delete from public.notificacao_plano_aee
+            var sqlExcluirTurma = @"delete from public.pendencia_usuario
+                                    where pendencia_id in (select id from public.pendencia where turma_id = @turmaId);
+                                    delete from public.pendencia where turma_id = @turmaId;
+                                    delete from public.notificacao_plano_aee
                                     where plano_aee_id in (select id from public.plano_aee where turma_id = @turmaId);
                                     delete from public.plano_aee where turma_id = @turmaId;
                                     delete from public.consolidado_conselho_classe_aluno_turma where turma_id = @turmaId;
