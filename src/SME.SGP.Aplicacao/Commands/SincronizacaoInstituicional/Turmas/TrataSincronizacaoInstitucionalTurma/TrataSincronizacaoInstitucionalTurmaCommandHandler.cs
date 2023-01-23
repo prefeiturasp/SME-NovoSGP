@@ -77,8 +77,10 @@ namespace SME.SGP.Aplicacao
 
                     if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
+                        var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
+
                         await mediator
-                            .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                            .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId), usuarioLogado: usuarioSistema));
 
                         return true;
                     }

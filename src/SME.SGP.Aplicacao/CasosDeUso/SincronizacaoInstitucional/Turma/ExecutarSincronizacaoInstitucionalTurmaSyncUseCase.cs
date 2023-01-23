@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId, anosComTurmasVigentes.ToArray()));
 
             if (!codigosTurma?.Any() ?? true) 
-                return true;            
+                return true;
 
             foreach (var codigoTurma in codigosTurma)
             {
@@ -44,11 +44,13 @@ namespace SME.SGP.Aplicacao
 
                     var mensagemParaPublicar = JsonConvert.SerializeObject(mensagemSyncTurma);
 
+                    var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
+
                     var publicarFilaIncluirTurma = await mediator
-                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, null));
+                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaTratar, mensagemParaPublicar, mensagemRabbit.CodigoCorrelacao, usuarioSistema));
 
                     if (!publicarFilaIncluirTurma)
-                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de codígo : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
+                        await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível inserir a turma de código : {codigoTurma} na fila de inclusão.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
                 }
                 catch (Exception)
                 {
