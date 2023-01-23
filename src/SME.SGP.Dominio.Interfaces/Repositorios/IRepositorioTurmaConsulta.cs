@@ -16,6 +16,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<Turma> ObterPorId(long id);
         Task<ObterTurmaSimplesPorIdRetornoDto> ObterTurmaSimplesPorId(long id);
         Task<Turma> ObterTurmaComUeEDrePorCodigo(string turmaCodigo);
+        Task<IEnumerable<Turma>> ObterTurmasComUeEDrePorCodigo(string turmaCodigo);
         Task<Turma> ObterTurmaComUeEDrePorId(long turmaId);
         Task<bool> ObterTurmaEspecialPorCodigo(string turmaCodigo);
 

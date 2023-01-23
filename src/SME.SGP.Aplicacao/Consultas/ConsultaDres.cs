@@ -90,7 +90,7 @@ namespace SME.SGP.Aplicacao
                     listaDeRemovida.AddRange(listaAtribuicaoRemover.FindAll(atribuicao => atribuicao.AtribuicaoExcluida));
             }
 
-            foreach(var atribuicao in listaDeRemovida)
+            foreach (var atribuicao in listaDeRemovida)
                 uesParaAtribuicao.Remove(atribuicao);
 
             var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
