@@ -104,6 +104,55 @@ namespace SME.SGP.Dados.Repositorios
             }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId")).FirstOrDefault();
         }
 
+        public async Task<IEnumerable<Turma>> ObterTurmasComUeEDrePorCodigo(string turmaCodigo)
+        {
+            var query = @"select
+	                        t.id,
+	                        t.turma_id,
+	                        t.ue_id,
+	                        t.nome,
+	                        t.ano,
+	                        t.ano_letivo,
+	                        t.modalidade_codigo,
+	                        t.semestre,
+	                        t.qt_duracao_aula,
+	                        t.tipo_turno,
+	                        t.data_atualizacao,
+                            t.tipo_turma,
+                            t.data_inicio,
+	                        t.historica,
+	                        u.id as UeId,
+	                        u.id,
+	                        u.ue_id,
+	                        u.nome,
+	                        u.dre_id,
+	                        u.tipo_escola,
+	                        u.data_atualizacao,
+	                        d.id as DreId,
+	                        d.id,
+	                        d.nome,
+	                        d.dre_id,
+	                        d.abreviacao,
+	                        d.data_atualizacao
+                        from
+	                        turma t
+                        inner join ue u on
+	                        t.ue_id = u.id
+                        inner join dre d on
+	                        u.dre_id = d.id
+                        where
+	                        turma_id = @turmaCodigo";
+
+            contexto.AbrirConexao();
+
+            return (await contexto.QueryAsync<Turma, Ue, Dre, Turma>(query, (turma, ue, dre) =>
+            {
+                ue.AdicionarDre(dre);
+                turma.AdicionarUe(ue);
+                return turma;
+            }, new { turmaCodigo }, splitOn: "TurmaId, UeId, DreId"));
+        }
+
         public async Task<Turma> ObterTurmaComUeEDrePorId(long turmaId)
         {
             var query = @"select
