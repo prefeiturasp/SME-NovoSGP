@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -21,13 +22,19 @@ namespace SME.SGP.Aplicacao
 
             if (string.IsNullOrEmpty(ueId))
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível iniciar a sincronização das turmas. O codígo da Ue não foi informado", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional));
-            
+
             var anosComTurmasVigentes = await mediator
                 .Send(new ObterAnoLetivoTurmasVigentesQuery(ueId));
 
-            var codigosTurma = await mediator.Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId, anosComTurmasVigentes.ToArray()));
+            //É necessário incluir o ano anterior para verificação de turmas históricas que foram extintas posteriormente
+            if (!anosComTurmasVigentes.Contains(DateTimeExtension.HorarioBrasilia().Year - 1))
+                anosComTurmasVigentes = anosComTurmasVigentes.Concat(new int[] { DateTimeExtension.HorarioBrasilia().Year - 1 });
 
-            if (!codigosTurma?.Any() ?? true) return true;
+            var codigosTurma = await mediator
+                .Send(new ObterCodigosTurmasEOLPorUeIdParaSyncEstruturaInstitucionalQuery(ueId, anosComTurmasVigentes.ToArray()));
+
+            if (!codigosTurma?.Any() ?? true) 
+                return true;            
 
             foreach (var codigoTurma in codigosTurma)
             {
