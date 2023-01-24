@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Collections.Generic;
@@ -11,7 +12,10 @@ namespace SME.SGP.Aplicacao
     {
         public ObterAtividadesNotasAlunoPorTurmaPeriodoUseCase(IMediator mediator) : base(mediator)
         {
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
+
+        private readonly IMediator mediator;
 
         public async Task<IEnumerable<AvaliacaoNotaAlunoDto>> Executar(FiltroTurmaAlunoPeriodoEscolarDto param)
         {

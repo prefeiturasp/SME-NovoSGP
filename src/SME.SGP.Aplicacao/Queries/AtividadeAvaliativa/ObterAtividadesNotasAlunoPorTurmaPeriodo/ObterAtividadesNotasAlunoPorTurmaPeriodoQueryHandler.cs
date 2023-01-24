@@ -12,7 +12,8 @@ namespace SME.SGP.Aplicacao
     public class ObterAtividadesNotasAlunoPorTurmaPeriodoQueryHandler : IRequestHandler<ObterAtividadesNotasAlunoPorTurmaPeriodoQuery, IEnumerable<AvaliacaoNotaAlunoDto>>
     {
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
-        public ObterAtividadesNotasAlunoPorTurmaPeriodoQueryHandler(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa, Mediator mediator)
+
+        public ObterAtividadesNotasAlunoPorTurmaPeriodoQueryHandler(IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa)
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
         }
