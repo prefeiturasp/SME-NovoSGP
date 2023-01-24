@@ -243,7 +243,10 @@ namespace SME.SGP.Api.Controllers
         [HttpPost("imprimir-detalhado")]
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.AEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ImpressaoRelatorioEncaminhamentoAeeDetalhado([FromBody] FiltroRelatorioEncaminhamentoAeeDetalhadoDto filtro, [FromServices] IRelatorioEncaminhamentoAeeDetalhadoUseCase detalhadoUseCase)
-            => Ok(await detalhadoUseCase.Executar(filtro));
+        public async Task<IActionResult> ImpressaoRelatorioEncaminhamentoAeeDetalhado(long[] Ids, [FromServices] IRelatorioEncaminhamentoAeeDetalhadoUseCase detalhadoUseCase)
+        {
+            return Ok(await detalhadoUseCase.Executar(new FiltroRelatorioEncaminhamentoAeeDetalhadoDto() { Ids = Ids}));
+        }
+            
     }
 }
