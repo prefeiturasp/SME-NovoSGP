@@ -271,14 +271,25 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task ExcluirTurmaExtintaAsync(long turmaId)
         {
-            var sqlExcluirTurma = @"delete from public.turma where id = @turmaId;";
+            var sqlExcluirTurma = @"delete from public.pendencia_usuario
+                                    where pendencia_id in (select id from public.pendencia where turma_id = @turmaId);
+                                    delete from public.pendencia where turma_id = @turmaId;
+                                    delete from public.notificacao_plano_aee
+                                    where plano_aee_id in (select id from public.plano_aee where turma_id = @turmaId);
+                                    delete from public.plano_aee where turma_id = @turmaId;
+                                    delete from public.consolidado_conselho_classe_aluno_turma where turma_id = @turmaId;
+                                    delete from public.consolidacao_acompanhamento_aprendizagem_aluno where turma_id = @turmaId;
+                                    delete from public.consolidacao_diarios_bordo where turma_id = @turmaId;
+                                    delete from public.consolidacao_registros_pedagogicos where turma_id = @turmaId;
+                                    delete from public.consolidacao_frequencia_turma where turma_id = @turmaId;
+                                    delete from public.consolidado_fechamento_componente_turma where turma_id = @turmaId;
+                                    delete from public.turma where id = @turmaId;";
             try
             {
                 var parametros = new { turmaId };
 
                 await servicoTelemetria.RegistrarAsync(async () =>
                     await SqlMapper.ExecuteScalarAsync(contexto.Conexao, sqlExcluirTurma, parametros), "query", "Excluir Turma Extinta", sqlExcluirTurma, parametros.ToString());
-
             }
             catch (Exception)
             {
