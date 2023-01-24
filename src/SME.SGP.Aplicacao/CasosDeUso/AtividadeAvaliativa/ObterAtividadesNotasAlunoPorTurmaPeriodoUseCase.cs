@@ -5,6 +5,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,6 +31,9 @@ namespace SME.SGP.Aplicacao
             var retorno = new List<AvaliacaoNotaAlunoDto>();
             var datasDasAtividadesAvaliativas = retorno.Select(x => x.Data).ToArray();
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+            
+            if(turma == null)
+                throw new NegocioException("Turma não encontrada");
 
             var ausenciasDasAtividadesAvaliativas = (await mediator.Send(new ObterAusenciasDaAtividadesAvaliativasPorAlunoQuery(turma.CodigoTurma, datasDasAtividadesAvaliativas, request.ComponenteCurricular, request.AlunoCodigo))).ToList();
 
