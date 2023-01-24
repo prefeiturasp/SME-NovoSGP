@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         private string ObterChave(string turmaCodigo)
         {
-            return string.Format(NomeChaveCache.CHAVE_TURMA_ID, turmaCodigo);
+            return string.Format(NomeChaveCache.CHAVE_TURMAS_CODIGO, turmaCodigo);
         }
     }
 }
