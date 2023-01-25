@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
         private async Task<List<AvaliacaoNotaAlunoDto>> ObterAusencia(FiltroTurmaAlunoPeriodoEscolarDto request, List<AvaliacaoNotaAlunoDto> listAtividades)
         {
             var retorno = new List<AvaliacaoNotaAlunoDto>();
-            var datasDasAtividadesAvaliativas = retorno.Select(x => x.Data).ToArray();
+            var datasDasAtividadesAvaliativas = listAtividades.Select(x => x.Data).ToArray();
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
             
             if(turma == null)
