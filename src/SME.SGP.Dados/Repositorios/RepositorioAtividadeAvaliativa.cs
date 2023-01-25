@@ -605,6 +605,8 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"SELECT distinct aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
 	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
+                            , eh_regencia as Regencia
+                            , aa.id as Id
                           FROM atividade_avaliativa aa
                          INNER JOIN turma t ON t.turma_id = aa.turma_id
                          INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
