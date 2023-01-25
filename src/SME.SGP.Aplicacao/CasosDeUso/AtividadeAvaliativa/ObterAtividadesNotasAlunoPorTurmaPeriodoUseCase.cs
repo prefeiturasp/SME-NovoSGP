@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -36,7 +37,7 @@ namespace SME.SGP.Aplicacao
         {
             var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { codigoComponenteCurricular }));
             if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
-                throw new NegocioException("Componente curricular informado não encontrado no EOL");
+                throw new NegocioException(MensagemNegocioEOL.COMPONENTE_CURRICULAR_NAO_LOCALIZADO_INFORMACOES_EOL);
 
             var componenteReferencia = componentesCurricularesCompletos.FirstOrDefault(a => a.CodigoComponenteCurricular == codigoComponenteCurricular);
 
@@ -45,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 var turmaCompleta = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaId));
 
                 if (turmaCompleta == null)
-                    throw new NegocioException("Não foi possível obter a turma.");
+                    throw new NegocioException(MensagemNegocioTurma.NAO_FOI_POSSIVEL_OBTER_TURMA);
 
                 foreach (var avaliacao in avaliacoesNotas)
                 {
