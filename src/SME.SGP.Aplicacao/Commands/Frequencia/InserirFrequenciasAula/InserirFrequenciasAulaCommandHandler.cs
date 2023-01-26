@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             if (!usuario.EhGestorEscolar())
             {
                 ValidaSeUsuarioPodeCriarAula(aula, usuario);
-                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula, false);
             }
             
             var mesmoAnoLetivo = DateTimeExtension.HorarioBrasilia().Year == aula.DataAula.Year;
@@ -109,9 +109,9 @@ namespace SME.SGP.Aplicacao
             var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
             return (AuditoriaDto)registroFrequencia;
         }
-        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula)
+        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
         {
-            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local()));
+            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local(), historico));
 
             if (!usuario.EhProfessorCj() && !podePersistirTurma)
                 throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
