@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
                         Tipo = r.Tipo.GetAttribute<DisplayAttribute>().Name,
                         Codigo = r.Codigo,
                         PodeRemover = r.PodeRemover,
-                        PodeMarcarComoLida = r.DeveMarcarComoLido
+                        PodeMarcarComoLida = r.Status == NotificacaoStatus.Pendente ? true : false
                     }
             };
 
