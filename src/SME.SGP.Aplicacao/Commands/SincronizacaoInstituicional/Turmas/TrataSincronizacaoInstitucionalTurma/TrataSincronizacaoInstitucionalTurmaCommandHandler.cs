@@ -98,7 +98,7 @@ namespace SME.SGP.Aplicacao
             else
             {
                 await mediator
-                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId, turma.DataStatusTurmaEscola.Date)));
 
                 return true;
             }
