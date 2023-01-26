@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
@@ -71,6 +72,14 @@ namespace SME.SGP.Dados
 
             return await database.Conexao.QueryAsync<ConsolidacaoTurmaComponenteCurricularDto>(query.ToString(), new { turmaId, bimestre, situacoesFechamento });
         }
+
+        public async Task ExcluirPorAno(long turmaId, int bimestre)
+        {
+            var query = @"delete from consolidado_fechamento_componente_turma where turma_id = @turmaId and bimestre = @bimestre";
+
+            await database.Conexao.ExecuteScalarAsync(query, new { turmaId, bimestre });
+        }
+
 
     }
 }
