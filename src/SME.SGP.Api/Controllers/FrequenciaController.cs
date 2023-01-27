@@ -51,9 +51,9 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos")]
-        public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
+        public async Task<IActionResult> NotificarAlunosFaltosos([FromQuery] long ueId, [FromServices] IServicoNotificacaoFrequencia servico)
         {
-            await servico.NotificarAlunosFaltosos();
+            await servico.NotificarAlunosFaltosos(ueId);
             
             return Ok();
         }
