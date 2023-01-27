@@ -27,7 +27,6 @@ namespace SME.SGP.Aplicacao
             if (resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                await mediator.Send(new SalvarLogViaRabbitCommand($">>> JSON turma recebido: {json}", LogNivel.Informacao, LogContexto.WorkerRabbit));
                 return JsonConvert.DeserializeObject<TurmaParaSyncInstitucionalDto>(json);
             }
             return default;
