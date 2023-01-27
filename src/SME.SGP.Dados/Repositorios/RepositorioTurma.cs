@@ -338,7 +338,7 @@ namespace SME.SGP.Dados.Repositorios
                 turma.SerieEnsino,
                 turma.TipoTurma,
                 turmaId = turma.Codigo.ToString(),
-                historica = deveMarcarHistorica ? true : false,
+                historica = deveMarcarHistorica,
                 turma.NomeFiltro
             };
 
