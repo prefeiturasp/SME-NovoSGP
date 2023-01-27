@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                         .OrderBy(x => x.Bimestre)
                         .First();
 
-                    if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
+                    if (turma.DataStatusTurmaEscola.Date != DateTime.MinValue && turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
                         var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
 
