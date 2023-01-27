@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<AvaliacaoNotaAlunoDto>> Executar(FiltroTurmaAlunoPeriodoEscolarDto param)
         {
             var retorno =  (await mediator.Send(new ObterAtividadesNotasAlunoPorTurmaPeriodoQuery(param.TurmaId, param.PeriodoEscolarId, param.AlunoCodigo, param.ComponenteCurricular))).ToList();
-
+            
             await CarregarDisciplinasDeRegencia(retorno, long.Parse(param.ComponenteCurricular), param.TurmaId);
             retorno = await ObterAusencia(param, retorno);
 

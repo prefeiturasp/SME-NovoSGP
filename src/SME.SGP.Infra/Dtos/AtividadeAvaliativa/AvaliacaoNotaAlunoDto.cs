@@ -11,5 +11,6 @@ namespace SME.SGP.Infra
         public bool Ausente { get; set; }
         public bool Regencia { get; set; }
         public string[] Disciplinas { get; set; }
+        public bool EhInterdisciplinar { get; set; }
     }
 }
