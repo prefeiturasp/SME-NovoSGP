@@ -19,6 +19,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentNullException(nameof(repositorioAtribuicaoCJ));
         }
         public async Task<IEnumerable<AtribuicaoCJ>> Handle(ObterAtribuicoesCJAtivasQuery request, CancellationToken cancellationToken)
-         => repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.CodigoRf);
+         => repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.CodigoRf, request.Historico);
     }
 }

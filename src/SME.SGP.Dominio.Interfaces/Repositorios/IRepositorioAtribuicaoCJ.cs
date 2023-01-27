@@ -5,7 +5,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioAtribuicaoCJ : IRepositorioBase<AtribuicaoCJ>
     {
-        IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf);
+        IEnumerable<AtribuicaoCJ> ObterAtribuicaoAtiva(string professorRf, bool historica);
         
         Task<IEnumerable<AtribuicaoCJ>> ObterAtribuicaoAtivaAsync(string professorRf);
 
