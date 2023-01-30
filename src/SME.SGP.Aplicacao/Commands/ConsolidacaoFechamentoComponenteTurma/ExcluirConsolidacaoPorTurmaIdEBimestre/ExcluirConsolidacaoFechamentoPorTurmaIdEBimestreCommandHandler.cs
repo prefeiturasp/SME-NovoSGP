@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
 
         protected override async Task Handle(ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand request, CancellationToken cancellationToken)
         {
-            await repositorioFechamentoConsolidado.ExcluirPorAno(request.TurmaId, request.Bimestre);
+            await repositorioFechamentoConsolidado.ExcluirConsolidacaoPorTurmaIdEBimestre(request.TurmaId, request.Bimestre);
         }
     }
 }
