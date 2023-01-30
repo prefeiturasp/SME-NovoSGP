@@ -42,7 +42,6 @@ namespace SME.SGP.Aplicacao
         }
         private void MapearParaEntidadeServico(ComunicadoInserirAeDto comunicadoServico, Comunicado comunicado)
         {
-            comunicadoServico.Id = comunicado.Id;
             comunicadoServico.AlteradoEm = comunicado.AlteradoEm;
             comunicadoServico.AlteradoPor = comunicado.AlteradoPor;
             comunicadoServico.AlteradoRF = comunicado.AlteradoRF;
