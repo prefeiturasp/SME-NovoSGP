@@ -414,7 +414,9 @@ namespace SME.SGP.Dados.Repositorios
 	                        left join registro_frequencia rf on
 	                            aula.id = rf.aula_id
                             left join pendencia_diario_bordo pdb on
-                                aula.id =  pdb.aula_id");
+                                aula.id =  pdb.aula_id
+                            left join diario_bordo db on
+                                db.aula_id = aula.id and db.componente_curricular_id = cc.id");
 
                 if (usuarioLogado.EhProfessorInfantilOuCjInfantil())
                 {
@@ -425,7 +427,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            not aula.excluido
 	                            and aula.id = @aula
                                 and aula.data_aula::date < @hoje
-                                and (rf.id is null or pdb.id is not null)");
+                                and (rf.id is null or (pdb.id is not null and db.id is null))");
             }
             else
             {
