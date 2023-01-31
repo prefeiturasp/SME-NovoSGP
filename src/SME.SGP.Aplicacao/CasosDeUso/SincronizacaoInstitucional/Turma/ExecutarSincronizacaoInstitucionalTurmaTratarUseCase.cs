@@ -21,18 +21,20 @@ namespace SME.SGP.Aplicacao
 
             try
             {
-                var turmaEOL = await mediator.Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
+                var turmaEOL = await mediator
+                    .Send(new ObterTurmaEOLParaSyncEstruturaInstitucionalPorTurmaIdQuery(filtro.CodigoTurma, filtro.UeId));
 
                 if (turmaEOL == null)
                     return true;
 
-                var turmaSGP = await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.CodigoTurma.ToString()));
+                var turmasSGP = await mediator.Send(new ObterTurmasPorCodigoQuery(filtro.CodigoTurma.ToString()));
 
-                var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
-
-                if (!turmaTratada)
+                foreach (var turmaSGP in turmasSGP)
                 {
-                    throw new Exception($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
+                    var turmaTratada = await mediator.Send(new TrataSincronizacaoInstitucionalTurmaCommand(turmaEOL, turmaSGP));
+
+                    if (!turmaTratada)
+                        throw new Exception($"Não foi possível realizar o tratamento da turma id {filtro.CodigoTurma}.");
                 }
             }
             catch (Exception ex)

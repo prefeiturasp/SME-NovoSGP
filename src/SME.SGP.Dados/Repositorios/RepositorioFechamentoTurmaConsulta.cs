@@ -73,7 +73,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
         }
 
-        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre)
+        public async Task<FechamentoTurma> ObterFechamentoTurmaComConselhoDeClassePorTurmaCodigoSemestre(string turmaCodigo, int bimestre, int anoLetivoTurma, int? semestre, long? tipoCalendario = null)
         {
             var query = new StringBuilder(@"with fechamentos as (select f.*,
                             row_number() over (partition by f.id, f.turma_id order by f.id desc) sequencia
@@ -84,10 +84,10 @@ namespace SME.SGP.Dados.Repositorios
                            left join tipo_calendario tp on tp.id = p.tipo_calendario_id and not tp.excluido
                           where t.turma_id = @turmaCodigo ");
             query.AppendLine(bimestre > 0 ? " and p.bimestre = @bimestre " : " and f.periodo_escolar_id is null");
-
+            query.AppendLine(bimestre > 0 && tipoCalendario.HasValue ? " and tp.id =@tipoCalendario" : string.Empty);
             query.AppendLine(" ) select * from fechamentos where sequencia = 1;");
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre });
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurma>(query.ToString(), new { turmaCodigo, bimestre, tipoCalendario });
         }
 
         public async Task<FechamentoTurma> ObterPorTurmaPeriodo(long turmaId, long periodoId = 0)

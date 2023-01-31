@@ -24,6 +24,7 @@ namespace SME.SGP.Aplicacao
         public async Task<PlanoAEEDto> Executar(FiltroPesquisaQuestoesPorPlanoAEEIdDto filtro)
         {
             var plano = new PlanoAEEDto();
+            bool verificaMatriculaAnoVigente = false; 
             bool novaVersao = false;
             var alunoCodigo = 0;
 
@@ -42,7 +43,10 @@ namespace SME.SGP.Aplicacao
                 alunoCodigo = int.Parse(entidadePlano.AlunoCodigo);
                 var alunoTurma = await mediator
                     .Send(new ObterAlunoPorCodigoEAnoPlanoAeeQuery(entidadePlano.AlunoCodigo,
-                        DateTimeExtension.HorarioBrasilia().Year, true)); 
+                        DateTimeExtension.HorarioBrasilia().Year, true));
+
+                if (alunoTurma != null)
+                    verificaMatriculaAnoVigente = true;
 
                 alunoTurma ??= await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, true));
 
@@ -66,8 +70,12 @@ namespace SME.SGP.Aplicacao
                         }
                 }
 
-                if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year && SituacaoAtivaPlanoAEE(entidadePlano))
+                if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
+                    && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year
+                    && SituacaoAtivaPlanoAEE(entidadePlano))
                     anoLetivo = entidadePlano.Turma.AnoLetivo;
+                else if (verificaMatriculaAnoVigente)
+                    anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
 
                 var alunoPorTurmaResposta = await mediator
                     .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, anoLetivo, anoLetivo != DateTimeExtension.HorarioBrasilia().Year && entidadePlano.Turma.AnoLetivo == anoLetivo && entidadePlano.Turma.EhTurmaHistorica, true, entidadePlano.Turma?.CodigoTurma));
@@ -85,7 +93,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if (alunoPorTurmaResposta == null)
-                    throw new NegocioException("Aluno não localizado");
+                    throw new NegocioException("Não foi localizada matrícula ativa para o aluno selecionado.");
 
                 turma = await mediator
                     .Send(new ObterTurmaPorCodigoQuery(alunoPorTurmaResposta.CodigoTurma.ToString()));
@@ -239,6 +247,9 @@ namespace SME.SGP.Aplicacao
                 if (turmasAluno.Count() > 0)
                 {
                     var alunoComMatriculaAtiva = turmasAluno.Where(t => t.PossuiSituacaoAtiva()).FirstOrDefault();
+
+                    if (alunoComMatriculaAtiva == null)
+                        return null;
 
                     return await mediator
                         .Send(new ObterAlunoPorCodigoEolQuery(codigoAluno, anoLetivo, false, false, alunoComMatriculaAtiva.CodigoTurma.ToString()));
