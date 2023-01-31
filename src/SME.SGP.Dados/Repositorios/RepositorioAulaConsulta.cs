@@ -1156,7 +1156,7 @@ namespace SME.SGP.Dados.Repositorios
         {
 
             var query = @"
-                         select db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
+                         select distinct db.id as DiarioBordoId, a.data_aula DataAula, a.id as AulaId, db.criado_rf CodigoRf,
                                 db.criado_por Nome, db.planejamento as Planejamento, 
                                 a.tipo_aula as Tipo, db.inserido_cj as InseridoCJ, 
                                 case when db.id is null then true else false end Pendente
