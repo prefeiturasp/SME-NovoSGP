@@ -96,7 +96,6 @@ namespace SME.SGP.Dados.Repositorios
             }
 
             var dados = await buscarDados();
-
             await SalvarAsync(nomeChave, JsonConvert.SerializeObject(dados), minutosParaExpirar, utilizarGZip);
 
             return dados;            
@@ -162,7 +161,7 @@ namespace SME.SGP.Dados.Repositorios
             
             try
             {
-                if (!string.IsNullOrWhiteSpace(valor) && valor != "[]")
+                if (!string.IsNullOrWhiteSpace(valor) && valor != "[]" && valor != "null")
                 {
                     if (utilizarGZip)
                     {
