@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaId));
             var periodos = await mediator.Send(new ObterPeriodosEscolaresPorAnoEModalidadeTurmaQuery(turma.ModalidadeCodigo, turma.AnoLetivo, turma.Semestre));
-            var periodoConsiderado = periodos?.SingleOrDefault(p => p.PeriodoInicio.Date <= request.DataAula.Date && p.PeriodoFim.Date >= request.DataAula.Date);
+            var periodoConsiderado = periodos?.FirstOrDefault(p => p.PeriodoInicio.Date <= request.DataAula.Date && p.PeriodoFim.Date >= request.DataAula.Date);
 
             if (periodoConsiderado == null)
                 throw new NegocioException("A data da aula está fora dos períodos escolares da turma");
@@ -228,7 +228,7 @@ namespace SME.SGP.Aplicacao
                 var registroFrequenciaAluno = registroFrequenciaAlunos
                     .FirstOrDefault(a => a.AlunoCodigo == alunoCodigo && a.ComponenteCurricularId == componenteCurricularId);
 
-                var frequenciaParaTratar = frequenciaDosAlunos
+                var frequenciaParaTratar = frequenciaDosAlunos.OrderByDescending(ft => ft.Id)
                     .FirstOrDefault(a => a.CodigoAluno == alunoCodigo && a.DisciplinaId == componenteCurricularId && a.Bimestre == periodoEscolar.Bimestre);
 
                 var totalCompensacoes = 0;
@@ -237,6 +237,9 @@ namespace SME.SGP.Aplicacao
 
                 if (totalCompensacoesDisciplinaAluno != null)
                     totalCompensacoes = totalCompensacoesDisciplinaAluno.Compensacoes;
+
+                var totalPresencas = registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina;
+                totalPresencas = totalPresencas > totalAulasNaDisciplina ? totalAulasNaDisciplina : totalPresencas;
 
                 var totalAusencias = registroFrequenciaAluno?.TotalAusencias ?? 0;
 
@@ -257,7 +260,7 @@ namespace SME.SGP.Aplicacao
                                  registroFrequenciaAluno?.TotalRemotos ?? 0,
                                  registroFrequenciaAluno?.TotalPresencas ?? totalAulasNaDisciplina);
 
-                    frequenciaDosAlunos.Add(frequenciaFinal);
+                        frequenciaDosAlunos.Add(frequenciaFinal);                   
                 }
                 else
                 {

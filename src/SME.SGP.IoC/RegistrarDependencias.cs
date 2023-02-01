@@ -621,6 +621,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IObterAulaPorIdUseCase, ObterAulaPorIdUseCase>();
             services.TryAddScoped<IExcluirAulaUseCase, ExcluirAulaUseCase>();
             services.TryAddScoped<IPodeCadastrarAulaUseCase, PodeCadastrarAulaUseCase>();
+            services.TryAddScoped<IObterAulasPorTurmaComponenteDataUseCase, ObterAulasPorTurmaComponenteDataUseCase>();
             services.TryAddScoped<IObterFuncionariosUseCase, ObterFuncionariosUseCase>();            
             services.TryAddScoped<IObterBimestresLiberacaoBoletimUseCase, ObterBimestresLiberacaoBoletimUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();

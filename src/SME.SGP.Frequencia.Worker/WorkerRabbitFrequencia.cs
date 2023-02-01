@@ -64,6 +64,8 @@ namespace SME.SGP.Frequencia.Worker
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoAula, new ComandoRabbit("Tratar carga referência Aula no registro frequência aluno por aula", typeof(ITratarRegistroFrequenciaAlunoAulaUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarCargaRegistroFrequenciaAlunoProcessamento, new ComandoRabbit("Processa a carga referência de aula no registro frequência aluno", typeof(ITratarRegistroFrequenciaAlunoProcessamentoUseCase)));
             Comandos.Add(RotasRabbitSgpFrequencia.RotaTratarFrequenciaRegistradaAlunosInativos, new ComandoRabbit("Tratar frequência registrada para alunos inativos indevidamente", typeof(IVerificaFrequenciaRegistradaAlunosInativosUseCase)));
+            
+            Comandos.Add(RotasRabbitSgpFrequencia.RotaFrequenciaLancamentoAulaSync, new ComandoRabbit("Tratar lançamento de frequências provenientes da integração externa ao SGP", typeof(ILancarFrequenciaAulaUseCase)));
         }
     }
 }
