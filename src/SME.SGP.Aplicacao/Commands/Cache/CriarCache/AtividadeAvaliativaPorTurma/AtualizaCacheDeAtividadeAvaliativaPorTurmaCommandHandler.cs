@@ -26,24 +26,27 @@ namespace SME.SGP.Aplicacao
 
             var atividadeAvaliativas = await repositorioCache.ObterObjetoAsync<List<NotaConceito>>(nomeChave);
 
-            foreach (var excluir in request.EntidadesExcluir)
-                atividadeAvaliativas.Remove(excluir);
+            if (request.EntidadesExcluir.Count() > 0)
+                foreach (var excluir in request.EntidadesExcluir)
+                    atividadeAvaliativas.Remove(excluir);
 
-            foreach (var inserir in request.EntidadesSalvar)
-                atividadeAvaliativas.Add(inserir);
+            if (request.EntidadesSalvar.Count() > 0)
+                foreach (var inserir in request.EntidadesSalvar)
+                    atividadeAvaliativas.Add(inserir);
 
-            foreach (var alterar in request.EntidadesAlterar)
-            {
-                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
-
-                if (atividade != null)
+            if (request.EntidadesAlterar.Count() > 0)
+                foreach (var alterar in request.EntidadesAlterar)
                 {
-                    atividade.Nota = alterar.Nota;
-                    atividade.ConceitoId = alterar.ConceitoId;
-                    atividade.AlteradoEm = alterar.AlteradoEm;
-                    atividade.AlteradoPor = alterar.AlteradoPor;
+                    var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
+
+                    if (atividade != null)
+                    {
+                        atividade.Nota = alterar.Nota;
+                        atividade.ConceitoId = alterar.ConceitoId;
+                        atividade.AlteradoEm = alterar.AlteradoEm;
+                        atividade.AlteradoPor = alterar.AlteradoPor;
+                    }
                 }
-            }
 
             await repositorioCache.SalvarAsync(nomeChave, atividadeAvaliativas);
 
