@@ -103,7 +103,8 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
 
-            dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 08);
+            dto.DataAula = new(DateTimeExtension.HorarioBrasilia().Year, 05, 01);
+            dto.DataAula = dto.DataAula.AddDays(7 - (int) dto.DataAula.DayOfWeek);
 
             await CriarPeriodoEscolarEAbertura();
 

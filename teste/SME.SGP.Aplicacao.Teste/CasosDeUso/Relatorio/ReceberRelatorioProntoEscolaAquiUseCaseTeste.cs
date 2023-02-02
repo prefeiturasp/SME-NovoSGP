@@ -37,14 +37,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             var mensagemRelatorioAutomaticoEscolaAquiDto = new MensagemRelatorioAutomaticoEscolaAquiDto
             {
-                DreCodigo = "109300",
-                UeCodigo = "019316",
+                DreCodigo = "111",
+                UeCodigo = "222",
                 Semestre = 1,
-                TurmaCodigo = "2354878",
+                TurmaCodigo = "333",
                 AnoLetivo = 2022,
                 Modalidade = 1,
                 ModalidadeCodigo = 1,
-                AlunoCodigo = "7059160",
+                AlunoCodigo = "123",
                 CodigoArquivo = Guid.NewGuid()
             };
             var mensagemRelatorioAutomaticoEscolaAquiDtoJson = JsonConvert.SerializeObject(mensagemRelatorioAutomaticoEscolaAquiDto);
@@ -59,8 +59,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 Action = "sgp/relatorio/app/pronto/notificar",
                 Mensagem = mensagemRelatorioProntoJson,
-                UsuarioLogadoNomeCompleto = "ADALGISA GONCALVES",
-                UsuarioLogadoRF = "6769195",
+                UsuarioLogadoNomeCompleto = "Professor",
+                UsuarioLogadoRF = "999999",
             };
 
         }
@@ -68,14 +68,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         {
             var mensagemRelatorioAutomaticoEscolaAquiDto = new MensagemRelatorioAutomaticoEscolaAquiDto
             {
-                DreCodigo = "109300",
-                UeCodigo = "093874",
+                DreCodigo = "111",
+                UeCodigo = "222",
                 Semestre = 0,
-                TurmaCodigo = "2360207",
+                TurmaCodigo = "333",
                 AnoLetivo = 2022,
                 Modalidade = 5,
                 ModalidadeCodigo = 5,
-                AlunoCodigo = "4449321",
+                AlunoCodigo = "123",
                 CodigoArquivo = Guid.NewGuid()
             };
             var mensagemRelatorioAutomaticoEscolaAquiDtoJson = JsonConvert.SerializeObject(mensagemRelatorioAutomaticoEscolaAquiDto);
@@ -90,8 +90,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 Action = "sgp/relatorio/app/pronto/notificar",
                 Mensagem = mensagemRelatorioProntoJson,
-                UsuarioLogadoNomeCompleto = "ADALGISA GONCALVES",
-                UsuarioLogadoRF = "6769195",
+                UsuarioLogadoNomeCompleto = "Professor",
+                UsuarioLogadoRF = "999999",
             };
         }
         [Fact]
@@ -141,7 +141,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Solicitacao_Novificacao_Sem_Sucesso()
+        public async Task Solicitacao_Notificacao_Sem_Sucesso()
         {
             this.configuration.Setup(x => x.GetSection("UrlServidorRelatorios").Value);
             var correlacao = new RelatorioCorrelacao
@@ -163,7 +163,7 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         }
 
         [Fact]
-        public async Task Novificacao_Com_Codigo_Correlacao_Invalido()
+        public async Task Notificacao_Com_Codigo_Correlacao_Invalido()
         {
             var codigo = Guid.NewGuid();
             try

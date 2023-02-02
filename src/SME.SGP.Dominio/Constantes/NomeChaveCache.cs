@@ -3,6 +3,7 @@
     public static class NomeChaveCache
     {
         public const string CHAVE_TURMA_ID = "turma:{0}";
+        public const string CHAVE_TURMAS_CODIGO = "turmas:{0}";
         public const string CHAVE_TURMA_UE_DRE_ID = "turma-ue-dre:{0}";
         public const string CHAVE_DRE_ID = "dre:{0}";
         public const string CHAVE_UE_ID = "ue:{0}";

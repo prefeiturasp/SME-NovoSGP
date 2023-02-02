@@ -76,13 +76,13 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
             if (turma.AnoLetivo != 2020)
-                await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma);
+                await VerificaSePodeFazerFechamentoFinal(periodosEscolares, turma, tipoCalendario.Id);
 
             var ultimoPeriodoEscolar = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault();
 
             retorno.EventoData = ultimoPeriodoEscolar.PeriodoInicio;
 
-            var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { filtros.DisciplinaCodigo }, ultimoPeriodoEscolar.Bimestre));
+            var fechamentoDoUltimoBimestre = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { filtros.DisciplinaCodigo }, ultimoPeriodoEscolar.Bimestre, tipoCalendario.Id));
 
             if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoPeriodoEscolar.Bimestre}º  bimestre.");
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             var notasFechamentosBimestres = Enumerable.Empty<FechamentoNotaAlunoDto>();
 
             if (!retorno.EhSintese)
-                notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota);
+                notasFechamentosBimestres = await ObterNotasFechamentosBimestres(filtros.DisciplinaCodigo, turma, periodosEscolares, retorno.EhNota, tipoCalendario.Id);
 
 
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, ultimoPeriodoEscolar, turma, filtros.DisciplinaCodigo.ToString(), retorno.EventoData);
@@ -212,10 +212,10 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota)
+        private async Task<IEnumerable<FechamentoNotaAlunoDto>> ObterNotasFechamentosBimestres(long disciplinaCodigo, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolares, bool ehNota,long? tipoCalendario = null)
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
-            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, -1);
+            var fechamentosTurmaDisciplina = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, new long[] { disciplinaCodigo }, -1, tipoCalendario);
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
             var notasBimestrais = await repositorioFechamentoNota.ObterPorFechamentosTurma(fechamentosIds);
 
@@ -283,11 +283,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma)
+        private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma, long? tipoCalendario = null)
         {
             var ultimoBimestre = periodosEscolares.OrderByDescending(a => a.Bimestre).FirstOrDefault().Bimestre;
 
-            var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre);
+            var fechamentoDoUltimoBimestre = await repositorioFechamentoTurmaDisciplina.ObterFechamentosTurmaDisciplinas(turma.Id, null, ultimoBimestre, tipoCalendario);
 
             if (fechamentoDoUltimoBimestre == null || !fechamentoDoUltimoBimestre.Any())
                 throw new NegocioException($"Para acessar este aba você precisa realizar o fechamento do {ultimoBimestre}º  bimestre.");
