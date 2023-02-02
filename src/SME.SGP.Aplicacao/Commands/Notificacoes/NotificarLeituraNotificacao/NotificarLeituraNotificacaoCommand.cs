@@ -6,12 +6,14 @@ namespace SME.SGP.Aplicacao
 {
     public class NotificarLeituraNotificacaoCommand : IRequest
     {
-        public NotificarLeituraNotificacaoCommand(Notificacao notificacao)
+        public NotificarLeituraNotificacaoCommand(Notificacao notificacao, string usuarioRf = null)
         {
             Notificacao = notificacao;
+            UsuarioRf = usuarioRf;
         }
 
         public Notificacao Notificacao { get; }
+        public string UsuarioRf { get; set; }
     }
 
     public class NotificarLeituraNotificacaoCommandValidator : AbstractValidator<NotificarLeituraNotificacaoCommand>

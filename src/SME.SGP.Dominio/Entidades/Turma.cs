@@ -85,8 +85,7 @@ namespace SME.SGP.Dominio
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
 
-        public int AnoTurmaInteiro => Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
-
+        public int AnoTurmaInteiro => !string.IsNullOrWhiteSpace(Ano) && Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
 
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {

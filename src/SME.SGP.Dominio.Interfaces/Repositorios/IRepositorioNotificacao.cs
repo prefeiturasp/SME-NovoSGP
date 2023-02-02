@@ -9,6 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirPorIdsAsync(long[] ids);
         Task ExcluirLogicamentePorIdsAsync(long[] ids);
         Task ExcluirPeloSistemaAsync(long[] ids);
-        Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5);
+        Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorRfAsync(string usuarioRf, int limite = 5);
     }
 }

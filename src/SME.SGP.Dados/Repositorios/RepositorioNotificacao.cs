@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
             await database.Conexao.ExecuteAsync(sql, new { ids, alteradoPor = "Sistema", alteradoEm = DateTime.Now, alteradoRf = "Sistema" });
         }
 
-        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
+        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorRfAsync(string usuarioRf, int limite = 5)
         {
             var sql = @"select
 	                        n.id,
@@ -86,15 +86,12 @@ namespace SME.SGP.Dados.Repositorios
 	                        n.usuario_id = u.id
                         where
 	                        (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)
-	                        and extract(year
-                        from
-	                        n.criado_em) = @anoLetivo
 	                        and not excluida
                         order by
 	                        n.status asc,
 	                        n.criado_em desc
                         limit @limite";
-            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite });
+            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new {usuarioRf, limite });
         }
     }
 }

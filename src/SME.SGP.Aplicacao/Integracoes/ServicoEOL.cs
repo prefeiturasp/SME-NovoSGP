@@ -655,7 +655,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 }     
                 else
                 {
-                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF, false));
 
                     if (!obterAtribuicoesCJAtivas.Any())
                         throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");

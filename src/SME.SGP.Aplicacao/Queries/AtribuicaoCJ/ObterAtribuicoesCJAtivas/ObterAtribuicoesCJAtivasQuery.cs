@@ -12,10 +12,12 @@ namespace SME.SGP.Aplicacao
     public class ObterAtribuicoesCJAtivasQuery : IRequest<IEnumerable<AtribuicaoCJ>>
     {
         public string CodigoRf { get; set; }
+        public bool Historico { get; set; }
 
-        public ObterAtribuicoesCJAtivasQuery(string codigoRf)
+        public ObterAtribuicoesCJAtivasQuery(string codigoRf, bool historico)
         {
             CodigoRf = codigoRf;
+            Historico = historico;
         }
     }
 
