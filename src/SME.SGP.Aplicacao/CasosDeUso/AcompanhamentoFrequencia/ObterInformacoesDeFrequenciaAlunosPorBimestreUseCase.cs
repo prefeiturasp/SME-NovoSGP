@@ -50,18 +50,24 @@ namespace SME.SGP.Aplicacao
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
-            var alunos = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim.Date));
+            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
             IEnumerable<AlunoPorTurmaResposta> alunosValidosComOrdenacao = null;
 
-            if(turma.AnoLetivo == DateTime.Now.Year)
+            if (turma.AnoLetivo == DateTime.Now.Year)
+            {
                 alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
-                                                   .OrderBy(a => a.NomeAluno)
-                                                   .ThenBy(a => a.NomeValido());
+                                                  .OrderBy(a => a.NomeAluno)
+                                                  .ThenBy(a => a.NomeValido()); 
+            }
             else
-                alunosValidosComOrdenacao = alunos.OrderBy(a => a.NomeAluno).ThenBy(a => a.NomeValido());            
+            {
+                alunosValidosComOrdenacao = alunos.Where(x => x.DataMatricula.Date < bimestreDoPeriodo.PeriodoFim)
+                                                  .OrderBy(a => a.NomeAluno)
+                                                  .ThenBy(a => a.NomeValido());
+            }
 
             return BimestreFinal == dto.Bimestre
                 ? await ObterFrequenciaAlunosBimestreFinalAsync(turma, alunosValidosComOrdenacao, dto.ComponenteCurricularId, tipoCalendarioId)
@@ -137,7 +143,7 @@ namespace SME.SGP.Aplicacao
             }
 
             return novaListaAlunos;
-        }        
+        }
 
 
         private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false)
