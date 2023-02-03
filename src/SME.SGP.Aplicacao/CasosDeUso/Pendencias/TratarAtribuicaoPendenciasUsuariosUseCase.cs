@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.DIRETOR:
                         var dreUe = await ObterCodigoDREUE(filtro.UeId);
                         var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterCargoPorPerfil()));
+                        if (funcionarios == null || !funcionarios.Any())
+                            funcionarios = await mediator.Send(new ObterFuncionariosPorFuncaoExternaHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterFuncaoExternaPorPerfil()));
 
                         if (funcionarios != null && funcionarios.Any())
                         {

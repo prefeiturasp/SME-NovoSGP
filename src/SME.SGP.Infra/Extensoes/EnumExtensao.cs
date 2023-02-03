@@ -52,6 +52,21 @@ namespace SME.SGP.Infra
             }
         }
 
+        public static FuncaoExterna ObterFuncaoExternaPorPerfil(this PerfilUsuario perfilCodigo)
+        {
+            switch (perfilCodigo)
+            {
+                case PerfilUsuario.CP:
+                    return FuncaoExterna.CP;
+                case PerfilUsuario.AD:
+                    return FuncaoExterna.AD;
+                case PerfilUsuario.DIRETOR:
+                    return FuncaoExterna.Diretor;
+                default:
+                    throw new NegocioException("Perfil não relacionado com Função Externa");
+            }
+        }
+
         public static PerfilUsuario ObterPerfilPorCargo(this Cargo cargoId)
         {
             switch (cargoId)
