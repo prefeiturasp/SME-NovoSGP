@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao.Commands.Aulas.InserirAula
             }
 
             var aulasExistentes = await mediator
-                                        .Send(new ObterAulasPorDataTurmaComponenteCurricularQuery(request.DataAula, 
+                                        .Send(new ObterAulasPorDataTurmaComponenteCurricularCJQuery(request.DataAula, 
                                                                                                   request.CodigoTurma, 
                                                                                                   request.CodigoComponenteCurricular, 
                                                                                                   request.Usuario.EhProfessorCj()));
