@@ -222,13 +222,14 @@ namespace SME.SGP.Dados.Repositorios
                         inner join abrangencia ab on
 	                        t.id = ab.turma_id
                         left join planejamento_anual p on
-	                        p.turma_id = ab.turma_id
+	                        p.turma_id = ab.turma_id and p.excluido = false
                         where
-	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId and p.excluido = false
+                            t.ano_letivo = @anoLetivo and
+	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId 
                             {(!ensinoEspecial ? " and t.ano = @ano " : "")}  
                         group by t.id order by t.nome  ";
 
-            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano });
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano, anoLetivo = turma.AnoLetivo});
         }
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)
