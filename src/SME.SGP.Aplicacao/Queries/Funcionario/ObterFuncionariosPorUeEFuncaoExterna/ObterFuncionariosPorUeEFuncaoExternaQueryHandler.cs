@@ -25,16 +25,10 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<FuncionarioDTO>> Handle(ObterFuncionariosPorUeEFuncaoExternaQuery request, CancellationToken cancellationToken)
         {
-
             var listaRetorno = new List<FuncionarioDTO>();
-
-            /*if (request.CodigoFuncaoExterna == (int)FuncaoExterna.Supervisor)
-                return await ObterSupervisoresUE(request.CodigoUE);*/
-
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
                 var resposta = await httpClient.GetAsync($"/api/escolas/{request.CodigoUE}/funcionarios/funcoes-externas/{request.CodigoFuncaoExterna}");
-
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
@@ -44,18 +38,8 @@ namespace SME.SGP.Aplicacao
                 }
 
             }
-
             return listaRetorno;
         }
 
-        /*private async Task<IEnumerable<FuncionarioDTO>> ObterSupervisoresUE(string codigoUE)
-        {
-            var supervisores = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUE);
-
-            return supervisores.Select(a => new FuncionarioDTO()
-            {
-                CodigoRF = a.SupervisorId
-            });
-        }*/
     }
 }

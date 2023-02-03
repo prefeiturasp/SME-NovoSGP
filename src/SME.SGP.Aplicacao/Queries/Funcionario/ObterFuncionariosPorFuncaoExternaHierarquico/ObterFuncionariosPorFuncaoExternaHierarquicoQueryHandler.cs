@@ -26,33 +26,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<FuncionarioFuncaoExternaDTO>> Handle(ObterFuncionariosPorFuncaoExternaHierarquicoQuery request, CancellationToken cancellationToken)
         {
-            IEnumerable<SupervisorEscolasDreDto> supervisoresEscola = null;
             IEnumerable<FuncionarioDTO> funcionarios = null;
 
-            /*if (request.FuncaoExterna == FuncaoExterna.Supervisor)
-                supervisoresEscola = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUeAsync(request.CodigoUe);
-            else*/
             funcionarios = await ObterFuncionariosPorFuncaoExterna(request.CodigoUe, (int)request.FuncaoExterna);
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
-
-            /*if (request.FuncaoExterna == FuncaoExterna.Supervisor ?
-                supervisoresEscola == null || !supervisoresEscola.Any() :
-                funcionarios == null || !funcionarios.Any() || (!funcionariosDisponiveis.Any() && request.NotificacaoExigeAcao))
-            {
-                FuncaoExterna? funcaoExternaProximoNivel = ObterProximoNivel(request.FuncaoExterna, request.PrimeiroNivel);
-
-                if (!funcaoExternaProximoNivel.HasValue)
-                    return null;
-
-                return await mediator.Send(new ObterFuncionariosPorFuncaoExternaHierarquicoQuery(request.CodigoUe, funcaoExternaProximoNivel.Value, false));
-            }
-            else*/
-            {
-                /*if (request.FuncaoExterna == FuncaoExterna.Supervisor)
-                    return supervisoresEscola.Select(s => new FuncionarioFuncaoExternaDTO(s.SupervisorId, request.FuncaoExterna));
-                else*/
-                return funcionarios.Select(f => new FuncionarioFuncaoExternaDTO(f.CodigoRF, request.FuncaoExterna));
-            }
+            return funcionarios.Select(f => new FuncionarioFuncaoExternaDTO(f.CodigoRF, request.FuncaoExterna));
         }
 
         private FuncaoExterna? ObterProximoNivel(FuncaoExterna funcaoExterna, bool primeiroNivel)
@@ -64,12 +42,7 @@ namespace SME.SGP.Aplicacao
                 case FuncaoExterna.AD:
                     return FuncaoExterna.Diretor;
                 case FuncaoExterna.Diretor:
-                    /*if (!primeiroNivel)
-                        return FuncaoExterna.Supervisor;
-                    else*/
                     return FuncaoExterna.AD;                       
-                /*case FuncaoExterna.Supervisor:
-                    return FuncaoExterna.SupervisorTecnico;*/
                 default:
                     return null;
             }
