@@ -29,9 +29,8 @@ namespace SME.SGP.Aplicacao
             if (atividadeAvaliativas == null)
                 return null;
 
-            if (request.EntidadesExcluir.Count() > 0)
-                foreach (var excluir in request.EntidadesExcluir)
-                    atividadeAvaliativas.Remove(excluir);
+            foreach (var excluir in request.EntidadesExcluir)
+                atividadeAvaliativas.Remove(excluir);
 
             foreach (var inserir in request.EntidadesSalvar)
                 atividadeAvaliativas.Add(inserir);
