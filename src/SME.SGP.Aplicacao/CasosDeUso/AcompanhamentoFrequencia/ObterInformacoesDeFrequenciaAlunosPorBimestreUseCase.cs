@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
-            var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma)));
+            var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim));
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
@@ -64,7 +64,8 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                alunosValidosComOrdenacao = alunos.Where(x => x.DataMatricula.Date < bimestreDoPeriodo.PeriodoFim)
+                alunosValidosComOrdenacao = alunos.Where(a => a.EstaAtivo(bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
+                                                             (a.Inativo && a.DataSituacao >= bimestreDoPeriodo.PeriodoFim) && a.DataMatricula <= bimestreDoPeriodo.PeriodoFim)
                                                   .OrderBy(a => a.NomeAluno)
                                                   .ThenBy(a => a.NomeValido());
             }
