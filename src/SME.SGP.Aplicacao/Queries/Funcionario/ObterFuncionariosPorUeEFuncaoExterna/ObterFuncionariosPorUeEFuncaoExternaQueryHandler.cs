@@ -48,7 +48,7 @@ namespace SME.SGP.Aplicacao
             return listaRetorno;
         }
 
-        private async Task<IEnumerable<FuncionarioDTO>> ObterSupervisoresUE(string codigoUE)
+        /*private async Task<IEnumerable<FuncionarioDTO>> ObterSupervisoresUE(string codigoUE)
         {
             var supervisores = await repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUE);
 
@@ -56,6 +56,6 @@ namespace SME.SGP.Aplicacao
             {
                 CodigoRF = a.SupervisorId
             });
-        }
+        }*/
     }
 }
