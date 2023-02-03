@@ -26,6 +26,9 @@ namespace SME.SGP.Aplicacao
 
             var atividadeAvaliativas = await repositorioCache.ObterObjetoAsync<List<NotaConceito>>(nomeChave);
 
+            if (atividadeAvaliativas == null)
+                return null;
+
             foreach (var excluir in request.EntidadesExcluir)
                 atividadeAvaliativas.Remove(excluir);
 
