@@ -11,14 +11,19 @@ namespace SME.SGP.Aplicacao
     public class RegistrarEncaminhamentoNAAPACommandHandler : IRequestHandler<RegistrarEncaminhamentoNAAPACommand, ResultadoEncaminhamentoNAAPADto>
     {
         private readonly IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA;
+        private readonly IMediator mediator;
 
-        public RegistrarEncaminhamentoNAAPACommandHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA)
+        public RegistrarEncaminhamentoNAAPACommandHandler(IRepositorioEncaminhamentoNAAPA repositorioEncaminhamentoNAAPA, IMediator mediator)
         {
             this.repositorioEncaminhamentoNAAPA = repositorioEncaminhamentoNAAPA ?? throw new ArgumentNullException(nameof(repositorioEncaminhamentoNAAPA));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ResultadoEncaminhamentoNAAPADto> Handle(RegistrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, request.AlunoCodigo, true));
+
             var encaminhamento = MapearParaEntidade(request);
             var id = await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamento);
             var resultado = new ResultadoEncaminhamentoNAAPADto(id);
