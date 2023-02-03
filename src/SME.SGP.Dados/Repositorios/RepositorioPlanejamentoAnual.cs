@@ -226,7 +226,7 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             t.ano_letivo = @anoLetivo and
 	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId 
-                            {(!ensinoEspecial ? " and t.ano = @ano " : "")}  
+                            {(!ensinoEspecial || !turma.EnsinoEspecial ? " and t.ano = @ano " : "")}  
                         group by t.id order by t.nome  ";
 
             return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano, anoLetivo = turma.AnoLetivo});
