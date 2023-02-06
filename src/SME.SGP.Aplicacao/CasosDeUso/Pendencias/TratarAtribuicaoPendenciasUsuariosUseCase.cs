@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,17 +31,10 @@ namespace SME.SGP.Aplicacao
                     case Dominio.PerfilUsuario.AD:
                     case Dominio.PerfilUsuario.DIRETOR:
                         var dreUe = await ObterCodigoDREUE(filtro.UeId);
-                        var funcionarios = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo.ObterCargoPorPerfil()));
 
-                        if (funcionarios != null && funcionarios.Any())
-                        {
-                            foreach (var funcionario in funcionarios)
-                            {
-                                var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRF);
-                                await AtribuirPerfilUsuario(usuarioId, funcionario.CargoId.ObterPerfilPorCargo(), pendenciaPerfil.Id);
-                            }
-                        }
-                        break;
+                       if (!(await AtribuirPerfisUsuarioPorCargo(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id)))
+                            await AtribuirPerfisUsuarioPorFuncaoExterna(dreUe.UeCodigo, pendenciaPerfil.PerfilCodigo, pendenciaPerfil.Id);
+                       break;
 
                     case Dominio.PerfilUsuario.CEFAI:
                         var dre = await ObterCodigoDREUE(filtro.UeId);
@@ -121,6 +115,37 @@ namespace SME.SGP.Aplicacao
 
             if(!verificaExistenciaPendencia)
                 await mediator.Send(new SalvarPendenciaPerfilUsuarioCommand(pendenciaPerfilId, usuarioId, perfil));
+        }
+
+        private async Task<bool> AtribuirPerfisUsuarioPorCargo(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            var funcionariosCargo = await mediator.Send(new ObterFuncionariosPorCargoHierarquicoQuery(ueCodigo, perfilUsuario.ObterCargoPorPerfil()));
+
+            if (funcionariosCargo != null && funcionariosCargo.Any())
+            {
+                foreach (var funcionario in funcionariosCargo)
+                {
+                    var usuarioId = await ObterUsuarioId(funcionario.FuncionarioRF);
+                    await AtribuirPerfilUsuario(usuarioId, funcionario.CargoId.ObterPerfilPorCargo(), pendenciaPerfilId);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private async Task<bool> AtribuirPerfisUsuarioPorFuncaoExterna(string ueCodigo, PerfilUsuario perfilUsuario, long pendenciaPerfilId)
+        {
+            var funcionariosFuncaoExterna = await mediator.Send(new ObterFuncionariosPorFuncaoExternaHierarquicoQuery(ueCodigo, perfilUsuario.ObterFuncaoExternaPorPerfil()));
+            if (funcionariosFuncaoExterna != null && funcionariosFuncaoExterna.Any())
+            {
+                foreach (var funcionario in funcionariosFuncaoExterna)
+                {
+                    var usuarioId = await ObterUsuarioId(funcionario.FuncionarioCpf);
+                    await AtribuirPerfilUsuario(usuarioId, funcionario.FuncaoExternaId.ObterPerfilPorFuncaoExterna(), pendenciaPerfilId);
+                }
+                return true;
+            }
+            return false;
         }
     }
 }
