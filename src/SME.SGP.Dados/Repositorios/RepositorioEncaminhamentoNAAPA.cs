@@ -353,7 +353,8 @@ namespace SME.SGP.Dados.Repositorios
                         turma_id as TurmaId,
                         aluno_codigo as AlunoCodigo,
                         aluno_nome as AlunoNome,
-                        situacao
+                        situacao,
+                        situacao_matricula_aluno as SituacaoMatriculaAluno
                         from encaminhamento_naapa 
                         where situacao <> @situacao and not excluido";
 

@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio.Enumerados;
+﻿using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using System.Collections.Generic;
 
 namespace SME.SGP.Infra
@@ -14,6 +15,7 @@ namespace SME.SGP.Infra
         public string AlunoCodigo { get; set; }
         public string AlunoNome { get; set; }
         public SituacaoNAAPA Situacao { get; set; }
-        public List<EncaminhamentoNAAPASecaoDto> Secoes { get; set; }
+        public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
+    public List<EncaminhamentoNAAPASecaoDto> Secoes { get; set; }
     }
 }
