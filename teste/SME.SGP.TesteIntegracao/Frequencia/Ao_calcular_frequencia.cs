@@ -454,7 +454,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoRF = "",
                 TurmaId = 1,
                 DisciplinaId = "1",
-                Bimestre = 1,
+                Bimestre = 3,
                 Nome = "",
                 Descricao = ""
             });
