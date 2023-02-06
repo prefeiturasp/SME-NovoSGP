@@ -1012,6 +1012,14 @@ namespace SME.SGP.Dados.Repositorios
             return await contexto.Conexao.QueryAsync<TurmaComplementarDto>(query, new { alunosCodigos });
         }
 
+        public async Task<string> ObterTurmaCodigoPorId(long turmaId)
+        {
+            var query = @"select t.turma_id
+                        from turma t
+                        inner join ue u on t.ue_id = u.id
+                        where t.id = @turmaId";
 
+            return await contexto.Conexao.QueryFirstOrDefaultAsync<string>(query, new { turmaId });
+        }
     }
 }
