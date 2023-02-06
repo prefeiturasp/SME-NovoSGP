@@ -360,5 +360,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
         }
+
+        public Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id)
+        {
+            var query = @" select ea.*
+                            from encaminhamento_naapa ea
+                           where ea.id = @id";
+
+            return (database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoNAAPA>(query, new { id }));
+        }
     }
 }

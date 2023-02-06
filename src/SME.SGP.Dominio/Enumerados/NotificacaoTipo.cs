@@ -33,5 +33,7 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "AEE")]
         AEE = 10,
+        [Display(Name = "NAAPA")]
+        NAAPA = 11,
     }
 }
