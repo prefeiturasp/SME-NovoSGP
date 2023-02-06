@@ -21,23 +21,24 @@ namespace SME.SGP.Aplicacao
 
         public async Task<ResultadoEncaminhamentoNAAPADto> Handle(RegistrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turma.CodigoTurma, request.AlunoCodigo, true));
+            var turmaCodigo = await mediator.Send(new ObterTurmaCodigoPorIdQuery(request.TurmaId));
+            var aluno = await mediator.Send(new ObterAlunoPorTurmaAlunoCodigoQuery(turmaCodigo, request.AlunoCodigo, true));
 
-            var encaminhamento = MapearParaEntidade(request);
+            var encaminhamento = MapearParaEntidade(request, aluno?.CodigoSituacaoMatricula);
             var id = await repositorioEncaminhamentoNAAPA.SalvarAsync(encaminhamento);
             var resultado = new ResultadoEncaminhamentoNAAPADto(id);
             resultado.Auditoria = (AuditoriaDto)encaminhamento;
             return resultado;
         }
 
-        private EncaminhamentoNAAPA MapearParaEntidade(RegistrarEncaminhamentoNAAPACommand request)
+        private EncaminhamentoNAAPA MapearParaEntidade(RegistrarEncaminhamentoNAAPACommand request, SituacaoMatriculaAluno? situacaoAluno)
             => new ()
             {
                 TurmaId = request.TurmaId,
                 Situacao = request.Situacao,
                 AlunoCodigo = request.AlunoCodigo,
-                AlunoNome = request.AlunoNome
+                AlunoNome = request.AlunoNome,
+                SituacaoMatriculaAluno = situacaoAluno
             };
     }
 }

@@ -17,6 +17,6 @@ namespace SME.SGP.Dominio
         public SituacaoNAAPA Situacao { get; set; }
         public bool Excluido { get; set; }
         public List<EncaminhamentoNAAPASecao> Secoes { get; set; }
-        public SituacaoMatriculaAluno SituacaoMatriculaAluno { get; set; }
+        public SituacaoMatriculaAluno? SituacaoMatriculaAluno { get; set; }
 }
 }
