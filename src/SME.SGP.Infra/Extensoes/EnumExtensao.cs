@@ -96,10 +96,6 @@ namespace SME.SGP.Infra
                     return PerfilUsuario.AD;
                 case FuncaoExterna.Diretor:
                     return PerfilUsuario.DIRETOR;
-                /*case FuncaoExterna.Supervisor:
-                    return PerfilUsuario.SUPERVISOR;
-                case FuncaoExterna.SupervisorTecnico:
-                    return PerfilUsuario.SUPERVISOR_TECNICO;*/
                 default:
                     throw new NegocioException("Funcao Externa não relacionada a um Perfil");
             }
