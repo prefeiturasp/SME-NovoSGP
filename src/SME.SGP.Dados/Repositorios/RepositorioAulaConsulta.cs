@@ -870,7 +870,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<DateTime>(query, new { aulaId });
         }
 
-        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ)
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricularCJ(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo, bool aulaCJ)
         {
             var query = @"select *
                  from aula
@@ -887,6 +887,26 @@ namespace SME.SGP.Dados.Repositorios
                 componenteCurricularCodigo,
                 aulaCJ
             });
+        }
+        
+        public async Task<IEnumerable<AulaConsultaDto>> ObterAulasPorDataTurmaComponenteCurricular(DateTime dataAula, string codigoTurma, string componenteCurricularCodigo)
+        {
+            var query = @"select id, ue_id Ueid, disciplina_id DisciplinaId, turma_id TurmaId,tipo_calendario_id TipoCalendarioId, professor_rf ProfessorRf, quantidade, 
+                                 data_aula DataAula, recorrencia_aula RecorrenciaAula, tipo_aula TipoAula, criado_em CriadoEm, criado_por CriadoPor, alterado_em AlteradoEm, 
+                                 alterado_por AlteradoPor, criado_rf CriadoRf, alterado_rf AlteradoRf, excluido, migrado, aula_cj AulaCj 
+                 from aula
+                where not excluido
+                  and DATE(data_aula) = @data
+                  and turma_id = @codigoTurma
+                  and disciplina_id = @componenteCurricularCodigo";
+
+            var retorno = await database.Conexao.QueryAsync<AulaConsultaDto>(query, new
+            {
+                data = dataAula.Date,
+                codigoTurma,
+                componenteCurricularCodigo
+            });
+            return retorno;
         }
 
         public async Task<bool> ObterTurmaInfantilPorAula(long aulaId)

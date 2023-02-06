@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
 
             ValidaDisciplinaNaAvaliacao(disciplina);
-            ValidaCategoriaInterdisciplinar(dto);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
 
@@ -211,7 +211,7 @@ namespace SME.SGP.Aplicacao
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
 
             ValidaDisciplinaNaAvaliacao(disciplina);
-            ValidaCategoriaInterdisciplinar(dto);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
@@ -378,11 +378,16 @@ namespace SME.SGP.Aplicacao
             return disciplina.FirstOrDefault();
         }
 
-        private void ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
+        private async Task ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
         {
+            bool verificaSeEhRegencia = false;
             if (dto.CategoriaId == CategoriaAtividadeAvaliativa.Interdisciplinar && dto.DisciplinasId.Count() < 2)
             {
-                throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
+                if (dto.DisciplinasId.Any())
+                    verificaSeEhRegencia = await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(Convert.ToInt64(dto.DisciplinasId.FirstOrDefault())));
+
+                if(!verificaSeEhRegencia)
+                    throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
             }
         }
 
@@ -427,7 +432,7 @@ namespace SME.SGP.Aplicacao
 
             if (atividadeAvaliativa.EhRegencia)
             {
-                if (dto.DisciplinaContidaRegenciaId.Length == 0)
+                if (dto.DisciplinaContidaRegenciaId.Length == 0 && !(atividadeAvaliativa.Categoria == CategoriaAtividadeAvaliativa.Interdisciplinar))
                     throw new NegocioException("É necessário informar as disciplinas da regência");
 
                 foreach (string id in dto.DisciplinaContidaRegenciaId)
