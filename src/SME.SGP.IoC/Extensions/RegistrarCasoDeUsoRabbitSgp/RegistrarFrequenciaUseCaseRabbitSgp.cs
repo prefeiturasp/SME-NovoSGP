@@ -48,6 +48,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoTurmaUseCase, TratarRegistroFrequenciaAlunoTurmaUseCase>();
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoAulaUseCase, TratarRegistroFrequenciaAlunoAulaUseCase>();
             services.TryAddScoped<ITratarRegistroFrequenciaAlunoProcessamentoUseCase, TratarRegistroFrequenciaAlunoProcessamentoUseCase>();
+            
+            services.TryAddScoped<ILancarFrequenciaAulaUseCase, LancarFrequenciaAulaUseCase>();
         }
     }
 }

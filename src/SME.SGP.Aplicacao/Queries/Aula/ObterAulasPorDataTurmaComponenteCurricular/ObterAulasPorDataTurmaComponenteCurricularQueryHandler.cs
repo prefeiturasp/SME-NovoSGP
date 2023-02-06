@@ -16,6 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<AulaConsultaDto>> Handle(ObterAulasPorDataTurmaComponenteCurricularQuery request, CancellationToken cancellationToken)
-            => await repositorioAula.ObterAulasPorDataTurmaComponenteCurricular(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular.ToString(), request.AulaCJ);
+            => await repositorioAula.ObterAulasPorDataTurmaComponenteCurricular(request.DataAula, request.CodigoTurma, request.CodigoComponenteCurricular.ToString());
     }
 }

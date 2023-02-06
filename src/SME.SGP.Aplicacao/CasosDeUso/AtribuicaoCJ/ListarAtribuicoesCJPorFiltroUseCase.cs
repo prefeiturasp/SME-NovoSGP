@@ -66,7 +66,8 @@ namespace SME.SGP.Aplicacao
                     TurmaId = professorDisciplina.TurmaId,
                     Disciplinas = exibeNomeTurmaNovoInfantil
                     ? disciplinasDescricoes.Select(d => d.NomeComponenteInfantil).ToArray() 
-                    : disciplinasDescricoes.Select(d => d.Nome).ToArray()
+                    : disciplinasDescricoes.Select(d => d.Nome).ToArray(),
+                    ProfessorRf = professorDisciplina.ProfessorRf
                 };
 
                 listRetorno.Add(atribuicaoDto);
