@@ -41,7 +41,8 @@
         public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA = "sgp.atualizar.endereco.encaminhamento.naapa";
-        
+        public const string ExecutarNotificacaoSituacaoAlunoDoEncaminhamentoNAAPA = "sgp.atualizacao.situacao.aluno.encaminhamento.naapa.notificar";
+
         #region Relatórios
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";
