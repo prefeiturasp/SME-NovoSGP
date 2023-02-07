@@ -38,7 +38,10 @@ namespace SME.SGP.Aplicacao
             if (turmaId != 0)
             {
                 if (turmaId != encaminhamento.TurmaId)
+                {
                     await AtualizarEncaminhamento(encaminhamento.Id.GetValueOrDefault(), turmaId);
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
+                }
                 if (alunoTurma.CodigoSituacaoMatricula != (int)(encaminhamento.SituacaoMatriculaAluno ?? 0))
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoNotificacaoSituacaoAlunoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
             }
