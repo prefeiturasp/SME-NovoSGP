@@ -375,6 +375,21 @@ namespace SME.SGP.Dados.Repositorios
             }, new { modalidades, anoLetivo });
         }
 
+        public async Task<IEnumerable<Ue>> ObterUEsComDREsPorCodigoUes(string[] codigoUes)
+        {
+            var query = @"select distinct u.*, d.*
+                          from ue u
+                         inner join dre d on d.id = u.dre_id
+                         where u.ue_id  = ANY(@codigoUes)";
+            
+            return await contexto.Conexao.QueryAsync<Ue, Dre, Ue>(query, (ue, dre) =>
+            {
+                ue.Dre = dre;
+
+                return ue;
+            }, new { codigoUes });
+        }
+
         public Task<IEnumerable<long>> ObterIdsPorDre(long dreId)
         {
             var query = "select id from UE where dre_id = @dreId";

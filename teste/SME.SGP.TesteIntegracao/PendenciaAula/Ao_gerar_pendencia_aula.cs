@@ -27,7 +27,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaAula
         {
             var useCase = ServiceProvider.GetService<IPendenciaAulaUseCase>();
 
-            var valorData = DateTimeExtension.HorarioBrasilia().AddDays(-1);
+            var valorData = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
 
             await InserirNaBase(new ParametrosSistema
             {

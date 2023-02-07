@@ -62,14 +62,14 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("{planoAeeId}")]
+        [Route("{planoAeeId}/aluno/{codigoAluno}")]
         [ProducesResponseType(typeof(PlanoAEEDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId, [FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
+        public async Task<IActionResult> ObterPlanoAee(long? planoAeeId,long codigoAluno ,[FromQuery] string turmaCodigo, [FromServices] IObterPlanoAEEPorIdUseCase useCase)
         {
-            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId, turmaCodigo)));
+            return Ok(await useCase.Executar(new FiltroPesquisaQuestoesPorPlanoAEEIdDto(planoAeeId,turmaCodigo,codigoAluno)));
         }
 
         [HttpGet]
@@ -240,6 +240,17 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(bool), 200)]
         [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
         public async Task<IActionResult> ImprimirConselhoTurma([FromBody] FiltroRelatorioPlanoAeeDto filtro, [FromServices] IImpressaoPlanoAeeUseCase useCase)
-            => Ok(await useCase.Executar(filtro));        
+            => Ok(await useCase.Executar(filtro));
+
+
+        [HttpGet("srm-paee")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterDadosSrmPaeeColaborativo([FromBody] FiltroSrmPaeeColaborativoDto filtro,[FromServices] IObterSrmPaeeColaborativoUseCase usecase)
+        {
+            return Ok(await  usecase.Executar(filtro));
+        }
+        
     }
 }
