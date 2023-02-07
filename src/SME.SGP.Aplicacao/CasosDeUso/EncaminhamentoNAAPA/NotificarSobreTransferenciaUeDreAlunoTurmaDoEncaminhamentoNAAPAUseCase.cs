@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
 
         private string MontarMensagemResponsaveisNovaUe(List<FuncionarioUnidadeDto> responsaveis)
         {
-            var perfisMsg = new Guid[] { Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO, Perfis.PERFIL_ASSISTENTE_SOCIAL }
-            if (!responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil).Any())
+            var perfisMsg = new Guid[] { Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO, Perfis.PERFIL_ASSISTENTE_SOCIAL };
+            if (!responsaveis.Any(resp => perfisMsg.Contains(resp.Perfil)))
                 return string.Empty;
 
             var msg = "O encaminhamento NAAPA agora é de responsabilidade dos seguintes profissionais:";
