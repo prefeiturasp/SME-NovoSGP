@@ -108,6 +108,7 @@ namespace SME.SGP.Worker.RabbitMQ
             Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza Endereço do encaminhamento NAAPA", typeof(IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarNotificacaoAtualizacaoSituacaoAlunoDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre inativação de aluno na turma do encaminhamento NAAPA", typeof(INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
             Comandos.Add(RotasRabbitSgp.ExecutarNotificacaoTransferenciaUeDreDoEncaminhamentoNAAPA, new ComandoRabbit("Notifica responsáveis sobre transferencia do aluno entre ues e dres do encaminhamento NAAPA", typeof(INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase), true));
+            Comandos.Add(RotasRabbitSgp.ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA, new ComandoRabbit("Atualiza Turmas de Programa do encaminhamento NAAPA", typeof(IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase), true));
         }
     }
 }
