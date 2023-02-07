@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -28,11 +27,11 @@ namespace SME.SGP.Aplicacao
                 ? DateTimeExtension.HorarioBrasilia().Date
                 : new DateTime(anoLetivo, 12, 31, 0, 0, 0, DateTimeKind.Utc);
 
-            IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, dataReferencia, professorRf, false));
+            var professoresTitularesDisciplinasEol = (await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId, dataReferencia, professorRf, false))).ToList();
 
-            var listaAtribuicoes = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo));
+            var listaAtribuicoes = (await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(modalidadeId, turmaId, ueId, 0, professorRf, string.Empty, null, "", null, anoLetivo))).ToList();
 
-            if (professoresTitularesDisciplinasEol != null && professoresTitularesDisciplinasEol.Any())
+            if (professoresTitularesDisciplinasEol.Any())
                 return TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(listaAtribuicoes, professoresTitularesDisciplinasEol);
             else return null;
         }
@@ -68,7 +67,7 @@ namespace SME.SGP.Aplicacao
             return listaProfessorDisciplina;
         }
 
-        private AtribuicaoCJTitularesRetornoDto TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(IEnumerable<AtribuicaoCJ> listaAtribuicoes, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol)
+        private AtribuicaoCJTitularesRetornoDto TransformaEntidadesEmDtosAtribuicoesProfessoresRetorno(List<AtribuicaoCJ> listaAtribuicoes, IEnumerable<ProfessorTitularDisciplinaEol> professoresTitularesDisciplinasEol)
         {
             var listaRetorno = new AtribuicaoCJTitularesRetornoDto();
 
@@ -82,7 +81,7 @@ namespace SME.SGP.Aplicacao
                     DisciplinaId = disciplinaProfessorTitular.DisciplinaId,
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
-                    Substituir = atribuicao != null && atribuicao.Substituir
+                    Substituir = atribuicao is {Substituir: true}
                 });
             }
 
@@ -92,10 +91,13 @@ namespace SME.SGP.Aplicacao
                     .OrderBy(b => b.AlteradoEm)
                     .ThenBy(b => b.CriadoEm).FirstOrDefault();
 
-                listaRetorno.CriadoEm = ultimoRegistroAlterado.CriadoEm;
-                listaRetorno.CriadoPor = ultimoRegistroAlterado.CriadoPor;
-                listaRetorno.AlteradoEm = ultimoRegistroAlterado.AlteradoEm;
-                listaRetorno.AlteradoPor = ultimoRegistroAlterado.AlteradoPor;
+                if (ultimoRegistroAlterado != null)
+                {
+                    listaRetorno.CriadoEm = ultimoRegistroAlterado.CriadoEm;
+                    listaRetorno.CriadoPor = ultimoRegistroAlterado.CriadoPor;
+                    listaRetorno.AlteradoEm = ultimoRegistroAlterado.AlteradoEm;
+                    listaRetorno.AlteradoPor = ultimoRegistroAlterado.AlteradoPor;
+                }
             }
 
             return listaRetorno;
