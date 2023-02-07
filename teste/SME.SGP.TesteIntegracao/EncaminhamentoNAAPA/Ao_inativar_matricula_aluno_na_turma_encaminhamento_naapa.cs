@@ -30,7 +30,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<FuncionarioUnidadeDto>>), typeof(ObterFuncionariosDreOuUePorPerfisQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Encaminhamento NAAPA - Ao receber atualização de situação matrícula do aluno a turma para Inativo, deve notificar CP NAAPA e atualizar situação matrícula no encaminhamento")]
+        [Fact(DisplayName = "Encaminhamento NAAPA - Ao receber atualização de situação matrícula do aluno na turma para Inativo, deve notificar CP NAAPA, psicopedagogo, psicólogo e assist. social e atualizar situação matrícula no encaminhamento")]
         public async Task Deve_atualizar_situacao_matricula_encaminhamento_naapa_e_notificar_CP_NAAPA()
         {
             var filtroNAAPA = new FiltroNAAPADto()

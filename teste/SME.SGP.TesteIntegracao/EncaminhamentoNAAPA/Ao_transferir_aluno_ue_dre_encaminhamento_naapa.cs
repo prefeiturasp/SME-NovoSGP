@@ -17,9 +17,9 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
-    public class Ao_inativar_matricula_aluno_na_turma_com_outra_matricula_ativa_existente_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
+    public class Ao_transferir_aluno_ue_dre_encaminhamento_naapa : EncaminhamentoNAAPATesteBase
     {
-        public Ao_inativar_matricula_aluno_na_turma_com_outra_matricula_ativa_existente_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_transferir_aluno_ue_dre_encaminhamento_naapa(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
@@ -30,8 +30,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<FuncionarioUnidadeDto>>), typeof(ObterFuncionariosDreOuUePorPerfisQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
-        [Fact(DisplayName = "Encaminhamento NAAPA - Ao receber atualização de situação matrícula do aluno a turma para Inativo porém com outra matrícula ativa, deve atualizar situação matrícula no encaminhamento e não notificar responsáveis")]
-        public async Task Deve_atualizar_situacao_matricula_encaminhamento_naapa_e_nao_notificar_CP_NAAPA()
+        [Fact(DisplayName = "Encaminhamento NAAPA - Ao receber transferencia de aluno entre Dres/Ues, deve notificar CP NAAPA, psicopedagogo, psicólogo e assist. social")]
+        public async Task Deve_notificar_CP_NAAPA()
         {
             var filtroNAAPA = new FiltroNAAPADto()
             {
@@ -51,17 +51,16 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             await CriarTurma(filtroNAAPA.Modalidade);
             await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_1);
 
-            var useCase = ObterServicoNotificacaoAtualizacaoMatriculaAlunoDoEncaminhamentoNAAPA();
+            var useCase = ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA();
 
             var mensagem = new MensagemRabbit(JsonSerializer.Serialize(ObterEncaminhamentoDto(ALUNO_CODIGO_1, ALUNO_NOME_1)));
 
             var gerouNotificacoes = (await useCase.Executar(mensagem));
-            gerouNotificacoes.ShouldBe(false);
+            gerouNotificacoes.ShouldBe(true);
 
-            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
-            encaminhamentoNAAPA.SituacaoMatriculaAluno.ShouldBe(SituacaoMatriculaAluno.ReclassificadoSaida);
             var notificacoes = ObterTodos<Dominio.Notificacao>();
-            notificacoes.ShouldBeEmpty();
+            notificacoes.ShouldNotBeNull().ShouldNotBeEmpty();
+            notificacoes.Count.ShouldBe(4);
         }
 
 

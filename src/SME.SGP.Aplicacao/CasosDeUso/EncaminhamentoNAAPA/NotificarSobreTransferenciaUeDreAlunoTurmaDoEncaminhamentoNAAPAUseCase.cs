@@ -64,8 +64,7 @@ namespace SME.SGP.Aplicacao
             responsaveisNotificados.AddRange(responsaveisUeNova);
 
             var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
-            var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turmaAnterior.Ue.Dre.Abreviacao} e estava matriculada na turma 
-                           {turmaAnterior.NomeComModalidade()} na {turmaAnterior.Ue.TipoEscola.ObterNomeCurto()} {turmaAnterior.Ue.Nome} foi transferida para a turma {turmaNova.NomeComModalidade()} na {turmaNova.Ue.TipoEscola.ObterNomeCurto()} {turmaNova.Ue.Nome}{(turmaAnterior.Ue.Dre.CodigoDre != turmaNova.Ue.Dre.CodigoDre ? $"({turmaNova.Ue.Dre.Abreviacao})" : "")}. {MontarMensagemResponsaveisNovaUe(responsaveisUeNova)}";
+            var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turmaAnterior.Ue.Dre.Abreviacao} e estava matriculada na turma {turmaAnterior.NomeComModalidade()} na {turmaAnterior.Ue.TipoEscola.ObterNomeCurto()} {turmaAnterior.Ue.Nome} foi transferida para a turma {turmaNova.NomeComModalidade()} na {turmaNova.Ue.TipoEscola.ObterNomeCurto()} {turmaNova.Ue.Nome}{(turmaAnterior.Ue.Dre.CodigoDre != turmaNova.Ue.Dre.CodigoDre ? $"({turmaNova.Ue.Dre.Abreviacao})" : "")}. {MontarMensagemResponsaveisNovaUe(responsaveisUeNova)}";
 
             
             foreach (var responsavel in responsaveisNotificados.DistinctBy(resp => resp.Login))
@@ -87,7 +86,7 @@ namespace SME.SGP.Aplicacao
 
             var msg = "O encaminhamento NAAPA agora é de responsabilidade dos seguintes profissionais:";
             foreach (var responsavel in responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil) ))
-                msg += $"{Environment.NewLine}{RetornarNomePerfil(responsavel.Perfil)} {responsavel.NomeServidor}({responsavel.Login})";
+                msg += $"{Environment.NewLine}{RetornarNomePerfil(responsavel.Perfil)}: {responsavel.NomeServidor}({responsavel.Login})";
             return msg;
         }
 
