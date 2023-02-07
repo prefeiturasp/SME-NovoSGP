@@ -88,27 +88,32 @@ namespace SME.SGP.Aplicacao
                            {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para {situacaoMatriculaAluno} e 
                            não possui outras matrículas válidas na rede municipal de educação.O seu encaminhamento junto a esta DRE deverá ser encerrado.";
 
-            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(turma.Ue.CodigoUe, new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA, 
-                                                                                                                                Perfis.PERFIL_PSICOPEDAGOGO,
-                                                                                                                                Perfis.PERFIL_PSICOLOGO_ESCOLAR,
-                                                                                                                                Perfis.PERFIL_ASSISTENTE_SOCIAL  })))?.ToList();
+            var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
 
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(turma.Ue.Dre.CodigoDre, new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA,
-                                                                                                                                Perfis.PERFIL_PSICOPEDAGOGO,
-                                                                                                                                Perfis.PERFIL_PSICOLOGO_ESCOLAR,
-                                                                                                                                Perfis.PERFIL_ASSISTENTE_SOCIAL  })))?.ToList();
-            if (responsaveisDre != null && responsaveisDre.Any())
-                responsaveisUe.AddRange(responsaveisDre);
-
-            foreach (var responsavelUe in responsaveisUe)
+            foreach (var responsavel in responsaveisNotificados)
             {
                 await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                 mensagem,
-                                                                responsavelUe.Login,
+                                                                responsavel.Login,
                                                                 NotificacaoCategoria.Aviso,
                                                                 NotificacaoTipo.NAAPA));
             }
 
+        }
+
+        private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
+        {
+            var perfis = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA,
+                                        Perfis.PERFIL_PSICOPEDAGOGO,
+                                        Perfis.PERFIL_PSICOLOGO_ESCOLAR,
+                                        Perfis.PERFIL_ASSISTENTE_SOCIAL  };
+            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfis)))?.ToList();
+
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfis)))?.ToList();
+            if (responsaveisDre != null && responsaveisDre.Any())
+                responsaveisUe.AddRange(responsaveisDre);
+
+            return responsaveisUe;
         }
 
     }
