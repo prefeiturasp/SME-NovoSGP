@@ -69,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
             if (bimestre > 0)
                 query.AppendLine("and p.bimestre = @bimestre");
             else if (bimestre == 0)
-                query.AppendLine(tipoCalendario.HasValue ? " and (ft.periodo_escolar_id is null  or p.tipo_calendario_id = @tipoCalendario)" : " and ft.periodo_escolar_id is null");
+                query.AppendLine(tipoCalendario.HasValue ? " and (ft.periodo_escolar_id is null  or p.tipo_calendario_id = @tipoCalendario)" : " and p.bimestre in (1,2,3,4)");
 
             if (bimestre > 0 && tipoCalendario.HasValue)
                 query.AppendLine(" and p.tipo_calendario_id = @tipoCalendario");
