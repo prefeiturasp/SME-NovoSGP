@@ -21,27 +21,98 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            var situcoesMatriculaInativas = new int[] { (int)SituacaoMatriculaAluno.Concluido, (int)SituacaoMatriculaAluno.Desistente,
-                                                        (int)SituacaoMatriculaAluno.VinculoIndevido, (int)SituacaoMatriculaAluno.Falecido,
-                                                        (int)SituacaoMatriculaAluno.NaoCompareceu, (int)SituacaoMatriculaAluno.Deslocamento } ;
             var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
-            var codigoTurma = await mediator.Send(new ObterTurmaCodigoPorIdQuery(encaminhamentoNAAPADto.TurmaId));
+            var notificacoesEnviadas = false;
+            
+            var alunosEol = (await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPADto.AlunoCodigo), true))).ToList();
+            var matriculaVigenteAluno = FiltrarMatriculaVigenteAluno(alunosEol);
+            var ultimaMatriculaAluno = FiltrarUltimaMatriculaAluno(alunosEol);
 
-            var alunosEol = await mediator.Send(new ObterAlunosEolPorCodigosQuery(long.Parse(encaminhamentoNAAPADto.AlunoCodigo), true));
-            var alunoTurma = alunosEol.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular)
+            if ((int)(encaminhamentoNAAPADto.SituacaoMatriculaAluno ?? 0) != 
+                matriculaVigenteAluno.CodigoSituacaoMatricula)
+            {
+                if (UltimaMatriculaAlunoInativa(ultimaMatriculaAluno))
+                {
+                    var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(ultimaMatriculaAluno.CodigoTurma.ToString()));
+                    await NotificarResponsaveisSobreInativacaoAluno(encaminhamentoNAAPADto.AlunoNome, encaminhamentoNAAPADto.AlunoCodigo,
+                                                                    turma, ultimaMatriculaAluno.SituacaoMatricula);
+                    notificacoesEnviadas = true;
+                }
+             
+                await AtualizarEncaminhamento(encaminhamentoNAAPADto.Id ?? 0, matriculaVigenteAluno.CodigoSituacaoMatricula);
+            }
+            return notificacoesEnviadas;
+
+        }
+
+        private TurmasDoAlunoDto FiltrarMatriculaVigenteAluno(List<TurmasDoAlunoDto> matriculasAluno)
+        {
+            return matriculasAluno.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular
+                                                     && turma.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
+                                                     && turma.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date)
+                                     .OrderByDescending(turma => turma.AnoLetivo)
+                                     .ThenByDescending(turma => turma.DataSituacao)
+                                     .FirstOrDefault();
+        }
+
+        private TurmasDoAlunoDto FiltrarUltimaMatriculaAluno(List<TurmasDoAlunoDto> matriculasAluno)
+        {
+            return matriculasAluno.Where(turma => turma.CodigoTipoTurma == (int)TipoTurma.Regular)
                                       .OrderByDescending(turma => turma.AnoLetivo)
                                       .ThenByDescending(turma => turma.DataSituacao)
                                       .FirstOrDefault();
+        }
 
-            if (codigoTurma == alunoTurma.CodigoTurma.ToString() && 
-                (int)(encaminhamentoNAAPADto.SituacaoMatriculaAluno ?? 0) != alunoTurma.CodigoSituacaoMatricula &&
-                situcoesMatriculaInativas.Contains(alunoTurma.CodigoSituacaoMatricula))
+        private bool UltimaMatriculaAlunoInativa(TurmasDoAlunoDto matriculaAluno)
+        {
+            var situcoesMatriculasInativas = new int[] { (int)SituacaoMatriculaAluno.Concluido, (int)SituacaoMatriculaAluno.Desistente,
+                                                        (int)SituacaoMatriculaAluno.VinculoIndevido, (int)SituacaoMatriculaAluno.Falecido,
+                                                        (int)SituacaoMatriculaAluno.NaoCompareceu, (int)SituacaoMatriculaAluno.Deslocamento };
+
+            return (situcoesMatriculasInativas.Contains(matriculaAluno.CodigoSituacaoMatricula)
+                    && matriculaAluno.AnoLetivo <= DateTimeExtension.HorarioBrasilia().Year
+                    && matriculaAluno.DataSituacao.Date <= DateTimeExtension.HorarioBrasilia().Date);
+        }
+
+        private async Task AtualizarEncaminhamento(long encaminhamentoNAAPAId, int codigoSituacaoMatriculaAluno)
+        {
+            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(encaminhamentoNAAPAId));
+            encaminhamentoNAAPA.SituacaoMatriculaAluno = (SituacaoMatriculaAluno)codigoSituacaoMatriculaAluno;
+            await mediator.Send(new SalvarEncaminhamentoNAAPACommand(encaminhamentoNAAPA));
+        }
+
+        private async Task NotificarResponsaveisSobreInativacaoAluno(string nomeAluno, string codigoAluno, Turma turma, string situacaoMatriculaAluno)
+        {
+            var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
+            var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turma.Ue.Dre.Abreviacao} e estava matriculado na turma 
+                           {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para {situacaoMatriculaAluno} e 
+                           não possui outras matrículas válidas na rede municipal de educação.O seu encaminhamento junto a esta DRE deverá ser encerrado.";
+
+            var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
+
+            foreach (var responsavel in responsaveisNotificados)
             {
-
-                return true;
+                await mediator.Send(new NotificarUsuarioCommand(titulo,
+                                                                mensagem,
+                                                                responsavel.Login,
+                                                                NotificacaoCategoria.Aviso,
+                                                                NotificacaoTipo.NAAPA));
             }
-            return false;
 
+        }
+
+        private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
+        {
+            var perfis = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA,
+                                        Perfis.PERFIL_PSICOPEDAGOGO,
+                                        Perfis.PERFIL_PSICOLOGO_ESCOLAR,
+                                        Perfis.PERFIL_ASSISTENTE_SOCIAL  };
+            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfis))).ToList();
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfis))).ToList();
+            
+            if (responsaveisDre != null && responsaveisDre.Any())
+                responsaveisUe.AddRange(responsaveisDre);
+            return responsaveisUe.DistinctBy(resp => resp.Login);
         }
 
     }

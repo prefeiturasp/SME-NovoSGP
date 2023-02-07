@@ -411,6 +411,7 @@ namespace SME.SGP.TesteIntegracao
 
 
         protected readonly string ALUNO_CODIGO_1 = "1";
+        protected const string ALUNO_NOME_1 = "Nome do Aluno 1";
         protected readonly string ALUNO_CODIGO_2 = "2";
         protected readonly string ALUNO_CODIGO_3 = "3";
         protected readonly string ALUNO_CODIGO_4 = "4";

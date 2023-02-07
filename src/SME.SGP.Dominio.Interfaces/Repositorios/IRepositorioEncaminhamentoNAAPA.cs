@@ -12,6 +12,7 @@ namespace SME.SGP.Dominio.Interfaces
             int situacao, long prioridade, long[] turmasIds, Paginacao paginacao);
 
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorId(long id);
+        Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoPorIdESecao(long id, long secaoId);
         Task<EncaminhamentoNAAPA> ObterEncaminhamentoComTurmaPorId(long requestEncaminhamentoId);
 
