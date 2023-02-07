@@ -16,10 +16,10 @@ namespace SME.SGP.Aplicacao
         {
             var encaminhamentos = await mediator.Send(new ObterEncaminhamentosComSituacaoDiferenteDeEncerradoQuery());
 
-            foreach(var encaminhamento in encaminhamentos) 
+            foreach (var encaminhamento in encaminhamentos.Where(a => a.Id == 150)) //TODO//Todo remover
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
             }
 
             return true;

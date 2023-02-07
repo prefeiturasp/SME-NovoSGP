@@ -36,8 +36,8 @@ namespace SME.SGP.Aplicacao
 
                 if (turmaNova.Ue.Dre.CodigoDre != turmaAnterior.Ue.Dre.CodigoDre || turmaNova.Ue.CodigoUe != turmaAnterior.Ue.CodigoUe)
                 {
-                    /*await NotificarResponsaveisSobreInativacaoAluno(encaminhamentoNAAPADto.AlunoNome, encaminhamentoNAAPADto.AlunoCodigo,
-                                                                    turma, ultimaMatriculaAluno.SituacaoMatricula);*/
+                    await NotificarResponsaveisSobreTransferenciaUeDreAluno(encaminhamentoNAAPADto.AlunoNome, encaminhamentoNAAPADto.AlunoCodigo,
+                                                                    turmaAnterior, turmaNova);
                     notificacoesEnviadas = true;
                 }
             }
@@ -55,16 +55,22 @@ namespace SME.SGP.Aplicacao
                                      .FirstOrDefault();
         }
 
-        private async Task NotificarResponsaveisSobreInativacaoAluno(string nomeAluno, string codigoAluno, Turma turma, string situacaoMatriculaAluno)
+        private async Task NotificarResponsaveisSobreTransferenciaUeDreAluno(string nomeAluno, string codigoAluno, Turma turmaAnterior, 
+                                                                             Turma turmaNova)
         {
+            var responsaveisUeAnterior = await RetornarReponsaveisDreUe(turmaAnterior.Ue.CodigoUe, turmaAnterior.Ue.Dre.CodigoDre);
+            var responsaveisUeNova = await RetornarReponsaveisDreUe(turmaNova.Ue.CodigoUe, turmaNova.Ue.Dre.CodigoDre);
+            var responsaveisNotificados = responsaveisUeAnterior;
+            responsaveisNotificados.AddRange(responsaveisUeNova);
+
             var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
-            var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turma.Ue.Dre.Abreviacao} e estava matriculado na turma 
-                           {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para {situacaoMatriculaAluno} e 
-                           não possui outras matrículas válidas na rede municipal de educação.O seu encaminhamento junto a esta DRE deverá ser encerrado.";
+            var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turmaAnterior.Ue.Dre.Abreviacao} e estava matriculada na turma 
+                           {turmaAnterior.NomeComModalidade()} na {turmaAnterior.Ue.TipoEscola.ObterNomeCurto()} {turmaAnterior.Ue.Nome} foi transferida para a turma 
+                           {turmaNova.NomeComModalidade()} na {turmaNova.Ue.TipoEscola.ObterNomeCurto()} {turmaNova.Ue.Nome}
+                           {(turmaAnterior.Ue.Dre.CodigoDre != turmaNova.Ue.Dre.CodigoDre ? $"({turmaNova.Ue.Dre.Abreviacao})" : "")}. {MontarMensagemResponsaveisNovaUe(responsaveisUeNova)}";
 
-            var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
-
-            foreach (var responsavel in responsaveisNotificados)
+            
+            foreach (var responsavel in responsaveisNotificados.DistinctBy(resp => resp.Login))
             {
                 await mediator.Send(new NotificarUsuarioCommand(titulo,
                                                                 mensagem,
@@ -75,7 +81,31 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
+        private string MontarMensagemResponsaveisNovaUe(List<FuncionarioUnidadeDto> responsaveis)
+        {
+            var perfisMsg = new Guid[] { Perfis.PERFIL_PSICOLOGO_ESCOLAR, Perfis.PERFIL_PSICOPEDAGOGO, Perfis.PERFIL_ASSISTENTE_SOCIAL }
+            if (!responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil).Any())
+                return string.Empty;
+
+            var msg = "O encaminhamento NAAPA agora é de responsabilidade dos seguintes profissionais:";
+            foreach (var responsavel in responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil) ))
+                msg += $"{Environment.NewLine}{RetornarNomePerfil(responsavel.Perfil)} {responsavel.NomeServidor}({responsavel.Login})";
+            //Perfis.
+            return msg;
+        }
+
+        private string RetornarNomePerfil(Guid perfil)
+        {
+            if (perfil == Perfis.PERFIL_PSICOLOGO_ESCOLAR)
+                return "Psicólogo Escolar";
+            if (perfil == Perfis.PERFIL_PSICOPEDAGOGO)
+                return "Psicopedagogo";
+            if (perfil == Perfis.PERFIL_ASSISTENTE_SOCIAL)
+                return "Assistente Social";
+            return string.Empty;            
+        }
+
+        private async Task<List<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
         {
             var perfis = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA,
                                         Perfis.PERFIL_PSICOPEDAGOGO,
@@ -86,7 +116,7 @@ namespace SME.SGP.Aplicacao
             
             if (responsaveisDre != null && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
-            return responsaveisUe.DistinctBy(resp => resp.Login);
+            return responsaveisUe.DistinctBy(resp => resp.Login).ToList();
         }
 
     }
