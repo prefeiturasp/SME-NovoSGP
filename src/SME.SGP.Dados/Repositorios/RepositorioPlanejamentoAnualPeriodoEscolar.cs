@@ -221,9 +221,14 @@ namespace SME.SGP.Dados.Repositorios
                         						  not pa2.excluido) tc
                         			on pa.turma_id = tc.turma_id and
                         			   pa.componente_curricular_id = tc.componente_curricular_id
+                                inner join turma t on t.id = pa.turma_id 
+                                inner join tipo_calendario c on c.id = pe.tipo_calendario_id
                         where not pape.excluido and
                         	  not pape.excluido and
-                        	  not pa.excluido
+                        	  not pa.excluido and
+                              c.modalidade = case when t.modalidade_codigo = 3 then 2 
+							      when t.modalidade_codigo in (5,6) then 1
+							      when t.modalidade_codigo = 1 then 3 end
                         order by pe.bimestre;";
             return await database.Conexao.QueryAsync<PlanejamentoAnualPeriodoEscolarResumoDto>(sql, new { planejamentoAnualId });
         }
