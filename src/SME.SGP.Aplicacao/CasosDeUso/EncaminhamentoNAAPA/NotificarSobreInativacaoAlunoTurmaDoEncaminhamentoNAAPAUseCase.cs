@@ -107,13 +107,12 @@ namespace SME.SGP.Aplicacao
                                         Perfis.PERFIL_PSICOPEDAGOGO,
                                         Perfis.PERFIL_PSICOLOGO_ESCOLAR,
                                         Perfis.PERFIL_ASSISTENTE_SOCIAL  };
-            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfis)))?.ToList();
-
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfis)))?.ToList();
+            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfis))).ToList();
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfis))).ToList();
+            
             if (responsaveisDre != null && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
-
-            return responsaveisUe;
+            return responsaveisUe.DistinctBy(resp => resp.Login);
         }
 
     }
