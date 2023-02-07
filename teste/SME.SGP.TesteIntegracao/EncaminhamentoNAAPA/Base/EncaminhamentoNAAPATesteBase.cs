@@ -140,7 +140,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
         }
-        
+
+        protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IRegistrarEncaminhamentoNAAPAUseCase ObterServicoRegistrarEncaminhamento()
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoNAAPAUseCase>();    
