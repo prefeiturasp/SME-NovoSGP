@@ -17,18 +17,15 @@ namespace SME.SGP.Aplicacao
 {
     public class AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase : AbstractUseCase, IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase
     {
-        private readonly IObterEstudanteTurmasProgramaUseCase obterEstudanteTurmasProgramaUseCase;
-        public AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase(IMediator mediator, IObterEstudanteTurmasProgramaUseCase obterEstudanteTurmasProgramaUseCase) : base(mediator)
-        {
-            this.obterEstudanteTurmasProgramaUseCase = obterEstudanteTurmasProgramaUseCase ?? throw new ArgumentNullException(nameof(obterEstudanteTurmasProgramaUseCase));
-        }
+        public AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase(IMediator mediator) : base(mediator)
+        {}
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var encaminhamentoNAAPADto = param.ObterObjetoMensagem<EncaminhamentoNAAPADto>();
             var turma = (await mediator.Send(new ObterTurmaPorIdQuery(encaminhamentoNAAPADto.TurmaId)));
 
-            var turmasProgramaAluno = (await obterEstudanteTurmasProgramaUseCase.Executar(encaminhamentoNAAPADto.AlunoCodigo, turma.AnoLetivo, true))
+            var turmasProgramaAluno = (await mediator.Send(new ObterTurmasProgramaAlunoQuery(encaminhamentoNAAPADto.AlunoCodigo, turma.AnoLetivo, true)))
                                         .Select(turmaPrograma => MapearDTO(turmaPrograma)).ToList();
 
             var questaoTurmasProgramaNAAPA = (await mediator.Send(new ObterQuestaoTurmasProgramaEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
