@@ -67,6 +67,7 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
 
             atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
             {
@@ -87,11 +88,13 @@ namespace SME.SGP.Aplicacao
             {
                 if (usuarioLogado.EhProfessor())
                 {
-                    componentesCurricularesDoProfessor = await mediator
-                        .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
-                            usuarioLogado.PerfilAtual,
-                            filtroAulasEventosCalendarioDto.TurmaCodigo,
-                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                    componentesCurricularesEolProfessor = await mediator
+                                                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                            usuarioLogado.CodigoRf,
+                                                            usuarioLogado.PerfilAtual,
+                                                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+                    componentesCurricularesDoProfessor = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString()).ToArray();
                 }
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
