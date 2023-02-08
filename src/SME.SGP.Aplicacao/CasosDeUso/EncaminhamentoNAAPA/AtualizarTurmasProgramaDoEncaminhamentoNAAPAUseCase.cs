@@ -35,8 +35,8 @@ namespace SME.SGP.Aplicacao
             if (respostaTurmasProgramaNAAPA != null)
             {
                 var turmasProgramaNaapa = JsonConvert.DeserializeObject<List<RespostaTurmaProgramaEncaminhamentoNAAPADto>>(respostaTurmasProgramaNAAPA.Texto);
-                if (turmasProgramaAluno.Count == turmasProgramaNaapa.Count &&
-                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa.Any(x => x.Equals(turmaProgramaAluno)))) 
+                if (turmasProgramaAluno.Count == turmasProgramaNaapa?.Count &&
+                    turmasProgramaAluno.All(turmaProgramaAluno => turmasProgramaNaapa != null && turmasProgramaNaapa.Any(x => x.Equals(turmaProgramaAluno)))) 
                     return false;
 
                 var respostaEnderecoAtualizado = MapearDTO(questaoTurmasProgramaNAAPA.QuestaoId, respostaTurmasProgramaNAAPA.Id, turmasProgramaAluno);
