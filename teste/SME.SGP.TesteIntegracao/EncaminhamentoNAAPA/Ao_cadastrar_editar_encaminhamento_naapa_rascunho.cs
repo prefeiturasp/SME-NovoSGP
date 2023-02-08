@@ -448,7 +448,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                             },
                             new ()
                             {
-                                QuestaoId = ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA,
+                                QuestaoId = ID_QUESTAO_TURMAS_PROGRAMA,
                                 Resposta = RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO,
                                 TipoQuestao = TipoQuestao.TurmasPrograma
                             }
@@ -470,7 +470,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_DATA_ENTRADA_QUEIXA).ShouldBeTrue();
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_PRIORIDADE).ShouldBeTrue();
-            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_TURMAS_PROGRAMA).ShouldBeTrue();
 
             var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();
@@ -507,7 +507,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                             },
                             new ()
                             {
-                                QuestaoId = ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA,
+                                QuestaoId = ID_QUESTAO_TURMAS_PROGRAMA,
                                 Resposta = RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_EDICAO,
                                 TipoQuestao = TipoQuestao.TurmasPrograma,
                                 //RespostaEncaminhamentoId = 3,     Edição sem passagem de Id para salvar resposta anterior como "Excluido"
@@ -530,7 +530,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_DATA_ENTRADA_QUEIXA).ShouldBeTrue();
             questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_PRIORIDADE).ShouldBeTrue();
-            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_TURMAS_PROGRAMA).ShouldBeTrue();
 
             respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
             respostaEncaminhamentoNAAPA.ShouldNotBeNull();

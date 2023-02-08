@@ -20,6 +20,7 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
                 await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarAtualizacaoDasTurmasProgramaDoEncaminhamentoNAAPA, encaminhamento, Guid.NewGuid(), null));
             }
 
             return true;
