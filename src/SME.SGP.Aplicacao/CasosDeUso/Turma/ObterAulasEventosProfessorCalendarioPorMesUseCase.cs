@@ -55,9 +55,6 @@ namespace SME.SGP.Aplicacao
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
-            string[] componentesCurricularesDoProfessor = new string[0];
-
-            IEnumerable<Aula> aulasParaVisualizar;
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
 
 
