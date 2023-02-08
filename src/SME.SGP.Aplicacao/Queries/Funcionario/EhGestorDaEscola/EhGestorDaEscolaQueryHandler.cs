@@ -26,11 +26,16 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(EhGestorDaEscolaQuery request, CancellationToken cancellationToken)
         {
             var cargo = ObterCargoPorPerfil(request.Perfil);
+            var funcaoExterna = ObterFuncaoExternaPorPerfil(request.Perfil);
 
             using (var httpClient = httpClientFactory.CreateClient("servicoEOL"))
             {
-                var resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/cargos/{cargo}");
-
+                HttpResponseMessage resposta;
+                if (request.UsuarioRf.EhLoginCpf())
+                    resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/funcoes-externas/{funcaoExterna}");
+                else
+                    resposta = await httpClient.GetAsync($"/api/escolas/{request.UeCodigo}/funcionarios/cargos/{cargo}");
+                    
                 if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
                 {
                     var json = await resposta.Content.ReadAsStringAsync();
@@ -51,6 +56,18 @@ namespace SME.SGP.Aplicacao
                 return (int)Cargo.AD;
             if (perfil == Perfis.PERFIL_DIRETOR)
                 return (int)Cargo.Diretor;
+
+            return 0;
+        }
+
+        private int ObterFuncaoExternaPorPerfil(Guid perfil)
+        {
+            if (perfil == Perfis.PERFIL_CP)
+                return (int)FuncaoExterna.CP;
+            if (perfil == Perfis.PERFIL_AD)
+                return (int)FuncaoExterna.AD;
+            if (perfil == Perfis.PERFIL_DIRETOR)
+                return (int)FuncaoExterna.Diretor;
 
             return 0;
         }
