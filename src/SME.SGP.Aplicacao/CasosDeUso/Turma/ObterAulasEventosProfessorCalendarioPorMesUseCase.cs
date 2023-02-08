@@ -37,6 +37,8 @@ namespace SME.SGP.Aplicacao
             });
 
             aulas = aulas.Where(a => a.TipoCalendarioId == tipoCalendarioId).ToList(); 
+            string[] componentesCurricularesDoProfessor = new string[0];            
+
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -50,7 +52,7 @@ namespace SME.SGP.Aplicacao
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
-
+            IEnumerable<Aula> aulasParaVisualizar;
 
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
                 aulasParaVisualizar = aulas;
@@ -72,7 +74,7 @@ namespace SME.SGP.Aplicacao
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
             }
 
-            return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
+             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Aulas = aulasParaVisualizar,
