@@ -43,8 +43,5 @@ namespace SME.SGP.Aplicacao
             var descricaoAprovadoRecusado = request.Aprovado ? "aprovada" : "recusada";
             return $@"A alteração de pareceres conclusivos dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foi {descricaoAprovadoRecusado}. Motivo: {request.Motivo}.";
         }
-
-        protected override string ObterTextoRodape()
-        { return ""; }
     }
 }

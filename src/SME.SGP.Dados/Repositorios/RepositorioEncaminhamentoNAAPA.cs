@@ -345,5 +345,19 @@ namespace SME.SGP.Dados.Repositorios
 
             return new SituacaoDto();
         }
+
+        public async Task<IEnumerable<EncaminhamentoNAAPADto>> ObterEncaminhamentosComSituacaoDiferenteDeEncerrado()
+        {
+            var query = @" select 
+                        id,
+                        turma_id as TurmaId,
+                        aluno_codigo as AlunoCodigo,
+                        aluno_nome as AlunoNome,
+                        situacao
+                        from encaminhamento_naapa 
+                        where situacao <> @situacao and not excluido";
+
+            return await database.Conexao.QueryAsync<EncaminhamentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
+        }
     }
 }

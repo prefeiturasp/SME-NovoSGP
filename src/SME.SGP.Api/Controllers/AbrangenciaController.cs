@@ -231,7 +231,6 @@ namespace SME.SGP.Api.Controllers
 
             if (filtro.Length < 3)
                 filtro = "";
-           
             var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro);
 
             if (!ues.Any())

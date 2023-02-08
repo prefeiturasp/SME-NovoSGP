@@ -18,18 +18,23 @@ namespace SME.SGP.Aplicacao
     {
             this.repositorioWFAprovacao = repositorioWFAprovacao ?? throw new ArgumentNullException(nameof(repositorioWFAprovacao));
         }
-        
+
+        protected override string ObterTabelaPareceresAlterados(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma, Turma turma)
+        {
+            return MENSAGEM_DINAMICA_TABELA_POR_ALUNO;
+        }
+
         public override async Task<bool> Handle(NotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaCommand request,
             CancellationToken cancellationToken)
         {
-            var WFAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
+            var wfAprovacoes = await repositorioWFAprovacao.ObterPareceresAguardandoAprovacaoSemWorkflow();
             
-            if (WFAprovacoes == null || !WFAprovacoes.Any())
+            if (wfAprovacoes == null || !wfAprovacoes.Any())
                 return false;
 
-            await CarregarInformacoesParaNotificacao(WFAprovacoes);
+            await CarregarInformacoesParaNotificacao(wfAprovacoes);
             
-            var agrupamentoPorTurma = WFAprovacoes.GroupBy(wf => wf.TurmaId);
+            var agrupamentoPorTurma = wfAprovacoes.GroupBy(wf => wf.TurmaId);
             
             foreach (var grupoTurma in agrupamentoPorTurma)
             {
@@ -46,16 +51,22 @@ namespace SME.SGP.Aplicacao
             {
                 var wfAprovacao = await repositorioWFAprovacao.ObterPorIdAsync(aprovacao.Id);
                 wfAprovacao.WfAprovacaoId = idAprovacao;
+
                 await repositorioWFAprovacao.SalvarAsync(wfAprovacao);
             }
         }
 
         private async Task<long> EnviarNotificacao(List<WFAprovacaoParecerConclusivoDto> aprovacoesPorTurma)
         {
-            var turma = await ObterTurma(aprovacoesPorTurma.FirstOrDefault().TurmaId);
+            var aprovacaoParecerConclusivo = aprovacoesPorTurma.FirstOrDefault();
+
+            if (aprovacaoParecerConclusivo == null)
+                return 0;
+            
+            var turma = await ObterTurma(aprovacaoParecerConclusivo.TurmaId);
             
             var mensagem = ObterMensagem(turma, aprovacoesPorTurma);
-            var conselhoClasseAlunoId = aprovacoesPorTurma.FirstOrDefault().ConselhoClasseAlunoId;
+            var conselhoClasseAlunoId = aprovacaoParecerConclusivo.ConselhoClasseAlunoId;
 
             return await mediator.Send(new EnviarNotificacaoCommand(ObterTitulo(turma),
                 mensagem,
@@ -70,11 +81,9 @@ namespace SME.SGP.Aplicacao
         }
 
         protected override string ObterTextoCabecalho(Turma turma)
-        {
-            return $"O parecer conclusivo dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.";
-        }
+            => $"O parecer conclusivo dos estudantes abaixo da turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} foram alterados.";
 
         protected override string ObterTextoRodape()
-        { return "Você precisa aceitar esta notificação para que a alteração seja considerada válida."; }
+            => "Você precisa aceitar esta notificação para que a alteração seja considerada válida.";
     }
 }

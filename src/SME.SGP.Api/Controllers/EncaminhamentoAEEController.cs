@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -238,5 +239,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(codigoDre));
         }
+        
+        [HttpPost("imprimir-detalhado")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImpressaoRelatorioEncaminhamentoAeeDetalhado(long[] Ids, [FromServices] IRelatorioEncaminhamentoAeeDetalhadoUseCase detalhadoUseCase)
+        {
+            return Ok(await detalhadoUseCase.Executar(new FiltroRelatorioEncaminhamentoAeeDetalhadoDto() { Ids = Ids}));
+        }
+            
     }
 }

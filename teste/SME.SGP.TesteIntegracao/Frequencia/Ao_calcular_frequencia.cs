@@ -213,7 +213,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaAluno
                 CriadoPor = "",
                 CriadoRF = "",
                 Valor = 2,
-                NumeroAula = 2,
+                NumeroAula = 1,
                 AulaId = 1
             });            
 

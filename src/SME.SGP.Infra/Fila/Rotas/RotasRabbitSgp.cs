@@ -41,6 +41,10 @@
         //public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
         public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
 
+        public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
+        public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";
+        public const string ExecutarAtualizacaoDoEnderecoDoEncaminhamentoNAAPA = "sgp.atualizar.endereco.encaminhamento.naapa";
+        
         #region Relatórios
 
         public const string RotaRelatoriosProntos = "sgp.relatorios.prontos.notificar";

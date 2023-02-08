@@ -76,8 +76,7 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaAlunoPorCodigoAlunoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTurmaAlunoPorCodigoAlunoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ProfessorPodePersistirTurmaQuery, bool>), typeof(ProfessorPodePersistirTurmaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<RemoverArquivosExcluidosCommand, bool>), typeof(RemoverArquivosExcluidosCommandHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));                        
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQuery, IEnumerable<ComponenteCurricularEol>>), typeof(ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilParaPlanejamentoQueryHandlerFakePortugues), ServiceLifetime.Scoped));                    
         }
 
         protected async Task ExecutarTeste(FiltroConselhoClasseDto filtroConselhoClasseDto)
@@ -320,6 +319,70 @@ namespace SME.SGP.TesteIntegracao.ConselhoDeClasse
             await CriarFechamentoTurmaAluno(fechamentoTurmaDisciplinaId);
 
             await CriarFechamentoTurmaAlunoNota(filtroConselhoClasseDto);
+        }
+
+        protected async Task CriaTurmaFechamentoAtual(TipoNota tipoNota, double? nota, long? conceito)
+        {
+            var periodosEscolares = ObterTodos<PeriodoEscolar>();
+            var periodo = periodosEscolares.Find(p => p.Bimestre == BIMESTRE_4);
+
+            await CriarFechamentoTurma(periodo.Id);
+
+            await CriarFechamentoTurmaDisciplina(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, FECHAMENTO_TURMA_ID_2);
+
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = 1,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                FechamentoAlunoId = 1,
+                Nota = tipoNota == TipoNota.Nota ? nota : null,
+                ConceitoId = tipoNota == TipoNota.Conceito ? conceito : null,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await CriarFechamentoTurma(null);
+
+            await CriarFechamentoTurmaDisciplina(COMPONENTE_CURRICULAR_PORTUGUES_ID_138, FECHAMENTO_TURMA_ID_3);
+
+            await InserirNaBase(new FechamentoAluno()
+            {
+                FechamentoTurmaDisciplinaId = 2,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new FechamentoNota()
+            {
+                DisciplinaId = COMPONENTE_CURRICULAR_PORTUGUES_ID_138,
+                FechamentoAlunoId = 2,
+                Nota = tipoNota == TipoNota.Nota ? nota : null,
+                ConceitoId = tipoNota == TipoNota.Conceito ? conceito : null,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new ConselhoClasse()
+            {
+                FechamentoTurmaId = FECHAMENTO_TURMA_ID_1,
+                Situacao = SituacaoConselhoClasse.Concluido,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task InserirConselhoClassePadrao(FiltroConselhoClasseDto filtroConselhoClasseDto)
