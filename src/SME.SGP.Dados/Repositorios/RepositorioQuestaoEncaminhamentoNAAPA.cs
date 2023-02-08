@@ -55,7 +55,32 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
 
         }
-  
+
+        public async Task<QuestaoEncaminhamentoNAAPA> ObterQuestaoTurmasProgramaPorEncaminhamentoId(long encaminhamentoNAAPAId)
+        {
+            var query = @"select enq.id as QuestaoId, enr.*
+                            from encaminhamento_naapa_questao enq                           
+                            inner join encaminhamento_naapa_secao ens on ens.id = enq.encaminhamento_naapa_secao_id 
+                            inner join secao_encaminhamento_naapa sen on sen.id = ens.secao_encaminhamento_id 
+                            inner join questao q on q.id = enq.questao_id 
+                            left join encaminhamento_naapa_resposta enr on enr.questao_encaminhamento_id = enq.id and not enr.excluido 
+                            where not enq.excluido and not ens.excluido 
+                                and sen.nome_componente = 'INFORMACOES_ESTUDANTE' 
+                                and q.nome_componente = 'TURMAS_PROGRAMA'
+	                            and ens.encaminhamento_naapa_id  = @encaminhamentoNAAPAId";
+
+            QuestaoEncaminhamentoNAAPA retorno = null;
+            await database.Conexao.QueryAsync<QuestaoEncaminhamentoNAAPA, RespostaEncaminhamentoNAAPA, QuestaoEncaminhamentoNAAPA>(query,
+                                        (questaoNAAPA, respostaNAAPA) =>
+                                        {
+                                            if (retorno == null) retorno = questaoNAAPA;
+                                            if (respostaNAAPA != null) retorno.Respostas.Add(respostaNAAPA);
+                                            return retorno;
+
+                                        },
+                                        new { encaminhamentoNAAPAId });
+            return retorno;
+        }
 
         public async Task<IEnumerable<long>> ObterQuestoesPorSecaoId(long encaminhamentoNAAPASecaoId)
         {

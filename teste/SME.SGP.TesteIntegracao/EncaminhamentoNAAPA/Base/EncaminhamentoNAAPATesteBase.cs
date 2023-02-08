@@ -18,7 +18,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
         protected const long ID_QUESTAO_DATA_ENTRADA_QUEIXA = 1;
         protected const long ID_QUESTAO_ENDERECO_RESIDENCIAL = 12;
-        protected const long ID_QUESTAO_ENDERECO_TURMAS_PROGRAMA = 13;
+        protected const long ID_QUESTAO_TURMAS_PROGRAMA = 13;
         protected const  long ID_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = 3;
         protected const long ID_QUESTAO_PRIORIDADE = 2;
         protected const long ID_QUESTAO_OBS_AGRUPAMENTO_PROMOCAO_CUIDADOS = 6;
@@ -53,6 +53,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
         protected const string NOME_COMPONENTE_QUESTAO_AGRUPAMENTO_PROMOCAO_CUIDADOS = "AGRUPAMENTO_PROMOCAO_CUIDADOS";
         protected const string NOME_COMPONENTE_QUESTAO_ENDERECO_RESIDENCIAL = "ENDERECO_RESIDENCIAL";
+        protected const string NOME_COMPONENTE_QUESTAO_TURMAS_PROGRAMA = "TURMAS_PROGRAMA";
 
         public EncaminhamentoNAAPATesteBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -140,7 +141,12 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         {
             return ServiceProvider.GetService<IObterEncaminhamentoNAAPAUseCase>();    
         }
-        
+
+        protected INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoTransfAlunoDreUeDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IRegistrarEncaminhamentoNAAPAUseCase ObterServicoRegistrarEncaminhamento()
         {
             return ServiceProvider.GetService<IRegistrarEncaminhamentoNAAPAUseCase>();    
@@ -181,9 +187,19 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             return ServiceProvider.GetService<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
         }
 
+        protected IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarTurmasProgramaDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
+        }
+
         protected IAtualizarTurmaDoEncaminhamentoNAAPAUseCase ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA()
         {
             return ServiceProvider.GetService<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
+        }
+
+        protected INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase ObterServicoNotificacaoAtualizacaoMatriculaAlunoDoEncaminhamentoNAAPA()
+        {
+            return ServiceProvider.GetService<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
         }
 
         private async Task CriarRespostasComplementares()
