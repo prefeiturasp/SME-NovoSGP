@@ -845,7 +845,7 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             return disciplinas.Select(x => new DisciplinaDto
             {
-                CodigoComponenteCurricular = !x.Territorio? x.CdComponenteCurricular : long.Parse(x.CdComponenteCurricular.ToString().Substring(x.CdComponenteCurricular.ToString().Length - 4)),
+                CodigoComponenteCurricular = x.CdComponenteCurricular,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,

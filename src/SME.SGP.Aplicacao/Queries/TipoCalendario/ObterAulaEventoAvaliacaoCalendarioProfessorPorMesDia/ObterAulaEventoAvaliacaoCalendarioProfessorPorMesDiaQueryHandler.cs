@@ -28,9 +28,12 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
-                    var componenteCurricular = request.ComponentesCurricularesParaVisualizacao.FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId));
-            
-                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId));
+                    var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
+                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||
+                                             a.Id == long.Parse(aulaParaVisualizar.DisciplinaId));
+
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId) ||
+                                                                                     (componenteCurricular != null && p.DisciplinaId == componenteCurricular.Id));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
@@ -40,7 +43,7 @@ namespace SME.SGP.Aplicacao
                         EhReposicao = aulaParaVisualizar.TipoAula == TipoAula.Reposicao,
                         EstaAguardandoAprovacao = aulaParaVisualizar.Status == EntidadeStatus.AguardandoAprovacao,
                         EhAulaCJ = aulaParaVisualizar.AulaCJ,
-                        PodeEditarAula = professoresTitulares.Any(p => p.ProfessorRf.Contains(usuarioLogado.CodigoRf)) || professorTitular != null && !aulaParaVisualizar.AulaCJ 
+                        PodeEditarAula = professorTitular != null && !aulaParaVisualizar.AulaCJ
                                       || usuarioLogado.EhProfessorCj() && aulaParaVisualizar.AulaCJ,
                         Quantidade = aulaParaVisualizar.Quantidade,
                         ComponenteCurricularId = long.Parse(aulaParaVisualizar.DisciplinaId)

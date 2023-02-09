@@ -156,7 +156,7 @@ namespace SME.SGP.Aplicacao
                                                                                         : a.Codigo % (10000) == d.CodigoComponenteCurricular);
                     
                     d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
-                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo % (10000);
+                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
 
                     if (d.TerritorioSaber)
