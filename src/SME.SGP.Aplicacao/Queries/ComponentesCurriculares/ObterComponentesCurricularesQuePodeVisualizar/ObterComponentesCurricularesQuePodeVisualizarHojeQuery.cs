@@ -1,10 +1,11 @@
 ﻿using FluentValidation;
 using MediatR;
 using System;
+using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesQuePodeVisualizarHojeQuery : IRequest<string[]>
+    public class ObterComponentesCurricularesQuePodeVisualizarHojeQuery : IRequest<IList<(string codigo, string codigoTerritorioSaber)>>
     {
         public ObterComponentesCurricularesQuePodeVisualizarHojeQuery(string rfLogado, Guid perfilAtual, string turmaCodigo, bool realizarAgrupamentoComponente = false)
         {
