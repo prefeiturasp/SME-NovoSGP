@@ -852,8 +852,8 @@ namespace SME.SGP.Aplicacao.Integracoes
                 RegistraFrequencia = x.RegistraFrequencia,
                 TerritorioSaber = x.Territorio,
                 LancaNota = x.LancaNota,
-                GrupoMatrizId = x.GrupoMatriz.Id,
-                GrupoMatrizNome = x.GrupoMatriz.Nome
+                GrupoMatrizId = x.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = x.GrupoMatriz?.Nome
             });
         }
 

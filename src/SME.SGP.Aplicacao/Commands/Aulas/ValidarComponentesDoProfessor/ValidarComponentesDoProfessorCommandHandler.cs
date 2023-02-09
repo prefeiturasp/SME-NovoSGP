@@ -40,9 +40,10 @@ namespace SME.SGP.Aplicacao
                 if (componentesCurricularesDoProfessor == null)
                     componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
 
-                podeCriarAulasParaTurma = componentesCurricularesDoProfessor == null ||
-                                          !componentesCurricularesDoProfessor.Any(c => (c.Codigo == request.ComponenteCurricularCodigo && !c.TerritorioSaber || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber)) &&
-                                          !componentesCurricularesDoProfessor.Any(r => r.Regencia && r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo);
+                podeCriarAulasParaTurma = componentesCurricularesDoProfessor != null &&
+                                          (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == request.ComponenteCurricularCodigo) ||
+                                           componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo || c.Codigo == request.ComponenteCurricularCodigo)) ||
+                                           componentesCurricularesDoProfessor.Any(r => r.Regencia && r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo));
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
