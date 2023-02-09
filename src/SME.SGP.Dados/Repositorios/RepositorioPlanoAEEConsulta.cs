@@ -236,7 +236,7 @@ namespace SME.SGP.Dados.Repositorios
                                   from plano_aee_versao
                                 group by plano_aee_id 
                             )
-                          select pa.*  
+                          select distinct pa.*  
                           from plano_aee pa
                          inner join versoes pav on pav.plano_aee_Id = pa.id
                          inner join plano_aee_questao paq on paq.plano_aee_versao_id = pav.versao_id
