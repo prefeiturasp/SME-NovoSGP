@@ -406,11 +406,12 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryAsync<RegistroFrequenciaAlunoPorAulaDto>(query, new { turmaCodigo, componenteCurricularId, codigosAlunos, dataInicio, dataFim });
         }
 
-        public Task<bool> RegistraFrequencia(long componenteCurricularId)
+        public Task<bool> RegistraFrequencia(long componenteCurricularId, long? codigoTerritorioSaber = null)
         {
             var query = "select permite_registro_frequencia from componente_curricular where id = @componenteCurricularId";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId });
+            return database.Conexao
+                .QueryFirstOrDefaultAsync<bool>(query, new { componenteCurricularId = codigoTerritorioSaber.HasValue ? codigoTerritorioSaber.Value : componenteCurricularId });
         }
 
         public async Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(int anoLetivo,

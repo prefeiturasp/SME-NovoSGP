@@ -51,8 +51,8 @@ namespace SME.SGP.Aplicacao
             else
             {
                 aulasPermitidas = usuarioLogado
-               .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
-               .Select(a => a.Id).ToList();
+                    .ObterAulasQuePodeVisualizar(aulas, new List<(string, string)>() { (request.ComponenteCurricularCodigo, null) } )
+                    .Select(a => a.Id).ToList();
             }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)

@@ -41,18 +41,16 @@ namespace SME.SGP.Dominio
         public void DefinirPerfilAtual(Guid perfilAtual)
          => PerfilAtual = perfilAtual;
 
-        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, string[] componentesCurricularesProfessor)
+        public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesProfessor)
         {
             if (TemPerfilGestaoUes() || TemPerfilAdmUE())
                 return aulas;
-
             else
             {
                 if (EhProfessorCj())
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
-
                 else
-                    return aulas.Where(a => (componentesCurricularesProfessor.Contains(a.DisciplinaId)) || a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => (componentesCurricularesProfessor.Any(c => c.codigo.Equals(a.DisciplinaId) || c.codigoTerritorioSaber.Equals(a.DisciplinaId)) || a.ProfessorRf == CodigoRf));
             }
         }
 

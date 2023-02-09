@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
-            string[] componentesCurricularesDoProfessor = new string[0];
+            IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesDoProfessor = new List<(string, string)>();
 
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
@@ -82,7 +82,7 @@ namespace SME.SGP.Aplicacao
             {
                 aulasParaVisualizar = aulasDoDia;
                 retorno.PodeCadastrarAula = false;
-            }                     
+            }
             else
             {
                 if (usuarioLogado.EhProfessor())
@@ -95,27 +95,42 @@ namespace SME.SGP.Aplicacao
                 }
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor);
+                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
             if (aulasParaVisualizar.Any())
             {
-                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), aulasParaVisualizar.Any(a => a.DisciplinaId.Length > 5), filtroAulasEventosCalendarioDto.TurmaCodigo));
-                
-                foreach (var componenteAula in componentesCurriculares){
-                    if (componenteAula.TerritorioSaber == true)
-                    {
-                        var componenteAulaTerritorio = componentesCurricularesDoProfessor.Any(a => a.Length > 5) || componenteAula.TerritorioSaber;
-                        var componenteCurricularAula = componentesCurricularesDoProfessor.Any(a => a.Length > 5) ? componentesCurricularesDoProfessor.Select(cc => Convert.ToInt64(cc)).ToArray() : new long[] { componenteAula.CodigoComponenteCurricular };
-                        var auxComponenteCalendario = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteCurricularAula, componenteAulaTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
-                        foreach (var componenteTerritorio in auxComponenteCalendario) {
-                            componenteAula.Nome = componenteTerritorio.Nome;
-                        }
-                    }
+                if (componentesCurricularesDoProfessor.Any())
+                {
+                    var componentesCorrelatos = (from c in componentesCurricularesDoProfessor
+                                                 from a in aulasParaVisualizar
+                                                 where c.codigo == a.DisciplinaId || c.codigoTerritorioSaber == a.DisciplinaId
+                                                 select (long.Parse(c.codigo), (long?)long.Parse(c.codigoTerritorioSaber)))
+                                                 .ToList();
+
+                    componentesCurriculares = await mediator
+                        .Send(new ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery(componentesCorrelatos, componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber)), filtroAulasEventosCalendarioDto.TurmaCodigo));
                 }
-               
+                else
+                {
+                    componentesCurriculares = await mediator
+                        .Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber)), filtroAulasEventosCalendarioDto.TurmaCodigo));
+                }
+
+                //foreach (var componenteAula in componentesCurriculares)
+                //{
+                //    if (componenteAula.TerritorioSaber)
+                //    {
+                //        var componenteAulaTerritorio = componentesCurricularesDoProfessor.Any(a => string.IsNullOrEmpty(a.codigoTerritorioSaber)) || componenteAula.TerritorioSaber;
+                //        var componenteCurricularAula = componentesCurricularesDoProfessor.Any(a => string.IsNullOrEmpty(a.codigoTerritorioSaber)) ? componentesCurricularesDoProfessor.Select(cc => Convert.ToInt64(cc)).ToArray() : new long[] { componenteAula.CodigoComponenteCurricular };
+                //        var auxComponenteCalendario = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteCurricularAula, componenteAulaTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
+                //        foreach (var componenteTerritorio in auxComponenteCalendario)
+                //            componenteAula.Nome = componenteTerritorio.Nome;
+                //    }
+                //}
+
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {
                     UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
