@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
 
             var msg = "O encaminhamento NAAPA agora é de responsabilidade dos seguintes profissionais:";
             foreach (var responsavel in responsaveis.Where(resp => perfisMsg.Contains(resp.Perfil) ))
-                msg += $"{Environment.NewLine}{RetornarNomePerfil(responsavel.Perfil)}: {responsavel.NomeServidor}({responsavel.Login})";
+                msg += $"</br>{RetornarNomePerfil(responsavel.Perfil)}: {responsavel.NomeServidor}({responsavel.Login})";
             return msg;
         }
 
