@@ -14,5 +14,7 @@ namespace SME.SGP.Dto
         public string Nacionalidade { get; set; }
         public EnderecoRespostaDto Endereco { get; set; }
         public bool EhImigrante { get; set; }
+        public string NIS { get; set; }
+        public string CNS { get; set; }
     }
 }
