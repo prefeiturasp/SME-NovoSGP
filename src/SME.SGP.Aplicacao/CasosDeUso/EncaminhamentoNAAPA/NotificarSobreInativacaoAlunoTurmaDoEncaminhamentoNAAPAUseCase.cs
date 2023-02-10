@@ -101,12 +101,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
         {
-            var perfis = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA,
-                                        Perfis.PERFIL_PSICOPEDAGOGO,
+            var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
+            var perfisUe = new Guid[] { Perfis.PERFIL_PSICOPEDAGOGO,
                                         Perfis.PERFIL_PSICOLOGO_ESCOLAR,
                                         Perfis.PERFIL_ASSISTENTE_SOCIAL  };
-            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfis))).ToList();
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfis))).ToList();
+
+            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfisUe))).ToList();
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
             
             if (responsaveisDre != null && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
