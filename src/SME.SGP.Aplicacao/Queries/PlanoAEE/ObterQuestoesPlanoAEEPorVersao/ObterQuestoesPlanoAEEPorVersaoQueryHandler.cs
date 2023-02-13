@@ -39,13 +39,14 @@ namespace SME.SGP.Aplicacao
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-                var dataUltimaAtualizacaoPlano = versaoPlano.AlteradoEm ?? versaoPlano.CriadoEm;
+                var dataUltimaAtualizacaoVersaoSelecionada = versaoPlano.AlteradoEm ?? versaoPlano.CriadoEm;
+                var anoUltimaVersaoCriadaPlano = ultimaVersaoPlano.AlteradoEm.HasValue ? ultimaVersaoPlano.AlteradoEm.Value.Year : ultimaVersaoPlano.CriadoEm.Year;
 
-                dataUltimaAtualizacaoPlano = dataUltimaAtualizacaoPlano.Year < DateTime.Today.Year
-                    ? new DateTime(DateTime.Today.Year, dataUltimaAtualizacaoPlano.Month, dataUltimaAtualizacaoPlano.Day)
-                    : dataUltimaAtualizacaoPlano;
+                dataUltimaAtualizacaoVersaoSelecionada = dataUltimaAtualizacaoVersaoSelecionada.Year < DateTime.Today.Year
+                    ? new DateTime(anoUltimaVersaoCriadaPlano, dataUltimaAtualizacaoVersaoSelecionada.Month, dataUltimaAtualizacaoVersaoSelecionada.Day)
+                    : dataUltimaAtualizacaoVersaoSelecionada;
 
-                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoPorModalidade(turma.ModalidadeCodigo, dataUltimaAtualizacaoPlano);
+                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoPorModalidade(turma.ModalidadeCodigo, dataUltimaAtualizacaoVersaoSelecionada);
 
                 if (periodoEscolar == null)
                     periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
