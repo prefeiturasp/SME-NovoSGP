@@ -110,7 +110,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
         {
             return new AutenticacaoApiEolDto()
             {
-                CodigoRf = "7924488"
+                CodigoRf = login
             };
         }
 
@@ -809,7 +809,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
 
         public EstruturaInstitucionalRetornoEolDTO ObterEstruturaInstuticionalVigentePorTurma(string[] codigosTurma = null)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public async Task<IEnumerable<UsuarioEolRetornoDto>> ObterFuncionariosPorCargoUe(string ueId, long cargoId)
@@ -1031,13 +1031,42 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                         Perfis.PERFIL_PAAI,
                     }
                 },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_COOD_NAAPA,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_COORDENADOR_NAAPA
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_ADM_DRE,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_ADMDRE
+                    }
+                },
+                new PerfisApiEolDto
+                {
+                    CodigoRf = TesteBaseComuns.USUARIO_LOGIN_ADM_SME,
+                    Perfis = new List<Guid>
+                    {
+                        Perfis.PERFIL_ADMSME
+                    }
+                },
             };
-            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login).FirstOrDefault());
+            return Task.FromResult(listaUsuarios.Where(x => x.CodigoRf == login.ToUpper()).FirstOrDefault());
         }
 
-        public Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
+        public async Task<RetornoDadosAcessoUsuarioSgpDto> CarregarDadosAcessoPorLoginPerfil(string login, Guid perfilGuid, AdministradorSuporteDto administradorSuporte = null)
         {
-            throw new NotImplementedException();
+            return new RetornoDadosAcessoUsuarioSgpDto()
+            {
+                Permissoes = new List<int>() { 1 },
+                Token = "",
+                DataExpiracaoToken = DateTime.Now
+            };
         }
 
         public Task<int[]> ObterPermissoesPorPerfil(Guid perfilGuid)
