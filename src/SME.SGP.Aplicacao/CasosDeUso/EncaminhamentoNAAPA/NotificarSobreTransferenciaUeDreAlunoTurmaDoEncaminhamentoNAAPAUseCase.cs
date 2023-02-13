@@ -58,8 +58,8 @@ namespace SME.SGP.Aplicacao
         private async Task NotificarResponsaveisSobreTransferenciaUeDreAluno(string nomeAluno, string codigoAluno, Turma turmaAnterior, 
                                                                              Turma turmaNova)
         {
-            var responsaveisUeAnterior = await RetornarReponsaveisDreUe(turmaAnterior.Ue.CodigoUe, turmaAnterior.Ue.Dre.CodigoDre);
-            var responsaveisUeNova = await RetornarReponsaveisDreUe(turmaNova.Ue.CodigoUe, turmaNova.Ue.Dre.CodigoDre);
+            var responsaveisUeAnterior = await RetornarReponsaveisDreUe(turmaAnterior.Ue.Dre.CodigoDre, turmaAnterior.Ue.CodigoUe);
+            var responsaveisUeNova = await RetornarReponsaveisDreUe(turmaNova.Ue.Dre.CodigoDre, turmaNova.Ue.CodigoUe);
             var responsaveisNotificados = responsaveisUeAnterior;
             responsaveisNotificados.AddRange(responsaveisUeNova);
 
@@ -104,13 +104,20 @@ namespace SME.SGP.Aplicacao
         private async Task<List<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
         {
             var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
-            var perfisUe = new Guid[] { Perfis.PERFIL_PSICOPEDAGOGO,
-                                        Perfis.PERFIL_PSICOLOGO_ESCOLAR,
-                                        Perfis.PERFIL_ASSISTENTE_SOCIAL  };
+            var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,
+                                        TipoResponsavelAtribuicao.PsicologoEscolar,
+                                        TipoResponsavelAtribuicao.AssistenteSocial };
 
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfisDre))).ToList();
+            if (!responsaveisDre.Any())
+                responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
 
-            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfisUe))).ToList();
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
+            var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoDre, codigoUe, tiposAtribuicaoUe)))
+                                .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto(){  Login = atribuicaoResponsavel.SupervisorId,
+                                                                                               NomeServidor = atribuicaoResponsavel.Nome,
+                                                                                               Perfil = ((TipoResponsavelAtribuicao)atribuicaoResponsavel.TipoAtribuicao).ToPerfil()
+                                }).ToList();
+            
             
             if (responsaveisDre != null && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
