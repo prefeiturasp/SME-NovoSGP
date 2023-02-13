@@ -315,8 +315,9 @@ namespace SME.SGP.Dados.Repositorios
         {
             StringBuilder query = new();
 
-            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
+            query.AppendLine("select sed.id as AtribuicaoSupervisorId, sed.dre_id as DreId, sed.escola_id as UeId, sed.supervisor_id as SupervisorId, sed.criado_em as CriadoEm, sed.criado_por as CriadoPor, sed.alterado_em as AlteradoEm, sed.alterado_por as AlteradoPor, sed.criado_rf as CriadoRF, sed.alterado_rf as AlteradoRF, sed.excluido as AtribuicaoExcluida, sed.tipo as TipoAtribuicao, u.nome as SupervisorNome");
             query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("join usuario u on u.rf_codigo = supervisor_id ");
             query.AppendLine("where not excluido");
 
             if (!string.IsNullOrEmpty(codigoDre))
