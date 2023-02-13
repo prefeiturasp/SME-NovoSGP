@@ -86,7 +86,7 @@ namespace SME.SGP.Aplicacao
             var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
             var mensagem = $"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turma.Ue.Dre.Abreviacao} e estava matriculado na turma {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para \"{situacaoMatriculaAluno}\" e não possui outras matrículas válidas na rede municipal de educação. O seu encaminhamento junto a esta DRE deverá ser encerrado.";
 
-            var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.CodigoUe, turma.Ue.Dre.CodigoDre);
+            var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
 
             foreach (var responsavel in responsaveisNotificados)
             {
@@ -102,16 +102,26 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<FuncionarioUnidadeDto>> RetornarReponsaveisDreUe(string codigoDre, string codigoUe) 
         {
             var perfisDre = new Guid[] { Perfis.PERFIL_COORDENADOR_NAAPA };
-            var perfisUe = new Guid[] { Perfis.PERFIL_PSICOPEDAGOGO,
-                                        Perfis.PERFIL_PSICOLOGO_ESCOLAR,
-                                        Perfis.PERFIL_ASSISTENTE_SOCIAL  };
+            var tiposAtribuicaoUe = new TipoResponsavelAtribuicao[] { TipoResponsavelAtribuicao.Psicopedagogo,
+                                        TipoResponsavelAtribuicao.PsicologoEscolar,
+                                        TipoResponsavelAtribuicao.AssistenteSocial };
 
-            var responsaveisUe = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfisUe))).ToList();
-            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
-            
+            var responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoUe, perfisDre))).ToList();
+            if (!responsaveisDre.Any())
+                responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
+
+            var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoUe, codigoDre, tiposAtribuicaoUe)))
+                                .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto()
+                                {
+                                    Login = atribuicaoResponsavel.SupervisorId,
+                                    NomeServidor = atribuicaoResponsavel.Nome,
+                                    Perfil = ((TipoResponsavelAtribuicao)atribuicaoResponsavel.TipoAtribuicao).ToPerfil()
+                                }).ToList();
+
+
             if (responsaveisDre != null && responsaveisDre.Any())
                 responsaveisUe.AddRange(responsaveisDre);
-            return responsaveisUe.DistinctBy(resp => resp.Login);
+            return responsaveisUe.DistinctBy(resp => resp.Login).ToList();
         }
 
     }

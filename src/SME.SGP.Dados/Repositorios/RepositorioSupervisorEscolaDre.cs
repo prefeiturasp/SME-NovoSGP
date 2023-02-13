@@ -310,5 +310,28 @@ namespace SME.SGP.Dados.Repositorios
 
             return (await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(query, new { codigoUe, tipoResponsavelAtribuicao }));
         }
+
+        public async Task<IEnumerable<SupervisorEscolasDreDto>> ObterResponsaveisPorDreUeTiposAtribuicaoAsync(string codigoDre, string codigoUe, TipoResponsavelAtribuicao[] tiposResponsavelAtribuicao)
+        {
+            StringBuilder query = new();
+
+            query.AppendLine("select id as AtribuicaoSupervisorId, dre_id as DreId, escola_id as UeId, supervisor_id as SupervisorId, criado_em as CriadoEm, criado_por as CriadoPor, alterado_em as AlteradoEm, alterado_por as AlteradoPor, criado_rf as CriadoRF, alterado_rf as AlteradoRF, excluido as AtribuicaoExcluida, tipo as TipoAtribuicao");
+            query.AppendLine("from supervisor_escola_dre sed");
+            query.AppendLine("where not excluido");
+
+            if (!string.IsNullOrEmpty(codigoDre))
+                query.AppendLine("and dre_id = @codigoDre");
+            if (!string.IsNullOrEmpty(codigoUe))
+                query.AppendLine("and escola_id = @codigoUe ");
+            if (tiposResponsavelAtribuicao != null && tiposResponsavelAtribuicao.Any())
+                query.AppendLine("and tipo = any(@tiposResponsavelAtribuicao) ");
+
+            return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new
+            {
+                codigoDre,
+                codigoUe,
+                tiposResponsavelAtribuicao = tiposResponsavelAtribuicao.Select(tipo => (int)tipo).ToList()
+            });            
+        }
     }
 }
