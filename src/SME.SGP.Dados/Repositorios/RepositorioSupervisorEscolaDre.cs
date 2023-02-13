@@ -324,14 +324,16 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(codigoUe))
                 query.AppendLine("and escola_id = @codigoUe ");
             if (tiposResponsavelAtribuicao != null && tiposResponsavelAtribuicao.Any())
-                query.AppendLine("and tipo = any(@tiposResponsavelAtribuicao) ");
+                query.AppendLine("and tipo = any (@tiposResponsavelAtribuicao) ");
 
             return await database.Conexao.QueryAsync<SupervisorEscolasDreDto>(query.ToString(), new
             {
                 codigoDre,
                 codigoUe,
-                tiposResponsavelAtribuicao = tiposResponsavelAtribuicao.Select(tipo => (int)tipo).ToList()
-            });            
+                tiposResponsavelAtribuicao = tiposResponsavelAtribuicao.ToIntegerArray()
+            });
+            
+            
         }
     }
 }

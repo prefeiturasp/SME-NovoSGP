@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -39,6 +40,11 @@ namespace SME.SGP.Dominio
                     return Perfis.PERFIL_PAAI;
                 default: throw new NotImplementedException();
             }
+        }
+
+        public static int[] ToIntegerArray(this TipoResponsavelAtribuicao[] tipos)
+        {
+            return tipos.Select(tipo => (int)tipo).ToArray();
         }
     }
 
