@@ -114,7 +114,7 @@ namespace SME.SGP.Aplicacao
 
             var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoDre, codigoUe, tiposAtribuicaoUe)))
                                 .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto(){  Login = atribuicaoResponsavel.SupervisorId,
-                                                                                               NomeServidor = atribuicaoResponsavel.Nome,
+                                                                                               NomeServidor = atribuicaoResponsavel.SupervisorNome,
                                                                                                Perfil = ((TipoResponsavelAtribuicao)atribuicaoResponsavel.TipoAtribuicao).ToPerfil()
                                 }).ToList();
             
