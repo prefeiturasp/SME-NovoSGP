@@ -96,7 +96,7 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao((UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool)
-            retornoAutenticacaoEol, string login, AdministradorSuporteDto administradorSuporte = null)
+            retornoAutenticacaoEol, string login, SuporteUsuario suporte = null)
         {
             if (!retornoAutenticacaoEol.Item1.Autenticado)
                 return retornoAutenticacaoEol.Item1;
@@ -111,6 +111,8 @@ namespace SME.SGP.Aplicacao
             servicoAbrangencia.RemoverAbrangenciasHistoricasIncorretas(login, perfis);
 
             var perfilSelecionado = retornoAutenticacaoEol.Item1.PerfisUsuario.PerfilSelecionado;
+
+            var administradorSuporte = ObterAdministradorSuporte(suporte, usuario);
 
             var dadosAcesso = await servicoEOL.CarregarDadosAcessoPorLoginPerfil(login, perfilSelecionado, administradorSuporte);
 
@@ -135,6 +137,20 @@ namespace SME.SGP.Aplicacao
             retornoAutenticacaoEol.Item1.AdministradorSuporte = administradorSuporte;
 
             return retornoAutenticacaoEol.Item1;
+        }
+
+        private AdministradorSuporteDto ObterAdministradorSuporte(SuporteUsuario suporte, Usuario usuarioSimulado)
+        {
+            if (suporte != null && suporte.UsuarioPodeReceberSuporte(usuarioSimulado))
+            {
+                return new AdministradorSuporteDto
+                {
+                   Login = suporte.Administrador.Login,
+                   Nome = suporte.Administrador.Nome
+                };
+            }
+
+            return null;
         }
 
         public async Task<TrocaPerfilDto> ModificarPerfil(Guid perfil)
@@ -251,21 +267,19 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
-            var administradorSuporte = new AdministradorSuporteDto
+            var suporte = new SuporteUsuario
             {
-                Login = usuarioLogado.Login,
-                Nome = usuarioLogado.Nome
-            };
-
-            var dto = await ObterAutenticacao(retornoAutenticacaoEol, login, administradorSuporte);
-
-            repositorioSuporteUsuario.Salvar(new SuporteUsuario
-            {
+                Administrador = usuarioLogado,
                 UsuarioAdministrador = usuarioLogado.Login,
                 UsuarioSimulado = login,
-                DataAcesso = DateTime.Now,
-                TokenAcesso = dto.Token
-            });
+                DataAcesso = DateTime.Now
+            };
+
+            var dto = await ObterAutenticacao(retornoAutenticacaoEol, login, suporte);
+
+            suporte.TokenAcesso = dto.Token;
+
+            repositorioSuporteUsuario.Salvar(suporte);
 
             return dto;
         }
