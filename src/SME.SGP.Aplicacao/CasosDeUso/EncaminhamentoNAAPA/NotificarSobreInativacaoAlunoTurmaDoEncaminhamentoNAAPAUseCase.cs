@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
             if (!responsaveisDre.Any())
                 responsaveisDre = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, perfisDre))).ToList();
 
-            var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoUe, codigoDre, tiposAtribuicaoUe)))
+            var responsaveisUe = (await mediator.Send(new ObterResponsaveisAtribuidosUePorDreUeTiposQuery(codigoDre, codigoUe, tiposAtribuicaoUe)))
                                 .Select(atribuicaoResponsavel => new FuncionarioUnidadeDto()
                                 {
                                     Login = atribuicaoResponsavel.SupervisorId,
