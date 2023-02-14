@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
         public ObterComponenteRegistraFrequenciaQuery(long componenteCurricularId, long? codigoTerritorioSaber = null)
         {
             ComponenteCurricularId = componenteCurricularId;
-            codigoTerritorioSaber = codigoTerritorioSaber;
+            CodigoTerritorioSaber = codigoTerritorioSaber;
         }
 
         public long ComponenteCurricularId { get; }
