@@ -5,6 +5,8 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +27,10 @@ namespace SME.SGP.Aplicacao
 
             var anosComTurmasVigentes = await mediator
                 .Send(new ObterAnoLetivoTurmasVigentesQuery(ueId));
+
+            //Verifica para o ano atual
+            if (!anosComTurmasVigentes.Contains(DateTimeExtension.HorarioBrasilia().Year))
+                anosComTurmasVigentes = anosComTurmasVigentes.Concat(new int[] { DateTimeExtension.HorarioBrasilia().Year });
 
             //É necessário incluir o ano anterior para verificação de turmas históricas que foram extintas posteriormente
             if (!anosComTurmasVigentes.Contains(DateTimeExtension.HorarioBrasilia().Year - 1))
