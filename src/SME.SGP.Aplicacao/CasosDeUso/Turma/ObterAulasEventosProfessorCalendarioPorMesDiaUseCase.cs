@@ -86,16 +86,14 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (usuarioLogado.EhProfessor())
-                {
-                    componentesCurricularesEolProfessor = await mediator
-                                                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                            usuarioLogado.CodigoRf,
-                                                            usuarioLogado.PerfilAtual,
-                                                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                componentesCurricularesEolProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.PerfilAtual,
+                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
-                    componentesCurricularesDoProfessor = componentesCurricularesEolProfessor.Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
-                }
+                componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
+                    .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
