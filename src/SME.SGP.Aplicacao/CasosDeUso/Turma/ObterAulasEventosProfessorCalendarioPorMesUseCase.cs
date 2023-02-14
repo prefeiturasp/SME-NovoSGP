@@ -55,7 +55,6 @@ namespace SME.SGP.Aplicacao
             
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
                 aulasParaVisualizar = aulas;
-
             else
             {
                 if (usuarioLogado.EhProfessor())
@@ -70,7 +69,7 @@ namespace SME.SGP.Aplicacao
                 avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
-            return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
+             return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
             {
                 TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
                 Aulas = aulasParaVisualizar,

@@ -17,6 +17,7 @@ namespace SME.SGP.Infra
         public string DataNascimento { get; set; }
         public int NumeroAlunoChamada { get; set; }
         public int CodigoTurma { get; set; }
+        public int CodigoTipoTurma { get; set; }
         public string ObterNomeFinalAluno()
         {
             if (!string.IsNullOrEmpty(NomeSocialAluno))

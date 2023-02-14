@@ -47,9 +47,8 @@ namespace SME.SGP.Aplicacao
             }
 
             var existeArquivo = await mediator.Send(
-                new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId,
-                    request.SalvarDocumentoDto.ClassificacaoId, request.SalvarDocumentoDto.UsuarioId,
-                    request.SalvarDocumentoDto.UeId), cancellationToken);
+                new VerificaUsuarioPossuiArquivoQuery(request.SalvarDocumentoDto.TipoDocumentoId,request.SalvarDocumentoDto.ClassificacaoId, 
+                    request.SalvarDocumentoDto.UsuarioId,request.SalvarDocumentoDto.UeId,request.SalvarDocumentoDto.AnoLetivo), cancellationToken);
             
             if (existeArquivo)
                 throw new NegocioException(MensagemNegocioDocumento.ESTE_USUARIO_JA_POSSUI_ARQUIVO);

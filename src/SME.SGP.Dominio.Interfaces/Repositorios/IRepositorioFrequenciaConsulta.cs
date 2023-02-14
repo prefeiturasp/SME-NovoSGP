@@ -28,5 +28,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> RegistraFrequencia(long componenteCurricularId, long? codigoTerritorioSaber = null);
         Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoAbaixo50Porcento(int anoLetivo, string dreCodigo, string ueCodigo, Modalidade modalidade, int semestre, int mes);
         Task<IEnumerable<GraficoFrequenciaTurmaEvasaoDto>> ObterDashboardFrequenciaTurmaEvasaoSemPresenca(int anoLetivo, string dreCodigo, string ueCodigo, Modalidade modalidade, int semestre, int mes);
+        Task<IEnumerable<AusenciaAlunoDto>> ObterAusenciasPorAluno(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string alunoCodigo);
     }
 }

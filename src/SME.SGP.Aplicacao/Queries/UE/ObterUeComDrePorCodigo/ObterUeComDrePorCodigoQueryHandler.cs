@@ -23,7 +23,11 @@ namespace SME.SGP.Aplicacao
         public async Task<Ue> Handle(ObterUeComDrePorCodigoQuery request, CancellationToken cancellationToken)
         {
             var ueId = await repositorioUe.ObterIdPorCodigoUe(request.UeCodigo);
-            return await mediator.Send(new ObterUeComDrePorIdQuery(ueId));
+
+            if (ueId > 0)
+                return await mediator.Send(new ObterUeComDrePorIdQuery(ueId));
+
+            return null;
         }
     }
 }

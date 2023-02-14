@@ -330,6 +330,18 @@ namespace SME.SGP.Aplicacao
             }
 
             var dadosAluno = dadosAlunos.FirstOrDefault(da => da.CodigoEOL.Contains(alunoCodigo));
+            var dadosMatriculaAlunoNaTurma = await mediator.Send(new ObterMatriculasAlunoNaTurmaQuery(turma.CodigoTurma, alunoCodigo));
+
+            if (dadosMatriculaAlunoNaTurma.Count() > 1)
+                dadosAluno = dadosMatriculaAlunoNaTurma.Select(d => new AlunoDadosBasicosDto()
+                {
+                    CodigoEOL = d.CodigoAluno,
+                    DataMatricula = d.DataMatricula,
+                    DataSituacao = d.DataSituacao,
+                    SituacaoCodigo = d.CodigoSituacaoMatricula,
+                    NumeroChamada = d.NumeroAlunoChamada.HasValue ? d.NumeroAlunoChamada.Value : 0
+                }).FirstOrDefault(d => d.DataMatricula <= periodoFim && d.DataSituacao.Date >= periodoInicio) ?? dadosAluno;
+
             bool validaMatricula = false;
 
             if (turmasComMatriculasValidas.Contains(codigoTurma))
