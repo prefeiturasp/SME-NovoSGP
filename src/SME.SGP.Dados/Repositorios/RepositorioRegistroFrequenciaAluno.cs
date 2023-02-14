@@ -119,36 +119,36 @@ namespace SME.SGP.Dados
                       	   pe.periodo_inicio,
                       	   pe.periodo_fim,
                       	   pe.bimestre,
-                      	   rfa.codigo_aluno,
+                      	   coalesce(rfa.codigo_aluno, '{listaAlunos[i].codigo}') codigo_aluno,
                       	   a.disciplina_id, 
-                      	   rfa.valor,  	
-                      	   rfa.criado_em,
-                           rfa.numero_aula,
-                           rfa.id registro_frequencia_aluno_id                    	   
-                      	from registro_frequencia_aluno rfa 
-                      		inner join aula a 
-                      			on rfa.aula_id = a.id
-                      		inner join periodo_escolar pe 
+                      	   coalesce(rfa.valor, 1) valor,  	
+                      	   coalesce(rfa.criado_em, a.criado_em) criado_em,
+                           coalesce(rfa.numero_aula, 1) numero_aula,
+                           coalesce(rfa.id, 0) registro_frequencia_aluno_id                    	   
+                      	from aula a
+                      		inner join periodo_escolar pe
                       			on a.tipo_calendario_id = pe.tipo_calendario_id
-                    where not rfa.excluido and
-                      	  not a.excluido and
-                      	  rfa.codigo_aluno = '{listaAlunos[i].codigo}' and
+                      		left join registro_frequencia_aluno rfa 
+                      			on a.id = rfa.aula_id and
+								   not rfa.excluido and
+								   rfa.codigo_aluno = '{listaAlunos[i].codigo}'
+                    where not a.excluido and                      	  
                     	  a.turma_id = any(@turmasId) and
                           @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
-                          a.data_aula::date >= '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
-                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date < '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
+                          a.data_aula::date > '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
+                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date <= '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
 
                 query += i + 1 == listaAlunos.Count ? string.Empty : " union ";
             }
-                    
+            
             query += $@"), lista2 as (
                     select *,
                            row_number() over (partition by aula_id, codigo_aluno, numero_aula order by registro_frequencia_aluno_id desc) sequencia
                     from lista1)
-                    select {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 1) TotalPresencas,")}
-                    	   count(0) filter (where tmp.valor = 2) TotalAusencias,
-                    	   {(somenteAusencias ? string.Empty : "count(0) filter (where tmp.valor = 3) TotalRemotos,")}
+                    select {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 1) TotalPresencas,")}
+                    	   count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 2) TotalAusencias,
+                    	   {(somenteAusencias ? string.Empty : "count(distinct (tmp.aula_id, tmp.numero_aula)) filter (where tmp.valor = 3) TotalRemotos,")}
                     	   tmp.periodo_id as PeriodoEscolarId,
                     	   tmp.periodo_inicio as PeriodoInicio,
                     	   tmp.periodo_fim as PeriodoFim,
