@@ -32,7 +32,10 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var codigoTerritorioSaberCorrespondente = request.CodigoComponentes.Single(c => c.codigo.Equals(disciplina.CodigoComponenteCurricular));
-                    disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular, codigoTerritorioSaberCorrespondente.codigoTerritorioSaber));
+
+                    disciplina.RegistraFrequencia = await mediator
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(codigoTerritorioSaberCorrespondente.codigo, codigoTerritorioSaberCorrespondente.codigoTerritorioSaber > 0 ? codigoTerritorioSaberCorrespondente.codigoTerritorioSaber : null));
+
                     disciplina.Id = codigoTerritorioSaberCorrespondente.codigoTerritorioSaber ?? 0;
                     listaDisciplinas.Add(disciplina);
                 }
