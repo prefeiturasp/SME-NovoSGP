@@ -36,6 +36,7 @@ namespace SME.SGP.Aplicacao
                 Mes = mes
             });
 
+            aulas = aulas.Where(a => a.TipoCalendarioId == tipoCalendarioId).ToList(); 
             var avaliacoes = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesQuery()
             {
                 UeCodigo = filtroAulasEventosCalendarioDto.UeCodigo,
@@ -50,27 +51,22 @@ namespace SME.SGP.Aplicacao
 
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(filtroAulasEventosCalendarioDto.AnoLetivo);
 
-            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
             IEnumerable<Aula> aulasParaVisualizar;
-
+            
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
                 aulasParaVisualizar = aulas;
             else
             {
                 if (usuarioLogado.EhProfessor())
-                {
-                    componentesCurricularesEolProfessor = await mediator
-                                                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                            usuarioLogado.CodigoRf,
-                                                            usuarioLogado.PerfilAtual,
-                                                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
-
-                    componentesCurricularesDoProfessor = componentesCurricularesEolProfessor.Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
-
-                    avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());                    
-                }
+                    componentesCurricularesDoProfessor = await mediator
+                                                               .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                                                                                                                                usuarioLogado.PerfilAtual,
+                                                                                                                                filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                                                                usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
+
+                avaliacoes = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(avaliacoes, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
              return await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesQuery()
