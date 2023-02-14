@@ -86,16 +86,14 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                if (usuarioLogado.EhProfessor())
-                {
-                    componentesCurricularesEolProfessor = await mediator
-                                                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                            usuarioLogado.CodigoRf,
-                                                            usuarioLogado.PerfilAtual,
-                                                            usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                componentesCurricularesEolProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.PerfilAtual,
+                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
-                    componentesCurricularesDoProfessor = componentesCurricularesEolProfessor.Select(c => c.Codigo.ToString()).ToArray();
-                }
+                componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
+                    .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
                 atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
@@ -121,18 +119,6 @@ namespace SME.SGP.Aplicacao
                     componentesCurriculares = await mediator
                         .Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber)), filtroAulasEventosCalendarioDto.TurmaCodigo));
                 }
-
-                //foreach (var componenteAula in componentesCurriculares)
-                //{
-                //    if (componenteAula.TerritorioSaber)
-                //    {
-                //        var componenteAulaTerritorio = componentesCurricularesDoProfessor.Any(a => string.IsNullOrEmpty(a.codigoTerritorioSaber)) || componenteAula.TerritorioSaber;
-                //        var componenteCurricularAula = componentesCurricularesDoProfessor.Any(a => string.IsNullOrEmpty(a.codigoTerritorioSaber)) ? componentesCurricularesDoProfessor.Select(cc => Convert.ToInt64(cc)).ToArray() : new long[] { componenteAula.CodigoComponenteCurricular };
-                //        var auxComponenteCalendario = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componenteCurricularAula, componenteAulaTerritorio, filtroAulasEventosCalendarioDto.TurmaCodigo));
-                //        foreach (var componenteTerritorio in auxComponenteCalendario)
-                //            componenteAula.Nome = componenteTerritorio.Nome;
-                //    }
-                //}
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {
