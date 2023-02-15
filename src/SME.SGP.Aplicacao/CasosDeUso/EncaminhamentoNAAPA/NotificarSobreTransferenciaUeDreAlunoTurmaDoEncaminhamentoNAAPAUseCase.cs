@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             var responsaveisNotificados = responsaveisUeAnterior;
             responsaveisNotificados.AddRange(responsaveisUeNova);
 
-            var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
+            var titulo = $"Criança / Estudante transferida - {nomeAluno}({codigoAluno})";
             var mensagem = $@"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turmaAnterior.Ue.Dre.Abreviacao} e estava matriculada na turma {turmaAnterior.NomeComModalidade()} na {turmaAnterior.Ue.TipoEscola.ObterNomeCurto()} {turmaAnterior.Ue.Nome} foi transferida para a turma {turmaNova.NomeComModalidade()} na {turmaNova.Ue.TipoEscola.ObterNomeCurto()} {turmaNova.Ue.Nome}{(turmaAnterior.Ue.Dre.CodigoDre != turmaNova.Ue.Dre.CodigoDre ? $"({turmaNova.Ue.Dre.Abreviacao})" : "")}. {MontarMensagemResponsaveisNovaUe(responsaveisUeNova)}";
 
             
