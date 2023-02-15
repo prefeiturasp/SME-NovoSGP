@@ -85,7 +85,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             };
 
             repositorioAulaConsulta.Setup(x => x.ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(It.IsAny<IEnumerable<long>>(), It.IsAny<int>(),
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool>())).ReturnsAsync(aulaPossuiFrequenciaAulaRegistradaDto);
+                It.IsAny<string>(), It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<bool>())).ReturnsAsync(aulaPossuiFrequenciaAulaRegistradaDto);
 
 
             mediator.Setup(x => x.Send(It.IsAny<ObterAulasPorIdsQuery>(), It.IsAny<CancellationToken>()))
