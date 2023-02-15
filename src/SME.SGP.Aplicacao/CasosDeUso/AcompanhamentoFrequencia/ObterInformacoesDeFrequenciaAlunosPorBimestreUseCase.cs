@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Diagnostics.Tracing.Parsers.AspNet;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
@@ -60,7 +61,7 @@ namespace SME.SGP.Aplicacao
             {
                 alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                                                   .OrderBy(a => a.NomeAluno)
-                                                  .ThenBy(a => a.NomeValido()); 
+                                                  .ThenBy(a => a.NomeValido());
             }
             else
             {
@@ -169,8 +170,6 @@ namespace SME.SGP.Aplicacao
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestresQuery(turma.CodigoTurma, componenteCurricularId.ToString(), periodosEscolaresIds.ToArray()));
             var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, null, turmaPossuiFrequenciaRegistrada);
 
-
-
             return new FrequenciaAlunosPorBimestreDto
             {
                 AulasDadas = aulasDadas,
@@ -196,40 +195,29 @@ namespace SME.SGP.Aplicacao
 
             return frequenciaAlunosRegistrada
                 .GroupBy(x => x.CodigoAluno)
-                .Select(x => ObterFrequenciaAluno(x, aulasComponentesTurma))
+                .Select(x => ObterFrequenciaAluno(x, aulasComponentesTurma).Result)
                 .ToList();
         }
 
-        private FrequenciaAluno ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<TurmaComponenteQntAulasDto> aulasComponentesTurma)
+        private async Task<FrequenciaAluno> ObterFrequenciaAluno(IGrouping<string, FrequenciaAluno> agrupamentoAluno, IEnumerable<TurmaComponenteQntAulasDto> aulasComponentesTurma)
         {
             var frequenciasAluno = agrupamentoAluno.ToList();
 
-            foreach (var aulasComponente in aulasComponentesTurma)
-            {
-                if (!frequenciasAluno.Any(a => a.TurmaId == aulasComponente.TurmaCodigo
-                                            && a.DisciplinaId == aulasComponente.ComponenteCurricularCodigo
-                                            && a.Bimestre == aulasComponente.Bimestre))
-                {
-                    frequenciasAluno.Add(new FrequenciaAluno()
-                    {
-                        DisciplinaId = aulasComponente.ComponenteCurricularCodigo,
-                        TurmaId = aulasComponente.TurmaCodigo,
-                        TotalAulas = aulasComponente.AulasQuantidade,
-                        TotalPresencas = aulasComponente.AulasQuantidade,
-                        Bimestre = aulasComponente.Bimestre,
-                        PeriodoEscolarId = aulasComponente.PeriodoEscolarId
-                    });
-                }
-            }
+            var matriculasAluno = await mediator
+                .Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(aulasComponentesTurma.First().TurmaCodigo), int.Parse(agrupamentoAluno.Key)));
 
+            var frequenciasConsideradas = from f in frequenciasAluno
+                                          from m in matriculasAluno
+                                          where f.PeriodoFim.Date >= m.DataMatricula
+                                          select f;
             return new FrequenciaAluno
             {
                 CodigoAluno = agrupamentoAluno.Key,
-                TotalAulas = frequenciasAluno.Sum(y => y.TotalAulas),
-                TotalAusencias = frequenciasAluno.Sum(y => y.TotalAusencias),
-                TotalCompensacoes = frequenciasAluno.Sum(y => y.TotalCompensacoes),
-                TotalPresencas = frequenciasAluno.Sum(y => y.TotalPresencas),
-                TotalRemotos = frequenciasAluno.Sum(y => y.TotalRemotos),
+                TotalAulas = frequenciasConsideradas.Sum(y => y.TotalAulas),
+                TotalAusencias = frequenciasConsideradas.Sum(y => y.TotalAusencias),
+                TotalCompensacoes = frequenciasConsideradas.Sum(y => y.TotalCompensacoes),
+                TotalPresencas = frequenciasConsideradas.Sum(y => y.TotalPresencas),
+                TotalRemotos = frequenciasConsideradas.Sum(y => y.TotalRemotos),
             };
         }
 
@@ -240,7 +228,8 @@ namespace SME.SGP.Aplicacao
             var periodoEscolar = periodosEscolares.FirstOrDefault(x => x.PeriodoInicio.Date <= dataPesquisa.Date && x.PeriodoFim.Date >= dataPesquisa.Date);
 
             if (periodoEscolar == null)
-                return 1;
+                return periodosEscolares.Select(p => p.Bimestre).Max();
+
             else return periodoEscolar.Bimestre;
         }
     }
