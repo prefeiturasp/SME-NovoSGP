@@ -83,8 +83,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task NotificarResponsaveisSobreInativacaoAluno(string nomeAluno, string codigoAluno, Turma turma, string situacaoMatriculaAluno)
         {
-            var titulo = $"Criança / Estudante inativa - {nomeAluno}({codigoAluno})";
-            var mensagem = $"A criança/ estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turma.Ue.Dre.Abreviacao} e estava matriculado na turma {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para \"{situacaoMatriculaAluno}\" e não possui outras matrículas válidas na rede municipal de educação. O seu encaminhamento junto a esta DRE deverá ser encerrado.";
+            var titulo = $"Criança/Estudante inativa - {nomeAluno}({codigoAluno})";
+            var mensagem = $"A criança/estudante {nomeAluno}({codigoAluno}) que está em acompanhamento pelo NAAPA da {turma.Ue.Dre.Abreviacao} e estava matriculado na turma {turma.NomeComModalidade()} na {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} teve a sua situação alterada para \"{situacaoMatriculaAluno}\" e não possui outras matrículas válidas na rede municipal de educação. O seu encaminhamento junto a esta DRE deverá ser encerrado.";
 
             var responsaveisNotificados = await RetornarReponsaveisDreUe(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe);
 
