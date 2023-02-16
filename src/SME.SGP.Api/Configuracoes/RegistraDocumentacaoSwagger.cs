@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Integracoes;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Configuracoes
 {
     public static class RegistraDocumentacaoSwagger
     {
@@ -31,7 +31,7 @@ namespace SME.SGP.Api
                     Scheme = "Bearer",
                     BearerFormat = "JWT"
                 });
-                
+
                 c.OperationFilter<BasicAuthOperationsFilter>();
             });
 

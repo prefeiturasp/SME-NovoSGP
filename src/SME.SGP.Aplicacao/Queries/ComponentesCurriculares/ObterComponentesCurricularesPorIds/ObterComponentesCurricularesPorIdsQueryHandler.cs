@@ -27,7 +27,10 @@ namespace SME.SGP.Aplicacao
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value)
             {
                 var listaDisciplinas = new List<DisciplinaDto>();
-                var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
+
+                var disciplinasAgrupadas = await servicoEol
+                    .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
+
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
@@ -35,13 +38,9 @@ namespace SME.SGP.Aplicacao
                 }
 
                 return listaDisciplinas;
-
             }
             else
                 return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
-
         }
-
-
     }
 }

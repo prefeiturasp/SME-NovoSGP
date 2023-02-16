@@ -7,7 +7,7 @@ using SME.SGP.Infra;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/fechamentos/acompanhamentos/turmas")]
