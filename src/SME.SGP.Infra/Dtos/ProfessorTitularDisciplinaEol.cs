@@ -1,11 +1,15 @@
 ﻿using Newtonsoft.Json;
+using System.Linq;
 
 namespace SME.SGP.Infra
 {
     public class ProfessorTitularDisciplinaEol
     {
-        [JsonProperty("disciplina_Id")]
-        public long DisciplinaId { get; set; }
+        private long[] disciplinasId;
+
+        [JsonProperty("disciplinas_Id")]
+        public string CodigosDisciplinas { get; set; }
+        public long[] DisciplinasId { get => CodigosDisciplinas?.Split(",").Select(x => long.Parse(x)).ToArray() ?? Enumerable.Empty<long>().ToArray(); set { disciplinasId = value; } }
 
         [JsonProperty("disciplina")]
         public string DisciplinaNome { get; set; }

@@ -78,10 +78,10 @@ namespace SME.SGP.Aplicacao
                 {
                     foreach (var bimestre in consolidacaoAgrupado.Select(c => c.PeriodoEscolarId).Distinct())
                     {
-                        foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinaId))
+                        foreach (var professor in professoresDaTurma.GroupBy(pt => pt.DisciplinasId))
                         {
                             var dadosProfessor = professor.FirstOrDefault();
-                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => p.ComponenteCurricularId == dadosProfessor.DisciplinaId && p.PeriodoEscolarId == bimestre);
+                            bool possuiConsolidacaoParaADisciplina = consolidacaoAgrupado.Any(p => dadosProfessor.DisciplinasId.Contains(p.ComponenteCurricularId) && p.PeriodoEscolarId == bimestre);
 
                             if (possuiConsolidacaoParaADisciplina)
                             {
@@ -89,18 +89,18 @@ namespace SME.SGP.Aplicacao
                                 string rfProfessor = string.Empty;
                                 bool possui2Professores = false;
 
-                                var consolidacao = consolidacaoAgrupado.FirstOrDefault(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre);
-                                var consolidacaoInfantil = consolidacaoAgrupado.Where(c => c.ComponenteCurricularId == dadosProfessor.DisciplinaId && c.PeriodoEscolarId == bimestre);
+                                var consolidacao = consolidacaoAgrupado.FirstOrDefault(c => dadosProfessor.DisciplinasId.Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
+                                var consolidacaoInfantil = consolidacaoAgrupado.Where(c => dadosProfessor.DisciplinasId.Contains(c.ComponenteCurricularId) && c.PeriodoEscolarId == bimestre);
 
-                                var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinaId == consolidacao.ComponenteCurricularId)
+                                var dadosProfessorTitularDisciplina = professoresDaTurma.Where(p => p.DisciplinasId.Contains(consolidacao.ComponenteCurricularId))
                                                             .Select(pt => new ProfessorTitularDisciplinaDto()
                                                             {
                                                                 RFProfessor = pt.ProfessorRf,
                                                                 NomeProfessor = pt.ProfessorNome
                                                             });
 
-                                string[] nomesProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.NomeProfessor).ToArray();
-                                string[] rfProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.RFProfessor).ToArray();
+                                var nomesProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.NomeProfessor).ToArray();
+                                var rfProfessores = dadosProfessorTitularDisciplina.Select(dpd => dpd.RFProfessor).ToArray();
 
                                 if (dadosProfessorTitularDisciplina != null && consolidacao.RFProfessor != null
                                     && consolidacao.ModalidadeCodigo != (int)Modalidade.EducacaoInfantil)
@@ -191,7 +191,7 @@ namespace SME.SGP.Aplicacao
                                     TurmaId = dadosConsolidadosTurma.TurmaId,
                                     PeriodoEscolarId = bimestre,
                                     AnoLetivo = dadosConsolidadosTurma.AnoLetivo,
-                                    ComponenteCurricularId = dadosProfessor.DisciplinaId,
+                                    ComponenteCurricularId = dadosProfessor.DisciplinasId.First(),
                                     QuantidadeAulas = 0,
                                     FrequenciasPendentes = 0,
                                     DataUltimaFrequencia = null,

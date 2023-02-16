@@ -42,12 +42,12 @@ namespace SME.SGP.Aplicacao
             var listaProfessorDisciplina = new List<ProfessorTitularDisciplinaEol>();
             foreach (var disciplina in disciplinas)
             {
-                if (professoresTitularesEol.Any(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular))
+                if (professoresTitularesEol.Any(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular)))
                 {
-                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinaId == disciplina.CodigoComponenteCurricular);
+                    var dadosProfessorTitular = professoresTitularesEol.FirstOrDefault(p => p.DisciplinasId.Contains(disciplina.CodigoComponenteCurricular));
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinaId = disciplina.Id,
+                        DisciplinasId = new long[] { disciplina.Id },
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = dadosProfessorTitular.ProfessorNome,
                         ProfessorRf = dadosProfessorTitular.ProfessorRf
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
                 {
                     listaProfessorDisciplina.Add(new ProfessorTitularDisciplinaEol()
                     {
-                        DisciplinaId = disciplina.Id,
+                        DisciplinasId = new long[] { disciplina.Id },
                         DisciplinaNome = disciplina.NomeComponenteInfantil,
                         ProfessorNome = "Não há professor titular",
                         ProfessorRf = ""
@@ -74,12 +74,12 @@ namespace SME.SGP.Aplicacao
 
             foreach (var disciplinaProfessorTitular in professoresTitularesDisciplinasEol)
             {
-                var atribuicao = listaAtribuicoes.FirstOrDefault(b => b.DisciplinaId == disciplinaProfessorTitular.DisciplinaId);
+                var atribuicao = listaAtribuicoes.FirstOrDefault(b => disciplinaProfessorTitular.DisciplinasId.Contains(b.DisciplinaId));
 
                 listaRetorno.Itens.Add(new AtribuicaoCJTitularesRetornoItemDto()
                 {
                     Disciplina = disciplinaProfessorTitular.DisciplinaNome,
-                    DisciplinaId = disciplinaProfessorTitular.DisciplinaId,
+                    DisciplinaId = disciplinaProfessorTitular.DisciplinasId.First(),
                     ProfessorTitular = disciplinaProfessorTitular.ProfessorNome,
                     ProfessorTitularRf = disciplinaProfessorTitular.ProfessorRf,
                     Substituir = atribuicao != null && atribuicao.Substituir
