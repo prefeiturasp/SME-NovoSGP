@@ -35,7 +35,12 @@ namespace SME.SGP.Aplicacao
 
             if (request.EntidadesSalvar.Count() > 0)
                 foreach (var inserir in request.EntidadesSalvar)
+                {
+                    var notaConceitoNovaAluno = await repositorioNotasConceitos.ObterNotasPorAtividadeIdCodigoAluno(inserir.AtividadeAvaliativaID, inserir.AlunoId);
+                    inserir.Id = notaConceitoNovaAluno.Id;
                     atividadeAvaliativas.Add(inserir);
+                }
+                    
 
             if (request.EntidadesAlterar.Count() > 0)
                 foreach (var alterar in request.EntidadesAlterar)
