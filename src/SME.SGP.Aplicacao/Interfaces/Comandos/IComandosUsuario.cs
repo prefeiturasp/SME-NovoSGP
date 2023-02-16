@@ -1,3 +1,4 @@
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,6 @@ namespace SME.SGP.Aplicacao
 
         Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao(
             (UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol,
-            string login, AdministradorSuporteDto administradorSuporte = null);
+            string login, SuporteUsuario suporte = null);
     }
 }

@@ -25,5 +25,6 @@ namespace SME.SGP.Dominio.Constantes.MensagensNegocio
         public const string ARQUIVO_INF0RMADO_NAO_ENCONTRADO = "O arquivo informado não foi encontrado";
         public const string NENHUM_ARQUIVO_ENCONTRADO = "Nenhum Arquivo foi Encontrado para Exclusão";
         public const string NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO = "Não foi possível localizar o usuário.";
+        public const string ACESSO_SUPORTE_INDISPONIVEL = "Acesso de suporte indisponível para este usuário por conta de informações sigilosas";
     }
 }
