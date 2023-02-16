@@ -32,8 +32,8 @@ namespace SME.SGP.Aplicacao
                         .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||
                                              a.Id == long.Parse(aulaParaVisualizar.DisciplinaId));
 
-                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinaId == long.Parse(aulaParaVisualizar.DisciplinaId) ||
-                                                                                     (componenteCurricular != null && p.DisciplinaId == componenteCurricular.Id));
+                    var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
+                                                                                     (componenteCurricular != null && p.DisciplinasId.Contains(componenteCurricular.Id)));
 
                     var eventoAulaDto = new EventoAulaDto()
                     {
