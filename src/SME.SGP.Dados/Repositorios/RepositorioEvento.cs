@@ -1129,7 +1129,7 @@ namespace SME.SGP.Dados.Repositorios
                         and not e.excluido";
 
             if (!string.IsNullOrEmpty(ueCodigo))
-                query += " and e.ue_id = @ueCodigo ";
+                query += " and (e.ue_id = @ueCodigo or e.ue_id is null)";
             
             return await database.Conexao.QueryAsync<Evento>(query,
                 new
