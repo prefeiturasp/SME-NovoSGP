@@ -9,5 +9,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<PendenciaRegistroIndividual> ObterPendenciaRegistroIndividualPorPendenciaESituacao(long pendenciaId, SituacaoPendencia situacaoPendencia,
             SituacaoPendenciaRegistroIndividualAluno situacaoAluno);
         Task<IEnumerable<long>> ObterAlunosCodigosComPendenciaAtivosDaTurmaAsync(long turmaId);
+        Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE);
     }
 }
