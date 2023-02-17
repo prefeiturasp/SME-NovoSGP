@@ -166,5 +166,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
+        
+        [HttpPost("encerrar")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_A, Policy = "Bearer")]
+        public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoEncaminhamentoNAAPADto parametros, [FromServices] IEncerrarEncaminhamentoNAAPAUseCase useCase)
+        {
+            return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
+        }
     }
 }

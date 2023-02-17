@@ -20,5 +20,6 @@ namespace SME.SGP.Infra.Dtos
         public string DescricaoSituacao { get; set; }
         public AlunoTurmaReduzidoDto Aluno { get; set; }
         public int Modalidade { get; set; }
+        public string MotivoEncerramento { get; set; }
     }
 }
