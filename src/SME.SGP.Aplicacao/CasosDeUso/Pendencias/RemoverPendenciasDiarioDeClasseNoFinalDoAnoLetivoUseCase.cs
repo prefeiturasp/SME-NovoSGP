@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -29,7 +30,8 @@ namespace SME.SGP.Aplicacao
                 idsPendencia.AddRange(idsPendenciaDiario);
                 idsPendencia.AddRange(idsPendenciaIndividual);
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, idsPendencia, Guid.NewGuid()));
+                if (idsPendencia.Any())
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, idsPendencia, Guid.NewGuid()));
             }
 
             return true;
