@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra
+﻿using SME.SGP.Dominio;
+
+namespace SME.SGP.Infra
 {
     public class AlunoSimplesDto
     {
@@ -8,5 +10,9 @@
         public string CodigoTurma { get; set; }
         public long TurmaId { get; set; }
         public string NomeComModalidadeTurma { get; set; }
+        
+        public Modalidade? ModalidadeCodigo { get; set; }
+
+        public int? Semestre { get; set; }
     }
 }
