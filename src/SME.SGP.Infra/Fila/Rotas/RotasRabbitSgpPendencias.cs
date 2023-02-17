@@ -13,5 +13,6 @@
         public const string RotaTratarAtribuicaoPendenciaUsuarios = "sgp.pendencias.atribuicao.tratar";
         public const string RotaCargaAtribuicaoPendenciaPerfilUsuario = "sgp.pendencia.perfil.usuario.atribuicao.carga";
         public const string RotaExecutarExclusaoPendenciasDevolutiva = "sgp.pendencias.devolutiva.excluir";
+        public const string RotaExecutarReplicarParametrosAnoAnterior = "sgp.pendencias.replicar.ano.anterior";
     }
 }
