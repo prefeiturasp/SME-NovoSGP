@@ -98,8 +98,85 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
             }
         }
 
+        [Fact]
+        public async Task Nao_deve_gerar_pendencias_componente_do_professor_tipo_escola_ignorada_param_sistema()
+        {
+            var useCase = ServiceProvider.GetService<ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase>();
 
-        private async Task CriarCadastrosBasicos()
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await CriarParametroSistema_TiposUEIgnorarGeracaoPendencia(((int) TipoEscola.CEIDIRET).ToString());
+            await CriarCadastrosBasicos(TipoEscola.CEIDIRET);
+
+            var filtroUseCase = ObterFiltroUseCase();
+
+            foreach (var item in filtroUseCase)
+            {
+                var jsonMensagem = JsonSerializer.Serialize(item);
+
+                var retorno = await useCase.Executar(new MensagemRabbit(jsonMensagem));
+
+                retorno.ShouldBeFalse();
+            }
+
+            foreach (var item in filtroUseCase)
+            {
+                foreach (var aulaProfessorComponente in item.AulasProfessoresComponentesCurriculares)
+                {
+                    var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(aulaProfessorComponente.ComponenteCurricularId, aulaProfessorComponente.ProfessorRf, 1));
+                    pendenciaRetorno.ShouldBe(0);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task Deve_gerar_pendencias_componente_do_professor_tipo_escola_ignorada_param_sistema_inativo()
+        {
+            var useCase = ServiceProvider.GetService<ITratarPendenciaDiarioBordoPorTurmaAulaComponenteUseCase>();
+
+            var mediator = ServiceProvider.GetService<IMediator>();
+
+            await CriarParametroSistema_TiposUEIgnorarGeracaoPendencia(((int)TipoEscola.CEIDIRET).ToString(), false);
+            await CriarCadastrosBasicos(TipoEscola.CEIDIRET);
+
+            var filtroUseCase = ObterFiltroUseCase();
+
+            foreach (var item in filtroUseCase)
+            {
+                var jsonMensagem = JsonSerializer.Serialize(item);
+
+                var retorno = await useCase.Executar(new MensagemRabbit(jsonMensagem));
+
+                retorno.ShouldBeTrue();
+            }
+
+            foreach (var item in filtroUseCase)
+            {
+                foreach (var aulaProfessorComponente in item.AulasProfessoresComponentesCurriculares)
+                {
+                    var pendenciaRetorno = await mediator.Send(new ObterPendenciaDiarioBordoPorComponenteProfessorPeriodoEscolarQuery(aulaProfessorComponente.ComponenteCurricularId, aulaProfessorComponente.ProfessorRf, 1));
+                    pendenciaRetorno.ShouldBeGreaterThan(0);
+                }
+            }
+        }
+
+        private async Task CriarParametroSistema_TiposUEIgnorarGeracaoPendencia(string valor, bool ativo = true)
+        {
+            await InserirNaBase(new ParametrosSistema
+            {
+                Id = 1,
+                Tipo = TipoParametroSistema.TiposUEIgnorarGeracaoPendencia,
+                Ativo = ativo,
+                CriadoPor = "",
+                CriadoRF = "",
+                Valor = valor,
+                Nome = "TiposUEIgnorarGeracaoPendencia",
+                Ano = DateTimeExtension.HorarioBrasilia().Year,
+                Descricao = "Tipos de UE ignoradas na geração de pendências no ano"
+            });
+        }
+
+        private async Task CriarCadastrosBasicos(TipoEscola tipoEscola = TipoEscola.EMEF)
         {
             await InserirNaBase(new TipoCalendario()
             {
@@ -409,7 +486,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaDiarioBordo
                 Id = 1,
                 Nome = "Ue Teste",
                 DreId = 1,
-                TipoEscola = TipoEscola.EMEF,
+                TipoEscola = tipoEscola,
                 CodigoUe = "22"
             });
 

@@ -23,6 +23,8 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Handle(ObterTipoUeIgnoraGeracaoPendenciasQuery request, CancellationToken cancellationToken)
         {
             var dadosParametro = await repositorioParametrosSistema.ObterParametroPorTipoEAno(TipoParametroSistema.TiposUEIgnorarGeracaoPendencia, DateTimeExtension.HorarioBrasilia().Year);
+            if (dadosParametro == null || !dadosParametro.Ativo) return false;
+            
             TipoEscola? tipoUe = request.TipoUe;
             if (tipoUe == null)
                tipoUe = await mediator.Send(new ObterTipoEscolaPorCodigoUEQuery(request.CodigoUe));
