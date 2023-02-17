@@ -18,5 +18,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<int> VerificarSeJaExisteAtribuicaoAtivaComOutroResponsavelParaAqueleTipoUe(int tipo, string ueCodigo, string dreCodigo, string responsavelCodigo);
         Task<IEnumerable<ListaUesConsultaAtribuicaoResponsavelDto>> ObterListaDeUesFiltroPrincipal(string dreCodigo);
         Task<IEnumerable<ExisteAtribuicaoExcluidaDto>> VerificarSeJaExisteAtribuicaoExcluida(string dreCodigo, string[] uesCodigos, int tipoAtribuicao);
+        Task<IEnumerable<SupervisorEscolasDreDto>> ObterSupervisoresPorUeTipo(string ueId, TipoResponsavelAtribuicao tipoResponsavelAtribuicao);
     }
 }
