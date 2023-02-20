@@ -14,5 +14,8 @@
         public const string RotaCargaAtribuicaoPendenciaPerfilUsuario = "sgp.pendencia.perfil.usuario.atribuicao.carga";
         public const string RotaExecutarExclusaoPendenciasDevolutiva = "sgp.pendencias.devolutiva.excluir";
         public const string RotaExecutarReplicarParametrosAnoAnterior = "sgp.pendencias.replicar.ano.anterior";
+        public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendario = "sgp.pendencias.calendario.excluir.ano.anterior";
+        public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe = "sgp.pendencias.calendario.excluir.ano.anterior.ue";
+        public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias = "sgp.pendencias.calendario.excluir.ano.anterior.idspendencias";
     }
 }
