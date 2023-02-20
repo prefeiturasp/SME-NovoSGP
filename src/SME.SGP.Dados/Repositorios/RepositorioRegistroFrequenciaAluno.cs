@@ -129,8 +129,8 @@ namespace SME.SGP.Dados
                     	  a.turma_id = any(@turmasId) and
                           @dataAula::date between pe.periodo_inicio and pe.periodo_fim and
                           a.data_aula::date between pe.periodo_inicio and pe.periodo_fim and
-                          a.data_aula::date >= '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
-                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date < '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
+                          a.data_aula::date > '{listaAlunos[i].dataMatricula:yyyy-MM-dd}'::date
+                          {(listaAlunos[i].dataSituacao.HasValue ? $" and a.data_aula::date <= '{listaAlunos[i].dataSituacao.Value:yyyy-MM-dd}'::date" : string.Empty)}";
 
                 query += i + 1 == listaAlunos.Count ? string.Empty : " union ";
             }
