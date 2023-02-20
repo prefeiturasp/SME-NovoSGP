@@ -122,7 +122,17 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCodigo, usuarioLogado, usuarioRF);
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
+
+            if (componentesCurriculares == null)
+                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
+
+            string disciplina = componentesCurriculares
+                                .Where(c => c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo)
+                                .Select(c => (long?)c.CodigoComponenteTerritorioSaber ?? c.Codigo)
+                                .FirstOrDefault().ToString();
+
+            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)

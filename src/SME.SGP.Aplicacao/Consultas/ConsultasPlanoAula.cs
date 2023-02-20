@@ -1,4 +1,5 @@
-﻿using SME.SGP.Dominio;
+﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -18,6 +19,7 @@ namespace SME.SGP.Aplicacao.Consultas
         private readonly IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IRepositorioPeriodoEscolar repositorioPeriodoEscolar;
+        private readonly IMediator mediator;
 
         public ConsultasPlanoAula(IRepositorioPlanoAula repositorioPlanoAula,
                                 IConsultasPlanoAnual consultasPlanoAnual,
@@ -26,7 +28,8 @@ namespace SME.SGP.Aplicacao.Consultas
                                 IConsultasPeriodoEscolar consultasPeriodoEscolar,
                                 IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
                                 IServicoUsuario servicoUsuario,
-                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar)
+                                IRepositorioPeriodoEscolar repositorioPeriodoEscolar,
+                                IMediator mediator)
         {
             this.repositorio = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.consultasObjetivosAula = consultasObjetivosAprendizagemAula ?? throw new ArgumentNullException(nameof(consultasObjetivosAprendizagemAula));
@@ -36,25 +39,38 @@ namespace SME.SGP.Aplicacao.Consultas
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioPeriodoEscolar = repositorioPeriodoEscolar ?? throw new ArgumentNullException(nameof(repositorioPeriodoEscolar));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<bool> PlanoAulaRegistrado(long aulaId)
             => await repositorio.PlanoAulaRegistradoAsync(aulaId);
 
-        public IEnumerable<PlanoAulaExistenteRetornoDto> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
+        public async Task<IEnumerable<PlanoAulaExistenteRetornoDto>> ValidarPlanoAulaExistente(FiltroPlanoAulaExistenteDto filtroPlanoAulaExistenteDto)
         {
             IList<PlanoAulaExistenteRetornoDto> retorno = new List<PlanoAulaExistenteRetornoDto>();
             var planoAulaTurmaDatasDto = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas;
 
+            var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
+
             for (int i = 0; i < planoAulaTurmaDatasDto.Count; i++)
             {
+                var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(planoAulaTurmaDatasDto[i].TurmaId.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
+
+                if (componentesCurriculares == null)
+                    componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(planoAulaTurmaDatasDto[i].TurmaId.ToString(), usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
+
+                string disciplina = componentesCurriculares
+                                .Where(c => c.TerritorioSaber && c.Codigo.ToString() == planoAulaTurmaDatasDto[i].DisciplinaId)
+                                .Select(c => (long?)c.CodigoComponenteTerritorioSaber ?? c.Codigo)
+                                .FirstOrDefault().ToString();
+
                 retorno.Add(new PlanoAulaExistenteRetornoDto()
                 {
                     TurmaId = filtroPlanoAulaExistenteDto.PlanoAulaTurmaDatas[i].TurmaId,
                     Existe = repositorio.ValidarPlanoExistentePorTurmaDataEDisciplina(
                                     planoAulaTurmaDatasDto[i].Data,
                                     planoAulaTurmaDatasDto[i].TurmaId.ToString(),
-                                    planoAulaTurmaDatasDto[i].DisciplinaId)
+                                    disciplina)
                 });
             }
 
