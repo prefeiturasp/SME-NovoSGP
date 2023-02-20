@@ -194,8 +194,8 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
             query.AppendLine("  from aula a ");
-            query.AppendLine("      inner join periodo_escolar p on");
-            query.AppendLine("          a.tipo_calendario_id = p.tipo_calendario_id");
+            query.AppendLine("      inner join periodo_escolar p");
+            query.AppendLine("          on a.tipo_calendario_id = p.tipo_calendario_id");
             query.AppendLine("where not a.excluido");
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
@@ -216,6 +216,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("			  where a.id = rfa.aula_id and");
             query.AppendLine("				  not a.excluido and");
             query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
+
             return query.ToString();
         }
 

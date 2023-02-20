@@ -72,7 +72,7 @@ namespace SME.SGP.Aplicacao
 
                 if (alunoTurma.CodigoSituacaoMatricula == SituacaoMatriculaAluno.Concluido
                     && entidadePlano.Turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year
-                    && SituacaoAtivaPlanoAEE(entidadePlano))
+                    && !verificaMatriculaAnoVigente)
                     anoLetivo = entidadePlano.Turma.AnoLetivo;
                 else if (verificaMatriculaAnoVigente)
                     anoLetivo = DateTimeExtension.HorarioBrasilia().Year;
@@ -87,7 +87,7 @@ namespace SME.SGP.Aplicacao
                         .Send(new ObterAlunoPorCodigoEolQuery(entidadePlano.AlunoCodigo, entidadePlano.Turma.AnoLetivo, entidadePlano.Turma.EhTurmaHistorica, false));
                 }
                 else if ((alunoPorTurmaResposta == null && anoLetivo == DateTimeExtension.HorarioBrasilia().Year) ||
-                         !SituacaoAtivaPlanoAEE(entidadePlano))
+                         !SituacaoAtivaPlanoAEE(entidadePlano.Situacao))
                 {
                     alunoPorTurmaResposta = await ChecaSeOAlunoTeveMudancaDeTurmaAnual(entidadePlano.AlunoCodigo, anoLetivo);
                 }
@@ -179,7 +179,7 @@ namespace SME.SGP.Aplicacao
                     periodoAtual.Id.ToString();
             }
             else
-                CriarRespostaPeriodoEscolarParaPlanoASerCriado(plano, periodoAtual);
+                CriarRespostaPeriodoEscolarParaPlanoASerCriado(plano, periodoAtual, SituacaoAtivaPlanoAEE(plano.Situacao));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             plano.PermitirExcluir = PermiteExclusaoPlanoAEE(plano.Situacao, usuarioLogado);
@@ -207,21 +207,25 @@ namespace SME.SGP.Aplicacao
             
         }
         
-        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual)
+        public void CriarRespostaPeriodoEscolarParaPlanoASerCriado(PlanoAEEDto plano, PeriodoEscolar periodoAtual, bool planoEstaAtivo)
         {
             if (periodoAtual == null)
                 return;
-            
-            var questaoPeriodoEscolar = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
-            var resposta = new List<RespostaQuestaoDto> { new() { Texto = periodoAtual.Id.ToString() } };
-            questaoPeriodoEscolar.Resposta = resposta;
 
-            var questao = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+            if (planoEstaAtivo)
+            {
+                var questaoPeriodoEscolar = plano.Questoes.Single(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+                var resposta = new List<RespostaQuestaoDto> { new() { Texto = periodoAtual.Id.ToString() } };
+                questaoPeriodoEscolar.Resposta = resposta;
 
-            if (questao == null)
-                return;
+                var questao = plano.Questoes.FirstOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar);
+
+                if (questao == null)
+                    return;
+
+                questao.Resposta = questaoPeriodoEscolar.Resposta;
+            }
             
-            questao.Resposta = questaoPeriodoEscolar.Resposta;
         }
 
         public bool VerificaSeUltimaVersaoPlanoEDoAnoAtual(PlanoAEEDto plano)
@@ -271,11 +275,11 @@ namespace SME.SGP.Aplicacao
             return entidadePlano;
         }
 
-        private bool SituacaoAtivaPlanoAEE(PlanoAEE entidadePlano)
+        private bool SituacaoAtivaPlanoAEE(SituacaoPlanoAEE situacaoEntidadePlanoAEE)
         {
-            return entidadePlano.Situacao != SituacaoPlanoAEE.Encerrado
-                && entidadePlano.Situacao != SituacaoPlanoAEE.EncerradoAutomaticamente
-                && entidadePlano.Situacao != SituacaoPlanoAEE.Expirado;
+            return situacaoEntidadePlanoAEE != SituacaoPlanoAEE.Encerrado
+                && situacaoEntidadePlanoAEE != SituacaoPlanoAEE.EncerradoAutomaticamente
+                && situacaoEntidadePlanoAEE != SituacaoPlanoAEE.Expirado;
         }
 
         private string ObterNomeTurmaFormatado(Turma turma)
