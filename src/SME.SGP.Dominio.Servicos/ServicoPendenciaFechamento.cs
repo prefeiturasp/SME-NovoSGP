@@ -338,8 +338,9 @@ namespace SME.SGP.Dominio.Servicos
                     var titulares = mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(professorRF.codigoTurma)).Result;
                     professoresTurma.AddRange(titulares.Select(t => t.ProfessorRf));
                 }
-                
-                var rfConsiderado = !string.IsNullOrWhiteSpace(professorRF.rf) ? professorRF.rf : professoresTurma.FirstOrDefault();
+
+                var rfProfTitularTurma = professoresTurma.FirstOrDefault();
+                var rfConsiderado = !string.IsNullOrWhiteSpace(rfProfTitularTurma) ? rfProfTitularTurma : professorRF.rf;
 
                 if (!string.IsNullOrWhiteSpace(rfConsiderado))
                 {
