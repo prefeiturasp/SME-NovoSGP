@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,9 +19,13 @@ namespace SME.SGP.Aplicacao
 
             if(filtro != null)
             {
-                await VerificaPendenciasDiarioDeBordo(filtro);
+                var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
+                if (!ignorarGeracaoPendencia)
+                {
+                    await VerificaPendenciasDiarioDeBordo(filtro);
+                    await VerificaPendenciasFrequencia(filtro);
+                }
                 await VerificaPendenciasAvaliacao(filtro);
-                await VerificaPendenciasFrequencia(filtro);
                 await VerificaPendenciasPlanoAula(filtro);
 
                 return true;
