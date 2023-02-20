@@ -42,7 +42,7 @@ namespace SME.SGP.Dados.Repositorios
                               AND p.tipo = any(@tipoPendencia)
                               AND p.situacao = any(@situacao)
                               AND tc.ano_letivo = @anoLetivo
-                              AND t.ue_id = @idUe and p.id in (23237652,23237585)";
+                              AND t.ue_id = @idUe ";
                                         
             return await database.Conexao.QueryAsync<long>(query, new
             {
