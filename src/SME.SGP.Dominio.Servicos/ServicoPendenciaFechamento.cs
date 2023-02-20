@@ -159,7 +159,10 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     mensagemHtml.Append("</table>");
 
-                    var professorRf = registrosAulasSemFrequencia.FirstOrDefault()?.ProfessorRf;
+                    var professorRf = professoresTitularesDaTurma.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(professorRf))
+                        professorRf = registrosAulasSemFrequencia.FirstOrDefault()?.ProfessorRf;
 
                     if (string.IsNullOrWhiteSpace(professorRf))
                         professorRf = usuariosPendencias.First().usuario.CodigoRf;
@@ -248,6 +251,8 @@ namespace SME.SGP.Dominio.Servicos
                                                                             fimPeriodo,
                                                                             (int)TipoAvaliacaoCodigo.AtividadeClassroom);
 
+            var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(codigoTurma);
+
             if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
                 var mensagem = new StringBuilder($"As avaliações a seguir não tiveram notas lançadas para nenhum aluno<br>");
@@ -278,14 +283,18 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                     {
                         var professor = usuariosPendencias
-                            .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
+                            .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf && professoresTitularesDaTurma.Any(p => p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
+
 
                         mensagem.AppendLine($"Professor {avaliacao.ProfessorRf} - {professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
                         mensagemHtml.Append($"<tr><td>{avaliacao.DataAvaliacao.ToString("dd/MM/yyyy")}</td><td>{avaliacao.NomeAvaliacao}</td><td>{professor.Nome} - {avaliacao.ProfessorRf}</td></tr>");
                     }
                     mensagemHtml.Append("</table>");
 
-                    var professorRf = registrosAvaliacoesSemNotaParaNenhumAluno.FirstOrDefault()?.ProfessorRf;
+                    var professorRf = professoresTitularesDaTurma.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(professorRf))
+                        professorRf = registrosAvaliacoesSemNotaParaNenhumAluno.FirstOrDefault()?.ProfessorRf;
 
                     if (string.IsNullOrWhiteSpace(professorRf))
                         professorRf = usuariosPendencias.First().usuario.CodigoRf;
@@ -340,7 +349,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 var rfProfTitularTurma = professoresTurma.FirstOrDefault();
-                var rfConsiderado = !string.IsNullOrWhiteSpace(rfProfTitularTurma) ? rfProfTitularTurma : professorRF.rf;
+                var rfConsiderado = !string.IsNullOrWhiteSpace(professorRF.rf) ? professorRF.rf : rfProfTitularTurma;
 
                 if (!string.IsNullOrWhiteSpace(rfConsiderado))
                 {
