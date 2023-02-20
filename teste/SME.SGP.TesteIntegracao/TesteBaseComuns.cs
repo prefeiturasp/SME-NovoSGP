@@ -513,6 +513,26 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.PROFESSOR.Name()).ToString();
         }
+        
+        protected string ObterPerfilCoordenadorNAAPA()
+        {
+            return Guid.Parse(PerfilUsuario.COORDENADOR_NAAPA.Name()).ToString();
+        }
+        
+        protected string ObterPerfilPsicologoEscolar()
+        {
+            return Guid.Parse(PerfilUsuario.PSICOLOGO_ESCOLAR.Name()).ToString();
+        }
+        
+        protected string ObterPerfilPsicopedagogo()
+        {
+            return Guid.Parse(PerfilUsuario.PSICOPEDAGOGO.Name()).ToString();
+        }
+        
+        protected string ObterPerfilAssistenteSocial()
+        {
+            return Guid.Parse(PerfilUsuario.ASSISTENTE_SOCIAL.Name()).ToString();
+        }
 
         protected string ObterPerfilCJ()
         {
