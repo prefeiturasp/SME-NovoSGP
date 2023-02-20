@@ -21,12 +21,10 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(EncerrarEncaminhamentoNAAPACommand request, CancellationToken cancellationToken)
         {
-            var encaminhamentoNAAPA = await mediator.Send(new ObterEncaminhamentoNAAPAPorIdQuery(request.EncaminhamentoId));
+            var encaminhamentoNAAPA = await mediator.Send(new ObterCabecalhoEncaminhamentoNAAPAQuery(request.EncaminhamentoId));
             
             if (encaminhamentoNAAPA == null || encaminhamentoNAAPA.Id == 0)
                 throw new NegocioException(MensagemNegocioEncaminhamentoNAAPA.ENCAMINHAMENTO_NAO_ENCONTRADO);
-            
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             
             encaminhamentoNAAPA.MotivoEncerramento = request.MotivoEncerramento;
             encaminhamentoNAAPA.Situacao = Dominio.Enumerados.SituacaoNAAPA.Encerrado;
