@@ -308,16 +308,21 @@ namespace SME.SGP.Aplicacao
                     TotalRemotos = s.TotalRemotos
                 }).FirstOrDefault();
 
-                var totalAusenciasDisciplina = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo
-                && compensacoesDisciplinasAlunos.Any(b => b.ComponenteCurricularId == a.ComponenteCurricularId)).Select(x => (x.ComponenteCurricularId, x.TotalAusencias)).ToList();
+                var totalAusenciasDisciplina = registroFrequenciaAlunos.Where(a => a.AlunoCodigo == alunoCodigo && 
+                    compensacoesDisciplinasAlunos.Any(b => b.ComponenteCurricularId == a.ComponenteCurricularId)).Select(x => (x.ComponenteCurricularId, x.TotalAusencias)).ToList();
 
-                var totalCompensacoesDisciplina = compensacoesDisciplinasAlunos.Where(a => a.AlunoCodigo == alunoCodigo).Select(x => (x.ComponenteCurricularId, x.Compensacoes)).ToList();
+                var totalCompensacoesDisciplina = compensacoesDisciplinasAlunos
+                    .Where(a => a.AlunoCodigo == alunoCodigo).Select(x => (x.ComponenteCurricularId, x.Compensacoes)).ToList();
 
                 if (totalCompensacoesDisciplina.Any())
+                {
                     totalCompensacoesDoAlunoGeral = totalAusenciasDisciplina.Sum(b => b.TotalAusencias >= totalCompensacoesDisciplina.FirstOrDefault(x => x.ComponenteCurricularId == b.ComponenteCurricularId).Compensacoes ?
                         totalCompensacoesDisciplina.FirstOrDefault(x => x.ComponenteCurricularId == b.ComponenteCurricularId).Compensacoes : b.TotalAusencias);
+                }
 
-                var frequenciaParaTratar = frequenciaDosAlunos.FirstOrDefault(a => a.CodigoAluno == alunoCodigo && string.IsNullOrEmpty(a.DisciplinaId) && a.Bimestre == registroFrequenciaAluno.Bimestre);
+                var frequenciaParaTratar = frequenciaDosAlunos.OrderByDescending(a => a.Id)
+                    .FirstOrDefault(a => a.CodigoAluno == alunoCodigo && string.IsNullOrEmpty(a.DisciplinaId) && a.Bimestre == registroFrequenciaAluno.Bimestre);
+
                 if (frequenciaParaTratar == null)
                 {
                     var frequenciaGlobal = new FrequenciaAluno(
