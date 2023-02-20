@@ -37,7 +37,7 @@ namespace SME.SGP.Pendencias.Worker
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarReplicarParametrosAnoAnterior, new ComandoRabbit("Replicar Parâmetros para ano anterior por modalidade e ano", typeof(IReplicarParametrosAnoAnteriorUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendario, new ComandoRabbit("Buscar UEs para Excluir Pendências Calendário do Ano Anterior", typeof(IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new ComandoRabbit("Excluir Pendências Calendário do Ano Anterior Por UE", typeof(IExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase)));
-            Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, new ComandoRabbit("Excluir Pendências Calendário do Ano Anterior Por ID Pendencia", typeof(IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, new ComandoRabbit("Excluir Pendências Calendário do Ano Anterior Por IDs das Pendencias", typeof(IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase)));
         }
     }
 }
