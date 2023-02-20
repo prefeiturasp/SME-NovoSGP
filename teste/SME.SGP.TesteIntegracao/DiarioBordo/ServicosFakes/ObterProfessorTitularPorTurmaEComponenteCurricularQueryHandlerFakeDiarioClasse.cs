@@ -21,7 +21,7 @@ namespace SME.SGP.TesteIntegracao.DiarioBordo.ServicosFakes
             {
             return new ProfessorTitularDisciplinaEol()
             {
-                DisciplinaId = COMPONENTE_CURRICULAR_512,
+                DisciplinasId = new long[] { COMPONENTE_CURRICULAR_512 },
                 ProfessorNome = "Teste",
                 ProfessorRf = "9999999",
                 TurmaId = TURMA_ID_1

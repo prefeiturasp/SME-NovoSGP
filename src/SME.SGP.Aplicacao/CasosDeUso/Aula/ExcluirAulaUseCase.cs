@@ -4,6 +4,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,9 +22,16 @@ namespace SME.SGP.Aplicacao
             var aula = await mediator.Send(new ObterAulaPorIdQuery(excluirDto.AulaId));
 
             if (aula == null)
-                throw new NegocioException($"Não foi possivél localizar a aula de id : {excluirDto.AulaId}");
+                throw new NegocioException($"Não foi possível localizar a aula de id : {excluirDto.AulaId}");
 
-            var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)));
+            var componentesProfessor = await mediator
+                .Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(aula.TurmaId, usuarioLogado.Login, usuarioLogado.PerfilAtual, usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+            var componenteCorrespondente = componentesProfessor
+                .SingleOrDefault(cp => cp.Codigo.ToString().Equals(aula.DisciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(aula.DisciplinaId));
+
+            var componenteCurricularNome = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber ? 
+                componenteCorrespondente.Descricao : await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(long.Parse(aula.DisciplinaId)));
 
             if (excluirDto.RecorrenciaAula == RecorrenciaAula.AulaUnica)
             {

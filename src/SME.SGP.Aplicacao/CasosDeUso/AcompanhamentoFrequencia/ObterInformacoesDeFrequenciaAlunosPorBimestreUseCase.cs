@@ -22,16 +22,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<FrequenciaAlunosPorBimestreDto> Executar(ObterFrequenciaAlunosPorBimestreDto dto)
         {
-            var componenteCurricular = await ObterComponenteCurricularAsync(dto.ComponenteCurricularId, dto.PossuiTerritorio);
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
+            if (turma is null)
+                throw new NegocioException("A turma informada não foi encontrada.");
+
+            var componenteCurricular = await ObterComponenteCurricularAsync(dto.ComponenteCurricularId, dto.PossuiTerritorio, turma.CodigoTurma);
             if (componenteCurricular is null)
                 throw new NegocioException("O componente curricular informado não foi encontrado.");
 
             if (!componenteCurricular.RegistraFrequencia)
-                throw new NegocioException("Este componente curricular não possui controle de frequência.");
-
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
-            if (turma is null)
-                throw new NegocioException("A turma informada não foi encontrada.");
+                throw new NegocioException("Este componente curricular não possui controle de frequência.");            
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             if (tipoCalendarioId == default)
@@ -148,9 +148,9 @@ namespace SME.SGP.Aplicacao
         }
 
 
-        private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false)
+        private async Task<DisciplinaDto> ObterComponenteCurricularAsync(long componenteCurricularId, bool? possuiTerritorio = false, string codigoTurma = null)
         {
-            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }, possuiTerritorio));
+            var componentes = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new[] { componenteCurricularId }, possuiTerritorio, codigoTurma));
             return componentes.FirstOrDefault();
         }
 
