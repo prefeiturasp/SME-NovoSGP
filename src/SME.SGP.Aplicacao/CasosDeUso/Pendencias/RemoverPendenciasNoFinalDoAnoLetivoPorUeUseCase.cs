@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
 
             if (filtro.DreId > 0)
             {
-                var IdsUes = await mediator.Send(new ObterUEsIdsPorDreQuery(filtro.DreId));
+                var ues = await mediator.Send(new ObterUesPorDreCodigoQuery(filtro.DreId));
 
-                foreach(var idUe in IdsUes)
+                foreach(var ue in ues)
                 {
-                    var filtroUe = new FiltroRemoverPendenciaFinalAnoLetivoDto(filtro.AnoLetivo, filtro.DreId, idUe);
+                    var filtroUe = new FiltroRemoverPendenciaFinalAnoLetivoDto(filtro.AnoLetivo, filtro.DreId, ue.CodigoUe);
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo, filtroUe, Guid.NewGuid()));
                 }
             }

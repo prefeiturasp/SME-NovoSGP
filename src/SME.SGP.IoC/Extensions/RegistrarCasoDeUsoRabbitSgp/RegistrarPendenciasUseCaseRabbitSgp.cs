@@ -22,6 +22,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase>();
             services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase>();
             services.TryAddScoped<IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase, RemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoUseCase, RemoverPendenciasNoFinalDoAnoLetivoUseCase>();
         }
     }
 }

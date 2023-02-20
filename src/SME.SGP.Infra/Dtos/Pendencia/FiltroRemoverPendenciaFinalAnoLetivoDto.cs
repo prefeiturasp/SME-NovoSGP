@@ -8,14 +8,14 @@
             DreId = dreId;
         }
 
-        public FiltroRemoverPendenciaFinalAnoLetivoDto(int anoLetivo, long dreId, long ueId) : 
+        public FiltroRemoverPendenciaFinalAnoLetivoDto(int anoLetivo, long dreId, string codigoUe) : 
             this(anoLetivo, dreId)
         {
-            UeId = ueId;
+            CodigoUe = codigoUe;
         }
 
         public int AnoLetivo { get; set; }
         public long DreId { get; set; }
-        public long UeId { get; set; }
+        public string CodigoUe { get; set; }
     }
 }

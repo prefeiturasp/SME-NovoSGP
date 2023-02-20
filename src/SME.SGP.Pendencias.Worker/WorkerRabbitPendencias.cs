@@ -38,6 +38,7 @@ namespace SME.SGP.Pendencias.Worker
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorAno, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo por ano", typeof(IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorUe, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo por ue", typeof(IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências de diário de classe no final do ano letivo", typeof(IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo", typeof(IRemoverPendenciasNoFinalDoAnoLetivoUseCase)));
         }
     }
 }

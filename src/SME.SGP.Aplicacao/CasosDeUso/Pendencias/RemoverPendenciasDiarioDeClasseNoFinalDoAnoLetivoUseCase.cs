@@ -2,6 +2,9 @@
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,9 +19,19 @@ namespace SME.SGP.Aplicacao
         {
             var filtro = JsonConvert.DeserializeObject<FiltroRemoverPendenciaFinalAnoLetivoDto>(param.Mensagem.ToString());
 
-            if (filtro.UeId > 0) 
-            { 
+            if (!string.IsNullOrEmpty(filtro.CodigoUe)) 
+            {
+                var idsPendencia = new List<long>();
+                var idsPendenciaAula = await mediator.Send(new ObterIdsPendenciaAulaPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
+                var idsPendenciaDiario = await mediator.Send(new ObterIdsPendenciaDiarioBordoPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
+                var idsPendenciaIndividual = await mediator.Send(new ObterIdsPendenciaIndividualPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
 
+                idsPendencia.AddRange(idsPendenciaAula);
+                idsPendencia.AddRange(idsPendenciaDiario);
+                idsPendencia.AddRange(idsPendenciaIndividual);
+
+                if (idsPendencia.Any())
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, idsPendencia, Guid.NewGuid()));
             }
 
             return true;
