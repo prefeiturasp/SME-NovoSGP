@@ -60,7 +60,7 @@ namespace SME.SGP.Aplicacao
             {
                 var listaAgrupada = aulas
                     .Where(a => diasComEventosNaoLetivos.Any(d => d.Data == a.Data && d.UesIds.Contains(a.CodigoUe)))
-                    .GroupBy(x => new { x.TurmaId, x.IdTurma, x.DisciplinaId }).ToList();
+                    .GroupBy(x => new { x.TurmaId, x.IdTurma, x.DisciplinaId, x.ProfessorRf }).ToList();
 
                 var motivos = diasComEventosNaoLetivos
                     .Where(d => aulas.Any(a => a.Data == d.Data && d.UesIds.Contains(a.CodigoUe)))
@@ -71,8 +71,8 @@ namespace SME.SGP.Aplicacao
                     try
                     {
                         var professor = await mediator.Send(new ObterProfessorTitularPorTurmaEComponenteCurricularQuery(turmas.Key.IdTurma.ToString(), turmas.Key.DisciplinaId.ToString()));
-                        if (professor == null) continue;
-                        var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor.ProfessorRf));
+                        if (professor == null && turmas.Key.ProfessorRf == "Sistema") continue;
+                        var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
                         var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor.ProfessorRf, TipoPendencia.AulaNaoLetivo));
                         var pendenciaExistente = pendenciaId != 0;
@@ -81,7 +81,7 @@ namespace SME.SGP.Aplicacao
 
                         if (!pendenciaExistente)
                         {
-                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, turmas.Key.IdTurma, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo, professor), ObterInstrucoes()));
+                            pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AulaNaoLetivo, ue.Id, turmas.Key.IdTurma, await ObterDescricao(turmas.FirstOrDefault(), TipoPendencia.AulaNaoLetivo), ObterInstrucoes()));
                             await mediator.Send(new SalvarPendenciaPerfilCommand(pendenciaId, ObterCodigoPerfis())); 
                             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, ue.Id), Guid.NewGuid()));
 
@@ -119,7 +119,7 @@ namespace SME.SGP.Aplicacao
                 TipoEscola.CEUEMEF
             };
 
-        private async Task<string> ObterDescricao(AulaReduzidaDto aula, TipoPendencia tipoPendencia, ProfessorTitularDisciplinaEol professor)
+        private async Task<string> ObterDescricao(AulaReduzidaDto aula, TipoPendencia tipoPendencia)
         {
             var componenteCurricular = await ObterComponenteCurricular(long.Parse(aula.DisciplinaId));
             var mensagem = new StringBuilder();
@@ -127,7 +127,7 @@ namespace SME.SGP.Aplicacao
             mensagem.AppendLine($"<i>{tipoPendencia.Name()}</i>");
             mensagem.AppendLine("<br />");
             mensagem.AppendLine($"<i>Componente Curricular: {componenteCurricular?.Nome ?? aula.DisciplinaId}</i><br />");
-            mensagem.AppendLine($"<i>Professor: {professor.ProfessorNome}({professor.ProfessorRf})</i><br />");
+            mensagem.AppendLine($"<i>Professor: {aula.Professor}({aula.ProfessorRf})</i><br />");
 
             return mensagem.ToString();
         }
