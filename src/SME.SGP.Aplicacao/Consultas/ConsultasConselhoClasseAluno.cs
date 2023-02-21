@@ -676,17 +676,19 @@ namespace SME.SGP.Aplicacao
                 Codigo = codigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina?.TotalAusencias,
-                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas, frequenciaDisciplina.TotalAulas, codigoComponenteCurricular),
+                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas, frequenciaDisciplina?.TotalAulas, codigoComponenteCurricular),
                 ParecerFinal = parecerFinal?.Valor == null || !totalAulas.Any() ? string.Empty : parecerFinal?.Valor,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default),
-                TotalAulas = ExibirTotalAulas(totalAulas, frequenciaDisciplina.TotalAulas, codigoComponenteCurricular),
+                TotalAulas = ExibirTotalAulas(totalAulas, frequenciaDisciplina?.TotalAulas, codigoComponenteCurricular),
                 TotalAusenciasCompensadas = ExibirTotalCompensadas(totalCompensacoes, codigoComponenteCurricular, bimestre)
             };
         }
 
-        private string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, int totalAulasAlunoDisciplina, long componenteCurricular)
+        private string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, int? totalAulasAlunoDisciplina, long componenteCurricular)
         {
             var aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular);
+
+            totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
 
             if ((aulas == null && totalAulasAlunoDisciplina == 0) || string.IsNullOrEmpty(percentualFrequencia))
                 return "";
@@ -708,9 +710,11 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, int totalAulasAlunoDisciplina, long codigoComponenteCurricular)
+        private string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, int? totalAulasAlunoDisciplina, long codigoComponenteCurricular)
         {
             var aulasComponente = aulas.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
+
+            totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
 
             return aulasComponente != null 
                     ? Convert.ToInt32(aulasComponente.TotalAulas) >= totalAulasAlunoDisciplina 
