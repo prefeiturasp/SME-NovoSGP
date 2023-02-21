@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
@@ -550,6 +551,21 @@ namespace SME.SGP.Dados.Repositorios
                 anoLetivo,
                 codigoUE
             });
+        }
+
+        public async Task<long[]> ObterPendenciasAulaDiarioClassePorTurmaDisciplinaPeriodo(string turmaId, string disciplinaId, DateTime periodoInicio, DateTime periodoFim)
+        {
+            var tipo = new int[] { (int)TipoPendencia.PlanoAula, (int)TipoPendencia.Frequencia, (int)TipoPendencia.Avaliacao };
+            var sql = @"select p.id from pendencia p 
+                        inner join pendencia_aula pa on pa.pendencia_id = p.id
+                        inner join aula a on a.id = pa.aula_id 
+                        where p.tipo = any(@tipo) and not p.excluido
+                           and a.turma_id = @turmaId
+                           and a.disciplina_id = @disciplinaId
+                           and a.data_aula between @dataInicio and @dataFim"
+            ;
+
+            return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();
         }
     }
 }
