@@ -275,10 +275,12 @@ namespace SME.SGP.Dados.Repositorios
                             from pendencia p 
                            inner join pendencia_aula pa on p.id = pa.pendencia_id 
                            inner join aula a on pa.aula_id = a.id 
+                           inner join pendencia_usuario pu on pu.pendencia_id = p.id 
+                           inner join usuario u on u.id = pu.usuario_id
                            where not p.excluido
                              and a.turma_id = @turmaId 
                              and a.disciplina_id = @disciplinaId
-                             and a.professor_rf = @professorRf
+                             and u.rf_codigo = @professorRf
                              and p.tipo = @tipoPendencia";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, disciplinaId, tipoPendencia, professorRf });
