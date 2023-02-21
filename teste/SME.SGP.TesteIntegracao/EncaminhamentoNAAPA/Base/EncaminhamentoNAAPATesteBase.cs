@@ -13,6 +13,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 {
     public class EncaminhamentoNAAPATesteBase : TesteBaseComuns
     {
+        protected const string MOTIVO_ENCERRAMENTO = "Motivo do encerramento do encaminhamento NAAPA";
         protected const int NORMAL = 1;
         protected const int PRIORITARIA = 2;
         protected const string NOME_ALUNO_1 = "Nome do aluno 1";
@@ -170,6 +171,11 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
         protected IExcluirEncaminhamentoNAAPAUseCase ObterServicoExcluirEncaminhamento()
         {
             return ServiceProvider.GetService<IExcluirEncaminhamentoNAAPAUseCase>();
+        }
+        
+        protected IEncerrarEncaminhamentoNAAPAUseCase ObterServicoEncerrarEncaminhamento()
+        {
+            return ServiceProvider.GetService<IEncerrarEncaminhamentoNAAPAUseCase>();
         }
         
         protected IObterEncaminhamentoNAAPAPorIdUseCase ObterServicoObterEncaminhamentoNAAPAPorId()
