@@ -74,7 +74,7 @@ namespace SME.SGP.Aplicacao
                         if (professor == null && turmas.Key.ProfessorRf == "Sistema") continue;
                         var usuarioId = await mediator.Send(new ObterUsuarioIdPorRfOuCriaQuery(professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf));
 
-                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor.ProfessorRf, TipoPendencia.AulaNaoLetivo));
+                        var pendenciaId = await mediator.Send(new ObterPendenciaAulaPorTurmaIdDisciplinaIdQuery(turmas.Key.TurmaId, turmas.Key.DisciplinaId, professor != null ? professor.ProfessorRf : turmas.Key.ProfessorRf, TipoPendencia.AulaNaoLetivo));
                         var pendenciaExistente = pendenciaId != 0;
 
                         var ue = await mediator.Send(new ObterUEPorTurmaCodigoQuery(turmas.Key.TurmaId));
