@@ -2,6 +2,10 @@
 {
     public class FiltroRemoverPendenciaFinalAnoLetivoDto
     {
+        public FiltroRemoverPendenciaFinalAnoLetivoDto()
+        {
+        }
+
         public FiltroRemoverPendenciaFinalAnoLetivoDto(int anoLetivo, long dreId)
         {
             AnoLetivo = anoLetivo;
