@@ -16,5 +16,11 @@ namespace SME.SGP.Api.Controllers
             return Ok(await obterUltimaVersaoUseCase.Executar());
         }
 
+        [HttpGet("ping-test")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TesteVelocidadePing()
+        {
+            return Ok();
+        }
     }
 }
