@@ -48,7 +48,10 @@ namespace SME.SGP.Aplicacao
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
                         TotalAulas = aulaComponenteTurma.AulasQuantidade,
                         Bimestre = aulaComponenteTurma.Bimestre,
-                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
+                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId,
+                        TotalPresencas = aulaComponenteTurma.AulasQuantidade,
+                        PeriodoInicio = aulaComponenteTurma.PeriodoInicio,
+                        PeriodoFim = aulaComponenteTurma.PeriodoFim
                     });
                 }
             }
