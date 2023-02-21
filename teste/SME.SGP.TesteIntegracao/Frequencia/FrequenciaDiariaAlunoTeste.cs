@@ -31,7 +31,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 1, 1, 2, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(1, 1, 1, 2, 1, useCase);
 
             retorno.ShouldNotBeNull();
             Assert.IsType<OkObjectResult>(retorno);
@@ -46,7 +46,7 @@ namespace SME.SGP.TesteIntegracao.FrequenciaDiaria
 
             var controller = new FrequenciaAcompanhamentoController();
 
-            var retorno = await controller.ObterFrequenciaDiariaAluno(111, 138, 1, 2, useCase);
+            var retorno = await controller.ObterFrequenciaDiariaAluno(111, 138, 1, 2,1, useCase);
 
             retorno.ShouldNotBeNull();
 

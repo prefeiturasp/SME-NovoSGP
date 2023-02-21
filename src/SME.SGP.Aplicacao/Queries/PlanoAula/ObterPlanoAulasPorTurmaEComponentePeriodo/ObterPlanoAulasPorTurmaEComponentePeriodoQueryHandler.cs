@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SME.SGP.Aplicacao 
+namespace SME.SGP.Aplicacao
 {
     public class ObterPlanoAulasPorTurmaEComponentePeriodoQueryHandler : IRequestHandler<ObterPlanoAulasPorTurmaEComponentePeriodoQuery, IEnumerable<PlanoAulaRetornoDto>>
     {
@@ -41,13 +41,13 @@ namespace SME.SGP.Aplicacao
 
             var aulas = await repositorioAula.ObterAulasPorDataPeriodo(request.AulaInicio, request.AulaFim, turma.CodigoTurma, request.ComponenteCurricularId, usuarioLogado.EhProfessorCj());
 
-            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s=> s.Id)));
+            var planoAulas = await mediator.Send(new ObterPlanosAulaEObjetivosAprendizagemQuery(aulas.Select(s => s.Id)));
 
             var bimestre = periodosEscolaresAulasInicioFim.FirstOrDefault().Bimestre;
 
             var validaObjetivos = !usuarioLogado.EhSomenteProfessorCj() && turma.ModalidadeCodigo != Modalidade.EJA && turma.ModalidadeCodigo != Modalidade.Medio;
 
-            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);            
+            var planoAulaDto = await MapearParaDto(planoAulas, aulas, temPlanoAnual, request.ComponenteCurricularCodigo, turma.UeId, validaObjetivos, long.Parse(request.ComponenteCurricularId), bimestre, turma.Id);
 
             return planoAulaDto.OrderBy(x => x.DataAula);
         }
@@ -120,22 +120,23 @@ namespace SME.SGP.Aplicacao
                     ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente,
                     ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
                     IdAtividadeAvaliativa = atividadeAvaliativa?.Id,
-                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,                    
+                    PodeLancarNota = atividadeAvaliativa != null && plano.DataAula.Date <= DateTimeExtension.HorarioBrasilia().Date,
                     EhReposicao = plano.TipoAula == (int)TipoAula.Reposicao
                 });
-            }            
+            }
 
-            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.AulaId).Contains(a.Id)).Select(aula=> aula);
+            var aulasSemPlanoAula = aulas.Where(a => !planoAulas.Select(b => b.AulaId).Contains(a.Id)).Select(aula => aula);
 
-            planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula select new PlanoAulaRetornoDto()
-            { 
-                DataAula = aula.DataAula,
-                AulaId = aula.Id,
-                QtdAulas = aula.Quantidade,
-                AulaCj = aula.AulaCJ,
-                EhReposicao = aula.EhReposicao(),
-                ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
-            }));
+            planosAulaRetorno.AddRange((from aula in aulasSemPlanoAula
+                                        select new PlanoAulaRetornoDto()
+                                        {
+                                            DataAula = aula.DataAula,
+                                            AulaId = aula.Id,
+                                            QtdAulas = aula.Quantidade,
+                                            AulaCj = aula.AulaCJ,
+                                            EhReposicao = aula.EhReposicao(),
+                                            ObjetivosAprendizagemOpcionais = temObjetivosAprendizagemOpcionais,
+                                        }));
 
             return planosAulaRetorno;
         }
@@ -162,11 +163,12 @@ namespace SME.SGP.Aplicacao
                 ObjetivosAprendizagemComponente = plano.ObjetivosAprendizagemComponente
             };
 
-        private IEnumerable<Aula> ObterAulas(ObterPlanoAulasPorTurmaEComponentePeriodoQuery request, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, Usuario usuarioLogado, string codigoRf,bool aulaCj)
+        private IEnumerable<Aula> ObterAulas(ObterPlanoAulasPorTurmaEComponentePeriodoQuery request, Turma turma, IEnumerable<PeriodoEscolar> periodosEscolaresAulasInicioFim, Usuario usuarioLogado, string codigoRf, bool aulaCj)
         {
-            var datasAulas = ObterAulasNosPeriodos(periodosEscolaresAulasInicioFim, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, codigoRf, request.AulaInicio, request.AulaFim,aulaCj);
+            var datasAulas = ObterAulasNosPeriodos(periodosEscolaresAulasInicioFim, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo, codigoRf, request.AulaInicio, request.AulaFim, aulaCj);
 
-            var aulasPermitidas = usuarioLogado.ObterAulasQuePodeVisualizar(datasAulas, new string[] { request.ComponenteCurricularCodigo }).Select(a => a.Id);
+            var aulasPermitidas = usuarioLogado
+                .ObterAulasQuePodeVisualizar(datasAulas, new List<(string, string)>() { (request.ComponenteCurricularCodigo, null) }).Select(a => a.Id);
 
             return ObterAulasSelecionadas(usuarioLogado, datasAulas, aulasPermitidas);
         }
@@ -203,11 +205,11 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim,bool aulaCj)
+        private IEnumerable<Aula> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string usuarioRf, DateTime aulaInicio, DateTime aulaFim, bool aulaCj)
         {
-            var lstPeriodosEscolaresIds = periodosEscolares.Select(s=> s.Id).Distinct();
+            var lstPeriodosEscolaresIds = periodosEscolares.Select(s => s.Id).Distinct();
 
-            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim,aulaCj);
+            var lstAulas = repositorioAula.ObterDatasDeAulasPorAnoTurmaEDisciplina(lstPeriodosEscolaresIds, anoLetivo, turmaCodigo, componenteCurricularCodigo, usuarioRf, aulaInicio, aulaFim, aulaCj);
 
             return lstAulas;
         }

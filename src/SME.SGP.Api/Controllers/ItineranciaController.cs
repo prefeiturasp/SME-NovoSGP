@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using SME.SGP.Dominio;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/itinerancias")]
@@ -29,12 +29,12 @@ namespace SME.SGP.Api
         {
             return Ok(await useCase.Executar());
         }
-       
+
         [HttpGet("criadores")]
         [ProducesResponseType(typeof(IEnumerable<ItineranciaObjetivosBaseDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterCriadores([FromServices] IObterRfsPorNomesItineranciaUseCase useCase, [FromQuery]string nome)
+        public async Task<IActionResult> ObterCriadores([FromServices] IObterRfsPorNomesItineranciaUseCase useCase, [FromQuery] string nome)
         {
             return Ok(await useCase.Executar(nome));
         }
@@ -119,7 +119,7 @@ namespace SME.SGP.Api
         [ProducesResponseType(typeof(IEnumerable<EventoNomeDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [Permissao(Permissao.RI_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterEventosPorCalendario([FromQuery]long tipoCalendarioId, [FromQuery] long itineranciaId, [FromQuery] string codigoUE, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
+        public async Task<IActionResult> ObterEventosPorCalendario([FromQuery] long tipoCalendarioId, [FromQuery] long itineranciaId, [FromQuery] string codigoUE, [FromServices] IObterEventosItinerânciaPorTipoCalendarioUseCase useCase)
         {
             return Ok(await useCase.Executar(new FiltroEventosItineranciaDto(tipoCalendarioId, itineranciaId, codigoUE)));
         }
@@ -127,14 +127,14 @@ namespace SME.SGP.Api
         [HttpPost("upload")]
         [ProducesResponseType(typeof(AuditoriaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Upload([FromForm] IFormFile file,[FromServices] IUploadDeArquivoItineranciaUseCase useCase)
+        public async Task<IActionResult> Upload([FromForm] IFormFile file, [FromServices] IUploadDeArquivoItineranciaUseCase useCase)
         {
             if (file.Length > 0)
                 return Ok(await useCase.Executar(file));
-            
+
             return BadRequest();
         }
-        
+
         [HttpDelete("excluir-arquivo")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]

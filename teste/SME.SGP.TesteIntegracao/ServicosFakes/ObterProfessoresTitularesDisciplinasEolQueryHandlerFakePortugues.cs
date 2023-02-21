@@ -19,7 +19,7 @@ namespace SME.SGP.TesteIntegracao
                     ProfessorRf ="111111",
                     ProfessorNome ="PROFESSOR DE PORTUGUES",
                     DisciplinaNome = "LÍNGUA PORTUGUESA",
-                    DisciplinaId = 138
+                    DisciplinasId = new long[] { 138 }
                 },
             };
         }

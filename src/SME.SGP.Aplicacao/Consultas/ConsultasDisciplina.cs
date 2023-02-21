@@ -151,7 +151,7 @@ namespace SME.SGP.Aplicacao
                 {
                     var componenteEOL = componentesCurriculares.FirstOrDefault(a => (a.TerritorioSaber && a.CodigoComponenteTerritorioSaber > 0) ? a.CodigoComponenteTerritorioSaber == d.CodigoComponenteCurricular : a.Codigo == d.CodigoComponenteCurricular);
                     d.PossuiObjetivos = turma.AnoLetivo >= Convert.ToInt32(dataInicioNovoSGP) && componenteEOL.PossuiObjetivosDeAprendizagem(componentesCurricularesJurema, turmaPrograma, turma.ModalidadeCodigo, turma.Ano);
-                    d.CodigoComponenteCurricular = componenteEOL.TerritorioSaber ? d.Id :componenteEOL.Codigo;
+                    d.CodigoComponenteCurricular = componenteEOL.Codigo;
                     d.Regencia = componenteEOL.Regencia;
 
                     if (d.TerritorioSaber)

@@ -1093,28 +1093,28 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
                     ProfessorRf ="",
                     ProfessorNome ="Não há professor titular.",
                     DisciplinaNome = "INFORMATICA - OIE",
-                    DisciplinaId = 1060
+                    DisciplinasId = new long[] { 1060 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf ="6118232",
                     ProfessorNome ="MARLEI LUCIANE BERNUN",
                     DisciplinaNome = "LEITURA - OSL",
-                    DisciplinaId = 1061
+                    DisciplinasId =new long[] { 1061 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "2222222",
                     ProfessorNome = "João Usuário",
                     DisciplinaNome = "REG CLASSE EJA ETAPA BASICA",
-                    DisciplinaId = 1114
+                    DisciplinasId = new long[] { 1114 }
                 },
                 new ProfessorTitularDisciplinaEol
                 {
                     ProfessorRf = "6737544",
                     ProfessorNome = "GENILDO CLEBER DA SILVA",
                     DisciplinaNome = "Disciplina Fundamental",
-                    DisciplinaId = 1114
+                    DisciplinasId = new long[] { 1114 }
                 },
             };
         }
