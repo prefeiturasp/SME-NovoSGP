@@ -25,7 +25,11 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>> Handle(ObterFrequenciaDiariaAlunoQuery request, CancellationToken cancellationToken)
         {
             var retornoPaginado = new PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>();
-            var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, request.Bimestre, request.AlunoCodigo.ToString()
+            int[] bimestres = request.Bimestre > 0
+                ? new int[] { request.Bimestre }
+                : request.Semestre == 1 ? new int[] { 1, 2 } : new int[] { 3, 4 };
+
+            var quantidadeDiasPorTipoFrequencia = await repositorioFrequenciaDiaria.ObterQuantidadeAulasDiasTipoFrequenciaPorBimestreAlunoCodigoTurmaDisciplina(Paginacao, bimestres, request.AlunoCodigo.ToString()
                 , request.TurmaId, request.ComponenteCurricularId.ToString());
 
             var lista = MapearMotivoAusencia(quantidadeDiasPorTipoFrequencia.Items);

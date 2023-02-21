@@ -118,7 +118,7 @@ namespace SME.SGP.Aplicacao
                 {
                     componentesCurriculares = await mediator
                         .Send(new ObterComponentesCurricularesPorIdsQuery(aulasParaVisualizar.Select(a => long.Parse(a.DisciplinaId)).ToArray(), componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber)), filtroAulasEventosCalendarioDto.TurmaCodigo));
-                }
+                }                
 
                 atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
                 {
