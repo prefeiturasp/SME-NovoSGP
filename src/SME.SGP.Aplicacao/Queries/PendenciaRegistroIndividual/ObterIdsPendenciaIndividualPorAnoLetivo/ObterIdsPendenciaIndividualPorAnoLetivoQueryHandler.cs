@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterIdsPendenciaIndividualPorAnoLetivoQueryHandler : IRequestHandler<ObterIdsPendenciaIndividualPorAnoLetivoQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioPendenciaRegistroIndividual repositorioPendenciaIndividual;
+        private readonly IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual;
 
-        public ObterIdsPendenciaIndividualPorAnoLetivoQueryHandler(IRepositorioPendenciaRegistroIndividual repositorioPendenciaIndividual)
+        public ObterIdsPendenciaIndividualPorAnoLetivoQueryHandler(IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual)
         {
-            this.repositorioPendenciaIndividual = repositorioPendenciaIndividual ?? throw new ArgumentNullException(nameof(repositorioPendenciaIndividual));
+            this.repositorioPendenciaRegistroIndividual = repositorioPendenciaRegistroIndividual ?? throw new ArgumentNullException(nameof(repositorioPendenciaRegistroIndividual));
         }
 
         public async Task<IEnumerable<long>> Handle(ObterIdsPendenciaIndividualPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            return await this.repositorioPendenciaIndividual.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
+            return await this.repositorioPendenciaRegistroIndividual.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
         }
     }
 }
