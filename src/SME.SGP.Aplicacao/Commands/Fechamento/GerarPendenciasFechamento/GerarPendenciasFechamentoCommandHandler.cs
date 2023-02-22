@@ -41,7 +41,14 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                     await servicoPendenciaFechamento.ValidarAlteracaoExtemporanea(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.CriadoRF, request.Bimestre, request.TurmaId);
                 }
                 await servicoPendenciaFechamento.ValidarAulasReposicaoPendente(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
-
+                await servicoPendenciaFechamento.ValidarAulasSemPlanoAulaNaDataDoFechamento(
+                                                            request.FechamentoTurmaDisciplinaId, 
+                                                            await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId)),
+                                                            request.ComponenteCurricularId,
+                                                            request.PeriodoEscolarInicio, 
+                                                            request.PeriodoEscolarFim,
+                                                            request.Bimestre, 
+                                                            request.TurmaId);
                 if (request.RegistraFrequencia)
                     await servicoPendenciaFechamento.ValidarAulasSemFrequenciaRegistrada(request.FechamentoTurmaDisciplinaId, request.TurmaCodigo, request.TurmaNome, request.ComponenteCurricularId, request.PeriodoEscolarInicio, request.PeriodoEscolarFim, request.Bimestre, request.TurmaId);
 
