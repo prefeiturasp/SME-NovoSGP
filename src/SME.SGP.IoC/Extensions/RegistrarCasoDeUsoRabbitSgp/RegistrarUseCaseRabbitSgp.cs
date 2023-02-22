@@ -74,6 +74,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase, AtualizarInformacoesDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase, AtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase, AtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterCodigoTurmaInfantilPorAnoUseCase, ObterCodigoTurmaInfantilPorAnoUseCase>();
+            services.TryAddScoped<IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase, ObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase>();
         }
     }
 }
