@@ -9,9 +9,9 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase : AbstractUseCase, IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase
+    public class ExcluirPendenciaCalendarioAnoAnteriorUseCase : AbstractUseCase, IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase
     {
-        public ExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase(IMediator mediator) : base(mediator)
+        public ExcluirPendenciaCalendarioAnoAnteriorUseCase(IMediator mediator) : base(mediator)
         {
         }
 
@@ -19,14 +19,15 @@ namespace SME.SGP.Aplicacao
         {
             IEnumerable<long> idsUes = new List<long>(); ;
             long ueId = 0;
+            int? anoLetivo;
             try
             {
                 idsUes = await mediator.Send(new ObterTodasUesIdsQuery());
-
+                anoLetivo = JsonConvert.DeserializeObject<int?>(param.Mensagem.ToString());
                 foreach (var idUe in idsUes)
                 {
                     ueId = idUe;
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, idUe, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new FiltroExcluirPendenciaCalendarioAnoAnteriorPorUeDto(anoLetivo,idUe), Guid.NewGuid(), null));
                 }
 
                 return true;

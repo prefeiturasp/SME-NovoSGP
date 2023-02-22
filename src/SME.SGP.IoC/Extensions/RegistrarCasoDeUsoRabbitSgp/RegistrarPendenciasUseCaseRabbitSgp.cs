@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.CasosDeUso.Pendencias;
 using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.IoC
@@ -21,7 +20,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase, RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasDevolutivaUseCase, ExecutarExclusaoPendenciasDevolutivaUseCase>();
             services.TryAddScoped<IReplicarParametrosAnoAnteriorUseCase, ReplicarParametrosAnoAnteriorUseCase>();
-            services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase, ExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase>();
+            services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase, ExcluirPendenciaCalendarioAnoAnteriorUseCase>();
             services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase, ExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase>();
             services.TryAddScoped<IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase, RemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase>();
             services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase>();

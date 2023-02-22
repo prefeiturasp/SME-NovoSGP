@@ -18,16 +18,16 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            long ueId = 0;
-            var anoLetivo = DateTimeExtension.HorarioBrasilia().Year - 1;
+            var anoAnteriorLetivo = DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
             IEnumerable<long> pendenciasIds = new List<long>();
             try
             {
-                ueId = JsonConvert.DeserializeObject<long>(param.Mensagem.ToString());
-                pendenciasIds = await mediator.Send(new ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery(ueId, anoLetivo));
+                var filtro = param.ObterObjetoMensagem<FiltroExcluirPendenciaCalendarioAnoAnteriorPorUeDto>();
+                int anoLetivo = filtro.AnoLetivo ?? anoAnteriorLetivo;
+                pendenciasIds = await mediator.Send(new ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery(filtro.UeId, anoLetivo));
 
                 if (pendenciasIds.Any())
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, pendenciasIds, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, pendenciasIds.ToArray(), Guid.NewGuid(), null));
 
                 return true;
             }
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
                     LogContexto.Calendario,
                     innerException: e.InnerException!.ToString(),
                     rastreamento: e.StackTrace,
-                    observacao: $"Id da ue: {ueId}, Ano Letivo: {anoLetivo}, ID Pendencias: {JsonConvert.SerializeObject(pendenciasIds.ToArray())} ,Erro:{e.Message}"));
+                    observacao: $"ID Pendencias: {JsonConvert.SerializeObject(pendenciasIds.ToArray())} ,Erro:{e.Message}"));
                 throw;
             }
         }
