@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdsPendenciaDevolutivaPorAnoLetivoQuery : IRequest<IEnumerable<long>>
+    public class ObterIdsPendenciaIndividualPorAnoLetivoQuery : IRequest<IEnumerable<long>>
     {
-        public ObterIdsPendenciaDevolutivaPorAnoLetivoQuery(int anoLetivo, string codigoUe)
+        public ObterIdsPendenciaIndividualPorAnoLetivoQuery(int anoLetivo, string codigoUe)
         {
             AnoLetivo = anoLetivo;
             CodigoUe = codigoUe;
@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao
         public string CodigoUe { get; set; }
     }
 
-    public class ObterIdsPendenciaDevolutivaPorAnoLetivoQueryValidator : AbstractValidator<ObterIdsPendenciaDevolutivaPorAnoLetivoQuery>
+    public class ObterIdsPendenciaIndividualPorAnoLetivoQueryValidator : AbstractValidator<ObterIdsPendenciaIndividualPorAnoLetivoQuery>
     {
-        public ObterIdsPendenciaDevolutivaPorAnoLetivoQueryValidator()
+        public ObterIdsPendenciaIndividualPorAnoLetivoQueryValidator()
         {
             RuleFor(c => c.AnoLetivo)
             .NotEmpty()
@@ -26,7 +26,8 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.CodigoUe)
             .NotEmpty()
-            .WithMessage("O código da ue deve ser informado para realizar a consulta.");
+            .WithMessage("O código da ue deve ser informado para realizar a consulta" +
+                         ".");
         }
     }
 }

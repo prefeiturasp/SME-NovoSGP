@@ -10,18 +10,18 @@ namespace SME.SGP.Aplicacao
     public class ExcluirPendenciasDevolutivaPorTurmaEComponenteCommandHandler : IRequestHandler<ExcluirPendenciasDevolutivaPorTurmaEComponenteCommand, bool>
     {
         private readonly IMediator mediator;
-        private readonly IRepositorioPendenciaDevolutiva repositorioPendenciaDevolutiva;
+        private readonly IRepositorioPendenciaDevolutiva _repositorioPendenciaDevolutiva;
 
         public ExcluirPendenciasDevolutivaPorTurmaEComponenteCommandHandler(IMediator mediator,
             IRepositorioPendenciaDevolutiva repositorioPendenciaDevolutiva)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            this.repositorioPendenciaDevolutiva = repositorioPendenciaDevolutiva ?? throw new ArgumentNullException(nameof(repositorioPendenciaDevolutiva));
+            this._repositorioPendenciaDevolutiva = repositorioPendenciaDevolutiva ?? throw new ArgumentNullException(nameof(repositorioPendenciaDevolutiva));
         }
 
         public async Task<bool> Handle(ExcluirPendenciasDevolutivaPorTurmaEComponenteCommand request, CancellationToken cancellationToken)
         {
-            var existePendencias = await repositorioPendenciaDevolutiva.ExistePendenciasDevolutivaPorTurmaComponente(request.TurmaId, request.ComponenteId);
+            var existePendencias = await _repositorioPendenciaDevolutiva.ExistePendenciasDevolutivaPorTurmaComponente(request.TurmaId, request.ComponenteId);
 
             if (!existePendencias)
                 return await Task.FromResult(false);
@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             if (!existePendenciaDiarioBordo)
             {
-                await repositorioPendenciaDevolutiva.ExlusaoLogicaPorTurmaComponente(request.TurmaId, request.ComponenteId);
+                await _repositorioPendenciaDevolutiva.ExlusaoLogicaPorTurmaComponente(request.TurmaId, request.ComponenteId);
                 return await Task.FromResult(true);
             }
 

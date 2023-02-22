@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterIdsPendenciaIndividualPorAnoLetivoQueryHandler : IRequestHandler<ObterIdsPendenciaIndividualPorAnoLetivoQuery, IEnumerable<long>>
+    public class ObterIdsPendenciaDevolutivaPorAnoLetivoQueryHandler : IRequestHandler<ObterIdsPendenciaDevolutivaPorAnoLetivoQuery, IEnumerable<long>>
     {
-        private readonly IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual;
+        private readonly IRepositorioPendenciaDevolutiva repositorioPendenciaRegistroDevolutiva;
 
-        public ObterIdsPendenciaIndividualPorAnoLetivoQueryHandler(IRepositorioPendenciaRegistroIndividual repositorioPendenciaRegistroIndividual)
+        public ObterIdsPendenciaDevolutivaPorAnoLetivoQueryHandler(IRepositorioPendenciaDevolutiva repositorioPendenciaRegistroDevolutiva)
         {
-            this.repositorioPendenciaRegistroIndividual = repositorioPendenciaRegistroIndividual ?? throw new ArgumentNullException(nameof(repositorioPendenciaRegistroIndividual));
+            this.repositorioPendenciaRegistroDevolutiva = repositorioPendenciaRegistroDevolutiva ?? throw new ArgumentNullException(nameof(repositorioPendenciaRegistroDevolutiva));
         }
 
-        public async Task<IEnumerable<long>> Handle(ObterIdsPendenciaIndividualPorAnoLetivoQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<long>> Handle(ObterIdsPendenciaDevolutivaPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            return await this.repositorioPendenciaRegistroIndividual.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
+            return await this.repositorioPendenciaRegistroDevolutiva.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
         }
     }
 }
