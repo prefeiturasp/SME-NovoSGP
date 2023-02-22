@@ -28,10 +28,17 @@ namespace SME.SGP.Aplicacao
                 await VerificaPendenciasAvaliacao(filtro);
                 await VerificaPendenciasPlanoAula(filtro);
 
+                await VerificaPendenciasDiarioClasseFechamento(filtro);
+
                 return true;
             }
 
             return false;
+        }
+
+        private async Task VerificaPendenciasDiarioClasseFechamento(Ue ue)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAvaliarPendenciasAulaDiarioClasseFechamento, new DreUeDto(ue.DreId, ue.CodigoUe)));
         }
 
         private async Task VerificaPendenciasDiarioDeBordo(Ue ue)
