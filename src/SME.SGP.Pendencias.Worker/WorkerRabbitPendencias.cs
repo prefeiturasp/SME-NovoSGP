@@ -38,6 +38,11 @@ namespace SME.SGP.Pendencias.Worker
             Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendario, new ComandoRabbit("Buscar UEs para Excluir Pendências Calendário do Ano Anterior", typeof(IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new ComandoRabbit("Excluir Pendências Calendário do Ano Anterior Por UE", typeof(IExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase)));
             Comandos.Add(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, new ComandoRabbit("Excluir Pendências Calendário do Ano Anterior Por IDs das Pendencias", typeof(IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDevolutiva, new ComandoRabbit("Executar exclusão de pendências de devolutivas", typeof(IExecutarExclusaoPendenciasDevolutivaUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorAno, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo por ano", typeof(IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorUe, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo por ue", typeof(IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências de diário de classe no final do ano letivo", typeof(IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase)));
+            Comandos.Add(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, new ComandoRabbit("Executar exclusão de pendências no final do ano letivo", typeof(IRemoverPendenciasNoFinalDoAnoLetivoUseCase)));
         }
     }
 }

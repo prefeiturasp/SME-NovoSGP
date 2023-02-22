@@ -23,6 +23,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase, ExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase>();
             services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase, ExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase>();
             services.TryAddScoped<IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase, RemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase>();
+            services.TryAddScoped<IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase, RemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoUseCase, RemoverPendenciasNoFinalDoAnoLetivoUseCase>();
         }
     }
 }

@@ -17,5 +17,9 @@
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendario = "sgp.pendencias.calendario.excluir.ano.anterior";
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe = "sgp.pendencias.calendario.excluir.ano.anterior.ue";
         public const string RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias = "sgp.pendencias.calendario.excluir.ano.anterior.idspendencias";
+        public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorAno = "sgp.pendencias.excluir.final.anoletivo.ano";
+        public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivoPorUe = "sgp.pendencias.excluir.final.anoletivo.ue";
+        public const string RotaExecutarExclusaoPendenciasDiarioDeClasseNoFinalDoAnoLetivo = "sgp.pendencias.excluir.final.anoletivo.diario.classe";
+        public const string RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo = "sgp.pendencias.excluir.final.anoletivo";
     }
 }
