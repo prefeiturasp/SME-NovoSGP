@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<long>> Handle(ObterIdsPendenciaDevolutivaPorAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            return await this.repositorioPendenciaRegistroDevolutiva.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
+            return await repositorioPendenciaRegistroDevolutiva.ObterIdsPendencias(request.AnoLetivo, request.CodigoUe);
         }
     }
 }
