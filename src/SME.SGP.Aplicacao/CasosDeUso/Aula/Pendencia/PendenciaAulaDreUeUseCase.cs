@@ -19,14 +19,14 @@ namespace SME.SGP.Aplicacao
 
             if(filtro != null)
             {
-                var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
+                /*var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
                 if (!ignorarGeracaoPendencia)
                 {
                     await VerificaPendenciasDiarioDeBordo(filtro);
                     await VerificaPendenciasFrequencia(filtro);
                 }
                 await VerificaPendenciasAvaliacao(filtro);
-                await VerificaPendenciasPlanoAula(filtro);
+                await VerificaPendenciasPlanoAula(filtro);*/
 
                 await VerificaPendenciasDiarioClasseFechamento(filtro);
 
@@ -38,7 +38,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaPendenciasDiarioClasseFechamento(Ue ue)
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAvaliarPendenciasAulaDiarioClasseFechamento, new DreUeDto(ue.DreId, ue.CodigoUe)));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAvaliarPendenciasAulaDiarioClasseFechamento, new DreUeDto(ue.DreId, ue.Id, ue.CodigoUe)));
         }
 
         private async Task VerificaPendenciasDiarioDeBordo(Ue ue)

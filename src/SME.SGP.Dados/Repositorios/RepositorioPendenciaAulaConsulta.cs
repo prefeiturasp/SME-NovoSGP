@@ -162,9 +162,9 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
-        {
-            var sqlQuery = @"select distinct a.id, a.turma_id, a.disciplina_id, a.professor_rf,
-                                    a.tipo_calendario_id, a.data_aula
+        { 
+            var sqlQuery = @"select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf,
+                                    a.tipo_calendario_id, a.data_aula, t.id Id, t.modalidade_codigo ModalidadeCodigo
 	                from atividade_avaliativa aa
 	                inner join dre on dre.dre_id = aa.dre_id
 	                inner join atividade_avaliativa_disciplina aad
@@ -199,14 +199,18 @@ namespace SME.SGP.Dados.Repositorios
                 sqlQuery += " and u.id = @ueId";
 
             return await database.Conexao
-                .QueryAsync<Aula>(sqlQuery.ToString(), new
+                .QueryAsync<Aula, Turma, Aula>(sqlQuery.ToString(), (aula, turma) =>
+                {
+                    aula.Turma = turma;
+                    return aula;
+                }, new
                 {
                     anoLetivo,
                     hoje = DateTime.Today.Date,
                     tipo = TipoPendencia.Avaliacao,
                     dreId,
                     ueId
-                }, commandTimeout: 120);
+                }, splitOn: "Id", commandTimeout: 120);
 
         }
         public async Task<long[]> ListarPendenciasPorAulaId(long aulaId)

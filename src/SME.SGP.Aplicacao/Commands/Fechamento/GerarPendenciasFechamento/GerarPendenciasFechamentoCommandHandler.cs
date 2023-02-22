@@ -114,9 +114,9 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
                 NotificacaoCategoria.Aviso,
                 NotificacaoTipo.Fechamento,
                 new long[] { usuarioLogadoId },
-                codigoDre,
-                codigoUe,
-                codigoTurma));
+                    codigoDre,
+                    codigoUe,
+                    codigoTurma));
 
             // Notifica CP e Diretor
             await mediator.Send(new EnviarNotificacaoCommand(titulo,
