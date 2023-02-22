@@ -9,16 +9,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmaDaPendenciaDevolutivaQueryHandler : IRequestHandler<ObterTurmaDaPendenciaDevolutivaQuery, Turma>
     {
-        private readonly IRepositorioPendenciaDevolutiva _repositorioPendenciaDevolutiva;
+        private readonly IRepositorioPendenciaDevolutiva repositorioPendenciaDevolutiva;
 
         public ObterTurmaDaPendenciaDevolutivaQueryHandler(IRepositorioPendenciaDevolutiva repositorioPendenciaDevolutiva)
         {
-            this._repositorioPendenciaDevolutiva = repositorioPendenciaDevolutiva ?? throw new ArgumentNullException(nameof(repositorioPendenciaDevolutiva));
+            this.repositorioPendenciaDevolutiva = repositorioPendenciaDevolutiva ?? throw new ArgumentNullException(nameof(repositorioPendenciaDevolutiva));
         }
 
         public async Task<Turma> Handle(ObterTurmaDaPendenciaDevolutivaQuery request, CancellationToken cancellationToken)
         {
-            return await _repositorioPendenciaDevolutiva.ObterTurmaPorPendenciaId(request.PendenciaId);
+            return await repositorioPendenciaDevolutiva.ObterTurmaPorPendenciaId(request.PendenciaId);
         }
     }
 }
