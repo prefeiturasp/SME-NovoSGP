@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var replicar = await mediator.Send(new ReplicarParametrosAnoAnteriorCommand(filtro.AnoLetivo,filtro.ModalidadeTipoCalendario));
 
             if (replicar == false)
-                throw new NegocioException($"Não foi possivel resplicar para o ano {filtro.AnoLetivo} e a modalidade {filtro.ModalidadeTipoCalendario.Name()}");
+                throw new NegocioException($"Não foi possível replicar para o ano {filtro.AnoLetivo} e a modalidade {filtro.ModalidadeTipoCalendario.Name()}");
             
             return true;
         }
