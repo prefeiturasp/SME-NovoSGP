@@ -105,16 +105,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task PublicarMsgGeracaoPendenciasFechamento(long componenteCurricularId, string turmaCodigo, string turmaNome, DateTime periodoEscolarInicio, DateTime periodoEscolarFim, int bimestre, long fechamentoTurmaDisciplinaId, string justificativa, string criadoRF, long turmaId, bool componenteSemNota = false, bool registraFrequencia = true)
         {
-            Usuario usuarioLogado;
-            try
-            {
-                usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            }
-            catch
-            {
-                usuarioLogado = new Usuario();
-            }
-
             await mediator.Send(new IncluirFilaGeracaoPendenciasFechamentoCommand(
                 componenteCurricularId,
                 turmaCodigo,
@@ -122,7 +112,7 @@ namespace SME.SGP.Aplicacao
                 periodoEscolarInicio,
                 periodoEscolarFim,
                 bimestre,
-                usuarioLogado,
+                new Usuario(),
                 fechamentoTurmaDisciplinaId,
                 justificativa,
                 criadoRF,

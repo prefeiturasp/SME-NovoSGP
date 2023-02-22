@@ -109,14 +109,15 @@ namespace SME.SGP.Aplicacao.Commands.Fechamento.GerarPendenciasFechamento
         private async Task NotificarUsuarios(string titulo, string mensagem, long usuarioLogadoId, string codigoDre, string codigoUe, string codigoTurma)
         {
             // Notifica Usuario
-            await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, 
-                mensagem, 
-                NotificacaoCategoria.Aviso,
-                NotificacaoTipo.Fechamento,
-                new long[] { usuarioLogadoId },
-                    codigoDre,
-                    codigoUe,
-                    codigoTurma));
+            if (usuarioLogadoId != 0)
+                await mediator.Send(new EnviarNotificacaoUsuariosCommand(titulo, 
+                    mensagem, 
+                    NotificacaoCategoria.Aviso,
+                    NotificacaoTipo.Fechamento,
+                    new long[] { usuarioLogadoId },
+                        codigoDre,
+                        codigoUe,
+                        codigoTurma));
 
             // Notifica CP e Diretor
             await mediator.Send(new EnviarNotificacaoCommand(titulo,
