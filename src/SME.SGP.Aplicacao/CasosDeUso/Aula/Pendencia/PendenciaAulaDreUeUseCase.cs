@@ -19,14 +19,14 @@ namespace SME.SGP.Aplicacao
 
             if(filtro != null)
             {
-                /*var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
+                var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
                 if (!ignorarGeracaoPendencia)
                 {
                     await VerificaPendenciasDiarioDeBordo(filtro);
                     await VerificaPendenciasFrequencia(filtro);
                 }
                 await VerificaPendenciasAvaliacao(filtro);
-                await VerificaPendenciasPlanoAula(filtro);*/
+                await VerificaPendenciasPlanoAula(filtro);
 
                 await VerificaPendenciasDiarioClasseFechamento(filtro);
 
