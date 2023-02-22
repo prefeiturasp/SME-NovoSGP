@@ -214,6 +214,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new EncaminhamentoNAAPASecaoMap());
                config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
                config.AddMap(new RespostaEncaminhamentoNAAPAMap());
+               config.AddMap(new PendenciaFechamentoAulaMap());
 
                config.ForDommel();
            });
