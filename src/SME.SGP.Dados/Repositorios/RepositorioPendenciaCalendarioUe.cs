@@ -37,11 +37,10 @@ namespace SME.SGP.Dados.Repositorios
 	                            JOIN pendencia_aula pa ON p.id = pa.pendencia_id
 	                            inner JOIN aula a ON a.id = pa.aula_id
 	                            inner JOIN turma t ON t.turma_id = a.turma_id
-	                            inner JOIN tipo_calendario tc ON tc.id = a.tipo_calendario_id
                             WHERE NOT p.excluido
                               AND p.tipo = any(@tipoPendencia)
                               AND p.situacao = any(@situacao)
-                              AND tc.ano_letivo = @anoLetivo
+                              AND t.ano_letivo = @anoLetivo
                               AND t.ue_id = @idUe ";
                                         
             return await database.Conexao.QueryAsync<long>(query, new
