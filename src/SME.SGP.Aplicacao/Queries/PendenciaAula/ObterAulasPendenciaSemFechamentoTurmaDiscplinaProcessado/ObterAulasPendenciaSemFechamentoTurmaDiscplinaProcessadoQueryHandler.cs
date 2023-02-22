@@ -27,10 +27,10 @@ namespace SME.SGP.Aplicacao
             var agrupamentoTurmaDisciplina = aulas.GroupBy(aula => new { TurmaCodigo = aula.TurmaId, aula.DisciplinaId, TurmaId = aula.Turma.Id, ModalidadeTipoCalendario = aula.Turma.ModalidadeTipoCalendario });
             foreach (var turmaDisciplina in agrupamentoTurmaDisciplina)
             {
-                var periodoEscolaresFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
-                if (periodoEscolaresFechamentoEmAberto != null)
+                var periodoEscolarFechamentoEmAberto = (await mediator.Send(new ObterPeriodoEscolarFechamentoEmAbertoQuery(turmaDisciplina.Key.TurmaCodigo, turmaDisciplina.Key.ModalidadeTipoCalendario, DateTimeExtension.HorarioBrasilia().Date)));
+                if (periodoEscolarFechamentoEmAberto != null)
                 {
-                    var situacao = await mediator.Send(new ObterSituacaoFechamentoTurmaComponenteQuery(turmaDisciplina.Key.TurmaId, long.Parse(turmaDisciplina.Key.DisciplinaId), periodoEscolaresFechamentoEmAberto.Id));
+                    var situacao = await mediator.Send(new ObterSituacaoFechamentoTurmaComponenteQuery(turmaDisciplina.Key.TurmaId, long.Parse(turmaDisciplina.Key.DisciplinaId), periodoEscolarFechamentoEmAberto.Id));
                     if (situacao != SituacaoFechamento.NaoIniciado)
                         aulas.RemoveAll(aula => aula.TurmaId == turmaDisciplina.Key.TurmaCodigo && aula.DisciplinaId == turmaDisciplina.Key.DisciplinaId);
                 }
