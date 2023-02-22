@@ -128,8 +128,8 @@ namespace SME.SGP.Aplicacao
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
             string disciplina = componentesCurriculares
-                                .Where(c => c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo)
-                                .Select(c => (long?)c.CodigoComponenteTerritorioSaber ?? c.Codigo)
+                                .Where(c => (c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo) || c.Codigo.ToString() == disciplinaCodigo)
+                                .Select(c => (long?) c.CodigoComponenteTerritorioSaber == 0 ? c.Codigo : c.CodigoComponenteTerritorioSaber)
                                 .FirstOrDefault().ToString();
 
             return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
