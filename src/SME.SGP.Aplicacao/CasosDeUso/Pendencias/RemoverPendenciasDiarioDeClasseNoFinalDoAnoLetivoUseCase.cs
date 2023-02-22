@@ -25,10 +25,12 @@ namespace SME.SGP.Aplicacao
                 var idsPendenciaAula = await mediator.Send(new ObterIdsPendenciaAulaPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
                 var idsPendenciaDiario = await mediator.Send(new ObterIdsPendenciaDiarioBordoPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
                 var idsPendenciaIndividual = await mediator.Send(new ObterIdsPendenciaIndividualPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
+                var idsPendenciaDevolutiva = await mediator.Send(new ObterIdsPendenciaDevolutivaPorAnoLetivoQuery(filtro.AnoLetivo, filtro.CodigoUe));
 
                 idsPendencia.AddRange(idsPendenciaAula);
                 idsPendencia.AddRange(idsPendenciaDiario);
                 idsPendencia.AddRange(idsPendenciaIndividual);
+                idsPendencia.AddRange(idsPendenciaDevolutiva);
 
                 if (idsPendencia.Any())
                     await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExecutarExclusaoPendenciasNoFinalDoAnoLetivo, idsPendencia, Guid.NewGuid()));

@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
         {
             int.TryParse(param.Mensagem.ToString(), out int ano);
 
-            ano = ano > 0 ? DateTime.Now.AddYears(-1).Year : ano;
+            ano = ano == 0 ? DateTime.Now.AddYears(-1).Year : ano;
 
             var idsDres = await mediator.Send(new ObterIdsDresQuery());
 
