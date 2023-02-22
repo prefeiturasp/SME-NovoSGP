@@ -1,4 +1,6 @@
-﻿namespace SME.SGP.Infra.Dtos
+﻿using System;
+
+namespace SME.SGP.Infra.Dtos
 {
     public class TurmaComponenteQntAulasDto
     {
@@ -7,5 +9,7 @@
         public int AulasQuantidade { get; set; }
         public int Bimestre { get; set; }
         public long PeriodoEscolarId { get; set; }
+        public DateTime PeriodoInicio { get; set; }
+        public DateTime PeriodoFim { get; set; }
     }
 }

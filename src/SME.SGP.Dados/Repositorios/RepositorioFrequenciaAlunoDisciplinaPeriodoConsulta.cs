@@ -605,7 +605,7 @@ namespace SME.SGP.Dados
             query.AppendLine(") select ComponenteCurricularCodigo, TurmaCodigo, Bimestre, sum(quantidade) AulasQuantidade from lista group by ComponenteCurricularCodigo, TurmaCodigo, Bimestre;");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
-                new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
+           new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
         }
 
         public async Task<IEnumerable<TurmaDataAulaComponenteQtdeAulasDto>> ObterAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] codigosAluno, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
