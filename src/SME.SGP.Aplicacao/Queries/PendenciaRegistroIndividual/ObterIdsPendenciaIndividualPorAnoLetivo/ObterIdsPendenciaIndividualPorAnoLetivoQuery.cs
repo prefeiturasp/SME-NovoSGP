@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
 
             RuleFor(c => c.CodigoUe)
             .NotEmpty()
-            .WithMessage("O código da ue deve ser informado para realizar a consulta");
+            .WithMessage("O código da ue deve ser informado para realizar a consulta.");
         }
     }
 }
