@@ -49,7 +49,8 @@ namespace SME.SGP.Aplicacao
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
-                
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
                 var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
                 if (periodoEscolar == null)
                     throw new NegocioException(MensagemNegocioPlanoAula.NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA);
@@ -65,10 +66,28 @@ namespace SME.SGP.Aplicacao
                 if (request.PlanoAula.ComponenteCurricularId.HasValue)
                 {
                     var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+
+                    if(!componentesCurriculares.Any())
+                    {
+                        var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
+                        if (componentesEol.Any())
+                            componentesCurriculares = componentesEol.Select(c => new DisciplinaDto()
+                            {
+                                CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
+                                CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,
+                                Nome = c.Descricao,
+                                TerritorioSaber = c.TerritorioSaber,
+                                LancaNota = c.LancaNota,
+                                Compartilhada = c.Compartilhada,
+                                Regencia = c.Regencia,
+                                RegistraFrequencia = c.RegistraFrequencia
+                            });
+                    }
+                        
                     disciplinaDto = componentesCurriculares.SingleOrDefault();
                 }
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+                
 
                 if (usuario.EhGestorEscolar())
                     await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.EhTurmaHistorica);
