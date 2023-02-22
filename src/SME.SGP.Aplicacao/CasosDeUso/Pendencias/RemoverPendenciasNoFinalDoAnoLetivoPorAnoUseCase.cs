@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading.Tasks;
+using SME.SGP.Dominio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -16,7 +17,10 @@ namespace SME.SGP.Aplicacao
         {
             int.TryParse(param.Mensagem.ToString(), out int ano);
 
-            ano = ano == 0 ? DateTime.Now.AddYears(-1).Year : ano;
+            ano = ano == 0 ? DateTimeExtension.HorarioBrasilia().AddYears(-1).Year : ano;
+
+            if (ano < 2014 || ano >= DateTimeExtension.HorarioBrasilia().Year)
+                return false;
 
             var idsDres = await mediator.Send(new ObterIdsDresQuery());
 
