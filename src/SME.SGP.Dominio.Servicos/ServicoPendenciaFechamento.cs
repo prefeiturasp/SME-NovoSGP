@@ -215,7 +215,7 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         mensagemHtml.Append("</table>");
 
-                        await GerarPendencia(fechamentoId, TipoPendencia.AulasSemFrequenciaNaDataDoFechamento, mensagem.ToString(), usuarioCp.usuario.CodigoRf, mensagemHtml.ToString(), bimestre, turmaId);
+                        await GerarPendencia(fechamentoId, TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento, mensagem.ToString(), usuarioCp.usuario.CodigoRf, mensagemHtml.ToString(), bimestre, turmaId);
                     }
                 }
                 else

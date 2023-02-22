@@ -18,6 +18,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
         protected long PENDENCIA_ID_1 = 1;
         protected long FECHAMENTO_TURMA_ID_1 = 1;
         protected long FECHAMENTO_TURMA_DISCIPLINA_ID_1 = 1;
+        protected long PENDENCIA_FECHAMENTO_ID_1 = 1;
 
         protected PendenciaFechamentoBase(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -102,6 +103,18 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             {
                 AulaId = aulaId,
                 PendenciaId = pendenciaId
+            });
+        }
+
+        protected async Task CriarPendenciaFechamento(long fechamentoTurmaDisciplinaId, long pendenciaId)
+        {
+            await InserirNaBase(new Dominio.PendenciaFechamento()
+            {
+                PendenciaId = pendenciaId,
+                FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId,
+                CriadoPor = "",
+                CriadoRF = "",
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
             });
         }
 
