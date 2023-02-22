@@ -562,7 +562,7 @@ namespace SME.SGP.Dados.Repositorios
                         where p.tipo = any(@tipo) and not p.excluido
                            and a.turma_id = @turmaId
                            and a.disciplina_id = @disciplinaId
-                           and a.data_aula between @dataInicio and @dataFim"
+                           and a.data_aula between @periodoInicio and @periodoFim"
             ;
 
             return (await database.Conexao.QueryAsync<long>(sql.ToString(), new { tipo, turmaId, disciplinaId, periodoInicio, periodoFim })).ToArray();

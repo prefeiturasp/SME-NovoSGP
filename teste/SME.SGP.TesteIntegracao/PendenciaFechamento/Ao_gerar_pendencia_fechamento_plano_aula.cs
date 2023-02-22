@@ -54,6 +54,9 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             pendeciasSemPlano.ShouldNotBeNull();
             var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemPlano.FirstOrDefault().Id);
             pendeciasFechamento.ShouldNotBeNull();
+            var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
+            var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
+            pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
         }
 
         [Fact]
