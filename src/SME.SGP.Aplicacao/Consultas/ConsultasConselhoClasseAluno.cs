@@ -690,7 +690,7 @@ namespace SME.SGP.Aplicacao
 
             totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
 
-            if ((aulas == null && totalAulasAlunoDisciplina == 0) || string.IsNullOrEmpty(percentualFrequencia))
+            if ((aulas == null && totalAulasAlunoDisciplina == 0) || String.IsNullOrEmpty(percentualFrequencia) || (percentualFrequencia == "0" && aulas == null))
                 return "";
 
             return $"{percentualFrequencia}%";
