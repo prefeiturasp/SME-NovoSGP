@@ -16,14 +16,14 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Executar(MensagemRabbit param)
-        {
+         {
             IEnumerable<long> pendenciasIds = new List<long>();
             try
             {
                 pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString()); ;
 
-                if (pendenciasIds.Any())
-                    await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });
+                // if (pendenciasIds.Any())
+                //     await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });
 
                 return true;
             }

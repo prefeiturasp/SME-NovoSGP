@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 idsUes = await mediator.Send(new ObterTodasUesIdsQuery());
-                anoLetivo = JsonConvert.DeserializeObject<int?>(param.Mensagem.ToString());
+                anoLetivo = param.Mensagem != null ? JsonConvert.DeserializeObject<int?>(param.Mensagem.ToString()!) : null;
                 foreach (var idUe in idsUes)
                 {
                     ueId = idUe;
