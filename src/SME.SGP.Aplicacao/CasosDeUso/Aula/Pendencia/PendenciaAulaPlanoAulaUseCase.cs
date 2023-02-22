@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SME.SGP.Dominio.Enumerados;
+using System.Threading;
 
 namespace SME.SGP.Aplicacao
 {
@@ -22,14 +23,15 @@ namespace SME.SGP.Aplicacao
             {
                 var filtro = param.ObterObjetoMensagem<DreUeDto>();
 
-                var aulas = await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula,
+                var aulas = (await mediator.Send(new ObterPendenciasAulasPorTipoQuery(TipoPendencia.PlanoAula,
                     "plano_aula",
                     new long[] { (int)Modalidade.Fundamental, (int)Modalidade.EJA, (int)Modalidade.Medio },
-                    filtro.DreId, filtro.UeId));
+                    filtro.DreId, filtro.UeId)));
 
+                aulas = await RemoverAulasComFechamentoTurmaDisciplinaProcessado(aulas);
                 if (aulas != null && aulas.Any())
                     await RegistraPendencia(aulas, TipoPendencia.PlanoAula);
-
+             
                 await VerificaPendenciaAulaGeradaParaInfantil(filtro.DreId, filtro.UeId);
 
                 return true;
@@ -39,6 +41,11 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao Registrar Pendencia Aula do Plano Aula.",  LogNivel.Critico, LogContexto.Aula, ex.Message,innerException: ex.InnerException.ToString(),rastreamento:ex.StackTrace));
                 throw;
             }
+        }
+
+        private async Task<IEnumerable<Aula>> RemoverAulasComFechamentoTurmaDisciplinaProcessado(IEnumerable<Aula> aulas)
+        {
+            return aulas != null ? await mediator.Send(new ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery(aulas)) : null;
         }
 
         private async Task VerificaPendenciaAulaGeradaParaInfantil(long dreId, long ueId)

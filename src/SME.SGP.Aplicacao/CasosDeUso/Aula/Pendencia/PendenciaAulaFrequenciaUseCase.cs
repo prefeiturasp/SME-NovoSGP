@@ -24,10 +24,15 @@ namespace SME.SGP.Aplicacao
                                                                                  filtro.DreId, filtro.UeId));
 
             var aulasRegistramFrequencia = aulas.Where(a => a.PermiteRegistroFrequencia());
+            aulasRegistramFrequencia = await RemoverAulasComFechamentoTurmaDisciplinaProcessado(aulasRegistramFrequencia);
             if (aulasRegistramFrequencia.Any())
                 await RegistraPendencia(aulasRegistramFrequencia, TipoPendencia.Frequencia);
 
             return true;
+        }
+        private async Task<IEnumerable<Aula>> RemoverAulasComFechamentoTurmaDisciplinaProcessado(IEnumerable<Aula> aulas)
+        {
+            return aulas != null ? await mediator.Send(new ObterAulasPendenciaSemFechamentoTurmaDiscplinaProcessadoQuery(aulas)) : null;
         }
 
         private async Task RegistraPendencia(IEnumerable<Aula> aulas, TipoPendencia tipoPendenciaAula)
