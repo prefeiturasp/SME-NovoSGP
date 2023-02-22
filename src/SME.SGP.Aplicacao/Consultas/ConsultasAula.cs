@@ -127,12 +127,21 @@ namespace SME.SGP.Aplicacao
             if (componentesCurriculares == null)
                 componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
 
-            string disciplina = componentesCurriculares
+            var dadosDisciplina = componentesCurriculares
                                 .Where(c => (c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo) || c.Codigo.ToString() == disciplinaCodigo)
-                                .Select(c => (long?) c.CodigoComponenteTerritorioSaber == 0 ? c.Codigo : c.CodigoComponenteTerritorioSaber)
-                                .FirstOrDefault().ToString();
+                                .Select(c => new ComponenteCurricularTipoDto()
+                                {
+                                    CodigoComponenteCurricular = !c.TerritorioSaber ? c.Codigo.ToString() : c.CodigoComponenteTerritorioSaber.ToString(),
+                                    CodigoComponenteCurricularTerritorio = !c.TerritorioSaber && c.CodigoComponenteTerritorioSaber == 0 
+                                                                            ? c.CodigoComponenteTerritorioSaber.ToString() 
+                                                                            : c.Codigo > 0 
+                                                                                       ? c.Codigo.ToString() 
+                                                                                       : "",
+                                    EhTerritorio = c.TerritorioSaber
+                                })
+                                .FirstOrDefault();
 
-            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplina, usuarioLogado, usuarioRF);
+            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF, dadosDisciplina.CodigoComponenteCurricularTerritorio);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
@@ -222,7 +231,7 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF)
+        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF, string disciplinaTerritorio)
         {
             if (disciplinaCodigo.ToCharArray().Any(a => !char.IsDigit(a)))
                 throw new NegocioException("Código do componente curricular inválido");
@@ -241,6 +250,16 @@ namespace SME.SGP.Aplicacao
                                                                                     null,
                                                                                     null,
                                                                                     usuarioLogado.EhProfessorCj());
+
+            if(!aulas.Any() && disciplina.TerritorioSaber && !String.IsNullOrEmpty(disciplinaTerritorio))
+                aulas = repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p => p.Id).Distinct(),
+                                                                               anoLetivo,
+                                                                               turmaCodigo,
+                                                                               disciplinaTerritorio,
+                                                                               string.Empty,
+                                                                               null,
+                                                                               null,
+                                                                               usuarioLogado.EhProfessorCj());
 
             aulas.ToList().ForEach(aula =>
             {
