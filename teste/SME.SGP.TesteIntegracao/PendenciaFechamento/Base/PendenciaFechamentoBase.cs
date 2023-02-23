@@ -37,6 +37,12 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             return ServiceProvider.GetService<IGerarPendenciasFechamentoUseCase>();
         }
 
+        protected IPendenciaAulaFrequenciaUseCase ObterUseCaseGerarPendenciaAulaFrequencia()
+        {
+            return ServiceProvider.GetService<IPendenciaAulaFrequenciaUseCase>();
+        }
+
+
         protected async Task CriarDadosBasicos(FiltroPendenciaFechamentoDto filtro)
         {
             await CriarTipoCalendario(filtro.TipoCalendario);
@@ -45,7 +51,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
 
             await CriarPeriodoEscolar();
 
-            await CriarPeriodoAbertura();
+            await CriarPeriodoFechamento();
 
             CriarClaimUsuario(ObterPerfilProfessor());
 
@@ -67,7 +73,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             await CriarPeriodoEscolar(dataReferencia.AddDays(-20), DateTimeExtension.HorarioBrasilia(), BIMESTRE_2, TIPO_CALENDARIO_1);
         }
 
-        private async Task CriarPeriodoAbertura()
+        private async Task CriarPeriodoFechamento()
         {
             var dataReferencia = DateTimeExtension.HorarioBrasilia();
 
@@ -82,6 +88,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
                 FinalDoFechamento = dataReferencia.AddDays(4)
             });
         }
+
 
         protected async Task CriaPendenciaPorTipo(TipoPendencia tipoPendencia)
         {
@@ -145,6 +152,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             {
                 DisciplinaId = componenteCurricular,
                 FechamentoTurmaId = fechamentoTurmaId,
+                Situacao = SituacaoFechamento.ProcessadoComPendencias,
                 CriadoEm = DateTime.Now,
                 CriadoPor = SISTEMA_NOME,
                 CriadoRF = SISTEMA_CODIGO_RF
