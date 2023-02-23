@@ -117,7 +117,7 @@ namespace SME.SGP.Dominio.Servicos
                 .Where(a => a.PermiteRegistroFrequencia())
                 .ToList();
 
-            var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(turmaCodigo);
+            var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
 
             if (registrosAulasSemFrequencia != null && registrosAulasSemFrequencia.Any())
             {
@@ -152,14 +152,14 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                     {
                         var professor = usuariosPendencias
-                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p=> p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+                            .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p=> p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
                         mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                         mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
                     }
                     mensagemHtml.Append("</table>");
 
-                    var professorRf = professoresTitularesDaTurma.FirstOrDefault();
+                    var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == disciplinaId).FirstOrDefault()?.ProfessorRf;                     
 
                     if (string.IsNullOrWhiteSpace(professorRf))
                         professorRf = registrosAulasSemFrequencia.FirstOrDefault()?.ProfessorRf;
@@ -176,9 +176,6 @@ namespace SME.SGP.Dominio.Servicos
             aulasSemFrequencia = registrosAulasSemFrequencia?.Count ?? 0;
             return aulasSemFrequencia;
         }
-
-        public async Task<IEnumerable<string>> RetornaProfessoresDaTurma(string codigoTurma)
-         => await mediator.Send(new ObterProfessoresTitularesDasTurmasQuery(new List<string>() { codigoTurma }));
 
         public async Task<int> ValidarAulasSemPlanoAulaNaDataDoFechamento(long fechamentoId, Turma turma, long disciplinaId, DateTime inicioPeriodo, DateTime fimPeriodo, int bimestre, long turmaId)
         {
@@ -251,7 +248,7 @@ namespace SME.SGP.Dominio.Servicos
                                                                             fimPeriodo,
                                                                             (int)TipoAvaliacaoCodigo.AtividadeClassroom);
 
-            var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(codigoTurma);
+            var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(codigoTurma));
 
             if (registrosAvaliacoesSemNotaParaNenhumAluno != null && registrosAvaliacoesSemNotaParaNenhumAluno.Any())
             {
@@ -283,7 +280,7 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                     {
                         var professor = usuariosPendencias
-                            .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf && professoresTitularesDaTurma.Any(p => p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
+                            .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
 
 
                         mensagem.AppendLine($"Professor {avaliacao.ProfessorRf} - {professor.Nome} - {avaliacao.NomeAvaliacao}.<br>");
@@ -291,7 +288,7 @@ namespace SME.SGP.Dominio.Servicos
                     }
                     mensagemHtml.Append("</table>");
 
-                    var professorRf = professoresTitularesDaTurma.FirstOrDefault();
+                    var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == disciplinaId).FirstOrDefault()?.ProfessorRf;
 
                     if (string.IsNullOrWhiteSpace(professorRf))
                         professorRf = registrosAvaliacoesSemNotaParaNenhumAluno.FirstOrDefault()?.ProfessorRf;
