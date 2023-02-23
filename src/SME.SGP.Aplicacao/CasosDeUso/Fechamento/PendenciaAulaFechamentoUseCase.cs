@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
                     fechamentoTurmaDisciplina.Justificativa,
                     fechamentoTurmaDisciplina.CriadoRF,
                     fechamentoTurmaDisciplina.TurmaId,
-                    true,
+                    false,
                     disciplina.RegistraFrequencia);
             }
         }
