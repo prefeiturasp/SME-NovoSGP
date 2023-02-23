@@ -42,6 +42,7 @@ pipeline {
             agent { node { label 'SME-AGENT-SGP-SONAR' } }
             when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch '_release'; branch 'release-r2'; branch 'infra/*'; } } 
                 steps {
+                  checkout scm
                   script{
                     withSonarQubeEnv('sonarqube-local'){
                       sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
