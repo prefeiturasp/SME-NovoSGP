@@ -22,8 +22,8 @@ namespace SME.SGP.Aplicacao
             {
                 pendenciasIds = JsonConvert.DeserializeObject<List<long>>(param.Mensagem.ToString()); ;
 
-                // if (pendenciasIds.Any())
-                //     await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });
+                if (pendenciasIds.Any())
+                    await mediator.Send(new ExcluirPendenciasPorIdsCommand() { PendenciasIds = pendenciasIds.ToArray() });
 
                 return true;
             }
