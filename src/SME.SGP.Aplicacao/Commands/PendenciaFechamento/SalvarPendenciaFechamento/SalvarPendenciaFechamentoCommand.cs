@@ -3,7 +3,7 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class SalvarPendenciaFechamentoCommand : IRequest<bool>
+    public class SalvarPendenciaFechamentoCommand : IRequest<long>
     {
         public SalvarPendenciaFechamentoCommand(long fechamentoTurmaDisciplinaId, long pendenciaId)
         {
