@@ -13,25 +13,25 @@ using Xunit;
 
 namespace SME.SGP.TesteIntegracao.PendenciaFechamento
 {
-    public class Ao_gerar_pendencia_fechamento_plano_aula : PendenciaFechamentoBase
+    public class Ao_gerar_pendencia_fechamento_frequencia : PendenciaFechamentoBase
     {
-        public Ao_gerar_pendencia_fechamento_plano_aula(CollectionFixture collectionFixture) : base(collectionFixture)
+        public Ao_gerar_pendencia_fechamento_frequencia(CollectionFixture collectionFixture) : base(collectionFixture)
         {
         }
 
         [Fact]
-        public async Task Ao_gerar_pendencia_fechamento_sem_plano_aula()
+        public async Task Ao_gerar_pendencia_fechamento_sem_frequencia()
         {
             var dto = new FiltroPendenciaFechamentoDto()
             {
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138
+                ComponenteCurricularCodigo = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString()
             };
             var dataReferencia = DateTimeExtension.HorarioBrasilia().AddDays(1);
 
             await CriarDadosBasicos(dto);
-            await CriaPendenciaPorTipo(TipoPendencia.PlanoAula);
+            await CriaPendenciaPorTipo(TipoPendencia.Frequencia);
             await CriarPendenciaAula(AULA_ID, PENDENCIA_ID_1);
 
             var useCase = ObterUseCaseGerarPendencia();
@@ -50,7 +50,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
                                         TURMA_ID_1);
 
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
-            var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento);
+            var pendeciasSemPlano = ObterTodos<Pendencia>().FindAll(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento);
             pendeciasSemPlano.ShouldNotBeNull();
             var pendeciasFechamento = ObterTodos<Dominio.PendenciaFechamento>().Find(pf => pf.PendenciaId == pendeciasSemPlano.FirstOrDefault().Id);
             pendeciasFechamento.ShouldNotBeNull();
@@ -60,20 +60,20 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
         }
 
         [Fact]
-        public async Task Ao_gerar_pendencia_fechamento_com_plano_aula()
+        public async Task Ao_gerar_pendencia_fechamento_com_frequencia()
         {
             var dto = new FiltroPendenciaFechamentoDto()
             {
                 Modalidade = Modalidade.Fundamental,
                 TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
-                ComponenteCurricularCodigo = COMPONENTE_LINGUA_PORTUGUESA_ID_138
+                ComponenteCurricularCodigo = COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString()
             };
             var dataReferencia = DateTimeExtension.HorarioBrasilia().AddDays(1);
 
             await CriarDadosBasicos(dto);
-            await CriaPendenciaPorTipo(TipoPendencia.PlanoAula);
+            await CriaPendenciaPorTipo(TipoPendencia.Frequencia);
             await CriarPendenciaAula(AULA_ID, PENDENCIA_ID_1);
-            await CriaPlanoDeAula();
+            await CriaFrequencia();
 
             var useCase = ObterUseCaseGerarPendencia();
             var command = new GerarPendenciasFechamentoCommand(
@@ -93,23 +93,20 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
             await useCase.Executar(new MensagemRabbit() { Mensagem = JsonConvert.SerializeObject(command) });
             var pendeciasSemPlano = ObterTodos<Pendencia>();
             pendeciasSemPlano.ShouldNotBeNull();
-            pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemPlanoAulaNaDataDoFechamento).ShouldBeFalse();
+            pendeciasSemPlano.Exists(p => p.Tipo == TipoPendencia.AulasSemFrequenciaNaDataDoFechamento).ShouldBeFalse();
             var pendenciasAula = ObterTodos<Dominio.PendenciaAula>().Select(pendenciaAula => pendenciaAula.PendenciaId);
             var pendencias = ObterTodos<Dominio.Pendencia>().Where(pendencia => pendenciasAula.Contains(pendencia.Id));
             pendencias.Where(pendencia => !pendencia.Excluido).ShouldBeEmpty();
         }
 
-        private async Task CriaPlanoDeAula()
+        private async Task CriaFrequencia()
         {
-            await InserirNaBase(new Dominio.PlanoAula()
+            await InserirNaBase(new Dominio.RegistroFrequencia()
             {
-                Descricao = "Plano",
                 AulaId = AULA_ID,
-                RecuperacaoAula = string.Empty,
-                LicaoCasa = string.Empty,
                 CriadoPor = "",
                 CriadoRF = "",
-                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01),
             });
         }
     }
