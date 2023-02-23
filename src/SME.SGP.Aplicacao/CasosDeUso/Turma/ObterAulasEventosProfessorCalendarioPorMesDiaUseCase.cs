@@ -105,13 +105,13 @@ namespace SME.SGP.Aplicacao
                         {
                             componentesCurricularesDoProfessor = dadosComponentes.Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
                             ehCJEPossuiComponentesVinculados = true;
-                        }                    
+                        }
                     }
                 }
 
                 if (componentesCurricularesEolProfessor != null || ehCJEPossuiComponentesVinculados)
                 {
-                    if(!ehCJEPossuiComponentesVinculados)
+                    if (!ehCJEPossuiComponentesVinculados)
                         componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
                         .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
 
@@ -152,22 +152,15 @@ namespace SME.SGP.Aplicacao
             else
                 aulasParaVisualizar = Enumerable.Empty<Aula>();
 
-            try
+            retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
             {
-                retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
-                {
-                    TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
-                    UsuarioCodigoRf = usuarioLogado.CodigoRf,
-                    Aulas = aulasParaVisualizar,
-                    Avaliacoes = atividadesAvaliativas,
-                    ComponentesCurricularesParaVisualizacao = componentesCurriculares,
-                    EventosDaUeSME = eventosDaUeSME
-                });
-            }
-            catch(Exception ex)
-            {
-                
-            }
+                TurmaCodigo = filtroAulasEventosCalendarioDto.TurmaCodigo,
+                UsuarioCodigoRf = usuarioLogado.CodigoRf,
+                Aulas = aulasParaVisualizar,
+                Avaliacoes = atividadesAvaliativas,
+                ComponentesCurricularesParaVisualizacao = componentesCurriculares,
+                EventosDaUeSME = eventosDaUeSME
+            });
 
             return retorno;
         }
