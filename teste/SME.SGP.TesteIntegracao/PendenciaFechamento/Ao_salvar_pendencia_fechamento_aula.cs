@@ -33,7 +33,7 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento
 
             var mediator = ServiceProvider.GetService<IMediator>();
 
-            await mediator.Send(new PendenciaFechamentoAulaCommand(AULA_ID, PENDENCIA_FECHAMENTO_ID_1));
+            await mediator.Send(new SalvarPendenciaFechamentoAulaCommand(AULA_ID, PENDENCIA_FECHAMENTO_ID_1));
 
             var pendeciasFechamentoAula = ObterTodos<PendenciaFechamentoAula>();
             pendeciasFechamentoAula.ShouldNotBeNull();

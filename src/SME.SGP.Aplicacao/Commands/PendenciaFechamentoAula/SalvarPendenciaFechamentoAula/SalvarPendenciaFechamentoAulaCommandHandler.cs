@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PendenciaFechamentoAulaCommandHandler : IRequestHandler<PendenciaFechamentoAulaCommand, bool>
+    public class SalvarPendenciaFechamentoAulaCommandHandler : IRequestHandler<SalvarPendenciaFechamentoAulaCommand, bool>
     {
         private readonly IRepositorioPendenciaFechamentoAula repositorioPendenciaFechamentoAula;
 
-        public PendenciaFechamentoAulaCommandHandler(IRepositorioPendenciaFechamentoAula repositorioPendenciaFechamentoAula)
+        public SalvarPendenciaFechamentoAulaCommandHandler(IRepositorioPendenciaFechamentoAula repositorioPendenciaFechamentoAula)
         {
             this.repositorioPendenciaFechamentoAula = repositorioPendenciaFechamentoAula ?? throw new ArgumentNullException(nameof(repositorioPendenciaFechamentoAula));
         }
 
-        public async Task<bool> Handle(PendenciaFechamentoAulaCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(SalvarPendenciaFechamentoAulaCommand request, CancellationToken cancellationToken)
         {
             await repositorioPendenciaFechamentoAula.SalvarAsync(new PendenciaFechamentoAula()
             {

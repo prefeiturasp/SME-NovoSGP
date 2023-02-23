@@ -83,12 +83,12 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             });
         }
 
-        protected async Task CriaPendenciaPorTipo(TipoPendencia tipoPendencia)
+        protected async Task CriaPendenciaPorTipo(TipoPendencia tipoPendencia, SituacaoPendencia situacao = SituacaoPendencia.Pendente)
         {
             await InserirNaBase(new Pendencia()
             {
                 Tipo = tipoPendencia,
-                Situacao = SituacaoPendencia.Pendente,
+                Situacao = situacao,
                 Descricao = "pendência",
                 Titulo = "pendência",
                 CriadoPor = "",
@@ -115,6 +115,15 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
                 CriadoPor = "",
                 CriadoRF = "",
                 CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 03, 01)
+            });
+        }
+
+        protected async Task CriarPendenciaFechamentoAula(long aulaId, long pendenciaFechamentoId)
+        {
+            await InserirNaBase(new Dominio.PendenciaFechamentoAula()
+            {
+                AulaId = aulaId,
+                PendenciaFechamentoId = pendenciaFechamentoId
             });
         }
 
