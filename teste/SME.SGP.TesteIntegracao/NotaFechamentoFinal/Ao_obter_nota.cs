@@ -23,7 +23,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
     public class Ao_obter_nota : NotaFechamentoTesteBase
     {
         private const int REGISTRO_FREQUENCIA_ID = 1;
-        private const double PERCENTUAL_ALUNO_1 = 87.5;
+        private const double PERCENTUAL_ALUNO_1 = 88;
         private const double PERCENTUAL_ALUNO_2 = 75;
         private const int TOTAL_FALTA = 3;
         private const int TOTAL_AUSENCIA_1 = 2;
