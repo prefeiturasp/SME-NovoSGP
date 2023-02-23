@@ -266,7 +266,7 @@ namespace SME.SGP.Dados.Repositorios
                 .Where(c => c.PendenciaAssunto.Equals(TipoPendenciaAssunto.PendenciaDevolutiva))
                 .Select(c => c.Id).Distinct().ToArray();
             
-            const string selectBase = "select p.id from pendencia p";
+            const string selectBase = "select distinct p.id from pendencia p";
             
             var query = new StringBuilder();
 
@@ -333,15 +333,23 @@ namespace SME.SGP.Dados.Repositorios
                 if (!string.IsNullOrEmpty(turmaCodigo))
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
-            
-            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
-                pendenciasIdsAula,
-                pendenciasIdsCalendario,
-                pendenciasIdsProfessor,
-                pendenciasIdsRegistroIndividual,
-                pendenciasIdsDevolutiva,
-                pendenciasIds,
-                turmaCodigo });
+
+            try
+            {
+                return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
+                    pendenciasIdsAula,
+                    pendenciasIdsCalendario,
+                    pendenciasIdsProfessor,
+                    pendenciasIdsRegistroIndividual,
+                    pendenciasIdsDevolutiva,
+                    pendenciasIds,
+                    turmaCodigo });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)

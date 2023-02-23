@@ -66,6 +66,7 @@
 
   <ItemGroup>
     <Folder Include="Commands\FechamentoTurmaDisciplina\" />
+    <Folder Include="Commands\PendenciaCalendarioUe\ExcluirPendenciaCalendarioAnoAnterior" />
     <Folder Include="obj\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
     <Folder Include="Servicos\Interfaces\" />
