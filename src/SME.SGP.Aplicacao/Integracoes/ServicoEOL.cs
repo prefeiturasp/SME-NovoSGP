@@ -676,6 +676,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
 
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
+
+            if (usuario == null)
+                throw new NegocioException("Usuário não localizado.");
+
             retorno.UsuarioId = usuario.Id;
 
             return retorno;
