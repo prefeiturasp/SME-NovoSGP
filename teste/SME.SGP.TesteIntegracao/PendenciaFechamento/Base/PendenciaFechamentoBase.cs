@@ -127,9 +127,18 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
 
         protected async Task CriarPendenciaFechamentoAula(long aulaId, long pendenciaFechamentoId)
         {
-            await InserirNaBase(new Dominio.PendenciaFechamentoAula()
+            await InserirNaBase(new PendenciaFechamentoAula()
             {
                 AulaId = aulaId,
+                PendenciaFechamentoId = pendenciaFechamentoId
+            });
+        }
+
+        protected async Task CriarPendenciaFechamentoAtividadeAvaliativa(long atividadeAvaliativaId, long pendenciaFechamentoId)
+        {
+            await InserirNaBase(new PendenciaFechamentoAtividadeAvaliativa()
+            {
+                AtividadeAvaliativaId = atividadeAvaliativaId,
                 PendenciaFechamentoId = pendenciaFechamentoId
             });
         }
