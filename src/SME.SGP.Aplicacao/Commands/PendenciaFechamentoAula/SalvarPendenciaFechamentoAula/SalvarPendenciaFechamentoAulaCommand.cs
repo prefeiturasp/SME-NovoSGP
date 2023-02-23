@@ -3,9 +3,9 @@ using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PendenciaFechamentoAulaCommand : IRequest<bool>
+    public class SalvarPendenciaFechamentoAulaCommand : IRequest<bool>
     {
-        public PendenciaFechamentoAulaCommand(long aulaId, long pendenciaFechamentoId)
+        public SalvarPendenciaFechamentoAulaCommand(long aulaId, long pendenciaFechamentoId)
         {
             AulaId = aulaId;
             PendenciaFechamentoId = pendenciaFechamentoId;
@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
         public long PendenciaFechamentoId { get; set; }
     }
 
-    public class PendenciaFechamentoAulaCommandValidator : AbstractValidator<PendenciaFechamentoAulaCommand>
+    public class PendenciaFechamentoAulaCommandValidator : AbstractValidator<SalvarPendenciaFechamentoAulaCommand>
     {
         public PendenciaFechamentoAulaCommandValidator()
         {
