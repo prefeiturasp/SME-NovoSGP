@@ -698,19 +698,21 @@ namespace SME.SGP.Aplicacao
                 Codigo = codigoComponenteCurricular,
                 Nome = componenteCurricular.Nome,
                 TotalFaltas = frequenciaDisciplina?.TotalAusencias,
-                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas, codigoComponenteCurricular),
+                PercentualFrequencia = ExibirPercentualFrequencia(percentualFrequencia, totalAulas, frequenciaDisciplina?.TotalAulas, codigoComponenteCurricular),
                 ParecerFinal = parecerFinal?.Valor == null || !totalAulas.Any() ? string.Empty : parecerFinal?.Valor,
                 ParecerFinalId = (int)(parecerFinal?.Id ?? default),
-                TotalAulas = ExibirTotalAulas(totalAulas, codigoComponenteCurricular),
+                TotalAulas = ExibirTotalAulas(totalAulas, frequenciaDisciplina?.TotalAulas, codigoComponenteCurricular),
                 TotalAusenciasCompensadas = ExibirTotalCompensadas(totalCompensacoes, codigoComponenteCurricular, bimestre)
             };
         }
 
-        private string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, long componenteCurricular)
+        private string ExibirPercentualFrequencia(string percentualFrequencia, IEnumerable<TotalAulasNaoLancamNotaDto> totalAulas, int? totalAulasAlunoDisciplina, long componenteCurricular)
         {
             var aulas = totalAulas.FirstOrDefault(x => x.DisciplinaId == componenteCurricular);
 
-            if (aulas == null || String.IsNullOrEmpty(percentualFrequencia) || (percentualFrequencia == "0" && aulas == null))
+            totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
+
+            if ((aulas == null && totalAulasAlunoDisciplina == 0) || String.IsNullOrEmpty(percentualFrequencia) || (percentualFrequencia == "0" && aulas == null))
                 return "";
 
             return $"{percentualFrequencia}%";
@@ -731,11 +733,17 @@ namespace SME.SGP.Aplicacao
 
         }
 
-        private string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, long codigoComponenteCurricular)
+        private string ExibirTotalAulas(IEnumerable<TotalAulasNaoLancamNotaDto> aulas, int? totalAulasAlunoDisciplina, long codigoComponenteCurricular)
         {
-            var totalAulas = aulas.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
+            var aulasComponente = aulas.FirstOrDefault(x => x.DisciplinaId == codigoComponenteCurricular);
 
-            return totalAulas?.TotalAulas ?? "0";
+            totalAulasAlunoDisciplina = totalAulasAlunoDisciplina ?? 0;
+
+            return aulasComponente != null 
+                    ? Convert.ToInt32(aulasComponente.TotalAulas) >= totalAulasAlunoDisciplina 
+                                                                  ? aulasComponente.TotalAulas 
+                                                                  : totalAulasAlunoDisciplina.ToString()   
+                    : totalAulasAlunoDisciplina.ToString();
         }
 
         private string ObterPercentualDeFrequencia(IEnumerable<FrequenciaAluno> frequenciaDisciplina)
@@ -782,8 +790,12 @@ namespace SME.SGP.Aplicacao
                 if(dadosAulasComponente != null)
                 {
                     int totalAulasComponente = Convert.ToInt32(dadosAulasComponente.TotalAulas);
-                    frequenciaAluno.TotalAulas = frequenciaAluno.TotalAulas == totalAulasComponente ? frequenciaAluno.TotalAulas : totalAulasComponente;
-                }  
+                    frequenciaAluno.TotalAulas = frequenciaAluno.TotalAulas == totalAulasComponente 
+                                                                            ? frequenciaAluno.TotalAulas 
+                                                                            : frequenciaAluno.TotalAulas > totalAulasComponente 
+                                                                                                         ? frequenciaAluno.TotalAulas
+                                                                                                         : totalAulasComponente;
+                }
             }
 
             return frequenciaAluno;
