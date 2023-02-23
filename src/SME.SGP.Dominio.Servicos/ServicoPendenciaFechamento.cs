@@ -189,7 +189,7 @@ namespace SME.SGP.Dominio.Servicos
 
             if (registrosAulasSemPlanoAula != null && registrosAulasSemPlanoAula.Any())
             {
-                var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(turma.CodigoTurma);
+                var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turma.CodigoTurma));
 
                 var componenteCurricular = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { disciplinaId })).ToList()?.FirstOrDefault();
 
@@ -223,14 +223,14 @@ namespace SME.SGP.Dominio.Servicos
                     foreach (var aula in registrosAulasSemPlanoAula.OrderBy(a => a.DataAula))
                     {
                         var professor = usuariosPendencias
-                             .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p => p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
+                             .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
                         mensagem.AppendLine($"Professor {aula.ProfessorRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                         mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {aula.ProfessorRf}</td></tr>");
                     }
                     mensagemHtml.Append("</table>");
 
-                    var professorRf = professoresTitularesDaTurma.FirstOrDefault();
+                    var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == disciplinaId).FirstOrDefault()?.ProfessorRf;
 
                     if (string.IsNullOrWhiteSpace(professorRf))
                         professorRf = registrosAulasSemPlanoAula.FirstOrDefault()?.ProfessorRf;
