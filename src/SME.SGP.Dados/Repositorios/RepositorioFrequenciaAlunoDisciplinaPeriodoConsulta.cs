@@ -64,9 +64,11 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<FrequenciaAluno>> ObterPorAlunos(IEnumerable<string> alunosCodigo, IEnumerable<long?> periodosEscolaresId, string turmaId, string disciplinaId)
         {
-            var query = new StringBuilder(@"select *
-                        from
-	                        frequencia_aluno
+            var query = new StringBuilder(@"with lista as (
+                        select *,
+                               row_number() over (partition by codigo_aluno, bimestre order by id desc) sequencia
+                            from
+	                            frequencia_aluno
                         where
 	                        codigo_aluno = any(@alunosCodigo)	                        	                        
                             and turma_id = @turmaId
@@ -74,6 +76,8 @@ namespace SME.SGP.Dados
 
             if (periodosEscolaresId != null && periodosEscolaresId.Any())
                 query.AppendLine("and periodo_escolar_id = any(@periodosEscolaresId)");
+
+            query.AppendLine(") select * from lista where sequencia = 1;");
 
             return await database.QueryAsync<FrequenciaAluno>(query.ToString(), new
             {
@@ -439,14 +443,23 @@ namespace SME.SGP.Dados
         }
         public async Task<IEnumerable<FrequenciaAlunoDto>> ObterFrequenciaGeralPorTurma(string turmaCodigo)
         {
-            var query = @"select codigo_aluno as AlunoCodigo
-	                    , sum(total_aulas) as TotalAulas
-	                    , sum(total_ausencias) as TotalAusencias
-	                    , sum(total_compensacoes ) as TotalCompensacoes 
-                      from frequencia_aluno fa 
-                     where fa.turma_id = @turmaCodigo
-                       and tipo = 2
-                      group by codigo_aluno";
+            var query = @"with lista as (
+                          select fa.codigo_aluno,
+	                              fa.total_aulas,
+	                              fa.total_ausencias,
+	                              fa.total_compensacoes,
+	                              row_number() over (partition by fa.codigo_aluno order by fa.id desc) sequencia
+	                          from frequencia_aluno fa
+                          where fa.turma_id = @turmaCodigo and
+	                          fa.tipo = 2 and
+	                          not fa.excluido)
+                          select codigo_aluno as AlunoCodigo, 
+	                             sum(total_aulas) as TotalAulas, 
+	                             sum(total_ausencias) as TotalAusencias, 
+	                             sum(total_compensacoes) as TotalCompensacoes
+                          from lista
+                          where sequencia = 1
+                          group by codigo_aluno;";
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { turmaCodigo });
         }
