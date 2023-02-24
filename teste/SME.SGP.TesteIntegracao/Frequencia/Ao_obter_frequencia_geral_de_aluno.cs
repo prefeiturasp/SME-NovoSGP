@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_obter_frequencia_geral_de_aluno : FrequenciaTesteBase
     {
-        private const string VALOR_83 = "83,33";
+        private const string VALOR_83 = "83";
         private const string VALOR_100 = "100";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {

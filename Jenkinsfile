@@ -39,19 +39,16 @@ pipeline {
           when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch 'development'; branch 'release'; branch 'release-r2'; branch 'infra/*'; } } 
           parallel {
             stage('Sonar') {
+            agent { node { label 'SME-AGENT-SGP-SONAR' } }
             when { anyOf { branch 'master'; branch 'main'; branch "story/*"; branch '_development'; branch '_release'; branch '_release-r2'; branch 'infra/*'; } } 
                 steps {
+                  checkout scm
                   script{
-                    boolean testPassed = true
-                    try{
-                      withSonarQubeEnv('sonarqube-local'){
-                        sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
-                        sh 'dotnet build SME.SGP.sln'
-                        sh 'dotnet test teste/SME.SGP.TesteIntegracao /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
-                        sh 'dotnet-sonarscanner'
-                      }
-                    }catch (Exception e){
-                       testPassed = false
+                    withSonarQubeEnv('sonarqube-local'){
+                      sh 'dotnet-sonarscanner begin /k:"SME-NovoSGP" /d:sonar.cs.opencover.reportsPaths="teste/SME.SGP.TesteIntegracao/coverage.opencover.xml" /d:sonar.coverage.exclusions="**Test*.cs, **/*SME.SGP.Dados.*, **/*SME.SGP.Dominio.Interfaces, **/*SME.SGP.Api, **/*SME.SGP.Infra, **/*SME.SGP.IoC, **/*SME.SGP.Infra.*, **/*/Workers/*, **/*/Hub/*"'
+                      sh 'dotnet build SME.SGP.sln'
+                      sh 'dotnet test teste/SME.SGP.TesteIntegracao --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover'
+                      sh 'dotnet-sonarscanner'
                     }
                  }
                }
@@ -183,7 +180,6 @@ pipeline {
       when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2';; } }       
       steps {
         script{
-           //if(testPassed){
               docker.withRegistry( 'https://registry.sme.prefeitura.sp.gov.br', registryCredential ) {
                 dockerImage1.push()
                 dockerImage2.push()
@@ -198,7 +194,6 @@ pipeline {
                 dockerImage11.push()
                 dockerImage12.push()
               }
-          // }
         }
       }
     }
@@ -219,8 +214,8 @@ pipeline {
                         withCredentials([file(credentialsId: "${kubeconfig}", variable: 'config')]){
                                 sh('cp $config '+"$home"+'/.kube/config')
                                 sh "kubectl rollout restart deployment/${deployment1} -n sme-novosgp"
-                                sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"	
-                                sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"	
+                                sh "kubectl rollout restart deployment/${deployment2} -n sme-novosgp"   
+                                sh "kubectl rollout restart deployment/${deployment3} -n sme-novosgp"   
                                 sh "kubectl rollout restart deployment/${deployment4} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment5} -n sme-novosgp"
                                 sh "kubectl rollout restart deployment/${deployment6} -n sme-novosgp"
@@ -237,7 +232,7 @@ pipeline {
                 }
             }           
         }
-        	 
+             
       stage('Flyway') {
         agent { label 'master' }
         when { anyOf {  branch 'master'; branch 'main'; branch 'development'; branch 'release'; branch 'release-r2'; } }
@@ -246,7 +241,7 @@ pipeline {
             checkout scm
             sh 'docker run --rm -v $(pwd)/scripts:/opt/scripts registry.sme.prefeitura.sp.gov.br/devops/flyway:5.2.4 -url=$url -locations="filesystem:/opt/scripts" -outOfOrder=true migrate'
           }
-        }		
+        }       
       }
 
       stage('Deploy Treinamento'){
@@ -282,7 +277,7 @@ pipeline {
                 echo err.getMessage()
             }
           }
-        }		
+        }       
       }        
     }
 
