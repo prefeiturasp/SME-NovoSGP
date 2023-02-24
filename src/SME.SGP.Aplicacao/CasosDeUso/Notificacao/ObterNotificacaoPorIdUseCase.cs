@@ -107,6 +107,9 @@ namespace SME.SGP.Aplicacao
                 case WorkflowAprovacaoTipo.Evento_Data_Passada:
                 case WorkflowAprovacaoTipo.Fechamento_Reabertura:
                 case WorkflowAprovacaoTipo.AlteracaoNotaFechamento:
+                    return await mediator.Send(
+                        new ObterMensagemNotificacaoAlteracaoNotaFechamentoQuery(workflowAprovacao.Id,
+                            notificacao.Id));
                 case WorkflowAprovacaoTipo.RegistroItinerancia:
                 case WorkflowAprovacaoTipo.AlteracaoNotaConselho:
                 default:
