@@ -31,19 +31,45 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var componentesCurricularesEolProfessor = await mediator
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
+
+            if (!usuarioLogado.EhProfessorCj())
+                componentesCurricularesEolProfessor = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
                                                                                   usuarioLogado.CodigoRf,
                                                                                   usuarioLogado.PerfilAtual,
                                                                                   usuarioLogado.EhProfessorInfantilOuCjInfantil()));
-
-            var componenteCorrespondente = componentesCurricularesEolProfessor
-                .SingleOrDefault(cp => cp.Codigo.ToString().Equals(request.ComponenteCurricularCodigo));
             
-            var codigoComponentes = new string[(componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? 2 : 1];
-            codigoComponentes[0] = componenteCorrespondente?.Codigo.ToString() ?? request.ComponenteCurricularCodigo;
-            if ((componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0)
-                codigoComponentes[1] = componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString();
+            if (usuarioLogado.EhProfessorCj())
+            {
+                var componentesCurricularesDoProfessorCJ = await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                if (componentesCurricularesDoProfessorCJ.Any())
+                {
+                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    if (dadosComponentes.Any())
+                    {
+                        componentesCurricularesDoProfessorCj = dadosComponentes
+                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber 
+                                ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
+                    }
+                }
+            }
+
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null
+                    ? componentesCurricularesEolProfessor.SingleOrDefault(cp => cp.Codigo.ToString() == request.ComponenteCurricularCodigo)
+                    : new ComponenteCurricularEol
+                    {
+                        Codigo = long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0,
+                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                    };
+
+            var codigoComponentes = new[] { componenteCorrespondente.Codigo.ToString() };
+            if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
+                codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
 
             var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigoComponentes, string.Empty);
 
