@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(turmaCodigo);
+                    var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
 
                     foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
                     {
@@ -288,7 +288,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    var professoresTitularesDaTurma = await RetornaProfessoresDaTurma(codigoTurma);
+                    var professoresTitularesDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(codigoTurma));
 
                     foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
                     {
