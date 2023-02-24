@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Newtonsoft.Json;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 
@@ -17,17 +18,17 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit param)
         {
-            IEnumerable<long> idsUes = new List<long>(); ;
-            long ueId = 0;
-            int? anoLetivo;
+            IEnumerable<TodosUesIdsComPendenciaCalendarioDto> pendencias = new List<TodosUesIdsComPendenciaCalendarioDto>();
+            int anoLetivo;
             try
             {
-                idsUes = await mediator.Send(new ObterTodasUesIdsQuery());
-                anoLetivo = param.Mensagem != null ? JsonConvert.DeserializeObject<int?>(param.Mensagem.ToString()!) : null;
-                foreach (var idUe in idsUes)
+                anoLetivo = param.Mensagem != null ? JsonConvert.DeserializeObject<int>(param.Mensagem.ToString()!) : DateTimeExtension.HorarioBrasilia().AddYears(-1).Year;
+                pendencias = await mediator.Send(new ObterTodosUesIdsComPendenciaCalendarioQuery(anoLetivo));
+                
+                foreach (var ueId in pendencias.Select(p => p.UeId).Distinct())
                 {
-                    ueId = idUe;
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new FiltroExcluirPendenciaCalendarioAnoAnteriorPorUeDto(anoLetivo,idUe), Guid.NewGuid(), null));
+                    var idPendencias = pendencias.Where(x => x.UeId == ueId).Select(e => e.PendenciaId).ToArray();
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioUe, new ExcluirPendenciaCalendarioAnoAnteriorPorUeDto(anoLetivo,ueId,idPendencias), Guid.NewGuid(), null));
                 }
 
                 return true;
@@ -39,7 +40,7 @@ namespace SME.SGP.Aplicacao
                     LogContexto.Calendario,
                     innerException: e.InnerException!.ToString(),
                     rastreamento: e.StackTrace,
-                    observacao: $"Id das UEs: {JsonConvert.SerializeObject(idsUes.ToArray())}, Id da UE = {ueId} ,Erro:{e.Message}"));
+                    observacao: e.Message));
                 throw;
             }
         }

@@ -22,12 +22,9 @@ namespace SME.SGP.Aplicacao
             IEnumerable<long> pendenciasIds = new List<long>();
             try
             {
-                var filtro = param.ObterObjetoMensagem<FiltroExcluirPendenciaCalendarioAnoAnteriorPorUeDto>();
-                int anoLetivo = filtro.AnoLetivo ?? anoAnteriorLetivo;
-                pendenciasIds = await mediator.Send(new ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomaticoQuery(filtro.UeId, anoLetivo));
+                var filtro = param.ObterObjetoMensagem<ExcluirPendenciaCalendarioAnoAnteriorPorUeDto>();
 
-                if (pendenciasIds.Any())
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, pendenciasIds.ToArray(), Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaExcluirPendenciaCalendarioAnoAnteriorCalendarioIdsPendencias, filtro.PendenciaId, Guid.NewGuid(), null));
 
                 return true;
             }
