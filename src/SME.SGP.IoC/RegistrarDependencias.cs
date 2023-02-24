@@ -462,7 +462,11 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRepositorioPendenciaPerfilUsuario, RepositorioPendenciaPerfilUsuario>();
             services.TryAddScoped<IRepositorioPendenciaDiarioBordo, RepositorioPendenciaDiarioBordo>();
             services.TryAddScoped<IRepositorioPendenciaDiarioBordoConsulta, RepositorioPendenciaDiarioBordoConsulta>();
-
+            services.TryAddScoped<IRepositorioPendenciaFechamentoAula, RepositorioPendenciaFechamentoAula>();
+            services.TryAddScoped<IRepositorioPendenciaFechamentoAulaConsulta, RepositorioPendenciaFechamentoAulaConsulta>();
+            services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativa, RepositorioPendenciaFechamentoAtividadeAvaliativa>();
+            services.TryAddScoped<IRepositorioPendenciaFechamentoAtividadeAvaliativaConsulta, RepositorioPendenciaFechamentoAtividadeAvaliativaConsulta>();
+            
             // Itinerancia
             services.TryAddScoped<IRepositorioItinerancia, RepositorioItinerancia>();
             services.TryAddScoped<IRepositorioItineranciaAluno, RepositorioItineranciaAluno>();
