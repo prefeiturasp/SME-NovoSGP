@@ -1,4 +1,5 @@
-﻿using Dommel;
+﻿using Dapper;
+using Dommel;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -25,7 +26,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterPorNotaId(long fechamentoNotaId)
         {
-            var query = @"select * from wf_aprovacao_nota_fechamento where fechamento_nota_id = @fechamentoNotaId ";
+            var query = @"select * from wf_aprovacao_nota_fechamento where not excluido and fechamento_nota_id = @fechamentoNotaId ";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamento>(query, new { fechamentoNotaId });
         }
@@ -50,7 +51,7 @@ namespace SME.SGP.Dados.Repositorios
                             inner join fechamento_turma ft on ft.id = ftd.fechamento_turma_id 
                             inner join componente_curricular cc on cc.id = fn.disciplina_id 
                             left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
-                            where wf_aprovacao_id is null";
+                            where not excluido and wf_aprovacao_id is null";
 
             return await database.Conexao.QueryAsync<WfAprovacaoNotaFechamentoTurmaDto, WfAprovacaoNotaFechamento, WfAprovacaoNotaFechamentoTurmaDto>(query, (wfAprovacaoDto, wfAprovacaoNotaFechamento) =>
             {
@@ -69,6 +70,15 @@ namespace SME.SGP.Dados.Repositorios
 
             database.Conexao.Execute(query, new { workflowAprovacaoId, workflowAprovacaoNotaFechamentoIds });
             return Task.FromResult(true);
+        }
+
+        public async Task ExcluirLogico(WfAprovacaoNotaFechamento wfAprovacaoNota)
+        {
+            var query = $@"update wf_aprovacao_nota_fechamento
+                            set excluido = true 
+                           where id=@id";
+
+            await database.Conexao.ExecuteAsync(query, new { id = wfAprovacaoNota.Id });
         }
     }
 }
