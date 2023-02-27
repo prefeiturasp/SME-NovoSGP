@@ -43,6 +43,12 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             return ServiceProvider.GetService<IPendenciaAulaFrequenciaUseCase>();
         }
 
+        protected IPendenciaAulaFechamentoUseCase ObterUseCaseGerarPendenciaAulaFrequenciaFechamento()
+        {
+            return ServiceProvider.GetService<IPendenciaAulaFechamentoUseCase>();
+        }
+
+        
 
         protected async Task CriarDadosBasicos(FiltroPendenciaFechamentoDto filtro)
         {
@@ -62,7 +68,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
 
             await CriarAula(DateTimeExtension.HorarioBrasilia().AddDays(-1), RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_2222222, TURMA_CODIGO_1, UE_CODIGO_1, filtro.ComponenteCurricularCodigo, TIPO_CALENDARIO_1);
 
-            await CriaFechamento(filtro.ComponenteCurricularCodigo);
+            if (!filtro.IgnorarCricaoFechamento)
+                await CriaFechamento(filtro.ComponenteCurricularCodigo);
 
             await CriarParametrosSistema();
         }
@@ -211,7 +218,8 @@ namespace SME.SGP.TesteIntegracao.PendenciaFechamento.Base
             public Modalidade Modalidade { get; set; }
             public ModalidadeTipoCalendario TipoCalendario { get; set; } 
             public string ComponenteCurricularCodigo { get; set; }
-        }
+            public bool IgnorarCricaoFechamento { get; set; }
+    }
     }
 
 
