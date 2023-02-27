@@ -98,8 +98,8 @@ namespace SME.SGP.Dados.Repositorios
                             inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                             inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
                             inner join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                            left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id
-                            where not w.excluido and ft.id = @turmaFechamentoId and fn.disciplina_id = @disciplinaId and fa.aluno_codigo = @codigoAluno
+                            left join wf_aprovacao_nota_fechamento w on w.fechamento_nota_id = fn.id and not w.excluido
+                            where ft.id = @turmaFechamentoId and fn.disciplina_id = @disciplinaId and fa.aluno_codigo = @codigoAluno
                         order by w.id desc";
 
             return database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
