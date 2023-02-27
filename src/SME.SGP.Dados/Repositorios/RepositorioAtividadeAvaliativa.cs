@@ -615,7 +615,7 @@ namespace SME.SGP.Dados.Repositorios
                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
                          left join fechamento_aluno fa on fa.aluno_codigo = nc.aluno_id
                          left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
-                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = fn.id
+                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = fn.id and not wf.excluido
                         WHERE NOT aa.excluido
                            AND t.id = @turmaId
                            and pe.id = @periodoEscolarId
