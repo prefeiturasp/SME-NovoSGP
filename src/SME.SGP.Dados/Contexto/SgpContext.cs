@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Data;
+using System.Data.Common;
 
 namespace SME.SGP.Dados.Contexto
 {
@@ -11,12 +12,14 @@ namespace SME.SGP.Dados.Contexto
     {
         private readonly IDbConnection conexao; //Raphael - Trocado classe concreta de PgConnection pra IDbConnection
         private readonly IContextoAplicacao contextoAplicacao;
+        private readonly string conexaoAlternativa;
 
-        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres")
+        public SgpContext(IConfiguration configuration, IContextoAplicacao contextoAplicacao, string stringConexao = "SGP_Postgres", string stringConexaoAlternativa = "")
         {
             conexao = new NpgsqlConnection(configuration.GetConnectionString(stringConexao));
             this.contextoAplicacao = contextoAplicacao ?? throw new ArgumentNullException(nameof(contextoAplicacao));
-            Open();
+            this.conexaoAlternativa = configuration.GetConnectionString(stringConexaoAlternativa);
+            AbrirConexao();
         }
 
         //Ctor para ser usado com o teste.
@@ -104,7 +107,18 @@ namespace SME.SGP.Dados.Contexto
 
         public void AbrirConexao()
         {
-            Open();
+            try
+            {
+                Open();
+            }
+            catch (DbException e)
+            {
+                if (string.IsNullOrEmpty(conexaoAlternativa))
+                    throw;
+
+                conexao.ConnectionString = conexaoAlternativa;
+                Open();
+            }
         }
 
         public void FecharConexao()
