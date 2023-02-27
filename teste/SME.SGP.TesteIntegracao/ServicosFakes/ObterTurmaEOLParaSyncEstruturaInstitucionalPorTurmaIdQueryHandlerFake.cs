@@ -14,7 +14,7 @@ namespace SME.SGP.TesteIntegracao.ServicosFakes
             {
                 Ano = "4",
                 AnoLetivo = 2022,
-                Codigo = 2362749,
+                Codigo = 444,
                 TipoTurma = 1,
                 NomeTurma = "4A",
                 SerieEnsino = "4º ANO",
