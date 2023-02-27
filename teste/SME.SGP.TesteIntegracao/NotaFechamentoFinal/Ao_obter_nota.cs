@@ -243,11 +243,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_2, NOTA_8);
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_3, NOTA_8);
             dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_4, NOTA_9);
+            dicionario[CODIGO_ALUNO_1].Add(BIMESTRE_FINAL, NOTA_8);
 
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_1, NOTA_7);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_2, NOTA_9);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_3, NOTA_8);
             dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_4, NOTA_10);
+            dicionario[CODIGO_ALUNO_2].Add(BIMESTRE_FINAL, NOTA_9);
 
             return dicionario;
         }
