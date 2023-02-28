@@ -445,21 +445,22 @@ namespace SME.SGP.Dados
         {
             var query = @"with lista as (
                           select fa.codigo_aluno,
-	                              fa.total_aulas,
-	                              fa.total_ausencias,
-	                              fa.total_compensacoes,
-	                              row_number() over (partition by fa.codigo_aluno order by fa.id desc) sequencia
+                                 fa.periodo_fim,
+	                             fa.total_aulas,
+	                             fa.total_ausencias,
+	                             fa.total_compensacoes,
+	                             row_number() over (partition by fa.codigo_aluno, fa.bimestre order by fa.id desc) sequencia
 	                          from frequencia_aluno fa
                           where fa.turma_id = @turmaCodigo and
 	                          fa.tipo = 2 and
 	                          not fa.excluido)
-                          select codigo_aluno as AlunoCodigo, 
-	                             sum(total_aulas) as TotalAulas, 
-	                             sum(total_ausencias) as TotalAusencias, 
-	                             sum(total_compensacoes) as TotalCompensacoes
+                          select codigo_aluno as AlunoCodigo,
+                                 periodo_fim PeriodoFim,
+	                             total_aulas as TotalAulas, 
+	                             total_ausencias as TotalAusencias, 
+	                             total_compensacoes as TotalCompensacoes
                           from lista
-                          where sequencia = 1
-                          group by codigo_aluno;";
+                          where sequencia = 1;";
 
             return await database.Conexao.QueryAsync<FrequenciaAlunoDto>(query, new { turmaCodigo });
         }
@@ -587,20 +588,19 @@ namespace SME.SGP.Dados
 
         public async Task<IEnumerable<TurmaComponenteQntAulasDto>> ObterTotalAulasPorDisciplinaETurmaEBimestre(string[] turmasCodigo, string[] componentesCurricularesId, long tipoCalendarioId, int[] bimestres, DateTime? dataMatriculaAluno = null, DateTime? dataSituacaoAluno = null)
         {
-            StringBuilder query = new StringBuilder();
-            query.AppendLine("with lista as (");
-            query.AppendLine(@"select distinct a.id, 
-                                               a.disciplina_id as ComponenteCurricularCodigo, 
-                                               a.turma_id as TurmaCodigo, p.bimestre as Bimestre,
-                                               a.quantidade 
-                                  from aula a 
-                                    inner join registro_frequencia rf on 
-                                        rf.aula_id = a.id 
+            var query = new StringBuilder();
+            query.AppendLine(@"select a.disciplina_id as ComponenteCurricularCodigo, a.turma_id as TurmaCodigo, 
+                               p.bimestre as Bimestre, p.periodo_inicio as PeriodoInicio, p.periodo_fim as PeriodoFim,
+                               COALESCE(SUM(a.quantidade),0) AS AulasQuantidade from 
+                                    aula a 
+                                    inner join registro_frequencia_aluno rfa on 
+                                    rfa.aula_id = a.id 
                                     inner join periodo_escolar p on 
-                                        a.tipo_calendario_id = p.tipo_calendario_id 
-                                  where not a.excluido 
+                                    a.tipo_calendario_id = p.tipo_calendario_id 
+                                    where not a.excluido 
+                                    and not rfa.excluido
                                     and a.tipo_calendario_id = @tipoCalendarioId
-                                    and a.data_aula between p.periodo_inicio and p.periodo_fim ");
+                                    and a.data_aula::date between p.periodo_inicio and p.periodo_fim ");
 
             if (componentesCurricularesId.Length > 0)
                 query.AppendLine("and a.disciplina_id = any(@componentesCurricularesId) ");

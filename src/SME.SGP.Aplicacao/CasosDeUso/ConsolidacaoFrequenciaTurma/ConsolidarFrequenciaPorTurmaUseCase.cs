@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -21,22 +22,26 @@ namespace SME.SGP.Aplicacao
             try
             {
                 filtro = mensagem.ObterObjetoMensagem<FiltroConsolidacaoFrequenciaTurma>();
-                var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ? 
-                    await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) : 
+                var turma = !string.IsNullOrWhiteSpace(filtro.TurmaCodigo) ?
+                    await mediator.Send(new ObterTurmaPorCodigoQuery(filtro.TurmaCodigo)) :
                     await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
 
                 if (turma != null)
                 {
+                    var anoAnterior = turma.AnoLetivo < DateTime.Today.Year;
+
                     var alunos = await mediator
-                        .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, turma.AnoLetivo.Equals(DateTime.Today.Year))); 
-                    
+                        .Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, anoAnterior));
+
                     if (filtro.PercentualFrequenciaMinimo == 0)
                     {
-                        var parametro = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(turma.ModalidadeCodigo == Dominio.Modalidade.EducacaoInfantil ? Dominio.TipoParametroSistema.PercentualFrequenciaMinimaInfantil : Dominio.TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo));
-                        filtro.PercentualFrequenciaMinimo = double.Parse(parametro.Valor);                            
+                        var parametro = await mediator
+                            .Send(new ObterParametroSistemaPorTipoEAnoQuery(turma.ModalidadeCodigo == Modalidade.EducacaoInfantil ? TipoParametroSistema.PercentualFrequenciaMinimaInfantil : TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo));
+
+                        filtro.PercentualFrequenciaMinimo = double.Parse(parametro.Valor);
                     }
-                    
-                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, turma.AnoLetivo.Equals(DateTime.Today.Year) ? alunos : alunos.Where(a => !a.Inativo));
+
+                    await ConsolidarFrequenciaAlunos(turma.Id, turma.CodigoTurma, filtro.PercentualFrequenciaMinimo, anoAnterior ? alunos : alunos.Where(a => !a.Inativo), anoAnterior);
                 }
 
                 return true;
@@ -45,16 +50,48 @@ namespace SME.SGP.Aplicacao
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand("Consolidar Frequencia Por Turma UseCase", LogNivel.Critico, LogContexto.Frequencia, ex.Message));
                 throw;
-            }            
+            }
         }
 
-        private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos)
+        private async Task ConsolidarFrequenciaAlunos(long turmaId, string turmaCodigo, double percentualFrequenciaMinimo, IEnumerable<AlunoPorTurmaResposta> alunos, bool anoAnterior)
         {
             var frequenciaTurma = await mediator.Send(new ObterFrequenciaGeralPorTurmaQuery(turmaCodigo));
-            var codigosAlunos = alunos.Select(a => a.CodigoAluno);
-            var frequenciasConsideradas = frequenciaTurma?.Where(f => codigosAlunos.Contains(f.AlunoCodigo));
-            var quantidadeReprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia < percentualFrequenciaMinimo).Count() ?? 0;
-            var quantidadeAprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia >= percentualFrequenciaMinimo).Count() ?? 0;
+
+            var frequenciasConsideradas = from ft in frequenciaTurma
+                                          join a in alunos
+                                          on ft.AlunoCodigo equals a.CodigoAluno
+                                          where (anoAnterior && !a.Inativo && a.DataMatricula.Date <= ft.PeriodoFim.Date) ||
+                                                (!anoAnterior && a.DataMatricula.Date <= ft.PeriodoFim.Date)
+                                          select ft;
+
+            var quantidadeReprovados = 0;
+            var quantidadeAprovados = 0;
+
+            if (anoAnterior)
+            {
+                var frequenciasAgrupadasPorAluno = frequenciasConsideradas.GroupBy(f => f.AlunoCodigo);
+                var listaAlunoPercentualGeral = (from fa in frequenciasAgrupadasPorAluno
+                                                 where fa.Any(f => f.TotalAulas > 0)
+                                                 select new
+                                                 {
+                                                     codigoAluno = fa.Key,
+                                                     totalAulas = Convert.ToDouble(fa.Sum(f => f.TotalAulas)),
+                                                     totalAusencias = Convert.ToDouble(fa.Sum(f => f.TotalAusencias) - fa.Sum(f => f.TotalCompensacoes))
+                                                 })
+                                                 .Select(fa => new
+                                                 {
+                                                     fa.codigoAluno,
+                                                     percentualTotal = Math.Round(100 - ((fa.totalAusencias / fa.totalAulas) * 100))
+                                                 });
+
+                quantidadeReprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal < percentualFrequenciaMinimo);
+                quantidadeAprovados = listaAlunoPercentualGeral.Count(fg => fg.percentualTotal >= percentualFrequenciaMinimo);
+            }
+            else
+            {
+                quantidadeReprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia < percentualFrequenciaMinimo).Count() ?? 0;
+                quantidadeAprovados = frequenciasConsideradas?.Where(c => c.PercentualFrequencia >= percentualFrequenciaMinimo).Count() ?? 0;
+            }
 
             await RegistraConsolidacaoFrequenciaTurma(turmaId, quantidadeAprovados, quantidadeReprovados);
         }
