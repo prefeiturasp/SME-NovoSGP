@@ -124,7 +124,7 @@ namespace SME.SGP.Aplicacao
 
             if (aulasParaVisualizar != null)
             {
-                if (componentesCurricularesDoProfessor != null)
+                if (componentesCurricularesDoProfessor != null && componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0"))
                 {
                     var componentesCorrelatos = (from c in componentesCurricularesDoProfessor
                                                  from a in aulasParaVisualizar
