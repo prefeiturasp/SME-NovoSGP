@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MailKit.Security;
+using MediatR;
 using Newtonsoft.Json;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Aplicacao.Integracoes.Respostas;
@@ -88,7 +89,7 @@ namespace SME.SGP.Aplicacao
 
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
 
-            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));            
+            var dataInicioNovoSGP = await mediator.Send(new ObterParametroSistemaPorTipoQuery(TipoParametroSistema.DataInicioSGP));
 
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(codigoTurma));
 
@@ -99,14 +100,14 @@ namespace SME.SGP.Aplicacao
             {
                 var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
                 var componenteTerritorio = disciplinas.Any(a => a.TerritorioSaber);
-                var componentesEol = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray(), componenteTerritorio, turma.CodigoTurma));
+
+                var componentesEol = await mediator
+                    .Send(new ObterComponentesCurricularesPorIdsQuery(disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray(), componenteTerritorio, turma.CodigoTurma));
 
                 if (disciplinas.Any() || disciplinas != null)
                 {
-                    foreach(var componente in componentesEol)
+                    foreach (var componente in componentesEol)
                     {
-                        var descricao = componentesEol.SingleOrDefault(c => c.CodigoComponenteCurricular == componente.Id)?.Nome;
-
                         disciplinasEol.Add(new DisciplinaResposta
                         {
                             CodigoComponenteCurricular = componente.CodigoComponenteCurricular,
@@ -127,7 +128,27 @@ namespace SME.SGP.Aplicacao
                     disciplinas = disciplinasEol.OrderBy(x => x.Nome);
                 }
 
-                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas?.DistinctBy(s => s.Nome) : disciplinas;
+                var componentesCurricularesAtribuicaoEol = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+
+                foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
+                {
+                    disciplinas = disciplinas.Append(new DisciplinaResposta()
+                    {
+                        CodigoComponenteCurricular = componenteAtual.Codigo,                        
+                        Compartilhada = componenteAtual.Compartilhada,
+                        CodigoComponenteCurricularPai = componenteAtual.CodigoComponenteCurricularPai,
+                        CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
+                        Nome = componenteAtual.Descricao,
+                        Regencia = componenteAtual.Regencia,
+                        RegistroFrequencia = componenteAtual.RegistraFrequencia,
+                        TerritorioSaber = componenteAtual.TerritorioSaber,
+                        LancaNota = componenteAtual.LancaNota,
+                        TurmaCodigo = componenteAtual.TurmaCodigo
+                    });
+                }
+
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas?.DistinctBy(s => s.Nome).OrderBy(s => s.Nome) : disciplinas.OrderBy(s => s.Nome);
 
                 disciplinasDto = MapearParaDto(disciplinasEolTratadas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
@@ -135,7 +156,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente));
 
-                if(componentesCurriculares == null)
+                if (componentesCurriculares == null)
                     componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(codigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual, realizarAgrupamentoComponente, false));
 
                 disciplinasDto = (await repositorioComponenteCurricular.ObterDisciplinasPorIds(
@@ -167,14 +188,14 @@ namespace SME.SGP.Aplicacao
             if (turma.ModalidadeCodigo == Modalidade.EJA && disciplinasDto.Any())
             {
                 var idComponenteInformaticaOie = 1060;
-                
+
                 var idComponenteLeituraOsl = 1061;
-                
-                foreach(var disciplina in disciplinasDto)
+
+                foreach (var disciplina in disciplinasDto)
                 {
                     disciplina.PossuiObjetivos = false;
                     if (disciplina.CodigoComponenteCurricular == idComponenteInformaticaOie || disciplina.CodigoComponenteCurricular == idComponenteLeituraOsl)
-                        disciplina.RegistraFrequencia = false;                    
+                        disciplina.RegistraFrequencia = false;
                 }
             }
 
@@ -262,7 +283,7 @@ namespace SME.SGP.Aplicacao
             var componentesCurriculares = await mediator.Send(new ObterComponentesRegenciaPorAnoQuery(
                                                                     turma.TipoTurno == 4 || turma.TipoTurno == 5 ? turma.AnoTurmaInteiro : 0));
 
-            return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));            
+            return MapearComponentes(componentesCurriculares.OrderBy(c => c.Descricao));
         }
 
         public async Task<DisciplinaDto> ObterDisciplina(long disciplinaId)
@@ -441,7 +462,7 @@ namespace SME.SGP.Aplicacao
                     TerritorioSaber = componenteCurricular.TerritorioSaber,
                     Compartilhada = componenteCurricular.Compartilhada,
                     LancaNota = componenteCurricular.LancaNota,
-                    
+
                 };
         }
 
@@ -522,14 +543,14 @@ namespace SME.SGP.Aplicacao
 
             if (regencia)
             {
-                if(!codigoTurma.Equals(""))
+                if (!codigoTurma.Equals(""))
                 {
                     var regencias = await mediator.Send(new ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(codigoTurma));
                     return CJ ? disciplinas.Where(x => regencias.Any(c => c.CodigoComponenteCurricular == x.CodigoComponenteCurricular))
                         : disciplinas.Where(x => x.Regencia && regencias.Any(c => c.CodigoComponenteCurricular == x.CodigoComponenteCurricular));
-                }                
+                }
                 return CJ ? disciplinas : disciplinas.Where(x => x.Regencia);
-            }                
+            }
 
             return disciplinas.Where(x => x.CodigoComponenteCurricular == codigoDisciplina);
         }
