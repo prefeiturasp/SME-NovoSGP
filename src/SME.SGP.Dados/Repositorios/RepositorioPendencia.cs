@@ -333,15 +333,23 @@ namespace SME.SGP.Dados.Repositorios
                 if (!string.IsNullOrEmpty(turmaCodigo))
                     query.Append(" AND t.turma_id = @turmaCodigo ");                
             }
-            
-            return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
-                pendenciasIdsAula,
-                pendenciasIdsCalendario,
-                pendenciasIdsProfessor,
-                pendenciasIdsRegistroIndividual,
-                pendenciasIdsDevolutiva,
-                pendenciasIds,
-                turmaCodigo });
+
+            try
+            {
+                return await database.Conexao.QueryAsync<long>(query.ToString(), new { pendenciasIdsFechamento,
+                    pendenciasIdsAula,
+                    pendenciasIdsCalendario,
+                    pendenciasIdsProfessor,
+                    pendenciasIdsRegistroIndividual,
+                    pendenciasIdsDevolutiva,
+                    pendenciasIds,
+                    turmaCodigo });
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         public async Task<long[]> ObterIdsPendenciasPorPlanoAEEId(long planoAeeId)

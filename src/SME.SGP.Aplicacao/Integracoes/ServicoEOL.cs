@@ -639,13 +639,23 @@ namespace SME.SGP.Aplicacao.Integracoes
 
                 if (!dadosUsuarioLogado.EhProfessorCj() && !ehGestorEscolar)
                     throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");
-                
+
                 if (ehGestorEscolar)
                 {
-                    var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId,
-                        new List<int> { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                    bool ehFuncionarioGestorEscolarDaUe = false;
+                    if (codigoRF.EhLoginCpf())
+                    {
+                        var funcionariosExternosDaUe = await mediator.Send(new ObterFuncionariosFuncoesExternasPorUeFuncoesExternasQuery(ueId,
+                            new List<int> { (int)FuncaoExterna.AD, (int)FuncaoExterna.Diretor, (int)FuncaoExterna.CP }, dreId));
+                        ehFuncionarioGestorEscolarDaUe = funcionariosExternosDaUe.Any(f => f.FuncionarioCpf == dadosUsuarioLogado.CodigoRf);
+                    }
+                    else
+                    {
+                        var funcionariosDaUe = await mediator.Send(new ObterFuncionariosCargosPorUeCargosQuery(ueId,
+                            new List<int> { (int)Cargo.AD, (int)Cargo.Diretor, (int)Cargo.CP }, dreId));
+                        ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
+                    }
                     
-                    var ehFuncionarioGestorEscolarDaUe = funcionariosDaUe.Any(f => f.FuncionarioRF == dadosUsuarioLogado.CodigoRf);
 
                     if (ehFuncionarioGestorEscolarDaUe)
                     {
@@ -655,7 +665,7 @@ namespace SME.SGP.Aplicacao.Integracoes
                 }     
                 else
                 {
-                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF));
+                    var obterAtribuicoesCJAtivas = await mediator.Send(new ObterAtribuicoesCJAtivasQuery(codigoRF, false));
 
                     if (!obterAtribuicoesCJAtivas.Any())
                         throw new NegocioException($"Não foi encontrado professor com RF {codigoRF}");

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDadosSrmPaeeColaborativoEolQueryHandler : IRequestHandler<ObterDadosSrmPaeeColaborativoEolQuery,IEnumerable<DadosSrmPaeeColaborativoEolDto>>
+    public class ObterDadosSrmPaeeColaborativoEolQueryHandler : IRequestHandler<ObterDadosSrmPaeeColaborativoEolQuery,IEnumerable<SrmPaeeColaborativoSgpDto>>
     {
         public ObterDadosSrmPaeeColaborativoEolQueryHandler(IHttpClientFactory httpClientFactory, IMediator mediator)
         {
@@ -20,16 +21,22 @@ namespace SME.SGP.Aplicacao
 
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IMediator mediator;
-        public async Task<IEnumerable<DadosSrmPaeeColaborativoEolDto>> Handle(ObterDadosSrmPaeeColaborativoEolQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<SrmPaeeColaborativoSgpDto>> Handle(ObterDadosSrmPaeeColaborativoEolQuery request, CancellationToken cancellationToken)
         {
+            var dados = new List<SrmPaeeColaborativoSgpDto>();
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
-            var url = $"srm-paee/aluno/{request.CodigoAluno}";
+            var url = $"alunos/srm-paee/aluno/{request.CodigoAluno}";
             
             var resposta = await httpClient.GetAsync(url);
             if(resposta.IsSuccessStatusCode)
             {
                 var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<DadosSrmPaeeColaborativoEolDto>>(json);
+                var dtoEol =  (JsonConvert.DeserializeObject<IEnumerable<DadosSrmPaeeColaborativoEolDto>>(json)).ToList();
+                
+                
+                if(dtoEol.Any())
+                    await MontarDados(dtoEol,dados);
+                return dados;
             }
             else 
             {
@@ -39,5 +46,27 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException(erro);
             }
         }
+        private async Task MontarDados(List<DadosSrmPaeeColaborativoEolDto> dadosSrmPaeeColaborativoEolDtos, List<SrmPaeeColaborativoSgpDto> srmPaeeColaborativoSgpDtos)
+        {
+            var idsTurmas = dadosSrmPaeeColaborativoEolDtos.Select(x => x.CodigoTurma.ToString()).ToArray();
+            var turmas = (await mediator.Send(new ObterTurmasPorCodigosQuery(idsTurmas))).ToList();
+
+            var idsUes = dadosSrmPaeeColaborativoEolDtos.Select(x => x.CodigoEscola).ToArray();
+            var ues = (await mediator.Send(new ObterUesComDrePorCodigoUesQuery(idsUes))).ToList();
+
+            foreach (var dadoEol in dadosSrmPaeeColaborativoEolDtos)
+            {
+                var dados = new SrmPaeeColaborativoSgpDto
+                {
+                    TurmaTurno = turmas.FirstOrDefault(x => x.CodigoTurma == dadoEol.CodigoTurma.ToString())?.NomeFiltro + " - " + dadoEol.Turno,
+                    ComponenteCurricular = dadoEol.Componente,
+                    DreUe = ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)!.Dre.Abreviacao + " - "+ ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)?.TipoEscola.ShortName() + " "
+                            + ues.FirstOrDefault(x => x.CodigoUe == dadoEol.CodigoEscola)?.Nome
+                };
+                
+                srmPaeeColaborativoSgpDtos.Add(dados);
+            }
+        }
+        
     }
 }

@@ -17,9 +17,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select obrigatorio from questao where id = @questaoId";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync(query, new { questaoId });
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new {questaoId});
         }
-
-        
     }
 }

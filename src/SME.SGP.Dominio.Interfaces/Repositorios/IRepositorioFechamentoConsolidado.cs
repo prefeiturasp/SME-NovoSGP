@@ -10,5 +10,6 @@ namespace SME.SGP.Dominio
         Task<IEnumerable<FechamentoConsolidadoComponenteTurma>> ObterFechamentosConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacaoFechamento);
         Task<FechamentoConsolidadoComponenteTurma> ObterFechamentoConsolidadoPorTurmaBimestreComponenteCurricularAsync(long turmaId, long componenteCurricularId, int? bimestre);
         Task<IEnumerable<ConsolidacaoTurmaComponenteCurricularDto>> ObterComponentesFechamentoConsolidadoPorTurmaBimestre(long turmaId, int bimestre, int[] situacoesFechamento);
+        Task ExcluirConsolidacaoPorTurmaIdEBimestre(long turmaId, int bimestre);
     }
 }

@@ -353,11 +353,21 @@ namespace SME.SGP.Dados.Repositorios
                         turma_id as TurmaId,
                         aluno_codigo as AlunoCodigo,
                         aluno_nome as AlunoNome,
-                        situacao
+                        situacao,
+                        situacao_matricula_aluno as SituacaoMatriculaAluno
                         from encaminhamento_naapa 
                         where situacao <> @situacao and not excluido";
 
             return await database.Conexao.QueryAsync<EncaminhamentoNAAPADto>(query, new { situacao = (int)SituacaoNAAPA.Encerrado });
+        }
+
+        public Task<EncaminhamentoNAAPA> ObterCabecalhoEncaminhamentoPorId(long id)
+        {
+            var query = @" select ea.*
+                            from encaminhamento_naapa ea
+                           where ea.id = @id";
+
+            return (database.Conexao.QueryFirstOrDefaultAsync<EncaminhamentoNAAPA>(query, new { id }));
         }
     }
 }

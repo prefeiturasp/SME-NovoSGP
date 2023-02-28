@@ -189,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     return notificacao;
                 }, param: new { codigo });
-            
+
             return notificacoes.FirstOrDefault();
         }
 
@@ -218,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by codigo desc");
             query.AppendLine("limit 1");
 
-            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano });
+            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano }, commandTimeout: 90);
             return codigos.FirstOrDefault();
         }
 

@@ -31,4 +31,5 @@ namespace SME.SGP.Dominio
         public readonly static Guid PERFIL_ASSISTENTE_SOCIAL = Guid.Parse("68e1e074-37d6-e911-abd6-f81654fe895d");
         public readonly static Guid PERFIL_COORDENADOR_NAAPA = Guid.Parse("65e1e074-37d6-e911-abd6-f81654fe895d");
     }
+
 }

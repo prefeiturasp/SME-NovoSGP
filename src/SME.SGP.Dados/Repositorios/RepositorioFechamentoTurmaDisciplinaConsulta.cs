@@ -49,7 +49,7 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId,
-            long[] disciplinasId, int bimestre = 0)
+            long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null)
         {
             var query = new StringBuilder(@"with lista as (
                         select f.*, fa.*, ft.*, p.*,
@@ -67,9 +67,12 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and (f.disciplina_id = ANY(@disciplinasId) or cc.id = ANY(@disciplinasId))");
 
             if (bimestre > 0)
-                query.AppendLine("and p.bimestre = @bimestre ");
+                query.AppendLine("and p.bimestre = @bimestre");
             else if (bimestre == 0)
-                query.AppendLine("and ft.periodo_escolar_id is null");
+                query.AppendLine(tipoCalendario.HasValue ? " and (ft.periodo_escolar_id is null  or p.tipo_calendario_id = @tipoCalendario)" : " and ft.periodo_escolar_id is null");
+
+            if (bimestre > 0 && tipoCalendario.HasValue)
+                query.AppendLine(" and p.tipo_calendario_id = @tipoCalendario");
 
             query.AppendLine(") select * from lista where sequencia = 1;");
 
@@ -95,7 +98,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     fechamentoTurmaDisciplinaLista.FechamentoAlunos.Add(fechamentoAluno);
                     return fechamentoTurmaDiscplina;
-                }, new { turmaId, disciplinasId, bimestre });
+                }, new { turmaId, disciplinasId, bimestre, tipoCalendario });
 
             return fechammentosTurmaDisciplina;
         }
@@ -659,5 +662,35 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaSituacaoDto>(sqlQuery, new { turmaId });
         }
+
+        public async Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre)
+        {
+            var query = new StringBuilder(@"select 	f.id,
+		                                    f.disciplina_id as DisciplinaId,
+		                                    f.situacao as SituacaoFechamento, 
+		                                    ft.turma_id as TurmaId,
+		                                    t.turma_id as CodigoTurma,
+		                                    t.nome as NomeTurma,
+		                                    p.periodo_inicio as PeriodoInicio,
+		                                    p.periodo_fim  as PeriodoFim,
+		                                    p.bimestre as bimestre,
+		                                    f.justificativa,
+		                                    f.criado_rf as CriadoRF,
+		                                    f.alterado_rf as AlteradoRF,
+		                                    u.id as UsuarioId,
+		                                    t.tipo_turma as TipoTurma
+                                     from fechamento_turma_disciplina f
+                                    inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                                    inner join periodo_escolar p on p.id = ft.periodo_escolar_id
+                                    inner join turma t on t.id = ft.turma_id
+                                    left join usuario u on u.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                    where t.turma_id = @turmaCodigo
+                                    and f.disciplina_id = @disciplinaId
+                                    and p.bimestre = @bimestre");
+            
+            return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
+                new { turmaCodigo, disciplinaId, bimestre });
+        }
+        
     }
 }

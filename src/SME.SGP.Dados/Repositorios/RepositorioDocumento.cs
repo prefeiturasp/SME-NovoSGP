@@ -135,7 +135,7 @@ namespace SME.SGP.Dados.Repositorios
             return true;
         }
 
-        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long documentoId)
+        public async Task<bool> ValidarUsuarioPossuiDocumento(long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, long anoLetivo,long documentoId)
         {
             const string query = @"select distinct 1 from documento 
                                         inner join classificacao_documento cd on documento.classificacao_documento_id = cd.id
@@ -145,10 +145,11 @@ namespace SME.SGP.Dados.Repositorios
                                     documento.ue_id = @ueId and
                                     cd.tipo_documento_id = @tipoDocumentoId and
                                     cd.tipo_documento_id = @tipoDocumentoId and
+                                    documento.ano_letivo = @anoLetivo and
                                     not cd.ehregistromultiplo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query,
-                new { tipoDocumentoId, classificacaoId, usuarioId, ueId, documentoId });
+                new { tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo,documentoId });
         }
 
         public async Task<ObterDocumentoResumidoDto> ObterPorIdCompleto(long documentoId)

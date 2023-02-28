@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (!request.Usuario.EhProfessorCj())
                 return await mediator.Send(new VerificaPodePersistirTurmaDisciplinaEOLQuery(request.Usuario, request.TurmaId, request.ComponenteCurricularId, request.Data));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.Usuario.CodigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(request.Usuario.CodigoRf, request.Historico);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }

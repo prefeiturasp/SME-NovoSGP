@@ -15,12 +15,16 @@ namespace SME.SGP.Aplicacao
         {
             this.mediator = mediator ?? throw new System.ArgumentNullException(nameof(mediator));
         }
-        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, bool consideraNovasModalidades, bool consideraHistorico = false)
+        public async Task<IEnumerable<OpcaoDropdownDto>> Executar(string codigoUe, bool consideraNovasModalidades, bool consideraHistorico = false, int anoLetivo = 0)
         {
             var login = await mediator.Send(new ObterLoginAtualQuery());
             var perfil = await mediator.Send(new ObterPerfilAtualQuery());
-            var modalidadesQueSeraoIgnoradas = await mediator.Send(new ObterNovasModalidadesPorAnoQuery(DateTime.Now.Year, consideraNovasModalidades));
-            return await mediator.Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modalidadesQueSeraoIgnoradas, consideraHistorico));
+
+            var modalidadesQueSeraoIgnoradas = await mediator
+                .Send(new ObterNovasModalidadesPorAnoQuery(anoLetivo > 0 ? anoLetivo : DateTime.Today.Year, consideraNovasModalidades));
+
+            return await mediator
+                .Send(new ObterFiltroRelatoriosModalidadesPorUeAbrangenciaQuery(codigoUe, login, perfil, modalidadesQueSeraoIgnoradas, consideraHistorico, anoLetivo));
         }
     }
 }

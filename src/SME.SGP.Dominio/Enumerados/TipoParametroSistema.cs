@@ -69,6 +69,7 @@ namespace SME.SGP.Dominio
         DataInicioGeracaoPendencias = 34,
         GerarPendenciaAulasDiasNaoLetivos = 35,
         GerarPendenciaDiasLetivosInsuficientes = 36,
+        TiposUEIgnorarGeracaoPendencia = 95,
 
         // Pendencias Fechamento
         DiasGeracaoPendenciaAvaliacao = 37,

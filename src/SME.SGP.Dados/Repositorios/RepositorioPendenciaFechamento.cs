@@ -214,5 +214,18 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryFirstOrDefaultAsync<DetalhamentoPendenciaAulaDto>(query, new { pendenciaId });
         }
+
+        public async Task<IEnumerable<long>> ObterIdPendenciaFechamentoAprovadaResolvida(long fechamentoId, TipoPendencia tipoPendencia)
+        {
+            var situacao = (int)SituacaoPendencia.Pendente;
+            var query = @"select pf.id          
+                           from pendencia p
+                           inner join pendencia_fechamento pf on pf.pendencia_id = p.id
+                           where p.situacao <> @situacao 
+                            and p.tipo = @tipoPendencia
+                            and pf.fechamento_turma_disciplina_id = @fechamentoId";
+
+            return await database.Conexao.QueryAsync<long>(query, new { situacao, fechamentoId, tipoPendencia = (int)tipoPendencia });
+        }
     }
 }

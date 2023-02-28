@@ -115,6 +115,10 @@ namespace SME.SGP.Aplicacao
         private async Task<IEnumerable<PendenciaDto>> ObterPendencias(Pendencia pendencia, string codigoRf)
         {
             return pendencia.EhPendenciaAula() ?
+                await ObterPendenciasAulasFormatadas(pendencia) :
+                pendencia.EhPendenciaCadastroEvento () ?
+                    await ObterPendenciasAulasFormatadas(pendencia) :
+                pendencia.EhPendenciaCalendarioUe () ?
                     await ObterPendenciasAulasFormatadas(pendencia) :
                 pendencia.EhPendenciaAusenciaAvaliacaoProfessor() ?
                     await ObterPendenciaAusenciaAvaliacaoProfessor(pendencia) :
@@ -130,7 +134,7 @@ namespace SME.SGP.Aplicacao
                     await ObterPendenciasProfessorFormatadas(pendencia) :
                 pendencia.EhPendenciaDevolutiva() ?
                     await ObterPendenciasDevolutivaFormatadas(pendencia) :
-                new List<PendenciaDto>();
+                    new List<PendenciaDto>();
         }
         
         private async Task<IEnumerable<PendenciaDto>> ObterPendenciasProfessorFormatadas(Pendencia pendencia)

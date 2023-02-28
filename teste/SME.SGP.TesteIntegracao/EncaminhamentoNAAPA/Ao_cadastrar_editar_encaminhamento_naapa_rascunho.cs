@@ -2,11 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shouldly;
+using SME.SGP.Aplicacao;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dto;
 using SME.SGP.Infra;
+using SME.SGP.TesteIntegracao.ConselhoDeClasse.ServicosFakes;
+using SME.SGP.TesteIntegracao.EncaminhamentoNAAPA.ServicosFakes;
+using SME.SGP.TesteIntegracao.ServicosFakes;
 using SME.SGP.TesteIntegracao.Setup;
 using Xunit;
 
@@ -15,9 +23,23 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
     public class Ao_cadastrar_editar_encaminhamento_naapa_rascunho: EncaminhamentoNAAPATesteBase
     {
         
+        private const string RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO = "[{\"dreUe\":\"DRE - EMEF TESTE 01, TESTE.\", \"turma\":\"EF - XX - Tarde\", \"componenteCurricular\":\"XYZ - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGT6Vh\"}]";
+        private const string RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_EDICAO = "[{\"dreUe\":\"DRE - EMEF TESTE 01, TESTE.\", \"turma\":\"EF - XX - Tarde\", \"componenteCurricular\":\"XYZ - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGT6Vh\"}, {\"dreUe\":\"DRE - EMEF TESTE 02, TESTE 02.\", \"turma\":\"EF - XX - Noite\", \"componenteCurricular\":\"ABC - RECUPERACAO DE APRENDIZAGENS\", \"id\":\"sB5UHnGH9Xy\"}]";
+        private const SituacaoMatriculaAluno SITUACAO_MATRICULA_ALUNO_FIXA = SituacaoMatriculaAluno.Concluido;
+        private const SituacaoMatriculaAluno SITUACAO_MATRICULA_ALUNO_TURMA_ID_1 = SituacaoMatriculaAluno.Ativo;
+
         public Ao_cadastrar_editar_encaminhamento_naapa_rascunho(CollectionFixture collectionFixture) : base(collectionFixture)
         { }
-        
+
+        protected override void RegistrarFakes(IServiceCollection services)
+        {
+            base.RegistrarFakes(services);
+
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorTurmaAlunoCodigoQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorTurmaAlunoCodigoQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTurmaCodigoPorIdQuery, string>), typeof(ObterTurmaCodigoPorIdQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEolQuery, AlunoPorTurmaResposta>), typeof(ObterAlunoPorCodigoEolQueryHandlerFakeNAAPA), ServiceLifetime.Scoped));
+        }
+
         [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar encaminhamento NAAPA - Concluído")]
         public async Task Ao_cadastrar_encaminhamento_rascunho_concluido()
         {
@@ -80,7 +102,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
             encaminhamentoNAAPA.Count.ShouldBe(1);
-            
+            encaminhamentoNAAPA.FirstOrDefault()?.SituacaoMatriculaAluno.Equals(SITUACAO_MATRICULA_ALUNO_TURMA_ID_1).ShouldBeTrue();
+
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
             encaminhamentoNAAPASecao.FirstOrDefault()?.SecaoEncaminhamentoNAAPAId.ShouldBe(1);
@@ -258,7 +281,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
             encaminhamentoNAAPA.FirstOrDefault()?.Situacao.Equals(SituacaoNAAPA.Rascunho).ShouldBeTrue();
             encaminhamentoNAAPA.Count.ShouldBe(1);
-            
+            encaminhamentoNAAPA.FirstOrDefault()?.SituacaoMatriculaAluno.Equals(SITUACAO_MATRICULA_ALUNO_FIXA).ShouldBeTrue();
+
             var encaminhamentoNAAPASecao = ObterTodos<EncaminhamentoNAAPASecao>();
             encaminhamentoNAAPASecao.ShouldNotBeNull();
             encaminhamentoNAAPASecao.FirstOrDefault().SecaoEncaminhamentoNAAPAId.ShouldBe(1);
@@ -374,6 +398,148 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
             respostasEncaminhamentoNAAPASecao2.Select(resposta => resposta.RespostaId).ShouldContain(ID_OPCAO_RESPOSTA_ADOECE_COM_FREQUENCIA);
         }
 
+
+        [Fact(DisplayName = "Encaminhamento NAAPA - Cadastrar/Editar Turmas de Programa em Encaminhamento NAAPA")]
+        public async Task Ao_cadastrar_editar_turma_programa_encaminhamento()
+        {
+            var filtroNAAPA = new FiltroNAAPADto()
+            {
+                Perfil = ObterPerfilCP(),
+                TipoCalendario = ModalidadeTipoCalendario.FundamentalMedio,
+                Modalidade = Modalidade.Fundamental,
+                AnoTurma = "8",
+                DreId = 1,
+                CodigoUe = "1",
+                TurmaId = TURMA_ID_1,
+                Situacao = (int)SituacaoNAAPA.Rascunho,
+                Prioridade = NORMAL
+            };
+
+            await CriarDadosBase(filtroNAAPA);
+
+            var registrarEncaminhamentoNaapaUseCase = ObterServicoRegistrarEncaminhamento();
+
+            var dataQueixa = DateTimeExtension.HorarioBrasilia().Date;
+
+            var encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            {
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoNAAPA.Rascunho,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno do naapa",
+                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                {
+                    new ()
+                    {
+                        SecaoId = 1,
+                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        {
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_DATA_ENTRADA_QUEIXA,
+                                Resposta = dataQueixa.ToString("dd/MM/yyyy"),
+                                TipoQuestao = TipoQuestao.Data
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_PRIORIDADE,
+                                Resposta = "1",
+                                TipoQuestao = TipoQuestao.Combo
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TURMAS_PROGRAMA,
+                                Resposta = RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO,
+                                TipoQuestao = TipoQuestao.TurmasPrograma
+                            }
+                        }
+                    }
+                }
+            };
+
+            var retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+
+            var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
+            encaminhamentoNAAPA.ShouldNotBeNull();
+            encaminhamentoNAAPA.Count.ShouldBe(1);
+
+            var questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
+            questaoEncaminhamentoNAAPA.ShouldNotBeNull();
+            questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_DATA_ENTRADA_QUEIXA).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_PRIORIDADE).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_TURMAS_PROGRAMA).ShouldBeTrue();
+
+            var respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
+            respostaEncaminhamentoNAAPA.ShouldNotBeNull();
+            respostaEncaminhamentoNAAPA.Count.ShouldBe(3);
+            respostaEncaminhamentoNAAPA.Any(a => a.Texto == RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO).ShouldBeTrue();
+
+            encaminhamentosNaapaDto = new EncaminhamentoNAAPADto()
+            {
+                Id = 1,
+                TurmaId = TURMA_ID_1,
+                Situacao = SituacaoNAAPA.Rascunho,
+                AlunoCodigo = ALUNO_CODIGO_1,
+                AlunoNome = "Nome do aluno do naapa",
+                Secoes = new List<EncaminhamentoNAAPASecaoDto>()
+                {
+                    new ()
+                    {
+                        SecaoId = 1,
+                        Questoes = new List<EncaminhamentoNAAPASecaoQuestaoDto>()
+                        {
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_DATA_ENTRADA_QUEIXA,
+                                Resposta = dataQueixa.ToString("dd/MM/yyyy"),
+                                TipoQuestao = TipoQuestao.Data,
+                                RespostaEncaminhamentoId = 1,
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_PRIORIDADE,
+                                Resposta = "1",
+                                TipoQuestao = TipoQuestao.Combo,
+                                RespostaEncaminhamentoId = 2,
+                            },
+                            new ()
+                            {
+                                QuestaoId = ID_QUESTAO_TURMAS_PROGRAMA,
+                                Resposta = RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_EDICAO,
+                                TipoQuestao = TipoQuestao.TurmasPrograma,
+                                //RespostaEncaminhamentoId = 3,     Edição sem passagem de Id para salvar resposta anterior como "Excluido"
+                            }
+                        }
+                    }
+                }
+            };
+
+            retorno = await registrarEncaminhamentoNaapaUseCase.Executar(encaminhamentosNaapaDto);
+            retorno.ShouldNotBeNull();
+            retorno.Id.ShouldBe(1);
+
+            encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>();
+            encaminhamentoNAAPA.ShouldNotBeNull();
+            encaminhamentoNAAPA.Count.ShouldBe(1);
+
+            questaoEncaminhamentoNAAPA = ObterTodos<QuestaoEncaminhamentoNAAPA>();
+            questaoEncaminhamentoNAAPA.ShouldNotBeNull();
+            questaoEncaminhamentoNAAPA.Count.ShouldBe(3);
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_DATA_ENTRADA_QUEIXA).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_PRIORIDADE).ShouldBeTrue();
+            questaoEncaminhamentoNAAPA.Any(a => a.QuestaoId == ID_QUESTAO_TURMAS_PROGRAMA).ShouldBeTrue();
+
+            respostaEncaminhamentoNAAPA = ObterTodos<RespostaEncaminhamentoNAAPA>();
+            respostaEncaminhamentoNAAPA.ShouldNotBeNull();
+            respostaEncaminhamentoNAAPA.Count.ShouldBe(4);
+            respostaEncaminhamentoNAAPA.Any(a => a.Texto == RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_INCLUSAO && a.Excluido).ShouldBeTrue();
+            respostaEncaminhamentoNAAPA.Any(a => a.Texto == RESPOSTA_TURMAS_PROGRAMA_ALUNO_EOL_EDICAO && !a.Excluido).ShouldBeTrue();
+
+        }
+
         private async Task GerarDadosEncaminhamentoNAAPA(DateTime dataQueixa)
         {
             await CriarEncaminhamentoNAAPA();
@@ -446,7 +612,8 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 AlunoNome = "Nome do aluno 1",
                 CriadoEm = DateTimeExtension.HorarioBrasilia(),
                 CriadoPor = SISTEMA_NOME,
-                CriadoRF = SISTEMA_CODIGO_RF
+                CriadoRF = SISTEMA_CODIGO_RF,
+                SituacaoMatriculaAluno = SITUACAO_MATRICULA_ALUNO_FIXA
             });
         }
     }

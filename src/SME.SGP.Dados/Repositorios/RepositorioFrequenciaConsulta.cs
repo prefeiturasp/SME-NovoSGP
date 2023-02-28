@@ -54,40 +54,45 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<AlunoComponenteCurricularDto>(query.ToString(), new { turmaCodigo, dataInicio, dataFim, componenteCurricularId,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
-        public IEnumerable<AlunosFaltososDto> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId)
+        public async Task<IEnumerable<AlunosFaltososDto>> ObterAlunosFaltosos(DateTime dataReferencia, long tipoCalendarioId, long ueId)
         {
-            var query = @"select a.TurmaCodigo
-	                     , a.ModalidadeCodigo
-	                     , a.Ano
-	                     , a.DataAula
-	                     , a.CodigoAluno
-	                     , Sum(a.Aulas) as QuantidadeAulas
-	                     , Sum(a.Ausencias) as QuantidadeFaltas
-                    from (
-	                    select a.turma_id as TurmaCodigo
-	                         , t.modalidade_codigo as modalidadeCodigo
-	                         , t.ano
-	                         , a.id as AulaId
-	                         , a.data_aula as DataAula
-	                         , a.quantidade as Aulas
-	                         , raa.codigo_aluno as CodigoAluno
-	                         , count(raa.id) as Ausencias
-	
-	                    from aula a
-	                      inner join turma t on t.turma_id = a.turma_id
-	                      left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = @tipoFrequencia
-	                    where not a.excluido
-	                      and a.data_aula >= @dataReferencia
-	                      and a.tipo_calendario_id = @tipoCalendarioId
-	                    group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
-                    ) a
-                    group by a.TurmaCodigo
-	                     , a.ModalidadeCodigo
-	                     , a.Ano
-	                     , a.DataAula
-	                     , a.CodigoAluno";
+            const string query = @"select a.TurmaCodigo
+	                                     , a.ModalidadeCodigo
+	                                     , a.Ano
+	                                     , a.DataAula
+	                                     , a.CodigoAluno
+	                                     , Sum(a.Aulas) as QuantidadeAulas
+	                                     , Sum(a.Ausencias) as QuantidadeFaltas
+                                    from (
+	                                    select a.turma_id as TurmaCodigo
+	                                         , t.modalidade_codigo as modalidadeCodigo
+	                                         , t.ano
+	                                         , a.id as AulaId
+	                                         , a.data_aula as DataAula
+	                                         , a.quantidade as Aulas
+	                                         , raa.codigo_aluno as CodigoAluno
+	                                         , count(raa.id) as Ausencias
+	                                    from aula a
+	                                      inner join turma t on t.turma_id = a.turma_id
+	                                      left join registro_frequencia_aluno raa on raa.aula_id = a.id and not raa.excluido and raa.valor = @tipoFrequencia
+	                                    where not a.excluido
+	                                      and a.data_aula >= @dataReferencia
+	                                      and a.tipo_calendario_id = @tipoCalendarioId
+	                                      and t.ue_id = @ueId
+	                                    group by a.turma_id, t.modalidade_codigo, t.ano, a.id, a.data_aula, a.quantidade, raa.codigo_aluno
+                                    ) a
+                                    group by a.TurmaCodigo
+	                                     , a.ModalidadeCodigo
+	                                     , a.Ano
+	                                     , a.DataAula
+	                                     , a.CodigoAluno";
 
-            return database.Conexao.Query<AlunosFaltososDto>(query, new { dataReferencia, tipoCalendarioId,tipoFrequencia = (int)TipoFrequencia.F });
+            return await database.Conexao.QueryAsync<AlunosFaltososDto>(query,
+                new
+                {
+                    dataReferencia, tipoCalendarioId, ueId,
+                    tipoFrequencia = (int)TipoFrequencia.F
+                });
         }
 
         public RegistroFrequenciaAulaDto ObterAulaDaFrequencia(long registroFrequenciaId)
@@ -164,6 +169,29 @@ namespace SME.SGP.Dados.Repositorios
                           WHERE a.quantidade = a.faltas";
 
             return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigos,tipoFrequencia = (int)TipoFrequencia.F });
+        }
+        
+        public async Task<IEnumerable<AusenciaAlunoDto>> ObterAusenciasPorAluno(string turmaCodigo, string disciplinaCodigo, DateTime[] datas, string alunoCodigo)
+        {
+            var query = @"SELECT a.codigo_aluno AS AlunoCodigo,
+                                 a.data_aula AS AulaData
+                          FROM
+                            (SELECT raa.codigo_aluno,
+                                    a.quantidade,
+                                    a.data_aula,
+                                    count(raa.id) AS faltas
+                             FROM registro_frequencia_aluno raa
+                             INNER JOIN aula a ON raa.aula_id = a.id AND raa.valor = @tipoFrequencia
+                             WHERE a.turma_id = @turmaCodigo
+                               AND a.disciplina_id = @disciplinaCodigo
+                               AND a.data_aula::date = ANY(@datas)
+                               AND raa.codigo_aluno = @alunoCodigo
+                             GROUP BY raa.codigo_aluno,
+                                      a.quantidade,
+                                      a.data_aula) a
+                          WHERE a.quantidade = a.faltas";
+
+            return await database.Conexao.QueryAsync<AusenciaAlunoDto>(query, new { turmaCodigo, disciplinaCodigo, datas, alunoCodigo,tipoFrequencia = (int)TipoFrequencia.F });
         }
 
         public async Task<IEnumerable<RecuperacaoParalelaFrequenciaDto>> ObterFrequenciaAusencias(string[] CodigoAlunos, string CodigoDisciplina, int Ano, PeriodoRecuperacaoParalela Periodo)

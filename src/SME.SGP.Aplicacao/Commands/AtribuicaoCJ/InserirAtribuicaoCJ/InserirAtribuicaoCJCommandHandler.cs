@@ -39,9 +39,6 @@ namespace SME.SGP.Aplicacao
 
             await ValidaComponentesCurricularesQueNaoPodemSerSubstituidos(atribuicaoCJ);
 
-            //if (request.ProfessoresTitulares != null && request.ProfessoresTitulares.Any(c => c.ProfessorRf.Contains(atribuicaoCJ.ProfessorRf) && c.DisciplinaId == atribuicaoCJ.DisciplinaId))
-            //    throw new NegocioException("Não é possível realizar substituição na turma onde o professor já é o titular.");
-
             if (request.AtribuicoesAtuais == null)
                 request.AtribuicoesAtuais = await repositorioAtribuicaoCJ.ObterPorFiltros(atribuicaoCJ.Modalidade, atribuicaoCJ.TurmaId,
                     atribuicaoCJ.UeId, 0, atribuicaoCJ.ProfessorRf, string.Empty, null);
@@ -68,12 +65,12 @@ namespace SME.SGP.Aplicacao
             ValidaSePerfilPodeIncluir(request.Usuario);
 
             await repositorioAtribuicaoCJ.SalvarAsync(atribuicaoCJ);
-            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais, request.EhHistorico);
+            await TratarAbrangencia(atribuicaoCJ, atribuicoesAtuais.ToList(), request.EhHistorico);
 
             return Unit.Value;
         }
 
-        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, IEnumerable<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico)
+        private async Task TratarAbrangencia(AtribuicaoCJ atribuicaoCJ, List<AtribuicaoCJ> atribuicoesAtuais, bool ehHistorico)
         {
             var perfil = atribuicaoCJ.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
@@ -92,8 +89,7 @@ namespace SME.SGP.Aplicacao
                     repositorioAbrangencia.InserirAbrangencias(abrangencias, atribuicaoCJ.ProfessorRf);
                 }
             }
-            else if ((abrangenciasAtuais != null && abrangenciasAtuais.Any()) &&
-                     (!atribuicoesAtuais.Any(a => a.Id != atribuicaoCJ.Id && a.Substituir)))
+            else if (!atribuicaoCJ.Substituir)
             {
                 if (ehHistorico)
                     repositorioAbrangencia.ExcluirAbrangenciasHistoricas(abrangenciasAtuais.Select(a => a.Id).ToArray());

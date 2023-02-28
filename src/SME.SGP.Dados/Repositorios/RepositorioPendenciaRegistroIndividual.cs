@@ -122,5 +122,30 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<long>(sql, new { turmaId });
         }
+
+        public async Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE)
+        {
+            var tipoPendencia = (int)TipoPendencia.AusenciaDeRegistroIndividual;
+            var situacao = new List<int>() { (int)SituacaoPendencia.Pendente, (int)SituacaoPendencia.Resolvida };
+            var query = @$"select distinct p.id 
+                            from pendencia p
+                            inner join pendencia_registro_individual pri on pri.pendencia_id = p.id 
+                            inner join turma t on t.id = pri.turma_id 
+                            inner join aula a on a.turma_id = t.turma_id 
+                            inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                            where tipo = @tipoPendencia
+                                    and not p.excluido 
+                                    and p.situacao = any(@situacao)
+                                    and tc.ano_letivo = @anoLetivo 
+                                    and a.ue_id = @codigoUE";
+
+            return await database.Conexao.QueryAsync<long>(query, new
+            {
+                tipoPendencia,
+                situacao = situacao.ToArray(),
+                anoLetivo,
+                codigoUE
+            });
+        }
     }
 }

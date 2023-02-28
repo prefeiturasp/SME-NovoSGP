@@ -25,5 +25,31 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<PendenciaCalendarioUe>(query, new { tipoCalendarioId, ueId, tipoPendencia });
         }
+
+        public async Task<IEnumerable<long>> ObterPendenciasCalendarioUeEAnoLetivoParaEncerramentoAutomatico(long idUe, int anoLetivo)
+        {
+            var tipoPendencia = new List<int>() { (int)TipoPendencia.CalendarioLetivoInsuficiente, (int)TipoPendencia.AulaNaoLetivo, (int)TipoPendencia.CadastroEventoPendente };
+            var situacao = new List<int>() { (int)SituacaoPendencia.Pendente, (int)SituacaoPendencia.Resolvida };
+
+            var query = @"SELECT 
+	                            distinct p.id AS PendenciaId
+                            FROM pendencia p
+	                            JOIN pendencia_aula pa ON p.id = pa.pendencia_id
+	                            inner JOIN aula a ON a.id = pa.aula_id
+	                            inner JOIN turma t ON t.turma_id = a.turma_id
+                            WHERE NOT p.excluido
+                              AND p.tipo = any(@tipoPendencia)
+                              AND p.situacao = any(@situacao)
+                              AND t.ano_letivo = @anoLetivo
+                              AND t.ue_id = @idUe ";
+                                        
+            return await database.Conexao.QueryAsync<long>(query, new
+            {
+                tipoPendencia = tipoPendencia.ToArray(),
+                situacao = situacao.ToArray(),
+                anoLetivo,
+                idUe
+            });
+        }
     }
 }
