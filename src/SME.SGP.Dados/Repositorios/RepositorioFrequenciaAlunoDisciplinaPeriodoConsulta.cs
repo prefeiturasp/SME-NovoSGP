@@ -614,7 +614,8 @@ namespace SME.SGP.Dados
             else if (dataSituacaoAluno.HasValue)
                 query.AppendLine("and a.data_aula::date < @dataSituacaoAluno");
 
-            query.AppendLine(" and a.turma_id = any(@turmasCodigo) group by a.disciplina_id, a.turma_id, p.bimestre, p.periodo_inicio, p.periodo_fim");
+            query.AppendLine(" and a.turma_id = any(@turmasCodigo)");
+            query.AppendLine(") select ComponenteCurricularCodigo, TurmaCodigo, Bimestre, sum(quantidade) AulasQuantidade from lista group by ComponenteCurricularCodigo, TurmaCodigo, Bimestre;");
 
             return await database.Conexao.QueryAsync<TurmaComponenteQntAulasDto>(query.ToString(),
            new { turmasCodigo, componentesCurricularesId, tipoCalendarioId, bimestres, dataMatriculaAluno, dataSituacaoAluno });
