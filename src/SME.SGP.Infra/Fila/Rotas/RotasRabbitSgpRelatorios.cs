@@ -43,5 +43,7 @@
         public const string RotaRelatoriosSolicitadosPlanoAee = "sr.relatorios.solicitados.planoaee";
         public const string RotaRelatoriosSolicitadosPlanosAee = "sr.relatorios.solicitados.planosaee";
         public const string RotaRelatoriosSolicitadosEncaminhamentoAee = "sr.relatorios.solicitados.encaminhamentoaee";
+        public const string RotaRelatoriosSolicitadosEncaminhamentoAeeDetalhado = "sr.relatorios.solicitados.RelatorioEncaminhamentoAeeDetalhado";
+        
     }
 }

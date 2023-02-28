@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(request.CodigoTurma))
                 (codigoDre, codigoUe) = await ObterCodigos(request.CodigoTurma, usuario);
             
-            var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario.PerfilAtual);
+            var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario, request.EhRelatorio);
 
             var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDre, codigoUe, usuario: usuario));
 
@@ -53,7 +53,10 @@ namespace SME.SGP.Aplicacao
         }
 
         // CEFAI Pesquisa por perfil PAAI pois a abrangencia é DRE, outros perfis pesquisa PAEE com abrangencia UE
-        private int ObterFuncaoAtividadeAPesquisarPorPerfil(Guid perfilAtual)
-            => perfilAtual == Perfis.PERFIL_CEFAI ? FUNCAO_ATIVIDADE_PAAI : FUNCAO_ATIVIDADE_PAEE;
+        private int ObterFuncaoAtividadeAPesquisarPorPerfil(Usuario usuario, bool ehRelatorio)
+            => usuario.PerfilAtual == Perfis.PERFIL_CEFAI || EhPerfilSME_DRE_Relatorio(usuario, ehRelatorio) ? FUNCAO_ATIVIDADE_PAAI : FUNCAO_ATIVIDADE_PAEE;
+
+        private bool EhPerfilSME_DRE_Relatorio(Usuario usuario, bool ehRelatorio)
+            => ehRelatorio && (usuario.EhPerfilSME() || usuario.EhPerfilDRE());
     }
 }

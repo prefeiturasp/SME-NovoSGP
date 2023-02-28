@@ -12,5 +12,6 @@ namespace SME.SGP.Dominio
         Task<long> ExisteIdPendenciaDiarioBordo(long aulaId, long componenteCurricularId);
         Task<IEnumerable<PendenciaUsuarioDto>> ObterIdPendenciaDiarioBordoPorAulaId(long aulaId);
         Task<IEnumerable<PendenciaDiarioBordoDescricaoDto>> ObterPendenciasDiarioPorPendencia(long pendenciaId, string codigoRf);
+        Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE);
     }
 }

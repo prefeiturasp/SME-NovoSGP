@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
         protected override void RegistrarFakes(IServiceCollection services)
         {
             base.RegistrarFakes(services);
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunoPorCodigoEAnoPlanoAeeQuery, AlunoReduzidoDto>), typeof(ObterAlunoPorCodigoEAnoPlanoAeeQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterParametroSistemaPorTipoEAnoQuery, ParametrosSistema>), typeof(ObterParametroSistemaPorTipoEAnoQueryHanlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioLogadoQuery, Usuario>), typeof(ObterUsuarioLogadoQueryHandlerFake), ServiceLifetime.Scoped));
         }
@@ -60,7 +60,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPlanoAee.ShouldNotBeNull();
             
             //Buscando Plano Criado
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1,1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
@@ -112,7 +112,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPlanoAee.ShouldNotBeNull();
             
             //Buscando Plano Criado com Situacao Parecer do CP
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()?.Id,TURMA_CODIGO_1,1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
@@ -125,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retornoParecerCp.ShouldBeTrue();
             
             //Buscando Plano Criado com Atribuição PAAI
-            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1);
+            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1,1);
             var obterPlanoAeeUseCasePaai =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObterPaai = await obterPlanoAeeUseCasePaai.Executar(filtroObterPaai);
             retornoObterPaai.ShouldNotBeNull();
@@ -176,7 +176,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             obterTodosPlanoAee.ShouldNotBeNull();
             
             //Buscando Plano Criado
-            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()!.Id,TURMA_CODIGO_1);
+            var filtroObter = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(obterTodosPlanoAee.FirstOrDefault()!.Id,TURMA_CODIGO_1,1);
             
             var obterPlanoAeeUseCase =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObter = await obterPlanoAeeUseCase.Executar(filtroObter);
@@ -189,7 +189,7 @@ namespace SME.SGP.TesteIntegracao.PlanoAEE
             retornoParecerCp.ShouldBeTrue();
             
             //Buscando Plano Criado com Atribuição PAAI
-            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1);
+            var filtroObterPaai = new FiltroPesquisaQuestoesPorPlanoAEEIdDto(retornoObter.Id,TURMA_CODIGO_1,1);
             var obterPlanoAeeUseCasePaai =  ObterServicoObterPlanoAEEPorIdUseCase();
             var retornoObterPaai = await obterPlanoAeeUseCasePaai.Executar(filtroObterPaai);
             retornoObterPaai.ShouldNotBeNull();

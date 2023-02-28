@@ -30,8 +30,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             var dto = new SalvarAnotacaoFrequenciaAlunoDto()
             {
                 Anotacao = "teste",
-                AulaId = 1771346,
-                CodigoAluno = "6502235",
+                AulaId = 1,
+                CodigoAluno = "123",
                 ComponenteCurricularId = 139,
                 EhInfantil = false,
                 MotivoAusenciaId = 1

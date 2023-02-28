@@ -11,12 +11,14 @@ namespace SME.SGP.Aplicacao
         {
             CodigosAluno = codigosAluno;
         }
-        public ObterAlunosEolPorCodigosQuery(long codigoAluno)
+        public ObterAlunosEolPorCodigosQuery(long codigoAluno, bool todasMatriculas = false)
         {
             CodigosAluno = new long[] { codigoAluno } ;
+            TodasMatriculas = todasMatriculas;
         }
 
         public long[] CodigosAluno { get; set; }
+        public bool TodasMatriculas { get; set; }
     }
 
     public class ObterAlunosEolPorCodigosQueryValidator : AbstractValidator<ObterAlunosEolPorCodigosQuery>

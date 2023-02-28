@@ -7,7 +7,7 @@ namespace SME.SGP.Dominio.Interfaces
     {
         Task ExecutaNotificacaoRegistroFrequencia();
         Task VerificaRegraAlteracaoFrequencia(long registroFrequenciaId, DateTime criadoEm, DateTime alteradoEm);
-        Task NotificarAlunosFaltosos();
+        Task NotificarAlunosFaltosos(long ueId);
         Task NotificarAlunosFaltososBimestre();
     }
 }

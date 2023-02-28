@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Polly;
-using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -120,6 +118,6 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ObterTurmasProgramaAluno([FromQuery]string codigoAluno, [FromQuery] int? anoLetivo, [FromServices] IObterEstudanteTurmasProgramaUseCase useCase, [FromQuery] bool filtrarSituacaoMatricula = true)
         {
             return Ok(await useCase.Executar(codigoAluno, anoLetivo, filtrarSituacaoMatricula));
-        }
+        }      
     }
 }

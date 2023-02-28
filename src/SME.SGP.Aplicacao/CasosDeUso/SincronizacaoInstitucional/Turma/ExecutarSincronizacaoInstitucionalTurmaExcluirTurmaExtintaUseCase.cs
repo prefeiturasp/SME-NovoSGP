@@ -32,7 +32,8 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível realizar a exclusão da turma extinta {filtro.TurmaCodigo}.", LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, ex.Message));
+                var mensagemErro = $"Não foi possível realizar a exclusão da turma extinta {filtro.TurmaCodigo} / dt atualiz.: {filtro.DataStatusTurmaEscola}{(filtro.DataInicioPeriodo.HasValue ? $" / dt início período: {filtro.DataInicioPeriodo.Value}" : string.Empty)}.";
+                await mediator.Send(new SalvarLogViaRabbitCommand(mensagemErro, LogNivel.Negocio, LogContexto.SincronizacaoInstitucional, ex.Message));
                 throw;
             }
         }

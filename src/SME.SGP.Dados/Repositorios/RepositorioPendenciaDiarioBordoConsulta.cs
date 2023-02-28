@@ -46,5 +46,29 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<PendenciaDiarioBordoDescricaoDto>(query, new { pendenciaId, codigoRf, tipoAulaReposicao = (int)TipoAula.Reposicao });
         }
+
+        public async Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE)
+        {
+            var tipoPendencia = (int)TipoPendencia.DiarioBordo;
+            var situacao = new List<int>() { (int)SituacaoPendencia.Pendente, (int)SituacaoPendencia.Resolvida };
+            var query = @$"select distinct p.id 
+                            from pendencia p
+                            inner join pendencia_diario_bordo pdb  on pdb.pendencia_id = p.id 
+                            inner join aula a on a.id = pdb.aula_id 
+                            inner join tipo_calendario tc on tc.id = a.tipo_calendario_id 
+                            where tipo = @tipoPendencia
+                                    and not p.excluido 
+                                    and p.situacao = any(@situacao)
+                                    and tc.ano_letivo = @anoLetivo 
+                                    and a.ue_id = @codigoUE";
+
+            return await database.Conexao.QueryAsync<long>(query, new
+            {
+                tipoPendencia,
+                situacao = situacao.ToArray(),
+                anoLetivo,
+                codigoUE
+            });
+        }
     }
 }

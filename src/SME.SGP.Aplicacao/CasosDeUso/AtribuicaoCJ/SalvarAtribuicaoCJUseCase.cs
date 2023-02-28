@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,9 +19,9 @@ namespace SME.SGP.Aplicacao
             var anoLetivo = int.Parse(atribuicaoCJPersistenciaDto.AnoLetivo);
 
             var atribuicoesAtuais = await mediator.Send(new ObterAtribuicoesPorTurmaEProfessorQuery(atribuicaoCJPersistenciaDto.Modalidade, atribuicaoCJPersistenciaDto.TurmaId,
-              atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null, "", null, anoLetivo));
+                atribuicaoCJPersistenciaDto.UeId, 0, atribuicaoCJPersistenciaDto.UsuarioRf, string.Empty, null, "", null, anoLetivo));
 
-            bool atribuiuCj = false;
+            var atribuiuCj = false;
 
             await RemoverDisciplinasCache(atribuicaoCJPersistenciaDto);
 
@@ -33,10 +34,9 @@ namespace SME.SGP.Aplicacao
                 var atribuicao = TransformaDtoEmEntidade(atribuicaoCJPersistenciaDto, atribuicaoDto);
 
                 var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
                 await mediator.Send(new InserirAtribuicaoCJCommand(atribuicao, professoresTitularesDisciplinasEol, atribuicoesAtuais, usuario, atribuicaoCJPersistenciaDto.Historico));
 
-                Guid perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
+                var perfilCJ = atribuicao.Modalidade == Modalidade.EducacaoInfantil ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_CJ;
 
                 atribuiuCj = await AtribuirPerfilCJ(atribuicaoCJPersistenciaDto, perfilCJ, atribuiuCj);
 
@@ -44,11 +44,6 @@ namespace SME.SGP.Aplicacao
                     await PublicarAtribuicaoNoGoogleClassroomApiAsync(atribuicao);
             }
         }
-        private async Task RemoverAtribuicaoAtual(AtribuicaoCJPersistenciaDto dto)
-        {
-            await mediator.Send(new RemoverAtribuicaoCJCommand(dto.DreId, dto.UeId, dto.TurmaId, dto.UsuarioRf));
-        }
-
 
         private async Task<bool> AtribuirPerfilCJ(AtribuicaoCJPersistenciaDto atribuicaoCJPersistenciaDto, Guid perfil, bool atribuiuCj)
         {
@@ -89,13 +84,13 @@ namespace SME.SGP.Aplicacao
             {
                 if (!long.TryParse(atribuicaoCJ.ProfessorRf, out var rf))
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível publicar a atribuição CJ no Google Classroom Api. O RF informado é inválido.", LogNivel.Negocio, LogContexto.CJ));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível publicar a atribuição CJ no Google Classroom Api. O RF informado é inválido.", LogNivel.Negocio, LogContexto.CJ));
                     return;
                 }
 
                 if (!long.TryParse(atribuicaoCJ.TurmaId, out var turmaId))
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível publicar a atribuição CJ no Google Classroom Api. A turma informada é inválida.", LogNivel.Negocio, LogContexto.CJ));                    
+                    await mediator.Send(new SalvarLogViaRabbitCommand("Não foi possível publicar a atribuição CJ no Google Classroom Api. A turma informada é inválida.", LogNivel.Negocio, LogContexto.CJ));
                     return;
                 }
 
@@ -105,13 +100,11 @@ namespace SME.SGP.Aplicacao
                     ? await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir, dto))
                     : await mediator.Send(new PublicarFilaGoogleClassroomCommand(RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoRemover, dto));
                 if (!publicacaoConcluida)
-                {
-                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível publicar na fila {RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir}.", LogNivel.Negocio, LogContexto.CJ));                    
-                }
+                    await mediator.Send(new SalvarLogViaRabbitCommand($"Não foi possível publicar na fila {RotasRabbitSgpGoogleClassroomApi.FilaProfessorCursoIncluir}.", LogNivel.Negocio, LogContexto.CJ));
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar na fila do google  - PublicarAtribuicaoNoGoogleClassroomApiAsync", LogNivel.Critico, LogContexto.CJ, ex.Message));                
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar na fila do google  - PublicarAtribuicaoNoGoogleClassroomApiAsync", LogNivel.Critico, LogContexto.CJ, ex.Message));
             }
         }
     }

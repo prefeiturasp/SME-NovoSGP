@@ -19,6 +19,14 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeUseCase, RemoverAtribuicaoPendenciasUsuariosUeUseCase>();
             services.TryAddScoped<IRemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase, RemoverAtribuicaoPendenciasUsuariosUeFuncionarioUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasDevolutivaUseCase, ExecutarExclusaoPendenciasDevolutivaUseCase>();
+            services.TryAddScoped<IReplicarParametrosAnoAnteriorUseCase, ReplicarParametrosAnoAnteriorUseCase>();
+            services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioUseCase, ExcluirPendenciaCalendarioAnoAnteriorUseCase>();
+            services.TryAddScoped<IExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase, ExcluirPendenciaCalendarioAnoAnteriorCalendarioPoUeUseCase>();
+            services.TryAddScoped<IRemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase, RemoverPendenciasCalendarioNoFinalDoAnoLetivoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorAnoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase, RemoverPendenciasNoFinalDoAnoLetivoPorUeUseCase>();
+            services.TryAddScoped<IRemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase, RemoverPendenciasDiarioDeClasseNoFinalDoAnoLetivoUseCase>();
+            services.TryAddScoped<IRemoverPendenciasNoFinalDoAnoLetivoUseCase, RemoverPendenciasNoFinalDoAnoLetivoUseCase>();
         }
     }
 }

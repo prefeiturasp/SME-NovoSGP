@@ -16,7 +16,7 @@ namespace SME.SGP.Dominio
             SetTurma(turma);
         }
 
-        protected PendenciaRegistroIndividual()
+        public PendenciaRegistroIndividual()
         {
         }
 

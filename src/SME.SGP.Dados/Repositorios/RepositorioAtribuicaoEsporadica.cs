@@ -133,7 +133,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.QueryFirstOrDefault<AtribuicaoEsporadica>(sql, new { codigoRF, infantil });
         }
 
-        public async Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo, string dreCodigo, string ueCodigo)
+        public async Task<IEnumerable<AtribuicaoEsporadica>> ObterAtribuicoesPorRFEAno(string codigoRF, bool somenteInfantil, int anoLetivo, string dreCodigo, string ueCodigo, bool historico)
         {
             var sql = $@"select
 	                        distinct ae.*
@@ -144,21 +144,26 @@ namespace SME.SGP.Dados.Repositorios
                         inner join turma t on
 	                        t.ue_id = u.id
                         where
-                            not ae.excluido and 
-                            ae.ano_letivo = @anoLetivo and
-	                        ae.professor_rf = @codigoRF
-	                        {(somenteInfantil ? "and t.modalidade_codigo = @infantil " : string.Empty)}";
+                            not ae.excluido and
+	                        ae.professor_rf = @codigoRF and
+                            t.historica = @historico
+	                        {(somenteInfantil ? " and t.modalidade_codigo = @infantil " : string.Empty)}";
 
+            if (anoLetivo > 0)
+                sql += " and ae.ano_letivo = @anoLetivo";
 
-            if (!String.IsNullOrEmpty(dreCodigo))
+            if (!string.IsNullOrEmpty(dreCodigo))
                 sql += " and ae.dre_id = @dreCodigo ";
-            if (!String.IsNullOrEmpty(ueCodigo))
+
+            if (!string.IsNullOrEmpty(ueCodigo))
                 sql += " and ae.ue_id = @ueCodigo ";
 
             sql += " order by ae.data_fim desc";
 
             var infantil = Modalidade.EducacaoInfantil;
-            return await database.Conexao.QueryAsync<AtribuicaoEsporadica>(sql, new { codigoRF, infantil, anoLetivo, dreCodigo, ueCodigo });
+
+            return await database.Conexao
+                .QueryAsync<AtribuicaoEsporadica>(sql, new { codigoRF, infantil, anoLetivo, dreCodigo, ueCodigo, historico });
         }
 
         public async Task<bool> PossuiAtribuicaoPorAnoData(int? anoLetivo, string dreCodigo, string ueCodigo, string codigoRF, DateTime? data)

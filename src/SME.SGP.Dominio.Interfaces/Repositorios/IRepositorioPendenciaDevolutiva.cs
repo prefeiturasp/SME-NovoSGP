@@ -14,5 +14,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<string>> ObterCodigoComponenteComDiarioBordoSemDevolutiva(long turmaId, string ueId);
         Task<Turma> ObterTurmaPorPendenciaId(long pendenciaId);
         Task<bool> ExistePendenciasDevolutivaPorTurmaComponente(long turmaId, long componenteId);
+        Task<IEnumerable<long>> ObterIdsPendencias(int anoLetivo, string codigoUE);
     }
 }

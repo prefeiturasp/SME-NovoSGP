@@ -25,7 +25,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentoAee, param, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoAee));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentosAee, param, usuarioLogado, rotaRelatorio: RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoAee));
         }
     }
 }

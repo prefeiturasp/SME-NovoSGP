@@ -2,6 +2,7 @@
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -18,15 +19,26 @@ namespace SME.SGP.Aplicacao
 
             if(filtro != null)
             {
-                await VerificaPendenciasDiarioDeBordo(filtro);
+                var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(filtro.TipoEscola, filtro.CodigoUe));
+                if (!ignorarGeracaoPendencia)
+                {
+                    await VerificaPendenciasDiarioDeBordo(filtro);
+                    await VerificaPendenciasFrequencia(filtro);
+                }
                 await VerificaPendenciasAvaliacao(filtro);
-                await VerificaPendenciasFrequencia(filtro);
                 await VerificaPendenciasPlanoAula(filtro);
+
+                await VerificaPendenciasDiarioClasseFechamento(filtro);
 
                 return true;
             }
 
             return false;
+        }
+
+        private async Task VerificaPendenciasDiarioClasseFechamento(Ue ue)
+        {
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaAvaliarPendenciasAulaDiarioClasseFechamento, new DreUeDto(ue.DreId, ue.Id, ue.CodigoUe)));
         }
 
         private async Task VerificaPendenciasDiarioDeBordo(Ue ue)
