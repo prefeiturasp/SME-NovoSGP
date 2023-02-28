@@ -68,6 +68,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
+            bool ehCJEPossuiComponentesVinculados = false;
 
             atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
             {
@@ -87,23 +88,43 @@ namespace SME.SGP.Aplicacao
             else
             {
                 componentesCurricularesEolProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                                                  usuarioLogado.CodigoRf,
-                                                                                  usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                   .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                 usuarioLogado.CodigoRf,
+                                                                                 usuarioLogado.PerfilAtual,
+                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
-                componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
-                    .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
+                if (usuarioLogado.EhSomenteProfessorCj())
+                {
+                    var componentesCurricularesDoProfessorCJ = await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
 
-                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
+                    if (componentesCurricularesDoProfessorCJ.Any())
+                    {
+                        var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                        if (dadosComponentes.Any())
+                        {
+                            componentesCurricularesDoProfessor = dadosComponentes.Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
+                            ehCJEPossuiComponentesVinculados = true;
+                        }
+                    }
+                }
+
+                if (componentesCurricularesEolProfessor != null || ehCJEPossuiComponentesVinculados)
+                {
+                    if (!ehCJEPossuiComponentesVinculados)
+                        componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
+                        .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
+
+                    aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+                    atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
+                }
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
-            if (aulasParaVisualizar.Any())
+            if (aulasParaVisualizar != null)
             {
-                if (componentesCurricularesDoProfessor.Any())
+                if (componentesCurricularesDoProfessor != null && componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0"))
                 {
                     var componentesCorrelatos = (from c in componentesCurricularesDoProfessor
                                                  from a in aulasParaVisualizar
@@ -128,6 +149,8 @@ namespace SME.SGP.Aplicacao
                     DataReferencia = dataConsulta
                 });
             }
+            else
+                aulasParaVisualizar = Enumerable.Empty<Aula>();
 
             retorno.EventosAulas = await mediator.Send(new ObterAulaEventoAvaliacaoCalendarioProfessorPorMesDiaQuery()
             {

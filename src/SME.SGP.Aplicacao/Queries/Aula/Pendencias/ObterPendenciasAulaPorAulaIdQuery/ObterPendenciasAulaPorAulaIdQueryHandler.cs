@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -23,13 +24,29 @@ namespace SME.SGP.Aplicacao
         {
             var aula = await mediator.Send(new ObterAulaPorIdQuery(request.AulaId));
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var componentesCurricularesDoProfessorCJ = Enumerable.Empty<AtribuicaoCJ>();
             var componentesCurricularesEolProfessor = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
                                                                                   usuarioLogado.CodigoRf,
                                                                                   usuarioLogado.PerfilAtual,
                                                                                   usuarioLogado.EhProfessorInfantilOuCjInfantil()));
-            var componenteCorrespondente = componentesCurricularesEolProfessor
-                .SingleOrDefault(cc => cc.Codigo.ToString().Equals(aula.DisciplinaId));
+
+            if (usuarioLogado.EhSomenteProfessorCj())
+                componentesCurricularesDoProfessorCJ = await mediator
+                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+            
+
+            var componenteCorrespondente = componentesCurricularesEolProfessor != null
+                ? componentesCurricularesEolProfessor.SingleOrDefault(cc => cc.Codigo.ToString().Equals(aula.DisciplinaId))
+                : usuarioLogado.EhSomenteProfessorCj() && componentesCurricularesDoProfessorCJ.Any() ?
+                                                        componentesCurricularesDoProfessorCJ.Select(c => new ComponenteCurricularEol()
+                                                        {
+                                                            Codigo = c.DisciplinaId,
+                                                            TurmaCodigo = c.TurmaId
+                                                        }).FirstOrDefault(c => c.TurmaCodigo == aula.TurmaId)
+                                                        : new ComponenteCurricularEol();
+
+
 
             var pendencias = await repositorioPendenciaAula
                 .PossuiPendenciasPorAulaId(request.AulaId, request.EhModalidadeInfantil, request.UsuarioLogado, (componenteCorrespondente?.CodigoComponenteTerritorioSaber ?? 0) > 0 ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : null);
