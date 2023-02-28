@@ -14,5 +14,7 @@ namespace SME.SGP.Infra
         public double? NotaAnterior { get; set; }
         public long? ConceitoAnteriorId { get; set; }
         public int? Bimestre { get; set; }
+        public int AnoLetivo { get; set; }
+        public bool LancaNota { get; set; }
     }
 }

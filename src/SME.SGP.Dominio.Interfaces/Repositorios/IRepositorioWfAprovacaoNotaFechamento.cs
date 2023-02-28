@@ -13,5 +13,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task ExcluirLogico(WfAprovacaoNotaFechamento wfAprovacaoNota);
         Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoSemWfAprovacaoId();
         Task<bool> AlterarWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowAprovacaoId, long[] workflowAprovacaoNotaFechamentoIds);
+        Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowId);
     }
 }
