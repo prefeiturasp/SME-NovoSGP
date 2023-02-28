@@ -15,6 +15,11 @@ namespace SME.SGP.TesteIntegracao
 {
     public abstract class TesteBaseComuns : TesteBase
     {
+        protected const string ALUNO_CODIGO_1111111 = "1111111";
+        protected const string ALUNO_CODIGO_2222222 = "2222222";
+        protected const string ALUNO_CODIGO_3333333 = "3333333";
+        protected const string ALUNO_CODIGO_4444444 = "4444444";
+        
         private const string USUARIO_CHAVE = "NomeUsuario";
         private const string USUARIO_RF_CHAVE = "RF";
         private const string USUARIO_LOGIN_CHAVE = "login";
