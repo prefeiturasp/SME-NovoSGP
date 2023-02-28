@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -229,7 +230,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
-
+            
             // Resolve a pendencia de fechamento
             repositorioPendencia.AtualizarPendencias(fechamentoTurmaDisciplinaId, SituacaoPendencia.Resolvida, TipoPendencia.AlteracaoNotaFechamento);
 
@@ -253,12 +254,29 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 repositorioFechamentoNota.Salvar(fechamentoNota);
 
+                await AtualizarCacheFechamentoNota(notaEmAprovacao, fechamentoNota);
             }
 
             await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
                                                new ConsolidacaoTurmaDto(fechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.TurmaId, 0),
                                                Guid.NewGuid(),
                                                null));
+        }
+
+        private async Task AtualizarCacheFechamentoNota(
+                                WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao, 
+                                FechamentoNota fechamentoNota)
+        {
+            await mediator.Send(new AtualizarCacheFechamentoNotaCommand(
+                                        fechamentoNota,
+                                        notaEmAprovacao.CodigoAluno,
+                                        await mediator.Send(new ObterTurmaCodigoPorIdQuery(notaEmAprovacao.TurmaId))));
+
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+                                            notaEmAprovacao.TurmaId,
+                                            notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId,
+                                            notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId);
+            await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaBimestre));
         }
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
