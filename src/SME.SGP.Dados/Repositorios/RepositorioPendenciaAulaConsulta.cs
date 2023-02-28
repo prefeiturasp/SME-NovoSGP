@@ -166,7 +166,7 @@ namespace SME.SGP.Dados.Repositorios
                          where NOT p.excluido
                                AND p.tipo = @tipo
                         ) 
-                    select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf,
+                    select distinct a.id, a.turma_id as TurmaId, a.disciplina_id, a.professor_rf, a.aula_cj as AulaCJ,
                                     a.tipo_calendario_id, a.data_aula, t.id Id, t.modalidade_codigo ModalidadeCodigo
 	                from atividade_avaliativa aa
 	                inner join dre on dre.dre_id = aa.dre_id
