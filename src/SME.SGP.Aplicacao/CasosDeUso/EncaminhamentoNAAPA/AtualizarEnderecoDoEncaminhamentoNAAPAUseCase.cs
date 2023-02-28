@@ -26,16 +26,22 @@ namespace SME.SGP.Aplicacao
             if (alunoEol == null) return false;
             var enderecoResidencialAluno = MapearDTO(alunoEol.Endereco);
 
-            var respostasEnderecoResidencialNAAPA = (await mediator.Send(new ObterRespostaEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
-            if (respostasEnderecoResidencialNAAPA == null) return false;
-            
-            var enderecosResidenciaisNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostasEnderecoResidencialNAAPA.Texto);
-            var enderecoResidencialNAAPA = enderecosResidenciaisNAAPA?.FirstOrDefault();
-            if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA)) return false;
+            var questaoEnderecoResidencialNAAPA = (await mediator.Send(new ObterQuestaoEnderecoAlunoEncaminhamentoNAAPAPorIdQuery(encaminhamentoNAAPADto.Id ?? 0)));
+            if (questaoEnderecoResidencialNAAPA == null) return false;
 
-            var respostaEnderecoAtualizado = MapearDTO(respostasEnderecoResidencialNAAPA, enderecoResidencialAluno);
-            return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostasEnderecoResidencialNAAPA,
-                                                                                              respostaEnderecoAtualizado));
+            var respostaEnderecoResidencialNAAPA = questaoEnderecoResidencialNAAPA.Respostas?.FirstOrDefault();
+            if (respostaEnderecoResidencialNAAPA != null)
+            {
+                var enderecoResidencialNAAPA = JsonConvert.DeserializeObject<List<RespostaEnderecoResidencialEncaminhamentoNAAPADto>>(respostaEnderecoResidencialNAAPA.Texto);
+                if (enderecoResidencialAluno.Equals(enderecoResidencialNAAPA?.FirstOrDefault())) return false;
+
+                var respostaEnderecoAtualizado = MapearDTO(questaoEnderecoResidencialNAAPA.QuestaoId, respostaEnderecoResidencialNAAPA.Id, enderecoResidencialAluno);
+                return await mediator.Send(new AlterarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(respostaEnderecoResidencialNAAPA,
+                                                                                                  respostaEnderecoAtualizado));
+            }
+            else
+                return (await mediator.Send(new RegistrarEncaminhamentoNAAPASecaoQuestaoRespostaCommand(JsonConvert.SerializeObject(new[] { enderecoResidencialAluno }),
+                                                                                                      questaoEnderecoResidencialNAAPA.QuestaoId, TipoQuestao.Endereco))) != 0;  
         }
 
         private RespostaEnderecoResidencialEncaminhamentoNAAPADto MapearDTO(EnderecoRespostaDto? endereco)
@@ -50,14 +56,14 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private EncaminhamentoNAAPASecaoQuestaoDto MapearDTO(RespostaEncaminhamentoNAAPA respostasEnderecoResidencialNAAPA, RespostaEnderecoResidencialEncaminhamentoNAAPADto novoEnderecoResidencialAluno)
+        private EncaminhamentoNAAPASecaoQuestaoDto MapearDTO(long questaoId, long respostaId, RespostaEnderecoResidencialEncaminhamentoNAAPADto novoEnderecoResidencialAluno)
         {
             return new EncaminhamentoNAAPASecaoQuestaoDto()
             {
-                QuestaoId = respostasEnderecoResidencialNAAPA.QuestaoEncaminhamento.Questao.Id,
+                QuestaoId = questaoId,
                 Resposta = JsonConvert.SerializeObject(new[] { novoEnderecoResidencialAluno }),
-                TipoQuestao = respostasEnderecoResidencialNAAPA.QuestaoEncaminhamento.Questao.Tipo,
-                RespostaEncaminhamentoId = respostasEnderecoResidencialNAAPA.Id
+                TipoQuestao = TipoQuestao.Endereco,
+                RespostaEncaminhamentoId = respostaId
 
             };
         }

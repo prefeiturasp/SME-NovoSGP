@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
         }
         public async Task<IEnumerable<NotificacaoBasicaDto>> Handle(ObterUltimasNotificacoesNaoLidasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorRfAsync(request.CodigoRf, 5);
 
             if (request.TituloReduzido)
             {

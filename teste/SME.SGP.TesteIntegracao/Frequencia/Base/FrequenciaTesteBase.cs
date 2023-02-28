@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Integracoes.Respostas;
 
 namespace SME.SGP.TesteIntegracao
 {
@@ -68,7 +69,8 @@ namespace SME.SGP.TesteIntegracao
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<VerificaPodePersistirTurmaDisciplinaEOLQuery, bool>), typeof(VerificaPodePersistirTurmaDisciplinaEOLQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ServicosFakes.ObterAlunosAtivosPorTurmaCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(Nota.ServicosFakes.ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));            
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDisciplinasPorCodigoTurmaQuery, IEnumerable<DisciplinaResposta>>), typeof(ObterDisciplinasPorCodigoTurmaQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected async Task<AuditoriaDto> InserirFrequenciaUseCaseComValidacaoBasica(FrequenciaDto frequenciaDto)
@@ -521,7 +523,7 @@ namespace SME.SGP.TesteIntegracao
         }
 
 
-        protected async Task InserirParametroSistema()
+        protected async Task InserirParametroSistema(bool inserirParametrosAnoAnterior = false)
         {
             await InserirNaBase(new ParametrosSistema()
             {
@@ -548,6 +550,35 @@ namespace SME.SGP.TesteIntegracao
                 CriadoPor = "",
                 CriadoRF = ""
             });
+
+            if (inserirParametrosAnoAnterior)
+            {
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaCritico",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaCritico,
+                    Descricao = "",
+                    Valor = "75",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+
+                await InserirNaBase(new ParametrosSistema()
+                {
+                    Nome = "PercentualFrequenciaAlerta",
+                    Tipo = TipoParametroSistema.PercentualFrequenciaAlerta,
+                    Descricao = "",
+                    Valor = "80",
+                    Ano = DateTimeExtension.HorarioBrasilia().Year-1,
+                    Ativo = true,
+                    CriadoEm = DateTime.Now,
+                    CriadoPor = "",
+                    CriadoRF = ""
+                });
+            }
         }
 
         protected async Task CriarDadosFrenqueciaAluno(string codigoAluno, TipoFrequenciaAluno tipoFrequenciaAluno, int totalAusencia = 2)

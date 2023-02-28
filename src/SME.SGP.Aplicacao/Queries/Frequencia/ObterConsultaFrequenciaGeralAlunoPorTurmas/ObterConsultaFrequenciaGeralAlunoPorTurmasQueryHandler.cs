@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Interfaces;
@@ -37,7 +38,15 @@ namespace SME.SGP.Aplicacao
             var aluno = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turma.CodigoTurma), int.Parse(request.AlunoCodigo)));
             var matriculasAluno = aluno.Select(a => ((DateTime?)a.DataMatricula, a.Inativo ? a.DataSituacao : (DateTime?)null, a.Inativo));
 
-            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, request.TurmaCodigo, tipoCalendario.Id, matriculasAluno));
+            var turmaCodigo = new string[] { turma.CodigoTurma };
+
+            var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.CodigoTurma));
+
+            string[] codigoDisciplinasTurma = disciplinasTurma.Any()
+                ? disciplinasTurma.Select(d => d.TerritorioSaber ? d.CodigoComponenteTerritorioSaber.ToString() : d.CodigoComponenteCurricular.ToString()).ToArray() 
+                : new string[] { };
+
+            return await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmasQuery(request.AlunoCodigo, turmaCodigo, codigoDisciplinasTurma, tipoCalendario.Id, matriculasAluno));
         }
 
         private async Task<Turma> ObterTurma(string[] turmasCodigos)

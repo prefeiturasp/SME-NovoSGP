@@ -25,10 +25,13 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IPendenciaAulaAvaliacaoUseCase, PendenciaAulaAvaliacaoUseCase>();
             services.TryAddScoped<IPendenciaAulaFrequenciaUseCase, PendenciaAulaFrequenciaUseCase>();
             services.TryAddScoped<IPendenciaAulaPlanoAulaUseCase, PendenciaAulaPlanoAulaUseCase>();
+            services.TryAddScoped<IPendenciaAulaFechamentoUseCase, PendenciaAulaFechamentoUseCase>(); 
             services.TryAddScoped<IExecutaVerificacaoPendenciasGeraisAulaUseCase, ExecutaVerificacaoPendenciasGeraisAulaUseCase>();
             services.TryAddScoped<IExecutarExclusaoPendenciasAulaUseCase, ExecutarExclusaoPendenciasAulaUseCase>();
             services.TryAddScoped<IExcluirPendenciaDiarioBordoPorAulaIdUseCase, ExcluirPendenciaDiarioBordoPorAulaIdUseCase>();
             services.TryAddScoped<IAlterarAulaFrequenciaTratarUseCase, AlterarAulaFrequenciaTratarUseCase>();
+            services.TryAddScoped<INotificarAlunosFaltososDreUseCase, NotificarAlunosFaltososDreUseCase>();
+            services.TryAddScoped<INotificarAlunosFaltososDreUeUseCase, NotificarAlunosFaltososDreUeUseCase>();
             services.TryAddScoped<INotificarAlunosFaltososUseCase, NotificarAlunosFaltososUseCase>();
             services.TryAddScoped<ICarregarUesTurmasRegenciaAulaAutomaticaUseCase, CarregarUesTurmasRegenciaAulaAutomaticaUseCase>();
             services.TryAddScoped<ISincronizarUeTurmaAulaRegenciaAutomaticaUseCase, SincronizarUeTurmaAulaRegenciaAutomaticaUseCase>();

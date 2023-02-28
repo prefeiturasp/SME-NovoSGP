@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
+using Elastic.Apm.Api;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 
@@ -8,7 +10,7 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioFechamentoTurmaDisciplinaConsulta : IRepositorioBase<FechamentoTurmaDisciplina>
     {
-        Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0);
+        Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(long turmaId, long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null);
 
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplinas(string turmaCodigo, long[] disciplinasId, int bimestre = 0);
 
@@ -27,5 +29,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<(long fechamentoTurmaDisciplinaId, long periodoEscolarId, string codigoRf)>> ObterFechamentosTurmaDisciplinaEmProcessamentoComTempoExpirado(DateTime dataInicio, int tempoConsideradoExpiracaoMinutos);
         Task<FechamentoTurmaDisciplina> ObterFechamentoTurmaDisciplinaPorId(long id);
         Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentoTurmaDisciplinaPorTurmaidDisciplinaId(string turmaCodigo, long disciplinaId, int? bimestre = 0);
+        Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre);
+        
     }
 }

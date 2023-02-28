@@ -13,6 +13,8 @@ namespace SME.SGP.Dados
             Map(c => c.AlunoNome).ToColumn("aluno_nome");
             Map(c => c.Situacao).ToColumn("situacao");
             Map(c => c.Excluido).ToColumn("excluido");
+            Map(c => c.SituacaoMatriculaAluno).ToColumn("situacao_matricula_aluno");
+            Map(c => c.MotivoEncerramento).ToColumn("motivo_encerramento");
         }
     }
 }

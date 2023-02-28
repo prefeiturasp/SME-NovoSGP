@@ -164,10 +164,6 @@ namespace SME.SGP.Api.Controllers
             var turmas = await mediator.Send(
                 new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade,
                     periodo, ConsideraHistorico, anoLetivo, tipos, consideraNovosAnosInfantil)); 
-            
-            if((turmas == null || !turmas.Any()) && !ConsideraHistorico)
-                turmas = await mediator.Send(
-                    new ObterAbrangenciaTurmasPorUeModalidadePeriodoHistoricoAnoLetivoTiposQuery(codigoUe, modalidade, periodo, true, anoLetivo, tipos, consideraNovosAnosInfantil)); 
 
             if (!turmas.Any())
                 return NoContent();
@@ -235,7 +231,6 @@ namespace SME.SGP.Api.Controllers
 
             if (filtro.Length < 3)
                 filtro = "";
-           
             var ues = await useCase.Executar(codigoDre, modalidade, periodo, ConsideraHistorico, anoLetivo, consideraNovasUEs, filtrarTipoEscolaPorAnoLetivo, filtro);
 
             if (!ues.Any())

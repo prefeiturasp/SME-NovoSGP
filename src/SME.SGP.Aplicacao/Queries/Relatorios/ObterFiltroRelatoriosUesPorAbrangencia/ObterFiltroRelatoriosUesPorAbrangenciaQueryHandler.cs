@@ -23,16 +23,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<List<AbrangenciaUeRetorno>> Handle(ObterFiltroRelatoriosUesPorAbrangenciaQuery request, CancellationToken cancellationToken)
         {
-            var anoReferencia = request.ConsideraNovosTiposUE ?
-                DateTime.Today.Year + 1 :
-                DateTime.Today.Year;
+            var parametroNovosTiposUE = await mediator
+                .Send(new ObterNovosTiposUEPorAnoQuery(request.AnoLetivo));
 
-            var parametroNovosTiposUE = await mediator.Send(new ObterNovosTiposUEPorAnoQuery(anoReferencia));
-            var novosTiposUE = parametroNovosTiposUE?.Split(',').Select(a => int.Parse(a)).ToArray();
+            var novosTiposUE = parametroNovosTiposUE?.Split(',')
+                .Select(a => int.Parse(a)).ToArray();
 
-            var ues = (await repositorioAbrangencia.ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE))?.ToList();
+            var ues = (await repositorioAbrangencia
+                .ObterUes(request.CodigoDre, request.UsuarioLogado.Login, request.UsuarioLogado.PerfilAtual, ignorarTiposUE: novosTiposUE, consideraHistorico: request.ConsideraHistorico, anoLetivo: request.AnoLetivo))?
+                .ToList();
 
-            var possuiAbrangenciaEmTodasAsUes = await mediator.Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
+            var possuiAbrangenciaEmTodasAsUes = await mediator
+                .Send(new ObterUsuarioPossuiAbrangenciaEmTodasAsUesQuery(request.UsuarioLogado.PerfilAtual));
 
             if (ues != null && ues.Any())
                 ues = ues.OrderBy(c => c.Nome).ToList();

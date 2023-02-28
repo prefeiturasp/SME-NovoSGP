@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -21,12 +22,18 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = param.ObterObjetoMensagem<FiltroDiarioBordoPendenciaDevolutivaDto>();
-                var ues =  await repositorioUeConsulta.ObterPorDre(filtro.DreId);
-                foreach (var ue in ues)
+                var ues =  (await repositorioUeConsulta.ObterPorDre(filtro.DreId)).ToList();
+
+                foreach (var tipoEscola in ues.GroupBy(ue => ue.TipoEscola))
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma, 
-                        new FiltroDiarioBordoPendenciaDevolutivaDto(dreId: filtro.DreId, ueCodigo: ue.CodigoUe, anoLetivo: filtro.AnoLetivo,ueId:ue.Id), 
-                        Guid.NewGuid(), null));
+                    var ignorarGeracaoPendencia = await mediator.Send(new ObterTipoUeIgnoraGeracaoPendenciasQuery(tipoEscola.Key, ""));
+                    if (!ignorarGeracaoPendencia)
+                        foreach (var ue in ues.Where(ue => ue.TipoEscola == tipoEscola.Key))
+                        {
+                            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaReprocessarDiarioBordoPendenciaDevolutivaPorTurma,
+                            new FiltroDiarioBordoPendenciaDevolutivaDto(dreId: filtro.DreId, ueCodigo: ue.CodigoUe, anoLetivo: filtro.AnoLetivo, ueId: ue.Id),
+                            Guid.NewGuid(), null));
+                        }
                 }
 
                 return true;

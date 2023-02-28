@@ -203,7 +203,8 @@ namespace SME.SGP.Dominio
             if (!usuarioLogado.EhProfessorCj())
                 return await mediator.Send(new ProfessorPodePersistirTurmaQuery(codigoRf, turmaId, data));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(codigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -222,7 +223,9 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -235,7 +238,8 @@ namespace SME.SGP.Dominio
             if (!usuario.EhProfessorCj())
                 return await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, data, usuario));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -284,16 +288,16 @@ namespace SME.SGP.Dominio
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
+            var componentesCurricularesUsuarioLogado = await servicoEOL
+                .ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
 
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
             var hoje = DateTime.Today;
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
                 if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
-
             }
 
             return componentesCurricularesParaVisualizar.ToArray();

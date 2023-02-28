@@ -15,7 +15,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class Ao_obter_frequencia_geral_de_aluno : FrequenciaTesteBase
     {
-        private const string VALOR_83 = "83,33";
+        private const string VALOR_83 = "83";
         private const string VALOR_100 = "100";
         public Ao_obter_frequencia_geral_de_aluno(CollectionFixture collectionFixture) : base(collectionFixture)
         {
@@ -32,7 +32,7 @@ namespace SME.SGP.TesteIntegracao.Frequencia
         [Fact]
         public async Task Deve_obter_frequencia_geral_de_aluno_com_ausencia()
         {
-            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DATA_02_05, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
+            await CriarDadosBasicos(ObterPerfilProfessor(), Modalidade.Fundamental, ModalidadeTipoCalendario.FundamentalMedio, DATA_02_05, DATA_07_08, BIMESTRE_2, DateTimeExtension.HorarioBrasilia().Date, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString(), false, NUMERO_AULAS_1);
             await CriarDadosFrenqueciaAluno(CODIGO_ALUNO_1,TipoFrequenciaAluno.Geral);
 
             await CrieRegistroDeFrenquencia();

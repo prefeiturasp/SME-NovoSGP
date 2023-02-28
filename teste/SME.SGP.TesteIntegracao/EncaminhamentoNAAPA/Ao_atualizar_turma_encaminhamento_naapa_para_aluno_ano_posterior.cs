@@ -41,12 +41,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CodigoUe = "1",
                 TurmaId = TURMA_ID_1,
                 Situacao = (int)SituacaoNAAPA.Rascunho,
-                Prioridade = NORMAL
+                Prioridade = NORMAL,
+                CriarTurmaPadrao = false
             };
 
             await CriarDadosBase(filtroNAAPA);
-            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_1);
             await CriarTurma(filtroNAAPA.Modalidade);
+            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_1);
 
             var useCase = ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA();
 
@@ -73,12 +74,13 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
                 CodigoUe = "1",
                 TurmaId = TURMA_ID_1,
                 Situacao = (int)SituacaoNAAPA.Rascunho,
-                Prioridade = NORMAL
+                Prioridade = NORMAL,
+                CriarTurmaPadrao = false
             };
 
             await CriarDadosBase(filtroNAAPA);
-            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_2);
             await CriarTurma(filtroNAAPA.Modalidade);
+            await CriarEncaminhamentoNAAPA(ALUNO_CODIGO_2);
 
             var useCase = ObterServicoAtualizarTurmaDoEncaminhamentoNAAPA();
 
@@ -88,7 +90,7 @@ namespace SME.SGP.TesteIntegracao.EncaminhamentoNAAPA
 
             var encaminhamentoNAAPA = ObterTodos<Dominio.EncaminhamentoNAAPA>().FirstOrDefault();
 
-            encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_3);
+            encaminhamentoNAAPA.TurmaId.ShouldBe(TURMA_ID_2);
         }
 
         private EncaminhamentoNAAPADto ObterEncaminhamentoDto(string alunoCodigo)

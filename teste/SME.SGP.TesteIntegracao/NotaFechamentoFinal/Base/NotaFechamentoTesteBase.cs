@@ -72,6 +72,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         protected override void RegistrarFakes(IServiceCollection services)
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            
             base.RegistrarFakes(services);
         }
 
@@ -1036,7 +1038,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         {
             await CriarDadosBase(filtroNotaFechamentoDto);
             
-            await CriarAula(DATA_28_04, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, filtroNotaFechamentoDto.ComponenteCurricular, TIPO_CALENDARIO_1);
+            var dataAula = (DATA_28_04 > DateTimeExtension.HorarioBrasilia()) ? DateTimeExtension.HorarioBrasilia() : DATA_28_04;
+            await CriarAula(dataAula, RecorrenciaAula.AulaUnica, TipoAula.Normal, USUARIO_PROFESSOR_CODIGO_RF_1111111, TURMA_CODIGO_1, UE_CODIGO_1, filtroNotaFechamentoDto.ComponenteCurricular, TIPO_CALENDARIO_1);
             
             await InserirFechamentoAluno(filtroNotaFechamentoDto);
 
@@ -1050,7 +1053,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
                 usuarioLogado, NUMERO_1, string.Empty, SISTEMA_CODIGO_RF, long.Parse(TURMA_CODIGO_1), true);
 
             await servicoMediator.Send(commando);
-            
+
             await ValidarResultadosTesteComPendencias();
         }
         private async Task ValidarResultadosTesteComPendencias()

@@ -58,16 +58,16 @@ namespace SME.SGP.Aplicacao
 
         private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
         {
+            var listaDeRemovida = new List<UnidadeEscolarSemAtribuicaolDto>();
             var novaLista = new List<UnidadeEscolarSemAtribuicaolDto>();
             var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
             .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
 
-
             foreach (var ue in uesParaAtribuicao.ToList())
             {
                 var codUE = ue.Codigo;
-                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE);
-                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
+                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE).ToList();
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao).Distinct();
                 if (quantidadeTipos.Count() < tipos.Count())
                 {
                     var naotemTipo = tipos.Except(quantidadeTipos).ToList();
@@ -84,7 +84,13 @@ namespace SME.SGP.Aplicacao
                         uesParaAtribuicao.Add(registro);
                     }
                 }
+                var listaAtribuicaoRemover = uesParaAtribuicaoDto.FindAll(atribuicao => atribuicao.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel);
+                if (listaAtribuicaoRemover.Count > 1 && listaAtribuicaoRemover.Exists(atribuicao => !atribuicao.AtribuicaoExcluida))
+                    listaDeRemovida.AddRange(listaAtribuicaoRemover.FindAll(atribuicao => atribuicao.AtribuicaoExcluida));
             }
+
+            foreach (var atribuicao in listaDeRemovida)
+                uesParaAtribuicao.Remove(atribuicao);
 
             var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
             return retorno.OrderBy(x => x.Nome).ToList();

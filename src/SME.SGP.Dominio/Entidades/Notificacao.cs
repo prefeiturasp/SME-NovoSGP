@@ -29,7 +29,7 @@
 
         public void MarcarComoLida()
         {
-            if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
+            if (Status == NotificacaoStatus.Pendente)
                 Status = NotificacaoStatus.Lida;
             else
                 throw new NegocioException($"A notificação com Código: '{Codigo}' não pode ser marcada como lida ou já está nesse status.");

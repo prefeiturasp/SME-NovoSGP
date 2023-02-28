@@ -18,8 +18,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagem)
         {
-            var anoAtual = DateTime.Now.Year;
             var filtro = mensagem.ObterObjetoMensagem<FiltroUEDto>();
+            
+            int anoAtual = filtro.AnoLetivo > 0 ? filtro.AnoLetivo : DateTimeExtension.HorarioBrasilia().Year;
 
             var turmas = await ObterTurmasInfantil(filtro.UeCodigo, anoAtual);
 

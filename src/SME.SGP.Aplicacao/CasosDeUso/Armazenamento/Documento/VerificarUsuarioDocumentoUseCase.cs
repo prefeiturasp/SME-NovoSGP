@@ -15,7 +15,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(VerificarUsuarioDocumentoDto param)
         {
-            return await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(param.TipoDocumentoId, param.ClassificacaoId, param.UsuarioId, param.UeId, param.DocumentoId));
+            return await mediator.Send(new VerificaUsuarioPossuiArquivoQuery(param.TipoDocumentoId, param.ClassificacaoId, param.UsuarioId, param.UeId,param.AnoLetivo,param.DocumentoId));
         }
     }
 }
