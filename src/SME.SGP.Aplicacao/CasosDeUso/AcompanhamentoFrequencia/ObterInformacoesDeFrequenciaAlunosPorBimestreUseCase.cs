@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("O componente curricular informado não foi encontrado.");
 
             if (!componenteCurricular.RegistraFrequencia)
-                throw new NegocioException("Este componente curricular não possui controle de frequência.");            
+                throw new NegocioException("Este componente curricular não possui controle de frequência.");
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             if (tipoCalendarioId == default)
@@ -51,7 +51,9 @@ namespace SME.SGP.Aplicacao
 
             var bimestreDoPeriodo = await consultasPeriodoEscolar.ObterPeriodoEscolarPorData(tipoCalendarioId, periodoAtual.PeriodoFim);
 
-            var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim));
+            var alunos = dto.Bimestre > 0 ? await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, bimestreDoPeriodo.PeriodoFim)) :
+                     await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, turma.AnoLetivo.Equals(DateTime.Today.Year)));
+
             if (!alunos?.Any() ?? true)
                 throw new NegocioException("Os alunos da turma não foram encontrados.");
 
@@ -65,10 +67,20 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                alunosValidosComOrdenacao = alunos.Where(a => a.EstaAtivo(bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
-                                                             (a.Inativo && a.DataSituacao >= bimestreDoPeriodo.PeriodoFim) && a.DataMatricula <= bimestreDoPeriodo.PeriodoFim)
-                                                  .OrderBy(a => a.NomeAluno)
-                                                  .ThenBy(a => a.NomeValido());
+                if (!(BimestreFinal == dto.Bimestre))
+                {
+                    alunosValidosComOrdenacao = alunos.Where(a => a.EstaAtivo(bimestreDoPeriodo.PeriodoInicio, bimestreDoPeriodo.PeriodoFim) || !a.SituacaoMatricula.Equals(SituacaoMatriculaAluno.VinculoIndevido) &&
+                                                            (a.Inativo && a.DataSituacao >= bimestreDoPeriodo.PeriodoFim) && a.DataMatricula <= bimestreDoPeriodo.PeriodoFim)
+                                                      .OrderBy(a => a.NomeAluno)
+                                                      .ThenBy(a => a.NomeValido());
+                }
+                else
+                {
+                    alunosValidosComOrdenacao = alunos.Where(a => !a.Inativo)
+                                                      .OrderBy(a => a.NomeAluno)
+                                                      .ThenBy(a => a.NomeValido());
+                }
+
             }
 
             return BimestreFinal == dto.Bimestre
@@ -103,8 +115,6 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<AlunoFrequenciaDto>> DefinirFrequenciaAlunoListagemAsync(IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, IEnumerable<FrequenciaAluno> frequenciaAlunosRegistrada, PeriodoEscolar periodoEscolar, bool turmaPossuiFrequenciaRegistrada = false)
         {
-            var turmaPossuiFrequenciasRegistradas = frequenciaAlunosRegistrada.ToList().Count > 0;
-
             List<AlunoFrequenciaDto> novaListaAlunos = new List<AlunoFrequenciaDto>();
             foreach (var aluno in alunos)
             {
@@ -117,15 +127,7 @@ namespace SME.SGP.Aplicacao
                 var presencas = frequenciaAlunoRegistrada?.TotalPresencas ?? default;
                 var totalAulas = frequenciaAlunoRegistrada?.TotalAulas ?? default;
 
-                var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0
-                ?
-                "100"
-                :
-                frequenciaAlunoRegistrada != null
-                ?
-                frequenciaAlunoRegistrada?.PercentualFrequencia.ToString()
-                :
-                "";
+                var percentualFrequencia = frequenciaAlunoRegistrada == null && turmaPossuiFrequenciaRegistrada && totalAulas > 0 ? "100" : frequenciaAlunoRegistrada != null ? frequenciaAlunoRegistrada?.PercentualFrequencia.ToString() : "";
 
                 novaListaAlunos.Add(new AlunoFrequenciaDto
                 {
@@ -169,13 +171,14 @@ namespace SME.SGP.Aplicacao
             var frequenciaAlunosRegistrada = await ObterFrequenciaAlunosRegistradaFinalAsync(turma, componenteCurricularId, tipoCalendarioId, periodosEscolaresIds, bimestres);
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestresQuery(turma.CodigoTurma, componenteCurricularId.ToString(), periodosEscolaresIds.ToArray()));
             var frequenciaAlunos = await DefinirFrequenciaAlunoListagemAsync(alunos, turma, frequenciaAlunosRegistrada, null, turmaPossuiFrequenciaRegistrada);
+            var frequenciasAlunosConsideradas = frequenciaAlunos.Where(fa => alunos.Select(a => a.CodigoAluno).Contains(fa.AlunoRf.ToString()));
 
             return new FrequenciaAlunosPorBimestreDto
             {
                 AulasDadas = aulasDadas,
                 AulasPrevistas = aulasPrevistas,
                 Bimestre = BimestreFinal,
-                FrequenciaAlunos = frequenciaAlunos.OrderBy(x => x.Nome),
+                FrequenciaAlunos = frequenciasAlunosConsideradas.OrderBy(x => x.Nome),
                 MostraColunaCompensacaoAusencia = turma.ModalidadeCodigo != Modalidade.EducacaoInfantil,
                 MostraLabelAulasPrevistas = turma.ModalidadeCodigo != Modalidade.EducacaoInfantil
             };
@@ -208,7 +211,7 @@ namespace SME.SGP.Aplicacao
 
             var frequenciasConsideradas = from f in frequenciasAluno
                                           from m in matriculasAluno
-                                          where f.PeriodoFim.Date >= m.DataMatricula
+                                          where m.DataMatricula.Date <= f.PeriodoFim.Date
                                           select f;
             return new FrequenciaAluno
             {
