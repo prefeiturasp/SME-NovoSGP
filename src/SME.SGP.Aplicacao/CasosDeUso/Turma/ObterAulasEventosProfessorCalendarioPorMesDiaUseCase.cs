@@ -122,9 +122,9 @@ namespace SME.SGP.Aplicacao
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
 
-            if (aulasParaVisualizar != null)
+            if (aulasParaVisualizar != null && aulasParaVisualizar.Any())
             {
-                if (componentesCurricularesDoProfessor != null)
+                if (componentesCurricularesDoProfessor != null && componentesCurricularesDoProfessor.Any(c => !string.IsNullOrWhiteSpace(c.codigoTerritorioSaber) && c.codigoTerritorioSaber != "0"))
                 {
                     var componentesCorrelatos = (from c in componentesCurricularesDoProfessor
                                                  from a in aulasParaVisualizar

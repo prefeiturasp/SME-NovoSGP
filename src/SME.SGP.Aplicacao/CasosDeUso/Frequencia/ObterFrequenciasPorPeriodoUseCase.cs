@@ -20,10 +20,12 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
             var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
 
             alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
 
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
+
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
