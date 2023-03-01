@@ -31,6 +31,8 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
             IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
@@ -58,8 +60,8 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null
-                    ? componentesCurricularesEolProfessor.SingleOrDefault(cp => cp.Codigo.ToString() == request.ComponenteCurricularCodigo)
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == request.ComponenteCurricularCodigo || cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString())
                     : new ComponenteCurricularEol
                     {
                         Codigo = long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0,
@@ -67,7 +69,7 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
                     };
 
-            var codigoComponentes = new[] { componenteCorrespondente.Codigo.ToString() };
+            var codigoComponentes = new[] { componenteCorrespondente.Regencia ? componenteCorrespondente.CodigoComponenteCurricularPai.ToString() : componenteCorrespondente.Codigo.ToString() };
             if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
                 codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
 
