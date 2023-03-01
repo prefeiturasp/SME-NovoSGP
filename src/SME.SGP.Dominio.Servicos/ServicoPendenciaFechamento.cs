@@ -125,8 +125,8 @@ namespace SME.SGP.Dominio.Servicos
             {
                 foreach (var aula in aulas.OrderBy(x => x.DataAula))
                 {
-                    mensagem.AppendLine($"CP @CodigoRfCP - @NomeCP, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>@NomeCP - @CodigoRfCP</td></tr>");
+                    mensagem.AppendLine($"CP @CodigoRfCP - @NomeCP, dia {aula.DataAula.ToString("dd/MM/yyyy")}{(aula.EhReposicao() ? " - Reposição" : String.Empty)}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}{(aula.EhReposicao() ? " - Reposição" : String.Empty)}</td><td>@NomeCP - @CodigoRfCP</td></tr>");
                 }
                 mensagemHtml.Append("</table>");
                 foreach (var usuarioCp in usuariosPendencias)
@@ -143,8 +143,8 @@ namespace SME.SGP.Dominio.Servicos
                     var professor = usuariosPendencias
                         .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p => p.ProfessorRf == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
 
-                    mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
-                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
+                    mensagem.AppendLine($"Professor {professor.CodigoRf} - {professor.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")} {(aula.EhReposicao() ? " - Reposição" : String.Empty)}.<br>");
+                    mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}{(aula.EhReposicao() ? " - Reposição" : String.Empty)}</td><td>{professor.Nome} - {professor.CodigoRf}</td></tr>");
                 }
                 mensagemHtml.Append("</table>");
 

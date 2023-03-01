@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<FechamentoTurmaDisciplinaPendenciaDto> Handle(ObterFechamentoTurmaDisciplinaDTOQuery request, CancellationToken cancellationToken)
-            => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(request.TurmaCodigo, request.DisciplinaId, request.Bimestre);
+            => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(request.TurmaCodigo, request.DisciplinaId, request.Bimestre, request.SituacoesFechamento);
     }
 }
