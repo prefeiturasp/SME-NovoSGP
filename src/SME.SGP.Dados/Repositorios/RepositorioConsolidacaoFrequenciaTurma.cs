@@ -104,5 +104,11 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteAsync(query, new { id, quantidadePresente, quantidadeAusente, quantidadeRemoto});
         }
+
+        public async Task Excluir(long turmaId)
+        {
+            var query = "delete from consolidacao_frequencia_turma where turma_id = @turmaId;";
+            await database.Conexao.ExecuteAsync(query, new { turmaId });
+        }
     }
 }
