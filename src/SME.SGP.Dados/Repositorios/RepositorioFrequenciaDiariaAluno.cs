@@ -53,7 +53,6 @@ namespace SME.SGP.Dados.Repositorios
                 FROM(SELECT count(rfa.id) AS TotalAulasNoDia,
 	                        a.data_aula AS DataAula,
 	                        a.id AS AulasId,
-	                        rfa.valor AS TipoFrequencia,
 	                        rfa.codigo_aluno AS AlunoCodigo,
 	                        an.id AS AnotacaoId,
                             count(distinct(rfa.registro_frequencia_id*rfa.numero_aula)) filter (WHERE rfa.valor = 1) AS TotalPresencas,
@@ -70,7 +69,7 @@ namespace SME.SGP.Dados.Repositorios
                         WHERE NOT rfa.excluido AND NOT rf.excluido AND NOT a.excluido
 	                        AND rfa.codigo_aluno = @codigoAluno
 	                        AND t.id = @turmaId AND a.disciplina_id = @aulaDisciplinaId   
- 						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.valor  ,rfa.codigo_aluno
+ 						GROUP  BY a.data_aula,a.id,an.id,ma.descricao,rfa.codigo_aluno
                         order by a.data_aula desc)n
                 ");
 
