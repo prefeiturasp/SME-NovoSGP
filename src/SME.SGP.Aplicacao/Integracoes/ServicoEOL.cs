@@ -1014,7 +1014,7 @@ namespace SME.SGP.Aplicacao.Integracoes
             if (!resposta.IsSuccessStatusCode || resposta.StatusCode == HttpStatusCode.NoContent)
             {
                 await RegistrarLogAsync(resposta, "obter as disciplinas", parametros);
-                return null;
+                return Enumerable.Empty<DisciplinaDto>();
             }
 
             var json = resposta.Content.ReadAsStringAsync().Result;

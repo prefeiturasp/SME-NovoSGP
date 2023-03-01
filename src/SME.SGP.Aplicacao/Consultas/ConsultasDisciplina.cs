@@ -505,16 +505,14 @@ namespace SME.SGP.Aplicacao
             if (disciplinas != null)
             {
                 foreach (var disciplina in disciplinas)
-                {
                     retorno.Add(MapearParaDto(disciplina, turmaPrograma, ensinoEspecial));
-                }
             }
             return retorno;
         }
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
-            Id = disciplina.Id,
+            Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue ? disciplina.CodigoComponenteTerritorioSaber.Value : disciplina.CodigoComponenteCurricular,
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,

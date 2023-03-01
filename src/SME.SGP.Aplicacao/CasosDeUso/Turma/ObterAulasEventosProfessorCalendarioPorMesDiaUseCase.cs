@@ -63,12 +63,11 @@ namespace SME.SGP.Aplicacao
             retorno.SomenteAulaReposicao = podeCadastrarAulaEMensagem.SomenteReposicao;
             retorno.MensagemPeriodoEncerrado = podeCadastrarAulaEMensagem.MensagemPeriodo;
 
-            IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesDoProfessor = new List<(string, string)>();
+            var componentesCurricularesDoProfessor = new List<(string codigo, string codigoTerritorioSaber)>();
 
             IEnumerable<Aula> aulasParaVisualizar = null;
             IEnumerable<AtividadeAvaliativa> atividadesAvaliativas = Enumerable.Empty<AtividadeAvaliativa>();
-            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor;
-            bool ehCJEPossuiComponentesVinculados = false;
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = new List<ComponenteCurricularEol>();
 
             atividadesAvaliativas = await mediator.Send(new ObterAtividadesAvaliativasCalendarioProfessorPorMesDiaQuery()
             {
@@ -87,11 +86,11 @@ namespace SME.SGP.Aplicacao
             }
             else
             {
-                componentesCurricularesEolProfessor = await mediator
+                componentesCurricularesEolProfessor = (await mediator
                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(filtroAulasEventosCalendarioDto.TurmaCodigo,
                                                                                  usuarioLogado.CodigoRf,
                                                                                  usuarioLogado.PerfilAtual,
-                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                                                                                 usuarioLogado.EhProfessorInfantilOuCjInfantil()))).ToList();
 
                 if (usuarioLogado.EhSomenteProfessorCj())
                 {
@@ -100,24 +99,26 @@ namespace SME.SGP.Aplicacao
 
                     if (componentesCurricularesDoProfessorCJ.Any())
                     {
-                        var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                        var dadosComponentes = await mediator
+                            .Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+
                         if (dadosComponentes.Any())
                         {
-                            componentesCurricularesDoProfessor = dadosComponentes.Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
-                            ehCJEPossuiComponentesVinculados = true;
-                        }
+                            componentesCurricularesDoProfessor.AddRange(dadosComponentes
+                                .Select(d => (d.CodigoComponenteCurricular.ToString(), d.TerritorioSaber ? d.CodigoComponenteCurricular.ToString() : "0")));
+                        }                            
                     }
                 }
 
-                if (componentesCurricularesEolProfessor != null || ehCJEPossuiComponentesVinculados)
+                if (componentesCurricularesEolProfessor != null && componentesCurricularesDoProfessor.Any())
                 {
-                    if (!ehCJEPossuiComponentesVinculados)
-                        componentesCurricularesDoProfessor = componentesCurricularesEolProfessor
-                        .Select(c => (c.Codigo.ToString(), c.CodigoComponenteTerritorioSaber.ToString())).ToArray();
-
-                    aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
-                    atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
+                    componentesCurricularesEolProfessor.ToList()
+                        .ForEach(cc => componentesCurricularesDoProfessor
+                            .Add((cc.Codigo.ToString(), cc.CodigoComponenteTerritorioSaber.ToString())));
                 }
+
+                aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulasDoDia, componentesCurricularesDoProfessor);
+                atividadesAvaliativas = usuarioLogado.ObterAtividadesAvaliativasQuePodeVisualizar(atividadesAvaliativas, componentesCurricularesDoProfessor.Select(c => c.codigo).ToArray());
             }
 
             IEnumerable<DisciplinaDto> componentesCurriculares = Enumerable.Empty<DisciplinaDto>();
