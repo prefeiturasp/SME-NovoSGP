@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
             }
             catch (Exception ex)
             {
-                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar mensagem para geração de pendências fechamento de aulas/diários de classe com pendência.", LogNivel.Critico, LogContexto.Fechamento, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace));
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao publicar mensagem para geração de pendências fechamento de aulas/diários de classe com pendência.", LogNivel.Critico, LogContexto.Pendencia, ex.Message, innerException: ex.InnerException.ToString(), rastreamento: ex.StackTrace));
                 throw;
             }
         }
