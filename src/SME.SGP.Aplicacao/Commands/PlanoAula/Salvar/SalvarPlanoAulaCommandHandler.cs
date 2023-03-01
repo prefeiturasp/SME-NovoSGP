@@ -65,13 +65,15 @@ namespace SME.SGP.Aplicacao
 
                 if (request.PlanoAula.ComponenteCurricularId.HasValue)
                 {
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+                    long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
+
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
 
                     if(!componentesCurriculares.Any())
                     {
                         var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
                         if (componentesEol.Any())
-                            componentesCurriculares = componentesEol.Select(c => new DisciplinaDto()
+                            componentesCurriculares = componentesEol.Where(c=> c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber == componenteCurricularId : c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
                             {
                                 CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
                                 CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,

@@ -25,9 +25,10 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
-
-                podeCriarAulasParaTurma = componentesCurricularesDoProfessorCJ != null ||
-                                          componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo);
+                
+                if(componentesCurricularesDoProfessorCJ != null)
+                    podeCriarAulasParaTurma = 
+                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo);
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
