@@ -333,12 +333,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select *
                             from aula a
-                            left join plano_aula p on p.aula_id = a.id
+                            left join plano_aula p on p.aula_id = a.id and not p.excluido 
                            where turma_id = @codigoTurma
                                 and disciplina_id = @disciplinaId
                                 and data_aula >= @inicioPeriodo
                                 and data_aula <= @fimPeriodo
                                 and data_aula <= @dataAtual
+                                and not a.excluido 
                                 and p.id is null";
 
             return database.Conexao.Query<Aula>(query, new
