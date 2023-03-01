@@ -23,7 +23,7 @@ namespace SME.SGP.Dados.Repositorios
             this.repositorioDre = repositorioDre ?? throw new ArgumentNullException(nameof(repositorioDre));
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasPorTipo(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int anoLetivo,bool exibirRegistroSemPendencia = true)
         {
             var listaRetorno = new List<Aula>();
             var sqlQuery = new StringBuilder();
@@ -62,7 +62,8 @@ namespace SME.SGP.Dados.Repositorios
             sqlQuery.AppendLine("	and ue.dre_id = @dreId");
             sqlQuery.AppendLine("   and t.modalidade_codigo = ANY(@modalidades)");
             sqlQuery.AppendLine("   and t.ano_letivo = @anoLetivo");
-            sqlQuery.AppendLine("	and p.id is null");
+            if(exibirRegistroSemPendencia)
+               sqlQuery.AppendLine("	and p.id is null");
             sqlQuery.AppendLine("	and tf.id is null ");
 
             if (ueId > 0)
@@ -157,7 +158,7 @@ namespace SME.SGP.Dados.Repositorios
                 commandTimeout: 60);
         }
 
-        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo)
+        public async Task<IEnumerable<Aula>> ListarPendenciasAtividadeAvaliativa(long dreId, long ueId, int anoLetivo, bool exibirRegistroSemPendencia = true)
         { 
             var sqlQuery = @"
                     with vw_pendencia as (
@@ -188,10 +189,11 @@ namespace SME.SGP.Dados.Repositorios
                     and dre.id = @dreId
                     and a.data_aula::date < @hoje
                     and t.ano_letivo = @anoLetivo
-                    and nc.id is null 
-                    and p.id is null ";
+                    and nc.id is null ";
+            if(exibirRegistroSemPendencia)
+                sqlQuery += "  and p.id is null ";
 
-            if (ueId > 0)
+                if (ueId > 0)
                 sqlQuery += " and u.id = @ueId";
 
             return await database.Conexao

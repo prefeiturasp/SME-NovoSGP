@@ -8,7 +8,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterPendenciasAulasPorTipoQuery : IRequest<IEnumerable<Aula>>
     {
-        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, int? anoLetivo = null)
+        public ObterPendenciasAulasPorTipoQuery(TipoPendencia tipoPendenciaAula, string tabelaReferencia, long[] modalidades, long dreId, long ueId, bool exibirRegistroSemPendencia = true, int? anoLetivo = null)
         {
             TipoPendenciaAula = tipoPendenciaAula;
             TabelaReferencia = tabelaReferencia;
@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
             DreId = dreId;
             AnoLetivo = anoLetivo ?? DateTime.Today.Year;
             UeId = ueId;
+            ExibirRegistroSemPendencia = exibirRegistroSemPendencia;
         }
 
         public TipoPendencia TipoPendenciaAula { get; set; }
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
         public long DreId { get; }
         public long UeId { get; }
         public int AnoLetivo { get; set; }
+        public bool ExibirRegistroSemPendencia { get; set; }
     }
 
     public class ObterPendenciasAulasPorTipoQueryValidator : AbstractValidator<ObterPendenciasAulasPorTipoQuery>
