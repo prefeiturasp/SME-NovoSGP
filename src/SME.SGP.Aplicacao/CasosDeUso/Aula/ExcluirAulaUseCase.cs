@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao
 
             if (!usuarioLogado.EhProfessorCj())
                 componentesCurricularesEolProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.Turma.CodigoTurma,
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(aula.TurmaId,
                                                                                   usuarioLogado.CodigoRf,
                                                                                   usuarioLogado.PerfilAtual,
                                                                                   usuarioLogado.EhProfessorInfantilOuCjInfantil()));
