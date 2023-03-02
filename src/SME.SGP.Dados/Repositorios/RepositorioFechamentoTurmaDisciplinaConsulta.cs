@@ -663,9 +663,9 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryAsync<TurmaFechamentoDisciplinaSituacaoDto>(sqlQuery, new { turmaId });
         }
 
-        public async Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre)
+        public async Task<FechamentoTurmaDisciplinaPendenciaDto> ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(string turmaCodigo, long disciplinaId, int bimestre, SituacaoFechamento[] situacoesFechamento)
         {
-            var query = new StringBuilder(@"select 	f.id,
+            var query = new StringBuilder(@"select f.id,
 		                                    f.disciplina_id as DisciplinaId,
 		                                    f.situacao as SituacaoFechamento, 
 		                                    ft.turma_id as TurmaId,
@@ -687,10 +687,24 @@ namespace SME.SGP.Dados.Repositorios
                                     where t.turma_id = @turmaCodigo
                                     and f.disciplina_id = @disciplinaId
                                     and p.bimestre = @bimestre");
-            
+            if (situacoesFechamento != null && situacoesFechamento.Any())
+                query.Append(" and f.situacao = any(@situacoesFechamento)");
+
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
-                new { turmaCodigo, disciplinaId, bimestre });
+                new { turmaCodigo, disciplinaId, bimestre, situacoesFechamento = (situacoesFechamento != null ? situacoesFechamento.Select(situacao => (int)situacao).ToArray() : null) });                
         }
-        
+
+        public async Task<bool> VerificaExistenciaFechamentoTurmaDisciplinPorTurmaDisciplinaBimestreSituacao(long turmaId, long disciplinaId, long periodoId, SituacaoFechamento[] situacoesFechamento)
+        {
+            var query = new StringBuilder(@"select count(f.id)
+                                     from fechamento_turma_disciplina f
+                                    inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                                    where ft.turma_id = @turmaId
+                                    and f.disciplina_id = @disciplinaId
+                                    and ft.periodo_escolar_id = @periodoId
+                                    and f.situacao = any(@situacoesFechamento)");
+                return (await database.Conexao.QueryFirstAsync<int>(query.ToString(),
+                new { turmaId, disciplinaId, periodoId, situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray() })) > 0;            
+        }
     }
 }
