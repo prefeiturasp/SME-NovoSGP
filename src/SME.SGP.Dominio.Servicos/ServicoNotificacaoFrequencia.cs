@@ -287,7 +287,7 @@ namespace SME.SGP.Dominio.Servicos
 
         private async Task NotificacaoAlunosFaltososTurma(string funcionarioId, IEnumerable<AlunoPorTurmaResposta> alunos, Turma turma, int quantidadeDias)
         {
-            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
+            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionarioId);
 
             var titulo = $"Alunos com excesso de ausências na turma {turma.Nome} ({turma.Ue.Nome})";
             StringBuilder mensagem = new StringBuilder();
