@@ -3,6 +3,7 @@ using SME.SGP.Api.Middlewares;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -18,7 +19,11 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> Get(string ueCodigo,int anoLetivo, [FromServices] IListarAtribuicoesCJPorFiltroUseCase useCase)
         {
-            return Ok(await useCase.Executar(new AtribuicaoCJListaFiltroDto{UeId = ueCodigo,AnoLetivo = anoLetivo}));
+            var retorno =  (await useCase.Executar(new AtribuicaoCJListaFiltroDto{UeId = ueCodigo,AnoLetivo = anoLetivo}));
+            if (!retorno.Any())
+                return NoContent();
+
+            return Ok(retorno);
         }
 
     }
