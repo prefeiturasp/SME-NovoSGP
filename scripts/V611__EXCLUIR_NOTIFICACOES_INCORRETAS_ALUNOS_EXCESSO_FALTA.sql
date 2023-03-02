@@ -1,5 +1,10 @@
---Notificação de alunos com excesso somente CP recebe pelo fluxo atual
-delete from notificacao n where n.titulo like '%Alunos com excesso%' 
+--Notificação de alunos com excesso, somente CP recebe pelo fluxo atual
+update notificacao
+set n.excluida = true, 
+n.alterado_em = current_timestamp,
+n.alterado_por = 'Sistema',
+n.alterado_rf = '0' 
+where n.titulo like '%Alunos com excesso%' 
 and extract (year from n.criado_em) = extract(year from now()) 
 and not n.excluida 
 and id not in(
