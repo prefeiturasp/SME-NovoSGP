@@ -58,11 +58,13 @@ namespace SME.SGP.Aplicacao
             else
             {
                 if (usuarioLogado.EhProfessor())
+                {
                     componentesCurricularesDoProfessor = await mediator
-                                                               .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
-                                                                                                                                usuarioLogado.PerfilAtual,
-                                                                                                                                filtroAulasEventosCalendarioDto.TurmaCodigo,
-                                                                                                                                usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                        .Send(new ObterComponentesCurricularesQuePodeVisualizarHojeQuery(usuarioLogado.CodigoRf,
+                                                                                         usuarioLogado.PerfilAtual,
+                                                                                         filtroAulasEventosCalendarioDto.TurmaCodigo,
+                                                                                         usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+                }                    
 
                 aulasParaVisualizar = usuarioLogado.ObterAulasQuePodeVisualizar(aulas, componentesCurricularesDoProfessor);
 

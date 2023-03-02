@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                     }
                 }
 
-                if (componentesCurricularesEolProfessor != null && componentesCurricularesDoProfessor.Any())
+                if (componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any())
                 {
                     componentesCurricularesEolProfessor.ToList()
                         .ForEach(cc => componentesCurricularesDoProfessor

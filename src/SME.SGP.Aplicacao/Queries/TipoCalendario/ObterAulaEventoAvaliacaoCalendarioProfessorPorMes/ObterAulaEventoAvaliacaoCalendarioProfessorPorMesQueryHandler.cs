@@ -34,8 +34,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
             var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-            var componentesCurricularesId = componentesCurriculares?.Select(x => x.Codigo).ToArray();
-            
+            var componentesCurricularesId = componentesCurriculares?.Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo).ToArray();
+
             for (int i = 1; i < qntDiasMes + 1; i++)
             {
                 var eventoAula = new EventoAulaDiaDto() { Dia = i };
@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                     else if (dataMes >= item.InicioDoFechamento && dataMes <= item.FinalDoFechamento)
-                    { 
+                    {
                         eventoAula.TemEvento = true;
                         break;
                     }

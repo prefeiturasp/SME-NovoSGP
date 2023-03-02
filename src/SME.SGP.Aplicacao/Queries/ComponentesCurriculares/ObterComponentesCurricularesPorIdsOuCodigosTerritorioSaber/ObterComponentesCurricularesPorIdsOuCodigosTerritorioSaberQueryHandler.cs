@@ -31,10 +31,11 @@ namespace SME.SGP.Aplicacao
                 var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.CodigoComponentes.Select(c => c.codigo).ToArray(), request.CodigoTurma);
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
-                    var codigoTerritorioSaberCorrespondente = request.CodigoComponentes.Single(c => c.codigo.Equals(disciplina.CodigoComponenteCurricular));
+                    var codigoTerritorioSaberCorrespondente = request.CodigoComponentes
+                        .FirstOrDefault(c => c.codigo.Equals(disciplina.CodigoComponenteCurricular) || c.codigoTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
                     disciplina.RegistraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(codigoTerritorioSaberCorrespondente.codigo, codigoTerritorioSaberCorrespondente.codigoTerritorioSaber > 0 ? codigoTerritorioSaberCorrespondente.codigoTerritorioSaber : null));
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(codigoTerritorioSaberCorrespondente.codigo, codigoTerritorioSaberCorrespondente != default && codigoTerritorioSaberCorrespondente.codigoTerritorioSaber.HasValue && codigoTerritorioSaberCorrespondente.codigoTerritorioSaber.Value > 0 ? codigoTerritorioSaberCorrespondente.codigoTerritorioSaber : null));
 
                     disciplina.Id = codigoTerritorioSaberCorrespondente.codigoTerritorioSaber ?? 0;
                     listaDisciplinas.Add(disciplina);

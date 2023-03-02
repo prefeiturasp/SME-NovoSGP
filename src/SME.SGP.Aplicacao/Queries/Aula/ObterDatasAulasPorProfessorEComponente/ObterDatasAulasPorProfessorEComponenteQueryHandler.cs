@@ -32,16 +32,22 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
-            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
-            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
             componentesCurricularesEolProfessor = await mediator
                 .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
                                                                               usuarioLogado.CodigoRf,
                                                                               usuarioLogado.PerfilAtual,
                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+            var componenteCurricularCorrespondente = componentesCurricularesEolProfessor
+                .SingleOrDefault(cp => cp.Codigo.Equals(componenteCurricularId));
+            
+            var componenteCurricular = await mediator
+                .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente?.CodigoComponenteTerritorioSaber ?? componenteCurricularId));
+
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();            
 
             if (usuarioLogado.EhProfessorCj())
             {
