@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioFechamentoTurmaDisciplina = repositorioFechamentoTurmaDisciplina ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurmaDisciplina));
         }
 
-        public async Task<FechamentoTurmaDisciplinaPendenciaDto> Handle(ObterFechamentoTurmaDisciplinaDTOQuery request, CancellationToken cancellationToken)
-            => await repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(request.TurmaCodigo, request.DisciplinaId, request.Bimestre);
+        public Task<FechamentoTurmaDisciplinaPendenciaDto> Handle(ObterFechamentoTurmaDisciplinaDTOQuery request, CancellationToken cancellationToken)
+            => repositorioFechamentoTurmaDisciplina.ObterFechamentoTurmaDisciplinaDTOPorTurmaDisciplinaBimestre(request.TurmaCodigo, request.DisciplinaId, request.Bimestre, request.SituacoesFechamento);
     }
 }

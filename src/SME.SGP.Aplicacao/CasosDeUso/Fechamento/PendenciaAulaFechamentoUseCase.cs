@@ -46,13 +46,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task GerarPendenciasFechamento(string turmaCodigo, long disciplinaId, PeriodoEscolar periodoEscolar)
         {
+            var situacoesFechamento = new SituacaoFechamento[] { SituacaoFechamento.ProcessadoComSucesso, SituacaoFechamento.ProcessadoComPendencias };
             var fechamentoTurmaDisciplina = await mediator.Send(new ObterFechamentoTurmaDisciplinaDTOQuery(turmaCodigo,
                 disciplinaId,
-                periodoEscolar.Bimestre));
+                periodoEscolar.Bimestre,
+                situacoesFechamento));
 
-            if (fechamentoTurmaDisciplina != null &&
-                (fechamentoTurmaDisciplina.SituacaoFechamento == SituacaoFechamento.ProcessadoComSucesso ||
-                 fechamentoTurmaDisciplina.SituacaoFechamento == SituacaoFechamento.ProcessadoComPendencias))
+            if (fechamentoTurmaDisciplina != null)
             {
                 var disciplinasEol = await mediator.Send(new ObterDisciplinasPorIdsQuery(new[] {fechamentoTurmaDisciplina.DisciplinaId}));
 

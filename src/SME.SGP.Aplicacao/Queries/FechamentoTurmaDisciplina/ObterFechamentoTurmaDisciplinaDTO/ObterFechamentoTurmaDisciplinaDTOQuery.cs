@@ -10,16 +10,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterFechamentoTurmaDisciplinaDTOQuery : IRequest<FechamentoTurmaDisciplinaPendenciaDto>
     {
-        public ObterFechamentoTurmaDisciplinaDTOQuery(string turmaCodigo, long disciplinaId, int bimestre)
+        public ObterFechamentoTurmaDisciplinaDTOQuery(string turmaCodigo, long disciplinaId, int bimestre, SituacaoFechamento[] situacoesFechamento)
         {
             TurmaCodigo = turmaCodigo;
             DisciplinaId = disciplinaId;
             Bimestre = bimestre;
+            SituacoesFechamento = situacoesFechamento;
         }
 
         public string TurmaCodigo { get; set; }
         public long DisciplinaId { get; set; }
         public int Bimestre { get; set; }
+        public SituacaoFechamento[] SituacoesFechamento { get; set; }
 
     }
 
