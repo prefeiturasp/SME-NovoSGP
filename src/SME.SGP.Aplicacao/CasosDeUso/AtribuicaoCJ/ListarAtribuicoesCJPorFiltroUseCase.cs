@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -26,7 +27,7 @@ namespace SME.SGP.Aplicacao
                 return await TransformaEntidadesEmDtosListaRetorno(listaRetorno);
             }
                 
-            else return null;
+            else return Enumerable.Empty<AtribuicaoCJListaRetornoDto>();
         }
 
         private async Task<IEnumerable<AtribuicaoCJListaRetornoDto>> TransformaEntidadesEmDtosListaRetorno(IEnumerable<AtribuicaoCJ> listaDto)
