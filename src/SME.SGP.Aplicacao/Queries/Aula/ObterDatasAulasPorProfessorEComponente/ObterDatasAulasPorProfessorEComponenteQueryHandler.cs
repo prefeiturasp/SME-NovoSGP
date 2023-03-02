@@ -31,28 +31,72 @@ namespace SME.SGP.Aplicacao
             var tipoCalendarioId = await ObterTipoCalendario(turma);
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+            IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
-            var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, request.ComponenteCurricularCodigo,string.Empty);
+            if (!usuarioLogado.EhProfessorCj())
+                componentesCurricularesEolProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
+                                                                                  usuarioLogado.CodigoRf,
+                                                                                  usuarioLogado.PerfilAtual,
+                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+            
+            if (usuarioLogado.EhProfessorCj())
+            {
+                var componentesCurricularesDoProfessorCJ = await mediator
+                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+                if (componentesCurricularesDoProfessorCJ.Any())
+                {
+                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+                    if (dadosComponentes.Any())
+                    {
+                        componentesCurricularesDoProfessorCj = dadosComponentes
+                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber 
+                                ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
+                    }
+                }
+            }
+
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == request.ComponenteCurricularCodigo || cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString())
+                    : new ComponenteCurricularEol
+                    {
+                        Codigo = long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0,
+                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
+                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                    };
+
+            var codigoComponentes = new[] { componenteCorrespondente.Regencia ? componenteCorrespondente.CodigoComponenteCurricularPai.ToString() : componenteCorrespondente.Codigo.ToString() };
+            if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
+                codigoComponentes = codigoComponentes.Append(componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString()).ToArray();
+
+            var datasAulas = await ObterAulasNosPeriodos(periodosEscolares, turma.AnoLetivo, turma.CodigoTurma, codigoComponentes, string.Empty);
 
             if (datasAulas == null || !datasAulas.Any())
                 return default;
 
-            var ids = datasAulas.Select(a => a.IdAula).ToList();
+            var ids = datasAulas.Select(a => a.IdAula).Distinct().ToList();
             var aulas = await mediator.Send(new ObterAulasPorIdsQuery(ids));
-            
+
             var aulasPermitidas = new List<long>();
             bool verificaCJPodeEditar = await VerificaCJPodeEditarRegistroTitular(turma.AnoLetivo);
 
             if (usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
             {
                 aulasPermitidas = aulas.Where(a => a.DisciplinaId == request.ComponenteCurricularCodigo)
-                                       .Select(a=> a.Id).ToList();
+                                       .Select(a => a.Id).ToList();
             }
             else
             {
+                IList<(string, string)> codigosComponentes = new List<(string, string)>()
+                    { (componenteCorrespondente?.Codigo.ToString() ?? request.ComponenteCurricularCodigo, componenteCorrespondente?.CodigoComponenteTerritorioSaber.ToString() ?? null) };
+
                 aulasPermitidas = usuarioLogado
-               .ObterAulasQuePodeVisualizar(aulas, new string[] { request.ComponenteCurricularCodigo })
-               .Select(a => a.Id).ToList();
+                    .ObterAulasQuePodeVisualizar(aulas, codigosComponentes)
+                    .Select(a => a.Id).ToList();
             }
 
             return datasAulas.Where(da => aulasPermitidas.Contains(da.IdAula)).GroupBy(g => g.Data)
@@ -63,8 +107,8 @@ namespace SME.SGP.Aplicacao
                     {
                         AulaId = a.IdAula,
                         AulaCJ = a.AulaCJ,
-                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar) 
-                        || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPosl() 
+                        PodeEditar = (usuarioLogado.EhProfessorCj() && a.AulaCJ || usuarioLogado.EhProfessorCjInfantil() && verificaCJPodeEditar)
+                        || (!a.AulaCJ && (usuarioLogado.EhProfessor() || usuarioLogado.EhGestorEscolar() || usuarioLogado.EhProfessorPosl()
                         || usuarioLogado.EhProfessorPoed()) || usuarioLogado.EhProfessorPap() || usuarioLogado.EhProfessorPaee()),
                         ProfessorRf = a.ProfessorRf,
                         CriadoPor = a.CriadoPor,
@@ -109,13 +153,16 @@ namespace SME.SGP.Aplicacao
             return turma;
         }
 
-        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string componenteCurricularCodigo, string professorRf)
+        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(IEnumerable<PeriodoEscolar> periodosEscolares, int anoLetivo, string turmaCodigo, string[] componenteCurricularCodigo, string professorRf)
         {
             var listaDataAulas = new List<DataAulasProfessorDto>();
-            var aulas = await repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(periodosEscolares.Select(s => s.Id).Distinct(), anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, null, null,false);
+
+            var aulas = await repositorioConsulta
+                .ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(periodosEscolares.Select(s => s.Id).Distinct(), anoLetivo, turmaCodigo, componenteCurricularCodigo, professorRf, null, null, false);
+
             foreach (var periodoEscolar in periodosEscolares)
             {
-                listaDataAulas.AddRange(aulas.Select(aula => new DataAulasProfessorDto
+                listaDataAulas.AddRange(aulas.Distinct().Select(aula => new DataAulasProfessorDto
                 {
                     Data = aula.DataAula,
                     IdAula = aula.Id,

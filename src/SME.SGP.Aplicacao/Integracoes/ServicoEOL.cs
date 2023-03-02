@@ -686,6 +686,10 @@ namespace SME.SGP.Aplicacao.Integracoes
             var retorno = JsonConvert.DeserializeObject<ProfessorResumoDto>(json);
 
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(retorno.CodigoRF));
+
+            if (usuario == null)
+                throw new NegocioException("Usuário não localizado.");
+
             retorno.UsuarioId = usuario.Id;
 
             return retorno;
@@ -855,15 +859,15 @@ namespace SME.SGP.Aplicacao.Integracoes
         {
             return disciplinas.Select(x => new DisciplinaDto
             {
-                CodigoComponenteCurricular = !x.Territorio? x.CdComponenteCurricular : long.Parse(x.CdComponenteCurricular.ToString().Substring(x.CdComponenteCurricular.ToString().Length - 4)),
+                CodigoComponenteCurricular = x.CdComponenteCurricular,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,
                 RegistraFrequencia = x.RegistraFrequencia,
                 TerritorioSaber = x.Territorio,
                 LancaNota = x.LancaNota,
-                GrupoMatrizId = x.GrupoMatriz.Id,
-                GrupoMatrizNome = x.GrupoMatriz.Nome
+                GrupoMatrizId = x.GrupoMatriz?.Id ?? 0,
+                GrupoMatrizNome = x.GrupoMatriz?.Nome
             });
         }
 

@@ -19,8 +19,8 @@ namespace SME.SGP.Dados
         {
             const string query = @"select 1 
                                      from consolidacao_registros_pedagogicos c
-                                          inner join turma t on t.id = c.turma_id
-                                    where t.ano_letivo = @ano";
+                                    where c.ano_letivo = @ano
+                                    limit 1";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { ano });
         }

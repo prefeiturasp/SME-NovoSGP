@@ -606,16 +606,15 @@ namespace SME.SGP.Dados.Repositorios
         }
 
         public async Task<IEnumerable<AulaPossuiFrequenciaAulaRegistradaDto>> ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo, 
-            string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
+            string[] disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj)
         {
             var query = new StringBuilder(@"SELECT DISTINCT a.id,
-                                            a.data_aula AS DataAula,
-                                                a.aula_cj AS AulaCJ, 
-                                                a.professor_rf AS ProfessorRf,
-                                                a.criado_por AS CriadoPor, 
-                                                a.tipo_aula AS TipoAula,
-                                                CASE WHEN rf.id > 0 THEN TRUE ELSE false
-                                            END PossuiFrequenciaRegistrada ");
+                                                            a.data_aula AS DataAula,
+                                                            a.aula_cj AS AulaCJ, 
+                                                            a.professor_rf AS ProfessorRf,
+                                                            a.criado_por AS CriadoPor, 
+                                                            a.tipo_aula AS TipoAula,
+                                                            CASE WHEN rf.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
@@ -626,7 +625,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");
-            query.AppendLine("and a.disciplina_id = @disciplinaId ");
+            query.AppendLine("and a.disciplina_id = any(@disciplinaId) ");
             query.AppendLine("and t.ano_letivo = @anoLetivo ");
 
             if (aulaInicio.HasValue && aulaFim.HasValue)

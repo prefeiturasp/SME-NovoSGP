@@ -103,7 +103,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<IEnumerable<TotalAulasNaoLancamNotaDto>> ObterTotalAulasPorTurmaDisciplinaAluno(string disciplinaId, string codigoTurma, string codigoAluno);
 
         Task<IEnumerable<AulaPossuiFrequenciaAulaRegistradaDto>> ObterDatasDeAulasPorAnoTurmaEDisciplinaVerificandoSePossuiFrequenciaAulaRegistrada(IEnumerable<long> periodosEscolaresId, int anoLetivo, string turmaCodigo,
-                string disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
+                string[] disciplinaId, string usuarioRF, DateTime? aulaInicio, DateTime? aulaFim, bool aulaCj);
 
         Task<IEnumerable<RegistroFrequenciaAulaParcialDto>> ObterListaDeRegistroFrequenciaAulaPorTurma(string codigoTurma);
     }

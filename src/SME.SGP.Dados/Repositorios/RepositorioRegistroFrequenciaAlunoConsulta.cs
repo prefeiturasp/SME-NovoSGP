@@ -194,8 +194,8 @@ namespace SME.SGP.Dados.Repositorios
             StringBuilder query = new StringBuilder();
             query.AppendLine("select COALESCE(SUM(a.quantidade),0) AS total");
             query.AppendLine("  from aula a ");
-            query.AppendLine("      inner join periodo_escolar p on");
-            query.AppendLine("          a.tipo_calendario_id = p.tipo_calendario_id");
+            query.AppendLine("      inner join periodo_escolar p");
+            query.AppendLine("          on a.tipo_calendario_id = p.tipo_calendario_id");
             query.AppendLine("where not a.excluido");
             query.AppendLine("and @dataAula::date between p.periodo_inicio and p.periodo_fim");
             query.AppendLine("and a.data_aula::date between p.periodo_inicio and p.periodo_fim");
@@ -204,17 +204,18 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and a.disciplina_id = @disciplinaId");
 
             if (dataMatriculaAluno.HasValue && dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date between @dataMatriculaAluno::date and @dataSituacaoAluno::date - 1");
+                query.AppendLine("and a.data_aula::date between (@dataMatriculaAluno::date + 1) and @dataSituacaoAluno::date");
             else if (dataMatriculaAluno.HasValue)
-                query.AppendLine("and a.data_aula::date >= @dataMatriculaAluno::date");
+                query.AppendLine("and a.data_aula::date > @dataMatriculaAluno::date");
             else if (dataSituacaoAluno.HasValue)
-                query.AppendLine("and a.data_aula::date < @dataSituacaoAluno::date");
+                query.AppendLine("and a.data_aula::date <= @dataSituacaoAluno::date");
 
             query.AppendLine("and a.turma_id = any(@turmasId)");            
             query.AppendLine("and exists (select 1");
             query.AppendLine("				from registro_frequencia_aluno rfa");
             query.AppendLine("			  where a.id = rfa.aula_id and");
-            query.AppendLine("				  not a.excluido);");
+            query.AppendLine("				  not a.excluido and");
+            query.AppendLine("				  rfa.numero_aula between 1 and a.quantidade);");
 
             return query.ToString();
         }

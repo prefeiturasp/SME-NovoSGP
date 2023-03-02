@@ -37,14 +37,14 @@ namespace SME.SGP.Api.Controllers
             return Ok(retorno);
         }
 
-        [HttpGet("turma/{turmaId}/componente-curricular/{componenteCurricularId}/aluno/{alunoCodigo}/bimestre/{bimestre}")]
+        [HttpGet("turma/{turmaId}/componente-curricular/{componenteCurricularId}/aluno/{alunoCodigo}/bimestre/{bimestre}/semestre/{semestre}")]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 602)]
         [Permissao(Permissao.AFQ_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaDiariaAluno(long turmaId, long componenteCurricularId, long alunoCodigo, int bimestre, [FromServices] IObterFrequenciaDiariaAlunoUseCase useCase)
+        public async Task<IActionResult> ObterFrequenciaDiariaAluno(long turmaId, long componenteCurricularId, long alunoCodigo, int bimestre, int? semestre, [FromServices] IObterFrequenciaDiariaAlunoUseCase useCase)
         {
-            var retornoPaginado = await useCase.Executar(new FiltroFrequenciaDiariaAlunoDto(turmaId, componenteCurricularId, alunoCodigo, bimestre));
+            var retornoPaginado = await useCase.Executar(new FiltroFrequenciaDiariaAlunoDto(turmaId, componenteCurricularId, alunoCodigo, bimestre, semestre));
             if (retornoPaginado.Items.Count() > 0)
                 return Ok(retornoPaginado);
             else

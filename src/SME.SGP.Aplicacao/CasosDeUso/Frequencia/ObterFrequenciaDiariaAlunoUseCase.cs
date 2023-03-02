@@ -10,7 +10,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<PaginacaoResultadoDto<FrequenciaDiariaAlunoDto>> Executar(FiltroFrequenciaDiariaAlunoDto dto)
         {
-            return await mediator.Send(new ObterFrequenciaDiariaAlunoQuery(dto.TurmaId,dto.ComponenteCurricularId,dto.AlunoCodigo,dto.Bimestre));
+            return await mediator.Send(new ObterFrequenciaDiariaAlunoQuery(dto.TurmaId,dto.ComponenteCurricularId,dto.AlunoCodigo,dto.Bimestre, dto.Semestre));
         }
     }
 }
