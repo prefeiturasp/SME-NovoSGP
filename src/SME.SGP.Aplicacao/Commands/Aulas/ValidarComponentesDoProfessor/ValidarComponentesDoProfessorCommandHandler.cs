@@ -18,43 +18,42 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<(bool resultado, string mensagem)> Handle(ValidarComponentesDoProfessorCommand request, 
-                                                                    CancellationToken cancellationToken)
+        public async Task<(bool resultado, string mensagem)> Handle(ValidarComponentesDoProfessorCommand request, CancellationToken cancellationToken)
         {
+            var podeCriarAulasParaTurma = false;
             if (request.Usuario.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
-                                                                 .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
-               
-                if (componentesCurricularesDoProfessorCJ == null 
-                 || !componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo 
-                                                                && c.DisciplinaId == request.ComponenteCurricularCodigo))
+                    .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(request.Usuario.Login));
+                
+                if(componentesCurricularesDoProfessorCJ != null)
+                    podeCriarAulasParaTurma = 
+                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo);
+
+                if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
             else
             {
                 var componentesCurricularesDoProfessor = await mediator
-                                                               .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, 
-                                                                                                                             request.Usuario.Login, 
-                                                                                                                             request.Usuario.PerfilAtual, 
-                                                                                                                             request.Usuario.EhProfessorInfantilOuCjInfantil()));
-                if (componentesCurricularesDoProfessor == null)
-                    componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual,
-                                                                                                                   request.Usuario.EhProfessorInfantilOuCjInfantil());
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil()));
 
-                if (componentesCurricularesDoProfessor == null || !componentesCurricularesDoProfessor.Any(c => (c.Codigo == request.ComponenteCurricularCodigo && !c.TerritorioSaber
-                    || c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo && c.TerritorioSaber))
-                    && !componentesCurricularesDoProfessor.Any(r => r.Regencia && r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo))
+                if (componentesCurricularesDoProfessor == null)
+                    componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
+
+                podeCriarAulasParaTurma = componentesCurricularesDoProfessor != null &&
+                                          (componentesCurricularesDoProfessor.Any(c => !c.Regencia && !c.TerritorioSaber && c.Codigo == request.ComponenteCurricularCodigo) ||
+                                           componentesCurricularesDoProfessor.Any(c => !c.Regencia && c.TerritorioSaber && (c.CodigoComponenteTerritorioSaber == request.ComponenteCurricularCodigo || c.Codigo == request.ComponenteCurricularCodigo)) ||
+                                           componentesCurricularesDoProfessor.Any(r => r.Regencia && (r.CodigoComponenteCurricularPai == request.ComponenteCurricularCodigo || r.Codigo == request.ComponenteCurricularCodigo)));
+
+                if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
 
                 if (!request.Usuario.EhGestorEscolar())
                 {
                     var usuarioPodePersistirTurmaNaData = await mediator
-                                                                .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, 
-                                                                                                                             request.TurmaCodigo, 
-                                                                                                                             request.Data, 
-                                                                                                                             request.Usuario));
-                
+                        .Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(request.ComponenteCurricularCodigo, request.TurmaCodigo, request.Data, request.Usuario));
+
                     if (!usuarioPodePersistirTurmaNaData)
                         return (false, MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
                 }

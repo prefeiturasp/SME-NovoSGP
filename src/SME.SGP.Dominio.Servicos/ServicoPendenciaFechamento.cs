@@ -94,7 +94,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task<ProfessorTitularDisciplinaEol> BuscaProfessorTitularPorTurmaEDisciplina(string turmaCodigo, long disciplinaId)
         {
             var professoresTitularesPorTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaCompletosQuery(turmaCodigo));
-            var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinaId == disciplinaId);
+            var professorTitularPorTurmaEDisciplina = professoresTitularesPorTurma.FirstOrDefault(o => o.DisciplinasId.Contains(disciplinaId));
 
             if (professorTitularPorTurmaEDisciplina == null)
                 throw new NegocioException($"Não existe professor titular para esta turma/disciplina {turmaCodigo}/{disciplinaId}");
@@ -148,7 +148,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == disciplinaId).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = aulas.FirstOrDefault()?.ProfessorRf;
 
@@ -198,7 +198,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 mensagemHtml.Append("</table>");
 
-                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == disciplinaId).FirstOrDefault()?.ProfessorRf;
+                var professorRf = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(disciplinaId)).FirstOrDefault()?.ProfessorRf;
                 if (string.IsNullOrWhiteSpace(professorRf) || aulasCJ)
                     professorRf = atividades.FirstOrDefault()?.ProfessorRf;
 
@@ -350,7 +350,7 @@ namespace SME.SGP.Dominio.Servicos
                 var rfProfTitularTurma = string.Empty;
 
                 if (!string.IsNullOrWhiteSpace(professorRF.disciplnaId))
-                    rfProfTitularTurma = professoresTitularesDaTurma.Where(professor => professor.DisciplinaId == long.Parse(professorRF.disciplnaId)).FirstOrDefault()?.ProfessorRf;
+                    rfProfTitularTurma = professoresTitularesDaTurma.Where(professor => professor.DisciplinasId.Contains(long.Parse(professorRF.disciplnaId))).FirstOrDefault()?.ProfessorRf;
                 else
                     rfProfTitularTurma = professoresTitularesDaTurma.FirstOrDefault()?.ProfessorRf;
                 

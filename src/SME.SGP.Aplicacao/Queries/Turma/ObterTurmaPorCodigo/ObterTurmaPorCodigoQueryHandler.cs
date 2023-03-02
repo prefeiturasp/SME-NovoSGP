@@ -22,7 +22,9 @@ namespace SME.SGP.Aplicacao
         
         public async Task<Turma> Handle(ObterTurmaPorCodigoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioCache.ObterAsync(ObterChave(request.TurmaCodigo), async () => await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo));
+            return request.UsarRepositorio 
+                    ? await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo)
+                    : await repositorioCache.ObterAsync(ObterChave(request.TurmaCodigo), async () => await repositorioTurmaConsulta.ObterTurmaComUeEDrePorCodigo(request.TurmaCodigo));
         }
         
         private string ObterChave(string turmaCodigo)

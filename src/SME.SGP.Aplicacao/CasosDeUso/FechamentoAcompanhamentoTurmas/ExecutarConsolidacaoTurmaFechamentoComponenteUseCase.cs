@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
             if (consolidadoTurmaComponente == null)
             {
-                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinaId == filtro.ComponenteCurricularId);
+                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId));
 
                 consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {

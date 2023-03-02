@@ -218,7 +218,10 @@ namespace SME.SGP.TesteIntegracao
         public const string USUARIO_LOGIN_CP = "CP999999";
         public const string USUARIO_LOGIN_DIRETOR = "DIR999998";
         public const string USUARIO_LOGIN_AD = "AD999997";
-        
+        public const string USUARIO_LOGIN_COOD_NAAPA = "NAAP11111";
+        public const string USUARIO_LOGIN_ADM_DRE = "DRE111111";
+        public const string USUARIO_LOGIN_ADM_SME = "SME111111";
+
         protected const string USUARIO_CP_LOGIN_3333333 = "3333333";
         protected const string USUARIO_CEFAI_LOGIN_3333333 = "3333333";
         protected const string USUARIO_PAAI_LOGIN_3333333 = "3333333";
@@ -506,6 +509,12 @@ namespace SME.SGP.TesteIntegracao
             if (perfil.Equals(ObterPerfilPaee()))
                 return USUARIO_PAAI_LOGIN_5555555;
 
+            if (perfil.Equals(ObterPerfilAdmDre()))
+                return USUARIO_LOGIN_ADM_DRE;
+
+            if (perfil.Equals(ObterPerfilAdmSme()))
+                return USUARIO_LOGIN_ADM_SME;
+
             return USUARIO_PROFESSOR_LOGIN_2222222;
         }
 
@@ -552,6 +561,17 @@ namespace SME.SGP.TesteIntegracao
         {
             return Guid.Parse(PerfilUsuario.PAEE.Name()).ToString();
         }
+
+        protected string ObterPerfilAdmDre()
+        {
+            return Guid.Parse(PerfilUsuario.ADMDRE.ObterNome()).ToString();
+        }
+
+        protected string ObterPerfilAdmSme()
+        {
+            return Guid.Parse(PerfilUsuario.ADMSME.ObterNome()).ToString();
+        }
+
         protected string ObterPerfilCJInfantil()
         {
             return Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name()).ToString();
