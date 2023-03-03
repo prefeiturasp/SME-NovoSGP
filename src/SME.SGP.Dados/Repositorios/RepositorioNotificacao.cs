@@ -93,5 +93,17 @@ namespace SME.SGP.Dados.Repositorios
                         limit @limite";
             return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new {usuarioRf, limite });
         }
+
+        public async Task AtualizarMensagemPorWorkFlowAprovacao(long[] ids, string mensagem)
+        {
+            var query = @"UPDATE NOTIFICACAO SET 
+                            MENSAGEM = @mensagem, 
+                            ALTERADO_EM = @alteradoEm, 
+                            ALTERADO_POR = @alteradoPor,
+                            ALTERADO_RF = @alteradoRf
+                         WHERE ID = any(@ids)";
+
+           await database.Conexao.ExecuteAsync(query, new { ids, mensagem, alteradoPor = "Sistema", alteradoEm = DateTimeExtension.HorarioBrasilia(), alteradoRf = "Sistema" });
+        }
     }
 }

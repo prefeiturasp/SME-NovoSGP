@@ -49,8 +49,8 @@ namespace SME.SGP.Aplicacao
                 workflowAprovacao.NotifacaoMensagem = mensagemAlterada;
                 await mediator.Send(new SalvarWorkflowAprovacaoCommand(workflowAprovacao));
             
-                notificacao.Mensagem = mensagemAlterada;
-                await mediator.Send(new SalvarNotificacaoCommand(notificacao));
+                var notificacoes = await mediator.Send(new ObterNotificacoesPorWorkFlowAprovacaoIdQuery(request.WorkflowAprovacaoId));
+                await mediator.Send(new AtualizarNotificacaoMensagemPorIdsCommand(notificacoes.Select(s=> s.Id).ToList().ToArray(), mensagemAlterada));
                 
                 return mensagemAlterada;
             }
