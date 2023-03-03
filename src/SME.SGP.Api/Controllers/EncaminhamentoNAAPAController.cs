@@ -13,6 +13,7 @@ using System;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra.Dtos;
 using SME.SGP.Aplicacao.CasosDeUso;
+using System.Collections;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -175,5 +176,17 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
         }
+
+        [HttpGet("fluxos-alerta")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterFluxosAlerta([FromServices] IObterOpcoesRespostaFluxoAlertaEncaminhamentosNAAPAUseCase useCase) => Ok(await useCase.Executar());
+
+        [HttpGet("portas-entrada")]
+        [ProducesResponseType(typeof(IEnumerable<OpcaoRespostaSimplesDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPortasEntrada([FromServices] IObterOpcoesRespostaPortaEntradaEncaminhamentosNAAPAUseCase useCase) => Ok(await useCase.Executar());
     }
 }
