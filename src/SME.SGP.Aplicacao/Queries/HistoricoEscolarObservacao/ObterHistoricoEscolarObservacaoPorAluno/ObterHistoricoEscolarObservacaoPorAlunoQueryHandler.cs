@@ -16,9 +16,9 @@ namespace SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao
             this.repositorioHistoricoEscolarObservacao = repositorioHistoricoEscolarObservacao ?? throw new ArgumentNullException(nameof(repositorioHistoricoEscolarObservacao));
         }
 
-        public async Task<HistoricoEscolarObservacaoDto> Handle(ObterHistoricoEscolarObservacaoPorAlunoQuery request, CancellationToken cancellationToken)
+        public Task<HistoricoEscolarObservacaoDto> Handle(ObterHistoricoEscolarObservacaoPorAlunoQuery request, CancellationToken cancellationToken)
         {
-            return await repositorioHistoricoEscolarObservacao.ObterPorCodigoAlunoAsync(request.AlunoCodigo);
+            return repositorioHistoricoEscolarObservacao.ObterPorCodigoAlunoAsync(request.AlunoCodigo);
         }
     }
 }

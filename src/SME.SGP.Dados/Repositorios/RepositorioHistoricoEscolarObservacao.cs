@@ -13,13 +13,13 @@ namespace SME.SGP.Dados.Repositorios
         {
         }
 
-        public async Task<HistoricoEscolarObservacaoDto> ObterPorCodigoAlunoAsync(string alunoCodigo)
+        public Task<HistoricoEscolarObservacaoDto> ObterPorCodigoAlunoAsync(string alunoCodigo)
         {
             var query = @"select aluno_codigo as AlunoCodigo, observacao as Observacao
                           from historico_escolar_observacao 
                           where aluno_codigo = @alunoCodigo";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<HistoricoEscolarObservacaoDto>(query, new { alunoCodigo });
+            return database.Conexao.QueryFirstOrDefaultAsync<HistoricoEscolarObservacaoDto>(query, new { alunoCodigo });
         }
     }
 }
