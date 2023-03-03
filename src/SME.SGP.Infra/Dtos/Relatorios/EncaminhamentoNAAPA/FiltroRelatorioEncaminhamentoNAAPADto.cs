@@ -8,6 +8,8 @@
         public bool ExibirEncerrados { get; set; }
         public int[] FluxoAlertaIds { get; set; }
         public int[] PortaEntradaIds { get; set; }
+        public string UsuarioNome { get; set; }
+        public string UsuarioRf { get; set; }
 
     }
 }
