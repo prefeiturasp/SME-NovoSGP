@@ -21,7 +21,8 @@ namespace SME.SGP.Dados.Repositorios
                           inner join questao q on q.id = opcres.questao_id 
                           inner join questionario q2 on q2.id = q.questionario_id 
                           where q2.tipo = @tipoQuestionario and not opcres.excluido and not q.excluido 
-                                and q.nome_componente = @nomeComponente";
+                                and q.nome_componente = @nomeComponente
+                          order by opcres.ordem";
 
             return database.Conexao.QueryAsync<OpcaoRespostaSimplesDto>(query, new { nomeComponente, tipoQuestionario = (int)tipoQuestionario });
         }
