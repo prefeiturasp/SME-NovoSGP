@@ -1130,7 +1130,7 @@ namespace SME.SGP.Dados.Repositorios
                                     left join dre d 
                                         on d.id = u.dre_id");
 
-             query.AppendLine(@"where
+             query.AppendLine(@" where
                                     e.tipo_calendario_id = @tipoCalendarioId
                                 and extract(year from e.data_inicio) = tc.ano_letivo     
                                 and e.letivo = any(@tiposLetivos)                         
