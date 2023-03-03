@@ -50,7 +50,7 @@ namespace SME.SGP.Aplicacao
                 wfAprovacao.AdicionarNivel(Cargo.Supervisor);
             }
 
-            var idWorkflow = await mediator.Send(new SalvarWorkflowAprovacaoCommand(wfAprovacao));
+            var idWorkflow = await mediator.Send(new SalvarWorkflowAprovacaoNivelUsuarioCommand(wfAprovacao));
 
             var workflowAprovacaoNotaFechamentoIds = dados.Select(d => d.WfAprovacao.Id);
 

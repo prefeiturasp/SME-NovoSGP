@@ -319,16 +319,6 @@ namespace SME.SGP.Dominio.Servicos
                             fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                             await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                         }
-
-                        if (emAprovacao)
-                        {
-                            var notaConceitoAprovacaoAluno = entidadeDto.NotaConceitoAlunos.Select(a => new { a.ConceitoId, a.CodigoAluno, a.Nota })
-                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
-
-                            AdicionaAprovacaoConceito(notasEnvioWfAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota,
-                                notaConceitoAprovacaoAluno?.ConceitoId);
-                        }
-
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
                     }
 

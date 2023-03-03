@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao
 
         protected virtual string ObterTabelaNotas(List<WfAprovacaoNotaFechamentoTurmaDto> aprovacoesPorTurma)
         {
-            return aprovacoesPorTurma.FirstOrDefault().ComponenteCurricularEhRegencia
+            return aprovacoesPorTurma.FirstOrDefault().ConceitoAnteriorId.HasValue || aprovacoesPorTurma.FirstOrDefault().WfAprovacao.ConceitoId.HasValue
                 ? MontarTabelaNotasRegencia(aprovacoesPorTurma,aprovacoesPorTurma.FirstOrDefault().LancaNota)
                 : MontarTabelaNotas(aprovacoesPorTurma);
         }
@@ -84,6 +84,7 @@ namespace SME.SGP.Aplicacao
 					CriadoRf = nota.WfAprovacao.CriadoRF,
 					CriadoPor = nota.WfAprovacao.CriadoPor,
 					ConceitoId = nota.WfAprovacao.ConceitoId,
+					ConceitoAnteriorId = nota.ConceitoAnteriorId,
 					ComponenteCurricularDescricao = nota.ComponenteCurricularDescricao,
 					NotaAnterior = nota.NotaAnterior,
 					Nota = nota.WfAprovacao.Nota,
