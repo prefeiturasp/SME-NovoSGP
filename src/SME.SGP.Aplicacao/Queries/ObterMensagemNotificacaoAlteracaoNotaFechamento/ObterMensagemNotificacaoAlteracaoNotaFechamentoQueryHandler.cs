@@ -30,32 +30,41 @@ namespace SME.SGP.Aplicacao
             if (!fechamentosNota.Any())
                 return mensagem;
             
-            if (notificacao.Status == NotificacaoStatus.Aceita || notificacao.Status == NotificacaoStatus.Reprovada)
+            if (notificacao.Status == NotificacaoStatus.Aceita || notificacao.Status == NotificacaoStatus.Reprovada || !TemTagDinamicaOuFixa(mensagem))
                 return mensagem;
             
-            var contemTagMensagemDinamica = mensagem.Contains(MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
+            var contemTagMensagemDinamica = mensagem.Contains(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO);
             
             await CarregarInformacoesParaNotificacao(fechamentosNota);
 
             var complementoMensagem = ObterTabelaNotas(fechamentosNota);
             
-            mensagem = contemTagMensagemDinamica 
-                ? mensagem.Replace(MENSAGEM_DINAMICA_TABELA_POR_ALUNO, complementoMensagem) 
+            var mensagemAlterada = contemTagMensagemDinamica 
+                ? mensagem.Replace(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO, complementoMensagem) 
                 : AtualizarMensagem(complementoMensagem, mensagem);
-            
-            var workflowAprovacao = await mediator.Send(new ObterWorkflowPorIdQuery(request.WorkflowAprovacaoId));
-            workflowAprovacao.NotifacaoMensagem = mensagem;
-            await mediator.Send(new SalvarWorkflowAprovacaoCommand(workflowAprovacao));
-            
-            notificacao.Mensagem = mensagem;
-            await mediator.Send(new SalvarNotificacaoCommand(notificacao));
 
+            if (!mensagemAlterada.Equals(mensagem))
+            {
+                var workflowAprovacao = await mediator.Send(new ObterWorkflowPorIdQuery(request.WorkflowAprovacaoId));
+                workflowAprovacao.NotifacaoMensagem = mensagemAlterada;
+                await mediator.Send(new SalvarWorkflowAprovacaoCommand(workflowAprovacao));
+            
+                notificacao.Mensagem = mensagemAlterada;
+                await mediator.Send(new SalvarNotificacaoCommand(notificacao));
+                
+                return mensagemAlterada;
+            }
             return mensagem;
+        }
+
+        private bool TemTagDinamicaOuFixa(string mensagem)
+        {
+            return mensagem.Contains(TAG_MENSAGEM_DINAMICA_TABELA_POR_ALUNO) || mensagem.Contains(MENSAGEM_FIXA_TABELA_POR_ALUNO);
         }
 
         private string AtualizarMensagem(string complementoMensagem, string mensagem)
         {
-            var mensagemPadrao = mensagem.Substring(0,mensagem.LastIndexOf("<table"));
+            var mensagemPadrao = mensagem.Substring(0,mensagem.LastIndexOf(TAG_MENSAGEM_FIXA_POR_ALUNO));
             
             return $"{mensagemPadrao} {complementoMensagem}";
         }
