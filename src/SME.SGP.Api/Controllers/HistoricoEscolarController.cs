@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Dtos;
 using SME.SGP.Infra.Dtos.Relatorios;
 using System;
 using System.Threading.Tasks;
@@ -23,6 +24,17 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Gerar(FiltroHistoricoEscolarDto filtroHistoricoEscolarDto, [FromServices] IHistoricoEscolarUseCase historicoEscolarUseCase)
         {
             return Ok(await historicoEscolarUseCase.Executar(filtroHistoricoEscolarDto));
+        }
+
+        [HttpGet]
+        [Route("observacao-complementar/{alunoCodigo}")]
+        [ProducesResponseType(typeof(HistoricoEscolarObservacaoDto), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.HE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterObservacaoHistoricoEscolar(string alunoCodigo, [FromServices] IObterHistoricoEscolarObservacaoUseCase obterHistoricoEscolarObservacaoUseCase)
+        {
+            return Ok(await obterHistoricoEscolarObservacaoUseCase.Executar(alunoCodigo));
         }
     }
 }
