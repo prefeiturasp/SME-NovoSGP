@@ -25,7 +25,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery request, CancellationToken cancellationToken)
         {
-            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value)
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
                 var listaDisciplinas = new List<DisciplinaDto>();
                 var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.CodigoComponentes.Select(c => c.codigo).ToArray(), request.CodigoTurma);

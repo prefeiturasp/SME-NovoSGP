@@ -25,17 +25,18 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value)
-            {
-                var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
+            {                
                 var listaDisciplinas = new List<DisciplinaDto>();
 
                 var disciplinasAgrupadas = await servicoEol
                     .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
 
                 var disciplinasUsuario = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));                
-
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var disciplinaCorrespondente = disciplinasUsuario

@@ -66,7 +66,7 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
+            var componenteCorrespondente = (!usuarioLogado.EhProfessorCj() && usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ) && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
                     ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == request.ComponenteCurricularCodigo || cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString())
                     : new ComponenteCurricularEol
                     {
