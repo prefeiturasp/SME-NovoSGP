@@ -1,6 +1,6 @@
 ﻿namespace SME.SGP.Infra
 {
-    public class FiltroRelatorioEncaminhamentoNaapaDto
+    public class FiltroRelatorioEncaminhamentoNaapaDetalhadoDto
     {
         public long[] EncaminhamentoNaapaIds { get; set; }
         public string UsuarioNome { get; set; }

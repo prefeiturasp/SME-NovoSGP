@@ -850,7 +850,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IRelatorioEncaminhamentoAEEUseCase, RelatorioEncaminhamentoAeeUseCase>();
             
             //Encaminhamento NAAPA
-            services.TryAddScoped<IRelatorioEncaminhamentoNaapaUseCase, RelatorioEncaminhamentoNaapaUseCase>();
+            services.TryAddScoped<IRelatorioEncaminhamentoNaapaDetalhadoUseCase, RelatorioEncaminhamentoNaapaDetalhadoUseCase>();
             
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();

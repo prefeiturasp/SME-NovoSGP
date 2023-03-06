@@ -8,16 +8,16 @@ using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao
 {
-    public class RelatorioEncaminhamentoNaapaUseCase : IRelatorioEncaminhamentoNaapaUseCase
+    public class RelatorioEncaminhamentoNaapaDetalhadoUseCase : IRelatorioEncaminhamentoNaapaDetalhadoUseCase
     {
         private readonly IMediator mediator;
 
-        public RelatorioEncaminhamentoNaapaUseCase(IMediator mediator)
+        public RelatorioEncaminhamentoNaapaDetalhadoUseCase(IMediator mediator)
         {
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<bool> Executar(FiltroRelatorioEncaminhamentoNaapaDto param)
+        public async Task<bool> Executar(FiltroRelatorioEncaminhamentoNaapaDetalhadoDto param)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             param.UsuarioNome = usuarioLogado.Nome;
@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
 
-            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentoNaapa,param,usuarioLogado,rotaRelatorio:RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoNaapa));
+            return await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.RelatorioEncaminhamentoNaapaDetalhado,param,usuarioLogado,rotaRelatorio:RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosEncaminhamentoNaapaDetalhado));
         }
     }
 }

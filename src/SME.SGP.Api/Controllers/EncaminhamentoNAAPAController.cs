@@ -21,7 +21,6 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class EncaminhamentoNAAPAController : ControllerBase
     {
-
         [HttpPost("salvar")]
         [ProducesResponseType(typeof(IEnumerable<ResultadoEncaminhamentoNAAPADto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -30,11 +29,11 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await registrarEncaminhamentoNAAPAUseCase.Executar(encaminhamentoNAAPADto));
         }
-        
+
         [HttpGet]
         [ProducesResponseType(typeof(PaginacaoResultadoDto<EncaminhamentoNAAPAResumoDto>), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")] 
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
         public async Task<IActionResult> ObterEncaminhamentosNAAPA([FromQuery] FiltroEncaminhamentoNAAPADto filtro,
             [FromServices] IObterEncaminhamentoNAAPAUseCase useCase)
         {
@@ -121,7 +120,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
-        
+
         [HttpGet("{encaminhamentoId}")]
         [ProducesResponseType(typeof(EncaminhamentoNAAPARespostaDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -166,7 +165,7 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await useCase.Executar(encaminhamentoNAAPAId));
         }
-        
+
         [HttpPost("encerrar")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -174,6 +173,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> EncerrarEncaminhamento([FromBody] EncerramentoEncaminhamentoNAAPADto parametros, [FromServices] IEncerrarEncaminhamentoNAAPAUseCase useCase)
         {
             return Ok(await useCase.Executar(parametros.EncaminhamentoId, parametros.MotivoEncerramento));
+        }
+
+        [HttpPost("imprimir-datalhado")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImprimirDetalhado([FromBody] FiltroRelatorioEncaminhamentoNaapaDetalhadoDto filtro, [FromServices] IRelatorioEncaminhamentoNaapaDetalhadoUseCase detalhadoUseCase)
+        {
+            return Ok(await detalhadoUseCase.Executar(filtro));
         }
     }
 }
