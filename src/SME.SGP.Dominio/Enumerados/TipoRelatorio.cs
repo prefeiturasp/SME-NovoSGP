@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
+using System.Xml.Linq;
 
 namespace SME.SGP.Dominio
 {
@@ -131,6 +133,10 @@ namespace SME.SGP.Dominio
         RelatorioEncaminhamentosAee = 43,
         
         [Display(Name = "relatorios/encaminhamentoaeedetalhado", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
+        RelatorioEncaminhamentoAeeDetalhado = 44,
+
+        [Display(Name = "relatorios/encaminhamentosnaapa", ShortName = "EncaminhamentoNAAPA", Description = "Encaminhamento NAAPA")]
+        RelatorioEncaminhamentosNAAPA = 45,
         RelatorioEncaminhamentoAeeDetalhado = 44,
         
         [Display(Name = "relatorios/encaminhamentonaapadetalhado", ShortName = "EncaminhamentoNaapaDetalhado", Description = "Encaminhamento NAAPA Detalhado")]
