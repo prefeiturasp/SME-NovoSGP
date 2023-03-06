@@ -18,8 +18,6 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             var historicoEscolarObservacaoDto = mensagemRabbit.ObterObjetoMensagem<HistoricoEscolarObservacaoDto>();
-            if (historicoEscolarObservacaoDto == null)
-                throw new Exception("Mensagem inválida");
 
             var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(historicoEscolarObservacaoDto.CodigoAluno));
 
