@@ -285,5 +285,14 @@ namespace SME.SGP.Api.Controllers
         {
             return Ok(await relatorioEncaminhamentoAeeUseCase.Executar(filtroRelatorioEncaminhamentoAeeDto));
         }
+
+        [HttpPost("encaminhamento-naapa")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.NAAPA_C, Policy = "Bearer")]
+        public async Task<IActionResult> EncaminhamentoNaapa([FromBody]FiltroRelatorioEncaminhamentoNaapaDto filtro, [FromServices] IRelatorioEncaminhamentoNaapaUseCase useCase)
+        {
+            return Ok( await  useCase.Executar(filtro));
+        }
     }
 }

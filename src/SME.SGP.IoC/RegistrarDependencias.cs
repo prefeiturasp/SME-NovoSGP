@@ -848,7 +848,10 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IPesquisaResponsavelEncaminhamentoPorDreUEUseCase, PesquisaResponsavelEncaminhamentoPorDreUEUseCase>();
             services.TryAddScoped<IPesquisaResponsavelPlanoPorDreUEUseCase, PesquisaResponsavelPlanoPorDreUEUseCase>();
             services.TryAddScoped<IRelatorioEncaminhamentoAEEUseCase, RelatorioEncaminhamentoAeeUseCase>();
-
+            
+            //Encaminhamento NAAPA
+            services.TryAddScoped<IRelatorioEncaminhamentoNaapaUseCase, RelatorioEncaminhamentoNaapaUseCase>();
+            
             // Funcionario
             services.TryAddScoped<IPesquisaFuncionariosPorDreUeUseCase, PesquisaFuncionariosPorDreUeUseCase>();
             services.TryAddScoped<IObterFuncionariosPAAIPorDreUseCase, ObterFuncionariosPAAIPorDreUseCase>();
