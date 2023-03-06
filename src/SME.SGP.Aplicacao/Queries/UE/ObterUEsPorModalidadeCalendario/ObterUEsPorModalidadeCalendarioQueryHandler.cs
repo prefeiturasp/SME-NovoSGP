@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorModalidadeCalendario
         {
             var modalidades = request.ModalidadeTipoCalendario.ObterModalidadesTurma();
 
-            return await repositorioUe.ObterUesPorModalidade(modalidades.Cast<int>().ToArray());
+            return await repositorioUe.ObterUesPorModalidade(modalidades.Cast<int>().ToArray(),request.AnoLetivo);
         }
     }
 }
