@@ -16,26 +16,28 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var filtro = mensagemRabbit.ObterObjetoMensagem<Ue>();
+            var ueId = filtro.Id;
 
             if (!await ExecutarConsolidacaoDevolutivas())
                 return false;
 
-            await ConsolidarDevolutivasAnoAtual();
+            await ConsolidarDevolutivasAnoAtual(ueId);
 
-            await ConsolidarDevolutivasHistorico();
+            await ConsolidarDevolutivasHistorico(ueId);
 
             return true;
 
         }
 
-        private async Task ConsolidarDevolutivasAnoAtual()
+        private async Task ConsolidarDevolutivasAnoAtual(long ueId)
         {
             var anoAtual = DateTime.Now.Year;
 
             var turmasInfantil = await mediator
-                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
+                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
 
             await mediator
                 .Send(new LimparConsolidacaoDevolutivasCommand(turmasInfantil.Select(ti => ti.Id).ToArray()));
@@ -45,8 +47,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             await AtualizarDataExecucao(anoAtual);
         }
 
-        private async Task ConsolidarDevolutivas(int ano)
+        private async Task ConsolidarDevolutivas(int ano, long ueId)
         {
+            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano, ueId));
+
+            await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
+
+            await AtualizarDataExecucao(ano);
             try
             {
                 // TODO: Essa rota não possui o registro
@@ -58,12 +65,12 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
         }
 
-        private async Task ConsolidarDevolutivasHistorico()
+        private async Task ConsolidarDevolutivasHistorico(long ueId)
         {
             for (var ano = 2021; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoDevolutivaTurmaPorAnoQuery(ano)))
-                    await ConsolidarDevolutivas(ano);
+                    await ConsolidarDevolutivas(ano, ueId);
             }
         }
 

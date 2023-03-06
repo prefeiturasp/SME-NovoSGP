@@ -123,7 +123,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<ConsolidacaoDevolutivaTurmaDTO>(query, new { turmaCodigo, anoLetivo });
         }
 
-        public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
+        public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo, long ueId)
         {
             var query = @" select distinct
                             t.turma_id as turmaId,
@@ -135,9 +135,10 @@ namespace SME.SGP.Dados.Repositorios
                         where not db.excluido 
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo in (1,2)
+                            and ue.id = @ueId
                             and a.data_aula::date <= current_date;";
 
-            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo }, commandTimeout: 60);
+            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo, ueId }, commandTimeout: 60);
         }
 
         public async Task<IEnumerable<long>> ObterTurmasInfantilComDevolutivasPorTurmaIdAula(string turmaId)
