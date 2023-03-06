@@ -19,8 +19,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(FiltroRelatorioEncaminhamentoNaapaDto param)
         {
-            //var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var usuarioLogado = await mediator.Send(new ObterUsuarioPorRfQuery(param.UsuarioRf));
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             param.UsuarioNome = usuarioLogado.Nome;
             param.UsuarioRf = usuarioLogado.CodigoRf;
 
