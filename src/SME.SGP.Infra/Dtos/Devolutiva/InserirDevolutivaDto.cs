@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Infra
 {
@@ -17,7 +15,7 @@ namespace SME.SGP.Infra
         public string Descricao { get; set; }
     }
 
-    public class InserirDevolutivaDtoValidator: AbstractValidator<InserirDevolutivaDto>
+    public class InserirDevolutivaDtoValidator : AbstractValidator<InserirDevolutivaDto>
     {
         public InserirDevolutivaDtoValidator()
         {

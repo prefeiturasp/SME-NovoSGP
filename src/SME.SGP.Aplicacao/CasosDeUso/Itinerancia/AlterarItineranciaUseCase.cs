@@ -1,9 +1,11 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,8 +36,6 @@ namespace SME.SGP.Aplicacao.Interfaces
             itinerancia.DreId = dto.DreId;
             itinerancia.UeId = dto.UeId;
 
-            await ExcluirFilhosItinerancia(dto, itinerancia);
-
             using (var transacao = unitOfWork.IniciarTransacao())
             {
                 try
@@ -43,6 +43,8 @@ namespace SME.SGP.Aplicacao.Interfaces
                     var auditoriaDto = await mediator.Send(new AlterarItineranciaCommand(itinerancia));
                     if (auditoriaDto == null)
                         throw new NegocioException($"Não foi possível alterar a itinerância de Id {itinerancia.Id}");
+
+                    await ExcluirFilhosItinerancia(dto, itinerancia);
 
                     await SalvarFilhosItinerancia(dto, itinerancia);
 
@@ -108,7 +110,7 @@ namespace SME.SGP.Aplicacao.Interfaces
                 workflow = await mediator.Send(new ObterWorkflowPorIdQuery(verificaWorkflow.WfAprovacaoId));
 
             if (workflow == null || workflow.Niveis.Any(a => a.Status == WorkflowAprovacaoNivelStatus.Reprovado))
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                     new NotificacaoSalvarItineranciaDto
                     {
                         CriadoRF = itinerancia.CriadoRF,
@@ -133,9 +135,18 @@ namespace SME.SGP.Aplicacao.Interfaces
                         throw new NegocioException($"Não foi possível excluir o objetivo da itinerância de Id {objetivo.Id}");
 
             if (itineranciaDto.PossuiQuestoes)
-                foreach (var questao in itinerancia.Questoes)
-                    if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
-                        throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+                foreach (var questao in itineranciaDto.Questoes)
+                {
+                    if (questao.Id != 0)
+                        if (!await mediator.Send(new ExcluirItineranciaQuestaoCommand(questao.Id, itinerancia.Id)))
+                            throw new NegocioException($"Não foi possível excluir a questão da itinerância de Id {questao.Id}");
+                    if (questao.Excluido && questao.QuestaoTipoUploadRespondida())
+                    {
+                        var arquivoCodigo = Guid.Parse(questao.Resposta);
+                        await ExcluirArquivoItinerancia(arquivoCodigo);
+                    }
+                    
+                }
 
             return true;
         }
@@ -155,7 +166,20 @@ namespace SME.SGP.Aplicacao.Interfaces
 
             if (itineranciaDto.PossuiQuestoes)
                 foreach (var questao in itineranciaDto.Questoes)
-                    await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
+                {
+                    if (!questao.Excluido)
+                    {
+                        if (questao.QuestaoTipoUploadRespondida() &&
+                            questao.QuestaoSemArquivoId())
+                        {
+                            var arquivoCodigo = Guid.Parse(questao.Resposta);
+                            questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+                        }
+
+                        if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                    }
+                }
 
             return true;
         }
@@ -175,6 +199,19 @@ namespace SME.SGP.Aplicacao.Interfaces
                     item.TurmaId = turmas.FirstOrDefault(a => a.CodigoTurma == item.TurmaId.ToString()).Id;
                 }
             }
+        }
+
+        private async Task ExcluirArquivoItinerancia(Guid arquivoCodigo)
+        {
+            var entidadeArquivo = await mediator.Send(new ObterArquivoPorCodigoQuery(arquivoCodigo));
+            if (entidadeArquivo == null)
+                throw new NegocioException(MensagemNegocioComuns.ARQUIVO_INF0RMADO_NAO_ENCONTRADO);
+
+            await mediator.Send(new ExcluirArquivoRepositorioPorIdCommand(entidadeArquivo.Id));
+
+            var extencao = Path.GetExtension(entidadeArquivo.Nome);
+            var filtro = new FiltroExcluirArquivoArmazenamentoDto { ArquivoNome = entidadeArquivo.Codigo.ToString() + extencao };
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
         }
     }
 }

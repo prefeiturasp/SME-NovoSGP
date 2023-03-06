@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Usuario = SME.SGP.Dominio.Usuario;
 
 namespace SME.SGP.Aplicacao
 {
@@ -23,83 +25,96 @@ namespace SME.SGP.Aplicacao
         public async Task<AuditoriaDto> Handle(InserirFrequenciasAulaCommand request, CancellationToken cancellationToken)
         {
             var alunos = request.Frequencia.ListaFrequencia.Select(a => a.CodigoAluno).ToList();
-            if (alunos == null || !alunos.Any())
-                throw new NegocioException("A lista de alunos da turma e o componente curricular devem ser informados para calcular a frequência.");
 
-            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId));
+            if (alunos == null || !alunos.Any())
+                throw new NegocioException(MensagensNegocioFrequencia.Lista_de_alunos_e_o_componente_devem_ser_informados);
+
+            var usuario = await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
+            var aula = await mediator.Send(new ObterAulaPorIdQuery(request.Frequencia.AulaId), cancellationToken);
 
             if (aula == null)
-                throw new NegocioException("A aula informada não foi encontrada");
+                throw new NegocioException(MensagensNegocioFrequencia.A_aula_informada_nao_foi_encontrada);
 
-            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId));
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(aula.TurmaId), cancellationToken);
+            
             if (turma == null)
-                throw new NegocioException("Turma informada não foi encontrada");
-
+                throw new NegocioException(MensagensNegocioFrequencia.Turma_informada_nao_foi_encontrada);
 
             if (usuario.EhProfessorCj())
             {
-                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf));
+                var possuiAtribuicaoCJ = await mediator.Send(new PossuiAtribuicaoCJPorDreUeETurmaQuery(turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe, turma.CodigoTurma, usuario.CodigoRf), cancellationToken);
 
-                var atribuicoesEsporadica = await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe));
+                var atribuicoesEsporadica = (await mediator.Send(new ObterAtribuicoesPorRFEAnoQuery(usuario.CodigoRf, false, aula.DataAula.Year, turma.Ue.Dre.CodigoDre, turma.Ue.CodigoUe), cancellationToken))
+                    .ToList();
 
                 if (possuiAtribuicaoCJ && atribuicoesEsporadica.Any())
                 {
-                    if (!atribuicoesEsporadica.Where(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe).Any())
-                        throw new NegocioException($"Você não possui permissão para inserir registro de frequência neste período");
+                    if (!atribuicoesEsporadica.Any(a => a.DataInicio <= aula.DataAula.Date && a.DataFim >= aula.DataAula.Date && a.DreId == turma.Ue.Dre.CodigoDre && a.UeId == turma.Ue.CodigoUe))
+                        throw new NegocioException(MensagensNegocioFrequencia.Nao_possui_permissão_para_inserir_neste_periodo);
                 }
             }
 
-
             if (!aula.PermiteRegistroFrequencia(turma))
-                throw new NegocioException("Não é permitido registro de frequência para este componente curricular.");
-
+                throw new NegocioException(MensagensNegocioFrequencia.Nao_e_permitido_registro_de_frequencia_para_este_componente);
 
             if (!usuario.EhGestorEscolar())
             {
                 ValidaSeUsuarioPodeCriarAula(aula, usuario);
-                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula);
+                await ValidaProfessorPodePersistirTurmaDisciplina(aula.TurmaId, usuario, aula.DisciplinaId, aula.DataAula, false);
             }
+            
+            var mesmoAnoLetivo = DateTimeExtension.HorarioBrasilia().Year == aula.DataAula.Year;
+            var bimestreAula = await mediator.Send(new ObterBimestreAtualQuery(aula.DataAula, turma), cancellationToken);
+            
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia(),
+                bimestreAula, mesmoAnoLetivo), cancellationToken);
+            
+            if (!temPeriodoAberto)
+                throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
 
-            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id));
+            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aula.Id), cancellationToken);
 
             var alteracaoRegistro = registroFrequencia != null;
-            if (registroFrequencia == null)
-                registroFrequencia = new RegistroFrequencia(aula);
+            
+            registroFrequencia ??= new RegistroFrequencia(aula);
 
-            registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia));
-            await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id, long.Parse(aula.DisciplinaId)));
+            registroFrequencia.Id = await mediator.Send(new PersistirRegistroFrequenciaCommand(registroFrequencia), cancellationToken);
+
+            await mediator.Send(new InserirRegistrosFrequenciasAlunosCommand(request.Frequencia.ListaFrequencia, registroFrequencia.Id, turma.Id,
+                long.Parse(aula.DisciplinaId),aula.Id), cancellationToken);
 
             // Quando for alteração de registro de frequencia chama o servico para verificar se atingiu o limite de dias para alteração e notificar
             if (alteracaoRegistro)
-            {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificacaoFrequencia, registroFrequencia, Guid.NewGuid(), usuario));
-            }
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.NotificacaoFrequencia, registroFrequencia, Guid.NewGuid(), usuario), cancellationToken);
 
-            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId));
-
-            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia));
+            await mediator.Send(new IncluirFilaCalcularFrequenciaPorTurmaCommand(alunos, aula.DataAula, aula.TurmaId, aula.DisciplinaId), cancellationToken);
+            await mediator.Send(new ExcluirPendenciaAulaCommand(aula.Id, TipoPendencia.Frequencia), cancellationToken);
 
             foreach (var tipo in Enum.GetValues(typeof(TipoPeriodoDashboardFrequencia)))
-                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo));
+                await mediator.Send(new IncluirFilaConsolidarDashBoardFrequenciaCommand(turma.Id, aula.DataAula, (TipoPeriodoDashboardFrequencia)tipo), cancellationToken);
 
-            return (AuditoriaDto)registroFrequencia;
+            return await ObterAuditoriaParaRetorno(aula.Id);
         }
 
         private void ValidaSeUsuarioPodeCriarAula(Aula aula, Usuario usuario)
         {
             if (!usuario.PodeRegistrarFrequencia(aula))
             {
-                throw new NegocioException("Não é possível registrar a frequência pois esse componente curricular não permite substituição.");
+                throw new NegocioException(MensagensNegocioFrequencia.Nao_e_possível_registrar_a_frequência_o_componente_nao_permite_substituicao);
             }
         }
 
-        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula)
+        private async Task<AuditoriaDto> ObterAuditoriaParaRetorno(long  aulaId)
         {
-            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local()));
+            var registroFrequencia = await mediator.Send(new ObterRegistroFrequenciaPorAulaIdQuery(aulaId));
+            return (AuditoriaDto)registroFrequencia;
+        }
+        private async Task ValidaProfessorPodePersistirTurmaDisciplina(string turmaId, Usuario usuario, string disciplinaId, DateTime dataAula, bool historico)
+        {
+            var podePersistirTurma = await mediator.Send(new VerificaPodePersistirTurmaDisciplinaQuery(usuario, turmaId, disciplinaId, dataAula.Local(), historico));
 
             if (!usuario.EhProfessorCj() && !podePersistirTurma)
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

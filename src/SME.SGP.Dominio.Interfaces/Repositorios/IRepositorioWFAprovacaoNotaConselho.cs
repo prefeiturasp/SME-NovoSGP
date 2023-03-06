@@ -3,11 +3,10 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Dominio.Interfaces
 {
-    public interface IRepositorioWFAprovacaoNotaConselho
+    public interface IRepositorioWFAprovacaoNotaConselho : IRepositorioBase<WFAprovacaoNotaConselho>
     {
-        Task Salvar(WFAprovacaoNotaConselho entidade);
-        Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPorWorkflow(long workflowId);
+        Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasEmAprovacaoPorWorkflow(long workflowId);
         Task<IEnumerable<WFAprovacaoNotaConselho>> ObterWorkflowAprovacaoNota(long conselhoClasseNotaId);
-        Task Excluir(long id);
+        Task<IEnumerable<WFAprovacaoNotaConselho>> ObterNotasAguardandoAprovacaoSemWorkflow();
     }
 }

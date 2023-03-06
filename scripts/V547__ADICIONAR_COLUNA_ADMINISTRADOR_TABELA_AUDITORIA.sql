@@ -1,0 +1,1 @@
+alter table auditoria add column if not exists administrador varchar(200) NULL;

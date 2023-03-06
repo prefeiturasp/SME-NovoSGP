@@ -12,6 +12,7 @@
         public NotificacaoCategoria Categoria { get; set; }
         public long Codigo { get; set; }
         public bool DeveAprovar { get { return Categoria == NotificacaoCategoria.Workflow_Aprovacao && Status == NotificacaoStatus.Pendente; } }
+        public bool AnoAnterior { get => DateTimeExtension.HorarioBrasilia().Year > CriadoEm.Year; }
         public bool DeveMarcarComoLido { get { return Categoria == NotificacaoCategoria.Alerta && Status != NotificacaoStatus.Lida; } }
         public string DreId { get; set; }
         public bool Excluida { get; set; }
@@ -28,7 +29,7 @@
 
         public void MarcarComoLida()
         {
-            if (DeveMarcarComoLido && Status != NotificacaoStatus.Lida)
+            if (Status == NotificacaoStatus.Pendente)
                 Status = NotificacaoStatus.Lida;
             else
                 throw new NegocioException($"A notificação com Código: '{Codigo}' não pode ser marcada como lida ou já está nesse status.");
@@ -46,16 +47,23 @@
 
         public void Remover()
         {
-            if (PodeRemover)
-                Excluida = true;
-            else
+            Excluida = true;
+        }
+
+        public bool ValidaExclusao()
+        {
+            if (!PodeRemover)
             {
                 if (Categoria != NotificacaoCategoria.Aviso)
                     throw new NegocioException($"Somente notificações de categoria Aviso, podem ser removidas.");
 
                 if (Excluida)
                     throw new NegocioException($"Esta notificação ja está excluída.");
+
+                return false;
             }
+
+            return true;
         }
     }
 }

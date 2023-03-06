@@ -2,46 +2,37 @@
 using Elastic.Apm.AspNetCore;
 using Elastic.Apm.DiagnosticSource;
 using Elastic.Apm.SqlClient;
-using HealthChecks.UI.Client;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Prometheus;
-using SME.SGP.Api.HealthCheck;
-using SME.SGP.Aplicacao;
-using SME.SGP.Dados;
-using SME.SGP.Infra;
 using SME.SGP.Infra.Utilitarios;
 using SME.SGP.IoC;
-using SME.SGP.IoC.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
+using SME.SGP.Infra;
+using SME.SGP.Api.Configuracoes;
 
 namespace SME.SGP.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IHostingEnvironment env)
+        public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            _env = env;
-
         }
 
-        private ConfiguracaoRabbitOptions configuracaoRabbitOptions;
         public IConfiguration Configuration { get; }
-        private IHostingEnvironment _env;
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseElasticApm(Configuration,
                 new SqlClientDiagnosticSubscriber(),
@@ -58,8 +49,8 @@ namespace SME.SGP.Api
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseRequestLocalization();
 
+            app.UseRequestLocalization();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
@@ -83,26 +74,21 @@ namespace SME.SGP.Api
 
             app.UseAuthentication();
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Arquivos")),
-                RequestPath = "/Arquivos"
-            });
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
 
+            var threadPoolOptions = new ThreadPoolOptions();
+            Configuration.GetSection(ThreadPoolOptions.Secao).Bind(threadPoolOptions, c => c.BindNonPublicProperties = true);
+            if (threadPoolOptions.WorkerThreads > 0 && threadPoolOptions.CompletionPortThreads > 0)
+                ThreadPool.SetMinThreads(threadPoolOptions.WorkerThreads, threadPoolOptions.CompletionPortThreads);
+
             Console.WriteLine("CURRENT------", Directory.GetCurrentDirectory());
             Console.WriteLine("COMBINE------", Path.Combine(Directory.GetCurrentDirectory(), @"Imagens"));
-
-            app.UseHealthChecks("/healthz", new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
-
+            
+            app.UseHealthChecksSgp();
+            app.UseHealthCheckPrometheusSgp();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -111,6 +97,7 @@ namespace SME.SGP.Api
             services.AddResponseCompression();
 
             var configTamanhoLimiteRequest = Configuration.GetSection("SGP_MaxRequestSizeBody").Value ?? "104857600";
+
             services.Configure<Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = long.Parse(configTamanhoLimiteRequest);
@@ -123,86 +110,36 @@ namespace SME.SGP.Api
 
             services.AddSingleton(Configuration);
             services.AddHttpContextAccessor();
-            services.AddApplicationInsightsTelemetry(Configuration);
 
-            ConfiguraVariaveisAmbiente(services);
-            ConfiguraGoogleClassroomSync(services);
-            ConfiguraRabbitParaLogs(services);
-            var telemetriaOptions = ConfiguraTelemetria(services);
+            var registraDependencias = new RegistrarDependencias();
+            registraDependencias.Registrar(services, Configuration);
+            registraDependencias.RegistrarGoogleClassroomSync(services, Configuration);
+            registraDependencias.RegistrarHttpClients(services, Configuration);
+            registraDependencias.RegistrarPolicies(services);
 
-            new RegistraDependencias().Registrar(services, configuracaoRabbitOptions);
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var clientTelemetry = serviceProvider.GetService<TelemetryClient>();
-
-            var servicoTelemetria = new ServicoTelemetria(clientTelemetry, telemetriaOptions);
-
-            RegistraClientesHttp.Registrar(services, Configuration);
             RegistraAutenticacao.Registrar(services, Configuration);
-            RegistrarMvc.Registrar(services, serviceProvider); 
-
-            RegistraDocumentacaoSwagger.Registrar(services); 
-
-            services.AddPolicies();
+            RegistrarMvc.Registrar(services); 
+            RegistraDocumentacaoSwagger.Registrar(services);
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             services.AddHealthChecks()
-                    .AddNpgSql(
-                        Configuration.GetConnectionString("SGP_Postgres"),
-                        name: "Postgres")
-                    .AddCheck<ApiJuremaCheck>("API Jurema")
-                    .AddCheck<ApiEolCheck>("API EOL");
+                .AddPostgreSqlSgp(Configuration)
+                .AddRedisSgp()
+                .AddRabbitMqSgp(Configuration)
+                .AddRabbitMqLogSgp(Configuration);
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("pt-BR") };
+                options.SupportedCultures = new List<CultureInfo> { new("pt-BR"), new("pt-BR") };
             });
-
-            DapperExtensionMethods.Init(servicoTelemetria);
-
-            services.AddSingleton(servicoTelemetria);
-
-            services.AddMemoryCache();
-
+            
+            services.AddHealthChecksUiSgp()
+                .AddPostgreSqlStorageSgp(Configuration);
+            
             services.AddCors();
-
             services.AddControllers();
-        }
-
-        private void ConfiguraVariaveisAmbiente(IServiceCollection services)
-        {
-            configuracaoRabbitOptions = new ConfiguracaoRabbitOptions();
-            Configuration.GetSection(nameof(ConfiguracaoRabbitOptions)).Bind(configuracaoRabbitOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(configuracaoRabbitOptions);
-        }
-
-        private void ConfiguraGoogleClassroomSync(IServiceCollection services)
-        {
-            var googleClassroomSyncOptions = new GoogleClassroomSyncOptions();
-            Configuration.GetSection(nameof(GoogleClassroomSyncOptions)).Bind(googleClassroomSyncOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(googleClassroomSyncOptions);
-        }
-
-        private void ConfiguraRabbitParaLogs(IServiceCollection services)
-        {
-            var configuracaoRabbitLogOptions = new ConfiguracaoRabbitLogOptions();
-            Configuration.GetSection("ConfiguracaoRabbitLog").Bind(configuracaoRabbitLogOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(configuracaoRabbitLogOptions);
-        }
-        private TelemetriaOptions ConfiguraTelemetria(IServiceCollection services)
-        {
-            var telemetriaOptions = new TelemetriaOptions();
-            Configuration.GetSection(TelemetriaOptions.Secao).Bind(telemetriaOptions, c => c.BindNonPublicProperties = true);
-
-            services.AddSingleton(telemetriaOptions);
-
-            return telemetriaOptions;
         }
     }
 }

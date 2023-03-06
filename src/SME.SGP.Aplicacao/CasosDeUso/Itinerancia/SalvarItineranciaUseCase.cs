@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Org.BouncyCastle.Ocsp;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
@@ -47,11 +48,20 @@ namespace SME.SGP.Aplicacao
 
                     if (itineranciaDto.PossuiQuestoes)
                         foreach (var questao in itineranciaDto.Questoes)
-                            await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta));
+                        {
+                            if (questao.QuestaoTipoUploadRespondida() &&
+                                questao.QuestaoSemArquivoId())
+                            {
+                                var arquivoCodigo = Guid.Parse(questao.Resposta);
+                                questao.ArquivoId = await mediator.Send(new ObterArquivoIdPorCodigoQuery(arquivoCodigo));
+                            }
+                            if (questao.QuestaoTipoTexto() || questao.QuestaoTipoUploadRespondida())
+                                await mediator.Send(new SalvarItineranciaQuestaoCommand(questao.QuestaoId, itinerancia.Id, questao.Resposta, questao.ArquivoId));
+                        }
                     unitOfWork.PersistirTransacao();
 
                     await mediator.Send(new AlterarSituacaoItineranciaCommand(itinerancia.Id, Dominio.Enumerados.SituacaoItinerancia.Enviado));
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoRegistroItineranciaInseridoUseCase,
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.RotaNotificacaoRegistroItineranciaInseridoUseCase,
                         new NotificacaoSalvarItineranciaDto
                         {
                             CriadoRF = itinerancia.CriadoRF,

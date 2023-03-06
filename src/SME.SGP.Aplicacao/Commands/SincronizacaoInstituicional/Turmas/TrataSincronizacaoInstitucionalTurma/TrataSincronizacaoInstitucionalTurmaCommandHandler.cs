@@ -60,36 +60,46 @@ namespace SME.SGP.Aplicacao
         }
 
         private async Task<bool> VerificarTurmaExtintaAsync(TurmaParaSyncInstitucionalDto turma, long turmaSgpId)
-        {
-            var anoAtual = DateTime.Now.Year;
-            var tipoCalendarioId = await mediator.Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, anoAtual, turma.Semestre));
+        {            
+            var tipoCalendarioId = await mediator
+                .Send(new ObterIdTipoCalendarioPorAnoLetivoEModalidadeQuery(turma.CodigoModalidade, turma.AnoLetivo, turma.Semestre));
 
             if (tipoCalendarioId > 0)
             {
-                var periodosEscolares = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+                var periodosEscolares = await mediator
+                    .Send(new ObterPeriodosEscolaresPorTipoCalendarioIdQuery(tipoCalendarioId));
+
                 if (periodosEscolares != null && periodosEscolares.Any())
                 {
-                    var primeiroPeriodo = periodosEscolares.OrderBy(x => x.Bimestre).First();
+                    var primeiroPeriodo = periodosEscolares
+                        .OrderBy(x => x.Bimestre)
+                        .First();
 
-                    if (turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
+                    if (turma.DataStatusTurmaEscola.Date != DateTime.MinValue && turma.DataStatusTurmaEscola.Date < primeiroPeriodo.PeriodoInicio.Date)
                     {
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                        var usuarioSistema = await mediator.Send(new ObterUsuarioPorRfQuery("Sistema"));
+
+                        await mediator
+                            .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId, turma.DataStatusTurmaEscola.Date, primeiroPeriodo.PeriodoInicio.Date), usuarioLogado: usuarioSistema));
+
                         return true;
                     }
                     else
-                    {
                         return await repositorioTurma.AtualizarTurmaSincronizacaoInstitucionalAsync(turma, true);
-                    }
                 }
                 else
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                    await mediator
+                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId, turma.DataStatusTurmaEscola.Date)));
+
                     return true;
                 }
             }
             else
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId)));
+                await mediator
+                    .Send(new PublicarFilaSgpCommand(RotasRabbitSgpInstitucional.SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta, new FiltroTurmaCodigoTurmaIdDto(turma.Codigo.ToString(), turmaSgpId, turma.DataStatusTurmaEscola.Date)));
+
                 return true;
             }
         }

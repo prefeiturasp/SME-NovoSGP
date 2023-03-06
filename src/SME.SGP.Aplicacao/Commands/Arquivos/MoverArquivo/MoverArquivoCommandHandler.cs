@@ -7,28 +7,28 @@ using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Aplicacao
 {
     public class MoverArquivoCommandHandler : IRequestHandler<MoverArquivoCommand, string>
     {
         private readonly IRepositorioArquivo repositorioArquivo;
+        private readonly IServicoArmazenamento servicoArmazenamento;
 
-        public MoverArquivoCommandHandler(IRepositorioArquivo repositorioArquivo)
+        public MoverArquivoCommandHandler(IRepositorioArquivo repositorioArquivo, IServicoArmazenamento servicoArmazenamento)
         {
             this.repositorioArquivo = repositorioArquivo ?? throw new ArgumentNullException(nameof(repositorioArquivo));
+            this.servicoArmazenamento = servicoArmazenamento ?? throw new ArgumentNullException(nameof(servicoArmazenamento));
         }
 
         public async Task<string> Handle(MoverArquivoCommand request, CancellationToken cancellationToken)
         {
-            var caminhoBase = UtilArquivo.ObterDiretorioBase();
-            var nomeArquivo = Path.GetFileName(request.Nome);
-            var caminhoArquivoTemp = Path.Combine(caminhoBase, TipoArquivo.Editor.Name());
-            var caminhoArquivoFuncionalidade = Path.Combine(caminhoBase, request.Tipo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString().PadLeft(2, '0'));
-            MoverAquivo(caminhoArquivoTemp, caminhoArquivoFuncionalidade, nomeArquivo);
+            var retorno = await servicoArmazenamento.Mover(request.Nome);
+            
             await AlterarTipoArquivo(request.Tipo, request.Nome);
 
-            return $@"/{request.Tipo.Name()}/{DateTime.Now.Year}/{DateTime.Now.Month.ToString().PadLeft(2, '0')}/";
+            return retorno;
         }
 
         private async Task AlterarTipoArquivo(TipoArquivo tipo, string nomeArquivo)

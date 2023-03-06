@@ -1,266 +1,74 @@
-﻿using Elastic.Apm;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
 using SME.SGP.Aplicacao;
 using SME.SGP.Aplicacao.Interfaces;
-using SME.SGP.Dominio;
-using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Aplicacao.Workers;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Contexto;
-using SME.SGP.Infra.Excecoes;
-using SME.SGP.Infra.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Utilitarios;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SME.SGP.Fechamento.Worker
 {
-    public class WorkerRabbitFechamento : IHostedService
+    public class WorkerRabbitFechamento : WorkerRabbitMQBase
     {
-        private readonly IModel canalRabbit;
-        private readonly IConnection conexaoRabbit;
-        private readonly IServiceScopeFactory serviceScopeFactory;
-        private readonly IServicoTelemetria servicoTelemetria;
-        private readonly TelemetriaOptions telemetriaOptions;
-        private IMediator mediator;
-
-        private readonly Dictionary<string, ComandoRabbit> comandos;
+        private const int TENTATIVA_REPROCESSAR_10 = 10;
 
         public WorkerRabbitFechamento(IServiceScopeFactory serviceScopeFactory,
-                              ServicoTelemetria servicoTelemetria,
-                              TelemetriaOptions telemetriaOptions,
-                              ConnectionFactory factory)
+            IServicoTelemetria servicoTelemetria,
+            IServicoMensageriaSGP servicoMensageria,
+            IOptions<TelemetriaOptions> telemetriaOptions,
+            IOptions<ConsumoFilasOptions> consumoFilasOptions,
+            IConnectionFactory factory) : base(serviceScopeFactory, servicoTelemetria, servicoMensageria,
+                telemetriaOptions, consumoFilasOptions, factory, "WorkerRabbitFechamento", 
+                typeof(RotasRabbitSgpFechamento))
         {
-            this.serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException("Service Scope Factory não localizado");
-            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
-            this.telemetriaOptions = telemetriaOptions ?? throw new ArgumentNullException(nameof(telemetriaOptions));
-
-            ////TODO: REVER
-            var scope = serviceScopeFactory.CreateScope();
-            this.mediator = scope.ServiceProvider.GetService<IMediator>();
-            ////
-
-            var conexaoRabbit = factory.CreateConnection();
-
-            canalRabbit = conexaoRabbit.CreateModel();
-
-            canalRabbit.BasicQos(0, 10, false);
-
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.Sgp, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpDeadLetter, ExchangeType.Direct, true, false);
-            canalRabbit.ExchangeDeclare(ExchangeSgpRabbit.SgpLogs, ExchangeType.Direct, true, false);
-
-            DeclararFilasSgp();
-
-            comandos = new Dictionary<string, ComandoRabbit>();
-            RegistrarUseCases();
         }
 
-        private void DeclararFilasSgp()
+        protected override void RegistrarUseCasesDoWorker()
         {
-            DeclararFilasPorRota(typeof(RotasRabbitFechamento), ExchangeSgpRabbit.Sgp, ExchangeSgpRabbit.SgpDeadLetter);
-        }
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase), TENTATIVA_REPROCESSAR_10, ExchangeSgpRabbit.SgpDeadLetterTTL_3));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por ue", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por turma", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por aluno", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorDre, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por DRE", typeof(IReprocessarParecerConclusivoPorDreUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorUe, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por UE", typeof(IReprocessarParecerConclusivoPorUeUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorTurma, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno por Turma", typeof(IReprocessarParecerConclusivoPorTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAluno, new ComandoRabbit("Atualiza parecer conclusivo do conselho de classe do aluno", typeof(IReprocessarParecerConclusivoAlunoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaExecutaAtualizacaoSituacaoConselhoClasse, new ComandoRabbit("Executa atualização da situação do conselho de classe", typeof(IAtualizarSituacaoConselhoClasseUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.NotificacaoPeriodoFechamentoReaberturaIniciando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura iniciando", typeof(INotificacaoPeriodoFechamentoReaberturaIniciandoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.NotificacaoPeriodoFechamentoReaberturaEncerrando, new ComandoRabbit("Executar notificação de período de Fechamento Reabertura encerrando", typeof(INotificacaoPeriodoFechamentoReaberturaEncerrandoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.VerificaPendenciasFechamentoTurma, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(IVerificaPendenciasFechamentoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaExecutaVerificacaoPendenciasAusenciaFechamento, new ComandoRabbit("Executa verificação de pendências de fechamento de bimestre", typeof(IExecutaVerificacaoGeracaoPendenciaAusenciaFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaExecutaExclusaoPendenciasAusenciaFechamento, new ComandoRabbit("Executa exclusão de pendências de ausencia de fechamento", typeof(IExecutarExclusaoPendenciasAusenciaFechamentoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAndamentoFechamento, new ComandoRabbit("Executa notificação sobre o andamento do fechamento", typeof(INotificacaoAndamentoFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAndamentoFechamentoPorUe, new ComandoRabbit("Executa notificação sobre o andamento do fechamento por UE", typeof(INotificacaoAndamentoFechamentoPorUeUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoInicioFimPeriodoFechamento, new ComandoRabbit("Executa notificação sobre o início e fim do Periodo de fechamento", typeof(INotificacaoInicioFimPeriodoFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoInicioPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o início do Periodo de fechamento por UE", typeof(INotificacaoInicioPeriodoFechamentoUEUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoFimPeriodoFechamentoUE, new ComandoRabbit("Executa notificação sobre o fim do Periodo de fechamento por UE", typeof(INotificacaoFimPeriodoFechamentoUEUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaGeracaoPendenciasFechamento, new ComandoRabbit("Executa inclusão de fila de Geração de Pendências do Fechamento", typeof(IGerarPendenciasFechamentoUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoUeFechamentosInsuficientes, new ComandoRabbit("Executa notificação UE sobre fechamento insuficientes", typeof(INotificacaoUeFechamentosInsuficientesUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaSync, new ComandoRabbit("Inicia processo de Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReabertura, new ComandoRabbit("Notificação de Reabertura de Fechamento", typeof(INotificarFechamentoReaberturaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaDRE, new ComandoRabbit("Notificação de Reabertura de Fechamento DRE", typeof(INotificarFechamentoReaberturaDREUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new ComandoRabbit("Notificação de Reabertura de Fechamento UE", typeof(INotificarFechamentoReaberturaUEUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, new ComandoRabbit("Efetua a varredura em busca de fechamentos em processamento pendentes", typeof(IVarreduraFechamentosEmProcessamentoPendentesUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.GerarNotificacaoAlteracaoLimiteDias, new ComandoRabbit("Gera notificacao de alteracao de limite de dias", typeof(IGerarNotificacaoAlteracaoLimiteDiasUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.VerificarPendenciasFechamentoTurmaDisciplina, new ComandoRabbit("Verifica prendencias no fechamento de turma para disciplina", typeof(IVerificarPendenciasFechamentoTurmaDisciplinaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.AlterarPeriodosComHierarquiaInferiorFechamento, new ComandoRabbit("Altera o periodo com hierarquia inferior", typeof(IAlterarPeriodosComHierarquiaInferiorFechamentoUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoResultadoInsatisfatorio, new ComandoRabbit("Notificar usuário resultado insatisfatório de aluno", typeof(INotificarResultadoInsatisfatorioUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamento, new ComandoRabbit("Notificar usuário sobre alteração de nota de fechamento nos anos anteriores", typeof(INotificarAlteracaoNotaFechamentoAgrupadaUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoFechamentoPorTurma, new ComandoRabbit("Notificar usuário sobre alteração de nota de fechamento segregado por turma nos anos anteriores", typeof(INotificarAlteracaoNotaFechamentoAgrupadaTurmaUseCase), true));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020, new ComandoRabbit("Processo para gerar fechamento para turmas de Ed. Física do ano letivo de 2020", typeof(IGerarFechamentoTurmaEdFisica2020UseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaGeracaoFechamentoEdFisica2020AlunosTurma, new ComandoRabbit("Processo para gerar fechamento para turmas de Ed. Física do ano letivo de 2020 - separação de filas alunos com turma", typeof(IGerarFechamentoTurmaEdFisica2020AlunosTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoNotaPosConselho, new ComandoRabbit("Notificar usuário sobre alteração de nota pós conselho de classe nos anos anteriores", typeof(INotificarAlteracaoNotaPosConselhoAgrupadaTurmaUseCase)));
+            Comandos.Add(RotasRabbitSgpFechamento.RotaNotificacaoAprovacaoParecerConclusivoConselhoClasse, new ComandoRabbit("Notificar usuário sobre alteração de parecer conclusivo conselho de classe nos anos anteriores", typeof(INotificarAlteracaoParecerConclusivoConselhoAgrupadaTurmaUseCase)));
 
-        private void DeclararFilasPorRota(Type tipoRotas, string exchange, string exchangeDeadLetter = "")
-        {
-            var args = new Dictionary<string, object>();
-
-            if (!string.IsNullOrEmpty(exchangeDeadLetter))
-                args.Add("x-dead-letter-exchange", exchangeDeadLetter);
-
-            foreach (var fila in tipoRotas.ObterConstantesPublicas<string>())
-            {
-                canalRabbit.QueueDeclare(fila, true, false, false, args);
-                canalRabbit.QueueBind(fila, exchange, fila, null);
-
-                if (!string.IsNullOrEmpty(exchangeDeadLetter))
-                {
-                    var filaDeadLetter = $"{fila}.deadletter";
-                    canalRabbit.QueueDeclare(filaDeadLetter, true, false, false, null);
-                    canalRabbit.QueueBind(filaDeadLetter, exchangeDeadLetter, fila, null);
-                }
-            }
-        }
-
-        private void RegistrarUseCases()
-        {
-            // Consolidação fechamento turmas
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaSync, new ComandoRabbit("Inicia processo de Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaGeralUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaTratar, new ComandoRabbit("Consolidação Fechamento/Conselho - Consolidar Turmas", typeof(IExecutarConsolidacaoTurmaUseCase)));
-
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseSync, new ComandoRabbit("Consolidação conselho classe - Sincronizar alunos da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, new ComandoRabbit("Consolidação conselho classe - Consolidar aluno da turma", typeof(IExecutarConsolidacaoTurmaConselhoClasseAlunoUseCase)));
-
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaFechamentoSync, new ComandoRabbit("Consolidação fechamento - Sincronizar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidarTurmaFechamentoComponenteTratar, new ComandoRabbit("Consolidação fechamento - Consolidar Componentes da Turma", typeof(IExecutarConsolidacaoTurmaFechamentoComponenteUseCase)));
-
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por ue", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresUeUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por turma", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresTurmaUseCase)));
-            comandos.Add(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, new ComandoRabbit("Consolidação turma conselho classe aluno anos anteriores por aluno", typeof(IConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoUseCase)));
-        }
-
-
-        private async Task TratarMensagem(BasicDeliverEventArgs ea)
-        {
-            var mensagem = Encoding.UTF8.GetString(ea.Body.Span);
-            var rota = ea.RoutingKey;
-            if (comandos.ContainsKey(rota))
-            {
-                var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                var comandoRabbit = comandos[rota];
-                try
-                {
-                    if (telemetriaOptions.Apm)
-                        Agent.Tracer.StartTransaction("TratarMensagem", "WorkerRabbitSGP");
-
-                    using (var scope = serviceScopeFactory.CreateScope())
-                    {
-                        AtribuirContextoAplicacao(mensagemRabbit, scope);
-
-                        var casoDeUso = scope.ServiceProvider.GetService(comandoRabbit.TipoCasoUso);
-
-                        var metodo = ObterMetodo(comandoRabbit.TipoCasoUso, "Executar");
-                        await servicoTelemetria.RegistrarAsync(async () =>
-                            await metodo.InvokeAsync(casoDeUso, new object[] { mensagemRabbit }),
-                                                    "RabbitMQ",
-                                                    "TratarMensagem",
-                                                    rota);
-
-                        canalRabbit.BasicAck(ea.DeliveryTag, false);
-                    }
-                }
-                catch (NegocioException nex)
-                {
-                    canalRabbit.BasicAck(ea.DeliveryTag, false);
-
-                    await RegistrarLog(ea, mensagemRabbit, nex, LogNivel.Negocio, $"Erros: {nex.Message}");
-                    if (mensagemRabbit.NotificarErroUsuario)
-                        NotificarErroUsuario(nex.Message, mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                }
-                catch (ValidacaoException vex)
-                {
-                    canalRabbit.BasicAck(ea.DeliveryTag, false);
-
-                    await RegistrarLog(ea, mensagemRabbit, vex, LogNivel.Negocio, $"Erros: {JsonConvert.SerializeObject(vex.Mensagens())}");
-
-                    if (mensagemRabbit.NotificarErroUsuario)
-                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                }
-                catch (Exception ex)
-                {
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
-                    await RegistrarLog(ea, mensagemRabbit, ex, LogNivel.Critico, $"Erros: {ex.Message}");
-                    if (mensagemRabbit.NotificarErroUsuario)
-                        NotificarErroUsuario($"Ocorreu um erro interno, por favor tente novamente", mensagemRabbit.UsuarioLogadoRF, comandoRabbit.NomeProcesso);
-                }
-            }
-            else
-            {
-                canalRabbit.BasicReject(ea.DeliveryTag, false);
-                var mensagemRabbit = JsonConvert.DeserializeObject<MensagemRabbit>(mensagem);
-                await RegistrarLog(ea, mensagemRabbit, null, LogNivel.Critico, $"Rota não registrada");
-            }
-        }
-
-        private async Task RegistrarLog(BasicDeliverEventArgs ea, MensagemRabbit mensagemRabbit, Exception ex, LogNivel logNivel, string observacao)
-        {
-            var mensagem = $"{mensagemRabbit.UsuarioLogadoRF} - {mensagemRabbit.CodigoCorrelacao.ToString().Substring(0, 3)} - ERRO - {ea.RoutingKey}";
-
-            await mediator.Send(new SalvarLogViaRabbitCommand(mensagem, logNivel, LogContexto.WorkerFechamento, observacao, rastreamento: ex?.StackTrace, excecaoInterna: ex.InnerException?.Message));
-        }
-
-        private void NotificarErroUsuario(string message, string usuarioRf, string nomeProcesso)
-        {
-            if (!string.IsNullOrEmpty(usuarioRf))
-            {
-                var command = new NotificarUsuarioCommand($"Ocorreu um erro ao: '{nomeProcesso}'",
-                                                          message,
-                                                          usuarioRf,
-                                                          NotificacaoCategoria.Aviso,
-                                                          NotificacaoTipo.Worker);
-
-                var request = new MensagemRabbit(string.Empty, command, Guid.NewGuid(), usuarioRf);
-                var mensagem = JsonConvert.SerializeObject(request);
-                var body = Encoding.UTF8.GetBytes(mensagem);
-
-                canalRabbit.BasicPublish(ExchangeSgpRabbit.Sgp, RotasRabbitSgp.RotaNotificacaoUsuario, null, body);
-            }
-        }
-
-        private MethodInfo ObterMetodo(Type objType, string method)
-        {
-            var executar = objType.GetMethod(method);
-
-            if (executar == null)
-            {
-                foreach (var itf in objType.GetInterfaces())
-                {
-                    executar = ObterMetodo(itf, method);
-                    if (executar != null)
-                        break;
-                }
-            }
-
-            return executar;
-        }
-
-        private static void AtribuirContextoAplicacao(MensagemRabbit mensagemRabbit, IServiceScope scope)
-        {
-            if (!string.IsNullOrWhiteSpace(mensagemRabbit.UsuarioLogadoRF))
-            {
-                var contextoAplicacao = scope.ServiceProvider.GetService<IContextoAplicacao>();
-                var variaveis = new Dictionary<string, object>();
-                variaveis.Add("NomeUsuario", mensagemRabbit.UsuarioLogadoNomeCompleto);
-                variaveis.Add("UsuarioLogado", mensagemRabbit.UsuarioLogadoRF);
-                variaveis.Add("RF", mensagemRabbit.UsuarioLogadoRF);
-                variaveis.Add("login", mensagemRabbit.UsuarioLogadoRF);
-                variaveis.Add("Claims", new List<InternalClaim> { new InternalClaim { Value = mensagemRabbit.PerfilUsuario, Type = "perfil" } });
-                contextoAplicacao.AdicionarVariaveis(variaveis);
-            }
-        }
-
-        public Task StartAsync(CancellationToken stoppingToken)
-        {
-            stoppingToken.ThrowIfCancellationRequested();
-            var consumer = new EventingBasicConsumer(canalRabbit);
-
-            consumer.Received += async (ch, ea) =>
-            {
-                try
-                {
-                    await TratarMensagem(ea);
-                }
-                catch (Exception ex)
-                {
-                    _ = await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao tratar mensagem {ea.DeliveryTag}", LogNivel.Critico, LogContexto.WorkerRabbit, ex.Message));
-                    canalRabbit.BasicReject(ea.DeliveryTag, false);
-                }
-            };
-
-            RegistrarConsumerSgp(consumer);
-            return Task.CompletedTask;
-        }
-
-        private void RegistrarConsumerSgp(EventingBasicConsumer consumer)
-        {
-            foreach (var fila in typeof(RotasRabbitFechamento).ObterConstantesPublicas<string>())
-                canalRabbit.BasicConsume(fila, false, consumer);
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            canalRabbit.Close();
-            conexaoRabbit.Close();
-            return Task.CompletedTask;
         }
     }
 }

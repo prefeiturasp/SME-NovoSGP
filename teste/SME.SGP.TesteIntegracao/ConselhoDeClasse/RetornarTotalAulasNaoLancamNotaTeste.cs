@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.ConselhoClasseController
 {
     public class RetornarTotalAulasNaoLancamNotaTeste : TesteBase
     {
@@ -30,8 +30,8 @@ namespace SME.SGP.TesteIntegracao
             await CriarAulaQueNaoLancaNota();
 
             //Act
-            var controller = new ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("2370993", 1, "6579272", useCase);
+            var controller = new Api.Controllers.ConselhoClasseController();
+            var retorno = await controller.ObterTotalAulasNaoLancamNotasPorTurmaBimestre("111", 1, "123123", useCase);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -43,10 +43,10 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new Usuario
             {
-                Id = 27695,
-                Login = "7495048",
-                CodigoRf = "7495048",
-                Nome = "FABIANA ROBERTA GUIMARAES REGO",
+                Id = 1,
+                Login = TesteBaseComuns.USUARIO_LOGADO_RF,
+                CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
+                Nome = TesteBaseComuns.USUARIO_LOGADO_NOME,
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
@@ -56,13 +56,13 @@ namespace SME.SGP.TesteIntegracao
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "FABIANA ROBERTA GUIMARAES REGO");
-            variaveis.Add("UsuarioLogado", "7495048");
-            variaveis.Add("RF", "7495048");
-            variaveis.Add("login", "7495048");
+            variaveis.Add("NomeUsuario", TesteBaseComuns.USUARIO_LOGADO_NOME);
+            variaveis.Add("UsuarioLogado", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("RF", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("login", TesteBaseComuns.USUARIO_LOGADO_RF);
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "7495048", Type = "rf" },
-                new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+                new InternalClaim { Value = TesteBaseComuns.USUARIO_LOGADO_RF, Type = "rf" },
+                new InternalClaim { Value = Perfis.PERFIL_PROFESSOR.ToString(), Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
@@ -72,12 +72,12 @@ namespace SME.SGP.TesteIntegracao
             await InserirNaBase(new TipoCalendario
             {
                 Id = 1,
-                AnoLetivo = 2022,
+                AnoLetivo = DateTimeExtension.HorarioBrasilia().Year,
                 Periodo = Periodo.Anual,
                 Modalidade = ModalidadeTipoCalendario.FundamentalMedio,
                 Situacao = true,
                 Migrado = true,
-                CriadoEm = new DateTime(2021, 01, 15, 23, 48, 43),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
                 AlteradoEm = null,
                 AlteradoPor = "",
@@ -90,10 +90,10 @@ namespace SME.SGP.TesteIntegracao
             {
                 Id = 1,
                 TipoCalendarioId = 1,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 Bimestre = 1,
-                CriadoEm = new DateTime(2021, 01, 15, 23, 48, 43),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 15, 23, 48, 43),
                 CriadoPor = "Sistema",
                 AlteradoEm = null,
                 AlteradoPor = "",
@@ -101,17 +101,17 @@ namespace SME.SGP.TesteIntegracao
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 2084687593,
-                PeriodoInicio = new DateTime(2022, 01, 03),
-                PeriodoFim = new DateTime(2022, 04, 29),
+                PeriodoInicio = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 03),
+                PeriodoFim = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 29),
                 Bimestre = 1,
                 TotalAulas = 1,
                 TotalAusencias = 0,
-                CriadoEm = new DateTime(2022, 04, 21, 12, 46, 29),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 21, 12, 46, 29),
                 CriadoPor = "Sistema",
-                AlteradoEm = new DateTime(2022, 04, 23, 21, 52, 51),
+                AlteradoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 04, 23, 21, 52, 51),
                 AlteradoPor = "Sistema",
                 CriadoRF = "0",
                 AlteradoRF = "0",
@@ -120,8 +120,8 @@ namespace SME.SGP.TesteIntegracao
                 TotalPresencas = 1,
                 TotalRemotos = 0,
                 DisciplinaId = "1060",
-                CodigoAluno = "6579272",
-                TurmaId = "2370993",
+                CodigoAluno = "123123",
+                TurmaId = "111",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
 
             });

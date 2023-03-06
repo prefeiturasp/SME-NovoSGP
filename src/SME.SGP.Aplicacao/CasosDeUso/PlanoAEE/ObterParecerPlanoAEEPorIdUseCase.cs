@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task<PlanoAEEParecerDto> MapearParaDto(PlanoAEE planoAEE)
         {
-            var responsavel = planoAEE.ResponsavelId.HasValue ?
-                await ObterResponsavel(planoAEE.ResponsavelId.Value) :
+            var responsavel = planoAEE.ResponsavelPaaiId.HasValue ?
+                await ObterResponsavel(planoAEE.ResponsavelPaaiId.Value) :
                 null;
 
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
@@ -70,12 +70,12 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
         {
             var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
-            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
+            return funcionarios.Any(c => c.Login == usuarioLogado.CodigoRf);
         }
 
         private bool PodeEditarParecerPAAI(PlanoAEE planoAEE, Usuario usuario)
             => planoAEE.Situacao == SituacaoPlanoAEE.ParecerPAAI
-            && (planoAEE.ResponsavelId.GetValueOrDefault() == usuario.Id);
+            && (planoAEE.ResponsavelPaaiId.GetValueOrDefault() == usuario.Id);
 
         private async Task<bool> PodeEditarParecerCP(PlanoAEE planoAEE, Usuario usuario, Turma turma)
             => SituacaoPermiteEdicaoCP(planoAEE.Situacao) &&

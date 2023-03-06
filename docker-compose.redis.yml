@@ -1,0 +1,14 @@
+version: "3.1"
+
+services:
+  sme-redis:
+    image: redis:5.0.5-alpine
+    container_name: sme-redis
+    ports:
+      - '6379:6379'
+    networks:
+      - sme-network
+networks:
+  sme-network:
+    driver: bridge
+    name: sme_external_network

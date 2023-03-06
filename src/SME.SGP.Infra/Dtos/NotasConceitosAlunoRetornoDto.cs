@@ -16,7 +16,7 @@ namespace SME.SGP.Infra
         public bool PodeEditar { get; set; }
         public string Nome { get; set; }
         public List<NotasConceitosNotaAvaliacaoRetornoDto> NotasAvaliacoes { get; set; }
-        public List<FechamentoNotaRetornoDto> NotasBimestre { get; set; }
+        public List<FechamentoNotaRetornoDto> NotasBimestre { get; }
         public int NumeroChamada { get; set; }
         public string PercentualFrequencia { get; set; }
         public bool EhAtendidoAEE { get; set; }

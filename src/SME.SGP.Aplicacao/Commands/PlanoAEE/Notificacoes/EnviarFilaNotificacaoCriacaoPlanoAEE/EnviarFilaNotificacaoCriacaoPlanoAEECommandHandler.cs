@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
             var command = new EnviarNotificacaoCriacaoPlanoAEECommand(request.PlanoAEEId, usuario);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotificarCriacaoPlanoAEE, command, Guid.NewGuid(), usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAEE.NotificarCriacaoPlanoAEE, command, Guid.NewGuid(), usuario));
 
             return true;
         }

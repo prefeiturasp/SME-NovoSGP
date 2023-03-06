@@ -29,7 +29,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, request.UeId, request.Descricao, titulo: request.Titulo));
+                    var pendenciaId = await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AEE, request.UeId, request.TurmaId, request.Descricao, titulo: request.Titulo));
 
                     await repositorioPendenciaPlanoAEE.SalvarAsync(new PendenciaPlanoAEE(pendenciaId, request.PlanoAEEId));
 
@@ -45,7 +45,7 @@ namespace SME.SGP.Aplicacao
                     unitOfWork.PersistirTransacao();
 
                     if (request.Perfil != null)
-                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpPendencias.RotaTratarAtribuicaoPendenciaUsuarios, new FiltroTratamentoAtribuicaoPendenciaDto(pendenciaId, request.UeId), Guid.NewGuid()));
                 }
                 catch (Exception e)
                 {

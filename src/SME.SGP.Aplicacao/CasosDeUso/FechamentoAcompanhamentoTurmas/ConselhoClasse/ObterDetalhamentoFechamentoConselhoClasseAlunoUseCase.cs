@@ -13,12 +13,9 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase : AbstractUseCase, IObterDetalhamentoFechamentoConselhoClasseAlunoUseCase
     {
-        private readonly IConsultasFrequencia consultasFrequencia;
-
-        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator, IConsultasFrequencia consultasFrequencia)
+        public ObterDetalhamentoFechamentoConselhoClasseAlunoUseCase(IMediator mediator)
             : base(mediator)
         {
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
         }
 
         public async Task<IEnumerable<DetalhamentoComponentesCurricularesAlunoDto>> Executar(FiltroConselhoClasseConsolidadoDto filtro)
@@ -36,15 +33,17 @@ namespace SME.SGP.Aplicacao
 
             string[] turmasCodigos;
             long[] conselhosClassesIds;
-            var turmasitinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
+            var turmasItinerarioEnsinoMedio = await mediator.Send(new ObterTurmaItinerarioEnsinoMedioQuery());
 
-            if (turma.DeveVerificarRegraRegulares() || turmasitinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
+            if (turma.DeveVerificarRegraRegulares() || turmasItinerarioEnsinoMedio.Any(a => a.Id == (int)turma.TipoTurma))
             {
-                var turmasCodigosParaConsulta = new List<int>() { (int)turma.TipoTurma };
-                turmasCodigosParaConsulta.AddRange(turma.ObterTiposRegularesDiferentes());
-                turmasCodigosParaConsulta.AddRange(turmasitinerarioEnsinoMedio.Select(s => s.Id));
+                var tiposParaConsulta = new List<int> { (int)turma.TipoTurma };
+                var tiposRegularesDiferentes = turma.ObterTiposRegularesDiferentes();
+                    
+                tiposParaConsulta.AddRange(tiposRegularesDiferentes.Where(c => tiposParaConsulta.All(x => x != c)));
+                tiposParaConsulta.AddRange(turmasItinerarioEnsinoMedio.Select(s => s.Id).Where(c => tiposParaConsulta.All(x => x != c)));
 
-                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, turmasCodigosParaConsulta));
+                turmasCodigos = await mediator.Send(new ObterTurmaCodigosAlunoPorAnoLetivoAlunoTipoTurmaQuery(turma.AnoLetivo, filtro.AlunoCodigo, tiposParaConsulta));
 
                 if (turmasCodigos == null || !turmasCodigos.Any())
                     turmasCodigos = new string[] { turma.CodigoTurma };
@@ -63,7 +62,7 @@ namespace SME.SGP.Aplicacao
             {
                 foreach (var conselhosClassesId in conselhosClassesIds)
                 {
-                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, filtro.AlunoCodigo));
+                    var notasParaAdicionar = await mediator.Send(new ObterConselhoClasseNotasAlunoQuery(conselhosClassesId, filtro.AlunoCodigo, bimestre));
                     notasConselhoClasseAluno.AddRange(notasParaAdicionar);
                 }
             }
@@ -82,8 +81,8 @@ namespace SME.SGP.Aplicacao
             Usuario usuarioAtual = await mediator.Send(new ObterUsuarioLogadoQuery());
 
             var componentesCurricularesDaTurmaEol = await mediator.Send(new ObterComponentesCurricularesPorTurmasCodigoQuery(turmasCodigos, usuarioAtual.PerfilAtual, usuarioAtual.Login, turma.EnsinoEspecial, turma.TurnoParaComponentesCurriculares));
-
-            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray()));
+            var existeTerritorio = componentesCurricularesDaTurmaEol.Any(c => c.TerritorioSaber = true);
+            var componentesCurricularesDaTurma = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesDaTurmaEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray(), existeTerritorio,turma.CodigoTurma));
 
             var retorno = new List<DetalhamentoComponentesCurricularesAlunoDto>();
 
@@ -239,7 +238,7 @@ namespace SME.SGP.Aplicacao
             var notasFechamento = ObterNotasComponente(componenteCurricular.CodigoComponenteCurricular, periodoEscolar, notasFechamentoAluno);
             var notaPosConselho = ObterNotaPosConselho(componenteCurricular.CodigoComponenteCurricular, periodoEscolar?.Bimestre, notasConselhoClasseAluno, notasFechamentoAluno);
 
-            var parecerFinal = bimestre == 0 ? await consultasFrequencia.ObterSinteseAluno(percentualFrequencia, componenteCurricular, anoLetivo) : null;
+            var parecerFinal = bimestre == 0 ? await mediator.Send(new ObterSinteseAlunoQuery(percentualFrequencia, componenteCurricular, anoLetivo)) : null;
 
             var notaFechamento = !componenteCurricular.LancaNota ? parecerFinal?.Valor : (notasFechamento != null && notasFechamento.Any() &&
                                  notasFechamento.FirstOrDefault().NotaConceito != null ? String.Format("{0:0.0}", notasFechamento.FirstOrDefault().NotaConceito) : null);
@@ -302,7 +301,7 @@ namespace SME.SGP.Aplicacao
 
             return new NotaPosConselhoDto()
             {
-                Id = notaComponente?.Id,
+                Id = notaComponente?.ConselhoClasseId,
                 Nota = notaComponente?.NotaConceito
             };
         }

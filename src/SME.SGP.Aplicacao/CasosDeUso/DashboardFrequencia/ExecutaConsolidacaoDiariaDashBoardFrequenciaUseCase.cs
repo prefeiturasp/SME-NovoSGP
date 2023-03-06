@@ -39,7 +39,7 @@ namespace SME.SGP.Aplicacao
                     TipoPeriodo = TipoPeriodoDashboardFrequencia.Diario
                 };
 
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDashBoardFrequenciaPorUe, dados, Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDashBoardFrequenciaPorUe, dados, Guid.NewGuid(), null));
             }
 
             return true;

@@ -45,15 +45,15 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
         public async Task<IActionResult> Notificar()
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.NotifificarRegistroFrequencia, null, Guid.NewGuid(), null));
             
             return Ok();
         }
 
         [HttpPost("frequencias/notificar/alunos/faltosos")]
-        public async Task<IActionResult> NotificarAlunosFaltosos([FromServices] IServicoNotificacaoFrequencia servico)
+        public async Task<IActionResult> NotificarAlunosFaltosos([FromQuery] long ueId, [FromServices] IServicoNotificacaoFrequencia servico)
         {
-            await servico.NotificarAlunosFaltosos();
+            await servico.NotificarAlunosFaltosos(ueId);
             
             return Ok();
         }
@@ -101,24 +101,24 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [ProducesResponseType(typeof(IEnumerable<AlunoAusenteDto>), 200)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAusenciasTurma(string turmaId, string disciplinaId, int bimestre, [FromServices] IConsultasFrequencia consultasFrequencia)
-            => Ok(await consultasFrequencia.ObterListaAlunosComAusencia(turmaId, disciplinaId, bimestre));
+        public async Task<IActionResult> ObterAusenciasTurma(string turmaId, string disciplinaId, int bimestre)
+            => Ok(await mediator.Send(new ObterListaAlunosComAusenciaQuery(turmaId, disciplinaId, bimestre)));
 
         [HttpGet("frequencias/alunos/{alunoCodigo}/turmas/{turmaCodigo}/geral")]
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, [FromServices] IConsultasFrequencia consultasFrequencia)
-             => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo));
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo)
+             => Ok(await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo)));
 
         [HttpGet("frequencias/alunos/{alunoCodigo}/turmas/{turmaCodigo}/semestre/{semestre}/geral")]
         [ProducesResponseType(typeof(double), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, int semestre, [FromServices] IConsultasFrequencia consultasFrequencia)
-             => Ok(await consultasFrequencia.ObterFrequenciaGeralAluno(alunoCodigo, turmaCodigo, semestre: semestre));
+        public async Task<IActionResult> ObterFrequenciaGeralAluno(string alunoCodigo, string turmaCodigo, int semestre)
+             => Ok(await mediator.Send(new ObterConsultaFrequenciaGeralAlunoQuery(alunoCodigo, turmaCodigo)));
 
         [AllowAnonymous]
         [HttpGet("frequencias/ausencias-motivos")]
@@ -126,8 +126,8 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.PDA_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterAusenciaMotivoPorAlunoTurmaBimestreAno([FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromQuery] short bimestre, [FromQuery] short anoLetivo, [FromServices] IConsultasFrequencia consultasFrequencia)
-             => Ok(await consultasFrequencia.ObterAusenciaMotivoPorAlunoTurmaBimestreAno(codigoAluno, codigoTurma, bimestre, anoLetivo));
+        public async Task<IActionResult> ObterAusenciaMotivoPorAlunoTurmaBimestreAno([FromQuery] string codigoAluno, [FromQuery] string codigoTurma, [FromQuery] short bimestre, [FromQuery] short anoLetivo)
+             => Ok(await mediator.Send(new ObterAusenciaMotivoPorAlunoTurmaBimestreAnoQuery(codigoAluno, codigoTurma, bimestre, anoLetivo)));
 
         [HttpPost("frequencias/calcular")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

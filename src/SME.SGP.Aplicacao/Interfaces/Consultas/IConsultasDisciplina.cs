@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
 
         Task<DisciplinaDto> ObterDisciplina(long disciplinaId);
 
-        Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma, long componenteCurricularCodigo);
+        Task<IEnumerable<DisciplinaResposta>> ObterComponentesRegencia(Turma turma);
         IEnumerable<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas);
         IEnumerable<DisciplinaResposta> MapearComponentes(IEnumerable<ComponenteCurricularEol> componentesCurriculares);
     }

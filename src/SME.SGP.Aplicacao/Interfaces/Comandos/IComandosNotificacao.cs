@@ -1,14 +1,15 @@
 ﻿using SME.SGP.Infra;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
     public interface IComandosNotificacao
     {
-        List<AlteracaoStatusNotificacaoDto> Excluir(IList<long> notificacoesId);
+        Task<List<AlteracaoStatusNotificacaoDto>> Excluir(IList<long> notificacoesId);
 
-        List<AlteracaoStatusNotificacaoDto> MarcarComoLida(IList<long> notificacoesId);
+        Task<List<AlteracaoStatusNotificacaoDto>> MarcarComoLida(IList<long> notificacoesId);
 
-        void Salvar(NotificacaoDto notificacaoDto);
+        Task Salvar(NotificacaoDto notificacaoDto);
     }
 }

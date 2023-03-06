@@ -4,7 +4,9 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
@@ -12,6 +14,7 @@ namespace SME.SGP.Aplicacao.CasosDeUso
     {
         private readonly IMediator mediator;
         private readonly IUnitOfWork unitOfWork;
+        private const int DOIS_BOLETIM = 2;
 
         public BoletimUseCase(IMediator mediator,
                               IUnitOfWork unitOfWork)
@@ -22,8 +25,14 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(FiltroRelatorioBoletimDto filtroRelatorioBoletimDto)
         {
-            bool existeUe = await mediator.Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
-            bool existeDre = await mediator.Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioBoletimDto.DreCodigo));
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= 0)
+                throw new NegocioException(MensagemNegocioBoletim.QUANTIDADE_BOLETIM_POR_PAGINAS);
+            
+            bool existeUe = await mediator
+                .Send(new ValidaSeExisteUePorCodigoQuery(filtroRelatorioBoletimDto.UeCodigo));
+
+            bool existeDre = await mediator
+                .Send(new ValidaSeExisteDrePorCodigoQuery(filtroRelatorioBoletimDto.DreCodigo));
 
             if (!existeDre)
                 throw new NegocioException("Não foi possível encontrar a DRE");
@@ -41,20 +50,36 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             }
 
             unitOfWork.IniciarTransacao();
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+            var usuarioLogado = await mediator
+                .Send(new ObterUsuarioLogadoQuery());
+            
+
             filtroRelatorioBoletimDto.Usuario = usuarioLogado;
+
+            if (filtroRelatorioBoletimDto.AlunosCodigo != null && !filtroRelatorioBoletimDto.AlunosCodigo.Any())
+            {
+                filtroRelatorioBoletimDto.AlunosCodigo = (await mediator
+                    .Send(new ObterAlunosPorTurmaQuery(filtroRelatorioBoletimDto.TurmaCodigo, filtroRelatorioBoletimDto.ConsideraInativo)))
+                    .Select(a => a.CodigoAluno)
+                    .ToArray();
+            }
 
             bool retorno;
 
-            if (filtroRelatorioBoletimDto.Modelo == ModeloBoletim.Detalhado)
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
+            if (filtroRelatorioBoletimDto.QuantidadeBoletimPorPagina <= DOIS_BOLETIM)
+            {
+                retorno = await mediator
+                    .Send(new GerarRelatorioCommand(TipoRelatorio.BoletimDetalhado, filtroRelatorioBoletimDto, usuarioLogado, RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimDetalhado));
+            }
             else
             {
                 var rotaBoletim = !string.IsNullOrEmpty(filtroRelatorioBoletimDto.TurmaCodigo) ?
                     RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletimTurma :
                     RotasRabbitSgpRelatorios.RotaRelatoriosSolicitadosBoletim;
 
-                retorno = await mediator.Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
+                retorno = await mediator
+                    .Send(new GerarRelatorioCommand(TipoRelatorio.Boletim, filtroRelatorioBoletimDto, usuarioLogado, rotaBoletim));
             }
 
             unitOfWork.PersistirTransacao();

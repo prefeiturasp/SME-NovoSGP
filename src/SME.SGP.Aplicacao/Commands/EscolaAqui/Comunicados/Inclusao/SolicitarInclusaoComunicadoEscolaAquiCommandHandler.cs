@@ -22,10 +22,12 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoAcompanhamentoEscolar _servicoAcompanhamentoEscolar;
         private readonly IServicoUsuario _servicoUsuario;
         private readonly IConsultasAbrangencia _consultasAbrangencia;
+        private readonly IMediator mediator;
 
         public SolicitarInclusaoComunicadoEscolaAquiCommandHandler(
               IRepositorioComunicado repositorioComunicado
             , IUnitOfWork unitOfWork
+              ,IMediator mediator
             , IRepositorioComunicadoTurma repositorioComunicadoTurma
             , IRepositorioComunicadoAluno repositorioComunicadoAluno
             , IServicoAcompanhamentoEscolar servicoAcompanhamentoEscolar
@@ -40,6 +42,7 @@ namespace SME.SGP.Aplicacao
             this._servicoAcompanhamentoEscolar = servicoAcompanhamentoEscolar ?? throw new ArgumentNullException(nameof(servicoAcompanhamentoEscolar));
             this._servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this._consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<string> Handle(SolicitarInclusaoComunicadoEscolaAquiCommand request, CancellationToken cancellationToken)
@@ -141,7 +144,7 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var turma in comunicado.Turmas)
             {
-                var abrangenciaTurmas = await _consultasAbrangencia.ObterAbrangenciaTurma(turma);
+                var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaPorTurmaEConsideraHistoricoQuery(turma));
 
                 if (abrangenciaTurmas == null)
                     throw new NegocioException($"Usuário não possui permissão para enviar comunicados para a Turma com codigo {turma}");

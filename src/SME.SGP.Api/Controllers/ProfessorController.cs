@@ -95,12 +95,13 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("{codigoRF}/resumo/{anoLetivo}")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, [FromQuery] bool buscarOutrosCargos = false)
+        public async Task<IActionResult> Resumo(string codigoRF, int anoLetivo, [FromQuery] string dreId, [FromQuery] string ueId, [FromQuery] bool buscarOutrosCargos = false, [FromQuery] bool buscarPorTodasDre = false)
         {
-            var retorno = await consultasProfessor.ObterResumoPorRFAnoLetivo(codigoRF, anoLetivo, buscarOutrosCargos);
+            var retorno = await consultasProfessor.ObterResumoPorRFUeDreAnoLetivo(codigoRF, anoLetivo, dreId, ueId, buscarOutrosCargos, buscarPorTodasDre);
 
             return Ok(retorno);
         }
+        
         [HttpGet("rfs/{codigoRf}/anos-letivos/{anoLetivo}/buscar")]
         [ProducesResponseType(typeof(ProfessorResumoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]

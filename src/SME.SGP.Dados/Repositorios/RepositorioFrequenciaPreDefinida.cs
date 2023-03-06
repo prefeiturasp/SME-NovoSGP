@@ -63,7 +63,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<FrequenciaPreDefinidaDto>> ObterPorTurmaEComponente(long turmaId, long componenteCurricularId)
         {
-            var query = new StringBuilder(@"select fpd.codigo_aluno as CodigoAluno,
+            var query = new StringBuilder(@"select distinct fpd.codigo_aluno as CodigoAluno,
                                                    fpd.tipo_frequencia as Tipo
                                               from frequencia_pre_definida fpd
                                              where fpd.turma_id = @turmaId
@@ -92,6 +92,24 @@ namespace SME.SGP.Dados.Repositorios
                 (@componenteCurricularId, @turmaId, @codigoAluno, @tipoFrequencia);",
                new
                {
+                   turmaId = frequenciaPreDefinida.TurmaId,
+                   componenteCurricularId = frequenciaPreDefinida.ComponenteCurricularId,
+                   codigoAluno = frequenciaPreDefinida.CodigoAluno,
+                   tipoFrequencia = frequenciaPreDefinida.TipoFrequencia
+               });
+        }
+
+        public async Task Atualizar(FrequenciaPreDefinida frequenciaPreDefinida)
+        {
+            await database.Conexao.ExecuteAsync(@"UPDATE frequencia_pre_definida 
+                                                  SET  componente_curricular_id = @componenteCurricularId,
+                                                       turma_id = @turmaId,
+                                                       codigo_aluno = @codigoAluno,
+                                                       tipo_frequencia = @tipoFrequencia
+                                                  WHERE Id = @id",
+               new
+               {
+                   id = frequenciaPreDefinida.Id,
                    turmaId = frequenciaPreDefinida.TurmaId,
                    componenteCurricularId = frequenciaPreDefinida.ComponenteCurricularId,
                    codigoAluno = frequenciaPreDefinida.CodigoAluno,

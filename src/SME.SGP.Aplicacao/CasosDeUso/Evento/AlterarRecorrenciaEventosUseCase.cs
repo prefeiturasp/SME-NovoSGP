@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarRecorrenciaEventosUseCase : AbstractUseCase, IAlterarRecorrenciaEventos
+    public class AlterarRecorrenciaEventosUseCase : AbstractUseCase, IAlterarRecorrenciaEventosUseCase
     {
         public class AlterarRecorrenciaEventosParametro
         {

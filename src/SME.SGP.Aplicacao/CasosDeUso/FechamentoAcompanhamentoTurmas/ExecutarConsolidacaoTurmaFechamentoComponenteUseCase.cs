@@ -30,7 +30,7 @@ namespace SME.SGP.Aplicacao
 
             var consolidadoTurmaComponente = await repositorioFechamentoConsolidado.ObterFechamentoConsolidadoPorTurmaBimestreComponenteCurricularAsync(filtro.TurmaId, filtro.ComponenteCurricularId, filtro.Bimestre);
 
-            var fechamentos = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(filtro.TurmaId, new long[] { filtro.ComponenteCurricularId }, filtro.Bimestre));
+            var fechamentos = await mediator.Send(new ObterFechamentosTurmaComponentesQuery(filtro.TurmaId, new long[] { filtro.ComponenteCurricularId }, filtro?.Bimestre ?? 0));
 
             var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(filtro.TurmaId));
             if (professoresDaTurma is null || !professoresDaTurma.Any())
@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
 
             if (consolidadoTurmaComponente == null)
             {
-                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinaId == filtro.ComponenteCurricularId);
+                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId));
 
                 consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {
@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
                     ComponenteCurricularCodigo = filtro.ComponenteCurricularId,
                     TurmaId = filtro.TurmaId,
                     ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
-                    ProfessorRf = professorComponente?.ProfessorRf
+                    ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty,                    
                 };
             }
 

@@ -19,8 +19,13 @@ namespace SME.SGP.Aplicacao
             var componenteCurricularId = long.Parse(param.DisciplinaId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var turma = await ObterTurma(param.TurmaId);
-            var alunosDaTurma = await ObterAlunos(param.TurmaId.ToString(), param.DataFim);
-            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
+            var alunosDaTurma = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(turma.CodigoTurma, param.DataFim));
+            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
+
+            alunosDaTurma = VerificaAlunosAtivosNoPeriodo(alunosDaTurma, param.DataInicio, param.DataFim);
+
+
+            var aulas = await ObterAulas(param.DataInicio, param.DataFim, param.TurmaId, componenteCurricular.Regencia ? componenteCurricular.CdComponenteCurricularPai.ToString() : param.DisciplinaId, usuarioLogado.EhSomenteProfessorCj());
 
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoEscolar = await ObterPeriodoEscolar(tipoCalendarioId, param.DataInicio);
@@ -28,9 +33,7 @@ namespace SME.SGP.Aplicacao
             var percentualCritico = await ObterParametro(TipoParametroSistema.PercentualFrequenciaCritico, turma.AnoLetivo);
             var percentualAlerta = await ObterParametro(TipoParametroSistema.PercentualFrequenciaAlerta, turma.AnoLetivo);
 
-            var mesmoAnoLetivo = DateTime.Today.Year == turma.AnoLetivo;
-
-            var registraFrequencia = await OterComponenteRegistraFrequencia(param.ComponenteCurricularId);
+            var registraFrequencia = await ObterComponenteRegistraFrequencia(param.ComponenteCurricularId);
             var frequenciaAlunos = await mediator.Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, componenteCurricularId, periodoEscolar.Id));
             var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, param.DisciplinaId, periodoEscolar.Id));
             var registrosFrequenciaAlunos = await mediator.Send(new ObterRegistrosFrequenciaAlunosPorPeriodoQuery(param.TurmaId,
@@ -58,7 +61,11 @@ namespace SME.SGP.Aplicacao
                                                                           percentualCritico));
         }
 
-        private async Task<bool> OterComponenteRegistraFrequencia(string disciplinaId)
+        private IEnumerable<AlunoPorTurmaResposta> VerificaAlunosAtivosNoPeriodo(IEnumerable<AlunoPorTurmaResposta> alunosdaTurmaEol, DateTime dataInicio, DateTime dataFim) 
+            => alunosdaTurmaEol.Where(a => a.EstaAtivo(dataInicio, dataFim) || (a.EstaInativo(dataFim)
+            && a.CodigoSituacaoMatricula != SituacaoMatriculaAluno.VinculoIndevido && a.DataSituacao.Date >= dataInicio && a.DataSituacao.Date <= dataFim));
+
+        private async Task<bool> ObterComponenteRegistraFrequencia(string disciplinaId)
             => await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(long.Parse(disciplinaId)));
 
         private async Task<int> ObterParametro(TipoParametroSistema parametro, int anoLetivo)
@@ -77,16 +84,6 @@ namespace SME.SGP.Aplicacao
                 throw new NegocioException("Ocorreu um erro, esta aula está fora do período escolar.");
 
             return periodoEscolar;
-        }
-
-        private async Task<IEnumerable<AlunoPorTurmaResposta>> ObterAlunos(string turmaId, DateTime dataInicio)
-        {
-            var alunosDaTurma = await mediator.Send(new ObterAlunosPorTurmaEDataMatriculaQuery(turmaId, dataInicio));
-
-            if (alunosDaTurma == null || !alunosDaTurma.Any())
-                throw new NegocioException("Não foram encontrados alunos para a turma informada.");
-
-            return alunosDaTurma;
         }
 
         private async Task<Turma> ObterTurma(string turmaId)

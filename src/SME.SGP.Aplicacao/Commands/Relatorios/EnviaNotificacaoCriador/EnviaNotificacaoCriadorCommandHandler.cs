@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));            
         }
 
-        public Task<bool> Handle(EnviaNotificacaoCriadorCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(EnviaNotificacaoCriadorCommand request, CancellationToken cancellationToken)
         {
             var extensaoRelatorio = request.RelatorioCorrelacao.Formato.Name();
             var urlNotificacao = $"{request.UrlRedirecionamentoBase}api/v1/downloads/sgp/{extensaoRelatorio}/{request.RelatorioCorrelacao.TipoRelatorio.ShortName()}.{extensaoRelatorio}/{request.RelatorioCorrelacao.Codigo}";
@@ -40,9 +40,9 @@ namespace SME.SGP.Aplicacao
                 UsuarioId = request.RelatorioCorrelacao.UsuarioSolicitanteId
             };
 
-            servicoNotificacao.Salvar(notificacao);
+            await servicoNotificacao.Salvar(notificacao);
 
-            return Task.FromResult(true);
+            return true;
         }
 
         private string FormatarMensagem(string descricaoDoRelatorio, string urlNotificacao, string mensagemUsuario)

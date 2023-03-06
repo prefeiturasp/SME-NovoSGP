@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioFechamentoAlunoConsulta : RepositorioBase<FechamentoAluno>, IRepositorioFechamentoAlunoConsulta
     {
-        public RepositorioFechamentoAlunoConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioFechamentoAlunoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -76,8 +77,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select *
                         from fechamento_aluno
-                        where not excluido
-                          and fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
+                        where fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
                           and aluno_codigo = @alunoCodigo";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<FechamentoAluno>(query, new { fechamentoTurmaDisciplinaId, alunoCodigo });
@@ -88,8 +88,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select a.*, n.*
                             from fechamento_aluno a
                            inner join fechamento_nota n on n.fechamento_aluno_id = a.id
-                           where not a.excluido
-                             and a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
+                           where a.fechamento_turma_disciplina_id = @fechamentoTurmaDisciplinaId
                              and a.aluno_codigo = @alunoCodigo";
 
             FechamentoAluno fechamentoAlunoRetorno = null;

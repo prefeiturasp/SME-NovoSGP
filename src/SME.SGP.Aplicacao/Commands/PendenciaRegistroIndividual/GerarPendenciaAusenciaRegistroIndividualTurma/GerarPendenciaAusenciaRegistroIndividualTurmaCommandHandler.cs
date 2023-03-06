@@ -80,12 +80,13 @@ namespace SME.SGP.Aplicacao
 
         private async Task CriarNovaPendenciaAusenciaRegistroIndividualAsync(Turma turma, IEnumerable<AlunoPorTurmaResposta> alunosTurmaComAusenciaRegistroIndividualPorDias)
         {
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
+            var listaProfessoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+            var professoresDaTurma = listaProfessoresDaTurma?.Select(x => x.ProfessorRf);
             if (!professoresDaTurma?.Any() ?? true)
                 throw new NegocioException($"Não foram encontrados professores para a turma {turma.CodigoTurma}.");
 
             var titulo = DefinirTituloDaPendenciaPorAusenciaDeRegistroIndividual(turma);
-            var pendencia = new Pendencia(TipoPendencia.AusenciaDeRegistroIndividual, titulo, DescricaoBase);
+            var pendencia = new Pendencia(TipoPendencia.AusenciaDeRegistroIndividual, titulo, DescricaoBase, turma.Id);
             pendencia.Id = await repositorioPendencia.SalvarAsync(pendencia);
 
 

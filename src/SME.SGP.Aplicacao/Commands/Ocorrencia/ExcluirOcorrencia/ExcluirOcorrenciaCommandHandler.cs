@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Threading;
@@ -11,10 +10,14 @@ namespace SME.SGP.Aplicacao
     public class ExcluirOcorrenciaCommandHandler : IRequestHandler<ExcluirOcorrenciaCommand, RetornoBaseDto>
     {
         private readonly IRepositorioOcorrencia repositorioOcorrencia;
+        private readonly IRepositorioOcorrenciaServidor _repositorioOcorrenciaServidor;
+        private readonly IMediator mediator;
 
-        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia)
+        public ExcluirOcorrenciaCommandHandler(IRepositorioOcorrencia repositorioOcorrencia,  IRepositorioOcorrenciaServidor repositorioOcorrenciaServidor,IMediator mediator)
         {
-            this.repositorioOcorrencia = repositorioOcorrencia;
+            this.repositorioOcorrencia = repositorioOcorrencia ?? throw new ArgumentNullException(nameof(repositorioOcorrencia));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _repositorioOcorrenciaServidor = repositorioOcorrenciaServidor ?? throw new ArgumentNullException(nameof(repositorioOcorrenciaServidor));
         }
 
         public async Task<RetornoBaseDto> Handle(ExcluirOcorrenciaCommand request, CancellationToken cancellationToken)
@@ -34,6 +37,12 @@ namespace SME.SGP.Aplicacao
 
                 ocorrencia.Excluir();
                 await repositorioOcorrencia.SalvarAsync(ocorrencia);
+                if (!string.IsNullOrEmpty(ocorrencia?.Descricao))
+                {
+                    await mediator.Send(new DeletarArquivoDeRegistroExcluidoCommand(ocorrencia.Descricao, TipoArquivo.Ocorrencia.Name()));
+                }
+
+                await mediator.Send(new ExcluirOcorrenciaServidorPorIdOcorrenciaCommand(ocorrencia.Id));
             }
             catch(Exception ex)
             {

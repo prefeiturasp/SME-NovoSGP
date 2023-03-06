@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,6 +25,7 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
+        private readonly IRepositorioTipoCalendarioConsulta repositorioTipoCalendario;
 
         public ComandosAtividadeAvaliativa(
             IRepositorioAtividadeAvaliativa repositorioAtividadeAvaliativa,
@@ -37,7 +39,8 @@ namespace SME.SGP.Aplicacao
             IRepositorioAtividadeAvaliativaRegencia repositorioAtividadeAvaliativaRegencia,
             IRepositorioAtividadeAvaliativaDisciplina repositorioAtividadeAvaliativaDisciplina,
             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
-            IMediator mediator)
+            IMediator mediator,
+            IRepositorioTipoCalendarioConsulta repositorioTipoCalendario)
 
         {
             this.repositorioAtividadeAvaliativa = repositorioAtividadeAvaliativa ?? throw new ArgumentNullException(nameof(repositorioAtividadeAvaliativa));
@@ -52,6 +55,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioAtividadeAvaliativaDisciplina = repositorioAtividadeAvaliativaDisciplina ?? throw new ArgumentException(nameof(repositorioAtividadeAvaliativaDisciplina));
             this.repositorioAtribuicaoCJ = repositorioAtribuicaoCJ ?? throw new ArgumentException(nameof(repositorioAtribuicaoCJ));
             this.mediator = mediator ?? throw new ArgumentException(nameof(mediator));
+            this.repositorioTipoCalendario = repositorioTipoCalendario ?? throw new ArgumentNullException(nameof(repositorioTipoCalendario));
         }
 
         public async Task<IEnumerable<RetornoCopiarAtividadeAvaliativaDto>> Alterar(AtividadeAvaliativaDto dto, long id)
@@ -60,7 +64,9 @@ namespace SME.SGP.Aplicacao
 
             var usuario = await servicoUsuario.ObterUsuarioLogado();
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+
             ValidaDisciplinaNaAvaliacao(disciplina);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, id, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
 
@@ -140,6 +146,28 @@ namespace SME.SGP.Aplicacao
 
             var atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(idAtividadeAvaliativa);
 
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(atividadeAvaliativa.TurmaId));
+
+            var disciplinaId = long.Parse(atividadeDisciplinas.FirstOrDefault().DisciplinaId);
+
+            var regenteAtual  = !usuario.EhProfessorCj() && !usuario.EhGestorEscolar()
+                ? await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplinaId, turma.CodigoTurma, DateTime.Now.Date, usuario))
+                : true;
+            
+            var aula = await repositorioAula.ObterAulas(turma.CodigoTurma, atividadeAvaliativa.UeId, regenteAtual  ? string.Empty : usuario.CodigoRf, atividadeAvaliativa.DataAvaliacao, atividadeDisciplinas.Select(s=> s.DisciplinaId).ToArray(), usuario.EhProfessorCj());
+
+            if (!aula.Any())
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data );
+            
+            var periodoEscolar = await repositorioTipoCalendario.ObterPeriodoEscolarPorCalendarioEData(aula.FirstOrDefault().TipoCalendarioId, atividadeAvaliativa.DataAvaliacao.Date);
+
+            var mesmoAnoLetivo = DateTime.Today.Year == atividadeAvaliativa.DataAvaliacao.Year;
+
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
+
+            if (!temPeriodoAberto)
+                throw new NegocioException("Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
+
             if (!usuario.EhGestorEscolar())
             {
                 atividadeAvaliativa.PodeSerAlterada(usuario);
@@ -180,9 +208,10 @@ namespace SME.SGP.Aplicacao
         {
             var mensagens = new List<RetornoCopiarAtividadeAvaliativaDto>();
             var usuario = await servicoUsuario.ObterUsuarioLogado();
-
             var disciplina = await ObterDisciplina(dto.DisciplinasId[0]);
+
             ValidaDisciplinaNaAvaliacao(disciplina);
+            await ValidaCategoriaInterdisciplinar(dto);
 
             var atividadeAvaliativa = MapearDtoParaEntidade(dto, 0L, usuario.CodigoRf, disciplina.Regencia, usuario.EhProfessorCj());
             mensagens.AddRange(await Salvar(atividadeAvaliativa, dto));
@@ -214,6 +243,15 @@ namespace SME.SGP.Aplicacao
 
             if (await AtividadeImportada(filtro.Id))
                 return;
+
+            var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(filtro.TurmaId));
+
+            var mesmoAnoLetivo = DateTime.Today.Year == dataAvaliacao.Year;
+
+            var temPeriodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTime.Today, periodoEscolar.Bimestre, mesmoAnoLetivo));
+
+            if (!temPeriodoAberto)
+                throw new NegocioException("Apenas é possível consultar este registro pois o período deste bimestre não está aberto.");
 
             //verificar se já existe atividade com o mesmo nome no mesmo bimestre
             if (await repositorioAtividadeAvaliativa.VerificarSeJaExisteAvaliacaoComMesmoNome(filtro.Nome, filtro.DreId, filtro.UeID, filtro.TurmaId, filtro.DisciplinasId, usuario.CodigoRf, periodoEscolar.PeriodoInicio, periodoEscolar.PeriodoFim, filtro.Id))
@@ -340,6 +378,19 @@ namespace SME.SGP.Aplicacao
             return disciplina.FirstOrDefault();
         }
 
+        private async Task ValidaCategoriaInterdisciplinar(AtividadeAvaliativaDto dto)
+        {
+            bool verificaSeEhRegencia = false;
+            if (dto.CategoriaId == CategoriaAtividadeAvaliativa.Interdisciplinar && dto.DisciplinasId.Count() < 2)
+            {
+                if (dto.DisciplinasId.Any())
+                    verificaSeEhRegencia = await mediator.Send(new VerificarComponenteCurriculareSeERegenciaPorIdQuery(Convert.ToInt64(dto.DisciplinasId.FirstOrDefault())));
+
+                if(!verificaSeEhRegencia)
+                    throw new NegocioException("Para categoria Interdisciplinar informe mais que um componente curricular.");
+            }
+        }
+
         private async Task<IEnumerable<TurmaDto>> ObterTurmasAtribuidasAoProfessor(string codigoRf, long disciplinaId)
         {
             var turmasAtribuidasAoProfessorTitular = consultasProfessor.Listar(codigoRf);
@@ -381,7 +432,7 @@ namespace SME.SGP.Aplicacao
 
             if (atividadeAvaliativa.EhRegencia)
             {
-                if (dto.DisciplinaContidaRegenciaId.Length == 0)
+                if (dto.DisciplinaContidaRegenciaId.Length == 0 && !(atividadeAvaliativa.Categoria == CategoriaAtividadeAvaliativa.Interdisciplinar))
                     throw new NegocioException("É necessário informar as disciplinas da regência");
 
                 foreach (string id in dto.DisciplinaContidaRegenciaId)
@@ -469,11 +520,8 @@ namespace SME.SGP.Aplicacao
 
         private async Task VerificaSeProfessorPodePersistirTurma(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
         {
-            if (usuario == null)
-                usuario = await servicoUsuario.ObterUsuarioLogado();
-
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            if (!usuario.EhProfessorCj() && !await mediator.Send(new PodePersistirTurmaDisciplinaQuery(codigoRf, turmaId, disciplinaId, dataAula.Ticks)))
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

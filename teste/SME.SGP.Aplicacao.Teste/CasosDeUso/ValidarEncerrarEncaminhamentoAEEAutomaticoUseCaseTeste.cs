@@ -29,14 +29,14 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             //-> Arrange
             var alunoPorUe = new AlunoPorUeDto
             {
-                CodigoAluno = "4824410",
-                NomeAluno = "NICOLAS DOS SANTOS ALMEIDA SILVA",
+                CodigoAluno = "123",
+                NomeAluno = "ALUNO TESTE",
                 NomeSocialAluno = string.Empty,
                 CodigoSituacaoMatricula = SituacaoMatriculaAluno.Transferido,
                 SituacaoMatricula = "Transferido",
                 DataSituacao = DateTime.UtcNow.AddDays(-1),
-                CodigoTurma = 2369048,
-                CodigoMatricula = 36099185,
+                CodigoTurma = 1,
+                CodigoMatricula = 1,
                 AnoLetivo = 2022
             };
 
@@ -63,8 +63,8 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             return new MensagemRabbit(json)
             { 
                 Action = "sgp/encaminhamento/aee/encerrar/automatico/validar",
-                UsuarioLogadoNomeCompleto = "MILENA PEDROSO RUELLA MARTINS",
-                UsuarioLogadoRF = "7707533"
+                UsuarioLogadoNomeCompleto = "TESTE",
+                UsuarioLogadoRF = "999"
             };
         }
     }

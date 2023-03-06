@@ -25,7 +25,6 @@ namespace SME.SGP.Dominio.Servicos
         private readonly IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao;
         private readonly IRepositorioWorkflowAprovacaoNivelNotificacao repositorioWorkflowAprovacaoNivelNotificacao;
         private readonly IRepositorioFechamentoNota repositorioFechamentoNota;
-        private readonly IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota;
         private readonly IRepositorioPendencia repositorioPendencia;
         private readonly IServicoEol servicoEOL;
         private readonly IServicoNotificacao servicoNotificacao;
@@ -47,7 +46,6 @@ namespace SME.SGP.Dominio.Servicos
                                         IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao,
                                         IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                         IRepositorioFechamentoNota repositorioFechamentoNota,
-                                        IRepositorioConselhoClasseNotaConsulta repositorioConselhoClasseNota,
                                         IRepositorioPendencia repositorioPendencia,
                                         IMediator mediator)
         {
@@ -65,7 +63,6 @@ namespace SME.SGP.Dominio.Servicos
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioFechamentoReabertura = repositorioFechamentoReabertura ?? throw new ArgumentNullException(nameof(repositorioFechamentoReabertura));
             this.repositorioFechamentoNota = repositorioFechamentoNota ?? throw new ArgumentNullException(nameof(repositorioFechamentoNota));
-            this.repositorioConselhoClasseNota = repositorioConselhoClasseNota ?? throw new ArgumentNullException(nameof(repositorioConselhoClasseNota));
             this.repositorioPendencia = repositorioPendencia ?? throw new ArgumentNullException(nameof(repositorioPendencia));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
@@ -81,11 +78,14 @@ namespace SME.SGP.Dominio.Servicos
             nivel.PodeAprovar();
 
             var niveisParaPersistir = workflow.ModificarStatusPorNivel(aprovar ? WorkflowAprovacaoNivelStatus.Aprovado : WorkflowAprovacaoNivelStatus.Reprovado, nivel.Nivel, observacao);
-            AtualizaNiveis(niveisParaPersistir);
+            await AtualizaNiveis(niveisParaPersistir);
 
             if (aprovar)
                 await AprovarNivel(nivel, workflow, (long)codigoDaNotificacao);
             else await ReprovarNivel(workflow, (long)codigoDaNotificacao, observacao, nivel.Cargo, nivel);
+
+            foreach (var notificacao in nivel.Notificacoes)
+                await mediator.Send(new NotificarLeituraNotificacaoCommand(notificacao, notificacao.Usuario.CodigoRf));
         }
 
         public async Task ConfiguracaoInicial(WorkflowAprovacao workflowAprovacao, long idEntidadeParaAprovar)
@@ -116,7 +116,7 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirWorkflowNotificacoes(long id)
         {
-            var workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
+            var workflow = await repositorioWorkflowAprovacao.ObterEntidadeCompleta(id);
 
             if (workflow == null)
                 throw new NegocioException("Não foi possível localizar o fluxo de aprovação.");
@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
                 foreach (Notificacao notificacao in wfNivel.Notificacoes)
                 {
                     repositorioWorkflowAprovacaoNivelNotificacao.ExcluirPorWorkflowNivelNotificacaoId(wfNivel.Id, notificacao.Id);
-                    repositorioNotificacao.Remover(notificacao);
+                    await mediator.Send(new ExcluirNotificacaoCommand(notificacao));
                 }
             }
 
@@ -157,7 +157,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Data_Passada)
                 {
-                    AprovarUltimoNivelDeEventoDataPassada(codigoDaNotificacao, workflow.Id);
+                    await AprovarUltimoNivelDeEventoDataPassada(codigoDaNotificacao, workflow.Id);
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.Fechamento_Reabertura)
                 {
@@ -225,7 +225,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
@@ -237,25 +237,25 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var fechamentoNota = notaEmAprovacao.FechamentoNota;
 
-                if (notaEmAprovacao.Nota.HasValue)
+                if (notaEmAprovacao.WfAprovacao.Nota.HasValue)
                 {
-                    if (notaEmAprovacao.Nota != fechamentoNota.Nota)
-                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.Nota.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota && fechamentoNota.Nota.HasValue)
+                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.WfAprovacao.Nota.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
-                    fechamentoNota.Nota = notaEmAprovacao.Nota;
+                    fechamentoNota.Nota = notaEmAprovacao.WfAprovacao.Nota;
                 }
                 else
                 {
-                    if (notaEmAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.ConceitoId.Value, notaEmAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                    if (notaEmAprovacao.WfAprovacao.ConceitoId != fechamentoNota.ConceitoId)
+                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.WfAprovacao.ConceitoId.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
-                    fechamentoNota.ConceitoId = notaEmAprovacao.ConceitoId;
+                    fechamentoNota.ConceitoId = notaEmAprovacao.WfAprovacao.ConceitoId;
                 }
-
                 repositorioFechamentoNota.Salvar(fechamentoNota);
+
             }
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoSync,
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoSync,
                                                new ConsolidacaoTurmaDto(fechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.TurmaId, 0),
                                                Guid.NewGuid(),
                                                null));
@@ -274,17 +274,17 @@ namespace SME.SGP.Dominio.Servicos
             await NotificarCriadorDaAulaQueFoiAprovada(aula, codigoDaNotificacao);
         }
 
-        private void AprovarUltimoNivelDeEventoDataPassada(long codigoDaNotificacao, long workflowId)
+        private async Task AprovarUltimoNivelDeEventoDataPassada(long codigoDaNotificacao, long workflowId)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflowId);
             if (evento == null)
                 throw new NegocioException("Não foi possível localizar o evento deste fluxo de aprovação.");
 
             evento.AprovarWorkflow();
-            repositorioEvento.Salvar(evento);
+            await repositorioEvento.SalvarAsync(evento);
 
-            NotificarCriadorEventoDataPassadaAprovado(evento, codigoDaNotificacao);
-            NotificarDiretorUeEventoDataPassadaAprovado(evento, codigoDaNotificacao);
+            await NotificarCriadorEventoDataPassadaAprovado(evento, codigoDaNotificacao);
+            await NotificarDiretorUeEventoDataPassadaAprovado(evento, codigoDaNotificacao);
         }
 
         private async Task AprovarUltimoNivelDeEventoFechamentoReabertura(long codigoDaNotificacao, long workflowId, long nivelId)
@@ -305,7 +305,7 @@ namespace SME.SGP.Dominio.Servicos
         private void NotificarFechamentoReaberturaUEUseCase(FechamentoReabertura fechamentoReabertura)
         {
             var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
-            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual)), new Guid(), null));
+            mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaNotificacaoFechamentoReaberturaUE, new FiltroNotificacaoFechamentoReaberturaUEDto(MapearFechamentoReaberturaNotificacao(fechamentoReabertura, usuarioAtual)), new Guid(), null));
         }
 
         private FiltroFechamentoReaberturaNotificacaoDto MapearFechamentoReaberturaNotificacao(FechamentoReabertura fechamentoReabertura, Usuario usuario)
@@ -335,7 +335,7 @@ namespace SME.SGP.Dominio.Servicos
             repositorioEvento.Salvar(evento);
 
             await VerificaPendenciaDiasLetivosInsuficientes(evento);
-            NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
+            await NotificarCriadorEventoLiberacaoExcepcionalAprovado(evento, codigoDaNotificacao);
         }
 
         private async Task VerificaPendenciaDiasLetivosInsuficientes(Evento evento)
@@ -348,15 +348,16 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
+        private async Task AtualizaNiveis(IEnumerable<WorkflowAprovacaoNivel> niveis)
         {
             foreach (var nivel in niveis)
             {
-                workflowAprovacaoNivel.Salvar(nivel);
+                await workflowAprovacaoNivel.SalvarAsync(nivel);
 
                 foreach (var notificacao in nivel.Notificacoes)
                 {
-                    repositorioNotificacao.Salvar(notificacao);
+                    await repositorioNotificacao.SalvarAsync(notificacao);
+                    await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao));
                 }
             }
         }
@@ -429,7 +430,8 @@ namespace SME.SGP.Dominio.Servicos
 
                 nivel.Adicionar(notificacao);
 
-                repositorioNotificacao.Salvar(notificacao);
+                await repositorioNotificacao.SalvarAsync(notificacao);
+                await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao, usuario.CodigoRf));
 
                 repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao()
                 {
@@ -488,6 +490,7 @@ namespace SME.SGP.Dominio.Servicos
                 nivel.Adicionar(notificacao);
 
                 await repositorioNotificacao.SalvarAsync(notificacao);
+                await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao, usuario.CodigoRf));
 
                 await repositorioWorkflowAprovacaoNivelNotificacao.SalvarAsync(new WorkflowAprovacaoNivelNotificacao()
                 {
@@ -505,75 +508,102 @@ namespace SME.SGP.Dominio.Servicos
             return nivel.Cargo;
         }
 
-        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
+        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
         {
             await ExcluirWfNotasFechamento(notasEmAprovacao);
-
             var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
-            var usuarioRf = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF;
-            var periodoEscolar = notasEmAprovacao.First().FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolar;
-            var notaConceitoTitulo = notasEmAprovacao.First().ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
-            var componenteCurricularNome = await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(notasEmAprovacao.First().FechamentoNota.DisciplinaId));
 
-            if (usuario != null)
+            int? bimestre = notasEmAprovacao.First().Bimestre;
+            var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
+
+            var usuariosRfs = notasEmAprovacao.Select(n => n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
+
+            foreach (var usuarioRf in usuariosRfs.Distinct())
             {
-                repositorioNotificacao.Salvar(new Notificacao()
-                {
-                    UeId = turma.Ue.CodigoUe,
-                    UsuarioId = usuario.Id,
-                    Ano = DateTime.Today.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = turma.Ue.Dre.CodigoDre,
-                    Titulo = $"Alteração em {notaConceitoTitulo} final - {componenteCurricularNome} - Turma {turma.Nome} ({turma.AnoLetivo})",
-                    Tipo = NotificacaoTipo.Notas,
-                    Codigo = codigoDaNotificacao,
-                    Mensagem = MontaMensagemAprovacaoNotaFechamento(turma, periodoEscolar?.Bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa, componenteCurricularNome)
-                });
+                var dadosUsuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(usuarioRf, ""));
 
+                if (dadosUsuario != null)
+                {
+                    await mediator.Send(new NotificarUsuarioCommand(
+                        $"Alteração em {notaConceitoTitulo} final - {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) - {turma.NomeComModalidade()} (ano anterior)",
+                        await MontaMensagemAprovacaoNotaFechamento(turma, bimestre, notaConceitoTitulo, notasEmAprovacao, aprovada, justificativa),
+                        usuarioRf,
+                        NotificacaoCategoria.Aviso,
+                        NotificacaoTipo.Notas,
+                        turma.Ue.Dre.CodigoDre,
+                        turma.Ue.CodigoUe,
+                        turma.CodigoTurma,
+                        DateTime.Today.Year,
+                        codigoDaNotificacao,
+                        nomeUsuario: dadosUsuario.Nome,
+                        usuarioId: dadosUsuario.Id));
+                }
             }
+
         }
 
-        private async Task ExcluirWfNotasFechamento(IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao)
+        private async Task ExcluirWfNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao)
         {
             foreach (var notaEmAprovacao in notasEmAprovacao)
-                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao));
+                await mediator.Send(new ExcluirWFAprovacaoNotaFechamentoCommand(notaEmAprovacao.WfAprovacao));
         }
 
-        private string MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamento> notasEmAprovacao, bool aprovado, string justificativa, string componenteCurricularNome)
+        private async Task<string> MontaMensagemAprovacaoNotaFechamento(Turma turma, int? bimestre, string notaConceitoTitulo, IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, bool aprovado, string justificativa)
         {
             var aprovadaRecusada = aprovado ? "aprovada" : "recusada";
             var motivo = aprovado ? "" : $"Motivo: {justificativa}.";
             var bimestreFormatado = !bimestre.HasValue ? "bimestre final" : $"{bimestre}º bimestre";
 
-            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo}(s) final(is) do {bimestreFormatado} do componente curricular {componenteCurricularNome} 
-da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) de {turma.AnoLetivo} para o(s) estudante(s) abaixo foi {aprovadaRecusada}. {motivo}</p>");
+            var mensagem = new StringBuilder($@"<p>A alteração de {notaConceitoTitulo} do {bimestreFormatado} de {turma.AnoLetivo} da turma {turma.ModalidadeCodigo.ObterNomeCurto()}-{turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} ({turma.Ue.Dre.Abreviacao}) abaixo foi {aprovadaRecusada}. {motivo}</p>");
 
             mensagem.AppendLine("<table style='margin-left: auto; margin-right: auto;' border='2' cellpadding='5'>");
             mensagem.AppendLine("<tr>");
+            mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Componente curricular</b></td>");
             mensagem.AppendLine("<td style='padding: 20px; text-align:left;'><b>Estudante</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Valor anterior</b></td>");
             mensagem.AppendLine("<td style='padding: 5px; text-align:left;'><b>Novo valor</b></td>");
+            mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Usuário que alterou</b></td>");
+            mensagem.AppendLine("<td style='padding: 10px; text-align:left;'><b>Data da alteração</b></td>");
             mensagem.AppendLine("</tr>");
 
-            var alunosTurma = servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma).Result;
+            var codigoAlunos = notasEmAprovacao.Select(x => long.Parse(x.CodigoAluno)).ToArray();
+            var alunosTurma = (await mediator.Send(new ObterAlunosPorTurmaQuery(turma.CodigoTurma, true))).OrderBy(c => c.NomeAluno);
 
             foreach (var notaAprovacao in notasEmAprovacao)
             {
-                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo);
+                var aluno = alunosTurma.FirstOrDefault(c => c.CodigoAluno == (notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo));
+
+                string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor == null ? notaAprovacao.WfAprovacao.CriadoPor : notaAprovacao.WfAprovacao.AlteradoPor;
+                string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF == null ? notaAprovacao.WfAprovacao.CriadoRF : notaAprovacao.WfAprovacao.AlteradoRF;
+                DateTime? dataUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoEm == null ? notaAprovacao.WfAprovacao.CriadoEm : notaAprovacao.WfAprovacao.AlteradoEm;
+                var horaNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("HH:mm:ss");
+                var dataNotificacao = notaAprovacao.WfAprovacao.CriadoEm.ToString("dd/MM/yyyy");
+                if (notaAprovacao.WfAprovacao.AlteradoEm.HasValue)
+                {
+                    horaNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("HH:mm:ss");
+                    dataNotificacao = notaAprovacao.WfAprovacao.AlteradoEm.Value.ToString("dd/MM/yyyy");
+                }
 
                 mensagem.AppendLine("<tr>");
-                mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
 
-                if (!notaAprovacao.ConceitoId.HasValue)
+
+                if (!notaAprovacao.WfAprovacao.ConceitoId.HasValue)
                 {
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.FechamentoNota.Nota)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.Nota.Value)}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
                 }
                 else
                 {
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.FechamentoNota.ConceitoId)}</td>");
-                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoId)}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+                    mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno?.NumeroAlunoChamada} - {aluno?.NomeAluno} ({notaAprovacao.FechamentoNota.FechamentoAluno.AlunoCodigo})</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
+                    mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
+                    mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao}({horaNotificacao})  </td>");
                 }
 
                 mensagem.AppendLine("</tr>");
@@ -604,9 +634,6 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                 return ConceitoValores.NS.ToString();
         }
 
-        private async Task<string> ObterComponente(long componenteCurricularCodigo)
-            => await mediator.Send(new ObterDescricaoComponenteCurricularPorIdQuery(componenteCurricularCodigo));
-
         private async Task NotificarCriadorFechamentoReaberturaAprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, long nivelId)
         {
             string criadorRf = fechamentoReabertura.CriadoRF;
@@ -614,26 +641,26 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(criadorRf));
             bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
 
-            var notificacao = new Notificacao()
-            {
-                UeId = fechamentoReabertura.Ue.CodigoUe,
-                UsuarioId = usuario.Id,
-                Ano = fechamentoReabertura.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = fechamentoReabertura.Dre.CodigoDre,
-                Titulo =  isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
-                                  Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
-                                  Descrição: { fechamentoReabertura.Descricao} <br/>
-                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
-            };
-            repositorioNotificacao.Salvar(notificacao);
+            var mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.TipoEscola.ObterNomeCurto()} {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi aprovado pela supervisão escolar. <br/>
+                            Tipo de Calendário: {fechamentoReabertura.TipoCalendario.Nome}<br/>
+                            Descrição: {fechamentoReabertura.Descricao} <br/>
+                            Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                            Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
+                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
 
-            repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
+            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
+                isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
+                mensagem,
+                criadorRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                fechamentoReabertura.Dre.CodigoDre,
+                fechamentoReabertura.Ue.CodigoUe,
+                ano: fechamentoReabertura.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
+
+            repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacaoId, WorkflowAprovacaoNivelId = nivelId });
 
         }
 
@@ -642,24 +669,26 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             string criadorRF = fechamentoReabertura.CriadoRF;
             var usuario = await mediator.Send(new ObterUsuarioPorRfQuery(criadorRF));
             bool isAnoAnterior = fechamentoReabertura.TipoCalendario.AnoLetivo < DateTime.Now.Year;
-            var notificacao = new Notificacao()
-            {
-                UeId = fechamentoReabertura.Ue.CodigoUe,
-                UsuarioId = usuario.Id,
-                Ano = fechamentoReabertura.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = fechamentoReabertura.Dre.CodigoDre,
-                Titulo = isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
-                                  Descrição: { fechamentoReabertura.Descricao} <br/>
-                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
-                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
-                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
-            };
-            repositorioNotificacao.Salvar(notificacao);
-            repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
+
+            var mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
+                            Descrição: {fechamentoReabertura.Descricao} <br/>
+                            Início: {fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} <br/>
+                            Fim: {fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} <br/>
+                            Bimestres: {fechamentoReabertura.ObterBimestresNumeral()}";
+
+            var notificacaoId = await mediator.Send(new NotificarUsuarioCommand(
+                isAnoAnterior ? "Cadastro de período de reabertura de fechamento - ano anterior" : "Cadastro de período de reabertura de fechamento",
+                mensagem,
+                criadorRF,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                fechamentoReabertura.Dre.CodigoDre,
+                fechamentoReabertura.Ue.CodigoUe,
+                ano: fechamentoReabertura.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
+
+            repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacaoId, WorkflowAprovacaoNivelId = nivelId });
         }
 
         private async Task NotificarAulaReposicaoQueFoiReprovada(Aula aula, long codigoDaNotificacao, string motivo)
@@ -668,20 +697,20 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
 
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = aula.UeId,
-                UsuarioId = usuario.Id,
-                Ano = aula.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = turma.Ue?.Dre?.CodigoDre,
-                Titulo = $"Criação de Aula de Reposição na turma {turma.Nome}",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $"A criação de {aula.Quantidade} aula(s) de reposição de {turma.ModalidadeCodigo.ToString()} na turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Nome}) foi recusada. Motivo: {motivo} "
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                $"Criação de Aula de Reposição na turma {turma.Nome}",
+                $"A criação de {aula.Quantidade} aula(s) de reposição de {turma.ModalidadeCodigo.ToString()} na turma {turma.Nome} da {turma.Ue.Nome} ({turma.Ue.Dre.Nome}) foi recusada. Motivo: {motivo} ",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                turma.Ue?.Dre?.CodigoDre,
+                aula.UeId,
+                aula.TurmaId,
+                aula.CriadoEm.Year,
+                codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
         private async Task NotificarCriadorDaAulaQueFoiAprovada(Aula aula, long codigoDaNotificacao)
@@ -690,177 +719,138 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             if (turma == null)
                 throw new NegocioException("Turma não localizada.");
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(aula.CriadoRF);
 
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = aula.UeId,
-                UsuarioId = usuario.Id,
-                Ano = aula.CriadoEm.Year,
-                DreId = turma.Ue?.Dre?.CodigoDre,
-                Categoria = NotificacaoCategoria.Aviso,
-                Titulo = $"Criação de Aula de Reposição na turma {turma.Nome} ",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $" Criação de {aula.Quantidade} aula(s) de reposição de {turma.ModalidadeCodigo.ToString()} na turma {turma.Nome} da {turma.Ue?.Nome} ({turma?.Ue?.Dre?.Nome}) foi aceita."
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                $"Criação de Aula de Reposição na turma {turma.Nome} ",
+                $"Criação de {aula.Quantidade} aula(s) de reposição de {turma.ModalidadeCodigo.ToString()} na turma {turma.Nome} da {turma.Ue?.Nome} ({turma?.Ue?.Dre?.Nome}) foi aceita.",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                turma.Ue?.Dre?.CodigoDre,
+                aula.UeId,
+                aula.TurmaId,
+                aula.CriadoEm.Year,
+                codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
-        private void NotificarCriadorEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
+        private async Task NotificarCriadorEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
         {
             var escola = repositorioUe.ObterPorCodigo(evento.UeId);
-
             if (escola == null)
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
 
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = evento.UeId,
-                UsuarioId = usuario.Id,
-                Ano = evento.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
-                Titulo = "Criação de evento com data passada",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                "Criação de evento com data passada",
+                $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>.",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                evento.DreId,
+                evento.UeId,
+                ano: evento.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
-        private void NotificarCriadorEventoDataPassadaReprovacao(Evento evento, long codigoDaNotificacao, string motivoRecusa)
+        private async Task NotificarCriadorEventoDataPassadaReprovacao(Evento evento, long codigoDaNotificacao, string motivoRecusa)
         {
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
 
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
-
-            if (escola == null)
+            var escola = await repositorioUe.ObterNomePorCodigo(evento.UeId);
+            if (string.IsNullOrEmpty(escola))
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = evento.UeId,
-                UsuarioId = usuario.Id,
-                Ano = evento.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
-                Titulo = "Criação de evento com data passada",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi recusado. <br/> Motivo: {motivoRecusa}"
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                "Criação de evento com data passada",
+                $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola} foi recusado. <br/> Motivo: {motivoRecusa}",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                evento.DreId,
+                evento.UeId,
+                ano: evento.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
-        private void NotificarCriadorEventoLiberacaoExcepcionalAprovado(Evento evento, long codigoDaNotificacao)
+        private async Task NotificarCriadorEventoLiberacaoExcepcionalAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
-
-            if (escola == null)
+            var escola = await repositorioUe.ObterNomePorCodigo(evento.UeId);
+            if (string.IsNullOrEmpty(escola))
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/:{evento.Id}/";
 
-            var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
+            var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
 
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = evento.UeId,
-                UsuarioId = usuario.Id,
-                Ano = evento.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
-                Titulo = "Criação de Eventos Excepcionais",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                "Criação de Eventos Excepcionais",
+                $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>.",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                evento.DreId,
+                evento.UeId,
+                ano: evento.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
-        private void NotificarDiretorUeEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
+        private async Task NotificarDiretorUeEventoDataPassadaAprovado(Evento evento, long codigoDaNotificacao)
         {
-            var escola = repositorioUe.ObterPorCodigo(evento.UeId);
+            var escola = await repositorioUe.ObterNomePorCodigo(evento.UeId);
 
-            if (escola == null)
+            if (string.IsNullOrEmpty(escola))
                 throw new NegocioException("Não foi possível localizar a Ue deste evento.");
 
-            var funcionariosEscola = servicoNotificacao.ObterFuncionariosPorNivel(escola.CodigoUe, Cargo.Diretor, true, true);
+            var funcionariosEscola = await servicoNotificacao.ObterFuncionariosPorNivelAsync(evento.UeId, Cargo.Diretor, true, true);
 
             var linkParaEvento = $"{configuration["UrlFrontEnd"]}calendario-escolar/eventos/editar/{evento.Id}/";
 
             foreach (var funcionario in funcionariosEscola)
             {
-                var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
+                var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
-                repositorioNotificacao.Salvar(new Notificacao()
-                {
-                    UeId = evento.UeId,
-                    UsuarioId = usuario.Id,
-                    Ano = evento.CriadoEm.Year,
-                    Categoria = NotificacaoCategoria.Aviso,
-                    DreId = evento.DreId,
-                    Titulo = "Criação de evento com data passada",
-                    Tipo = NotificacaoTipo.Calendario,
-                    Codigo = codigoDaNotificacao,
-                    Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola.Nome} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>."
-                });
+                await mediator.Send(new NotificarUsuarioCommand(
+                    "Criação de evento com data passada",
+                    $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {escola} foi aceito. Agora este evento está visível para todos os usuários. Para visualizá-lo clique <a href='{linkParaEvento}'>aqui</a>.",
+                    usuario.CodigoRf,
+                    NotificacaoCategoria.Aviso,
+                    NotificacaoTipo.Calendario,
+                    evento.DreId,
+                    evento.UeId,
+                    ano: evento.CriadoEm.Year,
+                    codigo: codigoDaNotificacao,
+                    usuarioId: usuario.Id));
             }
         }
 
-        private void NotificarDiretorUeFechamentoReaberturaReprovado(FechamentoReabertura fechamentoReabertura, long codigoDaNotificacao, string motivo, long nivelId)
+        private async Task NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
         {
-            var diretoresDaEscola = servicoEOL.ObterFuncionariosPorCargoUe(fechamentoReabertura.Ue.CodigoUe, (long)Cargo.Diretor);
-
-            if (diretoresDaEscola == null || !diretoresDaEscola.Any())
-                throw new NegocioException("Não foi possível localizar o diretor da Ue desta reabertura de fechamento.");
-            else
-                foreach (var diretorDaEscola in diretoresDaEscola)
-                {
-                    var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretorDaEscola.CodigoRf);
-                    var notificacao = new Notificacao()
-                    {
-                        UeId = fechamentoReabertura.Ue.CodigoUe,
-                        UsuarioId = usuario.Id,
-                        Ano = fechamentoReabertura.CriadoEm.Year,
-                        Categoria = NotificacaoCategoria.Aviso,
-                        DreId = fechamentoReabertura.Dre.CodigoDre,
-                        Titulo = "Cadastro de período de reabertura de fechamento - ano anterior",
-                        Tipo = NotificacaoTipo.Calendario,
-                        Codigo = codigoDaNotificacao,
-                        Mensagem = $@"O período de reabertura do fechamento de bimestre abaixo da {fechamentoReabertura.Ue.Nome} ({fechamentoReabertura.Dre.Abreviacao}) foi reprovado pela supervisão escolar. Motivo: {motivo} <br/>
-                                  Descrição: { fechamentoReabertura.Descricao} < br />
-                                  Início: { fechamentoReabertura.Inicio.ToString("dd/MM/yyyy")} < br />
-                                  Fim: { fechamentoReabertura.Fim.ToString("dd/MM/yyyy")} < br />
-                                  Bimestres: { fechamentoReabertura.ObterBimestresNumeral()}"
-                    };
-                    repositorioNotificacao.Salvar(notificacao);
-                    repositorioWorkflowAprovacaoNivelNotificacao.Salvar(new WorkflowAprovacaoNivelNotificacao() { NotificacaoId = notificacao.Id, WorkflowAprovacaoNivelId = nivelId });
-                }
-        }
-
-        private void NotificarEventoQueFoiReprovado(Evento evento, long codigoDaNotificacao, Usuario usuario, string motivoRecusa, string nomeEscola)
-        {
-            repositorioNotificacao.Salvar(new Notificacao()
-            {
-                UeId = evento.UeId,
-                UsuarioId = usuario.Id,
-                Ano = evento.CriadoEm.Year,
-                Categoria = NotificacaoCategoria.Aviso,
-                DreId = evento.DreId,
-                Titulo = "Criação de Eventos Excepcionais",
-                Tipo = NotificacaoTipo.Calendario,
-                Codigo = codigoDaNotificacao,
-                Mensagem = $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {nomeEscola} foi recusado. <br/> Motivo: {motivoRecusa}"
-            });
+            await mediator.Send(new NotificarUsuarioCommand(
+                "Criação de Eventos Excepcionais",
+                $"O evento {evento.Nome} - {evento.DataInicio.Day}/{evento.DataInicio.Month}/{evento.DataInicio.Year} do calendário {evento.TipoCalendario.Nome} da {nomeEscola} foi recusado. <br/> Motivo: {motivoRecusa}",
+                usuario.CodigoRf,
+                NotificacaoCategoria.Aviso,
+                NotificacaoTipo.Calendario,
+                evento.DreId,
+                evento.UeId,
+                ano: evento.CriadoEm.Year,
+                codigo: codigoDaNotificacao,
+                usuarioId: usuario.Id));
         }
 
         private async Task ReprovarNivel(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou, WorkflowAprovacaoNivel nivel)
         {
             if (workflow.Tipo == WorkflowAprovacaoTipo.Evento_Liberacao_Excepcional)
             {
-                TrataReprovacaoEventoLiberacaoExcepcional(workflow, codigoDaNotificacao, motivo, cargoDoNivelQueRecusou);
+                await TrataReprovacaoEventoLiberacaoExcepcional(workflow, codigoDaNotificacao, motivo, cargoDoNivelQueRecusou);
             }
             else if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
             {
@@ -902,23 +892,16 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
 
-        private Task<IEnumerable<WfAprovacaoNotaFechamento>> ObterNotasEmAprovacao(long workflowId)
-            => mediator.Send(new ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(workflowId));
+        private async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacao(long workflowId)
+            => await mediator.Send(new ObterNotaFechamentoEmAprovacaoPorWorkflowIdQuery(workflowId));
 
         private async Task TrataReprovacaoAlteracaoNotaPosConselho(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
-            var notasEmAprovacao = await ObterNotaEmAprovacaoPosConselho(workflow.Id);
-            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(notasEmAprovacao,
-                                                                        codigoDaNotificacao,
+            await mediator.Send(new RecusarAprovacaoNotaConselhoCommand(codigoDaNotificacao,
                                                                         workflow.TurmaId,
                                                                         workflow.Id,
-                                                                        motivo,
-                                                                        notasEmAprovacao.ConselhoClasseNota.Nota,
-                                                                        notasEmAprovacao.ConselhoClasseNota.ConceitoId));
+                                                                        motivo));
         }
-
-        private Task<WFAprovacaoNotaConselho> ObterNotaEmAprovacaoPosConselho(long workflowId)
-            => repositorioConselhoClasseNota.ObterNotaEmAprovacaoWf(workflowId);
 
         private void TrataReprovacaoEventoDataPassada(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
@@ -932,7 +915,7 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
             NotificarCriadorEventoDataPassadaReprovacao(evento, codigoDaNotificacao, motivo);
         }
 
-        private async void TrataReprovacaoEventoLiberacaoExcepcional(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
+        private async Task TrataReprovacaoEventoLiberacaoExcepcional(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, Cargo? cargoDoNivelQueRecusou)
         {
             Evento evento = repositorioEvento.ObterPorWorkflowId(workflow.Id);
             if (evento == null)
@@ -954,11 +937,11 @@ da turma {turma.Nome} da {turma.Ue.TipoEscola.ObterNomeCurto()} {turma.Ue.Nome} 
                 {
                     var usuarioDiretor = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(funcionario.Id);
 
-                    NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
+                    await NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuarioDiretor, motivo, escola.Nome);
                 }
             }
             var usuario = await servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(evento.CriadoRF);
-            NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
+            await NotificarEventoQueFoiReprovado(evento, codigoDaNotificacao, usuario, motivo, escola.Nome);
         }
 
         private async Task TrataReprovacaoFechamentoReabertura(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo, long nivelId)

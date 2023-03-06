@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SME.SGP.Dominio
 {
@@ -10,7 +8,9 @@ namespace SME.SGP.Dominio
         public int NumeroAula { get; set; }
         public int Valor { get; set; }
         public RegistroFrequencia RegistroFrequencia { get; set; }
+        public Aula Aula { get; set; }
         public long RegistroFrequenciaId { get; set; }
+        public long AulaId { get; set; }
 
         public object Clone()
          => new RegistroFrequenciaAluno()
@@ -23,7 +23,9 @@ namespace SME.SGP.Dominio
              CriadoRF = CriadoRF,
              CodigoAluno = CodigoAluno,
              NumeroAula = NumeroAula,
-             RegistroFrequenciaId = RegistroFrequenciaId
+             RegistroFrequenciaId = RegistroFrequenciaId,
+             AulaId = AulaId,
+             Valor = Valor
          };
     }
 }

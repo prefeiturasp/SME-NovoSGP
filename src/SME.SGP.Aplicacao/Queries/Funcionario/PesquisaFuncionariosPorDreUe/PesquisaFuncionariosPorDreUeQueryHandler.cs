@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,12 +12,10 @@ namespace SME.SGP.Aplicacao
 {
     public class PesquisaFuncionariosPorDreUeQueryHandler : IRequestHandler<PesquisaFuncionariosPorDreUeQuery, IEnumerable<UsuarioEolRetornoDto>>
     {
-        private readonly IServicoEol servicoEOL;
         private readonly IMediator mediator;
 
-        public PesquisaFuncionariosPorDreUeQueryHandler(IServicoEol servicoEOL, IMediator mediator)
+        public PesquisaFuncionariosPorDreUeQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -26,34 +23,41 @@ namespace SME.SGP.Aplicacao
         {
             ValidaFiltros(request);
 
-            var filtroCodigos = await ObterCodigosFiltros(request.CodigoDRE, request.CodigoUE, request.CodigoTurma);
+            var (codigoDRE, codigoUE) = await ObterCodigosFiltros(request.CodigoDRE, request.CodigoUE, request.CodigoTurma);
 
-            var usuario = request.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuario = request.Usuario ?? await mediator.Send(new ObterUsuarioLogadoQuery(), cancellationToken);
 
-            FiltroFuncionarioDto filtro = new FiltroFuncionarioDto()
+            FiltroFuncionarioDto filtro = new()
             {
-                CodigoDRE = filtroCodigos.codigoDRE,
-                CodigoUE = filtroCodigos.codigoUE,
+                CodigoDRE = codigoDRE,
+                CodigoUE = codigoUE,
                 CodigoRF = request.CodigoRF,
                 NomeServidor = request.Nome,
             };
 
-            return await CarregarUsuarioId(await servicoEOL.ObterFuncionariosPorDre(usuario.PerfilAtual, filtro));
+            return await CarregarUsuarioId(request, await mediator.Send(new ObterFuncionariosPorDreEolQuery(usuario.PerfilAtual, filtro.CodigoDRE,
+                filtro.CodigoUE, filtro.CodigoRF, filtro.NomeServidor), cancellationToken));
         }
 
-        private async Task<IEnumerable<UsuarioEolRetornoDto>> CarregarUsuarioId(IEnumerable<UsuarioEolRetornoDto> funcionarios)
+        private async Task<IEnumerable<UsuarioEolRetornoDto>> CarregarUsuarioId(PesquisaFuncionariosPorDreUeQuery request, IEnumerable<UsuarioEolRetornoDto> funcionarios)
         {
             var rfs = funcionarios.Select(a => a.CodigoRf)
                 .Distinct()
                 .ToList();
 
+            if (!rfs.Any())
+                return Enumerable.Empty<UsuarioEolRetornoDto>();
+
             var usuarios = await mediator.Send(new ObterUsuariosPorCodigosRfQuery(rfs));
 
             if (usuarios != null)
-                foreach(var funcionario in funcionarios)
+            {
+                foreach (var funcionario in funcionarios)
                 {
                     funcionario.UsuarioId = usuarios.FirstOrDefault(a => a.CodigoRf == funcionario.CodigoRf)?.Id ?? 0;
+                    funcionario.PodeEditar = request.Usuario != null && request.Usuario.EhCoordenadorCEFAI();
                 }
+            }
 
             return funcionarios;
         }
@@ -75,7 +79,7 @@ namespace SME.SGP.Aplicacao
             return (codigoDRE, codigoUE);
         }
 
-        private void ValidaFiltros(PesquisaFuncionariosPorDreUeQuery request)
+        private static void ValidaFiltros(PesquisaFuncionariosPorDreUeQuery request)
         {
             //if (string.IsNullOrEmpty(request.CodigoRF) && string.IsNullOrEmpty(request.Nome))
             //    throw new NegocioException("O código RF ou nome do servidor deve ser informado.");

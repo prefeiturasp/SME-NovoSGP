@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
 
 namespace SME.SGP.Aplicacao
 {
@@ -24,33 +25,30 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RegistroIndividual> Handle(InserirRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
-            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
-
-            if (turma == null)
-                throw new NegocioException("A turma informada não foi encontrada!");
-
             var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
-                throw new NegocioException("O componente curricular não foi encontrado");
-
-            var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(turma.Id, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
+                throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
+            
+            var registroExistente = await repositorioRegistroIndividual.ObterPorAlunoData(request.TurmaId, request.ComponenteCurricularId, request.AlunoCodigo, request.DataRegistro);
 
             if (registroExistente != null)
-                throw new NegocioException("Já existe um registro para o aluno da turma nessa data!");
-
-            MoverArquivos(request);
+                throw new NegocioException(MensagemNegocioRegistroIndividual.JA_EXISTE_REGISTRO_PARA_ALUNO_DA_TURMA_NESTA_DATA);
+            
+            await MoverArquivos(request);
+            
             var registroIndividual = MapearParaEntidade(request);
+            
             await repositorioRegistroIndividual.SalvarAsync(registroIndividual);
 
             return registroIndividual;
         }
-        private void MoverArquivos(InserirRegistroIndividualCommand novo)
+        private async Task MoverArquivos(InserirRegistroIndividualCommand novo)
         {
             if (!string.IsNullOrEmpty(novo.Registro))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, string.Empty, novo.Registro));
-                novo.Registro = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.RegistroIndividual, string.Empty, novo.Registro));
+                novo.Registro = moverArquivo;
             }
         }
         private RegistroIndividual MapearParaEntidade(InserirRegistroIndividualCommand request)

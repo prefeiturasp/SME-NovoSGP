@@ -5,7 +5,6 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,37 +25,40 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
         [Fact]
         public async Task Deve_Salvar_Documento()
         {
-            var codigo = Guid.NewGuid();
+            var codigos = new List<Guid> { Guid.NewGuid() };
+
             //Arrange
             var param = new SalvarDocumentoDto()
             {
-                ArquivoCodigo = codigo,
+                ArquivosCodigos = codigos.ToArray(),
                 ClassificacaoId = 2,
                 TipoDocumentoId = 1,
                 UsuarioId = 1,
                 UeId = 1
             };
 
-            Usuario usuario = new Usuario()
+            var usuario = new Usuario()
             {
                 Id = 1,
                 CodigoRf = "7938128"
             };
 
-            Arquivo arquivo = new Arquivo()
+            var arquivos = new List<Arquivo>
             {
-                Nome = "",
-                Codigo = codigo,
-                TipoConteudo = "",
-                Tipo = TipoArquivo.Geral
+                new()
+                {
+                    Nome = "",
+                    Codigo = codigos.FirstOrDefault(),
+                    TipoConteudo = "",
+                    Tipo = TipoArquivo.Geral
+                }
             };
 
-            usuario.DefinirPerfis(new List<PrioridadePerfil>() { new PrioridadePerfil() { NomePerfil = "PAP" } });
+            usuario.DefinirPerfis(new List<PrioridadePerfil> { new() { NomePerfil = "PAP" } });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterUsuarioLogadoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(usuario);
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterArquivoPorCodigoQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(arquivo);
-
+            mediator.Setup(a => a.Send(It.IsAny<ObterArquivosPorCodigosQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(arquivos);
 
             mediator.Setup(a => a.Send(It.IsAny<VerificaUsuarioPossuiArquivoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(true);

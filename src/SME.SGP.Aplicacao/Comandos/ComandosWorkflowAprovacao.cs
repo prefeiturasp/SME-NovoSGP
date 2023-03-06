@@ -4,6 +4,7 @@ using SME.SGP.Infra;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 
 namespace SME.SGP.Aplicacao
 {
@@ -15,9 +16,10 @@ namespace SME.SGP.Aplicacao
         private readonly IServicoUsuario servicoUsuario;
         private readonly IServicoWorkflowAprovacao servicoWorkflowAprovacao;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMediator mediator;
 
         public ComandosWorkflowAprovacao(IRepositorioWorkflowAprovacao repositorioWorkflowAprovacao, IRepositorioWorkflowAprovacaoNivel repositorioWorkflowAprovacaoNivel,
-            IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario, IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario, IServicoWorkflowAprovacao servicoWorkflowAprovacao)
+            IUnitOfWork unitOfWork, IServicoUsuario servicoUsuario, IRepositorioWorkflowAprovacaoNivelUsuario repositorioWorkflowAprovacaoNivelUsuario, IServicoWorkflowAprovacao servicoWorkflowAprovacao, IMediator mediator)
         {
             this.repositorioWorkflowAprovacao = repositorioWorkflowAprovacao ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacao));
             this.repositorioWorkflowAprovacaoNivel = repositorioWorkflowAprovacaoNivel ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivel));
@@ -25,11 +27,12 @@ namespace SME.SGP.Aplicacao
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.repositorioWorkflowAprovacaoNivelUsuario = repositorioWorkflowAprovacaoNivelUsuario ?? throw new ArgumentNullException(nameof(repositorioWorkflowAprovacaoNivelUsuario));
             this.servicoWorkflowAprovacao = servicoWorkflowAprovacao ?? throw new ArgumentNullException(nameof(servicoWorkflowAprovacao));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task Aprovar(bool aprovar, long notificacaoId, string observacao)
         {
-            var workflow = ObterWorkflow(notificacaoId);
+            var workflow = await mediator.Send(new ObterWorkflowAprovacaoPorNotificacaoIdQuery(notificacaoId));
 
             unitOfWork.IniciarTransacao();
             try
@@ -45,16 +48,21 @@ namespace SME.SGP.Aplicacao
 
         public async Task<string> ValidarWorkflowAprovacao(long notificacaoId)
         {
-            var workflow = ObterWorkflow(notificacaoId);
+            var workflow = await mediator.Send(new ObterWorkflowAprovacaoPorNotificacaoIdQuery(notificacaoId));
 
-            if (workflow.Tipo == WorkflowAprovacaoTipo.ReposicaoAula)
-            {
-                WorkflowAprovacaoNivel nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
-                var codigoDaNotificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId).Codigo;
-                return await servicoWorkflowAprovacao.VerificaAulaReposicao(workflow.Id, codigoDaNotificacao);
-            }
+            if (workflow.Tipo != WorkflowAprovacaoTipo.ReposicaoAula) 
+                return null;
+            
+            var nivel = workflow.ObterNivelPorNotificacaoId(notificacaoId);
 
-            return null;
+            var notificacao = nivel.Notificacoes.FirstOrDefault(a => a.Id == notificacaoId);
+
+            if (notificacao == null)
+                return null;
+            
+            var codigoDaNotificacao = notificacao.Codigo;
+            
+            return await servicoWorkflowAprovacao.VerificaAulaReposicao(workflow.Id, codigoDaNotificacao);
         }
 
         public async Task ExcluirAsync(long idWorkflowAprovacao)
@@ -111,7 +119,7 @@ namespace SME.SGP.Aplicacao
                     Nivel = nivel.Nivel
                 };
 
-                if (nivel.UsuariosRf != null && nivel.UsuariosRf.Length > 0)
+                if (nivel.UsuariosRf is { Length: > 0 })
                 {
                     foreach (var usuarioRf in nivel.UsuariosRf)
                     {
@@ -122,14 +130,6 @@ namespace SME.SGP.Aplicacao
                 workflowAprovacao.Adicionar(workflowNivel);
             }
             return workflowAprovacao;
-        }
-
-        private WorkflowAprovacao ObterWorkflow(long notificacaoId)
-        {
-            WorkflowAprovacao workflow = repositorioWorkflowAprovacao.ObterEntidadeCompleta(0, notificacaoId);
-            if (workflow == null)
-                throw new NegocioException($"Não foi possível localizar o fluxo de aprovação da notificação {notificacaoId}");
-            return workflow;
         }
     }
 }

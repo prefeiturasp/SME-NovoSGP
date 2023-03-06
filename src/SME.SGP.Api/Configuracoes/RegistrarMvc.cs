@@ -7,12 +7,14 @@ using SME.SGP.Api.Middlewares;
 using SME.SGP.Infra;
 using System.Text.Json.Serialization;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Configuracoes
 {
     public static class RegistrarMvc
     {
-        public static void Registrar(IServiceCollection services, ServiceProvider serviceProvider)
+        public static void Registrar(IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

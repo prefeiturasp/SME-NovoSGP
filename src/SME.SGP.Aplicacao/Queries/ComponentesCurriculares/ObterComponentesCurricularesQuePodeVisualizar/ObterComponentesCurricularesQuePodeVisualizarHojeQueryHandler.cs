@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler : IRequestHandler<ObterComponentesCurricularesQuePodeVisualizarHojeQuery, string[]>
+    public class ObterComponentesCurricularesQuePodeVisualizarHojeQueryHandler : IRequestHandler<ObterComponentesCurricularesQuePodeVisualizarHojeQuery, IList<(string codigo, string codigoTerritorioSaber)>>
     {
         private readonly IMediator mediator;
 
@@ -17,32 +17,40 @@ namespace SME.SGP.Aplicacao
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
-        public async Task<string[]> Handle(ObterComponentesCurricularesQuePodeVisualizarHojeQuery request, CancellationToken cancellationToken)
+        public async Task<IList<(string codigo, string codigoTerritorioSaber)>> Handle(ObterComponentesCurricularesQuePodeVisualizarHojeQuery request, CancellationToken cancellationToken)
         {
-            var componentesCurricularesParaVisualizar = new List<string>();
+            var componentesCurricularesParaVisualizar = new List<(string codigo, string codigoTerritorioSaber)>();
 
-            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo, 
-                                                                                                       request.RfLogado, 
-                                                                                                       request.PerfilAtual, 
-                                                                                                       request.RealizarAgrupamentoComponente);
-            
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado?.Select(b => b.Codigo.ToString());            
+            var componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo,
+                                                                                                       request.RfLogado,
+                                                                                                       request.PerfilAtual,
+                                                                                                       request.RealizarAgrupamentoComponente,
+                                                                                                       true);
 
-            foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
-                if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao))
-                    componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
+            if (componentesCurricularesUsuarioLogado == null)
+                componentesCurricularesUsuarioLogado = await ObterComponentesCurricularesUsuarioLogado(request.TurmaCodigo,
+                                                                                                       request.RfLogado,
+                                                                                                       request.PerfilAtual,
+                                                                                                       request.RealizarAgrupamentoComponente,
+                                                                                                       false);
 
-            return componentesCurricularesParaVisualizar.ToArray();
+            foreach (var componenteParaVerificarAtribuicao in componentesCurricularesUsuarioLogado?.Select(c => (c.Codigo, c.CodigoComponenteTerritorioSaber)))
+            {
+                if (await PodePersistirTurmaDisciplina(request.RfLogado, request.TurmaCodigo, componenteParaVerificarAtribuicao.Codigo.ToString()))
+                    componentesCurricularesParaVisualizar.Add((componenteParaVerificarAtribuicao.Codigo.ToString(), componenteParaVerificarAtribuicao.CodigoComponenteTerritorioSaber.ToString()));
+            }
+
+            return componentesCurricularesParaVisualizar;
         }
 
-        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual, bool realizarAgrupamentoComponente)
+        public async Task<IEnumerable<ComponenteCurricularEol>> ObterComponentesCurricularesUsuarioLogado(string turmaCodigo, string criadoRF, Guid perfilAtual, bool realizarAgrupamentoComponente, bool checaMotivoDisponibilizacao)
         {
-            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual, realizarAgrupamentoComponente));
+            return await mediator.Send(new ObterComponentesCurricularesPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, criadoRF, perfilAtual, realizarAgrupamentoComponente, checaMotivoDisponibilizacao));
         }
         public async Task<bool> PodePersistirTurmaDisciplina(string criadoRF, string turmaCodigo, string componenteParaVerificarAtribuicao)
         {
             long hojeTick = DateTime.Today.Ticks;
-            
+
             return await mediator.Send(new PodePersistirTurmaDisciplinaQuery(criadoRF, turmaCodigo, componenteParaVerificarAtribuicao, hojeTick));
         }
     }

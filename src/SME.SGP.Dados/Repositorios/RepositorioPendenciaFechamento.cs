@@ -8,12 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPendenciaFechamento : RepositorioBase<PendenciaFechamento>, IRepositorioPendenciaFechamento
     {
-        public RepositorioPendenciaFechamento(ISgpContext database) : base(database)
+        public RepositorioPendenciaFechamento(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -50,7 +51,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select p.id as PendenciaId, p.titulo as descricao, p.descricao as detalhamento, p.descricao_html as descricaohtml
                                 , p.situacao, ftd.disciplina_id as DisciplinaId, pe.bimestre, pf.fechamento_turma_disciplina_id as FechamentoId
-                                , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf
+                                , p.criado_em as CriadoEm, p.criado_por as CriadoPor, p.criado_rf as CriadoRf, p.alterado_em as AlteradoEm, p.alterado_por as AlteradoPor, p.alterado_rf as AlteradoRf,
+                                  ft.turma_id as turmaId
                           from pendencia_fechamento pf
                          inner join fechamento_turma_disciplina ftd on ftd.id = pf.fechamento_turma_disciplina_id
                          inner join fechamento_turma ft on ftd.fechamento_turma_id = ft.id
@@ -132,7 +134,7 @@ namespace SME.SGP.Dados.Repositorios
                                  inner join turma t on t.id = ft.turma_id
                                  inner join periodo_escolar pe on pe.id = ft.periodo_escolar_id
                                  inner join pendencia p on p.id = pf.pendencia_id
-                                  where not p.excluido
+                                  where not p.excluido and not ftd.excluido
                                     and t.turma_id = @turmaCodigo ", fields));
             if (bimestre > 0)
                 query.AppendLine(" and pe.bimestre = @bimestre");

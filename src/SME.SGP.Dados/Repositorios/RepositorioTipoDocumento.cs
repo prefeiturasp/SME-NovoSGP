@@ -9,58 +9,79 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ClassificacaoDocumento = SME.SGP.Dominio.Enumerados.ClassificacaoDocumento;
+using TipoDocumento = SME.SGP.Dominio.Enumerados.TipoDocumento;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioTipoDocumento : IRepositorioTipoDocumento
     {
         protected readonly ISgpContext database;
-
+        
         public RepositorioTipoDocumento(ISgpContext database)
         {
             this.database = database;
         }
+        
+        private string ConsultaTipoDocumentoClassificacao =>
+            @"select distinct td.id as TipoDocumentoId, 
+                                          td.descricao as TipoDocumentoNome,
+                                          cd.id as ClassificacaoId,
+                                          cd.descricao as ClassificacaoNome
+                          from tipo_documento td 
+                            inner join classificacao_documento cd on td.id = cd.tipo_documento_id";
 
         public async Task<IEnumerable<TipoDocumentoDto>> ListarDocumentosPorPerfil(string[] perfis)
         {
-            List<TipoDocumentoDto> retorno = new List<TipoDocumentoDto>();
+            var query = $"{ConsultaTipoDocumentoClassificacao} where (cd.descricao = ANY(@perfis) and td.id = @planoDeTrabalho);";
 
-            var query = @"select distinct tipo_documento.id, tipo_documento.descricao as tipodocumento from tipo_documento 
-                          inner join classificacao_documento on tipo_documento.id = classificacao_documento.tipo_documento_id
-                          where classificacao_documento.descricao = ANY(@perfis);
-
-                        select Id, descricao as Classificacao, tipo_documento_id as TipoDocumentoId from classificacao_documento 
-                            where descricao = ANY(@perfis);";
-
-            using (var multi = await database.Conexao.QueryMultipleAsync(query, new { perfis }))
+            var parametros = new
             {
-                retorno = multi.Read<TipoDocumentoDto>().ToList();
-                var classificacoes = multi.Read<ClassificacaoDocumentoDto>().ToList();
+                perfis,
+                planoDeTrabalho = (long)TipoDocumento.PlanoTrabalho, 
+                documentos = (long)TipoDocumento.Documento
+            };
 
-                retorno.ForEach(td => td.Classificacoes.AddRange(classificacoes.Where(c => c.TipoDocumentoId == td.Id)));
-            }
+            var tipoDocumentoDtos = await database.Conexao.QueryAsync<TipoDocumentoCompletoDto>(query, parametros);
+            
+            var tipoDocumentoAgrupados = ObterTipoDocumentoAgrupados(tipoDocumentoDtos);
 
-            return retorno;
+            return tipoDocumentoAgrupados;
         }
 
         public async Task<IEnumerable<TipoDocumentoDto>> ListarTipoDocumentoClassificacao()
         {
-            List<TipoDocumentoDto> retorno = new List<TipoDocumentoDto>();
+            var query = ConsultaTipoDocumentoClassificacao;
 
-            var query = @"select distinct tipo_documento.id, tipo_documento.descricao as tipodocumento from tipo_documento 
-                          inner join classificacao_documento on tipo_documento.id = classificacao_documento.tipo_documento_id;
+            var tipoDocumentoDtos = await database.Conexao.QueryAsync<TipoDocumentoCompletoDto>(query);
+            
+            var tipoDocumentoAgrupados = ObterTipoDocumentoAgrupados(tipoDocumentoDtos);
 
-                        select Id, descricao as Classificacao, tipo_documento_id as TipoDocumentoId from classificacao_documento; ";
+            return tipoDocumentoAgrupados;
+        }
 
-            using (var multi = await database.Conexao.QueryMultipleAsync(query))
-            {
-                retorno = multi.Read<TipoDocumentoDto>().ToList();
-                var classificacoes = multi.Read<ClassificacaoDocumentoDto>().ToList();
-
-                retorno.ForEach(td => td.Classificacoes.AddRange(classificacoes.Where(c => c.TipoDocumentoId == td.Id)));
-            }
-
-            return retorno;
+        private List<TipoDocumentoDto> ObterTipoDocumentoAgrupados(IEnumerable<TipoDocumentoCompletoDto> tiposDocumentos)
+        {
+            return tiposDocumentos.GroupBy(g => new
+                { 
+                    g.TipoDocumentoId,
+                    g.TipoDocumentoNome
+                }, (key, group) => 
+                    new TipoDocumentoDto { 
+                        Id = key.TipoDocumentoId,
+                        TipoDocumento = key.TipoDocumentoNome,
+                        Classificacoes = group.Select(s=>
+                                new ClassificacaoDocumentoDto
+                                {
+                                    Id = s.ClassificacaoId,
+                                    Classificacao = s.ClassificacaoNome,
+                                    TipoDocumentoId = s.TipoDocumentoId
+                                })
+                            .OrderBy(o=> o.Classificacao)
+                            .ToList()
+                    })
+                .OrderBy(o=> o.TipoDocumento)
+                .ToList();
         }
     }
 }

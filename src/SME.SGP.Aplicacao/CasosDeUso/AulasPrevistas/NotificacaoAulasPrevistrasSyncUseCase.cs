@@ -24,7 +24,7 @@ namespace SME.SGP.Aplicacao
                 var turmasAulasPrevistasDivergentes = await ObterTurmasDivergentes(quantidadeDias);
 
                 foreach (var turma in turmasAulasPrevistasDivergentes)
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoAulasPrevistas, turma, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaNotificacaoAulasPrevistas, turma, Guid.NewGuid(), null));
 
                 return true;
             }

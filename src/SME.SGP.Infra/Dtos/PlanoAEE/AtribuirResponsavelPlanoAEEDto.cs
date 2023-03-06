@@ -4,5 +4,7 @@
     {
         public long PlanoAEEId { get; set; }
         public string ResponsavelRF { get; set; }
+
+        public string ResponsavelNome { get; set; }
     }
 }

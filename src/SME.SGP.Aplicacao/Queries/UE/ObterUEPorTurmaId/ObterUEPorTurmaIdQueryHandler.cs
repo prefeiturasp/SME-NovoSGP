@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Constantes;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Threading;
@@ -9,14 +11,18 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEPorTurmaIdQueryHandler : IRequestHandler<ObterUEPorTurmaIdQuery, Ue>
     {
-        private readonly IRepositorioUeConsulta repositorioUe;
+        private readonly IMediator mediator;
 
-        public ObterUEPorTurmaIdQueryHandler(IRepositorioUeConsulta repositorioUe)
+        public ObterUEPorTurmaIdQueryHandler(IMediator mediator)
         {
-            this.repositorioUe = repositorioUe ?? throw new ArgumentNullException(nameof(repositorioUe));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<Ue> Handle(ObterUEPorTurmaIdQuery request, CancellationToken cancellationToken)
-            => await repositorioUe.ObterUEPorTurmaId(request.TurmaId);
+        {
+            var turma = await this.mediator.Send(new ObterTurmaComUeEDrePorIdQuery(request.TurmaId));
+
+            return turma?.Ue;
+        }
     }
 }

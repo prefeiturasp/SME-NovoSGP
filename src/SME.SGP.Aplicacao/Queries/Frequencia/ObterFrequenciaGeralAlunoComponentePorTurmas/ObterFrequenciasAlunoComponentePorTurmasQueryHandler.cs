@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
         {
             var frequenciaAlunoPeriodos = new List<FrequenciaAluno>();
             frequenciaAlunoPeriodos.AddRange(await repositorioFrequenciaAlunoDisciplinaPeriodo.ObterFrequenciaComponentesAlunoPorTurmas(request.CodigoAluno, request.CodigosTurmas, request.TipoCalendarioId, request.Bimestre));
-
+           
             var bimestres = request.Bimestre > 0 ?
                 new int[] { request.Bimestre } :
                 await mediator.Send(new ObterBimestresPorTipoCalendarioQuery(request.TipoCalendarioId));
@@ -48,17 +48,16 @@ namespace SME.SGP.Aplicacao
                         TurmaId = aulaComponenteTurma.TurmaCodigo,
                         TotalAulas = aulaComponenteTurma.AulasQuantidade,
                         Bimestre = aulaComponenteTurma.Bimestre,
-                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId
+                        PeriodoEscolarId = aulaComponenteTurma.PeriodoEscolarId,
+                        TotalPresencas = aulaComponenteTurma.AulasQuantidade,
+                        PeriodoInicio = aulaComponenteTurma.PeriodoInicio,
+                        PeriodoFim = aulaComponenteTurma.PeriodoFim
                     });
                 }
             }
-
-            var frequenciaAluno = new FrequenciaAluno()
-            {
-                TotalAulas = frequenciaAlunoPeriodos.Sum(f => f.TotalAulas),
-                TotalAusencias = frequenciaAlunoPeriodos.Sum(f => f.TotalAusencias),
-                TotalCompensacoes = frequenciaAlunoPeriodos.Sum(f => f.TotalCompensacoes),
-            };
+            
+            if (request.DataMatricula.HasValue)
+                frequenciaAlunoPeriodos = frequenciaAlunoPeriodos.Where(f => f.PeriodoFim > request.DataMatricula.Value).ToList();
 
             return frequenciaAlunoPeriodos
                 .GroupBy(a => a.DisciplinaId)

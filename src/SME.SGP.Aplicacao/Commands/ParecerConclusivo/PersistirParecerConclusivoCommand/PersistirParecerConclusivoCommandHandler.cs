@@ -21,7 +21,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(PersistirParecerConclusivoCommand request, CancellationToken cancellationToken)
         {
-            var conselhoClasseAluno = await mediator.Send(new ObterConselhoClasseAlunoPorIdQuery(request.ConselhoClasseAlunoId));
+            var conselhoClasseAluno = await repositorioConselhoClasseAluno.ObterPorIdAsync(request.ConselhoClasseAlunoId);
             conselhoClasseAluno.ConselhoClasseParecerId = request.ParecerConclusivoId;
 
             await repositorioConselhoClasseAluno.SalvarAsync(conselhoClasseAluno);
@@ -31,9 +31,9 @@ namespace SME.SGP.Aplicacao
             var mensagemConsolidacaoConselhoClasseAluno = new MensagemConsolidacaoConselhoClasseAlunoDto(conselhoClasseAluno.AlunoCodigo, 
                                                                                                          request.TurmaId, 
                                                                                                          request.Bimestre,
-                                                                                                         alunoDaTurma.Inativo);
+                                                                                                         alunoDaTurma.Inativo,null,null,null,true);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaConselhoClasseAlunoTratar, mensagemConsolidacaoConselhoClasseAluno, Guid.NewGuid(), null));
 
             return true;
         }

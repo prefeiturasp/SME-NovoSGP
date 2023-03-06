@@ -17,7 +17,6 @@ namespace SME.SGP.Aplicacao
         private readonly IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia;
         private readonly IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno;
         private readonly IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasProfessor consultasProfessor;
         private readonly IConsultasUe consultasUe;
         private readonly IRepositorioTurmaConsulta repositorioTurmaConsulta;
@@ -30,7 +29,6 @@ namespace SME.SGP.Aplicacao
         public ConsultasCompensacaoAusencia(IRepositorioCompensacaoAusenciaConsulta repositorioCompensacaoAusencia, 
                                             IConsultasCompensacaoAusenciaAluno consultasCompensacaoAusenciaAluno,
                                             IConsultasCompensacaoAusenciaDisciplinaRegencia consultasCompensacaoAusenciaDisciplinaRegencia,
-                                            IConsultasFrequencia consultasFrequencia,
                                             IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular,
                                             IRepositorioTurmaConsulta repositorioTurmaConsulta,
                                             IRepositorioParametrosSistema repositorioParametrosSistema,
@@ -44,7 +42,6 @@ namespace SME.SGP.Aplicacao
             this.repositorioCompensacaoAusencia = repositorioCompensacaoAusencia ?? throw new ArgumentNullException(nameof(repositorioCompensacaoAusencia));
             this.consultasCompensacaoAusenciaAluno = consultasCompensacaoAusenciaAluno ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaAluno));
             this.consultasCompensacaoAusenciaDisciplinaRegencia = consultasCompensacaoAusenciaDisciplinaRegencia ?? throw new ArgumentNullException(nameof(consultasCompensacaoAusenciaDisciplinaRegencia));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasProfessor = consultasProfessor ?? throw new ArgumentNullException(nameof(consultasProfessor));
             this.repositorioTurmaConsulta = repositorioTurmaConsulta ?? throw new ArgumentNullException(nameof(repositorioTurmaConsulta));
             this.repositorioParametrosSistema = repositorioParametrosSistema ?? throw new ArgumentNullException(nameof(repositorioParametrosSistema));
@@ -61,7 +58,7 @@ namespace SME.SGP.Aplicacao
             var listaCompensacoes = await repositorioCompensacaoAusencia.Listar(Paginacao, turmaId, disciplinaId, bimestre, nomeAtividade);
 
             // Busca os nomes de alunos do EOL por turma
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turmaId, true);
+            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turmaId, true));
 
             foreach (var compensacaoAusencia in listaCompensacoes.Items)
             {
@@ -116,7 +113,7 @@ namespace SME.SGP.Aplicacao
             var turma = await repositorioTurmaConsulta.ObterPorId(compensacao.TurmaId);
             compensacaoDto.TurmaId = turma.CodigoTurma;
 
-            var alunos = await servicoEOL.ObterAlunosPorTurma(turma.CodigoTurma);
+            var alunos =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(turma.CodigoTurma));
             if (alunos == null)
                 throw new NegocioException("Alunos não localizados para a turma.");
 
@@ -136,7 +133,7 @@ namespace SME.SGP.Aplicacao
                     var alunoDto = MapearParaDtoAlunos(aluno);
                     alunoDto.Nome = alunoEol.NomeAluno;
 
-                    var frequenciaAluno = consultasFrequencia.ObterPorAlunoDisciplinaData(aluno.CodigoAluno, compensacao.DisciplinaId, DateTime.Now);
+                    var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunoPorBimestreTurmaDisciplinaTipoQuery(aluno.CodigoAluno, compensacao.Bimestre,TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma, compensacao.DisciplinaId));
                     if (frequenciaAluno != null)
                     {
                         alunoDto.QuantidadeFaltasTotais = int.Parse((frequenciaAluno.NumeroFaltasNaoCompensadas + alunoDto.QuantidadeFaltasCompensadas).ToString());
@@ -145,7 +142,10 @@ namespace SME.SGP.Aplicacao
                         alunoDto.Alerta = frequenciaAluno.PercentualFrequencia <= percentualFrequenciaAlerta;
                     }
                     else
+                    {
                         alunoDto.PercentualFrequencia = 100;
+                    }
+                       
 
                     compensacaoDto.Alunos.Add(alunoDto);
                 }

@@ -6,6 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using SME.SGP.Infra.Utilitarios;
+using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
@@ -17,19 +20,23 @@ namespace SME.SGP.Aplicacao
         private readonly IUnitOfWork unitOfWork;
         private readonly IMediator mediator;
 
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+
         public ComandosPlanoCiclo(IRepositorioPlanoCiclo repositorioPlanoCiclo,
                                   IRepositorioMatrizSaberPlano repositorioMatrizSaberPlano,
                                   IRepositorioObjetivoDesenvolvimentoPlano repositorioObjetivoDesenvolvimentoPlano,
-                                  IUnitOfWork unitOfWork, IMediator mediator)
+                                  IUnitOfWork unitOfWork, IMediator mediator,
+                                  IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions)
         {
             this.repositorioPlanoCiclo = repositorioPlanoCiclo ?? throw new ArgumentNullException(nameof(repositorioPlanoCiclo));
             this.repositorioMatrizSaberPlano = repositorioMatrizSaberPlano ?? throw new ArgumentNullException(nameof(repositorioMatrizSaberPlano));
             this.repositorioObjetivoDesenvolvimentoPlano = repositorioObjetivoDesenvolvimentoPlano ?? throw new ArgumentNullException(nameof(repositorioObjetivoDesenvolvimentoPlano));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
-        public void Salvar(PlanoCicloDto planoCicloDto)
+        public async Task Salvar(PlanoCicloDto planoCicloDto)
         {
             string descricaoAtual;
             var planoCiclo = MapearParaDominio(planoCicloDto, out descricaoAtual);
@@ -39,7 +46,7 @@ namespace SME.SGP.Aplicacao
                 AjustarMatrizes(planoCiclo, planoCicloDto);
                 AjustarObjetivos(planoCiclo, planoCicloDto);
                 unitOfWork.PersistirTransacao();
-                MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
+                await MoverRemoverExcluidos(planoCicloDto,descricaoAtual);
             }
         }
 
@@ -121,22 +128,22 @@ namespace SME.SGP.Aplicacao
                     throw new NegocioException("Os objetivos de desenvolvimento sustentável devem conter ao menos 1 elemento.");
                 }
             }
-            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoCiclo.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoCiclo.Descricao = planoCicloDto.Descricao.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
             planoCiclo.CicloId = planoCicloDto.CicloId;
             planoCiclo.Ano = planoCicloDto.Ano;
             planoCiclo.EscolaId = planoCicloDto.EscolaId;
             return planoCiclo;
         }
-        private void MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
+        private async Task MoverRemoverExcluidos(PlanoCicloDto novo, string atual)
         {
             if (!string.IsNullOrEmpty(novo.Descricao))
             {
-                var moverArquivo = mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
-                novo.Descricao = moverArquivo.Result;
+                var moverArquivo = await mediator.Send(new MoverArquivosTemporariosCommand(TipoArquivo.PlanoCiclo, atual, novo.Descricao));
+                novo.Descricao = moverArquivo;
             }
             if (!string.IsNullOrEmpty(atual))
             {
-                var deletarArquivosNaoUtilziados = mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Descricao, TipoArquivo.PlanoCiclo.Name()));
+                var deletarArquivosNaoUtilziados = await mediator.Send(new RemoverArquivosExcluidosCommand(atual, novo.Descricao, TipoArquivo.PlanoCiclo.Name()));
             }
         }
         private void RemoverMatrizes(PlanoCicloDto planoCicloDto, IEnumerable<MatrizSaberPlano> matrizesPlanoCiclo)

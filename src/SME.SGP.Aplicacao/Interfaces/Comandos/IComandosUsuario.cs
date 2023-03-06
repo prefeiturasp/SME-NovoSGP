@@ -1,5 +1,7 @@
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -29,5 +31,11 @@ namespace SME.SGP.Aplicacao
         Task<string> SolicitarRecuperacaoSenha(string login);
 
         Task<bool> TokenRecuperacaoSenhaEstaValido(Guid token);
+
+        Task<UsuarioAutenticacaoRetornoDto> AutenticarSuporte(string login);
+
+        Task<UsuarioAutenticacaoRetornoDto> ObterAutenticacao(
+            (UsuarioAutenticacaoRetornoDto, string, IEnumerable<Guid>, bool, bool) retornoAutenticacaoEol,
+            string login, SuporteUsuario suporte = null);
     }
 }

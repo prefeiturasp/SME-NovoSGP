@@ -19,7 +19,6 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
 
         public TratarPendenciaDiarioBordoPorTurmaUseCaseTeste()
         {
-
             mediator = new Mock<IMediator>();
             tratarPendenciaDiarioBordoPorTurmaUseCase = new TratarPendenciaDiarioBordoPorTurmaUseCase(mediator.Object);
         }
@@ -32,15 +31,15 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
             {
                 new Turma()
                 {
-                    CodigoTurma = "2386241",
+                    CodigoTurma = "123123",
                     ModalidadeCodigo = Modalidade.EducacaoInfantil,
                     Ue = new Ue()
                     {
                         TipoEscola = TipoEscola.CEMEI,
-                        Nome = "CAPAO REDONDO ",
-                        Dre = new Dre() 
+                        Nome = "CEMEI TESTE",
+                        Dre = new Dre()
                         {
-                            Abreviacao = "DRE - CL"
+                            Abreviacao = "DRE"
                         }
                     }
                 }
@@ -49,22 +48,35 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 .ReturnsAsync(turmasDreUe);
 
             var componentesSgp = new List<ComponenteCurricularDto>()
-            { 
+            {
                 new ComponenteCurricularDto()
-                { 
+                {
                     Codigo = "512",
                     Descricao = "ED.INF. EMEI 4 HS"
                 }
             };
             mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(componentesSgp);
+                .ReturnsAsync(componentesSgp);
 
+            var listaProfessores = new List<ProfessorTitularDisciplinaEol>
+            {
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf = "111",
+                    DisciplinasId = new long[] { 138 },
+                    TurmaId = 1
+                },
+                new ProfessorTitularDisciplinaEol
+                {
+                    ProfessorRf = "222",
+                    DisciplinasId = new long[] { 138 },
+                    TurmaId = 1
+                }
+            };
 
-            var rfProfessores = new List<string>();
-            rfProfessores.Add("8269149, 7941706");
-
-            mediator.Setup(a => a.Send(It.IsAny<ObterProfessoresTitularesDaTurmaQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(rfProfessores);
+            mediator.Setup(a =>
+                    a.Send(It.IsAny<ObterProfessoresTitularesDisciplinasEolQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(listaProfessores);
 
             var componentesEol = new List<ComponenteCurricularEol>();
             componentesEol.Add(new ComponenteCurricularEol()
@@ -74,18 +86,19 @@ namespace SME.SGP.Aplicacao.Teste.CasosDeUso
                 Codigo = 512
             });
 
-            mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(componentesEol);
+            mediator.Setup(a => a.Send(It.IsAny<ObterComponentesCurricularesDoProfessorNaTurmaQuery>(),
+                    It.IsAny<CancellationToken>()))
+                .ReturnsAsync(componentesEol);
 
             var aulaComponente = new List<AulaComComponenteDto>();
             aulaComponente.Add(new AulaComComponenteDto()
             {
-                Id = 53724092,
-                TurmaId = "2386241"
+                Id = 1,
+                TurmaId = "123123"
             });
 
             mediator.Setup(a => a.Send(It.IsAny<ObterPendenciasDiarioBordoQuery>(), It.IsAny<CancellationToken>()))
-              .ReturnsAsync(aulaComponente);
+                .ReturnsAsync(aulaComponente);
 
             mediator.Setup(a => a.Send(It.IsAny<SalvarPendenciaDiarioBordoCommand>(), It.IsAny<CancellationToken>()));
 

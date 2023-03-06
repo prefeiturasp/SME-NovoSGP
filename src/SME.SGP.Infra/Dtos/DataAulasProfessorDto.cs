@@ -12,5 +12,6 @@ namespace SME.SGP.Infra
         public string ProfessorRf { get; set; }
         public string CriadoPor { get; set; }
         public TipoAula TipoAula { get; set; }
+        public bool PossuiFrequenciaRegistrada { get; set; }
     }
 }

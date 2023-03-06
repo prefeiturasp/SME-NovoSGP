@@ -14,7 +14,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task Executar()
         {
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, string.Empty, Guid.NewGuid(), null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.VarreduraFechamentosTurmaDisciplinaEmProcessamentoPendentes, string.Empty, Guid.NewGuid(), null));
         }
     }
 }

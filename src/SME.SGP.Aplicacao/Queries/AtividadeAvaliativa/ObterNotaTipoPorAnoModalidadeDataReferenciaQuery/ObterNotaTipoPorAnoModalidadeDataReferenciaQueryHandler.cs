@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using System;
+using MediatR;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
@@ -10,22 +11,25 @@ namespace SME.SGP.Aplicacao
     public class ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler
         : IRequestHandler<ObterNotaTipoPorAnoModalidadeDataReferenciaQuery, NotaTipoValor>
     {
-        private readonly IRepositorioCiclo _repositorioCiclo;
         private readonly IRepositorioNotaTipoValorConsulta _repositorioNotaTipoValor;
+        private readonly IMediator mediator;
 
-        public ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler(IRepositorioCiclo repositorioCiclo,
-            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor)
+        public ObterNotaTipoPorAnoModalidadeDataReferenciaQueryHandler(
+            IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,IMediator mediator)
         {
             _repositorioNotaTipoValor = repositorioNotaTipoValor;
-            _repositorioCiclo = repositorioCiclo;
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-        public Task<NotaTipoValor> Handle(ObterNotaTipoPorAnoModalidadeDataReferenciaQuery request, CancellationToken cancellationToken)
+        public async Task<NotaTipoValor> Handle(ObterNotaTipoPorAnoModalidadeDataReferenciaQuery request, CancellationToken cancellationToken)
         {
             var anoCicloModalidade = request.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Ano;
-            var ciclo = _repositorioCiclo.ObterCicloPorAnoModalidade(anoCicloModalidade, request.Modalidade);
+            var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, request.Modalidade));
+            
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
-            return Task.FromResult(_repositorioNotaTipoValor.ObterPorCicloIdDataAvalicacao(ciclo.Id, request.DataReferencia));
+            
+            var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));
+            return retorno;
         }
     }
 }

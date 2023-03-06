@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Newtonsoft.Json;
-using SME.SGP.Dominio;
+using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterFuncionariosDreOuUePorPerfisQueryHandler : IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<string>>
+    public class ObterFuncionariosDreOuUePorPerfisQueryHandler : IRequestHandler<ObterFuncionariosDreOuUePorPerfisQuery, IEnumerable<FuncionarioUnidadeDto>>
     {
         private readonly IHttpClientFactory httpClientFactory;
 
@@ -21,21 +21,21 @@ namespace SME.SGP.Aplicacao
             this.httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
-        public async Task<IEnumerable<string>> Handle(ObterFuncionariosDreOuUePorPerfisQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<FuncionarioUnidadeDto>> Handle(ObterFuncionariosDreOuUePorPerfisQuery request, CancellationToken cancellationToken)
         {
             var httpClient = httpClientFactory.CreateClient("servicoEOL");
 
             var parametros = JsonConvert.SerializeObject(request.Perfis);
 
-            var resposta = await httpClient.PostAsync($"/api/funcionarios/unidade/{request.CodigoDreUe}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"));
+            var resposta = await httpClient.PostAsync($"/api/funcionarios/unidade/{request.CodigoDreUe}", new StringContent(parametros, Encoding.UTF8, "application/json-patch+json"), cancellationToken);
 
             if (resposta.IsSuccessStatusCode && resposta.StatusCode != HttpStatusCode.NoContent)
             {
-                var json = await resposta.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<IEnumerable<string>>(json);
+                var json = await resposta.Content.ReadAsStringAsync(cancellationToken);
+                return JsonConvert.DeserializeObject<IEnumerable<FuncionarioUnidadeDto>>(json);
             }
 
-            return Enumerable.Empty<string>();
+            return Enumerable.Empty<FuncionarioUnidadeDto>();
         }
     }
 }

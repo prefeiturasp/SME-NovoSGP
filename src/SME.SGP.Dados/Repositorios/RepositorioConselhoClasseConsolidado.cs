@@ -1,6 +1,8 @@
-﻿using SME.SGP.Dados.Repositorios;
+﻿using Dapper;
+using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,12 +11,12 @@ namespace SME.SGP.Dados
 {
     public class RepositorioConselhoClasseConsolidado : RepositorioBase<ConselhoClasseConsolidadoTurmaAluno>, IRepositorioConselhoClasseConsolidado
     {
-        public RepositorioConselhoClasseConsolidado(ISgpContext database) : base(database)
+        public RepositorioConselhoClasseConsolidado(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
 
-        public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(long turmaId, int situacaoConselhoClasse)
+        public async Task<IEnumerable<ConselhoClasseConsolidadoTurmaAluno>> ObterConselhosClasseConsolidadoPorTurmaBimestreAsync(long turmaId, int situacaoConselhoClasse, int bimestre)
         {
             var query = new StringBuilder(@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,  
                                    criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido
@@ -27,9 +29,31 @@ namespace SME.SGP.Dados
                                               where not excluido and turma_id = @turmaId 
                                                 and status = @situacaoConselhoClasse)");
 
-            return await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, situacaoConselhoClasse });
+            var retorno = await database.Conexao.QueryAsync<ConselhoClasseConsolidadoTurmaAluno>(query.ToString(), new { turmaId, situacaoConselhoClasse });
+            return retorno;
         }
-        public Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
+
+        public async Task<IEnumerable<AlunoSituacaoConselhoDto>> ObterStatusConsolidacaoConselhoClasseAlunoTurma(long turmaId, int bimestre)
+        {
+
+            var sql = $@"select cccat.aluno_codigo as AlunoCodigo,
+                            case 
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = 0 then 0
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) < count(cccatn.id) then 1
+                            when count(coalesce(cccatn.nota,cccatn.conceito_id) > 0) = count(cccatn.id) then 2
+                            else 1
+                            end as StatusConselhoClasseAluno 
+                             from consolidado_conselho_classe_aluno_turma cccat 
+                             inner join consolidado_conselho_classe_aluno_turma_nota cccatn 
+                                on cccatn.consolidado_conselho_classe_aluno_turma_id = cccat.id
+                             where cccat.turma_id = @turmaId and cccatn.bimestre = @bimestre
+                             and not cccat.excluido 
+                             group by cccat.aluno_codigo";
+
+            return await database.Conexao.QueryAsync<AlunoSituacaoConselhoDto>(sql.ToString(), new { turmaId, bimestre });
+        }
+
+        public async Task<ConselhoClasseConsolidadoTurmaAluno> ObterConselhoClasseConsolidadoPorTurmaBimestreAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = $@" select id, dt_atualizacao, status, aluno_codigo, parecer_conclusivo_id, turma_id,   
                                    criado_em, criado_por, alterado_em, alterado_por, criado_rf, alterado_rf, excluido           
@@ -38,7 +62,27 @@ namespace SME.SGP.Dados
                             and turma_id = @turmaId
                             and aluno_codigo = @alunoCodigo";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
+            var retorno = await database.Conexao.QueryFirstOrDefaultAsync<ConselhoClasseConsolidadoTurmaAluno>(query, new { turmaId, alunoCodigo });
+            return retorno;
+        }
+
+        public async Task<IEnumerable<long>> ObterConsolidacoesAtivasIdPorAlunoETurmaAsync(string alunoCodigo, long turmaId)
+        {
+            var query = $@"select id from consolidado_conselho_classe_aluno_turma where aluno_codigo = @alunoCodigo and turma_id = @turmaId and not excluido";
+
+            return await database.Conexao.QueryAsync<long>(query, new { alunoCodigo, turmaId });
+        }
+
+        public async Task<bool> ExcluirLogicamenteConsolidacaoConselhoClasseAlunoTurmaPorIdConsolidacao(long[] idsConsolidacoes)
+        {
+            var sqlQuery = @"update consolidado_conselho_classe_aluno_turma
+                             set excluido = true
+                             where id = any(@idsConsolidacoes);";
+
+            await database.Conexao
+                .ExecuteAsync(sqlQuery, new { idsConsolidacoes });
+
+            return true;
         }
 
         public Task<IEnumerable<ConsolidacaoConselhoClasseAlunoMigracaoDto>> ObterFechamentoNotaAlunoOuConselhoClasseAsync(long turmaId)
@@ -148,7 +192,7 @@ namespace SME.SGP.Dados
             
         }
 
-        public Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
+        public async Task<long> ObterConselhoClasseConsolidadoPorTurmaAlunoAsync(long turmaId, string alunoCodigo)
         {
             var query = @"select id as ConsolidacaoId, 
                         turma_id as TurmaId,
@@ -158,7 +202,7 @@ namespace SME.SGP.Dados
                         and turma_id = @turmaId 
                         and aluno_codigo = @alunoCodigo";
 
-            return database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
+            return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { turmaId, alunoCodigo });
         }
     }
 }

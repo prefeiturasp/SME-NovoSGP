@@ -35,8 +35,8 @@ namespace SME.SGP.Aplicacao
             var usuarioLogado = dadosMensagem.Usuario;
             var cartaIntencoesObservacaoId = dadosMensagem.CartaIntencoesObservacaoId;
 
-            var titulares = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turma.CodigoTurma));
-
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+            var titulares = professoresTitulares?.Select(x => x.ProfessorRf);
             if (titulares != null)
             {
                 var mensagem = new StringBuilder($"O usuário {usuarioLogado.Nome} ({usuarioLogado.CodigoRf}) inseriu uma nova observação na Carta de intenções da turma <strong>{turma.Nome}</strong> da <strong>{turma.Ue.TipoEscola}-{turma.Ue.Nome}</strong> ({turma.Ue.Dre.Abreviacao}).");
@@ -75,7 +75,7 @@ namespace SME.SGP.Aplicacao
                                 DreId = "",
                             };
 
-                            await servicoNotificacao.SalvarAsync(notificacao);
+                            await servicoNotificacao.Salvar(notificacao);
 
                             var notificacaoObservacao = new NotificacaoCartaIntencoesObservacao()
                             {

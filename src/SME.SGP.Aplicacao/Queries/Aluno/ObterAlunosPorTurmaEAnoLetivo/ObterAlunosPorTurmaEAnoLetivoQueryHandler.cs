@@ -12,16 +12,16 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosPorTurmaEAnoLetivoQueryHandler : IRequestHandler<ObterAlunosPorTurmaEAnoLetivoQuery, IEnumerable<AlunoPorTurmaResposta>>
     {
-        private readonly IServicoEol _servicoEol;
+        private readonly IMediator mediator;
 
-        public ObterAlunosPorTurmaEAnoLetivoQueryHandler(IServicoEol servicoEol)
+        public ObterAlunosPorTurmaEAnoLetivoQueryHandler(IMediator mediator)
         {
-            this._servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AlunoPorTurmaResposta>> Handle(ObterAlunosPorTurmaEAnoLetivoQuery request, CancellationToken cancellationToken)
         {
-            var alunos = await _servicoEol.ObterAlunosAtivosPorTurma(request.CodigoTurma, DateTimeExtension.HorarioBrasilia());
+            var alunos = await mediator.Send(new ObterAlunosAtivosPorTurmaCodigoQuery(request.CodigoTurma, DateTimeExtension.HorarioBrasilia()));
 
             if (alunos == null || !alunos.Any())
                 throw new NegocioException($"Não foi encontrado alunos para a turma {request.CodigoTurma}");

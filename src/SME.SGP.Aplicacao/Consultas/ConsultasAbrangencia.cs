@@ -55,7 +55,7 @@ namespace SME.SGP.Aplicacao
 
             return await repositorioAbrangencia.ObterAbrangenciaTurma(turma, login, perfil, consideraHistorico, abrangenciaPermitida);
         }
-
+        
         public async Task<IEnumerable<int>> ObterAnosLetivos(bool consideraHistorico, int anoMinimo)
         {
             var login = servicoUsuario.ObterLoginAtual();
@@ -170,16 +170,6 @@ namespace SME.SGP.Aplicacao
             return (await repositorioAbrangencia.ObterUes(codigoDre, login, perfil, modalidade, periodo, consideraHistorico, anoLetivo)).OrderBy(c => c.Nome).ToList();
         }
 
-        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmas(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool consideraNovosAnosInfantil = false)
-        {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
-            var anosInfantilDesconsiderar = !consideraNovosAnosInfantil ? await mediator.Send(new ObterParametroTurmaFiltroPorAnoLetivoEModalidadeQuery(anoLetivo, Modalidade.EducacaoInfantil)) : null;
-           
-            var result = await repositorioAbrangencia.ObterTurmasPorTipos(codigoUe, login, perfil, modalidade, tipos.Any() ? tipos : null, periodo, consideraHistorico, anoLetivo, anosInfantilDesconsiderar);
-            return OrdernarTurmasItinerario(result);
-        }
-
         public async Task<IEnumerable<long>> ObterCodigoTurmasAbrangencia(string codigoUe, Modalidade modalidade, int periodo, bool consideraHistorico, int anoLetivo, int[] tipos, bool desconsideraNovosAnosInfantil = false)
         {
             var login = servicoUsuario.ObterLoginAtual();
@@ -203,6 +193,22 @@ namespace SME.SGP.Aplicacao
             turmasOrdenadas.AddRange(turmasItinerario.OrderBy(a => a.ModalidadeTurmaNome));
 
             return turmasOrdenadas;
+        }
+
+        public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasAbrangenciaMesmoComponente(IEnumerable<AbrangenciaTurmaRetorno> turmas, string codigoComponente)
+        {
+            List<AbrangenciaTurmaRetorno> turmasMesmoComponente = new List<AbrangenciaTurmaRetorno>();
+
+            foreach(var turma in turmas)
+            {
+                var disciplinasTurma = await mediator.Send(new ObterDisciplinasPorCodigoTurmaQuery(turma.Codigo));
+                bool possuiMesmoComponente = disciplinasTurma.Any(d => d.CodigoComponenteCurricular.ToString() == codigoComponente);
+
+                if (possuiMesmoComponente)
+                    turmasMesmoComponente.Add(turma);
+            }
+
+            return turmasMesmoComponente;
         }
     }
 }

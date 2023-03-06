@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class PodeCadastrarAulaUseCase: AbstractUseCase, IPodeCadastrarAulaUseCase
+    public class PodeCadastrarAulaUseCase : AbstractUseCase, IPodeCadastrarAulaUseCase
     {
-        public PodeCadastrarAulaUseCase(IMediator mediator): base(mediator)
+        public PodeCadastrarAulaUseCase(IMediator mediator) : base(mediator)
         {
         }
 

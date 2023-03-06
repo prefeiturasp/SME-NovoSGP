@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 using SME.SGP.Api.Filtros;
 using SME.SGP.Aplicacao.Integracoes;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Configuracoes
 {
     public static class RegistraDocumentacaoSwagger
     {
@@ -12,7 +12,7 @@ namespace SME.SGP.Api
             var sp = services.BuildServiceProvider();
 
             var versaoService = sp.GetService<IServicoGithub>();
-            var versaoAtual = versaoService.RecuperarUltimaVersao().Result;
+            var versaoAtual = versaoService?.RecuperarUltimaVersao().Result;
 
             services.AddSwaggerGen(c =>
             {
@@ -32,27 +32,13 @@ namespace SME.SGP.Api
                     BearerFormat = "JWT"
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement 
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                        },
-                        new string[] { }
-                    }
-                });
+                c.OperationFilter<BasicAuthOperationsFilter>();
             });
 
             services.AddSwaggerGen(o =>
             {
                 o.OperationFilter<FiltroIntegracaoExterna>();
             });
-
         }
     }
 }

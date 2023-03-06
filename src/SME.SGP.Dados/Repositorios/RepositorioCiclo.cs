@@ -7,12 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioCiclo : RepositorioBase<Ciclo>, IRepositorioCiclo
     {
-        public RepositorioCiclo(ISgpContext conexao) : base(conexao)
+        public RepositorioCiclo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -31,7 +32,7 @@ namespace SME.SGP.Dados.Repositorios
             return database.Conexao.Query<CicloDto>(query.ToString(), new { ano }).SingleOrDefault();
         }
 
-        public CicloDto ObterCicloPorAnoModalidade(string ano, Modalidade modalidade)
+        public async Task<CicloDto> ObterCicloPorAnoModalidade(string ano, Modalidade modalidade)
         {
             var sql = @"select tc.id, tc.descricao from tipo_ciclo tc
                         inner join tipo_ciclo_ano tca on tc.id = tca.tipo_ciclo_id
@@ -39,7 +40,7 @@ namespace SME.SGP.Dados.Repositorios
 
             var parametros = new { ano, modalidade };
 
-            return database.QueryFirstOrDefault<CicloDto>(sql, parametros);
+            return await database.QueryFirstOrDefaultAsync<CicloDto>(sql, parametros);
         }
 
 

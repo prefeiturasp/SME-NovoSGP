@@ -3,6 +3,7 @@ using Npgsql;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +14,12 @@ namespace SME.SGP.Dados
     public class RepositorioOcorrenciaAluno : IRepositorioOcorrenciaAluno
     {
         private readonly ISgpContext database;
+        private readonly IServicoAuditoria servicoAuditoria;
 
-        public RepositorioOcorrenciaAluno(ISgpContext database)
+        public RepositorioOcorrenciaAluno(ISgpContext database, IServicoAuditoria servicoAuditoria)
         {
             this.database = database;
+            this.servicoAuditoria = servicoAuditoria ?? throw new ArgumentNullException(nameof(servicoAuditoria));
         }
 
         public async Task ExcluirAsync(IEnumerable<long> idsOcorrenciasAlunos)
@@ -46,15 +49,18 @@ namespace SME.SGP.Dados
 
         private async Task AuditarAsync(long identificador, string acao)
         {
-            await database.Conexao.InsertAsync(new Auditoria()
+            var auditoria = new Auditoria()
             {
-                Data = DateTime.Now,
+                Data = DateTimeExtension.HorarioBrasilia(),
                 Entidade = nameof(OcorrenciaAluno).ToLower(),
                 Chave = identificador,
                 Usuario = database.UsuarioLogadoNomeCompleto,
                 RF = database.UsuarioLogadoRF,
                 Acao = acao
-            });
+            };
+
+            await servicoAuditoria.Auditar(auditoria);
+
         }
         public async Task<IEnumerable<string>> ObterAlunosPorOcorrencia(long ocorrenciaId)
         {

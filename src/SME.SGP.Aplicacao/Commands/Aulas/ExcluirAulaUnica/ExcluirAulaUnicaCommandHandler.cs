@@ -44,13 +44,13 @@ namespace SME.SGP.Aplicacao
 
             var filas = new string[]
             {
-                RotasRabbitSgp.NotificacoesDaAulaExcluir,
-                RotasRabbitSgp.FrequenciaDaAulaExcluir,
-                RotasRabbitSgp.PlanoAulaDaAulaExcluir,
-                RotasRabbitSgp.AnotacoesFrequenciaDaAulaExcluir,
+                RotasRabbitSgpAula.NotificacoesDaAulaExcluir,
+                RotasRabbitSgpFrequencia.FrequenciaDaAulaExcluir,
+                RotasRabbitSgpAula.PlanoAulaDaAulaExcluir,
+                RotasRabbitSgpFrequencia.AnotacoesFrequenciaDaAulaExcluir,
                 RotasRabbitSgp.DiarioBordoDaAulaExcluir,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciasAula,
-                RotasRabbitSgp.RotaExecutaExclusaoPendenciaDiarioBordoAula
+                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciasAula,
+                RotasRabbitSgpAula.RotaExecutaExclusaoPendenciaDiarioBordoAula
             };
 
             await PulicaFilaSgp(filas, aula.Id, request.Usuario);
@@ -84,12 +84,15 @@ namespace SME.SGP.Aplicacao
 
         private async Task RemoverArquivosDiarioBordo(long aulaId)
         {
-            var diarioDeBordo = await repositorioDiarioBordo.ObterPorAulaId(aulaId);
-            if(diarioDeBordo?.Planejamento != null)
+            var diariosDeBordos = await repositorioDiarioBordo.ObterPorAulaId(aulaId);
+
+            foreach (var diarioDeBordo in diariosDeBordos)
             {
-                await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
+                if(diarioDeBordo?.Planejamento != null)
+                    await ExcluirArquivo(diarioDeBordo.Planejamento,TipoArquivo.DiarioBordo);
             }
         }
+        
         private async Task ExcluirArquivoAnotacaoFrequencia(long aulaId)
         {
             var anotacaoFrequencia = await repositorioAnotacaoFrequenciaAluno.ObterPorAulaIdRegistroExcluido(aulaId);

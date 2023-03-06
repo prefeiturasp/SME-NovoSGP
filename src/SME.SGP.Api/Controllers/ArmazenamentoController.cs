@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SME.SGP.Aplicacao;
 using SME.SGP.Infra;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Api.Controllers
@@ -40,6 +41,8 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Download(Guid codigoArquivo, [FromServices] IDownloadDeArquivoUseCase useCase)
         {
             var (arquivo, contentType, nomeArquivo) = await useCase.Executar(codigoArquivo);
+            if (arquivo == null) return NoContent();
+
             return File(arquivo, contentType, nomeArquivo);
         }
 
@@ -50,6 +53,15 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> Delete(Guid codigoArquivo, [FromServices] IExcluirArquivoUseCase useCase)
         {
             return Ok(await useCase.Executar(codigoArquivo));
+        }
+        
+        [HttpDelete()]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        public async Task<IActionResult> ExcluirArquivos([FromBody]IEnumerable<Guid> codigos,[FromServices] IExcluirArquivosUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigos));
         }
     }
 }

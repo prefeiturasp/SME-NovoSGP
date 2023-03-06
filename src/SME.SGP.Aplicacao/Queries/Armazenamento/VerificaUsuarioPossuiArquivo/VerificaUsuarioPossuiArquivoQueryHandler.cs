@@ -17,6 +17,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<bool> Handle(VerificaUsuarioPossuiArquivoQuery request, CancellationToken cancellationToken)
-            => await repositorioDocumento.ValidarUsuarioPossuiDocumento(request.TipoDocumentoId, request.ClassificacaoId, request.UsuarioId, request.UeId, request.DocumentoId);
+            => await repositorioDocumento.ValidarUsuarioPossuiDocumento(request.TipoDocumentoId, request.ClassificacaoId, request.UsuarioId, request.UeId, request.AnoLetivo,request.DocumentoId);
     }
 }

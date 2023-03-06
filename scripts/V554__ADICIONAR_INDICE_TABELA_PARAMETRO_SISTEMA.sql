@@ -1,0 +1,2 @@
+CREATE INDEX if not EXISTS parametros_sistema_ano_idx ON public.parametros_sistema USING btree (ano );
+CREATE INDEX if not EXISTS parametros_sistema_tipo_idx ON public.parametros_sistema USING btree (tipo);

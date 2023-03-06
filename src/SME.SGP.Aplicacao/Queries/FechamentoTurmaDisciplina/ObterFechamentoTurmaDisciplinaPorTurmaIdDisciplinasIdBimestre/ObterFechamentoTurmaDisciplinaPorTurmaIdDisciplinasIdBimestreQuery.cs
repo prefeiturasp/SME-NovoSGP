@@ -12,12 +12,13 @@ namespace SME.SGP.Aplicacao
         public long TurmaId { get; set; }
         public long[] DisciplinasId { get; set; }
         public int Bimestre { get; set; }
-
-        public ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(long turmaId, long[] disciplinasId, int bimestre = 0)
+        public long? TipoCalendario { get; set; }
+        public ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(long turmaId, long[] disciplinasId, int bimestre = 0, long? tipoCalendario = null)
         {
             TurmaId = turmaId;
             DisciplinasId = disciplinasId;
             Bimestre = bimestre;
+            TipoCalendario = tipoCalendario;
         }
     }
 

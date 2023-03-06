@@ -13,11 +13,11 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
         private readonly Mock<IRepositorioAtribuicaoEsporadica> repositorioAtribuicaoEsporadica;
         private readonly Mock<IRepositorioHistoricoEmailUsuario> repositorioHistoricoEmailUsuario;
         private readonly Mock<IRepositorioUsuario> repositorioUsuario;
+        private readonly Mock<IRepositorioSuporteUsuario> repositorioSuporteUsuario;
         private readonly Mock<IServicoAbrangencia> servicoAbrangencia;
         private readonly Mock<IServicoAutenticacao> servicoAutenticacao;
         private readonly Mock<IServicoEol> servicoEOL;
         private readonly Mock<IServicoPerfil> servicoPerfil;
-        private readonly Mock<IServicoTokenJwt> servicoTokenJwt;
         private readonly Mock<IServicoUsuario> servicoUsuario;
         private readonly Mock<IMediator> mediator;
 
@@ -27,18 +27,18 @@ namespace SME.SGP.Aplicacao.Teste.Comandos
             servicoAutenticacao = new Mock<IServicoAutenticacao>();
             servicoUsuario = new Mock<IServicoUsuario>();
             servicoPerfil = new Mock<IServicoPerfil>();
-            servicoTokenJwt = new Mock<IServicoTokenJwt>();
             servicoEOL = new Mock<IServicoEol>();
             var repositorioCache = new Mock<IRepositorioCache>();
-            var mockConfiguration = new Mock<IConfiguration>();
             servicoAbrangencia = new Mock<IServicoAbrangencia>();
             repositorioAtribuicaoEsporadica = new Mock<IRepositorioAtribuicaoEsporadica>();
             repositorioAtribuicaoCJ = new Mock<IRepositorioAtribuicaoCJ>();
             repositorioHistoricoEmailUsuario = new Mock<IRepositorioHistoricoEmailUsuario>();
+            repositorioSuporteUsuario = new Mock<IRepositorioSuporteUsuario>();
             mediator = new Mock<IMediator>();
 
-            comandosUsuario = new ComandosUsuario(repositorioUsuario.Object, servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object, servicoTokenJwt.Object,
-                mockConfiguration.Object, repositorioCache.Object, servicoAbrangencia.Object, repositorioAtribuicaoEsporadica.Object, repositorioAtribuicaoCJ.Object, repositorioHistoricoEmailUsuario.Object, mediator.Object);
+            comandosUsuario = new ComandosUsuario(servicoAutenticacao.Object, servicoUsuario.Object, servicoPerfil.Object, servicoEOL.Object,
+                repositorioCache.Object, servicoAbrangencia.Object, repositorioHistoricoEmailUsuario.Object, 
+                repositorioSuporteUsuario.Object, mediator.Object);
         }
 
         //[Fact]

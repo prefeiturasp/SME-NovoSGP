@@ -226,7 +226,6 @@ namespace SME.SGP.Api.Controllers
         [HttpGet("pendencias/tipos")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
-        [Permissao(Permissao.RPF_C, Policy = "Bearer")]
         public IActionResult ObterTipoPendencias([FromQuery] bool opcaoTodos, [FromServices] IRelatorioPendenciasUseCase relatorioPendenciasFechamentoUseCase)
         {
             return Ok(relatorioPendenciasFechamentoUseCase.ListarTodosTipos(opcaoTodos));
@@ -267,6 +266,24 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> ImprimirRelatorioOcorrencias(FiltroImpressaoOcorrenciaDto filtro, [FromServices] IRelatorioOcorrenciasUseCase useCase)
         {
             return Ok(await useCase.Executar(filtro));
+        }
+        
+        [HttpPost("planos-aee")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.PAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> PlanosAee([FromBody] FiltroRelatorioPlanosAEEDto filtroRelatorioPlanosAeeDto, [FromServices] IRelatorioPlanosAEEUseCase relatorioPlanosAeeUseCase)
+        {
+            return Ok(await relatorioPlanosAeeUseCase.Executar(filtroRelatorioPlanosAeeDto));
+        }
+
+        [HttpPost("encaminhamento-aee")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.REAEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> EncaminhamentoAee([FromBody] FiltroRelatorioEncaminhamentoAEEDto filtroRelatorioEncaminhamentoAeeDto, [FromServices] IRelatorioEncaminhamentoAEEUseCase relatorioEncaminhamentoAeeUseCase)
+        {
+            return Ok(await relatorioEncaminhamentoAeeUseCase.Executar(filtroRelatorioEncaminhamentoAeeDto));
         }
     }
 }

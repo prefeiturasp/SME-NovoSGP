@@ -3,10 +3,12 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using SME.SGP.Infra;
 
 namespace SME.SGP.Aplicacao.Commands
 {
@@ -65,7 +67,12 @@ namespace SME.SGP.Aplicacao.Commands
                     if (entidadeArquivo == null)
                         throw new NegocioException("O arquivo informado não foi encontrado");
 
-                    await mediator.Send(new ExcluirArquivoFisicoCommand(entidadeArquivo.Codigo, entidadeArquivo.Tipo, entidadeArquivo.Nome));
+                    
+                    var extencao = Path.GetExtension(entidadeArquivo.Nome);
+
+                    var filtro = new FiltroExcluirArquivoArmazenamentoDto {ArquivoNome = entidadeArquivo.Codigo.ToString() + extencao};
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RemoverArquivoArmazenamento, filtro, Guid.NewGuid(), null));
+
                 }
             }
 

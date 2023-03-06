@@ -4,28 +4,7 @@
     {
         /*Retirar comentário após a implementação dos menus*/
         [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhConsulta = true)]
-        S_C = 1,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhInclusao = true)]
-        S_I = 2,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhExclusao = true)]
-        S_E = 3,
-
-        [PermissaoMenu(Menu = "Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 2, Url = "/sondagem", EhAlteracao = true)]
-        S_A = 4,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_C = 5,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem",OrdemMenu = 2)]
-        //SR_I = 6,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_E = 7,
-
-        //[PermissaoMenu(Menu = "Relatório de Sondagem", Icone = "fas fa-print", Agrupamento = "Relatórios", OrdemAgrupamento = 8, Url = "/sondagem", OrdemMenu = 2)]
-        //SR_A = 8,
+        S_C = 5,
 
         [PermissaoMenu(Menu = "Boletim", Icone = "fas fa-pencil-ruler", Agrupamento = "Fechamento", OrdemAgrupamento = 3, OrdemMenu = 4, Url = "/relatorios/diario-classe/boletim-simples", EhConsulta = true)]
         B_C = 9,
@@ -142,7 +121,7 @@
         AP_A = 45,
 
         [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, Url = "/usuarios/reiniciar-senha", EhAlteracao = true,
-           EhSubMenu = true, EhConsulta = true, SubMenu = "Reiniciar Senha")]
+           EhSubMenu = true, EhConsulta = true, OrdemSubMenu = 1, SubMenu = "Reiniciar Senha")]
         AS_C = 47,
 
         [PermissaoMenu(EhMenu = false, EhConsulta = true, Menu = "Meus Dados", Agrupamento = "Meus Dados", Url = "/meus-dados")]
@@ -289,17 +268,17 @@
         [PermissaoMenu(Menu = "Atribuição esporádica", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 1, EhAlteracao = true, Url = "/gestao/atribuicao-esporadica")]
         AE_A = 95,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-supervisor-lista")]
-        ASP_C = 96,
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhConsulta = true, Url = "/gestao/atribuicao-responsaveis/lista")]
+        ARP_C = 96,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
-        ASP_I = 97,
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhInclusao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
+        ARP_I = 97,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-supervisor-lista")]
-        ASP_E = 98,
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhExclusao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
+        ARP_E = 98,
 
-        [PermissaoMenu(Menu = "Atribuição Supervisor", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-supervisor-lista")]
-        ASP_A = 99,
+        [PermissaoMenu(Menu = "Atribuição de Responsáveis", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 5, EhAlteracao = true, Url = "/gestao/atribuicao-responsaveis/lista")]
+        ARP_A = 99,
 
         [PermissaoMenu(Menu = "Tipo de Avaliação", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 2, EhConsulta = true, Url = "/configuracoes/tipo-avaliacao")]
         TA_C = 100,
@@ -609,7 +588,7 @@
 
         [PermissaoMenu(Menu = "Plano", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 2, EhAlteracao = true, Url = "/aee/plano")]
         PAEE_A = 205,
-
+        
         [PermissaoMenu(Menu = "Registro de itinerância", Icone = "fas fa-universal-access", Agrupamento = "AEE", OrdemAgrupamento = 7, OrdemMenu = 3, EhConsulta = true, Url = "/aee/registro-itinerancia")]
         RI_C = 206,
 
@@ -692,6 +671,28 @@
         RFM_C = 232,
 
         [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-chart-bar", Agrupamento = "Dashboard", OrdemAgrupamento = 9, EhConsulta = true, Url = "/dashboard/naapa")]
-        DNA_C = 233
+        DNA_C = 233,
+
+        [PermissaoMenu(Menu = "Usuários", Icone = "fas fa-user-cog", Agrupamento = "Configurações", OrdemAgrupamento = 10, OrdemMenu = 1, OrdemSubMenu = 2,
+            Url = "/usuarios/suporte", EhSubMenu = true, EhConsulta = true, EhInclusao = true, SubMenu = "Suporte")]
+        US_C = 234,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhConsulta = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_C = 235,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhInclusao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_I = 236,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhExclusao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_E = 237,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Gestão", OrdemAgrupamento = 6, OrdemMenu = 7, OrdemSubMenu = 1, EhAlteracao = true, Url = "/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        NAAPA_A = 238,
+        
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, Url = "/relatorios/aee/plano", EhSubMenu = true, SubMenu = "Plano")]
+        RPAEE_C = 239,
+
+        [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        REAEE_C = 240,
     }
 }

@@ -25,8 +25,8 @@ namespace SME.SGP.Aplicacao
             var professoresEComponentes = new List<ProfessorEComponenteInfantilDto>();
             Guid perfilProfessorInfantil = Guid.Parse(PerfilUsuario.PROFESSOR_INFANTIL.ObterNome());
 
-            var professoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDaTurmaQuery(turmaId));
-
+            var listaProfessoresDaTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaId));
+            var professoresDaTurma = listaProfessoresDaTurma?.Select(x => x.ProfessorRf);
             var componentesSgp = await mediator.Send(new ObterComponentesCurricularesQuery());
 
             if (professoresDaTurma != null && professoresDaTurma.Any(a => !string.IsNullOrEmpty(a)))
@@ -97,7 +97,7 @@ namespace SME.SGP.Aplicacao
                         }));
                     }
                 }
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, filtroPendenciaDiarioBordoTurmaAula));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaExecutaPendenciasAulaDiarioBordoTurmaAulaComponente, filtroPendenciaDiarioBordoTurmaAula));
             }
             catch (Exception ex)
             {

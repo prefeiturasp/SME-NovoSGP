@@ -39,13 +39,21 @@ namespace SME.SGP.Aplicacao
             if (!versaoPlano.Numero.Equals(ultimaVersaoPlano.Numero))
             {
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
-                if (turma.AnoLetivo.Equals(DateTime.Today.Year))
+                var dataUltimaAtualizacaoVersaoSelecionada = versaoPlano.AlteradoEm ?? versaoPlano.CriadoEm;
+                var anoUltimaVersaoCriadaPlano = ultimaVersaoPlano.AlteradoEm.HasValue ? ultimaVersaoPlano.AlteradoEm.Value.Year : ultimaVersaoPlano.CriadoEm.Year;
+
+                dataUltimaAtualizacaoVersaoSelecionada = dataUltimaAtualizacaoVersaoSelecionada.Year < DateTime.Today.Year
+                    ? new DateTime(anoUltimaVersaoCriadaPlano, dataUltimaAtualizacaoVersaoSelecionada.Month, dataUltimaAtualizacaoVersaoSelecionada.Day)
+                    : dataUltimaAtualizacaoVersaoSelecionada;
+
+                var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoPorModalidade(turma.ModalidadeCodigo, dataUltimaAtualizacaoVersaoSelecionada);
+
+                if (periodoEscolar == null)
+                    periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
+
+                if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())
                 {
-                    var periodoEscolar = await consultasPeriodoEscolar.ObterPeriodoAtualPorModalidade(turma.ModalidadeCodigo);
-                    if (listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.Any())
-                    {
-                        listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.SingleOrDefault().Texto = periodoEscolar.Id.ToString();
-                    }                    
+                    listaQuestoes.SingleOrDefault(q => q.TipoQuestao == TipoQuestao.PeriodoEscolar).Resposta.SingleOrDefault().Texto = periodoEscolar.Id.ToString();
                 }
             }
             return listaQuestoes;

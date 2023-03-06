@@ -4,6 +4,7 @@ using NpgsqlTypes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private readonly IUnitOfWork unitOfWork;
 
-        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork) : base(conexao)
+        public RepositorioAula(ISgpContext conexao, IUnitOfWork unitOfWork, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
@@ -104,11 +105,7 @@ namespace SME.SGP.Dados.Repositorios
                             alterado_por = 'Sistema', 
                             alterado_em = current_timestamp, 
                             alterado_rf = 'Sistema'
-                        where id in (select rf.id
-                                        from registro_frequencia rf
-                                            inner join aula a
-                                                on rf.aula_id = a.id
-                                     where a.id = any(@idsAulas)) and excluido;";
+                        where aula_id = any(@idsAulas) and excluido;";
 
                     database.Conexao
                         .Execute(sql, new { idsAulas = idsAulasAtualizacao });
@@ -156,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
                          inner join diario_bordo db on a.id = db.aula_id
                          where t.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularFilhoId 
-                           and not a.excluido
+                           and not a.excluido and not db.excluido
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim
                          union all
@@ -169,7 +166,7 @@ namespace SME.SGP.Dados.Repositorios
                            and a.data_aula >= @dataInicio
                            and a.data_aula <= @dataFim
                            and not a.excluido
-                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoId and db.aula_id = a.id)";
+                           and not exists (select 1 from diario_bordo db where db.componente_curricular_id = @componenteCurricularFilhoId and db.aula_id = a.id and not db.excluido)";
 
             return await database.Conexao.QueryAsync<DiarioBordoPorPeriodoDto>(query,
                                                     new

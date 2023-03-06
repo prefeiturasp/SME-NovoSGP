@@ -1,20 +1,17 @@
-﻿using Npgsql;
-using NpgsqlTypes;
-using Dapper;
+﻿using Dapper;
 using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaDiarioBordo : RepositorioBase<PendenciaDiarioBordo>, IRepositorioPendenciaDiarioBordo
     {
-        public RepositorioPendenciaDiarioBordo(ISgpContext conexao) : base(conexao)
+        public RepositorioPendenciaDiarioBordo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -48,7 +45,7 @@ namespace SME.SGP.Dados
                                    join turma t on a.turma_id = t.turma_id and t.modalidade_codigo = @modalidadeCodigo
                                    join ue on t.ue_id = ue.id
                                    join periodo_escolar pe on a.data_aula between pe.periodo_inicio and pe.periodo_fim 	
-                                   left join diario_bordo db on db.aula_id = a.id and db.componente_curricular_id = ANY(@componentesCurricularesId)
+                                   left join diario_bordo db on db.aula_id = a.id and db.componente_curricular_id = ANY(@componentesCurricularesId) and not db.excluido
                                    left join pendencia_diario_bordo pdb on pdb.aula_id = a.id and pdb.componente_curricular_id = ANY(@componentesCurricularesId)
                                    left join pendencia p on p.id = pdb.pendencia_id and not p.excluido and p.tipo = @tipoPendencia
                               where not a.excluido

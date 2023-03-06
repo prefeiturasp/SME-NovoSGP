@@ -4,13 +4,11 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.TesteIntegracao.Setup;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.FrequenciaAluno
 {
     public class RetornarTotalAulasPorAlunoTurmaDisciplinaTeste : TesteBase
     {
@@ -25,7 +23,7 @@ namespace SME.SGP.TesteIntegracao
             await CriarAulaComFrequencia();
 
             //Act
-            var retorno = await repositorio.ObterTotalAulasPorTurmaDisciplinaAluno("1106", "2370993", "5854736");
+            var retorno = await repositorio.ObterTotalAulasPorTurmaDisciplinaAluno("1106", "111", "123123");
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -68,7 +66,7 @@ namespace SME.SGP.TesteIntegracao
                 AlteradoRF = null,
                 Migrado = false
             });
-            await InserirNaBase(new FrequenciaAluno
+            await InserirNaBase(new Dominio.FrequenciaAluno
             {
                 Id = 25510725,
                 PeriodoInicio = new DateTime(2020, 02, 05),
@@ -87,8 +85,8 @@ namespace SME.SGP.TesteIntegracao
                 TotalPresencas = 0,
                 TotalRemotos = 0,
                 DisciplinaId = "1061",
-                CodigoAluno = "5854736",
-                TurmaId = "2123463",
+                CodigoAluno = "123123",
+                TurmaId = "111",
                 Tipo = TipoFrequenciaAluno.PorDisciplina
             });
         }

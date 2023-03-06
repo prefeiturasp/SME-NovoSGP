@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ObterDescricaoComponentesCurricularesPorIdsQueryHandler : IRequestHandler<ObterDescricaoComponentesCurricularesPorIdsQuery, IEnumerable<ComponenteCurricularSimplesDto>>
+    public class ObterDescricaoComponentesCurricularesPorIdsQueryHandler : IRequestHandler<ObterDescricaoComponentesCurricularesPorIdsQuery, IEnumerable<ComponenteCurricularDescricaoDto>>
     {
         private readonly IRepositorioComponenteCurricularConsulta repositorioComponenteCurricular;
 
@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
         }
 
-        public async Task<IEnumerable<ComponenteCurricularSimplesDto>> Handle(ObterDescricaoComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ComponenteCurricularDescricaoDto>> Handle(ObterDescricaoComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
             => await repositorioComponenteCurricular.ObterDescricaoPorIds(request.Ids);
     }
 }

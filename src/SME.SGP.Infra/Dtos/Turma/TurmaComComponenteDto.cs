@@ -6,6 +6,7 @@
         public string NomeTurma { get; set; }
         public long TurmaCodigo { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
+        public bool LancaNota { get; set; }
         public string Turno { get; set; }
         public bool PendenciaFrequencia { get; set; }
         public bool PendenciaPlanoAula { get; set; }

@@ -48,13 +48,13 @@ namespace SME.SGP.Aplicacao
                                                                          aulaDto.CodigoUe,
                                                                          aulaDto.EhRegencia,
                                                                          aulaDto.RecorrenciaAula));
-                    return new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
+                    return await Task.FromResult(new RetornoBaseDto("Serão alteradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                 }
                 catch (Exception ex)
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Erro em alteração de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                    
                 }
-                return new RetornoBaseDto("Ocorreu um erro ao solicitar a alteração de aulas recorrentes, por favor tente novamente.");
+                return await Task.FromResult(new RetornoBaseDto("Ocorreu um erro ao solicitar a alteração de aulas recorrentes, por favor tente novamente."));
             }
         }
     }

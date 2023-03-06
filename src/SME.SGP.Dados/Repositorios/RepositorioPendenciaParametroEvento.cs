@@ -2,17 +2,16 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using System;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaParametroEvento : RepositorioBase<PendenciaParametroEvento>, IRepositorioPendenciaParametroEvento
     {
-        public RepositorioPendenciaParametroEvento(ISgpContext database) : base(database)
+        public RepositorioPendenciaParametroEvento(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

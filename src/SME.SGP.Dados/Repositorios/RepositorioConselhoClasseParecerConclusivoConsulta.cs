@@ -1,9 +1,7 @@
-﻿using Dapper;
-using SME.SGP.Dados.Repositorios;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,14 +13,14 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioConselhoClasseParecerConclusivoConsulta : RepositorioBase<ConselhoClasseParecerConclusivo>, IRepositorioConselhoClasseParecerConclusivo
     {
-        public RepositorioConselhoClasseParecerConclusivoConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioConselhoClasseParecerConclusivoConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
         public async Task<IEnumerable<ConselhoClasseParecerConclusivo>> ObterListaPorTurmaIdAsync(long turmaId, DateTime dataConsulta)
         {
             var where = "t.id = @parametro";
-
+            
             return await ObterListaPorTurma(where, turmaId, dataConsulta);
         }
 
@@ -58,6 +56,8 @@ namespace SME.SGP.Dados.Repositorios
                         inner join conselho_classe_parecer_ano ccpa on ccp.id = ccpa.parecer_id 
                         inner join turma t on ccpa.modalidade = t.modalidade_codigo 
 	                                                                and ((t.ano = 'S' and ccpa.ano_turma = 1) OR cast(ccpa.ano_turma as varchar) = t.ano) 
+                                                                    and ((t.modalidade_codigo = 3 and t.etapa_eja = ccpa.etapa_eja) 
+	                              										 or (t.modalidade_codigo <> 3 and ccpa.etapa_eja is null))
                         where {0} and ccpa.inicio_vigencia <= @dataConsulta and (ccpa.fim_vigencia >= @dataConsulta or ccpa.fim_vigencia is null)";
         }
 
@@ -112,7 +112,8 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = $@"select wf.*, cp.* from wf_aprovacao_parecer_conclusivo wf
                             inner join conselho_classe_parecer cp on cp.id = wf.conselho_classe_parecer_id
-                            where wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
+                            left join wf_aprovacao wa ON wa.id = wf.wf_aprovacao_id 
+                            where (wf.wf_aprovacao_id is null or not wa.excluido) and wf.conselho_classe_aluno_id = @conselhoClasseAlunoId";
 
             return (await database.Conexao.QueryAsync<WFAprovacaoParecerConclusivo, ConselhoClasseParecerConclusivo, WFAprovacaoParecerConclusivo>(query
                 , (wfAprovacaoNota, conselhoClasseParecer) =>

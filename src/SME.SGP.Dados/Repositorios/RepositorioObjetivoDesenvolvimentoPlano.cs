@@ -4,12 +4,13 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using System.Collections.Generic;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioObjetivoDesenvolvimentoPlano : RepositorioBase<RecuperacaoParalelaObjetivoDesenvolvimentoPlano>, IRepositorioObjetivoDesenvolvimentoPlano
     {
-        public RepositorioObjetivoDesenvolvimentoPlano(ISgpContext conexao) : base(conexao)
+        public RepositorioObjetivoDesenvolvimentoPlano(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

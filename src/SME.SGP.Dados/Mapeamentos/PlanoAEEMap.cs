@@ -14,6 +14,7 @@ namespace SME.SGP.Dados
             Map(c => c.Situacao).ToColumn("situacao");
             Map(c => c.ParecerCoordenacao).ToColumn("parecer_coordenacao");
             Map(c => c.ParecerPAAI).ToColumn("parecer_paai");
+            Map(c => c.ResponsavelPaaiId).ToColumn("responsavel_paai_id");
             Map(c => c.ResponsavelId).ToColumn("responsavel_id");
         }
     }

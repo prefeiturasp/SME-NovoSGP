@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanejamentoAnual : RepositorioBase<PlanejamentoAnual>, IRepositorioPlanejamentoAnual
     {
-        public RepositorioPlanejamentoAnual(ISgpContext database) : base(database)
+        public RepositorioPlanejamentoAnual(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -221,13 +222,14 @@ namespace SME.SGP.Dados.Repositorios
                         inner join abrangencia ab on
 	                        t.id = ab.turma_id
                         left join planejamento_anual p on
-	                        p.turma_id = ab.turma_id
+	                        p.turma_id = ab.turma_id and p.excluido = false
                         where
-	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId and p.excluido = false
-                            {(!ensinoEspecial ? " and t.ano = @ano " : "")}  
+                            t.ano_letivo = @anoLetivo and
+	                        {(consideraHistorico ? string.Empty : "not")} ab.historico and t.id <> @turmaId and t.ue_id = @ueId 
+                            {(!ensinoEspecial || !turma.EnsinoEspecial ? " and t.ano = @ano " : "")}  
                         group by t.id order by t.nome  ";
 
-            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano });
+            return await database.Conexao.QueryAsync<TurmaParaCopiaPlanoAnualDto>(query, new { turmaId = turma.Id, ueId = turma.UeId, ano, anoLetivo = turma.AnoLetivo});
         }
 
         public async Task<PlanejamentoAnual> ObterPlanejamentoAnualPorAnoEscolaBimestreETurma(long turmaId, long periodoEscolarId, long componenteCurricularId)

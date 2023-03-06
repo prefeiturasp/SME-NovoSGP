@@ -85,8 +85,7 @@ namespace SME.SGP.Dominio
         public int ObterHorasGradeRegencia()
             => EhEJA() ? 5 : 1;
 
-        public int AnoTurmaInteiro => Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
-
+        public int AnoTurmaInteiro => !string.IsNullOrWhiteSpace(Ano) && Ano.ToCharArray().All(a => char.IsDigit(a)) ? int.Parse(Ano) : 1;
 
         public bool AulasReposicaoPrecisamAprovacao(int quantidadeAulasExistentesNoDia)
         {
@@ -104,6 +103,11 @@ namespace SME.SGP.Dominio
         public bool EhTurmaEdFisicaOuItinerario()
         {
             return TipoTurma.EhUmDosValores(TipoTurma.EdFisica, TipoTurma.Itinerarios2AAno);
+        }
+
+        public bool EhTurmaEdFisica()
+        {
+            return TipoTurma.EhUmDosValores(TipoTurma.EdFisica);
         }
 
         public IEnumerable<int> ObterTiposRegularesDiferentes()

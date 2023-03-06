@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
             var registros = await mediator.Send(new ObterConselhoClasseAlunosPorTurmaQuery(filtro.TurmaCodigo));
 
             foreach (var registro in registros)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarParecerConclusivoAluno
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAluno
                     , registro, Guid.NewGuid(), null));
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.Extensions.Options;
 using SME.SGP.Aplicacao.Interfaces;
 using SME.SGP.Infra;
 using System.Threading.Tasks;
@@ -9,9 +10,9 @@ namespace SME.SGP.Aplicacao
     {
         private readonly GoogleClassroomSyncOptions googleClassroomSyncOptions;
 
-        public ExecutaSyncGsaGoogleClassroomUseCase(IMediator mediator, GoogleClassroomSyncOptions googleClassroomSyncOptions) : base(mediator)
+        public ExecutaSyncGsaGoogleClassroomUseCase(IMediator mediator, IOptions<GoogleClassroomSyncOptions> googleClassroomSyncOptions) : base(mediator)
         {
-            this.googleClassroomSyncOptions = googleClassroomSyncOptions;
+            this.googleClassroomSyncOptions = googleClassroomSyncOptions.Value;
         }
 
         public async Task<bool> Executar(MensagemRabbit param)

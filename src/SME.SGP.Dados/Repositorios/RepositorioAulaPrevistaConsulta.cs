@@ -1,14 +1,16 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioAulaPrevistaConsulta : RepositorioBase<AulaPrevista>, IRepositorioAulaPrevistaConsulta
     {
-        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioAulaPrevistaConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -20,6 +22,16 @@ namespace SME.SGP.Dados.Repositorios
                                not ap.excluido;";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<AulaPrevista>(query, new { tipoCalendarioId, turmaId, disciplinaId });
+        }
+
+        public async Task<IEnumerable<AulaPrevista>> ObterAulasPrevistasPorUe(long codigoUe)
+        {
+            var query = @"select ap.* from aula_prevista ap 
+                            join turma t on t.turma_id = ap.turma_id
+                            where t.ue_id = @codigoUe 
+                            and not ap.excluido";
+
+            return await database.Conexao.QueryAsync<AulaPrevista>(query, new { codigoUe });
         }
 
 

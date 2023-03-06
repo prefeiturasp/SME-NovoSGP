@@ -14,9 +14,9 @@ namespace SME.SGP.Infra
         }
 
         public List<NotasConceitosAlunoRetornoDto> Alunos { get; set; }
-        public List<NotasConceitosAvaliacaoRetornoDto> Avaliacoes { get; set; }
+        public List<NotasConceitosAvaliacaoRetornoDto> Avaliacoes { get; }
         public int QtdAvaliacoesBimestrais { get; set; }
-        public List<string> Observacoes { get; set; }
+        public List<string> Observacoes { get; }
         public string Descricao { get; set; }
         public int Numero { get; set; }
         public bool PodeLancarNotaFinal { get; set; }
@@ -24,5 +24,6 @@ namespace SME.SGP.Infra
         public SituacaoFechamento Situacao { get; set; }
         public DateTime PeriodoInicio { get; set; }
         public DateTime PeriodoFim { get; set; }
+        public NotaParametroDto DadosArredondamento { get; set; }
     }
 }

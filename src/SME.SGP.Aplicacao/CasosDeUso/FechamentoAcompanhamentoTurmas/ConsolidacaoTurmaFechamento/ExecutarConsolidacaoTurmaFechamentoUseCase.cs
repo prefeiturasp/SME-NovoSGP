@@ -47,13 +47,32 @@ namespace SME.SGP.Aplicacao
                 return false;
             }
 
-            foreach (var componente in componentes)
-            {
-                var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, Convert.ToInt64(componente.Codigo)));
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamentoConselho.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null));
-            }
+            var dadosTurmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
 
-            return true;
+            if (dadosTurmaEOL != null)
+            {
+                if (!dadosTurmaEOL.Extinta)
+                {
+                    foreach (var componente in componentes)
+                    {
+                        var mensagem = JsonConvert.SerializeObject(new FechamentoConsolidacaoTurmaComponenteBimestreDto(consolidacaoTurma.TurmaId, consolidacaoTurma.Bimestre, Convert.ToInt64(componente.Codigo)));
+                        await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidarTurmaFechamentoComponenteTratar, mensagem, mensagemRabbit.CodigoCorrelacao, null));
+                    }
+                }
+                else
+                {
+                    int bimestre = consolidacaoTurma.Bimestre.HasValue ? consolidacaoTurma.Bimestre.Value : 0;
+                    var consolidacoesTurmaBimestre = await mediator.Send(new ObterFechamentoConsolidadoPorTurmaBimestreQuery(consolidacaoTurma.TurmaId, bimestre, new int[] { -99 }));
+
+                    if (consolidacoesTurmaBimestre.Any())
+                        await mediator.Send(new ExcluirConsolidacaoFechamentoPorTurmaIdEBimestreCommand(consolidacaoTurma.TurmaId, bimestre));
+                }
+
+                return true;
+            }
+            else
+                return false;
+
         }
     }
 }

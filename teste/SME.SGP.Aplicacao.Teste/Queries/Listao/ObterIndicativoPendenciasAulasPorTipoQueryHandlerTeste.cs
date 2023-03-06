@@ -34,7 +34,7 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var dados = new List<PossuiPendenciaDiarioBordoDto>();
             dados.Add(new PossuiPendenciaDiarioBordoDto()
             {
-                TurmaId = "2386241",
+                TurmaId = "1",
                 Bimestre = 1,
                 AulaCJ = false
             });
@@ -42,17 +42,17 @@ namespace SME.SGP.Aplicacao.Teste.Queries
             var aulas = new List<long>();
             aulas.Add(123);
 
-            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "7941706", false, ""))
+            repositorioPendenciaAula.Setup(x => x.TrazerAulasComPendenciasDiarioBordo("512", "999", false, "", 2022))
                 .ReturnsAsync(aulas);
 
-            repositorioPendenciaAula.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "2386241", 1))
+            repositorioPendenciaAula.Setup(x => x.TurmasPendenciaDiarioBordo(aulas, "1", 1))
                 .ReturnsAsync(dados);
 
             mediator.Setup(x => x.Send(It.IsAny<ObterIndicativoPendenciasAulasPorTipoQuery>(), It.IsAny<CancellationToken>()))
                .ReturnsAsync(new Infra.PendenciaPaginaInicialListao() { PendenciaDiarioBordo = false });
 
             // Act
-            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery("512", "2386241", 1, true), new CancellationToken());
+            var retornoConsulta = await query.Handle(new ObterIndicativoPendenciasAulasPorTipoQuery("512", "1", 2022, 1, true), new CancellationToken());
 
             // Assert
             Assert.NotNull(retornoConsulta);

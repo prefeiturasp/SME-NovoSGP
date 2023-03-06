@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace SME.SGP.Dados.Repositorios
     {
         private const string QuerySincronizacao = @"SELECT id, cod_ciclo_ensino_eol,codigo_modalidade_ensino,codigo_etapa_ensino,descricao, data_atualizacao FROM public.ciclo_ensino where cod_ciclo_ensino_eol in (#ids);";
 
-        public RepositorioCicloEnsino(ISgpContext database) : base(database)
+        public RepositorioCicloEnsino(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

@@ -124,7 +124,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (periodoFechamento.UeId.HasValue)
                     await EnviaNotificacaoParaUe(periodosFechamentoBimestreUE, periodoFechamento.UeId.Value);
                 else
-                    EnviaNotificacaoParaDre(periodoFechamento.DreId.Value, periodosFechamentoBimestreUE);
+                    await EnviaNotificacaoParaDre(periodoFechamento.DreId.Value, periodosFechamentoBimestreUE);
             }
         }
 
@@ -293,7 +293,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private void EnviaNotificacaoParaDre(long dreId, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre)
+        private async Task EnviaNotificacaoParaDre(long dreId, IEnumerable<PeriodoFechamentoBimestre> fechamentosBimestre)
         {
             var dre = repositorioDre.ObterPorId(dreId);
             if (dre != null)
@@ -308,7 +308,7 @@ namespace SME.SGP.Dominio.Servicos
                         var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(adminSgpUe);
                         notificacao.UsuarioId = usuario.Id;
 
-                        servicoNotificacao.Salvar(notificacao);
+                        await servicoNotificacao.Salvar(notificacao);
                     }
                 }
             }
@@ -323,7 +323,8 @@ namespace SME.SGP.Dominio.Servicos
                 var nomeUe = $"{ue.TipoEscola.ObterNomeCurto()} {ue.Nome}";
 
                 Notificacao notificacao = MontaNotificacao(nomeUe, "DRE", fechamentosBimestre, ue.CodigoUe, null);
-                var diretores = servicoEol.ObterFuncionariosPorCargoUe(ue.CodigoUe, (long)Cargo.Diretor);
+                var diretores = await mediator.Send(
+                    new ObterFuncionariosPorCargoUeQuery(ue.CodigoUe, (long)Cargo.Diretor));
                 if (diretores == null || !diretores.Any())
                 {
                     await mediator.Send(new SalvarLogViaRabbitCommand($"Não foram localizados diretores para Ue {ue.CodigoUe} para Enviar notificação para a UE.", LogNivel.Negocio, LogContexto.Fechamento));
@@ -335,7 +336,7 @@ namespace SME.SGP.Dominio.Servicos
                         var usuario = servicoUsuario.ObterUsuarioPorCodigoRfLoginOuAdiciona(diretor.CodigoRf);
                         notificacao.UsuarioId = usuario.Id;
 
-                        servicoNotificacao.Salvar(notificacao);
+                        await servicoNotificacao.Salvar(notificacao);
                     }
                 }
 
@@ -351,7 +352,7 @@ namespace SME.SGP.Dominio.Servicos
                     {
                         notificacao.UsuarioId = usuario.Id;
 
-                        servicoNotificacao.Salvar(notificacao);
+                        await servicoNotificacao.Salvar(notificacao);
                     }
                 }
             }

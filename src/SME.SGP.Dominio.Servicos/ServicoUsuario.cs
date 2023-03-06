@@ -49,7 +49,7 @@ namespace SME.SGP.Dominio
         public async Task AlterarEmailUsuarioPorLogin(string login, string novoEmail)
         {
             var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(string.Empty, login));
-            
+
             if (usuario == null)
                 throw new NegocioException("Usuário não encontrado.");
 
@@ -79,7 +79,7 @@ namespace SME.SGP.Dominio
         public string ObterLoginAtual()
         {
             var loginAtual = contextoAplicacao.ObterVariavel<string>("login");
-            
+
             if (loginAtual == null)
                 throw new NegocioException("Não foi possível localizar o login no token");
 
@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio
             var perfisDoUsuario = await repositorioCache.ObterAsync($"perfis-usuario-{login}", async () => await ObterPerfisUsuario(login));
 
             usuario.DefinirPerfis(perfisDoUsuario);
-            
+
             usuario.DefinirPerfilAtual(ObterPerfilAtual());
 
             return usuario;
@@ -161,26 +161,23 @@ namespace SME.SGP.Dominio
 
             codigoRf = eNumero ? codigoRf : null;
 
-            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));            
+            var usuario = await mediator.Send(new ObterUsuarioPorCodigoRfLoginQuery(buscaLogin ? null : codigoRf, login));
 
             if (usuario != null)
             {
-                if (string.IsNullOrEmpty(usuario.Nome) && !string.IsNullOrEmpty(nome))
-                    usuario.Nome = nome;
-
-                if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
-                    usuario.CodigoRf = codigoRf;
+                var atualizouNome = AtualizouNomeDoUsuario(usuario, nome);
+                var atualizouRF = AtualizouRfDoUsuario(usuario, codigoRf);
 
                 usuario.Nome = usuario?.Nome ?? "";
 
-                if (!usuario.Nome.Equals(nome) || (usuario.CodigoRf != null && !usuario.CodigoRf.Equals(codigoRf)))
+                if (atualizouNome || atualizouRF)
                     await repositorioUsuario.SalvarAsync(usuario);
 
                 return usuario;
             }
 
             if (string.IsNullOrEmpty(login))
-                login = codigoRf;                     
+                login = codigoRf;
 
             usuario = new Usuario() { CodigoRf = codigoRf, Login = login, Nome = nome };
 
@@ -204,9 +201,10 @@ namespace SME.SGP.Dominio
             var usuarioLogado = await ObterUsuarioLogado();
 
             if (!usuarioLogado.EhProfessorCj())
-                return await servicoEOL.ProfessorPodePersistirTurma(codigoRf, turmaId, data);
+                return await mediator.Send(new ProfessorPodePersistirTurmaQuery(codigoRf, turmaId, data));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(codigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(codigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -225,7 +223,9 @@ namespace SME.SGP.Dominio
 
                 return validacaoData.FirstOrDefault().PodePersistir;
             }
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -236,9 +236,10 @@ namespace SME.SGP.Dominio
                 usuario = await ObterUsuarioLogado();
 
             if (!usuario.EhProfessorCj())
-                return await servicoEOL.PodePersistirTurmaDisciplina(usuario.CodigoRf, turmaId, disciplinaId, data);
+                return await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(Int64.Parse(disciplinaId), turmaId, data, usuario));
 
-            var atribuicaoCj = repositorioAtribuicaoCJ.ObterAtribuicaoAtiva(usuario.CodigoRf);
+            var atribuicaoCj = repositorioAtribuicaoCJ
+                .ObterAtribuicaoAtiva(usuario.CodigoRf, false);
 
             return atribuicaoCj != null && atribuicaoCj.Any();
         }
@@ -275,7 +276,7 @@ namespace SME.SGP.Dominio
             if (retornoEol == null)
                 throw new NegocioException("Ocorreu um erro ao obter os dados do usuário no EOL.");
 
-          
+
             var perfisUsuario = repositorioPrioridadePerfil.ObterPerfisPorIds(retornoEol.Perfis);
             usuario.DefinirPerfis(perfisUsuario);
             usuario.DefinirEmail(novoEmail);
@@ -287,19 +288,50 @@ namespace SME.SGP.Dominio
         {
             var componentesCurricularesParaVisualizar = new List<string>();
 
-            var componentesCurricularesUsuarioLogado = await servicoEOL.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
-            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
+            var componentesCurricularesUsuarioLogado = await servicoEOL
+                .ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turmaCodigo, usuarioLogado.CodigoRf, usuarioLogado.PerfilAtual);
 
+            var componentesCurricularesIdsUsuarioLogado = componentesCurricularesUsuarioLogado.Select(b => b.Codigo.ToString());
             var hoje = DateTime.Today;
 
             foreach (var componenteParaVerificarAtribuicao in componentesCurricularesIdsUsuarioLogado)
             {
                 if (await servicoEOL.PodePersistirTurmaDisciplina(usuarioLogado.CodigoRf, turmaCodigo, componenteParaVerificarAtribuicao, hoje))
                     componentesCurricularesParaVisualizar.Add(componenteParaVerificarAtribuicao);
-
             }
 
             return componentesCurricularesParaVisualizar.ToArray();
+        }
+
+        private bool AtualizouNomeDoUsuario(Usuario usuario, string nome)
+        {
+            if (!string.IsNullOrEmpty(nome))
+            {
+                if (string.IsNullOrEmpty(usuario.Nome))
+                {
+                    usuario.Nome = nome;
+                    return true;
+                }
+                else if (!usuario.Nome.Equals(nome))
+                {
+                    usuario.Nome = nome;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool AtualizouRfDoUsuario(Usuario usuario, string codigoRf)
+        {
+            if (string.IsNullOrEmpty(usuario.CodigoRf) && !string.IsNullOrEmpty(codigoRf))
+            {
+                usuario.CodigoRf = codigoRf;
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -14,14 +14,14 @@ namespace SME.SGP.Api.Controllers
     [Authorize("Bearer")]
     public class DocumentoController : ControllerBase
     {
-        [HttpGet("{documentoId}/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}")]
+        [HttpGet("{documentoId}/tipo-documento/{tipoDocumentoId}/classificacao/{classificacaoId}/usuario/{usuarioId}/ue/{ueId}/anoLetivo/{anoLetivo}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ValidacaoUsua(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
+        public async Task<IActionResult> ValidacaoUsuario(long documentoId, long tipoDocumentoId, long classificacaoId, long usuarioId, long ueId,int anoLetivo, [FromServices] IVerificarUsuarioDocumentoUseCase useCase)
         {
-            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId, documentoId)));
+            return Ok(await useCase.Executar(new VerificarUsuarioDocumentoDto(tipoDocumentoId, classificacaoId, usuarioId, ueId, anoLetivo,documentoId)));
         }
 
         [HttpGet("tipos")]
@@ -49,9 +49,10 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(401)]
         [Permissao(Permissao.DPU_C, Policy = "Bearer")]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
-        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId, [FromQuery] long classificacaoId, [FromServices] IListarDocumentosUseCase useCase)
+        public async Task<IActionResult> ListarDocumentos([FromQuery] long ueId, [FromQuery] long tipoDocumentoId,
+            [FromQuery] long classificacaoId, [FromQuery] int? anoLetivo, [FromServices] IListarDocumentosUseCase useCase)
         {
-            return Ok(await useCase.Executar(ueId, tipoDocumentoId, classificacaoId));
+            return Ok(await useCase.Executar(anoLetivo, ueId, tipoDocumentoId, classificacaoId));
         }
 
         [HttpPost("upload")]
@@ -62,7 +63,7 @@ namespace SME.SGP.Api.Controllers
         public async Task<IActionResult> UploadDocumentos([FromForm] IFormFile file, [FromServices] IUploadDocumentoUseCase useCase)
         {
             if (file.Length > 0)
-                return Ok(await useCase.Executar(file, Dominio.TipoConteudoArquivo.PDF));
+                return Ok(await useCase.Executar(file));
 
             return BadRequest();
         }
@@ -94,7 +95,7 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         public async Task<IActionResult> AtualizarDocumento(long documentoId, [FromBody] AlterarDocumentoDto dto,[FromServices] IAlterarDocumentoUseCase useCase)
         {
-            return Ok(await useCase.Executar(new AlterarDocumentoDto() { DocumentoId = documentoId, CodigoArquivo = dto.CodigoArquivo }));
+            return Ok(await useCase.Executar(new AlterarDocumentoDto { DocumentoId = documentoId, ArquivosCodigos = dto.ArquivosCodigos }));
         }
 
         [HttpGet("{documentoId}")]

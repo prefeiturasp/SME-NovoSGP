@@ -11,18 +11,19 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterAlunosSimplesDaTurmaQueryHandler : IRequestHandler<ObterAlunosSimplesDaTurmaQuery, IEnumerable<AlunoSimplesDto>>
     {
-        private readonly IServicoEol servicoEOL;
+        
+        private readonly IMediator mediator;
 
-        public ObterAlunosSimplesDaTurmaQueryHandler(IServicoEol servicoEOL)
+        public ObterAlunosSimplesDaTurmaQueryHandler(IMediator mediator)
         {
-            this.servicoEOL = servicoEOL ?? throw new ArgumentNullException(nameof(servicoEOL));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<IEnumerable<AlunoSimplesDto>> Handle(ObterAlunosSimplesDaTurmaQuery request, CancellationToken cancellationToken)
         {
             try
             {
-                var alunosEOL = await servicoEOL.ObterAlunosPorTurma(request.TurmaCodigo);
+                var alunosEOL =  await mediator.Send(new ObterAlunosEolPorTurmaQuery(request.TurmaCodigo));
                 alunosEOL = alunosEOL.OrderBy(a => a.NomeAluno);
                 return MapearParaDto(alunosEOL);
             }
@@ -40,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 yield return new AlunoSimplesDto()
                 {
                     Codigo = alunoEOL.CodigoAluno,
-                    NumeroChamada = alunoEOL.NumeroAlunoChamada,
+                    NumeroChamada = alunoEOL.ObterNumeroAlunoChamada(),
                     Nome = $"{alunoEOL.NomeValido()} {situacao}"
                 };
             }

@@ -1,14 +1,8 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Polly;
-using Polly.Registry;
-using RabbitMQ.Client;
-using SME.GoogleClassroom.Infra;
-using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,60 +10,43 @@ namespace SME.SGP.Aplicacao
 {
     public class PublicarFilaSgpCommandHandler : IRequestHandler<PublicarFilaSgpCommand, bool>
     {
-        private readonly IConfiguration configuration;
-        private readonly IServicoTelemetria servicoTelemetria;
-        private readonly IAsyncPolicy policy;
         private readonly IMediator mediator;
+        private readonly IServicoMensageriaSGP servicoMensageria;
 
-        public PublicarFilaSgpCommandHandler(IConfiguration configuration, IReadOnlyPolicyRegistry<string> registry, IServicoTelemetria servicoTelemetria, IMediator mediator)
+        public PublicarFilaSgpCommandHandler(IMediator mediator, IServicoMensageriaSGP servicoMensageria)
         {
-            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            this.servicoTelemetria = servicoTelemetria ?? throw new ArgumentNullException(nameof(servicoTelemetria));
-            this.policy = registry.Get<IAsyncPolicy>(PoliticaPolly.PublicaFila);
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            this.servicoMensageria = servicoMensageria ?? throw new ArgumentNullException(nameof(servicoMensageria));
         }
 
         public async Task<bool> Handle(PublicarFilaSgpCommand command, CancellationToken cancellationToken)
         {
-            var request = new MensagemRabbit(command.Filtros,
+            var usuario = command.Usuario ?? await ObtenhaUsuario();
+
+            var administrador = await mediator.Send(new ObterAdministradorDoSuporteQuery());
+
+            var mensagem = new MensagemRabbit(command.Filtros,
                                              command.CodigoCorrelacao,
-                                             command.Usuario?.Nome,
-                                             command.Usuario?.CodigoRf,
-                                             command.Usuario?.PerfilAtual,
-                                             command.NotificarErroUsuario);
+                                             usuario.Nome,
+                                             usuario.CodigoRf,
+                                             usuario.PerfilAtual,
+                                             command.NotificarErroUsuario,
+                                             administrador.Login);
 
-            var mensagem = JsonConvert.SerializeObject(request, new JsonSerializerSettings
-            {
-                NullValueHandling = NullValueHandling.Ignore
-            });
-            var body = Encoding.UTF8.GetBytes(mensagem);
-
-            servicoTelemetria.Registrar(() => 
-                    policy.ExecuteAsync(() => PublicarMensagem(command.Rota, body, command.Exchange)), 
-                            "RabbitMQ", "PublicarFilaSgp", command.Rota);
+            await servicoMensageria.Publicar(mensagem, command.Rota, command.Exchange ?? ExchangeSgpRabbit.Sgp, "PublicarFilaSgp");
 
             return true;
         }
 
-        private async Task PublicarMensagem(string rota, byte[] body, string exchange = null)
+        private async Task<Usuario> ObtenhaUsuario()
         {
-            var factory = new ConnectionFactory
+            try
             {
-                HostName = configuration.GetSection("ConfiguracaoRabbit:HostName").Value,
-                UserName = configuration.GetSection("ConfiguracaoRabbit:UserName").Value,
-                Password = configuration.GetSection("ConfiguracaoRabbit:Password").Value,
-                VirtualHost = configuration.GetSection("ConfiguracaoRabbit:Virtualhost").Value
-            };
-
-            using (var conexaoRabbit = factory.CreateConnection())
+                return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } 
+            catch
             {
-                using (IModel _channel = conexaoRabbit.CreateModel())
-                {
-                    var props = _channel.CreateBasicProperties();
-                    props.Persistent = true;
-
-                    _channel.BasicPublish(exchange ?? ExchangeSgpRabbit.Sgp, rota, props, body);
-                }
+                return new Usuario();
             }
         }
 

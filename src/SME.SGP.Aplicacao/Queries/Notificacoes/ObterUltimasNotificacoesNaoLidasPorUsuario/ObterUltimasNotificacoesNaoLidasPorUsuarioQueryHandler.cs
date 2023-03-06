@@ -9,15 +9,15 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler : IRequestHandler<ObterUltimasNotificacoesNaoLidasPorUsuarioQuery, IEnumerable<NotificacaoBasicaDto>>
     {
-        private readonly IRepositorioNotificacaoConsulta repositorioNotificacao;
+        private readonly IRepositorioNotificacao repositorioNotificacao;
 
-        public ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacaoConsulta repositorioNotificacao)
+        public ObterUltimasNotificacoesNaoLidasPorUsuarioQueryHandler(IRepositorioNotificacao repositorioNotificacao)
         {
             this.repositorioNotificacao = repositorioNotificacao ?? throw new System.ArgumentNullException(nameof(repositorioNotificacao));
         }
         public async Task<IEnumerable<NotificacaoBasicaDto>> Handle(ObterUltimasNotificacoesNaoLidasPorUsuarioQuery request, CancellationToken cancellationToken)
         {
-            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorAnoLetivoERfAsync(request.AnoLetivo, request.CodigoRf, 5);
+            var listaTratada = await repositorioNotificacao.ObterNotificacoesPorRfAsync(request.CodigoRf, 5);
 
             if (request.TituloReduzido)
             {

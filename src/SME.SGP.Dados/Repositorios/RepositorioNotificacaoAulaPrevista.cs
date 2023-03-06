@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotificacaoAulaPrevista : RepositorioBase<NotificacaoAulaPrevista>, IRepositorioNotificacaoAulaPrevista
     {
-        public RepositorioNotificacaoAulaPrevista(ISgpContext database) : base(database)
+        public RepositorioNotificacaoAulaPrevista(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -35,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
                                 and not apb.excluido
                          where not a.excluido
                            and now() between pe.periodo_inicio and pe.periodo_fim
-                           and DATE_PART('day', age(pe.periodo_fim, date(now()))) <= @limiteDias
+                           and DATE_PART('day', age(pe.periodo_fim, date(now()))) = @limiteDias
                            and t.modalidade_codigo <> 1
                            and a.tipo_aula = 1
 

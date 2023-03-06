@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             var filtro = param.ObterObjetoMensagem<FiltroDreUeTurmaDto>();
             var turmas = await mediator.Send(new ObterCodigosTurmasPorUeAnoQuery(filtro.AnoLetivo, filtro.UeCodigo));
             foreach (var turmaCodigo in turmas)
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaAtualizarParecerConclusivoAlunoPorTurma
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaAtualizarParecerConclusivoAlunoPorTurma
                     , new FiltroDreUeTurmaDto(filtro.AnoLetivo, filtro.DreId, filtro.UeCodigo, turmaCodigo), Guid.NewGuid(), null));
 
             return true;

@@ -1,14 +1,12 @@
 ﻿using MediatR;
-using SME.SGP.Aplicacao;
-using SME.SGP.Aplicacao.Integracoes.Respostas;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using SME.SGP.Aplicacao.Queries;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -78,7 +76,7 @@ namespace SME.SGP.Aplicacao
                 disciplinas.Add(new DisciplinaDto() { Nome = componenteCurricularSelecionado.Nome, CodigoComponenteCurricular = componenteCurricularSelecionado.CodigoComponenteCurricular });
 
             var alunosComAnotacao = Enumerable.Empty<string>();
-            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre);
+            var fechamentosTurma = await ObterFechamentosTurmaDisciplina(turmaCodigo, componenteCurricularCodigo.ToString(), bimestre, tipoCalendario.Id);
             if (fechamentosTurma != null && fechamentosTurma.Any())
             {
                 fechamentoNotaConceitoTurma.FechamentoId = fechamentosTurma.First().Id;
@@ -106,6 +104,8 @@ namespace SME.SGP.Aplicacao
 
                 var bimestreDoPeriodo = await mediator.Send(new ObterPeriodoEscolarPorCalendarioEDataQuery(tipoCalendario.Id, periodoAtual.PeriodoFim));
 
+                alunos = alunos.Where(a => a.VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(bimestreDoPeriodo.PeriodoFim));
+
                 alunosValidosComOrdenacao = alunos.Where(a => a.DeveMostrarNaChamada(bimestreDoPeriodo.PeriodoFim, bimestreDoPeriodo.PeriodoInicio))
                                                       .OrderBy(a => a.NomeAluno)
                                                       .ThenBy(a => a.NomeValido());
@@ -131,11 +131,16 @@ namespace SME.SGP.Aplicacao
                                                             componenteCurricularCodigo, periodosEscolares, tipoNotaTurma, usuarioAtual, alunosComAnotacao);
             }
 
-            fechamentoNotaConceitoTurma.AuditoriaAlteracao = MontaTextoAuditoriaAlteracao(fechamentosTurma.Any() ? fechamentosTurma.FirstOrDefault() : null, tipoNotaTurma.EhNota());
-            fechamentoNotaConceitoTurma.AuditoriaInclusao = MontaTextoAuditoriaInclusao(fechamentosTurma.Any() ? fechamentosTurma.FirstOrDefault() : null, tipoNotaTurma.EhNota());
+            fechamentoNotaConceitoTurma.AuditoriaAlteracao = AuditoriaUtil.MontarTextoAuditoriaAlteracao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
+            fechamentoNotaConceitoTurma.AuditoriaInclusao = AuditoriaUtil.MontarTextoAuditoriaInclusao(fechamentosTurma.FirstOrDefault(), tipoNotaTurma.EhNota());
+
+            await AtribuirDadosDoArredondamento(fechamentoNotaConceitoTurma);
 
             return fechamentoNotaConceitoTurma;
         }
+
+        private async Task AtribuirDadosDoArredondamento(FechamentoNotaConceitoTurmaDto fechamentoNotaConceitoTurma) 
+            => fechamentoNotaConceitoTurma.DadosArredondamento = await mediator.Send(new ObterParametrosArredondamentoNotaPorDataAvaliacaoQuery(fechamentoNotaConceitoTurma.PeriodoFim));
 
         private Task<IEnumerable<string>> ObterAlunosComAnotacaoNoFechamento(long fechamentoId)
             => mediator.Send(new ObterCodigosAlunosComAnotacaoNoFechamentoQuery(fechamentoId));
@@ -147,6 +152,7 @@ namespace SME.SGP.Aplicacao
         {
             var alunosFechamentoNotaConceito = new List<AlunosFechamentoNotaConceitoTurmaDto>();
             var usuarioEPeriodoPodeEditar = await PodeEditarNotaOuConceitoPeriodoUsuario(usuarioAtual, periodoAtual, turma, componenteCurricularCodigo.ToString(), periodoAtual.PeriodoInicio);
+            var exigeAprovacao = await mediator.Send(new ExigeAprovacaoDeNotaQuery(turma));
 
             foreach (var aluno in alunos)
             {
@@ -158,13 +164,13 @@ namespace SME.SGP.Aplicacao
                 var alunoDto = new AlunosFechamentoNotaConceitoTurmaDto
                 {
                     CodigoAluno = aluno.CodigoAluno,
-                    NumeroChamada = aluno.NumeroAlunoChamada,
+                    NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                     Nome = aluno.NomeAluno,
                     EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
                 };
 
                 alunoDto.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, periodoAtual.PeriodoInicio, turma.EhTurmaInfantil));
-                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.PodeEditarNotaConceito() : false;
+                alunoDto.PodeEditar = usuarioEPeriodoPodeEditar ? aluno.VerificaSePodeEditarAluno(periodoAtual) : false;
 
                 var frequenciaAluno = await mediator.Send(new ObterFrequenciaAlunosPorAlunoDisciplinaPeriodoEscolarTipoTurmaQuery(aluno.CodigoAluno, componenteCurricularCodigo, periodoAtual.Id, TipoFrequenciaAluno.PorDisciplina, turma.CodigoTurma));
                 if (frequenciaAluno != null)
@@ -209,7 +215,8 @@ namespace SME.SGP.Aplicacao
                                 NotaConceito = notaConceito
                             };
 
-                            await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
+                            if (exigeAprovacao)
+                                await VerificaNotaEmAprovacao(aluno.CodigoAluno, fechamentoTurma.FechamentoTurmaId, nota.DisciplinaCodigo, nota);
 
                             ((List<FechamentoConsultaNotaConceitoTurmaListaoDto>)alunoDto.NotasConceitoBimestre).Add(nota);
                         }
@@ -297,13 +304,13 @@ namespace SME.SGP.Aplicacao
 
             var notasFechamentosFinais = Enumerable.Empty<FechamentoNotaAlunoAprovacaoDto>();
             if (fechamentosTurma != null && fechamentosTurma.Any())
-                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurma.Select(ftd => ftd.Id).ToArray()));
+                notasFechamentosFinais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosTurma.Select(ftd => ftd.Id).ToArray(), turma.CodigoTurma, componenteCurricularCodigo.ToString()));
 
             foreach (var aluno in alunos)
             {
                 AlunosFechamentoNotaConceitoTurmaDto fechamentoFinalAluno = await TrataFrequenciaAluno(componenteCurricularCodigo.ToString(), aluno, turma);
 
-                fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoFim, turma.EhTurmaInfantil));
+                fechamentoFinalAluno.Marcador = await mediator.Send(new ObterMarcadorAlunoQuery(aluno, ultimoPeriodoEscolar.PeriodoInicio, turma.EhTurmaInfantil));
 
                 foreach (var periodo in periodosEscolares.OrderBy(a => a.Bimestre))
                 {
@@ -331,7 +338,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplinaParaAdicionar in disciplinas)
                 {
                     var nota = notasFechamentosFinais.FirstOrDefault(a => a.ComponenteCurricularId == disciplinaParaAdicionar.CodigoComponenteCurricular
-                                                                    && a.AlunoCodigo == aluno.CodigoAluno);
+                                                                    && a.AlunoCodigo == aluno.CodigoAluno && !a.Bimestre.HasValue);
 
                     var notaConceitoTurma = new FechamentoConsultaNotaConceitoTurmaListaoDto()
                     {
@@ -365,28 +372,11 @@ namespace SME.SGP.Aplicacao
 
             return alunosFechamentoNotaConceito;
         }
-        public async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre)
+
+        private async Task<IEnumerable<FechamentoTurmaDisciplina>> ObterFechamentosTurmaDisciplina(string turmaCodigo, string disciplinaId, int bimestre, long? tipoCalendario = null)
         {
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaCodigo));
-            return await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { Convert.ToInt64(disciplinaId) }, bimestre));
-        }
-
-        private string MontaTextoAuditoriaAlteracao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
-        {
-            if (fechamentoTurmaDisciplina != null && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.AlteradoPor))
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "alteradas" : "alterados")} por {fechamentoTurmaDisciplina.AlteradoPor}({fechamentoTurmaDisciplina.AlteradoRF}) em {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("dd/MM/yyyy")}, às {fechamentoTurmaDisciplina.AlteradoEm.Value.ToString("HH:mm")}.";
-            else return string.Empty;
-        }
-
-        private string MontaTextoAuditoriaInclusao(FechamentoTurmaDisciplina fechamentoTurmaDisciplina, bool EhNota)
-        {
-            var criadorRf = fechamentoTurmaDisciplina != null && fechamentoTurmaDisciplina.CriadoRF != "0" && !string.IsNullOrEmpty(fechamentoTurmaDisciplina.CriadoRF) ?
-                $"({fechamentoTurmaDisciplina.CriadoRF})" : "";
-
-            if (fechamentoTurmaDisciplina != null)
-                return $"{(EhNota ? "Notas" : "Conceitos")} finais {(EhNota ? "incluídas" : "incluídos")} por {fechamentoTurmaDisciplina.CriadoPor}{criadorRf} em {fechamentoTurmaDisciplina.CriadoEm.ToString("dd/MM/yyyy")}, às {fechamentoTurmaDisciplina.CriadoEm.ToString("HH:mm")}.";
-
-            else return string.Empty;
+            return await mediator.Send(new ObterFechamentosTurmaComponentesQuery(turma.Id, new long[] { Convert.ToInt64(disciplinaId) }, bimestre, tipoCalendario));
         }
 
         private async Task VerificaSePodeFazerFechamentoFinal(IEnumerable<PeriodoEscolar> periodosEscolares, Turma turma)
@@ -418,20 +408,26 @@ namespace SME.SGP.Aplicacao
         {
             var listaRetorno = new List<FechamentoNotaAlunoDto>();
             var fechamentosTurmaDisciplina = new List<FechamentoTurmaDisciplina>();
+            var tipoCalendario = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             IEnumerable<FechamentoNotaAlunoAprovacaoDto> notasBimestrais = new List<FechamentoNotaAlunoAprovacaoDto>();
+
             foreach (var periodo in periodosEscolares)
             {
-                var fechamentoBimestreTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre));
+                var fechamentoBimestreTurma = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, periodo.Bimestre, tipoCalendario));
 
                 if (fechamentoBimestreTurma.Any())
                     fechamentosTurmaDisciplina.AddRange(fechamentoBimestreTurma);
             }
 
+            //Busca fechamento final
+            var fechamentoFinal = await mediator.Send(new ObterFechamentoTurmaDisciplinaPorTurmaIdDisciplinasIdBimestreQuery(turma.Id, new long[] { disciplinaCodigo }, 0));
+            if (fechamentoFinal.Any())
+                fechamentosTurmaDisciplina.AddRange(fechamentoFinal);
 
             var fechamentosIds = fechamentosTurmaDisciplina?.Select(a => a.Id).ToArray() ?? new long[] { };
 
             if (fechamentosIds.Length > 0)
-                notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds));
+                notasBimestrais = await mediator.Send(new ObterPorFechamentosTurmaQuery(fechamentosIds, turma.CodigoTurma, disciplinaCodigo.ToString()));
 
             foreach (var nota in notasBimestrais.Where(a => a.Bimestre.HasValue))
             {
@@ -461,7 +457,7 @@ namespace SME.SGP.Aplicacao
             {
                 Nome = aluno.NomeAluno,
                 Frequencia = percentualFrequencia.ToString(),
-                NumeroChamada = aluno.NumeroAlunoChamada,
+                NumeroChamada = aluno.ObterNumeroAlunoChamada(),
                 EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(aluno.CodigoAluno, turma.AnoLetivo))
             };
             return fechamentoFinalAluno;
@@ -471,7 +467,7 @@ namespace SME.SGP.Aplicacao
         {
             double nota = await mediator.Send(new ObterNotaEmAprovacaoQuery(codigoAluno, turmaFechamentoId, disciplinaId));
 
-            if (nota > 0)
+            if (nota >= 0)
             {
                 notasConceito.NotaConceito = nota;
                 notasConceito.EmAprovacao = true;

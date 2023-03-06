@@ -16,13 +16,13 @@ namespace SME.SGP.Dominio.Interfaces
         Ue ObterPorCodigo(string ueId);
 
         Task<Ue> ObterUeComDrePorCodigo(string ueCodigo);
-
         Ue ObterPorId(long id);
-
+        Task<long> ObterIdPorCodigoUe(string codigoUe);
         Task<IEnumerable<Ue>> ObterPorDre(long dreId);
 
         Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade);
         Task<string> ObterCodigoPorId(long ueId);
+        Task<string> ObterNomePorCodigo(string ueCodigo);
         Task<IEnumerable<long>> ObterIdsPorDre(long dreId);
         Task<IEnumerable<string>> ObterCodigosUEs();
         IEnumerable<Ue> ObterTodas();
@@ -49,5 +49,6 @@ namespace SME.SGP.Dominio.Interfaces
         Task<DreUeCodigoDto> ObterCodigosDreUePorId(long ueId);
         Task<IEnumerable<long>> ObterTodosIds();
         Task<IEnumerable<Ue>> ObterUEsComDREsPorModalidadeTipoCalendarioQuery(int[] modalidades, int anoLetivo = 0);
+        Task<IEnumerable<Ue>> ObterUEsComDREsPorCodigoUes(string[]codigoUes);
     }
 }

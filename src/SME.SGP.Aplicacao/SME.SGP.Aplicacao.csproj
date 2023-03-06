@@ -7,12 +7,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <Compile Remove="Interfaces\CasosDeUso\Aluno\**" />
     <Compile Remove="Queries\AcompanhamentoFrequencia\**" />
+    <EmbeddedResource Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <EmbeddedResource Remove="Interfaces\CasosDeUso\Aluno\**" />
     <EmbeddedResource Remove="Queries\AcompanhamentoFrequencia\**" />
+    <None Remove="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\**" />
     <None Remove="Interfaces\CasosDeUso\Aluno\**" />
     <None Remove="Queries\AcompanhamentoFrequencia\**" />
+    <Compile Remove="Queries\EOL\Aluno\ObterAlunosPorTurma\ObterAlunosPorTurmaQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQueryHandler.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\ObterDadosTurmaEolQuery.cs" />
+    <Compile Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <EmbeddedResource Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <None Remove="Queries\Turma\ObterDadosTurmaEol\**" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQueryHandler.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\ObterProfessoresTitularesDaTurmaQuery.cs" />
+    <Compile Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <EmbeddedResource Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <None Remove="Queries\Professores\ObterProfessoresTitularesDaTurma\**" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQuery.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\ObterRegistroFrequenciaPorIdQueryHandler.cs" />
+    <Compile Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <EmbeddedResource Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
+    <None Remove="Queries\Frequencia\ObterRegistroFrequenciaPorId\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +43,7 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="10.3.3" />
     <PackageReference Include="MailKit" Version="2.15.0" />
     <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="5.0.1" />
@@ -35,14 +55,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SME.SGP.Dados.Cache\SME.SGP.Dados.Cache.csproj" />
     <ProjectReference Include="..\SME.SGP.Dados\SME.SGP.Dados.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio.Interfaces\SME.SGP.Dominio.Interfaces.csproj" />
     <ProjectReference Include="..\SME.SGP.Dominio\SME.SGP.Dominio.csproj" />
+    <ProjectReference Include="..\SME.SGP.Infra.Consts\SME.SGP.Infra.Consts.csproj" />
     <ProjectReference Include="..\SME.SGP.Infra\SME.SGP.Infra.csproj" />
+    <ProjectReference Include="..\SME.SGP.Notificacoes.Hub.Interface\SME.SGP.Notificacoes.Hub.Interface.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\PendenciaFechamento\AtualizarPendenciaFechamento\" />
+    <Folder Include="Commands\FechamentoTurmaDisciplina\" />
     <Folder Include="obj\" />
     <Folder Include="Queries\TipoCalendario\ObterTiposCalendariosAulaAutomaticaPorAnoLetivoEModalidades\" />
     <Folder Include="Servicos\Interfaces\" />

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace SME.SGP.Dados.Repositorios
                                                         inner join atividade_avaliativa_regencia aar on a.id = aar.atividade_avaliativa_id
                                                         inner join atividade_avaliativa_disciplina aad on aad.atividade_avaliativa_id = a.id";
 
-        public RepositorioAtividadeAvaliativa(ISgpContext conexao) : base(conexao)
+        public RepositorioAtividadeAvaliativa(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -78,7 +79,7 @@ namespace SME.SGP.Dados.Repositorios
             return retornoPaginado;
         }
 
-        public IEnumerable<AtividadeAvaliativa> ListarPorIds(IEnumerable<long> ids)
+        public async Task<IEnumerable<AtividadeAvaliativa>> ListarPorIds(IEnumerable<long> ids)
         {
             var sql = new StringBuilder();
 
@@ -86,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine(fromCompleto);
             sql.AppendLine($"where a.id = ANY(@ids)");
 
-            return database.Query<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
+            return await database.QueryAsync<AtividadeAvaliativa>(sql.ToString(), new { ids = ids.ToArray() });
         }
 
         public IEnumerable<AtividadeAvaliativa> ListarAtividadesIds(IEnumerable<long> ids)
@@ -601,15 +602,21 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<IEnumerable<AvaliacaoNotaAlunoDto>> ObterAtividadesNotasAlunoPorTurmaPeriodo(long turmaId, long periodoEscolarId, string alunoCodigo, string componenteCurricular)
         {
-            var query = @"SELECT aa.nome_avaliacao as Nome
+            var query = @"SELECT distinct aa.nome_avaliacao as Nome
 	                        , aa.data_avaliacao as data
-	                        , coalesce(nc.conceito, nc.nota) as NotaConceito
+	                        , coalesce(coalesce(wf.conceito_id, nc.conceito), coalesce(wf.nota, nc.nota)) as NotaConceito
+                            , eh_regencia as Regencia
+                            , aa.id as Id
+                            , aa.categoria_id = 2 as EhInterdisciplinar
                           FROM atividade_avaliativa aa
                          INNER JOIN turma t ON t.turma_id = aa.turma_id
                          INNER JOIN periodo_escolar pe ON aa.data_avaliacao between pe.periodo_inicio and pe.periodo_fim
                          INNER JOIN atividade_avaliativa_disciplina aad ON aad.atividade_avaliativa_id = aa.id
-                          left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
-                         WHERE NOT aa.excluido
+                         left join notas_conceito nc on nc.atividade_avaliativa = aa.id and nc.aluno_id = @alunoCodigo
+                         left join fechamento_aluno fa on fa.aluno_codigo = nc.aluno_id
+                         left join fechamento_nota fn on fn.fechamento_aluno_id = fa.id
+                          left join wf_aprovacao_nota_fechamento wf on wf.fechamento_nota_id = fn.id
+                        WHERE NOT aa.excluido
                            AND t.id = @turmaId
                            and pe.id = @periodoEscolarId
                            and aad.disciplina_id = @componenteCurricular

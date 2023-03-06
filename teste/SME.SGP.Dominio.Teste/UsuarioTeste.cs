@@ -90,7 +90,7 @@ namespace SME.SGP.Dominio.Teste
         {
             var Usuario = new Usuario();
 
-            Usuario.CodigoRf = "7777710";
+            Usuario.CodigoRf = "111111";
 
             Usuario.ValidarSenha("1aA23233");
 
@@ -100,9 +100,9 @@ namespace SME.SGP.Dominio.Teste
 
             Assert.Throws<NegocioException>(() => Usuario.ValidarSenha(@"1aA@82193490!@#$%&*()"));
 
-            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("7710"));
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("1111"));
 
-            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("Sgp7710"));
+            Assert.Throws<NegocioException>(() => Usuario.ValidarSenha("Sgp1111"));
         }
 
         [Fact]

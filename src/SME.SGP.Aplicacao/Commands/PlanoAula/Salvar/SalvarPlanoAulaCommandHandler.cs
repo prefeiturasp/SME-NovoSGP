@@ -7,6 +7,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
+using SME.SGP.Dominio.Constantes.MensagensNegocio;
+using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Infra.Utilitarios;
 
 namespace SME.SGP.Aplicacao
 {
@@ -18,13 +22,16 @@ namespace SME.SGP.Aplicacao
         private readonly IConsultasAbrangencia consultasAbrangencia;
         private readonly IServicoUsuario servicoUsuario;
         private readonly IUnitOfWork unitOfWork;
+        private readonly IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions;
+        
         public SalvarPlanoAulaCommandHandler(IMediator mediator,
             IRepositorioAula repositorioAula,
             IRepositorioObjetivoAprendizagemAula repositorioObjetivosAula,
             IRepositorioPlanoAula repositorioPlanoAula,
             IConsultasAbrangencia consultasAbrangencia,
             IUnitOfWork unitOfWork,
-            IServicoUsuario servicoUsuario) : base(mediator)
+            IServicoUsuario servicoUsuario,
+            IOptions<ConfiguracaoArmazenamentoOptions> configuracaoArmazenamentoOptions) : base(mediator)
         {
             this.repositorioAula = repositorioAula ?? throw new ArgumentNullException(nameof(repositorioAula));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
@@ -32,33 +39,62 @@ namespace SME.SGP.Aplicacao
             this.consultasAbrangencia = consultasAbrangencia ?? throw new ArgumentNullException(nameof(consultasAbrangencia));
             this.servicoUsuario = servicoUsuario ?? throw new ArgumentNullException(nameof(servicoUsuario));
             this.unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-
+            this.configuracaoArmazenamentoOptions = configuracaoArmazenamentoOptions ?? throw new ArgumentNullException(nameof(configuracaoArmazenamentoOptions));
         }
 
         public async Task<PlanoAulaDto> Handle(SalvarPlanoAulaCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                unitOfWork.IniciarTransacao();
                 var planoAulaDto = request.PlanoAula;
                 var aula = await mediator.Send(new ObterAulaPorIdQuery(planoAulaDto.AulaId));
                 var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(aula.TurmaId));
+                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
+
+                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
+                if (periodoEscolar == null)
+                    throw new NegocioException(MensagemNegocioPlanoAula.NAO_FOI_LOCALIZADO_BIMESTRE_DA_AULA);
+                
+                var periodoAberto = await mediator.Send(new TurmaEmPeriodoAbertoQuery(turma, DateTimeExtension.HorarioBrasilia().Date, periodoEscolar.Bimestre,
+                    turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year));
+
+                if (!periodoAberto)
+                    throw new NegocioException(MensagemNegocioComuns.APENAS_EH_POSSIVEL_CONSULTAR_ESTE_REGISTRO_POIS_O_PERIODO_NAO_ESTA_EM_ABERTO);
+                
                 DisciplinaDto disciplinaDto = null;
 
                 if (request.PlanoAula.ComponenteCurricularId.HasValue)
                 {
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.PlanoAula.ComponenteCurricularId.Value }));
+                    long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
+
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
+
+                    if(!componentesCurriculares.Any())
+                    {
+                        var componentesEol = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turma.CodigoTurma, usuario.Login, usuario.PerfilAtual, true, false));
+                        if (componentesEol.Any())
+                            componentesCurriculares = componentesEol.Where(c=> c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber == componenteCurricularId : c.Codigo == componenteCurricularId).Select(c => new DisciplinaDto()
+                            {
+                                CdComponenteCurricularPai = c.CodigoComponenteCurricularPai,
+                                CodigoComponenteCurricular = c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo,
+                                Nome = c.Descricao,
+                                TerritorioSaber = c.TerritorioSaber,
+                                LancaNota = c.LancaNota,
+                                Compartilhada = c.Compartilhada,
+                                Regencia = c.Regencia,
+                                RegistraFrequencia = c.RegistraFrequencia
+                            });
+                    }
+                        
                     disciplinaDto = componentesCurriculares.SingleOrDefault();
                 }
 
-                var abrangenciaTurma = await consultasAbrangencia.ObterAbrangenciaTurma(aula.TurmaId, turma.AnoLetivo == DateTimeExtension.HorarioBrasilia().Year ? planoAulaDto.ConsideraHistorico : true);
-                if (abrangenciaTurma == null)
-                    throw new NegocioException("Usuario sem acesso a turma da respectiva aula");
+                
 
-                var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-                if(!usuario.EhGestorEscolar())
-                    await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario);
+                if (usuario.EhGestorEscolar())
+                    await ValidarAbrangenciaGestorEscolar(usuario, turma.CodigoTurma, turma.EhTurmaHistorica);
+                else
+                    await VerificaSeProfessorPodePersistirTurmaDisciplina(usuario.CodigoRf, aula.TurmaId, aula.DisciplinaId, aula.DataAula, usuario.EhProfessorCj());
 
                 PlanoAula planoAula = await mediator.Send(new ObterPlanoAulaPorAulaIdQuery(planoAulaDto.AulaId));
                 var planoAulaResumidoDto = new PlanoAulaResumidoDto()
@@ -72,17 +108,13 @@ namespace SME.SGP.Aplicacao
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
                 planoAula = MapearParaDominio(planoAulaDto, planoAula);
-
-                var periodoEscolar = await mediator.Send(new ObterPeriodosEscolaresPorTipoCalendarioIdEDataQuery(aula.TipoCalendarioId, aula.DataAula.Date));
-                if (periodoEscolar == null)
-                    throw new NegocioException("Não foi possível concluir o cadastro, pois não foi localizado o bimestre da aula.");
-
+                
                 var planejamentoAnual = await mediator.Send(
                     new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );
 
                 if ((planejamentoAnual?.Id <= 0 || planejamentoAnual == null) && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) && !usuario.PerfilAtual.Equals(Perfis.PERFIL_CJ) && !(disciplinaDto != null && disciplinaDto.TerritorioSaber))
-                    throw new NegocioException("Não foi possível concluir o cadastro, pois não existe plano anual cadastrado");
+                    throw new NegocioException(MensagemNegocioPlanoAula.NAO_EXISTE_PLANO_ANUAL_CADASTRADO);
 
                 if (planoAulaDto.ObjetivosAprendizagemComponente == null || !planoAulaDto.ObjetivosAprendizagemComponente.Any() && !planoAula.Migrado)
                 {
@@ -92,28 +124,44 @@ namespace SME.SGP.Aplicacao
 
                     // Os seguintes componentes curriculares (disciplinas) não tem seleção de objetivos de aprendizagem
                     // Libras, Sala de Leitura
-                    permitePlanoSemObjetivos = new string[] { "218", "1061" }.Contains(aula.DisciplinaId) ||
-                                                   new[] { Modalidade.EJA, Modalidade.Medio }.Contains(abrangenciaTurma.Modalidade) ||  // EJA e Médio não obrigam seleção
+                    permitePlanoSemObjetivos = new [] { "218", "1061" }.Contains(aula.DisciplinaId) ||
+                                                   new [] { Modalidade.EJA, Modalidade.Medio }.Contains(turma.ModalidadeCodigo) ||  // EJA e Médio não obrigam seleção
                                                    usuario.EhProfessorCj() ||  // Para professores substitutos (CJ) a seleção dos objetivos deve ser opcional
                                                    periodoEscolar.TipoCalendario.AnoLetivo < DateTime.Now.Year || // Para anos anteriores não obrigatória seleção de objetivos
                                                    !possuiObjetivos || // Caso a disciplina não possui vinculo com Jurema, os objetivos não devem ser exigidos
-                                                   abrangenciaTurma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
+                                                   turma.Ano.Equals("0"); // Caso a turma for de  educação física multisseriadas, os objetivos não devem ser exigidos;
 
                     if (!permitePlanoSemObjetivos)
-                        throw new NegocioException("A seleção de objetivos de aprendizagem é obrigatória para criação do plano de aula");
+                        throw new NegocioException(MensagemNegocioPlanoAula.OBRIGATORIO_SELECIONAR_OBJETIVOS_APRENDIZAGEM);
                 }                            
-
+                unitOfWork.IniciarTransacao();
+                
                 await repositorioPlanoAula.SalvarAsync(planoAula);
 
                 await mediator.Send(new ExcluirPendenciaAulaCommand(planoAula.AulaId, Dominio.TipoPendencia.PlanoAula));
 
-                // Salvar Objetivos
-                await repositorioObjetivosAula.LimparObjetivosAula(planoAula.Id);
-                if (planoAulaDto.ObjetivosAprendizagemComponente != null)
-                    foreach (var objetivoAprendizagem in planoAulaDto.ObjetivosAprendizagemComponente)
-                    {
+                // Salvar Objetivos aprendizagem
+                var objetivosAtuais =  (await mediator.Send(new ObterObjetivosAprendizagemAulaPorPlanoAulaIdQuery(planoAula.Id))).ToList();
+                var objetivosPropostos = planoAulaDto.ObjetivosAprendizagemComponente;
+                
+                if (objetivosPropostos != null && objetivosPropostos.Any())
+                {
+                    var objetivosIdParaIncluir = objetivosPropostos.Select(s => s.Id).Except(objetivosAtuais.Select(s => s.ObjetivoAprendizagemId));
+                    
+                    var objetivosIdParaExcluir = objetivosAtuais.Select(s => s.ObjetivoAprendizagemId).Except(objetivosPropostos.Select(s => s.Id));
+
+                    foreach (var objetivoAtual in objetivosAtuais.Where(w => objetivosIdParaExcluir.Contains(w.ObjetivoAprendizagemId)))
+                        await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
+                        
+                    foreach (var objetivoAprendizagem in objetivosPropostos.Where(w=> objetivosIdParaIncluir.Contains(w.Id)))
                         await repositorioObjetivosAula.SalvarAsync(new ObjetivoAprendizagemAula(planoAula.Id, objetivoAprendizagem.Id, objetivoAprendizagem.ComponenteCurricularId));
-                    }
+                }
+                else
+                {
+                    foreach (var objetivoAtual in objetivosAtuais)
+                        await ExcluirObjetivoAprendizagemAulaLogicamente(objetivoAtual);
+                }
+                
                 unitOfWork.PersistirTransacao();
 
                  var planoAulaDescricao = await MoverRemoverExcluidos(planoAulaResumidoDto.DescricaoNovo, planoAulaResumidoDto.DescricaoAtual,TipoArquivo.PlanoAula);
@@ -136,14 +184,38 @@ namespace SME.SGP.Aplicacao
                 }
 
                 planoAulaDto.Id = planoAula.Id;
+                planoAulaDto.AlteradoEm = planoAula.AlteradoEm;
+                planoAulaDto.AlteradoPor = planoAula.AlteradoPor;
+                planoAulaDto.AlteradoRf = planoAula.AlteradoRF;
+                planoAulaDto.CriadoEm = planoAula.CriadoEm;
+                planoAulaDto.CriadoPor = planoAula.CriadoPor;
+                planoAulaDto.CriadoRf = planoAula.CriadoRF;
 
                 return planoAulaDto;
             }
             catch (Exception ex)
             {
                 unitOfWork.Rollback();
+                await mediator.Send(new SalvarLogViaRabbitCommand("Não foi registrar o plano de aula.", LogNivel.Negocio, LogContexto.PlanoAula,ex.Message,"SGP",string.Empty,ex.StackTrace));
                 throw;
             }
+        }
+
+
+        private async Task ExcluirObjetivoAprendizagemAulaLogicamente(ObjetivoAprendizagemAula objetivoAtual)
+        {
+            objetivoAtual.Excluido = true;
+            await repositorioObjetivosAula.SalvarAsync(objetivoAtual);
+        }
+        private async Task ValidarAbrangenciaGestorEscolar(Usuario usuario, string turmaCodigo, bool ehTurmaHistorica)
+        {
+            var ehAbrangenciaUeOuDreOuSme = usuario.EhPerfilUE() || usuario.EhPerfilDRE() || usuario.EhPerfilSME();
+            
+            var abrangenciaTurmas = await mediator.Send(new ObterAbrangenciaTurmaQuery(turmaCodigo, usuario.Login,
+                usuario.PerfilAtual, ehTurmaHistorica, ehAbrangenciaUeOuDreOuSme));
+
+            if (abrangenciaTurmas == null)
+                throw new NegocioException(MensagemNegocioComuns.USUARIO_SEM_ACESSO_TURMA_RESPECTIVA_AULA);
         }
 
         private PlanoAula MapearParaDominio(PlanoAulaDto planoDto, PlanoAula planoAula = null)
@@ -152,9 +224,9 @@ namespace SME.SGP.Aplicacao
                 planoAula = new PlanoAula();
 
             planoAula.AulaId = planoDto.AulaId;
-            planoAula.Descricao = planoDto.Descricao?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAula.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaRecuperacao.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
-            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(ArquivoContants.PastaTemporaria, $"/{Path.Combine(TipoArquivo.PlanoAulaLicaoCasa.Name(), DateTime.Now.Year.ToString(), DateTime.Now.Month.ToString())}/");
+            planoAula.Descricao = planoDto.Descricao?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.RecuperacaoAula = planoDto.RecuperacaoAula?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
+            planoAula.LicaoCasa = planoDto.LicaoCasa?.Replace(configuracaoArmazenamentoOptions.Value.BucketTemp, configuracaoArmazenamentoOptions.Value.BucketArquivos);
 
             return planoAula;
         }
@@ -171,10 +243,10 @@ namespace SME.SGP.Aplicacao
             }
             return novaDescricao;
         }
-        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, Usuario usuario = null)
+        private async Task VerificaSeProfessorPodePersistirTurmaDisciplina(string codigoRf, string turmaId, string disciplinaId, DateTime dataAula, bool ehProfessorCj)
         {
-            if (!usuario.EhProfessorCj() && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
-                throw new NegocioException("Você não pode fazer alterações ou inclusões nesta turma, componente curricular e data.");
+            if (!ehProfessorCj && !await servicoUsuario.PodePersistirTurmaDisciplina(codigoRf, turmaId, disciplinaId, dataAula))
+                throw new NegocioException(MensagemNegocioComuns.Voce_nao_pode_fazer_alteracoes_ou_inclusoes_nesta_turma_componente_e_data);
         }
     }
 }

@@ -2,6 +2,7 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,31 +13,33 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDiarioBordo : RepositorioBase<DiarioBordo>, IRepositorioDiarioBordo
     {
-        public RepositorioDiarioBordo(ISgpContext conexao) : base(conexao) { }
+        public RepositorioDiarioBordo(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        { }
 
         public async Task<DiarioBordo> ObterPorAulaId(long aulaId, long componenteCurricularId)
         {
             var sql = @"select id, aula_id, devolutiva_id, planejamento, turma_id,
                     criado_em, criado_por, criado_rf, alterado_em, alterado_por, alterado_rf, inserido_cj
-                    from diario_bordo where aula_id = @aulaId and componente_curricular_id  = @componenteCurricularId; ";
+                    from diario_bordo 
+                    where aula_id = @aulaId 
+                      and componente_curricular_id = @componenteCurricularId
+                      and not excluido";
 
             var parametros = new { aulaId, componenteCurricularId };
 
             return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
         }
 
-        public async Task<DiarioBordo> ObterPorAulaId(long aulaId)
+        public async Task<IEnumerable<DiarioBordo>> ObterPorAulaId(long aulaId)
         {
-            var sql = @"select * from diario_bordo where aula_id = @aulaId";
-
-            var parametros = new { aulaId = aulaId };
-
-            return await database.QueryFirstOrDefaultAsync<DiarioBordo>(sql, parametros);
+            const string sql = @"select * from diario_bordo where aula_id = @aulaId and not excluido";
+            var parametros = new { aulaId };
+            return await database.QueryAsync<DiarioBordo>(sql, parametros);
         }
 
         public async Task<bool> ExisteDiarioParaAula(long aulaId)
         {
-            var query = "select 1 from diario_bordo where aula_id = @aulaId";
+            var query = "select 1 from diario_bordo where aula_id = @aulaId and not excluido";
 
             return (await database.Conexao.QueryAsync<int>(query, new { aulaId })).Any();
         }
@@ -53,8 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             var condicao = @"from diario_bordo db 
                          inner join aula a on a.id = db.aula_id
                          left join devolutiva d on db.devolutiva_id = d.id and not d.excluido
-                         where not db.excluido
-                           and d.id is null
+                         where not db.excluido                           
                            and a.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
@@ -62,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = $"select count(0) {condicao}";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { turmaCodigo, componenteCurricularCodigo = componenteCurricularCodigo, periodoInicio, periodoFim });
+                new { turmaCodigo, componenteCurricularCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
@@ -79,7 +81,7 @@ namespace SME.SGP.Dados.Repositorios
                                                     new
                                                     {
                                                         turmaCodigo,
-                                                        componenteCurricularCodigo = componenteCurricularCodigo,
+                                                        componenteCurricularCodigo,
                                                         periodoInicio,
                                                         periodoFim,
                                                         qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
@@ -96,8 +98,7 @@ namespace SME.SGP.Dados.Repositorios
                                , a.data_aula as item2 
                           from diario_bordo db
                          inner join aula a on a.id = db.aula_id
-                         where not db.excluido
-                           and db.devolutiva_id is null
+                         where not db.excluido                           
                            and a.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularCodigo
                            and a.data_aula between @periodoInicio and @periodoFim ";
@@ -111,19 +112,10 @@ namespace SME.SGP.Dados.Repositorios
                 new
                 {
                     turmaCodigo,
-                    componenteCurricularCodigo = componenteCurricularCodigo,
+                    componenteCurricularCodigo,
                     periodoInicio,
                     periodoFim
                 }, null, true, splitOn: "*", null, null, "Query Postgres");
-        }
-
-        public async Task<IEnumerable<DateTime>> ObterDatasPorIds(IEnumerable<long> diariosBordoIds)
-        {
-            var query = "select criado_em from diario_bordo db where id in @diariosBordoIds";
-
-            var resultado = await database.Conexao.QueryAsync<DateTime>(query, diariosBordoIds.ToArray());
-
-            return resultado;
         }
 
         public async Task AtualizaDiariosComDevolutivaId(long devolutivaId, IEnumerable<long> diariosBordoIds)
@@ -134,21 +126,21 @@ namespace SME.SGP.Dados.Repositorios
 
             await database.Conexao.ExecuteAsync(query, new { devolutivaId, ids });
         }
+        
         public async Task<IEnumerable<long>> ObterIdsPorDevolutiva(long devolutivaId)
         {
-            var query = "select id from diario_bordo where devolutiva_id = @devolutivaId";
+            var query = "select id from diario_bordo where devolutiva_id = @devolutivaId and not excluido";
 
             return await database.Conexao.QueryAsync<long>(query, new { devolutivaId });
         }
 
         public async Task<PaginacaoResultadoDto<DiarioBordoDevolutivaDto>> ObterDiariosBordoPorDevolutivaPaginado(long devolutivaId, Paginacao paginacao)
         {
-            var query = $"select count(0) from diario_bordo db where db.devolutiva_id = @devolutivaId ";
+            var query = "select count(0) from diario_bordo db where db.devolutiva_id = @devolutivaId and not db.excluido ";
 
-            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
-                new { devolutivaId });
+            var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query, new { devolutivaId });
 
-            query = $@"select db.planejamento as DescricaoPlanejamento
+            query = @"select db.planejamento as DescricaoPlanejamento
                             , a.aula_cj as AulaCj
                             , a.data_aula as Data
                             , db.inserido_cj 
@@ -157,22 +149,22 @@ namespace SME.SGP.Dados.Repositorios
                        inner join aula a on a.id = db.aula_id
                        left join devolutiva d on db.devolutiva_id  =d.id
                        where db.devolutiva_id = @devolutivaId
+                       and not db.excluido
                       order by a.data_aula
                       offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
             return new PaginacaoResultadoDto<DiarioBordoDevolutivaDto>()
             {
                 Items = await database.Conexao.QueryAsync<DiarioBordoDevolutivaDto>(query,
-                                                    new
-                                                    {
-                                                        devolutivaId,
-                                                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
-                                                        qtdeRegistros = paginacao.QuantidadeRegistros
-                                                    }),
+                    new
+                    {
+                        devolutivaId,
+                        qtdeRegistrosIgnorados = paginacao.QuantidadeRegistrosIgnorados,
+                        qtdeRegistros = paginacao.QuantidadeRegistros
+                    }),
                 TotalRegistros = totalRegistrosDaQuery,
                 TotalPaginas = (int)Math.Ceiling((double)totalRegistrosDaQuery / paginacao.QuantidadeRegistros)
             };
-
         }
 
         public async Task ExcluirReferenciaDevolutiva(long devolutivaId)
@@ -219,7 +211,9 @@ namespace SME.SGP.Dados.Repositorios
                       t.ue_id = ue.id 
                      inner join dre on 
                       ue.dre_id = dre.id 
-                     where db.id =  @diarioBordoId";
+                     where db.id =  @diarioBordoId
+                     and not db.excluido";
+
             return (await database.QueryAsync<DiarioBordo, Aula, Turma, Ue, Dre, DiarioBordo>(query, (diarioBordo, aula, turma, ue, dre) =>
             {
                 ue.AdicionarDre(dre);
@@ -236,7 +230,7 @@ namespace SME.SGP.Dados.Repositorios
 
             condicao.AppendLine(@"from aula a
                          inner join turma t on a.turma_id = t.turma_id
-                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo
+                         left join diario_bordo db on a.id = db.aula_id and db.componente_curricular_id = @componenteCurricularFilhoCodigo and not db.Excluido
                          where t.id = @turmaId
                            and a.disciplina_id = @componenteCurricularPaiCodigo 
                            and not a.excluido 
@@ -248,19 +242,18 @@ namespace SME.SGP.Dados.Repositorios
             if (periodoFim.HasValue)
                 condicao.AppendLine(" and a.data_aula::date <= @periodoFim ");
 
-
             if (paginacao == null || (paginacao.QuantidadeRegistros == 0 && paginacao.QuantidadeRegistrosIgnorados == 0))
                 paginacao = new Paginacao(1, 10);
 
-            var query = $"select count(0) from (select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";
+            var query = $"select count(0) from (select distinct on (a.id, a.data_aula, db.componente_curricular_id) db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, db.inserido_cj InseridoCJ, false Pendente {condicao}) as DiarioBordo";
 
             var totalRegistrosDaQuery = await database.Conexao.QueryFirstOrDefaultAsync<int>(query,
                new { turmaId, componenteCurricularPaiCodigo, componenteCurricularFilhoCodigo, periodoInicio, periodoFim });
 
             var offSet = "offset @qtdeRegistrosIgnorados rows fetch next @qtdeRegistros rows only";
 
-            query = $"select db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, " +
-                    $"db.inserido_cj InseridoCJ, " +
+            query = "select distinct on (a.id, a.data_aula, db.componente_curricular_id) db.id, a.data_aula DataAula, db.criado_rf CodigoRf, db.criado_por Nome, a.tipo_aula Tipo, a.id AulaId, " +
+                    "db.inserido_cj InseridoCJ, " +
                     $"case when db.id is null then true else false end Pendente {condicao} order by dataaula desc {offSet} ";
 
             return new PaginacaoResultadoDto<DiarioBordoResumoDto>()
@@ -529,5 +522,57 @@ namespace SME.SGP.Dados.Repositorios
                 }, splitOn: "id");
         }
 
+        public async Task<IEnumerable<DiarioBordoSemDevolutivaDto>> DiarioBordoSemDevolutiva(long turmaId, string componenteCodigo)
+        {
+            var sql = $@"WITH DiarioBordo AS(
+                            SELECT 
+	                            min(a.data_aula) AS DataAula,
+	                            a.tipo_calendario_id AS TipoCalendarioId
+                            FROM
+	                            diario_bordo db
+                            INNER JOIN aula a ON
+	                            db.aula_id = a.id
+                            WHERE
+	                            db.devolutiva_id ISNULL
+	                            AND db.turma_id = @turmaId
+	                            AND a.disciplina_id = @componenteCodigo
+                                AND NOT db.excluido
+                            GROUP BY
+	                            a.tipo_calendario_id
+                            )
+                            SELECT 
+	                            pe.bimestre,
+	                            pe.periodo_inicio AS PeriodoInicio,
+	                            pe.periodo_fim  AS PeriodoFim,
+	                            db.DataAula
+                            FROM
+	                            periodo_escolar pe
+                            inner JOIN DiarioBordo db ON
+	                            pe.tipo_calendario_id = db.TipoCalendarioId
+                                WHERE pe.periodo_inicio <= now() ";
+
+            return await database.Conexao.QueryAsync<DiarioBordoSemDevolutivaDto>(sql, new { turmaId, componenteCodigo });
+        }
+
+        public async Task<DiarioBordoDetalhesParaPendenciaDto> ObterDadosDiarioBordoParaPendenciaPorid(long diarioBordoId)
+        {
+            var sql = $@"select db.id, 
+                               u.nome as nomeEscola, 
+	                           coalesce(cc.descricao_sgp, cc.descricao) as descricaocomponenteCurricular,
+                               a.professor_rf as ProfessorRf,
+                               db.componente_curricular_id as componenteCurricularId, db.turma_id as turmaId, 
+                               db.aula_id as aulaId, a.data_aula as dataAula,
+                               t.nome nomeTurma, t.turma_id as codigoTurma,
+                               t.modalidade_codigo as codModalidadeTurma, pe.id as periodoEscolarId
+                              from diario_bordo db 
+                        inner join turma t on t.id = db.turma_id 
+                        inner join aula a on a.id = db.aula_id 
+                        inner join ue u on u.ue_id  = a.ue_id 
+                        inner join componente_curricular cc on cc.id = db.componente_curricular_id
+                        inner join periodo_escolar pe on pe.tipo_calendario_id = a.tipo_calendario_id and a.data_aula between pe.periodo_inicio and pe.periodo_fim
+                        where db.id = @diariobordo; ";
+           
+            return await database.Conexao.QueryFirstOrDefaultAsync<DiarioBordoDetalhesParaPendenciaDto>(sql, new { diariobordo = diarioBordoId });
+        }
     }
 }

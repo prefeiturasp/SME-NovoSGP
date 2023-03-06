@@ -61,7 +61,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task IncluirPendenciaCP(IGrouping<(string TurmaCodigo, long TurmaId), TurmaEComponenteDto> turmaSemAvaliacao, IEnumerable<ComponenteCurricularDto> componentesCurriculares, PeriodoFechamentoBimestre periodoEncerrando)
         {
-            var professoresTurma = await servicoEol.ObterProfessoresTitularesDisciplinas(turmaSemAvaliacao.Key.TurmaCodigo);
+            var professoresTurma = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turmaSemAvaliacao.Key.TurmaCodigo));
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorIdQuery(turmaSemAvaliacao.Key.TurmaId));
 
             var pendenciaId = await ObterPendenciaIdDaTurma(turmaSemAvaliacao.Key.TurmaId);
@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var componenteCurricularNaTurma in turmaSemAvaliacao)
             {
-                var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId);
+                var professorComponente = professoresTurma.FirstOrDefault(c => c.DisciplinasId.Contains(componenteCurricularNaTurma.ComponenteCurricularId));
                 var componenteCurricular = componentesCurriculares.FirstOrDefault(c => c.Codigo == componenteCurricularNaTurma.ComponenteCurricularId.ToString());
 
                 if (!fechamentosDaTurma.Any(a=> a.DisciplinaId == componenteCurricularNaTurma.ComponenteCurricularId && a.PeriodoEscolarId == periodoEncerrando.PeriodoEscolarId))
@@ -101,7 +101,7 @@ namespace SME.SGP.Aplicacao
             var descricao = $"<i>Os componentes curriculares abaixo não possuem nenhuma avaliação cadastrada no {bimestre}º bimestre {escolaUe}</i>";
             var instrucao = "Oriente os professores a cadastrarem as avaliações.";
 
-            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, turma.UeId, descricao, instrucao, titulo));
+            return await mediator.Send(new SalvarPendenciaCommand(TipoPendencia.AusenciaDeAvaliacaoCP, turma.UeId, turma.Id, descricao, instrucao, titulo));
         }
 
         private async Task<bool> ExistePendenciaProfessor(long pendenciaId, long turmaId, string componenteCurricularId, string professorRf, long periodoEscolarId)

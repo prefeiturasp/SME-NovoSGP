@@ -11,7 +11,8 @@ namespace SME.SGP.Infra
         public long Id { get; set; }
         public string Codigo { get; set; }
         public int CodigoModalidade { get; set; }
-        public int Ano { get; set; }
+        public string AnoTurma { get; set; }
+        public int AnoLetivo { get; set; }
 
         public string ModalidadeTurmaNome
         {

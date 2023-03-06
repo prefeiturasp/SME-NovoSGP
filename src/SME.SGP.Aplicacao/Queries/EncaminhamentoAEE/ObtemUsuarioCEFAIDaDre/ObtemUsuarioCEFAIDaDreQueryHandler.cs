@@ -23,7 +23,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<long>> Handle(ObtemUsuarioCEFAIDaDreQuery request, CancellationToken cancellationToken)
         {
-            var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDRE, new List<Guid>() { Perfis.PERFIL_CEFAI }));
+            var funcionarios = (await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(request.CodigoDRE, new List<Guid>() { Perfis.PERFIL_CEFAI }))).Select(c => c.Login);
 
             return await ObterUsuarios(funcionarios);
         }

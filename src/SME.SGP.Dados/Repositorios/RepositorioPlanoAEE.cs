@@ -1,21 +1,15 @@
 using Dapper;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Entidades;
-using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
-using SME.SGP.Infra.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using SME.SGP.Infra.Interface;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioPlanoAEE : RepositorioBase<PlanoAEE>, IRepositorioPlanoAEE
     {
-        public RepositorioPlanoAEE(ISgpContext database) : base(database)
+        public RepositorioPlanoAEE(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
@@ -27,5 +21,14 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.ExecuteAsync(query, new { versaoId, situacao });
         }        
+
+        public async Task<int> AtualizarTurmaParaRegularPlanoAEE(long planoAEEId, long turmaId)
+        {
+            var query = @"update plano_aee 
+                            set turma_id = @turmaId 
+                            where id = @planoAEEId";
+
+            return await database.Conexao.ExecuteAsync(query, new { planoAEEId, turmaId });                  
+        }
     }
 }

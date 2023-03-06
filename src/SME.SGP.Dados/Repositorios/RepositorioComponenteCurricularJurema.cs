@@ -1,14 +1,14 @@
-﻿using Dapper;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using System.Collections.Generic;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioComponenteCurricularJurema : RepositorioBase<ComponenteCurricularJurema>, IRepositorioComponenteCurricularJurema
     {
-        public RepositorioComponenteCurricularJurema(ISgpContext conexao) : base(conexao)
+        public RepositorioComponenteCurricularJurema(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

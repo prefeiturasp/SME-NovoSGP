@@ -14,20 +14,19 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IServicoEol servicoEol;
         private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
-        private readonly IRepositorioCiclo repositorioCiclo;
+        private readonly IMediator mediator;
 
-        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IRepositorioCiclo repositorioCiclo)
+        public ObterTipoNotaPorTurmaQueryHandler(IServicoEol  servicoEol, IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor, IMediator mediator)
         {
             this.servicoEol = servicoEol ?? throw new ArgumentNullException(nameof(servicoEol));
             this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
-            this.repositorioCiclo = repositorioCiclo ?? throw new ArgumentNullException(nameof(repositorioCiclo));
+            this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<TipoNota> Handle(ObterTipoNotaPorTurmaQuery request, CancellationToken cancellationToken)
         {
             //TODO: TIPO DE TURMA NÃO EXISTE NO SGP, É NECESSÁRIO SEMPRE CONSULTAR O EOL.....
-            var turmaEOL = await servicoEol
-                .ObterDadosTurmaPorCodigo(request.Turma.CodigoTurma);
+            var turmaEOL = await mediator.Send(new ObterDadosTurmaEolPorCodigoQuery(request.Turma.CodigoTurma));
 
             // Para turma tipo 2 o padrão é nota.
             if (turmaEOL.TipoTurma == TipoTurma.EdFisica)
@@ -37,14 +36,13 @@ namespace SME.SGP.Aplicacao
             if (request.Turma != null)
                 anoCicloModalidade = request.Turma.Ano == AnoCiclo.Alfabetizacao.Name() ? AnoCiclo.Alfabetizacao.Description() : request.Turma.Ano;            
 
-            var ciclo = repositorioCiclo
-                .ObterCicloPorAnoModalidade(anoCicloModalidade, request.Turma.ModalidadeCodigo);
+            var ciclo = await mediator.Send(new ObterCicloPorAnoModalidadeQuery(anoCicloModalidade, request.Turma.ModalidadeCodigo));
 
             if (ciclo == null)
                 throw new NegocioException("Não foi encontrado o ciclo da turma informada");
 
-            return repositorioNotaTipoValor
-                .ObterPorCicloIdDataAvalicacao(ciclo.Id, request.DataReferencia)?.TipoNota ?? TipoNota.Nota;            
+            var retorno = await mediator.Send(new ObterNotaTipoPorCicloIdDataAvalicacaoQuery(ciclo.Id, request.DataReferencia));
+            return retorno?.TipoNota ?? TipoNota.Nota;            
         }
     }
 }

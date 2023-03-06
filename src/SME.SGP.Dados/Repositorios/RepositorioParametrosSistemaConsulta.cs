@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,33 +13,36 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioParametrosSistemaConsulta : RepositorioBase<ParametrosSistema>, IRepositorioParametrosSistemaConsulta
     {
-        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioParametrosSistemaConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
-        public async Task<IEnumerable<KeyValuePair<string, string>>> ObterChaveEValorPorTipoEAno(TipoParametroSistema tipo, int ano)
+        public async Task<IEnumerable<ParametroSistemaRetornoDto>> ObterChaveEValorPorTipoEAno(TipoParametroSistema tipo, int ano)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("select nome, valor");
             query.AppendLine("from parametros_sistema");
             query.AppendLine("where ativo and tipo = @tipo");
             query.AppendLine("and ano = @ano");
 
-            var resultado = await database.Conexao.QueryAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo, ano });
-
-            return resultado
-                .ToDictionary(pair => pair.Key, pair => pair.Value);
+            return await database.Conexao.QueryAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo, ano });
         }
 
         public async Task<KeyValuePair<string, string>?> ObterUnicoChaveEValorPorTipo(TipoParametroSistema tipo)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("select nome as Key, valor as Value");
+            query.AppendLine("select nome, valor");
             query.AppendLine("from parametros_sistema");
             query.AppendLine("where ativo and tipo = @tipo");
 
-            return await database.Conexao
-                .QueryFirstAsync<KeyValuePair<string, string>>(query.ToString(), new { tipo });
+            var resultado = await database.Conexao
+                .QueryFirstAsync<ParametroSistemaRetornoDto>(query.ToString(), new { tipo });
+
+            if (resultado != null)
+                return new KeyValuePair<string, string>(resultado.Nome, resultado.Valor);
+
+            return null;
+            
         }
 
         public async Task<IEnumerable<ParametrosSistema>> ObterPorTiposAsync(long[] tipos)

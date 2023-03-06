@@ -25,7 +25,8 @@ namespace SME.SGP.Infra
         }
 
         public string NomeSocialAluno { get; set; }
-        public int NumeroAlunoChamada { get; set; }
+        public int? NumeroAlunoChamada { get; set; }
+        public int ObterNumeroAlunoChamada() => NumeroAlunoChamada.HasValue ? NumeroAlunoChamada.Value : 0;
         public char? ParecerConclusivo { get; set; }
         public bool PossuiDeficiencia { get; set; }
         public string SituacaoMatricula { get; set; }
@@ -36,8 +37,9 @@ namespace SME.SGP.Infra
         public string NomeResponsavel { get; set; }
         public string TipoResponsavel { get; set; }
         public string CelularResponsavel { get; set; }
-        public DateTime DataAtualizacaoContato { get; set; }
+        public DateTime? DataAtualizacaoContato { get; set; }
         public string CodigoEscola { get; set; }
+        public int CodigoTipoTurma { get; set; }
 
         public bool Inativo
         {
@@ -83,7 +85,9 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         public bool EstaAtivo(DateTime dataBase) => TratarExcepcionalmenteSituacaoAtivo(dataBase) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
                                                     (SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataMatricula.Date <= dataBase.Date) ||
-                                                    (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date);
+                                                    (!SituacoesAtiva.Contains(CodigoSituacaoMatricula) && DataSituacao.Date >= dataBase.Date) ||
+                                                    ChecarSituacaoConcluidoEMatriculaNaMesmaData(dataBase);
+
         /// <summary>
         /// Verifica se o aluno está ativo para Notas e Frequencia
         /// </summary>
@@ -91,8 +95,8 @@ namespace SME.SGP.Infra
         /// <param name="periodoFim">Data a se considerar para verificar a situação do aluno no periodo, Ex: Data do fim do bimestre</param>
         /// <returns></returns>
         public bool EstaAtivo(DateTime periodoInicio, DateTime periodoFim) => TratarExcepcionalmenteSituacaoAtivo(periodoFim) ? SituacoesAtiva.Contains(CodigoSituacaoMatricula) :
-                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) ||
-                                                    (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
+                                                    SituacoesAtiva.Contains(CodigoSituacaoMatricula) && (DataSituacao.Date <= periodoInicio.Date || (DataSituacao.Date > periodoFim.Date && DataMatricula.Date < periodoInicio.Date)) 
+                                                    || (DataSituacao.Date >= periodoInicio.Date && DataSituacao.Date <= periodoFim.Date);
 
         /// <summary>
         /// Verifica se o aluno está inativo
@@ -140,6 +144,26 @@ namespace SME.SGP.Infra
         /// <returns></returns>
         private bool TratarExcepcionalmenteSituacaoAtivo(DateTime dataReferencia)
             => DataMatricula.Year.Equals(DataSituacao.Year) && DataMatricula.Year > dataReferencia.Year;
-        
+
+
+        /// <summary>
+        /// Verifica se o aluno esteve na turma mas por algum motivo a sua matrícula foi alterada pela mesma data da conclusão de seus estudos na turma.
+        /// </summary>
+        /// <param name="dataReferencia">Data de referência utilzada para verificar a posterioridade da situação com o período bimestral </param>
+        /// <returns></returns>
+        private bool ChecarSituacaoConcluidoEMatriculaNaMesmaData(DateTime dataReferencia)
+            => DataMatricula.Date > dataReferencia && DataMatricula.Date.Equals(DataSituacao.Date) && CodigoSituacaoMatricula.Equals(SituacaoMatriculaAluno.Concluido);
+
+        public bool VerificaSeMatriculaEstaDentroDoPeriodoSelecionado(DateTime dataReferencia)
+            => DataMatricula.Date <= dataReferencia;
+
+        public bool VerificaSePodeEditarAluno(PeriodoEscolar ultimoPeriodoEscolar)
+        {
+            if (!PodeEditarNotaConceito() && ultimoPeriodoEscolar != null)
+                return EstaAtivo(ultimoPeriodoEscolar.PeriodoFim);
+
+            return PodeEditarNotaConceito();
+        }
+
     }
 }

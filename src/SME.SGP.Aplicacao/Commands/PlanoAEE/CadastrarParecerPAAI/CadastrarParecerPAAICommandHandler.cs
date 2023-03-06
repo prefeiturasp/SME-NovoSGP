@@ -31,7 +31,7 @@ namespace SME.SGP.Aplicacao.Commands
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoIdQuery());
 
-            if (planoAEE.ResponsavelId != usuarioLogado)
+            if (planoAEE.ResponsavelPaaiId != usuarioLogado)
                 throw new NegocioException("O usuário atual não é o PAAI responsável por este Plano AEE");
 
             planoAEE.Situacao = Dominio.Enumerados.SituacaoPlanoAEE.Validado;

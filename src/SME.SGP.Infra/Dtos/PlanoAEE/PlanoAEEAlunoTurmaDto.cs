@@ -19,6 +19,11 @@ namespace SME.SGP.Infra
         public DateTime CriadoEm { get; set; }
         public int Versao { get; set; }
         public DateTime DataVersao { get; set; }
+        public string RfReponsavel { get; set; }
+        public string NomeReponsavel { get; set; }
+        public string RfPaaiReponsavel { get; set; }
+        public string NomePaaiReponsavel { get; set; }
+        public long PlanoAeeVersaoId { get; set; }
 
         public string ObterVersaoPlano()
             => $"v{Versao} ({DataVersao:dd/MM/yyyy})";

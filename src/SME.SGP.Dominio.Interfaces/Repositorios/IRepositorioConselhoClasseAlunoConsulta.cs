@@ -7,7 +7,6 @@ namespace SME.SGP.Dominio.Interfaces
 {
     public interface IRepositorioConselhoClasseAlunoConsulta : IRepositorioBase<ConselhoClasseAluno>
     {
-        Task<ConselhoClasseAluno> ObterPorFechamentoAsync(long fechamentoTurmaId, string alunoCodigo);
         Task<ConselhoClasseAluno> ObterPorFiltrosAsync(string codigoTurma, string codigoAluno, int bimestre, bool EhFinal);
         Task<ConselhoClasseAluno> ObterPorConselhoClasseAlunoCodigoAsync(long conselhoClasseId, string alunoCodigo);
         Task<ConselhoClasseAluno> ObterPorPeriodoAsync(string alunoCodigo, long turmaId, long periodoEscolarId);
@@ -16,5 +15,8 @@ namespace SME.SGP.Dominio.Interfaces
         Task<ConselhoClasseAluno> ObterConselhoClasseAlunoPorId(long conselhoClasseAlunoId);
         Task<long> ObterConselhoClasseAlunoIdAsync(long conselhoClasseId, string alunoCodigo);
         Task<IEnumerable<ConselhoClasseFechamentoAlunoDto>> ObterConselhoClasseAlunosPorTurma(string turmaCodigo);
+
+        Task<IEnumerable<NotaConceitoFechamentoConselhoFinalDto>> ObterNotasConselhoAlunoTurma(string alunoCodigo,
+            string[] turmaCodigo, long? periodoEscolarId = null);
     }
 }

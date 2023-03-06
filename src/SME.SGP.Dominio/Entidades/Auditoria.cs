@@ -8,9 +8,10 @@ namespace SME.SGP.Dominio
         public long Chave { get; set; }
         public DateTime Data { get; set; }
         public string Entidade { get; set; }
-        public long Id { get; set; }
+        public Guid? Id { get; set; }
         public string RF { get; set; }
         public string Usuario { get; set; }
         public Guid? Perfil { get; set; }
+        public string Administrador { get; set; }
     }
 }

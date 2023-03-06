@@ -154,14 +154,13 @@ namespace SME.SGP.Dados.Repositorios
                         from
 	                        componente_curricular WHERE id = @id;";
             return (await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id }));
-        }
-
+        }        
         public async Task<bool> LancaNota(long id)
         {
             return await database.Conexao.QueryFirstOrDefaultAsync<bool>("select permite_lancamento_nota from componente_curricular where id = @id", new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, long turmaId, int? bimestre, string codigoAluno)
+        public async Task<IEnumerable<ComponenteCurricularDto>> ObterComponentesComNotaDeFechamentoOuConselhoPorAlunoEBimestre(int anoLetivo, string[] turmasId, int? bimestre, string codigoAluno)
         {
             var query = $@"	                        
                            select
@@ -200,7 +199,7 @@ namespace SME.SGP.Dados.Repositorios
                            {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId
+                           and t.turma_id = ANY(@turmasId)
                            union all
                            
                            select 
@@ -235,9 +234,9 @@ namespace SME.SGP.Dados.Repositorios
                             {(bimestre.HasValue && bimestre.Value > 0 ? " pe.bimestre = @bimestre " : " pe.bimestre is null ")} 
                            and cca.aluno_codigo = @codigoAluno
                            and t.ano_letivo = @anoLetivo
-                           and ft.turma_id = @turmaId ) x   ";
+                           and t.turma_id = ANY(@turmasId)) x   ";
 
-            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmaId, codigoAluno, }));
+            return (await database.Conexao.QueryAsync<ComponenteCurricularDto>(query, new { bimestre, anoLetivo, turmasId, codigoAluno, }));
         }
 
         public async Task<string> ObterDescricaoPorId(long id)
@@ -261,11 +260,11 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
 
-        public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterDescricaoPorIds(long[] ids)
+        public async Task<IEnumerable<ComponenteCurricularDescricaoDto>> ObterDescricaoPorIds(long[] ids)
         {
             var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil from componente_curricular where id = Any(@ids)";
 
-            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
+            return await database.Conexao.QueryAsync<ComponenteCurricularDescricaoDto>(query, new { ids },queryName: "ObterDescricaoPorIds");
         }
 
         public async Task<string> ObterCodigoComponentePai(long componenteCurricularId)
@@ -273,6 +272,13 @@ namespace SME.SGP.Dados.Repositorios
             var query = @"select coalesce(componente_curricular_pai_id,id) from componente_curricular where id = @componenteCurricularId";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { componenteCurricularId });
+        }
+
+        public async Task<IEnumerable<ComponenteCurricularSimplesDto>> ObterComponentesSimplesPorIds(long[] ids)
+        {
+            var query = @"select id, coalesce(descricao_sgp, descricao) as descricao, descricao_infantil as descricaoinfantil, permite_lancamento_nota as permiteLanctoNota from componente_curricular where id = Any(@ids)";
+
+            return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterComponentesSimplesPorIds");
         }
     }
 }

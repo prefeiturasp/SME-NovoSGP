@@ -20,10 +20,17 @@ namespace SME.SGP.Aplicacao
         public async Task<PaginacaoResultadoDto<UsuarioEolRetornoDto>> Executar(FiltroPesquisaFuncionarioDto request)
         {
             var usuario = await mediator.Send(new ObterUsuarioLogadoQuery());
-            var codigos = await ObterCodigos(request.CodigoTurma, request.CodigoDRE, usuario);
-            var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario.PerfilAtual);
 
-            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigos.codigoDRE, codigos.codigoUE, usuario: usuario));
+            var codigoDre = request.CodigoDRE;
+            var codigoUe = request.CodigoUE;
+
+            if (!string.IsNullOrEmpty(request.CodigoTurma))
+                (codigoDre, codigoUe) = await ObterCodigos(request.CodigoTurma, usuario);
+            
+            var funcaoAtividadePesquisa = ObterFuncaoAtividadeAPesquisarPorPerfil(usuario, request.EhRelatorio);
+
+            var funcionarios = await mediator.Send(new PesquisaFuncionariosPorDreUeQuery(request.CodigoRF, request.Nome, codigoDre, codigoUe, usuario: usuario));
+
             var limite = request.Limite > 0 ? request.Limite : 10;
 
             return new PaginacaoResultadoDto<UsuarioEolRetornoDto>()
@@ -37,7 +44,7 @@ namespace SME.SGP.Aplicacao
             };
         }
 
-        private async Task<(string codigoDRE, string codigoUE)> ObterCodigos(string codigoTurma, string codigoDRE, Usuario usuario)
+        private async Task<(string codigoDRE, string codigoUE)> ObterCodigos(string codigoTurma, Usuario usuario)
         {
             var turma = await mediator.Send(new ObterTurmaComUeEDrePorCodigoQuery(codigoTurma));
             return usuario.EhCoordenadorCEFAI() ?
@@ -46,7 +53,10 @@ namespace SME.SGP.Aplicacao
         }
 
         // CEFAI Pesquisa por perfil PAAI pois a abrangencia é DRE, outros perfis pesquisa PAEE com abrangencia UE
-        private int ObterFuncaoAtividadeAPesquisarPorPerfil(Guid perfilAtual)
-            => perfilAtual == Perfis.PERFIL_CEFAI ? FUNCAO_ATIVIDADE_PAAI : FUNCAO_ATIVIDADE_PAEE;
+        private int ObterFuncaoAtividadeAPesquisarPorPerfil(Usuario usuario, bool ehRelatorio)
+            => usuario.PerfilAtual == Perfis.PERFIL_CEFAI || EhPerfilSME_DRE_Relatorio(usuario, ehRelatorio) ? FUNCAO_ATIVIDADE_PAAI : FUNCAO_ATIVIDADE_PAEE;
+
+        private bool EhPerfilSME_DRE_Relatorio(Usuario usuario, bool ehRelatorio)
+            => ehRelatorio && (usuario.EhPerfilSME() || usuario.EhPerfilDRE());
     }
 }

@@ -15,7 +15,6 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RecuperacaoParalelaObjetivoDesenvolvimentoPlanoMap());
                config.AddMap(new MatrizSaberMap());
                config.AddMap(new MatrizSaberPlanoMap());
-               config.AddMap(new AuditoriaMap());
                config.AddMap(new CicloMap());
                config.AddMap(new CicloAnoMap());
                config.AddMap(new PlanoAnualMap());
@@ -108,6 +107,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new RelatorioSemestralAlunoSecaoMap());
                config.AddMap(new SecaoRelatorioSemestralPAPMap());
                config.AddMap(new ConselhoClasseParecerAnoMap());
+               config.AddMap(new ConselhoClasseParecerMap());
                config.AddMap(new ConselhoClasseParecerConclusivoMap());
                config.AddMap(new ObjetivoAprendizagemMap());
                config.AddMap(new PlanoAnualTerritorioSaberMap());
@@ -134,6 +134,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new HistoricoNotaFechamentoMap());
                config.AddMap(new HistoricoNotaConselhoClasseMap());
                config.AddMap(new ClassificacaoDocumentoMap());
+               config.AddMap(new DocumentoArquivoMap());
                config.AddMap(new TipoDocumentoMap());
                config.AddMap(new DocumentoMap());
                config.AddMap(new PendenciaUsuarioMap());
@@ -143,6 +144,7 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new QuestionarioMap());
                config.AddMap(new QuestaoMap());
                config.AddMap(new OpcaoRespostaMap());
+               config.AddMap(new OpcaoQuestaoComplementarMap());
                config.AddMap(new SecaoEncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEEMap());
                config.AddMap(new EncaminhamentoAEESecaoMap());
@@ -166,7 +168,8 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new NotificacaoPlanoAEEMap());
                config.AddMap(new OcorrenciaTipoMap());
                config.AddMap(new OcorrenciaMap());
-               config.AddMap(new OcorrenciaAlunoMap());               
+               config.AddMap(new OcorrenciaAlunoMap());
+               config.AddMap(new OcorrenciaServidorMap());
                config.AddMap(new AcompanhamentoAlunoMap());
                config.AddMap(new AcompanhamentoAlunoSemestreMap());
                config.AddMap(new AcompanhamentoAlunoFotoMap());
@@ -204,6 +207,14 @@ namespace SME.SGP.Dados.Mapeamentos
                config.AddMap(new ConselhoClasseAlunoRecomendacaoMap());
                config.AddMap(new ConsolidacaoFrequenciaAlunoMensalMap());
                config.AddMap(new FrequenciaTurmaEvasaoMap());
+               config.AddMap(new SuporteUsuarioMap());
+               config.AddMap(new PendenciaDevolutivaMap());
+               config.AddMap(new SecaoEncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPAMap());
+               config.AddMap(new EncaminhamentoNAAPASecaoMap());
+               config.AddMap(new QuestaoEncaminhamentoNAAPAMap());
+               config.AddMap(new RespostaEncaminhamentoNAAPAMap());
+
                config.ForDommel();
            });
         }

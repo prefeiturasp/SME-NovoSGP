@@ -128,7 +128,7 @@ namespace SME.SGP.Aplicacao
                 .Where(ct => ct.Regencia && componentesCurriculares.Contains(ct.Codigo));
 
             var dadosTurmaEol = await mediator
-                .Send(new ObterDadosTurmaEolQuery(turma.CodigoTurma));
+                .Send(new ObterDadosTurmaEolPorCodigoQuery(turma.CodigoTurma));
 
             componentesConsiderados.ToList().ForEach(cc => dadosTurmaComponente.Add(new DadosTurmaAulasAutomaticaDto()
             {

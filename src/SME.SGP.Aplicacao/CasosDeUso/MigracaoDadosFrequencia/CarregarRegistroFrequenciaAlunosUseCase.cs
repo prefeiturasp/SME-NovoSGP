@@ -34,7 +34,8 @@ namespace SME.SGP.Aplicacao
                             CriadoEm = DateTime.Today,
                             CriadoPor = "Sistema",
                             CriadoRF = "0",
-                            Valor = (int)TipoFrequencia.C
+                            Valor = (int)TipoFrequencia.C,
+                            AulaId = dadosAula.AulaId
                         };
                         frequenciasPersistir.Add(registro);
                     }
@@ -42,7 +43,7 @@ namespace SME.SGP.Aplicacao
             }
 
             if (frequenciasPersistir.Any())
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.SincronizarDadosAlunosFrequenciaMigracao, new ParametroFrequenciasPersistirDto(frequenciasPersistir), Guid.NewGuid(), null));
 
             return true;
         }

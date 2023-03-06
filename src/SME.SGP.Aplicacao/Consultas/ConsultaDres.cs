@@ -1,7 +1,9 @@
 ﻿using SME.SGP.Aplicacao.Integracoes;
+using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Dto;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,16 +45,56 @@ namespace SME.SGP.Aplicacao
             return lista;
         }
 
-        public async Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId)
+        public async Task<IEnumerable<UnidadeEscolarDto>> ObterEscolasSemAtribuicao(string dreId, int tipoResponsavel)
         {
-            var login = servicoUsuario.ObterLoginAtual();
-            var perfil = servicoUsuario.ObterPerfilAtual();
+            var uesParaAtribuicao = await repositorioSupervisorEscolaDre.ObterListaUEsParaNovaAtribuicaoPorCodigoDre(dreId);
+            if (!uesParaAtribuicao.Any())
+                return new List<UnidadeEscolarDto>() { new UnidadeEscolarDto() };
 
-            var escolasPorDre = await repositorioAbrangencia.ObterUes(dreId, login, perfil);
+            var listaUesParaAtribuicao = AdicionarTiposNaoExistente(uesParaAtribuicao.ToList(), tipoResponsavel);
 
-            var supervisoresEscolasDres = repositorioSupervisorEscolaDre.ObtemPorDreESupervisor(dreId, string.Empty);
+            return TrataEscolasSemSupervisores(listaUesParaAtribuicao);
+        }
 
-            return TrataEscolasSemSupervisores(escolasPorDre, supervisoresEscolasDres);
+        private List<UnidadeEscolarSemAtribuicaolDto> AdicionarTiposNaoExistente(List<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao, int tipoResponsavel)
+        {
+            var listaDeRemovida = new List<UnidadeEscolarSemAtribuicaolDto>();
+            var novaLista = new List<UnidadeEscolarSemAtribuicaolDto>();
+            var tipos = Enum.GetValues(typeof(TipoResponsavelAtribuicao)).Cast<TipoResponsavelAtribuicao>()
+            .Select(d => new { codigo = (int)d }).Select(x => x.codigo);
+
+
+            foreach (var ue in uesParaAtribuicao.ToList())
+            {
+                var codUE = ue.Codigo;
+                var uesParaAtribuicaoDto = uesParaAtribuicao.Where(x => x.Codigo == codUE).ToList();
+                var quantidadeTipos = uesParaAtribuicaoDto.Select(t => (int)t.TipoAtribuicao);
+                if (quantidadeTipos.Count() < tipos.Count())
+                {
+                    var naotemTipo = tipos.Except(quantidadeTipos).ToList();
+                    foreach (var tipo in naotemTipo)
+                    {
+                        var registro = new UnidadeEscolarSemAtribuicaolDto
+                        {
+                            Codigo = ue.Codigo,
+                            UeNome = ue.UeNome,
+                            TipoEscola = ue.TipoEscola,
+                            TipoAtribuicao = (TipoResponsavelAtribuicao)tipo,
+                            AtribuicaoExcluida = true
+                        };
+                        uesParaAtribuicao.Add(registro);
+                    }
+                }
+                var listaAtribuicaoRemover = uesParaAtribuicaoDto.FindAll(atribuicao => atribuicao.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel);
+                if (listaAtribuicaoRemover.Count > 1 && listaAtribuicaoRemover.Exists(atribuicao => !atribuicao.AtribuicaoExcluida))
+                    listaDeRemovida.AddRange(listaAtribuicaoRemover.FindAll(atribuicao => atribuicao.AtribuicaoExcluida));
+            }
+
+            foreach (var atribuicao in listaDeRemovida)
+                uesParaAtribuicao.Remove(atribuicao);
+
+            var retorno = uesParaAtribuicao.Where(x => x.TipoAtribuicao == (TipoResponsavelAtribuicao)tipoResponsavel && x.AtribuicaoExcluida);
+            return retorno.OrderBy(x => x.Nome).ToList();
         }
 
         public IEnumerable<DreConsultaDto> ObterTodos()
@@ -75,22 +117,16 @@ namespace SME.SGP.Aplicacao
             }
         }
 
-        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<AbrangenciaUeRetorno> escolasPorDre,
-                    IEnumerable<SupervisorEscolasDreDto> supervisoresEscolas)
+        private IEnumerable<UnidadeEscolarDto> TrataEscolasSemSupervisores(IEnumerable<UnidadeEscolarSemAtribuicaolDto> uesParaAtribuicao)
         {
-            var escolasComSupervisor = supervisoresEscolas?
-                .Select(a => a.EscolaId)
-                .ToList();
-
-            List<AbrangenciaUeRetorno> escolasSemSupervisor = null;
-            if (escolasComSupervisor != null)
+            foreach (var item in uesParaAtribuicao)
             {
-                escolasSemSupervisor = escolasPorDre?
-                    .Where(a => !escolasComSupervisor.Contains(a.Codigo))
-                    .ToList();
+                yield return new UnidadeEscolarDto
+                {
+                    Codigo = item.Codigo,
+                    Nome = item.Nome
+                };
             }
-
-            return escolasSemSupervisor?.OrderBy(c=>c.Nome).Select(t => new UnidadeEscolarDto() { Codigo = t.Codigo, Nome = t.Nome });
         }
     }
 }

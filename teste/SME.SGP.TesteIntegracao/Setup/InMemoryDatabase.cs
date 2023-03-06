@@ -13,15 +13,20 @@ namespace SME.SGP.TesteIntegracao.Setup
 {
     public class InMemoryDatabase : IDisposable
     {
-        public readonly NpgsqlConnection Conexao;
+        public NpgsqlConnection Conexao;
         private readonly PostgresRunner _postgresRunner;
 
         public InMemoryDatabase()
         {
             _postgresRunner = PostgresRunner.Start();
+            CriarConexaoEAbrir();
+            new ConstrutorDeTabelas().Contruir(Conexao);
+        }
+
+        public void CriarConexaoEAbrir()
+        {
             Conexao = new NpgsqlConnection(_postgresRunner.GetConnectionString());
             Conexao.Open();
-            new ConstrutorDeTabelas().Contruir(Conexao);
         }
 
         public void Inserir<T>(IEnumerable<T> objetos) where T : class, new()
@@ -35,6 +40,11 @@ namespace SME.SGP.TesteIntegracao.Setup
         public void Inserir<T>(T objeto) where T : class, new()
         {
             Conexao.Insert(objeto);
+        }
+        
+        public void Atualizar<T>(T objeto) where T : class, new()
+        {
+            Conexao.Update(objeto);
         }
 
         public List<T> ObterTodos<T>() where T : class, new()
@@ -71,6 +81,21 @@ namespace SME.SGP.TesteIntegracao.Setup
             var builder = new StringBuilder();
             builder.Append($"Insert into {tabela} Values (");
             builder.Append(string.Join(", ", campos));
+            builder.Append(")");
+
+            using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+        
+        public void Inserir(string tabela, string[] campos, string[] valores)
+        {
+            var builder = new StringBuilder();
+            builder.Append($"Insert into {tabela} (");
+            builder.Append(string.Join(", ", campos));
+            builder.Append(@") Values (");
+            builder.Append(string.Join(", ", valores));
             builder.Append(")");
 
             using (var cmd = new NpgsqlCommand(builder.ToString(), Conexao))

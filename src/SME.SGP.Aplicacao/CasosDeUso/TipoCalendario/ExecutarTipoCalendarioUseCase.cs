@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class ExecutarTipoCalendarioUseCase : IExecutarTipoCalendario
+    public class ExecutarTipoCalendarioUseCase : IExecutarTipoCalendarioUseCase
     {
         public class ExecutarTipoCalendarioParametro
         {

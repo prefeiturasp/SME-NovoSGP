@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (!professorValidoNoEol)
                 throw new NegocioException("Este professor não é válido para ser CJ.");
 
-            var professoresTitularesDisciplinasEol = await servicoEOL.ObterProfessoresTitularesDisciplinas(atribuicaoCJPersistenciaDto.TurmaId);
+            var professoresTitularesDisciplinasEol = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(atribuicaoCJPersistenciaDto.TurmaId));
 
             foreach (var atribuicaoDto in atribuicaoCJPersistenciaDto.Disciplinas)
             {

@@ -4,6 +4,7 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +15,15 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioEncaminhamentoAEE : RepositorioBase<EncaminhamentoAEE>, IRepositorioEncaminhamentoAEE
     {
-        public RepositorioEncaminhamentoAEE(ISgpContext database) : base(database)
+        public RepositorioEncaminhamentoAEE(ISgpContext database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 
-        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, Paginacao paginacao)
+        public async Task<PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>> ListarPaginado(long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos, Paginacao paginacao)
         {
-            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo);
+            var query = MontaQueryCompleta(paginacao, dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos);
 
-            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo };
+            var parametros = new { dreId, ueId, turmaId, alunoCodigo, situacao, responsavelRf, anoLetivo, turmasCodigos };
             var retorno = new PaginacaoResultadoDto<EncaminhamentoAEEAlunoTurmaDto>();
 
             using (var multi = await database.Conexao.QueryMultipleAsync(query, parametros))
@@ -36,24 +37,24 @@ namespace SME.SGP.Dados.Repositorios
             return retorno;
         }
 
-        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo)
+        private static string MontaQueryCompleta(Paginacao paginacao, long dreId, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, int anoLetivo, string[] turmasCodigos)
         {
             StringBuilder sql = new StringBuilder();
 
-            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
+            MontaQueryConsulta(paginacao, sql, contador: false, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
 
             sql.AppendLine(";");
 
-            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
+            MontaQueryConsulta(paginacao, sql, contador: true, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
 
             return sql.ToString();
         }
 
-        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf)
+        private static void MontaQueryConsulta(Paginacao paginacao, StringBuilder sql, bool contador, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos)
         {
             ObtenhaCabecalho(sql, contador);
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf);
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, responsavelRf, turmasCodigos);
 
             if (!contador)
                 sql.AppendLine(" order by ea.aluno_nome ");
@@ -86,7 +87,7 @@ namespace SME.SGP.Dados.Repositorios
             sql.AppendLine("  left join usuario u on u.id = ea.responsavel_id");
         }
 
-        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf)
+        private static void ObtenhaFiltro(StringBuilder sql, long ueId, long turmaId, string alunoCodigo, int? situacao, string responsavelRf, string[] turmasCodigos)
         {
             sql.AppendLine(" where ue.dre_id = @dreId and not ea.excluido ");
             sql.AppendLine("   and t.ano_letivo = @anoLetivo ");
@@ -101,6 +102,8 @@ namespace SME.SGP.Dados.Repositorios
                 sql.AppendLine(" and ea.situacao = @situacao ");
             if (!string.IsNullOrEmpty(responsavelRf))
                 sql.AppendLine(" and u.rf_codigo = @responsavelRf ");
+            if (turmasCodigos != null && turmaId == 0)
+                sql.AppendLine(" and t.turma_id = ANY(@turmasCodigos) ");
 
         }
 
@@ -163,16 +166,18 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<EncaminhamentoAEE> ObterEncaminhamentoComTurmaPorId(long encaminhamentoId)
         {
-            var query = @" select ea.*, t.*, u.*
+            var query = @" select ea.*, t.*, ue.*, u.*
                             from encaminhamento_aee ea
                            inner join turma t on t.id = ea.turma_id
-                            left join usuario u on u.id = ea.responsavel_id 
+                            left join usuario u on u.id = ea.responsavel_id
+                            join ue on ue.id = t.ue_id
                            where ea.id = @encaminhamentoId";
 
-            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, Usuario, EncaminhamentoAEE>(query,
-                (encaminhamentoAEE, turma, usuario) =>
+            return (await database.Conexao.QueryAsync<EncaminhamentoAEE, Turma, Ue, Usuario, EncaminhamentoAEE>(query,
+                (encaminhamentoAEE, turma, ue, usuario) =>
                 {
                     encaminhamentoAEE.Turma = turma;
+                    encaminhamentoAEE.Turma.Ue = ue;
                     encaminhamentoAEE.Responsavel = usuario;
                     return encaminhamentoAEE;
                 }, new { encaminhamentoId })).FirstOrDefault();
@@ -208,7 +213,7 @@ namespace SME.SGP.Dados.Repositorios
                                      inner join ue on t.ue_id = ue.id
                                      inner join usuario u on u.id = ea.responsavel_id ");
 
-            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "");
+            ObtenhaFiltro(sql, ueId, turmaId, alunoCodigo, situacao, "", null);
 
             return await database.Conexao.QueryAsync<UsuarioEolRetornoDto>(sql.ToString(), new { dreId, ueId, turmaId, alunoCodigo, situacao, anoLetivo });
         }

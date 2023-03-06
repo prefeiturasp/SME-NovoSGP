@@ -5,9 +5,9 @@ using System;
 
 namespace SME.SGP.IoC.Extensions
 {
-    public static class ServiceCollectionExtensions
+    internal static class ServiceCollectionExtensions
     {
-        public static void TryAddScopedWorkerService<TService, TImplementation>(this IServiceCollection collection)
+        internal static void TryAddScopedWorkerService<TService, TImplementation>(this IServiceCollection collection)
             where TService : class
             where TImplementation : class, TService
         {

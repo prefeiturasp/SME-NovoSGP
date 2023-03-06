@@ -15,7 +15,9 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<IEnumerable<FrequenciaAlunoBimestreDto>> Executar(FiltroTurmaAlunoSemestreDto dto)
+        public async Task<IEnumerable<FrequenciaAlunoBimestreDto>> 
+            
+            Executar(FiltroTurmaAlunoSemestreDto dto)
         {
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(dto.TurmaId));
             if (turma == null)
@@ -66,7 +68,7 @@ namespace SME.SGP.Aplicacao
                 }
 
                 if(dados1 != null || dados2 != null)
-                    bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2);
+                    bimestres = TratarMediaBimestresParaSemestreInfantil(dados1, dados2, semestre == 1 ? 1 : 3);
         
             }
             else
@@ -77,6 +79,7 @@ namespace SME.SGP.Aplicacao
                         periodosEscolares.First(a => a.Bimestre == 1), componenteCurricularId));
                     bimestres.Add(await ObterInformacoesBimestre(turma, alunoCodigo, tipoCalendarioId,
                         periodosEscolares.First(a => a.Bimestre == 2), componenteCurricularId));
+
                 }
                 else
                 {
@@ -90,7 +93,7 @@ namespace SME.SGP.Aplicacao
             return bimestres.Where(bimestre => bimestre != null);
         }
 
-        public List<FrequenciaAlunoBimestreDto> TratarMediaBimestresParaSemestreInfantil(FrequenciaAlunoBimestreDto dados1, FrequenciaAlunoBimestreDto dados2)
+        public List<FrequenciaAlunoBimestreDto> TratarMediaBimestresParaSemestreInfantil(FrequenciaAlunoBimestreDto dados1, FrequenciaAlunoBimestreDto dados2, int bimestreReferencia)
         {
             int somatorioAusencias = 0;
             int somatorioAulasRealizadas = 0;
@@ -108,7 +111,7 @@ namespace SME.SGP.Aplicacao
                 Frequencia = mediaFrequencia,
                 Ausencias = somatorioAusencias,
                 AulasRealizadas = somatorioAulasRealizadas,
-                Semestre = int.Parse(dados1.Bimestre.ToString()) <= 2 ? 1 : 2,
+                Semestre = bimestreReferencia <= 2 ? 1 : 2,
                 Bimestre = "0",
             });
 

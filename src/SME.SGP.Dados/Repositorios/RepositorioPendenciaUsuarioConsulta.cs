@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dados.Repositorios;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace SME.SGP.Dados
 {
     public class RepositorioPendenciaUsuarioConsulta : RepositorioBase<PendenciaUsuario>, IRepositorioPendenciaUsuarioConsulta
     {
-        public RepositorioPendenciaUsuarioConsulta(ISgpContextConsultas database) : base(database)
+        public RepositorioPendenciaUsuarioConsulta(ISgpContextConsultas database, IServicoAuditoria servicoAuditoria) : base(database, servicoAuditoria)
         {
         }
 

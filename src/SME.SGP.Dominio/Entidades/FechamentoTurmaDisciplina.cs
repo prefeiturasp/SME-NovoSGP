@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SME.SGP.Dominio
@@ -16,10 +15,9 @@ namespace SME.SGP.Dominio
         public long DisciplinaId { get; set; }
         public SituacaoFechamento Situacao { get; set; }
         public string Justificativa { get; set; }
-
         public bool Migrado { get; set; }
         public bool Excluido { get; set; }
-        public List<FechamentoAluno> FechamentoAlunos { get; set; }
+        public List<FechamentoAluno> FechamentoAlunos { get; }
 
         public void AtualizarSituacao(SituacaoFechamento situacao)
         {
@@ -37,12 +35,11 @@ namespace SME.SGP.Dominio
 
         public void AdicionarNota(FechamentoNota fechamentoNota)
         {
-            if(fechamentoNota != null)
-            {
-                var fechamentoAluno = FechamentoAlunos.FirstOrDefault(a => a.Id == fechamentoNota.FechamentoAlunoId);
-                if (fechamentoAluno != null)
-                    fechamentoAluno.AdicionarNota(fechamentoNota);
-            }
+            if (fechamentoNota == null) 
+                return;
+            
+            var fechamentoAluno = FechamentoAlunos.FirstOrDefault(a => a.Id == fechamentoNota.FechamentoAlunoId);
+            fechamentoAluno?.AdicionarNota(fechamentoNota);
         }
     }
 }

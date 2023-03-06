@@ -7,12 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery : IRequest<IEnumerable<DisciplinaDto>>
     {
-        public ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(string turmaCodigo)
+        public ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery(string turmaCodigo, bool situacaoConselho = false)
         {
             TurmaCodigo = turmaCodigo;
+            SituacaoConselho = situacaoConselho;
         }
 
         public string TurmaCodigo { get; set; }
+        public bool SituacaoConselho { get; set; }
     }
 
     public class ObterComponentesCurricularesRegenciaPorTurmaCodigoQueryValidator : AbstractValidator<ObterComponentesCurricularesRegenciaPorTurmaCodigoQuery>

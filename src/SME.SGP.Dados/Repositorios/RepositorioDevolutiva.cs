@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +14,8 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioDevolutiva : RepositorioBase<Devolutiva>, IRepositorioDevolutiva
     {
-        public RepositorioDevolutiva(ISgpContext conexao) : base(conexao) { }
+        public RepositorioDevolutiva(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
+        { }
 
         public async Task<Devolutiva> ObterPorIdRegistroExcluido(long? devolutivaId)
         {
@@ -54,7 +56,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@"from devolutiva d
                          inner join diario_bordo db on db.devolutiva_id = d.id
                          inner join aula a on a.id = db.aula_id
-                         where not d.excluido
+                         where not d.excluido  and not db.excluido
                            and a.turma_id = @turmaCodigo
                            and db.componente_curricular_id = @componenteCurricularCodigo");
 
@@ -68,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.periodo_fim
                           from devolutiva d
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.aula_id
                          where a.turma_id = @turmaCodigo
                            and d.componente_curricular_codigo = @componenteCurricularCodigo";
@@ -80,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = @"select d.id 
                           from devolutiva d 
-                         inner join diario_bordo db on db.devolutiva_id = d.id
+                         inner join diario_bordo db on db.devolutiva_id = d.id and not db.excluido
                          inner join aula a on a.id = db.id
                          where not d.excluido
                            and a.turma_id = @turmaCodigo
@@ -105,7 +107,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueId,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaId,
-                                count(db.planejamento) as quantidadeRegistradaDevolutivas
+                                count(distinct d.id) as quantidadeRegistradaDevolutivas
                             from devolutiva d 
                              inner join diario_bordo db on db.devolutiva_id = d.id
                              inner join aula a on a.id = db.aula_id
@@ -123,8 +125,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public async Task<IEnumerable<DevolutivaTurmaDTO>> ObterTurmasInfantilComDevolutivasPorAno(int anoLetivo)
         {
-            var query = @" select 
-	                        distinct
+            var query = @" select distinct
                             t.turma_id as turmaId,
                             t.ano_letivo as anoLetivo
                         from diario_bordo db 
@@ -134,9 +135,9 @@ namespace SME.SGP.Dados.Repositorios
                         where not db.excluido 
                             and t.ano_letivo = @anoLetivo
                             and t.modalidade_codigo in (1,2)
-                            and a.data_aula < current_date ";
+                            and a.data_aula::date <= current_date;";
 
-            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo });
+            return await database.Conexao.QueryAsync<DevolutivaTurmaDTO>(query, new { anoLetivo }, commandTimeout: 60);
         }
 
         public async Task<QuantidadeDiarioBordoRegistradoPorAnoletivoTurmaDTO> ObterDiariosDeBordoPorTurmaEAnoLetivo(string turmaCodigo, int anoLetivo)
@@ -145,7 +146,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            ue.ue_id as ueid,
 	                            ue.dre_id as dreId,
                                 a.turma_id as turmaid,
-                                count(db.id) as quantidadeDiarioBordoRegistrado
+                                count(distinct db.id) as quantidadeDiarioBordoRegistrado
                             from diario_bordo db
 	                            inner join aula a on a.id = db.aula_id
 	                            inner join turma t on t.turma_id = a.turma_id 
@@ -167,7 +168,7 @@ namespace SME.SGP.Dados.Repositorios
             var query = new StringBuilder(@" select t.ano as Ano,
                             count(distinct d.criado_rf) as Quantidade
                             from devolutiva d
-                            inner join diario_bordo db on db.devolutiva_id = d.id
+                            inner join diario_bordo db on db.devolutiva_id = d.id  
                             inner join turma t on t.id = db.turma_id
                             inner join ue on ue.id = t.ue_id
                             where t.ano_letivo = @anoLetivo ");

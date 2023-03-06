@@ -32,7 +32,7 @@ namespace SME.SGP.Aplicacao
                                                             , request.ComponenteSemNota
                                                             , request.RegistraFrequencia);
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaGeracaoPendenciasFechamento, command, Guid.NewGuid(), request.Usuario));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.RotaGeracaoPendenciasFechamento, command, Guid.NewGuid(), request.Usuario));
 
             return true;
         }

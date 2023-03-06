@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using static System.Text.Encoding;
 
-namespace SME.SGP.Api
+namespace SME.SGP.Api.Configuracoes
 {
     public static class RegistraAutenticacao
     {

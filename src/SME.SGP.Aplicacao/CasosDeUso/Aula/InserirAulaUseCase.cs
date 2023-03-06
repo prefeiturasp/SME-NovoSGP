@@ -21,6 +21,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
 
+            if (inserirAulaDto.TipoAula == TipoAula.Reposicao && inserirAulaDto.RecorrenciaAula != RecorrenciaAula.AulaUnica)
+                throw new NegocioException("Não é possível cadastrar aula de reposição com recorrência!");
+
             var retornoPodeCadastrarAula = await podeCadastrarAulaUseCase.Executar(new FiltroPodeCadastrarAulaDto(0,
                 inserirAulaDto.CodigoTurma,
                 inserirAulaDto.CodigoComponenteCurricular,
@@ -45,33 +48,33 @@ namespace SME.SGP.Aplicacao
                 }
                 else
                 {
+                    string mensagemDeExcecao;
                     try
                     {
                         await mediator.Send(new IncluirFilaInserirAulaRecorrenteCommand(usuarioLogado,
-                                                                             inserirAulaDto.DataAula,
-                                                                             inserirAulaDto.Quantidade,
-                                                                             inserirAulaDto.CodigoTurma,
-                                                                             inserirAulaDto.CodigoComponenteCurricular,
-                                                                             inserirAulaDto.NomeComponenteCurricular,
-                                                                             inserirAulaDto.TipoCalendarioId,
-                                                                             inserirAulaDto.TipoAula,
-                                                                             inserirAulaDto.CodigoUe,
-                                                                             inserirAulaDto.EhRegencia,
-                                                                             inserirAulaDto.RecorrenciaAula));
+                                                                                        inserirAulaDto.DataAula,
+                                                                                        inserirAulaDto.Quantidade,
+                                                                                        inserirAulaDto.CodigoTurma,
+                                                                                        inserirAulaDto.CodigoComponenteCurricular,
+                                                                                        inserirAulaDto.NomeComponenteCurricular,
+                                                                                        inserirAulaDto.TipoCalendarioId,
+                                                                                        inserirAulaDto.TipoAula,
+                                                                                        inserirAulaDto.CodigoUe,
+                                                                                        inserirAulaDto.EhRegencia,
+                                                                                        inserirAulaDto.RecorrenciaAula));
 
-                        return new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento.");
+                        return await Task.FromResult(new RetornoBaseDto("Serão cadastradas aulas recorrentes, em breve você receberá uma notificação com o resultado do processamento."));
                     }
                     catch (Exception ex)
                     {
-                        await mediator.Send(new SalvarLogViaRabbitCommand("Criação de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));                        
+                        mensagemDeExcecao = ex.Message;
+                        await mediator.Send(new SalvarLogViaRabbitCommand("Criação de aulas recorrentes", LogNivel.Critico, LogContexto.Aula, ex.Message));
                     }
-                    return new RetornoBaseDto("Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente.");
+                    return await Task.FromResult(new RetornoBaseDto($"Ocorreu um erro ao solicitar a criação de aulas recorrentes, por favor tente novamente. Detalhes: {mensagemDeExcecao}"));
                 }
             }
             else
-            {
                 throw new NegocioException($"Não é possível cadastrar aula do tipo '{inserirAulaDto.TipoAula.Name()}' para o dia selecionado!");
-            }
         }
     }
 }

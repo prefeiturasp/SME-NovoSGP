@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Infra.Dtos.Relatorios;
 
 namespace SME.SGP.Api.Controllers
 {
@@ -197,6 +198,17 @@ namespace SME.SGP.Api.Controllers
             return Ok(await useCase.Executar(filtro));
         }
 
+
+        [HttpPost]
+        [Route("responsavel-plano/pesquisa")]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(PaginacaoResultadoDto<UsuarioEolRetornoDto>), 200)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> PesquisaResponsavelPlano([FromBody] FiltroPesquisaFuncionarioDto filtro, [FromServices] IPesquisaResponsavelPlanoPorDreUEUseCase useCase)
+        {
+            return Ok(await useCase.Executar(filtro));
+        }
+
         [HttpPost("concluir/{encaminhamentoId}")]
         [ProducesResponseType(typeof(RetornoBaseDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
@@ -217,5 +229,24 @@ namespace SME.SGP.Api.Controllers
 
             return Ok(new RetornoBaseDto("Encaminhamento devolvido com sucesso"));
         }
+
+        [HttpGet]
+        [Route("paai")]
+        [ProducesResponseType(typeof(IEnumerable<UsuarioEolRetornoDto>), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ObterPAAI([FromQuery] string codigoDre, [FromServices] IObterPAAIPorDreUseCase useCase)
+        {
+            return Ok(await useCase.Executar(codigoDre));
+        }
+        
+        [HttpPost("imprimir-detalhado")]
+        [ProducesResponseType(typeof(bool), 200)]
+        [Permissao(Permissao.AEE_C, Policy = "Bearer")]
+        public async Task<IActionResult> ImpressaoRelatorioEncaminhamentoAeeDetalhado(long[] Ids, [FromServices] IRelatorioEncaminhamentoAeeDetalhadoUseCase detalhadoUseCase)
+        {
+            return Ok(await detalhadoUseCase.Executar(new FiltroRelatorioEncaminhamentoAeeDetalhadoDto() { Ids = Ids}));
+        }
+            
     }
 }

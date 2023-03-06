@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase : INotificacaoPeriodoFechamentoReaberturaIniciando
+    public class NotificacaoPeriodoFechamentoReaberturaIniciandoUseCase : INotificacaoPeriodoFechamentoReaberturaIniciandoUseCase
     {
         private readonly IMediator mediator;
 

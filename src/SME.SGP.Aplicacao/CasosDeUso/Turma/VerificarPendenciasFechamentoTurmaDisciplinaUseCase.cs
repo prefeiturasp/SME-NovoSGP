@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class VerificarPendenciasFechamentoTurmaDisciplinaUseCase : AbstractUseCase, IVerificarPendenciasFechamentoTurmaDisciplina
+    public class VerificarPendenciasFechamentoTurmaDisciplinaUseCase : AbstractUseCase, IVerificarPendenciasFechamentoTurmaDisciplinaUseCase
     {
         private readonly IServicoPendenciaFechamento servicoFechamentoTurmaDisciplina;
 
@@ -18,7 +18,7 @@ namespace SME.SGP.Aplicacao
         public async Task<bool> Executar(MensagemRabbit param)
         {
             var data = param.ObterObjetoMensagem<PendenciaFechamentoCompletoDto>();
-            servicoFechamentoTurmaDisciplina.VerificaPendenciasFechamento(data.FechamentoId);
+            servicoFechamentoTurmaDisciplina.VerificarPendenciasEmAbertoPorFechamento(data.FechamentoId);
             return true;
         }
     }

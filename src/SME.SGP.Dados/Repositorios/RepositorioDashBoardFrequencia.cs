@@ -104,8 +104,7 @@ namespace SME.SGP.Dados.Repositorios
 			                                           count(rfa.id) filter(where rfa.valor = 2) as QuantidadeAusencias,
                                                        count(rfa.id) filter(where rfa.valor = 3) as QuantidadeRemotos              
                                                   from registro_frequencia_aluno rfa
-                                                 inner join registro_frequencia rf on rf.id = rfa.registro_frequencia_id
-                                                 inner join aula a on a.id = rf.aula_id
+                                                 inner join aula a on a.id = rfa.aula_id
                                                  inner join turma t on t.turma_id = a.turma_id
                                                  inner join ue on ue.id = t.ue_id
                                                  inner join dre on dre.id = ue.dre_id

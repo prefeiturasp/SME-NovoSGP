@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso
 {
-    public class ExecutarGravarRecorrenciaUseCase : AbstractUseCase, IExecutarGravarRecorrencia
+    public class ExecutarGravarRecorrenciaUseCase : AbstractUseCase, IExecutarGravarRecorrenciaUseCase
     {
         private readonly IComandosEvento comandosEvento;
 

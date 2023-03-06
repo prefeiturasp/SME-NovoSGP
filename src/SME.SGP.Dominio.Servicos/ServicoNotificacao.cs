@@ -33,7 +33,13 @@ namespace SME.SGP.Dominio.Servicos
 
         public async Task ExcluirFisicamenteAsync(long[] ids)
         {
+            var notificacoes = await repositorioNotificacaoConsulta.ObterUsuariosNotificacoesPorIds(ids);
             await repositorioNotificacao.ExcluirPorIdsAsync(ids);
+
+            foreach(var notificacao in notificacoes)
+            {
+                await mediator.Send(new NotificarExclusaoNotificacaoCommand(notificacao.Codigo, notificacao.Status, notificacao.UsuarioRf));
+            }
         }
 
         public void GeraNovoCodigo(Notificacao notificacao)
@@ -58,18 +64,12 @@ namespace SME.SGP.Dominio.Servicos
             return await mediator.Send(new ObterNotificacaoUltimoCodigoPorAnoQuery(DateTime.Now.Year)) + 1;
         }
 
-        public void Salvar(Notificacao notificacao)
-        {
-            GeraNovoCodigo(notificacao);
-
-            repositorioNotificacao.Salvar(notificacao);
-        }
-
-        public async Task SalvarAsync(Notificacao notificacao)
+        public async Task Salvar(Notificacao notificacao)
         {
             await GeraNovoCodigoAsync(notificacao);
 
             await repositorioNotificacao.SalvarAsync(notificacao);
+            await mediator.Send(new NotificarCriacaoNotificacaoCommand(notificacao));
         }
 
         public IEnumerable<(Cargo? Cargo, string Id)> ObterFuncionariosPorNivel(string codigoUe, Cargo? cargo, bool primeiroNivel = true, bool? notificacaoExigeAcao = false)
@@ -78,9 +78,10 @@ namespace SME.SGP.Dominio.Servicos
             IEnumerable<UsuarioEolRetornoDto> funcionarios = null;
 
             if (cargo == Cargo.Supervisor)
-                supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe);
+                supervisoresEscola = repositorioSupervisorEscolaDre.ObtemSupervisoresPorUe(codigoUe).Result;
             else
-                funcionarios = servicoEOL.ObterFuncionariosPorCargoUe(codigoUe, (int)cargo);
+                funcionarios = mediator.Send(
+                    new ObterFuncionariosPorCargoUeQuery(codigoUe, (int) cargo)).Result;
 
             var funcionariosDisponiveis = funcionarios?.Where(f => !f.EstaAfastado);
 
@@ -93,7 +94,7 @@ namespace SME.SGP.Dominio.Servicos
                 if (!cargoProximoNivel.HasValue)
                     return Enumerable.Empty<(Cargo?, string)>();
 
-                return ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
+                return  ObterFuncionariosPorNivel(codigoUe, cargoProximoNivel, false);
             }
             else
             {
@@ -170,6 +171,5 @@ namespace SME.SGP.Dominio.Servicos
         {
             await repositorioNotificacao.ExcluirPeloSistemaAsync(ids);
         }
-
     }
 }

@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace SME.SGP.TesteIntegracao
+namespace SME.SGP.TesteIntegracao.Frequencia
 {
     public class RetornarTotalAulasNaoRealizamFrequenciaTeste : TesteBase
     {
@@ -30,8 +30,8 @@ namespace SME.SGP.TesteIntegracao
             await CriarAulaSemFrequencia();
 
             //Act
-            var controller = new ConselhoClasseController();
-            var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("2370993",useCase);
+            var controller = new Api.Controllers.ConselhoClasseController();
+            var retorno = await controller.ObterTotalAulasSemFrequenciaPorTurma("111",useCase);
 
             //Assert
             retorno.ShouldNotBeNull();
@@ -42,10 +42,10 @@ namespace SME.SGP.TesteIntegracao
         {
             await InserirNaBase(new Usuario
             {
-                Id = 27695,
-                Login = "7495048",
-                CodigoRf = "7495048",
-                Nome = "FABIANA ROBERTA GUIMARAES REGO",
+                Id = 1,
+                Login = TesteBaseComuns.USUARIO_LOGADO_RF,
+                CodigoRf = TesteBaseComuns.USUARIO_LOGADO_RF,
+                Nome = TesteBaseComuns.USUARIO_LOGADO_NOME,
                 CriadoPor = "Sistema",
                 CriadoRF = "1"
             });
@@ -55,13 +55,13 @@ namespace SME.SGP.TesteIntegracao
         {
             var contextoAplicacao = ServiceProvider.GetService<IContextoAplicacao>();
             var variaveis = new Dictionary<string, object>();
-            variaveis.Add("NomeUsuario", "FABIANA ROBERTA GUIMARAES REGO");
-            variaveis.Add("UsuarioLogado", "7495048");
-            variaveis.Add("RF", "7495048");
-            variaveis.Add("login", "7495048");
+            variaveis.Add("NomeUsuario", TesteBaseComuns.USUARIO_LOGADO_NOME);
+            variaveis.Add("UsuarioLogado", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("RF", TesteBaseComuns.USUARIO_LOGADO_RF);
+            variaveis.Add("login", TesteBaseComuns.USUARIO_LOGADO_RF);
             variaveis.Add("Claims", new List<InternalClaim> {
-                new InternalClaim { Value = "7495048", Type = "rf" },
-                new InternalClaim { Value = "40e1e074-37d6-e911-abd6-f81654fe895d", Type = "perfil" }
+                new InternalClaim { Value = TesteBaseComuns.USUARIO_LOGADO_RF, Type = "rf" },
+                new InternalClaim { Value = Perfis.PERFIL_PROFESSOR.ToString(), Type = "perfil" }
             });
             contextoAplicacao.AdicionarVariaveis(variaveis);
         }
@@ -85,18 +85,18 @@ namespace SME.SGP.TesteIntegracao
                 Nome = "Teste"
             });
 
-            await InserirNaBase(new Aula
+            await InserirNaBase(new Dominio.Aula
             {
                 UeId = "1",
                 DisciplinaId = "1106",
-                TurmaId = "2370993",
+                TurmaId = "111",
                 TipoCalendarioId = 1,
-                ProfessorRf = "6737544",
+                ProfessorRf = TesteBaseComuns.USUARIO_LOGADO_RF,
                 Quantidade = 1,
-                DataAula = new DateTime(2022, 02, 10),
+                DataAula = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 RecorrenciaAula = 0,
                 TipoAula = TipoAula.Normal,
-                CriadoEm = new DateTime(2022, 02, 10),
+                CriadoEm = new DateTime(DateTimeExtension.HorarioBrasilia().Year, 02, 10),
                 CriadoPor = "Sistema",
                 CriadoRF = "1",
                 Excluido = false,

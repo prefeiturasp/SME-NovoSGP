@@ -19,11 +19,11 @@ namespace SME.SGP.Aplicacao
 
             var codigoCorrelacao = Guid.NewGuid();
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoDiariaDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoDiariaDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoSemanalDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoSemanalDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
 
-            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaConsolidacaoMensalDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
+            await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFrequencia.RotaConsolidacaoMensalDashBoardFrequencia, mensagemParaPublicar, codigoCorrelacao, null));
 
             return true; 
         }

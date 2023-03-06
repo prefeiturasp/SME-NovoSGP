@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
 {
-    public class AlterarPeriodosComHierarquiaInferiorFechamentoUseCase : AbstractUseCase, IAlterarPeriodosComHierarquiaInferiorFechamento
+    public class AlterarPeriodosComHierarquiaInferiorFechamentoUseCase : AbstractUseCase, IAlterarPeriodosComHierarquiaInferiorFechamentoUseCase
     {
         private readonly IServicoPeriodoFechamento servicoPeriodoFechamento;
 

@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
                     var mensagemPorAluno = new MensagemConsolidarTurmaConselhoClasseAlunoPorAlunoDto(alunoNota.AlunoCodigo, filtro.TurmaId, alunoNota.Result, parecerConclusivo);
 
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, JsonConvert.SerializeObject(mensagemPorAluno), mensagemRabbit.CodigoCorrelacao, null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpFechamento.ConsolidacaoTurmaConselhoClasseAlunoAnosAnterioresAlunoTratar, JsonConvert.SerializeObject(mensagemPorAluno), mensagemRabbit.CodigoCorrelacao, null));
                 }
                 return true;
             }

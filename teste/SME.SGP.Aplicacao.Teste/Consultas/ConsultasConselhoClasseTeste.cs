@@ -16,11 +16,13 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
         private readonly Mock<IRepositorioConselhoClasseAlunoConsulta> repositorioConselhoClasseAluno;
         private readonly Mock<IRepositorioParametrosSistemaConsulta> repositorioParametrosSistema;
         private readonly Mock<IRepositorioTipoCalendarioConsulta> repositorioTipoCalendario;
+        private readonly Mock<IRepositorioFechamentoTurmaConsulta> repositorioFechamentoTurma;
         private readonly Mock<IConsultasTurma> consultasTurma;
         private readonly Mock<IConsultasPeriodoEscolar> consultasPeriodoEscolar;
         private readonly Mock<IConsultasPeriodoFechamento> consultasPeriodoFechamento;
         private readonly Mock<IConsultasFechamentoTurma> consultasFechamentoTurma;
         private readonly Mock<IServicoDeNotasConceitos> servicoDeNotasConceitos;
+        private readonly Mock<IRepositorioConselhoClasseConsolidado> repositorioConselhoClasseConsolidado;
         private readonly Mock<IMediator> mediator;
 
         public ConsultasConselhoClasseTeste()
@@ -30,17 +32,20 @@ namespace SME.SGP.Aplicacao.Teste.Consultas
             repositorioConselhoClasseAluno = new Mock<IRepositorioConselhoClasseAlunoConsulta>();
             repositorioParametrosSistema = new Mock<IRepositorioParametrosSistemaConsulta>();
             repositorioTipoCalendario = new Mock<IRepositorioTipoCalendarioConsulta>();
+            repositorioFechamentoTurma = new Mock<IRepositorioFechamentoTurmaConsulta>();
             consultasTurma = new Mock<IConsultasTurma>();
             consultasPeriodoEscolar = new Mock<IConsultasPeriodoEscolar>();
             consultasPeriodoFechamento = new Mock<IConsultasPeriodoFechamento>();
             consultasFechamentoTurma = new Mock<IConsultasFechamentoTurma>();
             servicoDeNotasConceitos = new Mock<IServicoDeNotasConceitos>();
+            repositorioConselhoClasseConsolidado = new Mock<IRepositorioConselhoClasseConsolidado>();
             mediator = new Mock<IMediator>();
             consultasConselhoClasse = new ConsultasConselhoClasse(repositorioConselhoClasseConsulta.Object,
                                                                   repositorioConselhoClasseAluno.Object,
                                                                   repositorioPeriodoEscolar.Object,
                                                                   repositorioParametrosSistema.Object,
                                                                   repositorioTipoCalendario.Object,
+                                                                  repositorioFechamentoTurma.Object,                                                                  
                                                                   consultasTurma.Object,
                                                                   consultasPeriodoEscolar.Object,
                                                                   consultasPeriodoFechamento.Object,

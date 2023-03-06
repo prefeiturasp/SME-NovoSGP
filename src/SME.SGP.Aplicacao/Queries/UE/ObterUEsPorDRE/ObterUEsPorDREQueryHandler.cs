@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.UE.ObterUEsPorDRE
 {
-    public class ObterUEsPorDREQueryHandler : IRequestHandler<ObterUEsPorDREQuery, IEnumerable<AbrangenciaUeRetorno>>
+    public class 
+        ObterUEsPorDREQueryHandler : IRequestHandler<ObterUEsPorDREQuery, IEnumerable<AbrangenciaUeRetorno>>
     {
         private readonly IMediator mediator;
         private readonly IRepositorioAbrangencia repositorioAbrangencia;

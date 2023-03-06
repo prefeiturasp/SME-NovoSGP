@@ -13,5 +13,9 @@
         public const string SincronizaEstruturaInstitucionalCicloSync = "sgp.sincronizacao.institucional.ciclo.sync";
         public const string SincronizaEstruturaInstitucionalCicloTratar = "sgp.sincronizacao.institucional.ciclo.tratar";
         public const string SincronizaEstruturaInstitucionalTurmaExcluirTurmaExtinta = "sgp.sincronizacao.institucional.turma.excluir.turma.extinta";
+        public const string ConsolidacaoMatriculasTurmasDreCarregar = "sgp.matricula.turma.consolidar.dre.carregar";
+        public const string SincronizarDresMatriculasTurmas = "sgp.matricula.turma.consolidar.dre.sync";
+        public const string ConsolidacaoMatriculasTurmasCarregar = "sgp.matricula.turma.carregar";
+        public const string ConsolidacaoMatriculasTurmasSync = "sgp.matricula.turma.sync";
     }
 }

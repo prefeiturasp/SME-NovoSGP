@@ -16,6 +16,7 @@ namespace SME.SGP.Aplicacao
     {
         private readonly IRepositorioAula repositorioAula;
         private readonly IMediator mediator;
+        private const string AUDITORIA_SISTEMA = "SISTEMA";
 
         public CriarAulasInfantilAutomaticamenteCommandHandler(IRepositorioAula repositorioAula,
                                                                IMediator mediator)
@@ -100,7 +101,7 @@ namespace SME.SGP.Aplicacao
 
             if (aulasAExcluirComFrequenciaRegistrada.Any())
             {
-                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.RotaNotificacaoExclusaoAulasComFrequencia,
+                await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgpAula.RotaNotificacaoExclusaoAulasComFrequencia,
                     new NotificarExclusaoAulasComFrequenciaDto(turma, aulasAExcluirComFrequenciaRegistrada), Guid.NewGuid(), null));
 
                 aulasAExcluirComFrequenciaRegistrada.Clear();
@@ -119,7 +120,15 @@ namespace SME.SGP.Aplicacao
                 contadorAulasCriadas = CriarAulas(aulasACriar, contadorAulasCriadas);
 
             if (idsAulasAExcluir.Any())
+            {                
+                foreach(var idAula in idsAulasAExcluir)
+                {
+                    await mediator.Send(new ExcluirPendenciaAulaCommand(idAula, TipoPendencia.Frequencia), cancellationToken);                    
+                    await mediator.Send(new ExcluirPendenciaDiarioPorAulaIdCommand(idAula));
+                }
                 contadorAulasExcluidas = await ExcluirAulas(contadorAulasExcluidas, idsAulasAExcluir);
+            }
+                
 
             return true;
         }
@@ -169,12 +178,15 @@ namespace SME.SGP.Aplicacao
                     .ToList();
 
                 var excluirAula = ((diasNaoLetivos != null && diasNaoLetivos.Any(a => a.Data == aula.DataAula) &&
-                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && aula.DadosComplementares.PossuiFrequencia) ||
+                                    !diasLetivos.Any(d => d.Data == aula.DataAula) && !aula.DadosComplementares.PossuiFrequencia) ||
                                     !turma.DataInicio.HasValue || aula.DataAula.Date < turma.DataInicio.Value.Date ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id > aula.Id && !aula.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && a.DadosComplementares.PossuiFrequencia && aula.DadosComplementares.PossuiFrequencia) ||
                                     aulasMesmoDia.Any(a => a.Id < aula.Id && !a.DadosComplementares.PossuiFrequencia && !aula.DadosComplementares.PossuiFrequencia));
+
+                if(!excluirAula)
+                    excluirAula = VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(aula, diasLetivos);
 
                 if (excluirAula)
                     aulasExclusao.Add(aula);
@@ -182,6 +194,9 @@ namespace SME.SGP.Aplicacao
 
             return aulasExclusao;
         }
+
+        public bool VerificaSeFoiAulaCriadaNoFimDeSemanaAutomaticaSemEventoLetivo(Aula aula, IEnumerable<DiaLetivoDto> diasLetivos)
+            => aula.DataAula.FimDeSemana() && aula.CriadoPor.ToUpper() == AUDITORIA_SISTEMA && !diasLetivos.Any(d=> d.Data == aula.DataAula);
 
         private IEnumerable<(Aula aula, long? plano_aula_id)> ObterAulasParaCriacao(long tipoCalendarioId, IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DiaLetivoDto> diasLetivos, IEnumerable<DiaLetivoDto> diasNaoLetivos, Turma turma, IEnumerable<Aula> aulasCriadasPeloSistema, (string id, string nome) dadosDisciplina, int quantidade, string rfProfessor)
         {
@@ -201,7 +216,7 @@ namespace SME.SGP.Aplicacao
 
         private IList<DiaLetivoDto> DeterminaDiasLetivos(IEnumerable<DiaLetivoDto> diasDoPeriodo, IEnumerable<DateTime> diasNaoLetivos, Turma turma)
         {
-            return diasDoPeriodo.Where(c => c.CriarAulaSME ||
+            return diasDoPeriodo.Where(c => !c.Data.FimDeSemana() && c.CriarAulaSME ||
                                             ((c.PossuiEventoDre(turma.Ue.Dre.CodigoDre) || c.PossuiEventoUe(turma.Ue.CodigoUe)) && c.EhLetivo) ||
                                             (c.NaoPossuiDre && c.NaoPossuiUe && c.EhLetivo && !diasNaoLetivos.Contains(c.Data.Date)))?
                                 .OrderBy(c => c.Data)?.ToList();

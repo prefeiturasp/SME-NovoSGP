@@ -3,6 +3,7 @@ using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioNotificacaoConsulta : RepositorioBase<Notificacao>, IRepositorioNotificacaoConsulta
     {
-        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioNotificacaoConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -77,7 +78,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and n.tipo = @tipoId");
 
             if (!string.IsNullOrEmpty(usuarioRf))
-                query.AppendLine("and u.rf_codigo = @usuarioRf");
+                query.AppendLine("and (u.rf_codigo = @usuarioRf or u.login = @usuarioRf)");
 
             if (categoriaId > 0)
                 query.AppendLine("and n.categoria = @categoriaId");
@@ -188,7 +189,7 @@ namespace SME.SGP.Dados.Repositorios
 
                     return notificacao;
                 }, param: new { codigo });
-            
+
             return notificacoes.FirstOrDefault();
         }
 
@@ -217,7 +218,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by codigo desc");
             query.AppendLine("limit 1");
 
-            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano });
+            var codigos = await database.Conexao.QueryAsync<int>(query.ToString(), new { ano }, commandTimeout: 90);
             return codigos.FirstOrDefault();
         }
 
@@ -230,40 +231,12 @@ namespace SME.SGP.Dados.Repositorios
                         left join usuario u on
 	                        n.usuario_id = u.id
                         where
-	                        u.rf_codigo = @codigoRf
+	                        (u.rf_codigo = @codigoRf or u.login = @codigoRf)
 	                        and not excluida
 	                        and n.status = @naoLida
 	                        and extract(year from n.criado_em) = @anoLetivo";
 
             return await database.Conexao.QueryFirstAsync<int>(sql, new { anoLetivo, codigoRf, naoLida = (int)NotificacaoStatus.Pendente });
-        }
-
-        public async Task<IEnumerable<NotificacaoBasicaDto>> ObterNotificacoesPorAnoLetivoERfAsync(int anoLetivo, string usuarioRf, int limite = 5)
-        {
-            var sql = @"select
-	                        n.id,
-	                        n.categoria,
-	                        n.codigo ,
-	                        n.criado_em as Data,
-	                        n.mensagem as DescricaoStatus,
-	                        n.status,
-	                        n.tipo,
-	                        n.titulo
-                        from
-	                        notificacao n
-                        left join usuario u on
-	                        n.usuario_id = u.id
-                        where
-	                        u.rf_codigo = @usuarioRf
-	                        and extract(year
-                        from
-	                        n.criado_em) = @anoLetivo
-	                        and not excluida
-                        order by
-	                        n.status asc,
-	                        n.criado_em desc
-                        limit @limite";
-            return await database.Conexao.QueryAsync<NotificacaoBasicaDto>(sql, new { anoLetivo, usuarioRf, limite });
         }
 
         public async Task<IEnumerable<NotificacoesParaTratamentoCargosNiveisDto>> ObterNotificacoesParaTratamentoCargosNiveis()
@@ -303,6 +276,30 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("where EXTRACT(year FROM n.criado_em) = @ano");
 
             return database.Conexao.QueryFirstOrDefault<int>(query.ToString(), new { ano });
+        }
+
+        public Task<IEnumerable<NotificacaoUsuarioDto>> ObterUsuariosNotificacoesPorIds(long[] notificacoesIds)
+        {
+            var query = @"select 
+                            n.id as Id,
+                            n.codigo as Codigo,
+                            n.status as Status,
+                            u.rf_codigo as UsuarioRf
+                         from notificacao n 
+                         left join usuario u on u.id = n.usuario_id
+	                    where n.id = any(@notificacoesIds)";
+
+            return database.Conexao.QueryAsync<NotificacaoUsuarioDto>(query, new { notificacoesIds });
+        }
+
+        public Task<string> ObterUsuarioNotificacaoPorId(long id)
+        {
+            var query = @"select u.rf_codigo
+                         from notificacao n 
+                         left join usuario u on u.id = n.usuario_id
+	                    where n.id = @id";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
     }
 }

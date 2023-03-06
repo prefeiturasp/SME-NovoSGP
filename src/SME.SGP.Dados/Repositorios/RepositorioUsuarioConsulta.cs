@@ -1,6 +1,7 @@
 ﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 using SME.SGP.Infra.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioUsuarioConsulta : RepositorioBase<Usuario>, IRepositorioUsuarioConsulta
     {
-        public RepositorioUsuarioConsulta(ISgpContextConsultas conexao) : base(conexao)
+        public RepositorioUsuarioConsulta(ISgpContextConsultas conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 
@@ -57,7 +59,7 @@ namespace SME.SGP.Dados.Repositorios
         {
             var query = new StringBuilder();
             query.AppendLine("select * from usuario");
-            query.AppendLine("where rf_codigo = @codigoRf");
+            query.AppendLine("where upper(rf_codigo) = upper(@codigoRf)");
 
             return await database.Conexao.QueryFirstOrDefaultAsync<Usuario>(query.ToString(), new { codigoRf });
         }
@@ -120,6 +122,15 @@ namespace SME.SGP.Dados.Repositorios
                            where login = @login";
 
             return await database.Conexao.QueryFirstOrDefaultAsync<long>(query, new { login });
+        }
+
+        public Task<string> ObterRfPorId(long id)
+        {
+            var query = @"select rf_codigo
+                            from usuario 
+                           where id = @id";
+
+            return database.Conexao.QueryFirstOrDefaultAsync<string>(query, new { id });
         }
     }
 }

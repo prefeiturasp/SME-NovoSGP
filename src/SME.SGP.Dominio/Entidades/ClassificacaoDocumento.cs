@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SME.SGP.Dominio
+﻿namespace SME.SGP.Dominio
 {
     public class ClassificacaoDocumento
     {
@@ -8,5 +6,6 @@ namespace SME.SGP.Dominio
         public long TipoDocumentoId { get; set; }
         public TipoDocumento TipoDocumento { get; set; }
         public string Descricao { get; set; }
+        public bool EhRegistroMultiplo { get; set; }
     }
 }

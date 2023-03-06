@@ -119,6 +119,18 @@ namespace SME.SGP.Dominio
         RaaEscolaAqui = 39,
 
         [Display(Name = "relatorios/frequencia-global", ShortName = "RelatorioFrequenciaMensal", Description = "Relatório de frequência mensal")]
-        FrequenciaMensal = 40
+        FrequenciaMensal = 40,
+        
+        [Display(Name = "relatorios/planoaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
+        PlanoAee = 41,
+        
+        [Display(Name = "relatorios/planosaee", ShortName = "PlanoAEE", Description = "Plano AEE")]
+        RelatorioPlanosAee = 42,
+
+        [Display(Name = "relatorios/encaminhamentosaee", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
+        RelatorioEncaminhamentosAee = 43,
+        
+        [Display(Name = "relatorios/encaminhamentoaeedetalhado", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
+        RelatorioEncaminhamentoAeeDetalhado = 44
     }
 }

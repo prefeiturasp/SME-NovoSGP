@@ -2,12 +2,13 @@
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using SME.SGP.Infra.Interface;
 
 namespace SME.SGP.Dados.Repositorios
 {
     public class RepositorioHistoricoNota : RepositorioBase<HistoricoNota>, IRepositorioHistoricoNota
     {
-        public RepositorioHistoricoNota(ISgpContext conexao) : base(conexao)
+        public RepositorioHistoricoNota(ISgpContext conexao, IServicoAuditoria servicoAuditoria) : base(conexao, servicoAuditoria)
         {
         }
 

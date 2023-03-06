@@ -8,5 +8,7 @@
         public long QuestionarioId { get; set; }
         public int Etapa { get; set; }
         public AuditoriaDto Auditoria { get; set; }
+        public string? NomeComponente { get; set; }
+        public int Ordem { get; set; }
     }
 }

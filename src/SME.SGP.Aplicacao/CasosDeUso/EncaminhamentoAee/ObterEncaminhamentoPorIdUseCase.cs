@@ -26,7 +26,7 @@ namespace SME.SGP.Aplicacao
             if(encaminhamentoAee == null)
                 throw new NegocioException("Encaminhamento não localizado");
 
-            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
+            var aluno = await mediator.Send(new ObterAlunoPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo, true));
             aluno.EhAtendidoAEE = await mediator.Send(new VerificaEstudantePossuiPlanoAEEPorCodigoEAnoQuery(encaminhamentoAee.AlunoCodigo, encaminhamentoAee.Turma.AnoLetivo));
 
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
@@ -41,7 +41,8 @@ namespace SME.SGP.Aplicacao
                 {
                     Id = encaminhamentoAee.Turma.Id,
                     Codigo = encaminhamentoAee.Turma.CodigoTurma,
-                    AnoLetivo = encaminhamentoAee.Turma.AnoLetivo
+                    AnoLetivo = encaminhamentoAee.Turma.AnoLetivo,
+                    CodigoUE = encaminhamentoAee.Turma.Ue.CodigoUe
                 },
                 Situacao = encaminhamentoAee.Situacao,
                 SituacaoDescricao = encaminhamentoAee.Situacao.Name(),
@@ -63,6 +64,7 @@ namespace SME.SGP.Aplicacao
             switch (encaminhamentoAee.Situacao)
             {
                 case SituacaoAEE.AtribuicaoResponsavel:
+                case SituacaoAEE.AtribuicaoPAAI:
                 case SituacaoAEE.Analise:
                     return await EhGestorDaEscolaDaTurma(usuarioLogado, encaminhamentoAee.Turma) 
                         || await EhCoordenadorCEFAI(usuarioLogado, encaminhamentoAee.Turma);
@@ -86,7 +88,7 @@ namespace SME.SGP.Aplicacao
         private async Task<bool> UsuarioTemFuncaoCEFAINaDRE(Usuario usuarioLogado, string codigoDre)
         {
             var funcionarios = await mediator.Send(new ObterFuncionariosDreOuUePorPerfisQuery(codigoDre, new List<Guid>() { Perfis.PERFIL_CEFAI }));
-            return funcionarios.Any(c => c == usuarioLogado.CodigoRf);
+            return funcionarios.Any(c => c.Login == usuarioLogado.CodigoRf);
         }
 
         private async Task<bool> VerificaPodeEditar(EncaminhamentoAEE encaminhamento, Usuario usuarioLogado)

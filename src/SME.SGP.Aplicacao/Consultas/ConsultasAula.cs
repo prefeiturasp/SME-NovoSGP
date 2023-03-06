@@ -14,7 +14,6 @@ namespace SME.SGP.Aplicacao
     public class ConsultasAula : IConsultasAula
     {
         private readonly IConsultasDisciplina consultasDisciplina;
-        private readonly IConsultasFrequencia consultasFrequencia;
         private readonly IConsultasPeriodoEscolar consultasPeriodoEscolar;
         private readonly IConsultasPeriodoFechamento consultasPeriodoFechamento;
         private readonly IConsultasTipoCalendario consultasTipoCalendario;
@@ -27,7 +26,6 @@ namespace SME.SGP.Aplicacao
         private readonly IMediator mediator;
         private IRepositorioAula object1;
         private IConsultasPeriodoEscolar object2;
-        private IConsultasFrequencia object3;
         private IConsultasTipoCalendario object4;
         private IRepositorioPlanoAula object5;
         private IRepositorioTurmaConsulta object6;
@@ -39,7 +37,6 @@ namespace SME.SGP.Aplicacao
 
         public ConsultasAula(IRepositorioAulaConsulta repositorioConsulta,
                              IConsultasPeriodoEscolar consultasPeriodoEscolar,
-                             IConsultasFrequencia consultasFrequencia,
                              IConsultasTipoCalendario consultasTipoCalendario,
                              IRepositorioPlanoAula repositorioPlanoAula,
                              IRepositorioTurmaConsulta repositorioTurma,
@@ -57,7 +54,6 @@ namespace SME.SGP.Aplicacao
             this.consultasTurma = consultasTurma ?? throw new ArgumentNullException(nameof(consultasTurma));
             this.consultasPeriodoFechamento = consultasPeriodoFechamento ?? throw new ArgumentNullException(nameof(consultasPeriodoFechamento));
             this.consultasPeriodoEscolar = consultasPeriodoEscolar ?? throw new ArgumentNullException(nameof(consultasPeriodoEscolar));
-            this.consultasFrequencia = consultasFrequencia ?? throw new ArgumentNullException(nameof(consultasFrequencia));
             this.consultasTipoCalendario = consultasTipoCalendario ?? throw new ArgumentNullException(nameof(consultasTipoCalendario));
             this.repositorioPlanoAula = repositorioPlanoAula ?? throw new ArgumentNullException(nameof(repositorioPlanoAula));
             this.repositorioTurma = repositorioTurma ?? throw new ArgumentNullException(nameof(repositorioTurma));
@@ -126,7 +122,26 @@ namespace SME.SGP.Aplicacao
 
             var periodosEscolares = await consultasPeriodoEscolar.ObterPorTipoCalendario(tipoCalendario.Id);
 
-            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, disciplinaCodigo, usuarioLogado, usuarioRF);
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true));
+
+            if (componentesCurriculares == null)
+                componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesEolPorCodigoTurmaLoginEPerfilQuery(turmaCodigo, usuarioLogado.Login, usuarioLogado.PerfilAtual, true, false));
+
+            var dadosDisciplina = componentesCurriculares
+                                .Where(c => (c.TerritorioSaber && c.Codigo.ToString() == disciplinaCodigo) || c.Codigo.ToString() == disciplinaCodigo)
+                                .Select(c => new ComponenteCurricularTipoDto()
+                                {
+                                    CodigoComponenteCurricular = !c.TerritorioSaber ? c.Codigo.ToString() : c.CodigoComponenteTerritorioSaber.ToString(),
+                                    CodigoComponenteCurricularTerritorio = !c.TerritorioSaber && c.CodigoComponenteTerritorioSaber == 0 
+                                                                            ? c.CodigoComponenteTerritorioSaber.ToString() 
+                                                                            : c.Codigo > 0 
+                                                                                       ? c.Codigo.ToString() 
+                                                                                       : "",
+                                    EhTerritorio = c.TerritorioSaber
+                                })
+                                .FirstOrDefault();
+
+            return await ObterAulasNosPeriodos(periodosEscolares, anoLetivo, turmaCodigo, dadosDisciplina.CodigoComponenteCurricular, usuarioLogado, usuarioRF, dadosDisciplina.CodigoComponenteCurricularTerritorio);
         }
 
         public async Task<int> ObterQuantidadeAulasRecorrentes(long aulaInicialId, RecorrenciaAula recorrencia)
@@ -216,7 +231,7 @@ namespace SME.SGP.Aplicacao
             return dto;
         }
 
-        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF)
+        private async Task<IEnumerable<DataAulasProfessorDto>> ObterAulasNosPeriodos(PeriodoEscolarListaDto periodosEscolares, int anoLetivo, string turmaCodigo, string disciplinaCodigo, Usuario usuarioLogado, string usuarioRF, string disciplinaTerritorio)
         {
             if (disciplinaCodigo.ToCharArray().Any(a => !char.IsDigit(a)))
                 throw new NegocioException("Código do componente curricular inválido");
@@ -235,6 +250,16 @@ namespace SME.SGP.Aplicacao
                                                                                     null,
                                                                                     null,
                                                                                     usuarioLogado.EhProfessorCj());
+
+            if(!aulas.Any() && disciplina.TerritorioSaber && !String.IsNullOrEmpty(disciplinaTerritorio))
+                aulas = repositorioConsulta.ObterDatasDeAulasPorAnoTurmaEDisciplina(periodosEscolares.Periodos.Select(p => p.Id).Distinct(),
+                                                                               anoLetivo,
+                                                                               turmaCodigo,
+                                                                               disciplinaTerritorio,
+                                                                               string.Empty,
+                                                                               null,
+                                                                               null,
+                                                                               usuarioLogado.EhProfessorCj());
 
             aulas.ToList().ForEach(aula =>
             {
