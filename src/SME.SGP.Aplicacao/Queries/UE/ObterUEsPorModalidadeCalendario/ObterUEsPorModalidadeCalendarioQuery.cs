@@ -9,12 +9,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterUEsPorModalidadeCalendarioQuery : IRequest<IEnumerable<Ue>>
     {
-        public ObterUEsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario modalidadeTipoCalendario)
+        public ObterUEsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario modalidadeTipoCalendario,int anoLetivo = 0)
         {
             ModalidadeTipoCalendario = modalidadeTipoCalendario;
+            AnoLetivo = anoLetivo;
         }
 
         public ModalidadeTipoCalendario ModalidadeTipoCalendario { get; set; }
+        public int AnoLetivo { get; set; }
     }
 
     public class ObterUEsPorModalidadeCalendarioQueryValidator : AbstractValidator<ObterUEsPorModalidadeCalendarioQuery>

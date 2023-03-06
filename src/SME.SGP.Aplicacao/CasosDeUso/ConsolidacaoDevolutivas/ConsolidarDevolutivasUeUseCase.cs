@@ -5,7 +5,6 @@ using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -16,7 +15,7 @@ namespace SME.SGP.Aplicacao
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
             await ObterUesConsolidarDevolutivas();
 
@@ -26,9 +25,7 @@ namespace SME.SGP.Aplicacao
         private async Task ObterUesConsolidarDevolutivas()
         {
             var anoAtual = DateTime.Now.Year;
-            var turmas = mediator.Send(new ObterTurmasPorAnoModalidadeQuery(anoAtual, Modalidade.EducacaoInfantil));
-            var ues = turmas.Result.Select(x => x.Ue);
-
+            var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario.Infantil,anoAtual));
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(ues);
 
         }
