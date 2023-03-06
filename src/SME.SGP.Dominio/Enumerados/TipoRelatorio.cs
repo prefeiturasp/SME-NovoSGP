@@ -137,7 +137,6 @@ namespace SME.SGP.Dominio
 
         [Display(Name = "relatorios/encaminhamentosnaapa", ShortName = "EncaminhamentoNAAPA", Description = "Encaminhamento NAAPA")]
         RelatorioEncaminhamentosNAAPA = 45,
-        RelatorioEncaminhamentoAeeDetalhado = 44,
         
         [Display(Name = "relatorios/encaminhamentonaapadetalhado", ShortName = "EncaminhamentoNaapaDetalhado", Description = "Encaminhamento NAAPA Detalhado")]
         RelatorioEncaminhamentoNaapaDetalhado = 46,
