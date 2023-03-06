@@ -23,6 +23,7 @@
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
         public const string SincronizaDevolutivasPorTurmaInfantilSync = "sgp.consolidacao.devolutivas.turma.sync";
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
+        public const string ConsolidarDevolutivasPorUE = "sgp.consolidacao.devolutivas.turma.infantil.ue";
         public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
         public const string ConsolidarDiariosBordoCarregar = "sgp.consolidacao.diarios.bordo.carregar";
         public const string ConsolidarDiariosBordoPorUeTratar = "sgp.consolidacao.diarios.bordo.ue.tratar";
