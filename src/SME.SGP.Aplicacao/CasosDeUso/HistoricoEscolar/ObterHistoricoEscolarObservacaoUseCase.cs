@@ -3,9 +3,6 @@ using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
 using SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao;
 using SME.SGP.Infra.Dtos;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar
@@ -21,7 +18,11 @@ namespace SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar
 
         public async Task<HistoricoEscolarObservacaoDto> Executar(string alunoCodigo)
         {
-            return await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(alunoCodigo));
+            var historicoEscolarObservacao = await mediator.Send(new ObterHistoricoEscolarObservacaoPorAlunoQuery(alunoCodigo));
+            if (historicoEscolarObservacao != null)
+                return new HistoricoEscolarObservacaoDto(historicoEscolarObservacao.AlunoCodigo, historicoEscolarObservacao.Observacao);
+
+            return default;
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao
 {
-    public class ObterHistoricoEscolarObservacaoPorAlunoQueryHandler : IRequestHandler<ObterHistoricoEscolarObservacaoPorAlunoQuery, HistoricoEscolarObservacaoDto>
+    public class ObterHistoricoEscolarObservacaoPorAlunoQueryHandler : IRequestHandler<ObterHistoricoEscolarObservacaoPorAlunoQuery, Dominio.HistoricoEscolarObservacao>
     {
         private readonly IRepositorioHistoricoEscolarObservacao repositorioHistoricoEscolarObservacao;
 
@@ -16,7 +16,7 @@ namespace SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao
             this.repositorioHistoricoEscolarObservacao = repositorioHistoricoEscolarObservacao ?? throw new ArgumentNullException(nameof(repositorioHistoricoEscolarObservacao));
         }
 
-        public Task<HistoricoEscolarObservacaoDto> Handle(ObterHistoricoEscolarObservacaoPorAlunoQuery request, CancellationToken cancellationToken)
+        public Task<Dominio.HistoricoEscolarObservacao> Handle(ObterHistoricoEscolarObservacaoPorAlunoQuery request, CancellationToken cancellationToken)
         {
             return repositorioHistoricoEscolarObservacao.ObterPorCodigoAlunoAsync(request.AlunoCodigo);
         }
