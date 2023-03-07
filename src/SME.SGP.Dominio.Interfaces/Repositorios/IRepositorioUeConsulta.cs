@@ -37,6 +37,7 @@ namespace SME.SGP.Dominio.Interfaces
         Task<bool> ValidarUeEducacaoInfantil(long ueId);
 
         Task<IEnumerable<Ue>> ObterUesPorModalidade(int[] modalidades, int anoLetivo = 0);
+        Task<IEnumerable<long>> ObterUesIdsPorModalidade(int[] modalidades, int anoLetivo = 0)
         Task<IEnumerable<Ue>> ObterUesPorIds(long[] ids);
 
         Task<Ue> ObterUePorId(long id);
