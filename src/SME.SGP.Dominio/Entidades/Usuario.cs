@@ -28,7 +28,7 @@ namespace SME.SGP.Dominio
         private string Email { get; set; }
 
         public void AtualizaUltimoLogin()
-         => UltimoLogin = DateTime.Now;
+            => UltimoLogin = DateTime.Now;
 
         public void DefinirEmail(string novoEmail)
         {
@@ -39,7 +39,7 @@ namespace SME.SGP.Dominio
         }
 
         public void DefinirPerfilAtual(Guid perfilAtual)
-         => PerfilAtual = perfilAtual;
+            => PerfilAtual = perfilAtual;
 
         public IEnumerable<Aula> ObterAulasQuePodeVisualizar(IEnumerable<Aula> aulas, IList<(string codigo, string codigoTerritorioSaber)> componentesCurricularesProfessor)
         {
@@ -50,12 +50,19 @@ namespace SME.SGP.Dominio
                 if (EhProfessorCj())
                     return aulas.Where(a => a.ProfessorRf == CodigoRf);
                 else
-                    return aulas.Where(a => (componentesCurricularesProfessor.Any(c => c.codigo.Equals(a.DisciplinaId) || c.codigoTerritorioSaber.Equals(a.DisciplinaId)) || a.ProfessorRf == CodigoRf));
+                {
+                    return (from a in aulas
+                            from ccp in componentesCurricularesProfessor
+                            where ((!string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigoTerritorioSaber.Equals(a.DisciplinaId) && a.ProfessorRf.Equals(CodigoRf)) ||
+                                  (string.IsNullOrWhiteSpace(ccp.codigoTerritorioSaber) && ccp.codigo.Equals(a.DisciplinaId)) ||
+                                  a.ProfessorRf == CodigoRf) && !a.AulaCJ
+                            select a).Distinct();
+                }
             }
         }
 
         public bool EhProfessorInfantilOuCjInfantil()
-         => EhProfessorInfantil() || EhProfessorCjInfantil();
+            => EhProfessorInfantil() || EhProfessorCjInfantil();
 
         public IEnumerable<AtividadeAvaliativa> ObterAtividadesAvaliativasQuePodeVisualizar(IEnumerable<AtividadeAvaliativa> atividades, string[] componentesCurricularesProfessor)
         {

@@ -848,8 +848,9 @@ namespace SME.SGP.Aplicacao.Integracoes
         private IEnumerable<DisciplinaDto> MapearParaDtoDisciplinas(IEnumerable<RetornoDisciplinaDto> disciplinas)
         {
             return disciplinas.Select(x => new DisciplinaDto
-            {
+            {                
                 CodigoComponenteCurricular = x.CdComponenteCurricular,
+                CodigoTerritorioSaber = x.CodigoTerritorioSaber,
                 Nome = x.Descricao,
                 Regencia = x.EhRegencia,
                 Compartilhada = x.EhCompartilhada,

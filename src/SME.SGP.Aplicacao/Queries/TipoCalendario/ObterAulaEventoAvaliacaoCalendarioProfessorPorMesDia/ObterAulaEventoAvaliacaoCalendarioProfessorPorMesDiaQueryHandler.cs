@@ -29,8 +29,15 @@ namespace SME.SGP.Aplicacao
                 foreach (var aulaParaVisualizar in request.Aulas)
                 {
                     var componenteCurricular = request.ComponentesCurricularesParaVisualizacao
-                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||
-                                             a.Id == long.Parse(aulaParaVisualizar.DisciplinaId));
+                        .FirstOrDefault(a => a.CodigoComponenteCurricular == long.Parse(aulaParaVisualizar.DisciplinaId) ||                            
+                                             a.Id == long.Parse(aulaParaVisualizar.DisciplinaId) ||
+                                             a.CodigoTerritorioSaber == long.Parse(aulaParaVisualizar.DisciplinaId));
+
+                    if (componenteCurricular != null && !componenteCurricular.RegistraFrequencia)
+                    {
+                        componenteCurricular.RegistraFrequencia = await mediator
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(componenteCurricular.TerritorioSaber && componenteCurricular.Id > 0 ? componenteCurricular.Id : componenteCurricular.CodigoComponenteCurricular));
+                    }
 
                     var professorTitular = professoresTitulares?.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(aulaParaVisualizar.DisciplinaId)) ||
                                                                                      (componenteCurricular != null && p.DisciplinasId.Contains(componenteCurricular.Id)));

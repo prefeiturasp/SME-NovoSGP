@@ -43,11 +43,11 @@ namespace SME.SGP.Aplicacao
 
             var componenteCurricularCorrespondente = componentesCurricularesEolProfessor
                 .SingleOrDefault(cp => cp.Codigo.Equals(componenteCurricularId));
-            
-            var componenteCurricular = await mediator
-                .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente?.CodigoComponenteTerritorioSaber ?? componenteCurricularId));
 
-            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();            
+            var componenteCurricular = await mediator
+                .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente != null && componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber > 0 ? componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber : componenteCurricularId));
+
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
 
             if (usuarioLogado.EhProfessorCj())
             {
