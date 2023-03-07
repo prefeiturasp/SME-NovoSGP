@@ -35,9 +35,9 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
             var turmasInfantil = await mediator
                 .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
-
-            await mediator
-                .Send(new LimparConsolidacaoDevolutivasCommand(turmasInfantil.Select(ti => ti.Id).ToArray()));
+            if(turmasInfantil.Any())
+                await mediator
+                    .Send(new LimparConsolidacaoDevolutivasCommand(turmasInfantil.Select(ti => ti.Id).ToArray()));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
