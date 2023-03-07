@@ -240,17 +240,17 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(string turmaCodigo, string ueCodigo, int mes)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("SELECT a.id,");
-            query.AppendLine("       a.data_aula,");
-            query.AppendLine("       a.tipo_aula,");
-            query.AppendLine("       a.aula_cj,");
-            query.AppendLine("       a.disciplina_id,");
-            query.AppendLine("       a.professor_rf,");
-            query.AppendLine("       a.tipo_calendario_id");
+            query.AppendLine("SELECT distinct a.id,");
+            query.AppendLine("                a.data_aula,");
+            query.AppendLine("                a.tipo_aula,");
+            query.AppendLine("                a.aula_cj,");
+            query.AppendLine("                a.disciplina_id,");
+            query.AppendLine("                a.professor_rf,");
+            query.AppendLine("                a.tipo_calendario_id");
             query.AppendLine("  FROM public.aula a");
             query.AppendLine("      INNER JOIN turma t");
             query.AppendLine("          ON a.turma_id = t.turma_id");
-            query.AppendLine("WHERE a.excluido = false");
+            query.AppendLine("WHERE not a.excluido");
             query.AppendLine("AND a.status <> 3");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND extract(month from a.data_aula) = @mes");

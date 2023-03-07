@@ -71,7 +71,7 @@ namespace SME.SGP.Aplicacao
             var percentualAlerta = int.Parse(parametroPercentualAlerta.Valor);
 
             var componenteCurricularAula = await mediator
-                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { param.ComponenteCurricularId ?? Convert.ToInt64(aula.DisciplinaId) }));
+                .Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { param.ComponenteCurricularId ?? Convert.ToInt64(aula.DisciplinaId) }, codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricularAula == null || componenteCurricularAula.ToList().Count <= 0)
                 throw new NegocioException("Componente curricular da aula não encontrado");

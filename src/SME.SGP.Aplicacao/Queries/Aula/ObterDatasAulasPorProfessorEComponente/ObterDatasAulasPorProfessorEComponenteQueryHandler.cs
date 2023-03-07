@@ -32,17 +32,23 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
-            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
-            if (!usuarioLogado.EhProfessorCj())
-                componentesCurricularesEolProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
-                                                                                  usuarioLogado.CodigoRf,
-                                                                                  usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
-            
+            componentesCurricularesEolProfessor = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
+                                                                              usuarioLogado.CodigoRf,
+                                                                              usuarioLogado.PerfilAtual,
+                                                                              usuarioLogado.EhProfessorInfantilOuCjInfantil()));
+
+            var componenteCurricularCorrespondente = componentesCurricularesEolProfessor
+                .SingleOrDefault(cp => cp.Codigo.Equals(componenteCurricularId));
+
+            var componenteCurricular = await mediator
+                .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente != null && componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber > 0 ? componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber : componenteCurricularId));
+
+            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+
             if (usuarioLogado.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
@@ -54,7 +60,7 @@ namespace SME.SGP.Aplicacao
                     if (dadosComponentes.Any())
                     {
                         componentesCurricularesDoProfessorCj = dadosComponentes
-                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber 
+                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber
                                 ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
                     }
                 }

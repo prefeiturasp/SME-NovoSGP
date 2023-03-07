@@ -21,6 +21,10 @@ namespace SME.SGP.Aplicacao
         public async Task<(bool resultado, string mensagem)> Handle(ValidarComponentesDoProfessorCommand request, CancellationToken cancellationToken)
         {
             var podeCriarAulasParaTurma = false;
+
+            var componentesCurricularesDoProfessor = await mediator
+                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil()));
+
             if (request.Usuario.EhProfessorCj())
             {
                 var componentesCurricularesDoProfessorCJ = await mediator
@@ -28,16 +32,14 @@ namespace SME.SGP.Aplicacao
                 
                 if(componentesCurricularesDoProfessorCJ != null)
                     podeCriarAulasParaTurma = 
-                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo);
+                        componentesCurricularesDoProfessorCJ.Any(c => c.TurmaId == request.TurmaCodigo && c.DisciplinaId == request.ComponenteCurricularCodigo) ||
+                        componentesCurricularesDoProfessor.Any(c => c.Codigo.Equals(request.ComponenteCurricularCodigo) || c.CodigoComponenteTerritorioSaber.Equals(request.ComponenteCurricularCodigo));
 
                 if (!podeCriarAulasParaTurma)
                     return (false, MensagemNegocioComuns.Voce_nao_pode_criar_aulas_para_essa_turma);
             }
             else
             {
-                var componentesCurricularesDoProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil()));
-
                 if (componentesCurricularesDoProfessor == null)
                     componentesCurricularesDoProfessor = await VerificaPossibilidadeDeTurmaComMotivoErroDeCadastroNoUsuario(request.TurmaCodigo, request.Usuario.Login, request.Usuario.PerfilAtual, request.Usuario.EhProfessorInfantilOuCjInfantil());
 
