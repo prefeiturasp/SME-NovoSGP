@@ -89,7 +89,7 @@ namespace SME.SGP.Aplicacao
             IEnumerable<AtividadeAvaliativaDisciplina> atividadeDisciplinas = await repositorioAtividadeAvaliativaDisciplina.ListarPorIdAtividade(id);
 
             var podeEditarAvaliacao = usuarioLogado.EhProfessorCj() && atividade.EhCj || usuarioLogado.EhProfessor() && !atividade.EhCj || usuarioLogado.EhGestorEscolar();
-            
+
             if (atividade.EhRegencia)
                 atividadeRegencias = await repositorioAtividadeAvaliativaRegencia.Listar(id);
 
@@ -129,33 +129,47 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(turmaId.ToString()));
             var usuario = await servicoUsuario.ObterUsuarioLogado();
 
-            var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
-
-            var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
-                                    Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);
-
-            var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.AnoLetivo == turma.AnoLetivo &&
-                                                                       t.Ano == turma.Ano &&
-                                                                       t.Modalidade == turma.ModalidadeCodigo.ToString() &&
-                                                                       t.CodTurma.ToString() != turma.CodigoTurma);
-
-            if (turmasTitular != null && turmasTitular.Any())
+            if (usuario.EhPerfilProfessor())
             {
-                retorno.AddRange(turmasTitular
-                       .Select(x => new TurmaRetornoDto() { Codigo = x.CodTurma.ToString(), Nome = x.NomeTurma })
-                       .ToList());
+                var turmasAtribuidasAoProfessor = consultasProfessor.Listar(usuario.CodigoRf);
+
+                var lstTurmasCJ = await repositorioAtribuicaoCJ.ObterPorFiltros(turma.ModalidadeCodigo, null, null,
+                                        Convert.ToInt64(disciplinaId), usuario.CodigoRf, null, true);
+
+                var turmasTitular = turmasAtribuidasAoProfessor.Where(t => t.AnoLetivo == turma.AnoLetivo &&
+                                                                           t.Ano == turma.Ano &&
+                                                                           t.Modalidade == turma.ModalidadeCodigo.ToString() &&
+                                                                           t.CodTurma.ToString() != turma.CodigoTurma);
+
+                if (turmasTitular != null && turmasTitular.Any())
+                {
+                    retorno.AddRange(turmasTitular
+                           .Select(x => new TurmaRetornoDto() { Codigo = x.CodTurma.ToString(), Nome = x.NomeTurma })
+                           .ToList());
+                }
+
+                var turmasCJ = lstTurmasCJ.Where(t => t.Turma.AnoLetivo == turma.AnoLetivo &&
+                                                      t.Turma.Ano == turma.Ano &&
+                                                      t.Turma.ModalidadeCodigo == turma.ModalidadeCodigo &&
+                                                      t.TurmaId != turma.CodigoTurma);
+
+                if (turmasCJ != null && turmasCJ.Any())
+                {
+                    retorno.AddRange(turmasCJ
+                          .Select(x => new TurmaRetornoDto() { Codigo = x.TurmaId, Nome = x.Turma.Nome })
+                          .ToList());
+                }
             }
-
-            var turmasCJ = lstTurmasCJ.Where(t => t.Turma.AnoLetivo == turma.AnoLetivo &&
-                                                  t.Turma.Ano == turma.Ano &&
-                                                  t.Turma.ModalidadeCodigo == turma.ModalidadeCodigo &&
-                                                  t.TurmaId != turma.CodigoTurma);
-
-            if (turmasCJ != null && turmasCJ.Any())
+            else if (usuario.EhCP())
             {
-                retorno.AddRange(turmasCJ
-                      .Select(x => new TurmaRetornoDto() { Codigo = x.TurmaId, Nome = x.Turma.Nome })
-                      .ToList());
+                var turmasAtribuidasCP = await mediator.Send(new ObterAbrangenciaTurmasCPParaCopiaAvaliacaoQuery(turma.AnoLetivo, usuario.CodigoRf, (int)turma.ModalidadeCodigo, turma.Ano, turma.Id));
+
+                if (turmasAtribuidasCP.Any() && turmasAtribuidasCP != null)
+                    return turmasAtribuidasCP.Select(t => new TurmaRetornoDto()
+                    {
+                        Codigo = t.CodigoTurma,
+                        Nome = t.Nome
+                    });
             }
 
             return retorno;
