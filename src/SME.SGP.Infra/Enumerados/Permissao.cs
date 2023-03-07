@@ -693,6 +693,9 @@
         RPAEE_C = 239,
 
         [PermissaoMenu(Menu = "AEE", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 2, EhAlteracao = false, Url = "/relatorios/aee/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
-        REAEE_C = 240
+        REAEE_C = 240,
+
+        [PermissaoMenu(Menu = "NAAPA", Icone = "fas fa-tasks", Agrupamento = "Relatórios", OrdemAgrupamento = 8, OrdemMenu = 1, OrdemSubMenu = 1, EhAlteracao = false, EhConsulta = true, Url = "/relatorios/naapa/encaminhamento", EhSubMenu = true, SubMenu = "Encaminhamento")]
+        RENAAPA_C = 241
     }
 }
