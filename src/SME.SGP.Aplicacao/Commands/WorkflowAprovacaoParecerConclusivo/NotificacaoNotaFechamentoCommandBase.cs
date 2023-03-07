@@ -161,7 +161,8 @@ namespace SME.SGP.Aplicacao
 					ComponenteCurricularDescricao = nota.ComponenteCurricularDescricao,
 					NotaAnterior = nota.NotaAnterior,
 					Nota = nota.WfAprovacao.Nota,
-				}).ToList();
+				}).GroupBy(o => new {o.CodigoAluno, o.ComponenteCurricularDescricao})
+				.Select(g => g.First());
 				
 			foreach (var alunoNotaAprovacao in agrupamentoAlunoNotasAprovacoes)
 			{
