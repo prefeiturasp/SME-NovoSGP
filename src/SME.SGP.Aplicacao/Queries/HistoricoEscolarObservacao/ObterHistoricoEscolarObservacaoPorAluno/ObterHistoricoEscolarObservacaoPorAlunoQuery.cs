@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using MediatR;
-using SME.SGP.Infra.Dtos;
 
 namespace SME.SGP.Aplicacao.Queries.HistoricoEscolarObservacao
 {
-    public class ObterHistoricoEscolarObservacaoPorAlunoQuery : IRequest<HistoricoEscolarObservacaoDto>
+    public class ObterHistoricoEscolarObservacaoPorAlunoQuery : IRequest<Dominio.HistoricoEscolarObservacao>
     {
         public ObterHistoricoEscolarObservacaoPorAlunoQuery(string alunoCodigo)
         {

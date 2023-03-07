@@ -21,20 +21,34 @@ namespace SME.SGP.Api.Controllers
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.HE_C, Policy = "Bearer")]
-        public async Task<IActionResult> Gerar(FiltroHistoricoEscolarDto filtroHistoricoEscolarDto, [FromServices] IHistoricoEscolarUseCase historicoEscolarUseCase)
+        public async Task<IActionResult> Gerar(FiltroHistoricoEscolarDto filtroHistoricoEscolarDto,
+            [FromServices] IHistoricoEscolarUseCase historicoEscolarUseCase)
         {
             return Ok(await historicoEscolarUseCase.Executar(filtroHistoricoEscolarDto));
         }
 
         [HttpGet]
-        [Route("observacao-complementar/{alunoCodigo}")]
+        [Route("observacao-complementar/{codigoAluno}")]
         [ProducesResponseType(typeof(HistoricoEscolarObservacaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.HE_C, Policy = "Bearer")]
-        public async Task<IActionResult> ObterObservacaoHistoricoEscolar(string alunoCodigo, [FromServices] IObterHistoricoEscolarObservacaoUseCase obterHistoricoEscolarObservacaoUseCase)
+        public async Task<IActionResult> ObterObservacaoHistoricoEscolar(string codigoAluno,
+            [FromServices] IObterHistoricoEscolarObservacaoUseCase obterHistoricoEscolarObservacaoUseCase)
         {
-            return Ok(await obterHistoricoEscolarObservacaoUseCase.Executar(alunoCodigo));
+            return Ok(await obterHistoricoEscolarObservacaoUseCase.Executar(codigoAluno));
+        }
+
+        [HttpPost]
+        [Route("observacao-complementar")]
+        [ProducesResponseType(typeof(Boolean), 200)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 500)]
+        [ProducesResponseType(typeof(RetornoBaseDto), 601)]
+        [Permissao(Permissao.HE_C, Policy = "Bearer")]
+        public async Task<IActionResult> SalvarObservacaoHistoricoEscolar([FromBody] HistoricoEscolarObservacaoDto historicoEscolarObservacaoDto,
+            [FromServices] IEnviarFilaGravarHistoricoEscolarObservacaoUseCase salvarHistoricoEscolarObservacaoUseCase)
+        {
+            return Ok(await salvarHistoricoEscolarObservacaoUseCase.Executar(historicoEscolarObservacaoDto));
         }
     }
 }
