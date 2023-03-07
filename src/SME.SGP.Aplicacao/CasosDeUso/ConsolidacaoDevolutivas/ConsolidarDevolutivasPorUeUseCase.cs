@@ -1,13 +1,12 @@
 ﻿using MediatR;
-using SME.SGP.Dominio.Enumerados;
+using SME.SGP.Aplicacao.Interfaces;
+using SME.SGP.Aplicacao.Queries;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SME.SGP.Aplicacao.Interfaces;
 
 namespace SME.SGP.Aplicacao
 {
@@ -30,18 +29,18 @@ namespace SME.SGP.Aplicacao
         private async Task ObterUesConsolidarDevolutivas()
         {
             var anoAtual = DateTime.Now.Year;
-            var ues = await mediator.Send(new ObterUEsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario.Infantil, anoAtual));
+            var ues = await mediator.Send(new ObterUesIdsPorModalidadeCalendarioQuery(ModalidadeTipoCalendario.Infantil, anoAtual));
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(ues);
 
         }
 
-        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<Ue> ues)
+        private async Task PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(IEnumerable<long> ues)
         {
             foreach (var ue in ues)
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, ue.Id, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, ue, Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
