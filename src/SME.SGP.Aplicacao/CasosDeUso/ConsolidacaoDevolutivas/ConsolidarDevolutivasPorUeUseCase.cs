@@ -19,6 +19,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            if (!await ExecutarConsolidacaoDevolutivas())
+                return false;
+
             await ObterUesConsolidarDevolutivas();
 
             return true;
@@ -38,7 +41,7 @@ namespace SME.SGP.Aplicacao
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, ue, Guid.NewGuid(), null));
+                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantil, ue.Id, Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
@@ -47,5 +50,14 @@ namespace SME.SGP.Aplicacao
 
             }
         }
+        private async Task<bool> ExecutarConsolidacaoDevolutivas()
+        {
+            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, DateTime.Now.Year));
+            if (parametroExecucao != null)
+                return parametroExecucao.Ativo;
+
+            return false;
+        }
+
     }
 }

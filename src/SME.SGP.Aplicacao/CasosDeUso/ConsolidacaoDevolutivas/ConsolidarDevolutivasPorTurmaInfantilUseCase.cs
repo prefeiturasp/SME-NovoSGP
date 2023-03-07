@@ -18,11 +18,8 @@ namespace SME.SGP.Aplicacao.CasosDeUso
 
         public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
-            var filtro = mensagemRabbit.ObterObjetoMensagem<Ue>();
-            var ueId = filtro.Id;
-
-            if (!await ExecutarConsolidacaoDevolutivas())
-                return false;
+            var filtro = mensagemRabbit.ObterObjetoMensagem<string>();
+            var ueId = long.Parse(filtro);
 
             await ConsolidarDevolutivasAnoAtual(ueId);
 
@@ -86,15 +83,6 @@ namespace SME.SGP.Aplicacao.CasosDeUso
                 }
 
             }
-        }
-
-        private async Task<bool> ExecutarConsolidacaoDevolutivas()
-        {
-            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
-                return parametroExecucao.Ativo;
-
-            return false;
         }
 
         private async Task AtualizarDataExecucao(int ano)
