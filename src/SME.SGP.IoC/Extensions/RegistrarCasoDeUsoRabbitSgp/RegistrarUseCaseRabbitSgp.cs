@@ -10,6 +10,7 @@ namespace SME.SGP.IoC
     {
         internal static void RegistrarUseCaseRabbitSgp(this IServiceCollection services)
         {
+            services.TryAddScoped<INotificarUsuarioUseCase, NotificarUsuarioUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoUseCase, ReceberRelatorioProntoUseCase>();
             services.TryAddScoped<IReceberRelatorioProntoEscolaAquiUseCase, ReceberRelatorioProntoEscolaAquiUseCase>();
             services.TryAddScoped<IReceberRelatorioComErroUseCase, ReceberRelatorioComErroUseCase>();
@@ -77,6 +78,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<INotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreInativacaoAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<INotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase, NotificarSobreTransferenciaUeDreAlunoTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase, AtualizarTurmasProgramaDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IExecutarGravarHistoricoEscolarObservacaoUseCase, ExecutarGravarHistoricoEscolarObservacaoUseCase>();
         }
     }
 }
