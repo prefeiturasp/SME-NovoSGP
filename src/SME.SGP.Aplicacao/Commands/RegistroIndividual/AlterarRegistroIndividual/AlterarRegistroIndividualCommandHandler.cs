@@ -22,13 +22,12 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RegistroIndividual> Handle(AlterarRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
-
             var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
 
             if (turma == null)
                 throw new NegocioException("A turma informada não foi encontrada!");
 
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
+            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }, codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException("O componente curricular não foi encontrado");
