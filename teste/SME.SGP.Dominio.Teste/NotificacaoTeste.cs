@@ -9,10 +9,11 @@ namespace SME.SGP.Dominio.Teste
         {
             var notificacao = new Notificacao()
             {
-                Categoria = NotificacaoCategoria.Aviso
+                Categoria = NotificacaoCategoria.Aviso,
+                Status = NotificacaoStatus.Lida
             };
             Assert.Throws<NegocioException>(() => notificacao.MarcarComoLida());
-            Assert.True(notificacao.Status == NotificacaoStatus.Pendente);
+            Assert.True(notificacao.Status == NotificacaoStatus.Lida);
         }
 
         [Fact]

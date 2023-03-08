@@ -36,7 +36,8 @@ namespace SME.SGP.Aplicacao
                                     long codigoComponenteCurricular,
                                     long turmaId)
         {
-            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { codigoComponenteCurricular }));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(turmaId));
+            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { codigoComponenteCurricular }, codigoTurma: turma.CodigoTurma));
             if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
                 throw new NegocioException(MensagemNegocioEOL.COMPONENTE_CURRICULAR_NAO_LOCALIZADO_INFORMACOES_EOL);
 

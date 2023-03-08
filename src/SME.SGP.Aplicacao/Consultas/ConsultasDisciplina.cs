@@ -227,13 +227,13 @@ namespace SME.SGP.Aplicacao
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
-            var codigosDisciplinasAtribuicao = (from a in atribuicoesCJTurma
+            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ?  (from a in atribuicoesCJTurma
                                                 where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
                                                 select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
                                                .Where(a => a.HasValue)
                                                .Select(a => a.Value)
                                                .Distinct()
-                                               .ToArray();
+                                               .ToArray() : new long[] { };
 
             if (codigosDisciplinasAtribuicao.Any())
             {

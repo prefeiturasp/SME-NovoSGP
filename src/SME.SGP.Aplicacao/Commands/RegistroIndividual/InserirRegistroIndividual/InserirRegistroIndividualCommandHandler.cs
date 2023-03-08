@@ -25,7 +25,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<RegistroIndividual> Handle(InserirRegistroIndividualCommand request, CancellationToken cancellationToken)
         {
-            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }));
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(request.TurmaId));
+
+            var componenteCurricular = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { request.ComponenteCurricularId }, codigoTurma: turma.CodigoTurma));
 
             if (componenteCurricular == null || !componenteCurricular.Any())
                 throw new NegocioException(MensagemNegocioComponentesCurriculares.COMPONENTE_CURRICULAR_NAO_ENCONTRADO);
