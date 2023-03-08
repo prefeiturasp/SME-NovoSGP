@@ -79,9 +79,10 @@ namespace SME.SGP.Aplicacao
                     else
                     {
                         var disciplina = disciplinasAgrupadas.SingleOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
-                            .ObterDisciplinasPorIds(new long[] { id })).First();
+                            .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 
-                        disciplinasRetorno.Add(disciplina);
+                        if (disciplina != null)
+                            disciplinasRetorno.Add(disciplina);
                     }
                 }
             }
