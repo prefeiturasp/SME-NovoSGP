@@ -19,22 +19,26 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre.ServicosFakes
                 new TurmasDoAlunoDto()
                 {
                     CodigoAluno = 1111111,
-                    NomeAluno = "Nome aluno 1111111"
+                    NomeAluno = "Nome aluno 1111111",
+                    CodigoTurma = 1
                 },
                 new TurmasDoAlunoDto()
                 {
                     CodigoAluno = 2222222,
-                    NomeAluno = "Nome aluno 2222222"
+                    NomeAluno = "Nome aluno 2222222",
+                    CodigoTurma = 1
                 },
                 new TurmasDoAlunoDto()
                 {
                     CodigoAluno = 3333333,
-                    NomeAluno = "Nome aluno 3333333"
+                    NomeAluno = "Nome aluno 3333333",
+                    CodigoTurma = 1
                 },
                 new TurmasDoAlunoDto()
                 {
                     CodigoAluno = 4444444,
-                    NomeAluno = "Nome aluno 4444444"
+                    NomeAluno = "Nome aluno 4444444",
+                    CodigoTurma = 1
                 }
             };
 

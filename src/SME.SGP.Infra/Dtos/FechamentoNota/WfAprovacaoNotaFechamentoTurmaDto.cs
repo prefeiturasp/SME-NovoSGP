@@ -6,6 +6,7 @@ namespace SME.SGP.Infra
     {
         public WfAprovacaoNotaFechamento WfAprovacao { get; set; }
         public long TurmaId { get; set; }
+        public string TurmaCodigo { get; set; }
         public long FechamentoTurmaDisciplinaId { get; set; }
         public string ComponenteCurricularDescricao { get; set; }
         public FechamentoNota FechamentoNota { get; set; }

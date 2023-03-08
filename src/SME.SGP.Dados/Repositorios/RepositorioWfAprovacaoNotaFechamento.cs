@@ -74,7 +74,7 @@ namespace SME.SGP.Dados.Repositorios
         
         public async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterWfAprovacaoNotaFechamentoComWfAprovacaoId(long workflowId)
         {
-            var query = @"select ft.turma_id as TurmaId, t.ano_letivo as AnoLetivo, fa.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId, pe.bimestre as Bimestre, 
+            var query = @"select ft.turma_id as TurmaId, t.turma_id as TurmaCodigo, t.ano_letivo as AnoLetivo, fa.fechamento_turma_disciplina_id as FechamentoTurmaDisciplinaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
                                 cc.eh_regencia as ComponenteCurricularEhRegencia, 
                                 cc.permite_lancamento_nota LancaNota, fn.conceito_id as ConceitoAnteriorId, wanf.* 
