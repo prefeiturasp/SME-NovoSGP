@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 {
                     long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
 
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
 
                     if(!componentesCurriculares.Any())
                     {
