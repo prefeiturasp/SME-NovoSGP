@@ -55,10 +55,10 @@ namespace SME.SGP.Aplicacao
         {
             var statusFechamento = fechamento != null ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
 
+            var professorComponente = professoresDaTurma != null ? professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId)) : null;
+
             if (consolidadoTurmaComponente == null)
             {
-                var professorComponente = professoresDaTurma.FirstOrDefault(p => p.DisciplinasId.Contains(filtro.ComponenteCurricularId));
-
                 consolidadoTurmaComponente = new FechamentoConsolidadoComponenteTurma()
                 {
                     Bimestre = filtro.Bimestre,
@@ -67,6 +67,18 @@ namespace SME.SGP.Aplicacao
                     ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular",
                     ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty,                    
                 };
+            }
+            else
+            {
+                if(professorComponente != null)
+                {
+                    if (((consolidadoTurmaComponente.ProfessorNome.ToUpper() != professorComponente.ProfessorNome) && professorComponente.ProfessorNome != null) ||
+                         (consolidadoTurmaComponente.ProfessorRf != professorComponente.ProfessorRf) && professorComponente.ProfessorRf != null)
+                    {
+                        consolidadoTurmaComponente.ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular";
+                        consolidadoTurmaComponente.ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty;
+                    }
+                }
             }
 
             consolidadoTurmaComponente.DataAtualizacao = DateTime.Now;
