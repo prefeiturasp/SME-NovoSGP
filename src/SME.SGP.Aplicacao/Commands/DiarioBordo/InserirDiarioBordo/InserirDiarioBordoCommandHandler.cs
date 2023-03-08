@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
             }
 
             await MoverRemoverExcluidos(request);
-            var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
+            var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ, usuario.Nome, usuario.CodigoRf);
 
             if (diarioAulaComponente != null)
                 diarioBordo.Id = diarioAulaComponente.Id;
@@ -72,14 +72,16 @@ namespace SME.SGP.Aplicacao
                 diario.Planejamento = moverArquivo;
             }
         }
-        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ)
+        private DiarioBordo MapearParaEntidade(InserirDiarioBordoCommand request, long turmaId, bool inseridoCJ, string usuarioNome,string usuarioRf)
             => new DiarioBordo()
             { 
                 AulaId = request.AulaId,
                 Planejamento = request.Planejamento,
                 ComponenteCurricularId = request.ComponenteCurricularId,
                 TurmaId = turmaId,
-                InseridoCJ = inseridoCJ
+                InseridoCJ = inseridoCJ,
+                CriadoPor = usuarioNome,
+                CriadoRF = usuarioRf
             };
     }
 }
