@@ -24,13 +24,27 @@ namespace SME.SGP.TesteIntegracao.HistoricoEscolar
         [Fact]
         public async Task Deve_enviar_fila_gravar_observacao_complementar_historico_escolar()
         {
-            var historicoEscolarObservacaoDto = new HistoricoEscolarObservacaoDto("456789", "Inserir observação nova para aluno");
+            var codigoAluno = "456789";
+            var salvarObservacaoHistoricoEscolarDto = new SalvarObservacaoHistoricoEscolarDto("Inserir observação nova para aluno");
 
             var salvarHistoricoEscolarObservacaoUseCase = ServiceProvider.GetService<IEnviarFilaGravarHistoricoEscolarObservacaoUseCase>();
 
-            var retorno = await salvarHistoricoEscolarObservacaoUseCase.Executar(historicoEscolarObservacaoDto);
+            var retorno = await salvarHistoricoEscolarObservacaoUseCase.Executar(codigoAluno, salvarObservacaoHistoricoEscolarDto);
 
             retorno.ShouldBe(true);
+        }
+
+        [Fact]
+        public async Task Excecao_negocio_enviar_fila_gravar_observacao_complementar_historico_escolar()
+        {
+            string codigoAluno = null;
+            var salvarObservacaoHistoricoEscolarDto = new SalvarObservacaoHistoricoEscolarDto("Inserir observação nova para aluno");
+
+            var salvarHistoricoEscolarObservacaoUseCase = ServiceProvider.GetService<IEnviarFilaGravarHistoricoEscolarObservacaoUseCase>();
+
+            var exAlunoCodigoVazio = await Should.ThrowAsync<NegocioException>(() => salvarHistoricoEscolarObservacaoUseCase.Executar(codigoAluno, salvarObservacaoHistoricoEscolarDto));
+
+            exAlunoCodigoVazio.Message.ShouldBe("O Código do Aluno deve ser informado.");
         }
 
         [Fact]

@@ -5,6 +5,6 @@ namespace SME.SGP.Aplicacao.Interfaces.CasosDeUso
 {
     public interface IEnviarFilaGravarHistoricoEscolarObservacaoUseCase
     {
-        Task<bool> Executar(HistoricoEscolarObservacaoDto historicoEscolarObservacaoDto);
+        Task<bool> Executar(string codigoAluno, SalvarObservacaoHistoricoEscolarDto salvarObservacaoHistoricoEscolarDto);
     }
 }

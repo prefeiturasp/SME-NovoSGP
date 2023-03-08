@@ -28,7 +28,7 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpGet]
-        [Route("observacao-complementar/{codigoAluno}")]
+        [Route("aluno/{codigoAluno}/observacao-complementar")]
         [ProducesResponseType(typeof(HistoricoEscolarObservacaoDto), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
@@ -40,15 +40,15 @@ namespace SME.SGP.Api.Controllers
         }
 
         [HttpPost]
-        [Route("observacao-complementar")]
+        [Route("aluno/{codigoAluno}/observacao-complementar")]
         [ProducesResponseType(typeof(Boolean), 200)]
         [ProducesResponseType(typeof(RetornoBaseDto), 500)]
         [ProducesResponseType(typeof(RetornoBaseDto), 601)]
         [Permissao(Permissao.HE_C, Policy = "Bearer")]
-        public async Task<IActionResult> SalvarObservacaoHistoricoEscolar([FromBody] HistoricoEscolarObservacaoDto historicoEscolarObservacaoDto,
+        public async Task<IActionResult> SalvarObservacaoHistoricoEscolar(string codigoAluno, [FromBody] SalvarObservacaoHistoricoEscolarDto salvarObservacaoHistoricoEscolarDto,
             [FromServices] IEnviarFilaGravarHistoricoEscolarObservacaoUseCase salvarHistoricoEscolarObservacaoUseCase)
         {
-            return Ok(await salvarHistoricoEscolarObservacaoUseCase.Executar(historicoEscolarObservacaoDto));
+            return Ok(await salvarHistoricoEscolarObservacaoUseCase.Executar(codigoAluno, salvarObservacaoHistoricoEscolarDto));
         }
     }
 }

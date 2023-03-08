@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Interfaces.CasosDeUso;
+using SME.SGP.Dominio;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Dtos;
 using System;
@@ -13,9 +14,13 @@ namespace SME.SGP.Aplicacao.CasosDeUso.HistoricoEscolar
         {
         }
 
-        public async Task<bool> Executar(HistoricoEscolarObservacaoDto historicoEscolarObservacaoDto)
+        public async Task<bool> Executar(string codigoAluno, SalvarObservacaoHistoricoEscolarDto salvarObservacaoHistoricoEscolarDto)
         {
-            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, historicoEscolarObservacaoDto, Guid.NewGuid()));
+            if (string.IsNullOrWhiteSpace(codigoAluno))
+                throw new NegocioException("O Código do Aluno deve ser informado.");
+
+            var historicoEscolarObservacao = new HistoricoEscolarObservacaoDto(codigoAluno, salvarObservacaoHistoricoEscolarDto.Observacao);
+            return await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ExecutarGravarObservacaoHistorioEscolar, historicoEscolarObservacao, Guid.NewGuid()));
         }
     }
 }
