@@ -71,51 +71,32 @@ namespace SME.SGP.Aplicacao
 				.OrderBy(n => n.WfAprovacao.AlteradoEm)
 				.ThenBy(n => n.WfAprovacao.CriadoEm);
 
-			var agrupamentoAlunoNotasAprovacoes = (from nota in notasAprovacao
-				join aluno in Alunos on nota.CodigoAluno equals aluno.CodigoAluno.ToString()
-				select new AlunoNotaFechamentoDto
-				{
-					CodigoAluno = aluno.CodigoAluno.ToString(),
-					NumeroAlunoChamada = aluno?.NumeroAlunoChamada, 
-					NomeAluno = aluno.NomeAluno,
-					AlteradoPor = nota.WfAprovacao.AlteradoPor,
-					AlteradoRf = nota.WfAprovacao.AlteradoRF,
-					AlteradoEm = nota.WfAprovacao.AlteradoEm,
-					CriadoEm = nota.WfAprovacao.CriadoEm,
-					CriadoRf = nota.WfAprovacao.CriadoRF,
-					CriadoPor = nota.WfAprovacao.CriadoPor,
-					ConceitoId = nota.WfAprovacao.ConceitoId,
-					ConceitoAnteriorId = nota.ConceitoAnteriorId,
-					ComponenteCurricularDescricao = nota.ComponenteCurricularDescricao,
-					NotaAnterior = nota.NotaAnterior,
-					Nota = nota.WfAprovacao.Nota,
-				}).GroupBy(o => new {o.CodigoAluno, o.ComponenteCurricularDescricao})
-				.Select(g => g.First());
-				
-			foreach (var alunoNotaAprovacao in agrupamentoAlunoNotasAprovacoes)
+			foreach (var notaAprovacao in notasAprovacao)
 			{
-				string nomeUsuarioAlterou = alunoNotaAprovacao.AlteradoPor ?? alunoNotaAprovacao.CriadoPor;
-				string rfUsuarioAlterou = alunoNotaAprovacao.AlteradoRf ?? alunoNotaAprovacao.CriadoRf;
+				var aluno = Alunos.FirstOrDefault(a => a.CodigoAluno.ToString() == notaAprovacao.CodigoAluno && a.CodigoTurma.ToString() == notaAprovacao.TurmaCodigo);
+				
+				string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor ?? notaAprovacao.WfAprovacao.CriadoPor;
+				string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF ?? notaAprovacao.WfAprovacao.CriadoRF;
 
-				var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(alunoNotaAprovacao.AlteradoEm, alunoNotaAprovacao.CriadoEm);
+				var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(notaAprovacao.WfAprovacao.AlteradoEm, notaAprovacao.WfAprovacao.CriadoEm);
 
 				mensagem.AppendLine("<tr>");
 
-				if (alunoNotaAprovacao.Nota.HasValue && lancaNota)
+				if (notaAprovacao.WfAprovacao.Nota.HasValue && lancaNota)
 				{
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.ComponenteCurricularDescricao}</td>");
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.NumeroAlunoChamada} - {alunoNotaAprovacao.NomeAluno} ({alunoNotaAprovacao.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(alunoNotaAprovacao.NotaAnterior.Value)}</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(alunoNotaAprovacao.Nota.Value)}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior.Value)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota.Value)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
 				}
 				else
 				{
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.ComponenteCurricularDescricao}</td>");
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.NumeroAlunoChamada} - {alunoNotaAprovacao.NomeAluno} ({alunoNotaAprovacao.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(alunoNotaAprovacao.ConceitoAnteriorId)}</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(alunoNotaAprovacao.ConceitoId)}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
 				}
@@ -144,50 +125,32 @@ namespace SME.SGP.Aplicacao
 			notasAprovacao = notasAprovacao
 				.OrderBy(n => n.WfAprovacao.AlteradoEm)
 				.ThenBy(n => n.WfAprovacao.CriadoEm);
-
-			var agrupamentoAlunoNotasAprovacoes = (from nota in notasAprovacao
-				join aluno in Alunos on nota.CodigoAluno equals aluno.CodigoAluno.ToString()
-				select new AlunoNotaFechamentoDto
-				{
-					CodigoAluno = aluno.CodigoAluno.ToString(),
-					NumeroAlunoChamada = aluno?.NumeroAlunoChamada, 
-					NomeAluno = aluno.NomeAluno,
-					AlteradoPor = nota.WfAprovacao.AlteradoPor,
-					AlteradoRf = nota.WfAprovacao.AlteradoRF,
-					AlteradoEm = nota.WfAprovacao.AlteradoEm,
-					CriadoEm = nota.WfAprovacao.CriadoEm,
-					CriadoRf = nota.WfAprovacao.CriadoRF,
-					CriadoPor = nota.WfAprovacao.CriadoPor,
-					ConceitoId = nota.WfAprovacao.ConceitoId,
-					ComponenteCurricularDescricao = nota.ComponenteCurricularDescricao,
-					NotaAnterior = nota.NotaAnterior,
-					Nota = nota.WfAprovacao.Nota,
-				}).GroupBy(o => new {o.CodigoAluno, o.ComponenteCurricularDescricao})
-				.Select(g => g.First());
-				
-			foreach (var alunoNotaAprovacao in agrupamentoAlunoNotasAprovacoes)
+			
+			foreach (var notaAprovacao in notasAprovacao)
 			{
-				string nomeUsuarioAlterou = alunoNotaAprovacao.AlteradoPor ?? alunoNotaAprovacao.CriadoPor;
-				string rfUsuarioAlterou = alunoNotaAprovacao.AlteradoRf ?? alunoNotaAprovacao.CriadoRf;
-				var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(alunoNotaAprovacao.AlteradoEm, alunoNotaAprovacao.CriadoEm);
+				var aluno = Alunos.FirstOrDefault(a => a.CodigoAluno.ToString() == notaAprovacao.CodigoAluno && a.CodigoTurma.ToString() == notaAprovacao.TurmaCodigo);
+				
+				string nomeUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoPor ?? notaAprovacao.WfAprovacao.CriadoPor;
+				string rfUsuarioAlterou = notaAprovacao.WfAprovacao.AlteradoRF ?? notaAprovacao.WfAprovacao.CriadoRF;
+				var (dataNotificacao, horaNotificacao) = RetornarDataHoraNotificacao(notaAprovacao.WfAprovacao.AlteradoEm, notaAprovacao.WfAprovacao.CriadoEm);
 
 				mensagem.AppendLine("<tr>");
 
-				if (alunoNotaAprovacao.Nota.HasValue)
+				if (notaAprovacao.WfAprovacao.Nota.HasValue)
 				{
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.ComponenteCurricularDescricao}</td>");
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.NumeroAlunoChamada} - {alunoNotaAprovacao.NomeAluno} ({alunoNotaAprovacao.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(alunoNotaAprovacao.NotaAnterior)}</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(alunoNotaAprovacao.Nota)}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.NotaAnterior)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterNota(notaAprovacao.WfAprovacao.Nota)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
 				}
 				else
 				{
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.ComponenteCurricularDescricao}</td>");
-					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{alunoNotaAprovacao.NumeroAlunoChamada} - {alunoNotaAprovacao.NomeAluno} ({alunoNotaAprovacao.CodigoAluno})</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(alunoNotaAprovacao.ConceitoAnteriorId)}</td>");
-					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(alunoNotaAprovacao.ConceitoId)}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{notaAprovacao.ComponenteCurricularDescricao}</td>");
+					mensagem.Append($"<td style='padding: 20px; text-align:left;'>{aluno.NumeroAlunoChamada} - {aluno.NomeAluno} ({aluno.CodigoAluno})</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.ConceitoAnteriorId)}</td>");
+					mensagem.Append($"<td style='padding: 5px; text-align:right;'>{ObterConceito(notaAprovacao.WfAprovacao.ConceitoId)}</td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'> {nomeUsuarioAlterou} ({rfUsuarioAlterou}) </td>");
 					mensagem.Append($"<td style='padding: 10px; text-align:right;'>{dataNotificacao} ({horaNotificacao}) </td>");
 				}
