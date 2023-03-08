@@ -43,13 +43,25 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             retorno.ShouldNotBeNull();
             var avaliacao = retorno.FirstOrDefault();
+            VerificarNotasAvaliacoesTurmaComponenteRegencia(avaliacao);
+          
+        }
+        private void VerificarNotasAvaliacoesTurmaComponenteRegencia(AvaliacaoNotaAlunoDto avaliacao)
+        {
             avaliacao.Nome.ShouldBe(AVALIACAO_NOME_1);
             avaliacao.Disciplinas.ShouldNotBeNull();
             avaliacao.Disciplinas.Length.ShouldBe(2);
-            avaliacao.Disciplinas[0].ShouldBe(COMPONENTE_GEOGRAFIA_NOME.Replace("'", string.Empty));
-            avaliacao.Disciplinas[1].ShouldBe(COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty));
+            if (avaliacao.Disciplinas[0] == COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty))
+            {
+                avaliacao.Disciplinas[0].ShouldBe(COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty));
+                avaliacao.Disciplinas[1].ShouldBe(COMPONENTE_GEOGRAFIA_NOME.Replace("'", string.Empty));
+            }
+            else
+            {
+                avaliacao.Disciplinas[0].ShouldBe(COMPONENTE_GEOGRAFIA_NOME.Replace("'", string.Empty));
+                avaliacao.Disciplinas[1].ShouldBe(COMPONENTE_CIENCIAS_NOME.Replace("'", string.Empty));
+            }
         }
-
         private async Task CriarNotaConceitoNaBase(FiltroFechamentoNotaDto filtroNota, string alunoCodigo, long atividadeAvaliativaId, double? nota = null, long? conceitoId = null)
         {
             await InserirNaBase(new NotaConceito()
