@@ -68,7 +68,7 @@ namespace SME.SGP.TesteIntegracao.AulaUnica
 
             var useCase = ServiceProvider.GetService<IInserirAulaUseCase>();
 
-            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_PORTUGUES_ID_138, DATA_02_05);
+            var dto = ObterAula(TipoAula.Normal, RecorrenciaAula.AulaUnica, COMPONENTE_CURRICULAR_DESCONHECIDO_ID_999999, DATA_02_05);
 
             await CriarPeriodoEscolarEAbertura();
 
