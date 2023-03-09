@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,7 +26,9 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await RetornarUsuario();
+            if (usuarioLogado == null)
+              return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {                
@@ -50,6 +53,17 @@ namespace SME.SGP.Aplicacao
             }
             else
                 return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
+        }
+
+        private async Task<Usuario> RetornarUsuario()
+        {
+            try
+            {
+               return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
