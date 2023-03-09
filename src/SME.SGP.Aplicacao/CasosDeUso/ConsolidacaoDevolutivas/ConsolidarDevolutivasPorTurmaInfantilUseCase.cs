@@ -16,54 +16,58 @@ namespace SME.SGP.Aplicacao.CasosDeUso
         {
         }
 
-        public async Task<bool> Executar(MensagemRabbit param)
+        public async Task<bool> Executar(MensagemRabbit mensagemRabbit)
         {
+            var filtro = mensagemRabbit.ObterObjetoMensagem<string>();
+            var ueId = long.Parse(filtro);
 
-            if (!await ExecutarConsolidacaoDevolutivas())
-                return false;
+            await ConsolidarDevolutivasAnoAtual(ueId);
 
-            await ConsolidarDevolutivasAnoAtual();
-
-            await ConsolidarDevolutivasHistorico();
+            await ConsolidarDevolutivasHistorico(ueId);
 
             return true;
 
         }
 
-        private async Task ConsolidarDevolutivasAnoAtual()
+        private async Task ConsolidarDevolutivasAnoAtual(long ueId)
         {
             var anoAtual = DateTime.Now.Year;
 
             var turmasInfantil = await mediator
-                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual));
-
-            await mediator
-                .Send(new LimparConsolidacaoDevolutivasCommand(anoAtual));
+                .Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(anoAtual, ueId));
+            if(turmasInfantil.Any())
+                await mediator
+                    .Send(new LimparConsolidacaoDevolutivasCommand(turmasInfantil.Select(ti => ti.Id).ToArray()));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, anoAtual);
 
             await AtualizarDataExecucao(anoAtual);
         }
 
-        private async Task ConsolidarDevolutivas(int ano)
+        private async Task ConsolidarDevolutivas(int ano, long ueId)
         {
-            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano));
-
-            await mediator.Send(new LimparConsolidacaoDevolutivasCommand(ano));
+            var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(ano, ueId));
 
             await PublicarMensagemConsolidarDevolutivasPorTurmasInfantil(turmasInfantil, ano);
 
             await AtualizarDataExecucao(ano);
+            try
+            {
+                // TODO: Essa rota não possui o registro
+                //await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurmaInfantilTurma, new FiltroCodigoTurmaInfantilPorAnoDto(ano), Guid.NewGuid(), null));
+            }
+            catch (Exception ex)
+            {
+                await mediator.Send(new SalvarLogViaRabbitCommand("Erro ao executar", LogNivel.Critico, LogContexto.Geral, ex.Message));
+            }
         }
 
-        private async Task ConsolidarDevolutivasHistorico()
+        private async Task ConsolidarDevolutivasHistorico(long ueId)
         {
             for (var ano = 2021; ano < DateTime.Now.Year; ano++)
             {
                 if (!await mediator.Send(new ExisteConsolidacaoDevolutivaTurmaPorAnoQuery(ano)))
-                {
-                    await ConsolidarDevolutivas(ano);
-                }
+                    await ConsolidarDevolutivas(ano, ueId);
             }
         }
 
@@ -76,23 +80,15 @@ namespace SME.SGP.Aplicacao.CasosDeUso
             {
                 try
                 {
-                    await mediator.Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo), Guid.NewGuid(), null));
+                    await mediator
+                        .Send(new PublicarFilaSgpCommand(RotasRabbitSgp.ConsolidarDevolutivasPorTurma, new FiltroDevolutivaTurmaDTO(turma.TurmaId, anoLetivo, 0), Guid.NewGuid(), null));
                 }
                 catch (Exception ex)
                 {
-                    await mediator.Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
+                    await mediator
+                        .Send(new SalvarLogViaRabbitCommand("Publicar Mensagem Consolidar Devolutivas Por Turmas Infantil", LogNivel.Critico, LogContexto.Devolutivas, ex.Message));
                 }
-
             }
-        }
-
-        private async Task<bool> ExecutarConsolidacaoDevolutivas()
-        {
-            var parametroExecucao = await mediator.Send(new ObterParametroSistemaPorTipoEAnoQuery(TipoParametroSistema.ExecucaoConsolidacaoDevolutivasTurma, DateTime.Now.Year));
-            if (parametroExecucao != null)
-                return parametroExecucao.Ativo;
-
-            return false;
         }
 
         private async Task AtualizarDataExecucao(int ano)

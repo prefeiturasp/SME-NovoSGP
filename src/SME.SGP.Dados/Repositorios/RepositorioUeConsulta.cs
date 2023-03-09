@@ -227,6 +227,20 @@ namespace SME.SGP.Dados.Repositorios
             }, new { modalidades, anoLetivo });
         }
 
+        public Task<IEnumerable<long>> ObterUesIdsPorModalidade(int[] modalidades, int anoLetivo = 0)
+        {
+            var query = @"select distinct ue.id
+                          from turma t
+                         inner join ue on ue.id = t.ue_id
+                         inner join dre on dre.id = ue.dre_id
+                         where t.modalidade_codigo = ANY(@modalidades) ";
+
+            if (anoLetivo > 0)
+                query += "and ano_letivo = @anoLetivo";
+
+            return contexto.Conexao.QueryAsync<long>(query, new { modalidades, anoLetivo });
+        }
+
         public async Task<IEnumerable<Ue>> ObterUesComDrePorDreEModalidade(string dreCodigo, Modalidade modalidade)
         {
             var query = @"select ue.*, dre.*
@@ -304,7 +318,7 @@ namespace SME.SGP.Dados.Repositorios
                         inner join dre on dre.id = ue.dre_id
                         where ue.id = @id";
 
-            return await contexto.QueryFirstAsync<Ue>(query, new { id });
+            return await contexto.QueryFirstOrDefaultAsync<Ue>(query, new { id });
         }
 
         public async Task<TipoEscola> ObterTipoEscolaPorCodigo(string ueCodigo)

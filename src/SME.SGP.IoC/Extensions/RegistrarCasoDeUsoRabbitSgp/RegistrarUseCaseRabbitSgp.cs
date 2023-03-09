@@ -31,6 +31,7 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IGerarPendenciaAusenciaRegistroIndividualUseCase, GerarPendenciaAusenciaRegistroIndividualUseCase>();
             services.TryAddScoped<IAtualizarPendenciaRegistroIndividualUseCase, AtualizarPendenciaRegistroIndividualUseCase>();
             services.TryAddScoped<INotificarCompensacaoAusenciaUseCase, NotificarCompensacaoAusenciaUseCase>();
+            services.TryAddScoped<IConsolidarDevolutivasPorUeUseCase, ConsolidarDevolutivasPorUeUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaInfantilUseCase, ConsolidarDevolutivasPorTurmaInfantilUseCase>();
             services.TryAddScoped<IConsolidarDevolutivasPorTurmaUseCase, ConsolidarDevolutivasPorTurmaUseCase>();
             services.TryAddScoped<IConsolidarDiariosBordoCarregarUseCase, ConsolidarDiariosBordoCarregarUseCase>();
@@ -75,6 +76,8 @@ namespace SME.SGP.IoC
             services.TryAddScoped<IAtualizarInformacoesDoEncaminhamentoNAAPAUseCase, AtualizarInformacoesDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarTurmaDoEncaminhamentoNAAPAUseCase, AtualizarTurmaDoEncaminhamentoNAAPAUseCase>();
             services.TryAddScoped<IAtualizarEnderecoDoEncaminhamentoNAAPAUseCase, AtualizarEnderecoDoEncaminhamentoNAAPAUseCase>();
+            services.TryAddScoped<IObterCodigoTurmaInfantilPorAnoUseCase, ObterCodigoTurmaInfantilPorAnoUseCase>();
+            services.TryAddScoped<IObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase, ObterTurmaCodigoAulaInfantilPorTurmaCodigoUseCase>();
         }
     }
 }

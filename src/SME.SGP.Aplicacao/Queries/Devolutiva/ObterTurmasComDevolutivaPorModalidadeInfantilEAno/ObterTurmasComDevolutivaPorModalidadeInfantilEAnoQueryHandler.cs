@@ -18,6 +18,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<IEnumerable<DevolutivaTurmaDTO>> Handle(ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery request, CancellationToken cancellationToken)
-            => await repositorioDevolutiva.ObterTurmasInfantilComDevolutivasPorAno(request.AnoLetivo);
+            => await repositorioDevolutiva.ObterTurmasInfantilComDevolutivasPorAno(request.AnoLetivo,request.UeId);
     }
 }

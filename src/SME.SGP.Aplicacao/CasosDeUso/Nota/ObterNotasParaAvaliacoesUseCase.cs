@@ -57,7 +57,7 @@ namespace SME.SGP.Aplicacao
             if (alunos == null || !alunos.Any())
                 throw new NegocioException("Não foi encontrado alunos para a turma informada");
 
-            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }));
+            var componentesCurricularesCompletos = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.DisciplinaCodigo }, codigoTurma: turmaCompleta.CodigoTurma));
             if (componentesCurricularesCompletos == null || !componentesCurricularesCompletos.Any())
                 throw new NegocioException("Componente curricular informado não encontrado no EOL");
 
@@ -230,7 +230,6 @@ namespace SME.SGP.Aplicacao
 
                 notaConceitoAluno.Marcador = await mediator
                     .Send(new ObterMarcadorAlunoQuery(aluno, periodoInicio, turmaCompleta.EhTurmaInfantil));
-
                 notaConceitoAluno.NotasAvaliacoes = notasAvaliacoes;
 
                 var fechamentoTurma = (from ft in fechamentosNotasDaTurma

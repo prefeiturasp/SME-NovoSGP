@@ -240,17 +240,17 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<Aula>> ObterAulasProfessorCalendarioPorMes(string turmaCodigo, string ueCodigo, int mes)
         {
             StringBuilder query = new StringBuilder();
-            query.AppendLine("SELECT a.id,");
-            query.AppendLine("       a.data_aula,");
-            query.AppendLine("       a.tipo_aula,");
-            query.AppendLine("       a.aula_cj,");
-            query.AppendLine("       a.disciplina_id,");
-            query.AppendLine("       a.professor_rf,");
-            query.AppendLine("       a.tipo_calendario_id");
+            query.AppendLine("SELECT distinct a.id,");
+            query.AppendLine("                a.data_aula,");
+            query.AppendLine("                a.tipo_aula,");
+            query.AppendLine("                a.aula_cj,");
+            query.AppendLine("                a.disciplina_id,");
+            query.AppendLine("                a.professor_rf,");
+            query.AppendLine("                a.tipo_calendario_id");
             query.AppendLine("  FROM public.aula a");
             query.AppendLine("      INNER JOIN turma t");
             query.AppendLine("          ON a.turma_id = t.turma_id");
-            query.AppendLine("WHERE a.excluido = false");
+            query.AppendLine("WHERE not a.excluido");
             query.AppendLine("AND a.status <> 3");
             query.AppendLine("AND a.turma_id = @turmaCodigo");
             query.AppendLine("AND extract(month from a.data_aula) = @mes");
@@ -613,14 +613,13 @@ namespace SME.SGP.Dados.Repositorios
                                                             a.professor_rf AS ProfessorRf,
                                                             a.criado_por AS CriadoPor, 
                                                             a.tipo_aula AS TipoAula,
-                                                            CASE WHEN rf.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
+                                                            CASE WHEN rfa.id > 0 THEN TRUE ELSE false END PossuiFrequenciaRegistrada ");
             query.AppendLine("from aula a ");
             query.AppendLine("inner join turma t on ");
             query.AppendLine("a.turma_id = t.turma_id ");
             query.AppendLine("inner join periodo_escolar pe on pe.id = ANY(@periodoEscolarId) ");
-            query.AppendLine("                and pe.periodo_inicio <= a.data_aula ");
-            query.AppendLine("                and pe.periodo_fim >= a.data_aula ");
-            query.AppendLine(" LEFT JOIN registro_frequencia rf ON rf.aula_id = a.id ");
+            query.AppendLine("                and a.data_aula::date between pe.periodo_inicio and pe.periodo_fim");
+            query.AppendLine("LEFT JOIN registro_frequencia_aluno rfa ON rfa.aula_id = a.id and not rfa.excluido");
             query.AppendLine("where");
             query.AppendLine("not a.excluido");
             query.AppendLine("and a.turma_id = @turmaCodigo ");

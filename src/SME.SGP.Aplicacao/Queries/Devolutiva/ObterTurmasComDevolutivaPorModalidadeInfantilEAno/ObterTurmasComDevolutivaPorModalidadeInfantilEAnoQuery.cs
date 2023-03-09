@@ -7,12 +7,14 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery : IRequest<IEnumerable<DevolutivaTurmaDTO>>
     {
-        public ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(int anoLetivo)
+        public ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(int anoLetivo, long ueId = 0)
         {
             AnoLetivo = anoLetivo;
+            UeId = ueId;
         }
 
         public int AnoLetivo { get; set; }
+        public long UeId { get; set; }
     }
 
     public class ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQueryValidator : AbstractValidator<ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery>

@@ -21,8 +21,8 @@
         public const string NotificarCompensacaoAusencia = "sgp.compensacao.ausencia.notificar";
         public const string RotaRabbitDeadletterSync = "sgp.rabbit.deadletter.sync";
         public const string RotaRabbitDeadletterTratar = "sgp.rabbit.deadletter.tratar";
-        public const string SincronizaDevolutivasPorTurmaInfantilSync = "sgp.consolidacao.devolutivas.turma.sync";
         public const string ConsolidarDevolutivasPorTurma = "sgp.consolidacao.devolutivas.turma";
+        public const string ConsolidarDevolutivasPorUE = "sgp.consolidacao.devolutivas.turma.infantil.ue";
         public const string ConsolidarDevolutivasPorTurmaInfantil = "sgp.consolidacao.devolutivas.turma.infantil";
         public const string ConsolidarDiariosBordoCarregar = "sgp.consolidacao.diarios.bordo.carregar";
         public const string ConsolidarDiariosBordoPorUeTratar = "sgp.consolidacao.diarios.bordo.ue.tratar";
@@ -37,6 +37,9 @@
         public const string ConsolidarRegistrosPedagogicos = "sgp.consolidacao.registros.pedagogicos";
         public const string RotaAgendamentoTratar = "sgp.agendamento.tratar";
         public const string RemoverArquivoArmazenamento = "sgp.armazenamento.remover.arquivo";
+        // TODO: Essas rotas não possuem o registro
+        //public const string ConsolidarDevolutivasPorTurmaInfantilTurma = "sgp.consolidacao.devolutivas.turma.infantil.turma";
+        public const string ConsolidarDevolutivasPorTurmaInfantilAula = "sgp.consolidacao.devolutivas.turma.infantil.aula";
 
         public const string ExecutarAtualizacaoDasInformacoesEncaminhamentoNAAPA = "sgp.atualizar.informacoes.encaminhamento.naapa";
         public const string ExecutarAtualizacaoDaTurmaDoEncaminhamentoNAAPA = "sgp.atualizar.turma.encaminhamento.naapa";

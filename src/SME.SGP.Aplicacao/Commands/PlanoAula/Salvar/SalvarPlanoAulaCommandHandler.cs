@@ -67,7 +67,7 @@ namespace SME.SGP.Aplicacao
                 {
                     long componenteCurricularId = request.PlanoAula.ComponenteCurricularId.Value;
 
-                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }));
+                    var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularId }, codigoTurma: turma.CodigoTurma));
 
                     if(!componentesCurriculares.Any())
                     {
@@ -107,8 +107,8 @@ namespace SME.SGP.Aplicacao
                     LicaoCasaAtual = planoAula?.LicaoCasa ?? string.Empty,
                     RecuperacaoAulaAtual = planoAula?.RecuperacaoAula ?? string.Empty
                 };
-                planoAula = MapearParaDominio(planoAulaDto, planoAula);
-                
+                planoAula = MapearParaDominio(planoAulaDto, planoAula);                
+
                 var planejamentoAnual = await mediator.Send(
                     new ObterPlanejamentoAnualPorAnoEscolaBimestreETurmaQuery(turma.Id, periodoEscolar.Id, long.Parse(aula.DisciplinaId))
                     );

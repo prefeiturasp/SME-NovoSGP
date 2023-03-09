@@ -26,26 +26,44 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsOuCodigosTerritorioSaberQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var codigosComponentes = request.CodigoComponentes
+                    .Select(c => c.codigo)
+                    .ToArray();
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
-                var listaDisciplinas = new List<DisciplinaDto>();
-                var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.CodigoComponentes.Select(c => c.codigo).ToArray(), request.CodigoTurma);
+                var listaDisciplinas = new List<DisciplinaDto>();                
+
+                var disciplinasAgrupadas = await servicoEol
+                    .ObterDisciplinasPorIdsAgrupadas(codigosComponentes, request.CodigoTurma);
+
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
-                    var codigoTerritorioSaberCorrespondente = request.CodigoComponentes.Single(c => c.codigo.Equals(disciplina.CodigoComponenteCurricular));
+                    var codigoTerritorioSaberCorrespondente = request.CodigoComponentes
+                        .FirstOrDefault(c => (!disciplina.TerritorioSaber && c.codigo.Equals(disciplina.CodigoComponenteCurricular)) || (disciplina.TerritorioSaber && (c.codigoTerritorioSaber.Equals(disciplina.CodigoTerritorioSaber) || c.codigo.Equals(disciplina.CodigoTerritorioSaber))));
+
+                    if (codigoTerritorioSaberCorrespondente == default)
+                        continue;
 
                     disciplina.RegistraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(codigoTerritorioSaberCorrespondente.codigo, codigoTerritorioSaberCorrespondente.codigoTerritorioSaber > 0 ? codigoTerritorioSaberCorrespondente.codigoTerritorioSaber : null));
+                        .Send(new ObterComponenteRegistraFrequenciaQuery(codigoTerritorioSaberCorrespondente.codigo, codigoTerritorioSaberCorrespondente != default && codigoTerritorioSaberCorrespondente.codigoTerritorioSaber.HasValue && codigoTerritorioSaberCorrespondente.codigoTerritorioSaber.Value > 0 ? codigoTerritorioSaberCorrespondente.codigoTerritorioSaber : null));
 
                     disciplina.Id = codigoTerritorioSaberCorrespondente.codigoTerritorioSaber ?? 0;
                     listaDisciplinas.Add(disciplina);
                 }
 
+                request.CodigoComponentes
+                    .Where(cc => !disciplinasAgrupadas.Select(d => d.CodigoComponenteCurricular).Contains(cc.codigo) && cc.codigoTerritorioSaber.Equals(0))
+                    .ToList().ForEach(async cc =>
+                    {
+                        var componente = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { cc.codigo });
+                        listaDisciplinas.Add(componente.First());
+                    });
+
                 return listaDisciplinas;
             }
             else
-                return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.CodigoComponentes.Select(c => c.codigo).ToArray());
+                return await repositorioComponenteCurricular.ObterDisciplinasPorIds(codigosComponentes);
         }
     }
 }
