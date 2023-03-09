@@ -183,11 +183,8 @@ namespace SME.SGP.Dominio
             if (Perfis == null || !Perfis.Any())
                 throw new NegocioException(MENSAGEM_ERRO_USUARIO_SEM_ACESSO);
 
-            if (perfilCJPrioritario != Guid.Empty)
-            {
-                VerificarOrdenacaoPerfilInfantil(perfilCJPrioritario);
-                return perfilCJPrioritario;
-            }
+            if (perfilCJPrioritario != Guid.Empty && VerificarOrdenacaoPerfilInfantil(perfilCJPrioritario))            
+                return perfilCJPrioritario;           
 
             var possuiPerfilPrioritario = Perfis.Any(c => c.CodigoPerfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL && possuiTurmaInfantilAtiva);
             if (possuiPerfilPrioritario)
@@ -212,12 +209,26 @@ namespace SME.SGP.Dominio
             return Perfis.FirstOrDefault().CodigoPerfil;
         }
 
-        private void VerificarOrdenacaoPerfilInfantil(Guid perfil)
+        private bool VerificarOrdenacaoPerfilInfantil(Guid perfil)
         {
-            if (perfil == Dominio.Perfis.PERFIL_CJ_INFANTIL ||
-                perfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL)
-                Perfis = Perfis.OrderByDescending(o => o.EhPerfilInfantil());
+            if (VerificarPerfilInfantil(perfil))
+            {
+                OrdenarPorPerfilInfantil();
+                return true;
+            }
+            return false;
         }
+
+        private bool VerificarPerfilInfantil(Guid perfil)
+        {
+            return perfil == Dominio.Perfis.PERFIL_CJ_INFANTIL || perfil == Dominio.Perfis.PERFIL_PROFESSOR_INFANTIL;
+        }
+
+        private void OrdenarPorPerfilInfantil()
+        {
+            Perfis = Perfis.OrderByDescending(o => o.EhPerfilInfantil());
+        }
+
 
         public TipoPerfil? ObterTipoPerfilAtual()
         {
