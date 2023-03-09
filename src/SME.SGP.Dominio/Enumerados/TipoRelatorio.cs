@@ -131,6 +131,15 @@ namespace SME.SGP.Dominio
         RelatorioEncaminhamentosAee = 43,
         
         [Display(Name = "relatorios/encaminhamentoaeedetalhado", ShortName = "EncaminhamentoAEE", Description = "Encaminhamento AEE")]
-        RelatorioEncaminhamentoAeeDetalhado = 44
+        RelatorioEncaminhamentoAeeDetalhado = 44,
+
+        [Display(Name = "relatorios/encaminhamentosnaapa", ShortName = "EncaminhamentoNAAPA", Description = "Encaminhamento NAAPA")]
+        RelatorioEncaminhamentosNAAPA = 45,
+        
+        [Display(Name = "relatorios/encaminhamentonaapadetalhado", ShortName = "EncaminhamentoNaapaDetalhado", Description = "Encaminhamento NAAPA Detalhado")]
+        RelatorioEncaminhamentoNaapaDetalhado = 46,
+
+        [Display(Name = "relatorios/historicoescolarfundamental", ShortName = "HistoricoEscolar", Description = "Histórico Escolar")]
+        HistoricoEscolarFundamentalRazor = 47
     }
 }
