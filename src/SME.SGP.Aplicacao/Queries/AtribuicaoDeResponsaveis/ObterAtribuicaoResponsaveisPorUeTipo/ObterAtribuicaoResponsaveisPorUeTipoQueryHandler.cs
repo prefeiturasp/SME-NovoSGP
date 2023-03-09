@@ -24,24 +24,10 @@ namespace SME.SGP.Aplicacao
         {
             var supervisores = await repositorioSupervisorEscolaDre.ObterSupervisoresPorUeTipo(request.CodigoUE, request.Tipo);
 
-            var retorno = supervisores.Select(a => new AtribuicaoResponsavelDto()
+            return supervisores.Select(a => new AtribuicaoResponsavelDto()
             {
-                CodigoRF = a.SupervisorId,
-                NomeResponsavel = a.NomeResponsavel
+                CodigoRF = a.SupervisorId
             }).ToList();
-
-            var supervisoresSemNome = retorno.Where(supervisor => string.IsNullOrEmpty(supervisor.NomeResponsavel));
-            if (supervisoresSemNome.Any())
-            {
-                var funcionarios = await mediator.Send(new ObterFuncionariosPorRFsQuery(supervisoresSemNome.Select(supervisor => supervisor.CodigoRF)));
-                foreach(var funcionario in funcionarios)
-                {
-                    foreach (var supervisor in retorno.Where(supervisor => supervisor.CodigoRF == funcionario.CodigoRF))
-                        supervisor.NomeResponsavel = funcionario.Nome;
-                }
-            }
-
-            return retorno;
         }
     }
 }
