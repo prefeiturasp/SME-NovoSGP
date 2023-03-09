@@ -27,6 +27,8 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await RetornarUsuario();
+            if (usuarioLogado == null)
+              return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {                
@@ -60,7 +62,7 @@ namespace SME.SGP.Aplicacao
                return await mediator.Send(new ObterUsuarioLogadoQuery());
             } catch(Exception ex)
             {
-                return new Usuario();
+                return null;
             }
         }
     }
