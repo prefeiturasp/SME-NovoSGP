@@ -23,11 +23,13 @@ namespace SME.SGP.Aplicacao
             
             var planoAulaDto = MapearParaDto(planoAula) ?? new PlanoAulaRetornoDto();
 
+            var turma = await mediator.Send(new ObterTurmaPorIdQuery(filtro.TurmaId));
+
             DisciplinaDto disciplinaDto = null;
 
             if (filtro.ComponenteCurricularId.HasValue)
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.ComponenteCurricularId.Value }));
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.ComponenteCurricularId.Value }, codigoTurma: turma.CodigoTurma));
                 disciplinaDto = disciplinasRetorno.SingleOrDefault();
             }
 
