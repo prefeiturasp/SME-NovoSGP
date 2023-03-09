@@ -59,11 +59,9 @@ namespace SME.SGP.Aplicacao
             if (diarioAulaComponente != null)
             {
                 diarioBordo.Id = diarioAulaComponente.Id;
-                if (diarioBordo.CriadoRF is null)
-                {
-                    diarioBordo.CriadoPor = usuario.Nome;
-                    diarioBordo.CriadoRF = usuario.CodigoRf;
-                }
+                diarioBordo.CriadoEm = diarioAulaComponente.CriadoEm;
+                diarioBordo.CriadoPor = diarioAulaComponente.CriadoPor;
+                diarioBordo.CriadoRF = diarioAulaComponente.CriadoRF;      
             }
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
