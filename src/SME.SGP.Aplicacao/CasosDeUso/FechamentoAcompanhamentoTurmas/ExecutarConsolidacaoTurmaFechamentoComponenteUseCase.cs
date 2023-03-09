@@ -43,7 +43,7 @@ namespace SME.SGP.Aplicacao
             if (fechamento != null && consolidadoTurmaComponente != null)
                 atualizarConsolidado = consolidadoTurmaComponente.Status != fechamento.Situacao;
 
-            consolidadoTurmaComponente = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma);
+            (consolidadoTurmaComponente,atualizarConsolidado) = MapearFechamentoConsolidado(filtro, consolidadoTurmaComponente, fechamento, professoresDaTurma,atualizarConsolidado);
 
             if (consolidadoTurmaComponente.Id == 0 || atualizarConsolidado)
                 await repositorioFechamentoConsolidado.SalvarAsync(consolidadoTurmaComponente);
@@ -51,7 +51,7 @@ namespace SME.SGP.Aplicacao
             return true;
         }
 
-        private FechamentoConsolidadoComponenteTurma MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma)
+        private (FechamentoConsolidadoComponenteTurma fechamento, bool consolidacaoAtualizada) MapearFechamentoConsolidado(FechamentoConsolidacaoTurmaComponenteBimestreDto filtro, FechamentoConsolidadoComponenteTurma consolidadoTurmaComponente, FechamentoTurmaDisciplina fechamento, IEnumerable<Infra.ProfessorTitularDisciplinaEol> professoresDaTurma, bool atualizarConsolidado)
         {
             var statusFechamento = fechamento != null ? fechamento.Situacao : SituacaoFechamento.NaoIniciado;
 
@@ -77,6 +77,7 @@ namespace SME.SGP.Aplicacao
                     {
                         consolidadoTurmaComponente.ProfessorNome = professorComponente != null ? professorComponente.ProfessorNome : "Sem professor titular";
                         consolidadoTurmaComponente.ProfessorRf = professorComponente != null ? professorComponente.ProfessorRf : String.Empty;
+                        atualizarConsolidado = true;
                     }
                 }
             }
@@ -84,7 +85,7 @@ namespace SME.SGP.Aplicacao
             consolidadoTurmaComponente.DataAtualizacao = DateTime.Now;
             consolidadoTurmaComponente.Status = statusFechamento;
 
-            return consolidadoTurmaComponente;
+            return (consolidadoTurmaComponente, atualizarConsolidado);
         }
     }
 }
