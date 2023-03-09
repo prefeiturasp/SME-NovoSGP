@@ -13,5 +13,10 @@
 
         public bool Migrado { get; set; }
         public bool Excluido { get; set; }
+
+        public FechamentoNota Clone()
+        {
+            return (FechamentoNota)this.MemberwiseClone();
+        }
     }
 }
