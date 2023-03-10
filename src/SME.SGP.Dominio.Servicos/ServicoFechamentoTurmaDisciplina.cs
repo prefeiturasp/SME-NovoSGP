@@ -300,35 +300,25 @@ namespace SME.SGP.Dominio.Servicos
 
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
-                        if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                        var ehAprovacaoSemFechamentoNota = emAprovacao && (fechamentoNota.Id == 0);
+                        if (!emAprovacao || ehAprovacaoSemFechamentoNota)
                         {
-                            if (emAprovacao && (fechamentoNota.Id == 0))
+                            FechamentoNota fechamentoNotaClone = null;
+                            if (ehAprovacaoSemFechamentoNota)
                             {
-                                var notaConceitoAnterior = entidadeDto.NotaConceitoAlunos.Select(a => new
-                                {
-                                    a.NotaAnterior,
-                                    a.ConceitoIdAnterior,
-                                    a.CodigoAluno
-                                })
-                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
-
-                                fechamentoNota.Nota = notaConceitoAnterior.NotaAnterior;
-                                fechamentoNota.ConceitoId = notaConceitoAnterior.ConceitoIdAnterior;
+                                fechamentoNotaClone = fechamentoNota.Clone();
+                                fechamentoNota.Nota = null;
+                                fechamentoNota.ConceitoId = null;
                             }
 
                             fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                             await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+                            if (fechamentoNotaClone != null)
+                            {
+                                fechamentoNotaClone.Id = fechamentoNota.Id;
+                                notasEnvioWfAprovacao.Add(MapearParaEntidade(fechamentoNotaClone));
+                            }
                         }
-
-                        if (emAprovacao)
-                        {
-                            var notaConceitoAprovacaoAluno = entidadeDto.NotaConceitoAlunos.Select(a => new { a.ConceitoId, a.CodigoAluno, a.Nota })
-                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);
-
-                            AdicionaAprovacaoConceito(notasEnvioWfAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo, notaConceitoAprovacaoAluno?.Nota,
-                                notaConceitoAprovacaoAluno?.ConceitoId);
-                        }
-
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
                     }
 
@@ -347,8 +337,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 await EnviarNotasWfAprovacao(usuarioLogado);
-
                 unitOfWork.PersistirTransacao();
+
 
                 await PersistirCache(turma, entidadeDto.Bimestre, fechamentoAlunos.ToList());
 
@@ -650,6 +640,17 @@ namespace SME.SGP.Dominio.Servicos
                   Nota = fechamentoNotaDto.Nota,
                   ConceitoId = fechamentoNotaDto.ConceitoId,
                   SinteseId = fechamentoNotaDto.SinteseId
+              };
+
+        private FechamentoNotaDto MapearParaEntidade(FechamentoNota fechamentoNota)
+            => fechamentoNota == null ? null :
+              new FechamentoNotaDto()
+              {
+                  Id = fechamentoNota.Id,
+                  DisciplinaId = fechamentoNota.DisciplinaId,
+                  Nota = fechamentoNota.Nota,
+                  ConceitoId = fechamentoNota.ConceitoId,
+                  SinteseId = fechamentoNota.SinteseId
               };
 
         private FechamentoTurmaDisciplina MapearParaEntidade(long id, FechamentoTurmaDisciplinaDto fechamentoDto)

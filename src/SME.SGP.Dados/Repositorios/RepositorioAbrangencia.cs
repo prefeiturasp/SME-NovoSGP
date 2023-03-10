@@ -251,26 +251,34 @@ namespace SME.SGP.Dados.Repositorios
             return anos.Where(a => a >= anoMinimo);
         }
 
-        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo)
         {
-            var query = @"select distinct act.turma_ano
+           var query = new StringBuilder(@"select distinct act.turma_ano
 	                            from v_abrangencia_nivel_dre a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.dre_id = act.dre_id
-                            where a.login = @login and 
-	                              a.perfil_id = @perfil and	  
+                            where a.login = @login and  ");
+
+            if (consideraHistorico && anoLetivo > 0)
+                query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
+
+            query.AppendLine(@" a.perfil_id = @perfil and	  
 	                              act.turma_historica = @consideraHistorico and
 	                              act.modalidade_codigo = @modalidade and
-                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe))
-	 
-                            union
+                                  (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe))");
+
+            query.AppendLine(@"             union
 
                             select distinct act.turma_ano
 	                            from v_abrangencia_nivel_ue a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.ue_id = act.ue_id
-                            where a.login = @login and 
-	                              a.perfil_id = @perfil and	  
+                            where a.login = @login and ");
+
+            if (consideraHistorico && anoLetivo > 0)
+                query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
+
+            query.AppendLine(@"  a.perfil_id = @perfil and	  
 	                              act.turma_historica = @consideraHistorico and
 	                              act.modalidade_codigo = @modalidade and
                                   (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
@@ -279,23 +287,26 @@ namespace SME.SGP.Dados.Repositorios
 	                                @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and 
 	                                act.dre_id in (select dre_id from v_abrangencia_nivel_dre where login = @login and historico = false) and 
 	   	                            act.ue_id in (select ue_id from v_abrangencia_nivel_ue where login = @login and historico = false)) or
-	                               (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))
+	                               (@consideraHistorico = false and @perfil = '4ee1e074-37d6-e911-abd6-f81654fe895d' and a.historico = false))");
 
-                            union
-
+            query.AppendLine(@" union
                             select distinct act.turma_ano
 	                            from v_abrangencia_nivel_turma a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.turma_id = act.turma_id
-                            where a.login = @login and 
-	                              a.perfil_id = @perfil and
+                            where a.login = @login and  ");
+            
+            if (consideraHistorico && anoLetivo > 0)
+                query.AppendLine(" act.turma_ano_letivo = @anoLetivo and ");
+            
+            query.AppendLine(@"  a.perfil_id = @perfil and
 	                              act.modalidade_codigo = @modalidade and
                                   (@codigoUe = '-99' or (@codigoUe <> '-99' and act.ue_codigo = @codigoUe)) and
 	                              ((@consideraHistorico = true and a.historico = true) or
-	                               (@consideraHistorico = false and a.historico  = false and act.turma_historica = false));	  	";
+	                               (@consideraHistorico = false and a.historico  = false and act.turma_historica = false)); ");
 
-            // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            return (await database.Conexao.QueryAsync<string>(query, new { login, perfil, codigoUe, modalidade = (int)modalidade, consideraHistorico }));
+
+            return (await database.Conexao.QueryAsync<string>(query.ToString(), new {login, perfil, codigoUe, modalidade = (int) modalidade, consideraHistorico,anoLetivo}));
         }
 
         public async Task<AbrangenciaDreRetornoDto> ObterDre(string dreCodigo, string ueCodigo, string login, Guid perfil)

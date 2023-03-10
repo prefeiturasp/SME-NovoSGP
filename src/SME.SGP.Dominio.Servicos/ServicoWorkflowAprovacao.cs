@@ -241,14 +241,14 @@ namespace SME.SGP.Dominio.Servicos
                 if (notaEmAprovacao.WfAprovacao.Nota.HasValue)
                 {
                     if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota && fechamentoNota.Nota.HasValue)
-                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota.Value, notaEmAprovacao.WfAprovacao.Nota.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                        await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaEmAprovacao.WfAprovacao.Nota, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                     fechamentoNota.Nota = notaEmAprovacao.WfAprovacao.Nota;
                 }
                 else
                 {
                     if (notaEmAprovacao.WfAprovacao.ConceitoId != fechamentoNota.ConceitoId)
-                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId.Value, notaEmAprovacao.WfAprovacao.ConceitoId.Value, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
+                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaEmAprovacao.WfAprovacao.ConceitoId, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                     fechamentoNota.ConceitoId = notaEmAprovacao.WfAprovacao.ConceitoId;
                 }

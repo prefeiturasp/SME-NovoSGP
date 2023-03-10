@@ -706,5 +706,35 @@ namespace SME.SGP.Dados.Repositorios
                 return (await database.Conexao.QueryFirstAsync<int>(query.ToString(),
                 new { turmaId, disciplinaId, periodoId, situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray() })) > 0;            
         }
+
+        public Task<IEnumerable<FechamentoTurmaDisciplinaPendenciaDto>> ObterFechamentosTurmaDisciplinaDTOPorUeSituacao(long idUe, SituacaoFechamento[] situacoesFechamento, long[] fechamentoTurmaDisciplinaIdsIgnorados = null)
+        {
+            var query = new StringBuilder(@"select f.id,
+		                                    f.disciplina_id as DisciplinaId,
+		                                    f.situacao as SituacaoFechamento, 
+		                                    ft.turma_id as TurmaId,
+		                                    t.turma_id as CodigoTurma,
+		                                    t.nome as NomeTurma,
+		                                    p.periodo_inicio as PeriodoInicio,
+		                                    p.periodo_fim  as PeriodoFim,
+		                                    p.bimestre as bimestre,
+		                                    f.justificativa,
+		                                    f.criado_rf as CriadoRF,
+		                                    f.alterado_rf as AlteradoRF,
+		                                    u.id as UsuarioId,
+		                                    t.tipo_turma as TipoTurma
+                                     from fechamento_turma_disciplina f
+                                    inner join fechamento_turma ft on ft.id = f.fechamento_turma_id
+                                    inner join periodo_escolar p on p.id = ft.periodo_escolar_id
+                                    inner join turma t on t.id = ft.turma_id
+                                    left join usuario u on u.rf_codigo = coalesce(f.alterado_rf, f.criado_rf)
+                                    where f.situacao = any(@situacoesFechamento) and t.ue_id = @idUe and t.ano_letivo = @anoletivo ");
+            if (fechamentoTurmaDisciplinaIdsIgnorados != null && fechamentoTurmaDisciplinaIdsIgnorados.Any())
+                query.Append(" and f.id != any(@fechamentoTurmaDisciplinaIdsIgnorados) ");
+
+            return database.Conexao.QueryAsync<FechamentoTurmaDisciplinaPendenciaDto>(query.ToString(),
+                new { situacoesFechamento = situacoesFechamento.Select(situacao => (int)situacao).ToArray(), 
+                      fechamentoTurmaDisciplinaIdsIgnorados, idUe, anoletivo = DateTimeExtension.HorarioBrasilia().Year});
+        }
     }
 }

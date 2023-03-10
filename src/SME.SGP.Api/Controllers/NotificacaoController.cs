@@ -38,7 +38,7 @@ namespace SME.SGP.Api.Controllers
         [Permissao(Permissao.N_C, Policy = "Bearer")]
         public async Task<IActionResult> Get([FromQuery]NotificacaoFiltroDto notificacaoFiltroDto)
         {
-            return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
+             return Ok(await consultasNotificacao.Listar(notificacaoFiltroDto));
         }
 
         [HttpGet]

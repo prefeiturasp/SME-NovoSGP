@@ -902,7 +902,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
                             t.nome as Nome, t.nome_filtro as nomeFiltro,
-                                    t.ano  AS AnoTurma,
+                                    COALESCE(t.ano, '0') AS AnoTurma,
 	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia a
                                 inner join turma t on t.turma_id = a.turma_id
@@ -913,7 +913,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 query = @"select distinct t.id as Id, a.turma_id as Codigo, a.modalidade_codigo as CodigoModalidade, 
                             t.nome as Nome, t.nome_filtro as nomeFiltro, 
-                                    t.ano  AS AnoTurma,
+                                    COALESCE(t.ano, '0') AS AnoTurma,
 	                                t.ano_letivo  AS AnoLetivo
                                 from v_abrangencia_historica a
                                 inner join turma t on t.turma_id = a.turma_id
