@@ -18,7 +18,7 @@ namespace SME.SGP.Dados.Repositorios
         private readonly IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre;
 
         public RepositorioAbrangencia(ISgpContext database,
-            IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
+                                      IRepositorioSupervisorEscolaDre repositorioSupervisorEscolaDre)
         {
             this.database = database ?? throw new ArgumentNullException(nameof(database));
             this.repositorioSupervisorEscolaDre = repositorioSupervisorEscolaDre ?? throw new ArgumentNullException(nameof(repositorioSupervisorEscolaDre));
@@ -39,7 +39,7 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i = i + 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] {0}))));
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
@@ -58,7 +58,7 @@ namespace SME.SGP.Dados.Repositorios
             for (int i = 0; i < ids.Count(); i += 900)
             {
                 var iteracao = ids.Skip(i).Take(900);
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] {0}))));
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
@@ -70,7 +70,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] {0}))));
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
@@ -82,7 +82,7 @@ namespace SME.SGP.Dados.Repositorios
             {
                 var iteracao = ids.Skip(i).Take(900);
 
-                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] {0}))));
+                database.Conexao.Execute(comando.Replace("#ids", string.Join(",", iteracao.Concat(new long[] { 0 }))));
             }
         }
 
@@ -118,7 +118,7 @@ namespace SME.SGP.Dados.Repositorios
 	                            and perfil = @perfil
                                 and abrangencia.historico = false";
 
-            return (await database.Conexao.QueryAsync<bool>(query, new {login, perfil})).FirstOrDefault();
+            return (await database.Conexao.QueryAsync<bool>(query, new { login, perfil })).FirstOrDefault();
         }
 
         public async Task<IEnumerable<AbrangenciaFiltroRetorno>> ObterAbrangenciaPorFiltro(string texto, string login, Guid perfil, bool consideraHistorico, string[] anosInfantilDesconsiderar = null)
@@ -153,7 +153,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("order by ue.nome");
             query.AppendLine("limit 10;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new {texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar})).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { texto, login, perfil, consideraHistorico, anosInfantilDesconsiderar })).AsList();
         }
 
         public Task<IEnumerable<AbrangenciaSinteticaDto>> ObterAbrangenciaSintetica(string login, Guid perfil, string turmaId = "", bool consideraHistorico = false)
@@ -182,7 +182,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(turmaId))
                 query.AppendLine("and codigo_turma = @turmaId");
 
-            return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new {login, perfil, turmaId});
+            return database.Conexao.QueryAsync<AbrangenciaSinteticaDto>(query.ToString(), new { login, perfil, turmaId });
         }
 
         public async Task<IEnumerable<AbrangenciaHistoricaDto>> ObterAbrangenciaHistoricaPorLogin(string login)
@@ -203,11 +203,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("from");
             query.AppendLine("public.v_abrangencia_sintetica where login = @login and historico");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new {login})).AsList();
+            return (await database.Conexao.QueryAsync<AbrangenciaHistoricaDto>(query.ToString(), new { login })).AsList();
         }
 
         public async Task<AbrangenciaFiltroRetorno> ObterAbrangenciaTurma(string turma, string login, Guid perfil, bool consideraHistorico = false, bool abrangenciaPermitida = false)
         {
+
             var query = new StringBuilder();
 
             query.AppendLine("select t.modalidade_codigo as modalidade,");
@@ -233,12 +234,12 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("        (a.turma_id is null and a.dre_id is null and a.ue_id = t.ue_id) --admin ue");
             query.AppendLine("  inner join ue");
             query.AppendLine("      on ue.id = t.ue_id");
-            query.AppendLine($"where {(!consideraHistorico || (abrangenciaPermitida && !consideraHistorico) ? "not " : string.Empty)} coalesce(nullif(t.turma_historica, false), a.historico)");
+            query.AppendLine($"where { (!consideraHistorico || (abrangenciaPermitida && !consideraHistorico) ? "not " : string.Empty) } coalesce(nullif(t.turma_historica, false), a.historico)");
             query.AppendLine("  and u.login = @login");
             query.AppendLine("  and a.perfil = @perfil");
             query.AppendLine("  and t.turma_codigo = @turma;");
 
-            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new {turma, login, perfil}))
+            return (await database.Conexao.QueryAsync<AbrangenciaFiltroRetorno>(query.ToString(), new { turma, login, perfil }))
                 .FirstOrDefault();
         }
 
@@ -246,13 +247,13 @@ namespace SME.SGP.Dados.Repositorios
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var anos = (await database.Conexao.QueryAsync<int>(@"select f_abrangencia_anos_letivos(@login, @perfil, @consideraHistorico)
-                                                             order by 1 desc", new {login, perfil, consideraHistorico}));
+                                                             order by 1 desc", new { login, perfil, consideraHistorico }));
             return anos.Where(a => a >= anoMinimo);
         }
 
-        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico, int? anoLetivo)
+        public async Task<IEnumerable<string>> ObterAnosTurmasPorCodigoUeModalidade(string login, Guid perfil, string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo)
         {
-            var query = new StringBuilder(@"select distinct act.turma_ano
+           var query = new StringBuilder(@"select distinct act.turma_ano
 	                            from v_abrangencia_nivel_dre a
 		                            inner join v_abrangencia_cadeia_turmas act
 			                            on a.dre_id = act.dre_id
@@ -328,7 +329,7 @@ namespace SME.SGP.Dados.Repositorios
             if (!string.IsNullOrEmpty(ueCodigo))
                 query.AppendLine("and va.ue_codigo = @ueCodigo");
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetornoDto>(query.ToString(), new {dreCodigo, ueCodigo, login, perfil}));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaDreRetornoDto>(query.ToString(), new { dreCodigo, ueCodigo, login, perfil }));
         }
 
         public async Task<IEnumerable<AbrangenciaDreRetornoDto>> ObterDres(string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string filtro = "", bool filtroEhCodigo = false)
@@ -376,16 +377,16 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<int>> ObterModalidades(string login, Guid perfil, int anoLetivo, bool consideraHistorico, IEnumerable<Modalidade> modalidadesQueSeraoIgnoradas)
         {
             var query = @"select f_abrangencia_modalidades(@login, @perfil, @consideraHistorico, @anoLetivo, @modalidadesQueSeraoIgnoradas) order by 1";
-            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int) x).ToArray();
+            var modalidadesQueSeraoIgnoradasArray = modalidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
             var retorno = await database.Conexao
-                .QueryAsync<int>(query, new {login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray});
+                .QueryAsync<int>(query, new { login, perfil, consideraHistorico, anoLetivo, modalidadesQueSeraoIgnoradas = modalidadesQueSeraoIgnoradasArray });
 
             if (perfil == Perfis.PERFIL_SUPERVISOR)
             {
                 retorno = await AcrescentarModalidadesSupervisor(login, consideraHistorico, anoLetivo, retorno);
                 if (modalidadesQueSeraoIgnoradas != null && modalidadesQueSeraoIgnoradas.Any())
-                    retorno = retorno.Where(r => !modalidadesQueSeraoIgnoradas.Contains((Modalidade) r));
+                    retorno = retorno.Where(r => !modalidadesQueSeraoIgnoradas.Contains((Modalidade)r));
             }
 
             return retorno
@@ -396,7 +397,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<int>> ObterSemestres(string login, Guid perfil, Modalidade modalidade, bool consideraHistorico, int anoLetivo = 0, string dreCodigo = null, string ueCodigo = null)
         {
             // Foi utilizada função de banco de dados com intuíto de melhorar a performance
-            var parametros = new {login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo};
+            var parametros = new { login, perfil, consideraHistorico, modalidade, anoLetivo, dreCodigo, ueCodigo };
 
             var retorno = await database.Conexao
                 .QueryAsync<int>(@"select f_abrangencia_semestres(@login, @perfil, @consideraHistorico, @modalidade, @anoLetivo, @dreCodigo, @ueCodigo)
@@ -427,7 +428,7 @@ namespace SME.SGP.Dados.Repositorios
                             from f_abrangencia_turmas(@login, @perfil, @consideraHistorico, @modalidade, @semestre, @codigoUe, @anoLetivo)
                           order by 5";
 
-            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new {login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo})).AsList();
+            var result = (await database.Conexao.QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo })).AsList();
 
             return result;
         }
@@ -449,7 +450,7 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("and va.login = @login");
             query.AppendLine("and va.usuario_perfil = @perfil");
 
-            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new {codigo, login, perfil}));
+            return (await database.Conexao.QueryFirstOrDefaultAsync<AbrangenciaUeRetorno>(query.ToString(), new { codigo, login, perfil }));
         }
 
         public async Task<IEnumerable<AbrangenciaUeRetorno>> ObterUes(string codigoDre, string login, Guid perfil, Modalidade? modalidade = null, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, int[] ignorarTiposUE = null, string filtro = "", bool filtroEhCodigo = false)
@@ -500,7 +501,9 @@ namespace SME.SGP.Dados.Repositorios
                 if (!string.IsNullOrWhiteSpace(filtro))
                 {
                     filtro = filtro.Replace("%", string.Empty);
-                    retorno = filtroEhCodigo ? retorno.Where(r => r.Codigo.ToUpper().Contains(filtro)).Take(10) : retorno.Where(r => r.NomeSimples.ToUpper().Contains(filtro)).Take(10);
+                    retorno = filtroEhCodigo ?
+                        retorno.Where(r => r.Codigo.ToUpper().Contains(filtro)).Take(10) :
+                        retorno.Where(r => r.NomeSimples.ToUpper().Contains(filtro)).Take(10);
                 }
             }
 
@@ -512,9 +515,9 @@ namespace SME.SGP.Dados.Repositorios
             var sql = $@"select count(*) from usuario u
                          inner join abrangencia a on a.usuario_id = u.id
                          where u.login = @login and historico = false and turma_id is not null
-                              and {(cj ? string.Empty : "not")} a.perfil = ANY(@perfisCJ);";
+                              and { (cj ? string.Empty : "not") } a.perfil = ANY(@perfisCJ);";
 
-            var parametros = new {login, perfisCJ = new Guid[] {Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL}};
+            var parametros = new { login, perfisCJ = new Guid[] { Perfis.PERFIL_CJ, Perfis.PERFIL_CJ_INFANTIL } };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
@@ -526,7 +529,7 @@ namespace SME.SGP.Dados.Repositorios
                         where u.login = @login and historico = false and turma_id is not null
                               and a.perfil = @perfilINFANTIL ;";
 
-            var parametros = new {login, perfilINFANTIL = cj ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_PROFESSOR_INFANTIL};
+            var parametros = new { login, perfilINFANTIL = cj ? Perfis.PERFIL_CJ_INFANTIL : Perfis.PERFIL_PROFESSOR_INFANTIL };
 
             return database.Conexao.QueryFirstOrDefault<int>(sql, parametros) > 0;
         }
@@ -550,23 +553,22 @@ namespace SME.SGP.Dados.Repositorios
                     break;
             }
 
-            database.Execute(query, new {login, perfil});
+            database.Execute(query, new { login, perfil });
         }
 
         public async Task<bool> UsuarioPossuiAbrangenciaAdm(long usuarioId)
         {
             var query = "select 1 from abrangencia where usuario_id = @usuarioId and turma_id is null";
 
-            return (await database.Conexao.QueryAsync<int>(query, new {usuarioId})).Count() > 0;
+            return (await database.Conexao.QueryAsync<int>(query, new { usuarioId })).Count() > 0;
         }
 
         public async Task<bool> UsuarioPossuiAbrangenciaDeUmDosTipos(Guid perfil, IEnumerable<TipoPerfil> tipos)
         {
             var query = "select 1 from prioridade_perfil where codigo_perfil = @perfil and tipo = any(@tipos)";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new {perfil, tipos = tipos?.Select(c => (int) c)?.ToArray()});
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { perfil, tipos = tipos?.Select(c => (int)c)?.ToArray() });
         }
-
         public async Task<IEnumerable<Modalidade>> ObterModalidadesPorUe(string codigoUe)
         {
             var query = @"select
@@ -578,7 +580,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
                                 u.ue_id = @codigoUe  and t.modalidade_codigo <> 0";
 
-            return await database.Conexao.QueryAsync<Modalidade>(query, new {codigoUe});
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe });
         }
 
         public async Task<IEnumerable<Modalidade>> ObterModalidadesPorCodigosUe(string[] codigosUe)
@@ -592,7 +594,7 @@ namespace SME.SGP.Dados.Repositorios
                             where
                                 u.ue_id = any(@codigosUe)";
 
-            return await database.Conexao.QueryAsync<Modalidade>(query, new {codigosUe});
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigosUe });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestre(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, string[] anosInfantilDesconsiderar = null)
@@ -615,7 +617,7 @@ namespace SME.SGP.Dados.Repositorios
                 query.AppendLine("and t.ano <> ALL(@anosInfantilDesconsiderar)");
             }
 
-            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new {codigoUe, anoLetivo, modalidade, semestre, anosInfantilDesconsiderar});
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString(), new { codigoUe, anoLetivo, modalidade, semestre, anosInfantilDesconsiderar });
 
             return dados.OrderBy(x => x.Descricao);
         }
@@ -634,8 +636,8 @@ namespace SME.SGP.Dados.Repositorios
                             and (@modalidadesQueSeraoIgnoradasArray::int4[] is null or not(vau.modalidade_codigo = ANY(@modalidadesQueSeraoIgnoradasArray::int4[])))";
             }
 
-            var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int) x).ToArray();
-            return await database.Conexao.QueryAsync<Modalidade>(query, new {codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year});
+            var modalidadesQueSeraoIgnoradasArray = modadlidadesQueSeraoIgnoradas?.Select(x => (int)x).ToArray();
+            return await database.Conexao.QueryAsync<Modalidade>(query, new { codigoUe, login, perfilAtual, modalidadesQueSeraoIgnoradasArray, anoLetivo = anoLetivo > 0 ? anoLetivo : DateTime.Today.Year });
         }
 
         public async Task<IEnumerable<OpcaoDropdownDto>> ObterDropDownTurmasPorUeAnoLetivoModalidadeSemestreAnos(string codigoUe, int anoLetivo, Modalidade? modalidade, int semestre, IList<string> anos)
@@ -656,7 +658,7 @@ namespace SME.SGP.Dados.Repositorios
             if (anos != null && anos.Any())
                 query.AppendLine(" and tca.ano IN (#anos)");
 
-            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join("','", anos) + "'"), new {codigoUe, anoLetivo, modalidade, semestre, anos});
+            var dados = await database.Conexao.QueryAsync<OpcaoDropdownDto>(query.ToString().Replace("#anos", "'" + string.Join("','", anos) + "'"), new { codigoUe, anoLetivo, modalidade, semestre, anos });
 
             return dados.OrderBy(x => x.Descricao);
         }
@@ -668,7 +670,7 @@ namespace SME.SGP.Dados.Repositorios
             var modalidadesSemEja = new int[] { };
 
             if (modalidades.Any() && !modalidades.Any(c => c == -99))
-                modalidadesSemEja = modalidades.Where(m => (Modalidade) m != Modalidade.EJA).ToArray();
+                modalidadesSemEja = modalidades.Where(m => (Modalidade)m != Modalidade.EJA).ToArray();
 
             if (modalidadesSemEja.Any())
             {
@@ -685,7 +687,7 @@ namespace SME.SGP.Dados.Repositorios
                 if (modalidades.Any() && !modalidades.Any(c => c == -99))
                     query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
 
-                if (anos != null && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int) Modalidade.MOVA))
+                if (anos != null && anos.Any() && !anos.Any(a => a == "-99") && !modalidadesSemEja.Any(a => a == (int)Modalidade.MOVA))
                     query.AppendLine(" and tca.ano = any(@anos)");
 
                 if (anos.Any(a => a == "-99"))
@@ -703,14 +705,15 @@ namespace SME.SGP.Dados.Repositorios
                     if (modalidades.Any() && !modalidades.Any(c => c == -99))
                         query.AppendLine("and t.modalidade_codigo = any(@modalidadesSemEja) ");
                 }
+
             }
 
-            if (modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade) m == Modalidade.EJA))
+            if (modalidadesSemEja.Any() && modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
                 query.AppendLine(" union ");
 
-            if (modalidades.Any(m => (Modalidade) m == Modalidade.EJA))
+            if (modalidades.Any(m => (Modalidade)m == Modalidade.EJA))
             {
-                modalidadeEja = (int) Modalidade.EJA;
+                modalidadeEja = (int)Modalidade.EJA;
 
                 query.AppendLine(@"select distinct t.turma_id as valor, 
                                                    coalesce(t.nome_filtro, t.nome) as descricao,
@@ -754,13 +757,12 @@ namespace SME.SGP.Dados.Repositorios
 	                        and a.perfil  = @usuarioPerfil 
 	                        and ue.tipo_escola in (1,3,4,16)";
 
-            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new {usuarioRF, usuarioPerfil});
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { usuarioRF, usuarioPerfil });
         }
-
         public async Task<IEnumerable<Abrangencia>> ObterAbrangenciaGeralPorUsuarioId(long usuarioId)
         {
             var query = @"select id,usuario_id,dre_id,ue_id,turma_id,perfil,historico from abrangencia where usuario_id = @usuarioId";
-            return await database.Conexao.QueryAsync<Abrangencia>(query, new {usuarioId});
+            return await database.Conexao.QueryAsync<Abrangencia>(query, new { usuarioId });
         }
 
         public async Task<IEnumerable<AbrangenciaTurmaRetorno>> ObterTurmasPorTipos(string codigoUe, string login, Guid perfil, Modalidade modalidade, int[] tipos, int periodo = 0, bool consideraHistorico = false, int anoLetivo = 0, string[] anosInfantilDesconsiderar = null)
@@ -781,7 +783,7 @@ namespace SME.SGP.Dados.Repositorios
                           order by 5";
 
             var resultado = await database.Conexao
-                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new {login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar});
+                .QueryAsync<AbrangenciaTurmaRetorno>(query.ToString(), new { login, perfil, consideraHistorico, modalidade, semestre = periodo, codigoUe, anoLetivo, tipos, anosInfantilDesconsiderar });
 
             var resultadoFiltrado = resultado.GroupBy(x => x.Codigo).SelectMany(y => y.OrderBy(a => a.Codigo).Take(1));
 
@@ -809,7 +811,7 @@ namespace SME.SGP.Dados.Repositorios
 	                               a.historico = @historica and	  
 	                               a.perfil = @perfil;";
 
-            return await database.Conexao.QueryAsync<string>(sqlQuery, new {ueId, perfil, historica});
+            return await database.Conexao.QueryAsync<string>(sqlQuery, new { ueId, perfil, historica });
         }
 
         public async Task<IEnumerable<string>> ObterProfessoresTurmaPorAbrangencia(string turmaCodigo)
@@ -826,7 +828,7 @@ namespace SME.SGP.Dados.Repositorios
             Guid professorCJ = Guid.Parse(PerfilUsuario.CJ.Name());
             Guid professorCJInfantil = Guid.Parse(PerfilUsuario.CJ_INFANTIL.Name());
 
-            return await database.Conexao.QueryAsync<string>(sqlQuery, new {turmaCodigo, professor, professorInfantil, professorCJ, professorCJInfantil});
+            return await database.Conexao.QueryAsync<string>(sqlQuery, new { turmaCodigo, professor, professorInfantil, professorCJ, professorCJInfantil });
         }
 
         private async Task<IEnumerable<DadosAbrangenciaSupervisorDto>> ObterDadosAbrangenciaSupervisor(string login, bool consideraHistorico, int anoLetivo)
@@ -858,7 +860,7 @@ namespace SME.SGP.Dados.Repositorios
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
                 retorno = retorno.Concat(dadosAbrangenciaSupervisor
-                    .Where(d => (Modalidade) d.Modalidade == modalidade)
+                    .Where(d => (Modalidade)d.Modalidade == modalidade)
                     .Select(d => d.Semestre)
                     .Distinct());
             }
@@ -876,16 +878,16 @@ namespace SME.SGP.Dados.Repositorios
                 var dres = retorno.Select(d => d.Id).ToList();
 
                 var dresComplementares = (from da in dadosAbrangenciaSupervisor
-                    where (Modalidade) da.Modalidade == modalidade &&
-                          (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                          !dres.Contains(da.DreId)
-                    select new
-                    {
-                        da.AbreviacaoDre,
-                        da.CodigoDre,
-                        da.DreNome,
-                        da.DreId
-                    }).Distinct();
+                                          where (Modalidade)da.Modalidade == modalidade &&
+                                                (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                !dres.Contains(da.DreId)
+                                          select new
+                                          {
+                                              da.AbreviacaoDre,
+                                              da.CodigoDre,
+                                              da.DreNome,
+                                              da.DreId
+                                          }).Distinct();
 
                 var listaDistinta = dresComplementares
                     .Select(d => new AbrangenciaDreRetornoDto()
@@ -906,66 +908,67 @@ namespace SME.SGP.Dados.Repositorios
 
         private async Task<IEnumerable<AbrangenciaUeRetorno>> AcrescentarUesSupervisor(string login, Modalidade modalidade, int semestre, string dre, bool consideraHistorico, int anoLetivo, int[] tiposEscolasIgnoradas, IEnumerable<AbrangenciaUeRetorno> retorno)
         {
-            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();
+            var retornoUesSupervisor = new List<AbrangenciaUeRetorno>();   
             var dadosAbrangenciaSupervisor =
                 await ObterDadosAbrangenciaSupervisor(login, consideraHistorico, anoLetivo);
 
-            if (retorno.Any())
+            if(retorno.Any())
                 retornoUesSupervisor.AddRange(retorno);
 
             if (dadosAbrangenciaSupervisor != null && dadosAbrangenciaSupervisor.Any())
             {
                 var ues = retorno.Select(u => u.Id).ToList();
-                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new {da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId});
+                var uesComplementares = (from da in dadosAbrangenciaSupervisor select new { da.CodigoUe, da.UeNome, da.TipoEscola, da.UeId });
 
                 if (modalidade > 0)
                 {
                     uesComplementares = (from da in dadosAbrangenciaSupervisor
-                        where (Modalidade) da.Modalidade == modalidade &&
-                              da.CodigoDre == dre &&
-                              !tiposEscolasIgnoradas.Contains((int) da.TipoEscola) &&
-                              (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                              !ues.Contains(da.UeId)
-                        select new
-                        {
-                            da.CodigoUe,
-                            da.UeNome,
-                            da.TipoEscola,
-                            da.UeId
-                        }).Distinct();
+                                         where (Modalidade)da.Modalidade == modalidade &&
+                                               da.CodigoDre == dre &&
+                                               !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                               !ues.Contains(da.UeId)
+                                         select new
+                                         {
+                                             da.CodigoUe,
+                                             da.UeNome,
+                                             da.TipoEscola,
+                                             da.UeId
+                                         }).Distinct();
                 }
                 else
                 {
                     uesComplementares = (from da in dadosAbrangenciaSupervisor
-                        where da.CodigoDre == dre &&
-                              !tiposEscolasIgnoradas.Contains((int) da.TipoEscola) &&
-                              (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                              !ues.Contains(da.UeId)
-                        select new
-                        {
-                            da.CodigoUe,
-                            da.UeNome,
-                            da.TipoEscola,
-                            da.UeId
-                        }).Distinct();
+                                         where da.CodigoDre == dre &&
+                                               !tiposEscolasIgnoradas.Contains((int)da.TipoEscola) &&
+                                               (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                               !ues.Contains(da.UeId)
+                                         select new
+                                         {
+                                             da.CodigoUe,
+                                             da.UeNome,
+                                             da.TipoEscola,
+                                             da.UeId
+                                         }).Distinct();
                 }
 
                 if (uesComplementares.Any())
                 {
                     var listaDistinta = uesComplementares
-                        .Select(u => new AbrangenciaUeRetorno()
-                        {
-                            Codigo = u.CodigoUe,
-                            NomeSimples = u.UeNome,
-                            TipoEscola = u.TipoEscola,
-                            Id = u.UeId
-                        });
+                                                      .Select(u => new AbrangenciaUeRetorno()
+                                                      {
+                                                          Codigo = u.CodigoUe,
+                                                          NomeSimples = u.UeNome,
+                                                          TipoEscola = u.TipoEscola,
+                                                          Id = u.UeId
+                                                      });
 
                     retornoUesSupervisor.AddRange(listaDistinta);
                 }
+
             }
 
-            return retornoUesSupervisor.Distinct().OrderBy(r => r.Nome);
+            return retornoUesSupervisor.Distinct().OrderBy(r=> r.Nome);
         }
 
         private async Task<IEnumerable<AbrangenciaTurmaRetorno>> AcrescentarTurmasSupervisor(string login, Modalidade modalidade, int semestre, string ue, bool consideraHistorico, int anoLetivo, IEnumerable<AbrangenciaTurmaRetorno> retorno)
@@ -978,23 +981,23 @@ namespace SME.SGP.Dados.Repositorios
                 var turmas = retorno.Select(t => t.Id).ToList();
 
                 var turmasComplementares = (from da in dadosAbrangenciaSupervisor
-                    where (Modalidade) da.Modalidade == modalidade &&
-                          da.CodigoUe == ue &&
-                          (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
-                          !turmas.Contains(da.TurmaId)
-                    select new AbrangenciaTurmaRetorno
-                    {
-                        NomeFiltro = da.NomeFiltro,
-                        Ano = da.TurmaAno,
-                        AnoLetivo = da.TurmaAnoLetivo,
-                        Codigo = da.CodigoTurma,
-                        CodigoModalidade = da.Modalidade,
-                        Nome = da.TurmaNome,
-                        Semestre = da.Semestre,
-                        EnsinoEspecial = da.EnsinoEspecial,
-                        Id = da.TurmaId,
-                        TipoTurma = da.TipoTurma
-                    });
+                                            where (Modalidade)da.Modalidade == modalidade &&
+                                                  da.CodigoUe == ue &&
+                                                  (semestre == 0 || (semestre > 0 && da.Semestre == semestre)) &&
+                                                  !turmas.Contains(da.TurmaId)
+                                            select new AbrangenciaTurmaRetorno
+                                            {
+                                                NomeFiltro = da.NomeFiltro,
+                                                Ano = da.TurmaAno,
+                                                AnoLetivo = da.TurmaAnoLetivo,
+                                                Codigo = da.CodigoTurma,
+                                                CodigoModalidade = da.Modalidade,
+                                                Nome = da.TurmaNome,
+                                                Semestre = da.Semestre,
+                                                EnsinoEspecial = da.EnsinoEspecial,
+                                                Id = da.TurmaId,
+                                                TipoTurma = da.TipoTurma
+                                            });
 
                 retorno = retorno
                     .Concat(turmasComplementares)
