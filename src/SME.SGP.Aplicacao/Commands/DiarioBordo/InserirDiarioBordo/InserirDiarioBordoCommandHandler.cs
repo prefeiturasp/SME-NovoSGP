@@ -57,7 +57,12 @@ namespace SME.SGP.Aplicacao
             var diarioBordo = MapearParaEntidade(request, turma.Id, inseridoCJ);
 
             if (diarioAulaComponente != null)
+            {
                 diarioBordo.Id = diarioAulaComponente.Id;
+                diarioBordo.CriadoEm = diarioAulaComponente.CriadoEm;
+                diarioBordo.CriadoPor = diarioAulaComponente.CriadoPor;
+                diarioBordo.CriadoRF = diarioAulaComponente.CriadoRF;      
+            }
 
             await repositorioDiarioBordo.SalvarAsync(diarioBordo);
 
