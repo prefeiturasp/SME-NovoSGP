@@ -44,7 +44,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual")]
         public async Task Deve_lancar_nota_para_fundamental()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -64,9 +64,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com avaliação")]
         public async Task Deve_lancar_nota_para_fundamental_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -90,9 +98,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual regência com avaliação")]
         public async Task Deve_lancar_nota_para_fundamental_regencia_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -116,9 +132,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual EM com avaliação")]
         public async Task Deve_lancar_nota_para_medio_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -142,9 +166,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual EJA com avaliação")]
         public async Task Deve_lancar_nota_para_eja_com_avaliacao()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -168,9 +200,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var fechamentosNotas = ObterTodos<FechamentoNota>();
             fechamentosNotas.ShouldNotBeNull();
             fechamentosNotas.Count.ShouldBe(4);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com mais de 50% alunos abaixo da media")]
         public async Task Deve_lancar_notas_com_mais_de_50_porcento_dos_alunos_abaixo_da_media()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -197,9 +237,17 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
             percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual com mais de 50% alunos abaixo da media regência")]
         public async Task Deve_lancar_notas_com_mais_de_50_porcento_dos_alunos_abaixo_da_media_regencia()
         {
             var filtroFechamentoNota = await ObterFiltroFechamentoNota(ObterPerfilProfessor(),
@@ -226,6 +274,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             var percentualAlunosAbaixoMedia = Convert.ToDecimal(qtdeAlunosAbaixoMedia * 100 / qtdeLancamentos);
 
             percentualAlunosAbaixoMedia.ShouldBeGreaterThanOrEqualTo(CINQUENTA_PORCENTO);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(4);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(4);
+
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(4);
         }
 
         private async Task<IList<FechamentoTurmaDisciplinaDto>> LancarNotasAlunos50PorcentoAbaixoDaMedia(long disciplinaId)

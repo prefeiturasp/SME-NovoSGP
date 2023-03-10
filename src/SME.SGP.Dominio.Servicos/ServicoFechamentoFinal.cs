@@ -102,26 +102,24 @@ namespace SME.SGP.Dominio.Servicos
                                     ValidarNotasFechamento2020(notaDto);
 
                                 var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
+
+                                var semFechamentoNota = (fechamentoNota.Id == 0);
                                 
                                 //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                                 //   deve gerar o registro do fechamento da nota inicial.
-                                if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                                if (!emAprovacao || (emAprovacao && semFechamentoNota))
                                 {
-                                    // Registra Histórico de alteração de nota
-                                    if (fechamentoNota != null)
-                                    {
-                                        if (tipoNota.TipoNota == TipoNota.Nota)
-                                        {
-                                            if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaDto.Nota) != 0)
-                                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
-                                        }
-                                        else
-                                        if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
-                                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
-                                    }
-
+                                    double? notaAnterior = null;
+                                    long? conceitoIdAnterior = null;
+                                    
                                     if (!emAprovacao)
                                     {
+                                        if (!semFechamentoNota)
+                                        {
+                                            notaAnterior = fechamentoNota.Nota;
+                                            conceitoIdAnterior = fechamentoNota.ConceitoId;
+                                        }
+                                        
                                         fechamentoNota.Nota = notaDto.Nota;
                                         fechamentoNota.ConceitoId = notaDto.ConceitoId;
                                     }
@@ -132,6 +130,9 @@ namespace SME.SGP.Dominio.Servicos
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
                                     fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
+                                    
+                                    if (!emAprovacao)
+                                        await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, notaAnterior, conceitoIdAnterior);
 
                                     ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
@@ -191,6 +192,17 @@ namespace SME.SGP.Dominio.Servicos
                 unitOfWork.Rollback();
                 throw e;
             }
+        }
+
+        private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota,double? notaAnterior, long? conceitoIdAnterior)
+        {
+            if (notaAnterior.HasValue || fechamentoNota.Nota.HasValue)
+            {
+                if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaAnterior) != 0)
+                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, fechamentoNota.Nota, fechamentoNota.Id));
+            }
+            else if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != conceitoIdAnterior)
+                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id));
         }
 
         private async Task AtualizarCache(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, bool emAprovacao, Dictionary<FechamentoAluno,List<FechamentoNota>> fechamentosNotasCache)
