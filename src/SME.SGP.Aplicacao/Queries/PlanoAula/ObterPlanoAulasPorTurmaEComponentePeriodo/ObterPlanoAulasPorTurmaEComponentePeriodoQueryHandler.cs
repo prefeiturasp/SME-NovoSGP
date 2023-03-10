@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)
             {
-                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(ComponenteCurricularId)));
+                var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(turma.Id, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.CodigoComponenteCurricular : long.Parse(ComponenteCurricularId)));
 
                 temPlanoAnual.Add(planejamentoAnualPeriodoId);
 
