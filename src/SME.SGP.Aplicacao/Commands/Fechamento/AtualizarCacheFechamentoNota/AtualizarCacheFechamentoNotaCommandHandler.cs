@@ -52,7 +52,7 @@ namespace SME.SGP.Aplicacao
                                 List<FechamentoNotaAlunoAprovacaoDto> notasFinais,
                                 AtualizarCacheFechamentoNotaCommand request)
         {
-            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == request.CodigoAluno && c.ComponenteCurricularId == request.FechamentoNota.DisciplinaId);
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == request.CodigoAluno && c.ComponenteCurricularId == request.FechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
             if (notaFinalAluno == null)
             {

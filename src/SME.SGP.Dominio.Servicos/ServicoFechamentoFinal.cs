@@ -102,40 +102,41 @@ namespace SME.SGP.Dominio.Servicos
                                     ValidarNotasFechamento2020(notaDto);
 
                                 var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
-                                
+
                                 //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                                 //   deve gerar o registro do fechamento da nota inicial.
-                                if (!emAprovacao || (emAprovacao && (fechamentoNota.Id == 0)))
+                                var ehAprovacaoSemFechamentoNota = emAprovacao && (fechamentoNota.Id == 0);
+                                
+                                // Registra Histórico de alteração de nota
+                                if (fechamentoNota?.Id != 0 && !emAprovacao)
                                 {
-                                    // Registra Histórico de alteração de nota
-                                    if (fechamentoNota != null)
+                                    if (tipoNota.TipoNota == TipoNota.Nota)
                                     {
-                                        if (tipoNota.TipoNota == TipoNota.Nota)
-                                        {
-                                            if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaDto.Nota) != 0)
-                                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
-                                        }
-                                        else
-                                        if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
-                                            await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
+                                        if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaDto.Nota) != 0)
+                                            await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaDto.Nota, fechamentoNota.Id));
                                     }
+                                    else
+                                    if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != notaDto.ConceitoId)
+                                        await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(fechamentoNota.ConceitoId, notaDto.ConceitoId, fechamentoNota.Id));
 
-                                    if (!emAprovacao)
-                                    {
-                                        fechamentoNota.Nota = notaDto.Nota;
-                                        fechamentoNota.ConceitoId = notaDto.ConceitoId;
-                                    }
-
-                                    fechamentoNota.SinteseId = notaDto.SinteseId;
-                                    fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
-
-                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-
-                                    fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
-
-                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                    fechamentoNota.Nota = notaDto.Nota;
+                                    fechamentoNota.ConceitoId = notaDto.ConceitoId;
                                 }
 
+                                fechamentoNota.SinteseId = notaDto.SinteseId;
+                                fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                FechamentoNota fechamentoNotaClone = fechamentoNota.Clone();
+                                fechamentoNotaClone.Nota = notaDto.Nota;
+                                fechamentoNotaClone.ConceitoId = notaDto.ConceitoId;
+                                fechamentosNotasCache[fechamentoAluno].Add(fechamentoNotaClone);
+
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                
+                                
                                 if (emAprovacao)
                                     AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
                             }
@@ -315,7 +316,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task PersistirNotasFinaisNoCache(List<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota,
             string codigoAluno, string disciplinaId, string codigoTurma, bool emAprovacao)
         {
-            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId);
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
             if (notaFinalAluno == null) {
                 notasFinais.Add(new FechamentoNotaAlunoAprovacaoDto
