@@ -16,5 +16,6 @@ namespace SME.SGP.Infra
         public int? Bimestre { get; set; }
         public int AnoLetivo { get; set; }
         public bool LancaNota { get; set; }
+        public string UsuarioSolicitanteRf { get; set; }
     }
 }

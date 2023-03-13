@@ -263,6 +263,18 @@ namespace SME.SGP.Dominio.Servicos
                                                null));
         }
 
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao)
+        {
+            var agrupamento = notasEmAprovacao.GroupBy(notaEmAprovacao => new
+            {
+                notaEmAprovacao.TurmaId,
+                notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId,
+                notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.FechamentoTurma.PeriodoEscolarId
+            });
+            foreach(var notaEmAprovacao in agrupamento)
+                await RemoverCacheFechamentoNota(notaEmAprovacao.Key.TurmaId, notaEmAprovacao.Key.DisciplinaId, notaEmAprovacao.Key.PeriodoEscolarId);
+        }
+
         private async Task AtualizarCacheFechamentoNota(
                                 WfAprovacaoNotaFechamentoTurmaDto notaEmAprovacao, 
                                 FechamentoNota fechamentoNota)
@@ -278,6 +290,23 @@ namespace SME.SGP.Dominio.Servicos
                                             notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId);
             await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaBimestre));
         }
+
+        private async Task RemoverCacheFechamentoNota(long turmaId, long disciplinaId, long? periodoEscolarId)
+        {
+            var codigoTurma = await mediator.Send(new ObterTurmaCodigoPorIdQuery(turmaId));
+            var chaveCacheNotaFinal = ObterChaveFechamentoNotaFinalComponenteTurma(disciplinaId.ToString(),
+                                                                                   codigoTurma);
+            await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaFinal));
+
+            var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
+                                            turmaId,
+                                            periodoEscolarId,
+                                            disciplinaId);
+            await mediator.Send(new RemoverChaveCacheCommand(chaveCacheNotaBimestre));
+        }
+
+        private string ObterChaveFechamentoNotaFinalComponenteTurma(string codigoDisciplina, string codigoTurma)
+            => string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_FINAL_COMPONENTE_TURMA, codigoDisciplina, codigoTurma);
 
         private async Task AprovarUltimoNivelDaReposicaoAula(long codigoDaNotificacao, long workflowId)
         {
@@ -533,8 +562,8 @@ namespace SME.SGP.Dominio.Servicos
 
             int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
-
-            var usuariosRfs = notasEmAprovacao.Select(n => n.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.AlteradoRF);
+            
+            var usuariosRfs = notasEmAprovacao.Select(n => n.UsuarioSolicitanteRf);
 
             foreach (var usuarioRf in usuariosRfs.Distinct())
             {
@@ -907,6 +936,7 @@ namespace SME.SGP.Dominio.Servicos
         {
             var notasEmAprovacao = await ObterNotasEmAprovacao(workflow.Id);
 
+            await AtualizarNotasFechamento(notasEmAprovacao);
             await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
         }
 
