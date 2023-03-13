@@ -93,7 +93,7 @@ namespace SME.SGP.Dados.Repositorios
 
         public Task<double> ObterNotaEmAprovacao(string codigoAluno, long disciplinaId, long turmaFechamentoId)
         {
-            var sql = $@"select coalesce(coalesce(coalesce(w.nota, fn.nota), coalesce(w.conceito_id, fn.conceito_id), -1))
+            var sql = $@"select coalesce(coalesce(coalesce(w.nota, fn.nota), coalesce(w.nota, w.conceito_id), -1))
                             from fechamento_turma ft 
                             inner join fechamento_turma_disciplina ftd on ftd.fechamento_turma_id = ft.id
                             inner join fechamento_aluno fa on fa.fechamento_turma_disciplina_id = ftd.id
