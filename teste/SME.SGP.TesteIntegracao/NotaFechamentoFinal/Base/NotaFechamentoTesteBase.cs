@@ -692,19 +692,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
                 CriadoPor = SISTEMA_NOME
             });
             
-            // await InserirNaBase(new ParametrosSistema()
-            // {
-            //     Nome = MEDIA_BIMESTRAL,
-            //     Descricao = MEDIA_BIMESTRAL,
-            //     Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
-            //     Valor = NUMERO_5,
-            //     Ano = dataAtualAnoAtual.Year,
-            //     Ativo = true,
-            //     CriadoEm = dataAtualAnoAtual,
-            //     CriadoRF = SISTEMA_CODIGO_RF,
-            //     CriadoPor = SISTEMA_NOME
-            // });
-            
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = MEDIA_BIMESTRAL,
