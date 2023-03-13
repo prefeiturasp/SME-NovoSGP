@@ -132,7 +132,7 @@ namespace SME.SGP.Dominio.Servicos
                                     fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
                                     
                                     if (!emAprovacao)
-                                        await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, notaAnterior, conceitoIdAnterior);
+                                        await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
 
                                     ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
@@ -194,14 +194,14 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota,double? notaAnterior, long? conceitoIdAnterior)
+        private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,double? notaAnterior, long? conceitoIdAnterior)
         {
-            if (notaAnterior.HasValue || fechamentoNota.Nota.HasValue)
+            if (tipoNota == TipoNota.Nota)
             {
-                if (fechamentoNota.Nota.HasValue && fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaAnterior) != 0)
+                if (fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaAnterior) != 0)
                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, fechamentoNota.Nota, fechamentoNota.Id));
             }
-            else if (fechamentoNota.ConceitoId != null && fechamentoNota.ConceitoId != conceitoIdAnterior)
+            else if (fechamentoNota.ConceitoId.GetValueOrDefault().CompareTo(conceitoIdAnterior) != 0)
                 await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id));
         }
 

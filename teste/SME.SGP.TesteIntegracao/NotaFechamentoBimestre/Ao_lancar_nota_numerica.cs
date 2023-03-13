@@ -39,9 +39,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve lançar nota numérica pelo Professor Titular em ano atual")]
@@ -115,7 +112,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false,
                 Modalidade.Fundamental,
-                ANO_1,
+                ANO_7,
                 TipoFrequenciaAluno.PorDisciplina,
                 COMPONENTE_REGENCIA_CLASSE_FUND_I_5H_ID_1105.ToString());
 
@@ -149,7 +146,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ModalidadeTipoCalendario.FundamentalMedio,
                 false,
                 Modalidade.Medio,
-                ANO_8,
+                ANO_3,
                 TipoFrequenciaAluno.PorDisciplina,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 
@@ -183,7 +180,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 ModalidadeTipoCalendario.EJA,
                 false,
                 Modalidade.EJA,
-                ANO_9,
+                ANO_3,
                 TipoFrequenciaAluno.PorDisciplina,
                 COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString());
 

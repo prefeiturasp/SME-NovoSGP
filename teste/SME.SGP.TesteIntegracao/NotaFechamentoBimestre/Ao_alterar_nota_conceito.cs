@@ -35,16 +35,13 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
                 typeof(ObterAlunosPorTurmaEAnoLetivoQueryHandlerFakeValidarAlunos), ServiceLifetime.Scoped));
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
-                typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));            
+                typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));            
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo Professor Titular em ano atual")]
         public async Task Deve_alterar_nota_conceito_lancada_professor_titular()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_3, false));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
             
@@ -89,7 +86,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo CP em ano atual")]
         public async Task Deve_alterar_nota_conceito_lancada_cp()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_3, false));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilCP(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
             
@@ -134,7 +131,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito lançada pelo DIRETOR em ano atual")]
         public async Task Deve_alterar_nota_conceito_lancada_diretor_ano_atual()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(), ANO_3, false));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(), ANO_1, false));
 
             var conceitosParaPersistir = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);
             
@@ -169,7 +166,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota conceito em turma de ano anterior com WorkFlow")]
         public async Task Deve_alterar_nota_conceito_em_turma_do_ano_anterior()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_3, true));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1, true));
 
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoConceito(COMPONENTE_CURRICULAR_ARTES_ID_139), COMPONENTE_CURRICULAR_ARTES_ID_139);

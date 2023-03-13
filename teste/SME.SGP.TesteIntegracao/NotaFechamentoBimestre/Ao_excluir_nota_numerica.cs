@@ -34,9 +34,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota numérica lançada pelo Professor Titular em ano atual")]
@@ -171,7 +168,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota numérica lançada Professor Regente em ano atual")]
         public async Task Deve_permitir_excluir_nota_titular_regencia_classe_fundamental()
         {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_1);
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_7);
 
             await CriarDadosBase(filtroNotaFechamento);
 

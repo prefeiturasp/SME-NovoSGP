@@ -46,9 +46,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterDadosTurmaEolPorCodigoQuery, DadosTurmaEolDto>),
                 typeof(ObterDadosTurmaEolPorCodigoQueryHandlerFakeRegular), ServiceLifetime.Scoped));
 
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
-
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosAtivosPorTurmaCodigoQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterAlunosAtivosPorTurmaCodigoQueryHandlerFakeValidarAlunosFrequencia), ServiceLifetime.Scoped));
 
@@ -71,7 +68,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -112,7 +108,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -147,7 +142,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosAtivos(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -186,7 +180,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosInativosDurantePeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas);
@@ -223,7 +216,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarDadosBase(filtroFechamentoNota);
             await CriarAvaliacaoBimestral(filtroFechamentoNota.ProfessorRf, filtroFechamentoNota.ComponenteCurricular);
-            await CriarCiclo();
 
             var notasLancadas = await LancarNotasAlunosInativosForaPeriodoFechamento(COMPONENTE_CURRICULAR_PORTUGUES_ID_138);
             await ExecutarTeste(notasLancadas, true);

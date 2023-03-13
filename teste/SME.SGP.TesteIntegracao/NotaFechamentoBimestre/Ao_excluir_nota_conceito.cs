@@ -36,15 +36,12 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo Professor Titular em ano atual")]
         public async Task Deve_permitir_excluir_nota_titular_fundamental()
         {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(),ANO_7);
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(),ANO_1);
 
             await CriarDadosBase(filtroNotaFechamento);
 
@@ -86,7 +83,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo CP em ano atual")]
         public async Task Deve_permitir_excluir_nota_cp_fundamental()
         {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilCP(),ANO_7);
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilCP(),ANO_1);
 
             await CriarDadosBase(filtroNotaFechamento);
 
@@ -128,7 +125,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve excluir nota conceito lançada pelo DIRETOR em ano atual")]
         public async Task Deve_permitir_excluir_nota_diretor_fundamental()
         {
-            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(),ANO_7);
+            var filtroNotaFechamento = ObterFiltroFechamentoNotaDto(ObterPerfilDiretor(),ANO_1);
 
             await CriarDadosBase(filtroNotaFechamento);
 

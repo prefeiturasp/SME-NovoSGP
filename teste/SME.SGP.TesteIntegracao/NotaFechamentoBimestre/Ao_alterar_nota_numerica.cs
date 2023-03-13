@@ -35,9 +35,6 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterTodosAlunosNaTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>),
                 typeof(ObterTodosAlunosNaTurmaQueryHandlerAnoAnteriorFake), ServiceLifetime.Scoped));
-
-            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
-                typeof(ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota numérica lançada pelo Professor Titular em ano atual")]
@@ -175,7 +172,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
         [Fact(DisplayName = "Fechamento Bimestre - Deve alterar nota numérica em turma de ano anterior com WorkFlow")]
         public async Task Deve_alterar_nota_numerico_em_turma_do_ano_anterior()
         {
-            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_3, true));
+            await CriarDadosBase(ObterFiltroFechamentoNotaDto(ObterPerfilProfessor(), ANO_7, true));
             
             var comando = ServiceProvider.GetService<IComandosFechamentoTurmaDisciplina>();
             var dto = ObterListaFechamentoTurma(ObterListaDeFechamentoNumerica(COMPONENTE_CURRICULAR_PORTUGUES_ID_138), COMPONENTE_CURRICULAR_PORTUGUES_ID_138);

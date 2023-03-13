@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SME.SGP.Dominio;
 using SME.SGP.TesteIntegracao.Setup;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using Xunit;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Shouldly;
 using SME.SGP.Aplicacao;
 using SME.SGP.TesteIntegracao.ServicosFakes;
 
@@ -26,7 +28,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerComPermissaoFake), ServiceLifetime.Scoped));
         }
         
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Não deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período de reabertura")]
         public async Task Nao_deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_sem_periodo_reabertura()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -45,7 +47,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await ExecutarTesteComExcecao(filtroNotaFechamento);
         }
         
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período abertura")]
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_abertura()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -64,9 +66,24 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await InserirPeriodoAberturaCustomizado();
             
             await ExecutarTeste(filtroNotaFechamento);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(5);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(5);
+            
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
         }
         
-        [Fact]
+        [Fact(DisplayName = "Fechamento Bimestre Final - Deve permitir lançamento de nota com período escolar no 4º bimestre encerrado e sem período reabertura")]
         public async Task Deve_permitir_lancamento_nota_com_periodo_escolar_no_4_bimestre_encerrada_com_periodo_reabertura()
         {
             var filtroNotaFechamento = ObterFiltroNotasFechamento(
@@ -83,6 +100,21 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await InserirPeriodoEscolarCustomizado();
             
             await ExecutarTeste(filtroNotaFechamento, true);
+            
+            var historicoNotas = ObterTodos<HistoricoNota>();
+            historicoNotas.Count.ShouldBe(5);
+            
+            var historicoNotasNotaFechamentos = ObterTodos<HistoricoNotaFechamento>();
+            historicoNotasNotaFechamentos.Count.ShouldBe(5);
+            
+            historicoNotas.Count(w=> !w.NotaAnterior.HasValue).ShouldBe(5);
+            historicoNotas.Count(w=> w.NotaNova.HasValue).ShouldBe(5);
+            
+            historicoNotas.Any(w=> w.Id == 1 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_6).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 2 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_5).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 3 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_8).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 4 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_10).ShouldBeTrue();
+            historicoNotas.Any(w=> w.Id == 5 && !w.NotaAnterior.HasValue && w.NotaNova == NOTA_2).ShouldBeTrue();
         }
         
         private async Task InserirPeriodoEscolarCustomizado(bool periodoEscolarValido = false)

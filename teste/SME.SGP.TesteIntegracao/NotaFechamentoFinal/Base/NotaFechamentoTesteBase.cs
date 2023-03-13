@@ -73,6 +73,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         {
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterProfessoresTitularesDisciplinasEolQuery, IEnumerable<ProfessorTitularDisciplinaEol>>), typeof(ObterProfessoresTitularesDisciplinasEolQueryHandlerFakePortugues), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>), typeof(ServicosFakes.ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
             
             base.RegistrarFakes(services);
         }
@@ -691,18 +692,32 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
                 CriadoPor = SISTEMA_NOME
             });
             
+            // await InserirNaBase(new ParametrosSistema()
+            // {
+            //     Nome = MEDIA_BIMESTRAL,
+            //     Descricao = MEDIA_BIMESTRAL,
+            //     Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
+            //     Valor = NUMERO_5,
+            //     Ano = dataAtualAnoAtual.Year,
+            //     Ativo = true,
+            //     CriadoEm = dataAtualAnoAtual,
+            //     CriadoRF = SISTEMA_CODIGO_RF,
+            //     CriadoPor = SISTEMA_NOME
+            // });
+            
             await InserirNaBase(new ParametrosSistema()
             {
                 Nome = MEDIA_BIMESTRAL,
                 Descricao = MEDIA_BIMESTRAL,
-                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaConselho,
-                Valor = NUMERO_5,
-                Ano = dataAtualAnoAtual.Year,
+                Tipo = TipoParametroSistema.AprovacaoAlteracaoNotaFechamento,
+                Ano = dataAtualAnoAnterior.Year,
+                Valor = string.Empty,
                 Ativo = true,
                 CriadoEm = dataAtualAnoAtual,
                 CriadoRF = SISTEMA_CODIGO_RF,
                 CriadoPor = SISTEMA_NOME
             });
+            
         }
 
         protected async Task CriarPeriodoEscolarEAbertura()
@@ -831,14 +846,14 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
         {
             await CriarDadosBase(ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false));
 
-            await ExecutarComandosFechamentoFinalComValidacaoNota(ObtenhaFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
+            await ExecutarComandosFechamentoFinalComValidacaoNota(ObterFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
         }
 
         protected async Task ExecuteTesteConceitoAlteracao(string perfil, long componenteCurricular, Modalidade modalidade, ModalidadeTipoCalendario modalidadeTipoCalendario, bool ehRegencia, TipoNota tipoNota)
         {
             await CriarDadosBase(ObterFiltroNotas(perfil, ANO_3, componenteCurricular.ToString(), tipoNota, modalidade, modalidadeTipoCalendario, false));
 
-            await ExecutarComandosFechamentoFinal(ObtenhaFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
+            await ExecutarComandosFechamentoFinal(ObterFechamentoFinalConceitoDto(componenteCurricular, ehRegencia));
 
             var dto = new FechamentoFinalSalvarDto()
             {
@@ -896,7 +911,7 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
             };
         }
 
-        protected FechamentoFinalSalvarDto ObtenhaFechamentoFinalConceitoDto(long componenteCurricular, bool ehRegencia)
+        protected FechamentoFinalSalvarDto ObterFechamentoFinalConceitoDto(long componenteCurricular, bool ehRegencia)
         {
             return new FechamentoFinalSalvarDto()
             {
@@ -905,19 +920,19 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal.Base
                 EhRegencia = ehRegencia,
                 Itens = new List<FechamentoFinalSalvarItemDto>()
                 {
-                    new FechamentoFinalSalvarItemDto()
+                    new ()
                     {
                         AlunoRf = ALUNO_CODIGO_1,
                         ComponenteCurricularCodigo = componenteCurricular,
                         ConceitoId = (int)ConceitoValores.NS
                     },
-                    new FechamentoFinalSalvarItemDto()
+                    new ()
                     {
                         AlunoRf = ALUNO_CODIGO_2,
                         ComponenteCurricularCodigo = componenteCurricular,
                         ConceitoId = (int)ConceitoValores.S
                     },
-                    new FechamentoFinalSalvarItemDto()
+                    new ()
                     {
                         AlunoRf = ALUNO_CODIGO_3,
                         ComponenteCurricularCodigo = componenteCurricular,

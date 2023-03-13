@@ -45,6 +45,7 @@ namespace SME.SGP.Dominio.Servicos
         private List<FechamentoNotaDto> notasEnvioWfAprovacao;
         private Turma turmaFechamento;
         private readonly IMediator mediator;
+        private readonly IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor;
 
         public ServicoFechamentoTurmaDisciplina(IRepositorioFechamentoTurmaDisciplina repositorioFechamentoTurmaDisciplina,
                                                 IRepositorioFechamentoTurma repositorioFechamentoTurma,
@@ -68,6 +69,7 @@ namespace SME.SGP.Dominio.Servicos
                                                 IRepositorioEventoTipo repositorioEventoTipo,
                                                 IRepositorioFechamentoReabertura repositorioFechamentoReabertura,
                                                 IRepositorioCache repositorioCache,
+                                                IRepositorioNotaTipoValorConsulta repositorioNotaTipoValor,
                                                 IMediator mediator)
         {
             this.repositorioFechamentoTurma = repositorioFechamentoTurma ?? throw new ArgumentNullException(nameof(repositorioFechamentoTurma));
@@ -92,6 +94,7 @@ namespace SME.SGP.Dominio.Servicos
             this.servicoNotificacao = servicoNotificacao ?? throw new ArgumentNullException(nameof(servicoNotificacao));
             this.repositorioComponenteCurricular = repositorioComponenteCurricular ?? throw new ArgumentNullException(nameof(repositorioComponenteCurricular));
             this.repositorioCache = repositorioCache ?? throw new ArgumentNullException(nameof(repositorioCache));
+            this.repositorioNotaTipoValor = repositorioNotaTipoValor ?? throw new ArgumentNullException(nameof(repositorioNotaTipoValor));
             this.mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
@@ -255,11 +258,13 @@ namespace SME.SGP.Dominio.Servicos
             if (disciplinaEOL == null)
                 throw new NegocioException("Não foi possível localizar o componente curricular no EOL.");
 
+            var tipoNotaOuConceito = await repositorioNotaTipoValor.ObterPorTurmaIdAsync(turmaFechamento.Id, turmaFechamento.TipoTurma);
+            
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
             if (componenteSemNota && id > 0)
                 fechamentoAlunos = await AtualizaSinteseAlunos(id, periodoEscolar.PeriodoFim, disciplinaEOL, turmaFechamento.AnoLetivo);
             else
-                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento);
+                fechamentoAlunos = await CarregarFechamentoAlunoENota(id, entidadeDto.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento,tipoNotaOuConceito.TipoNota);
 
             var alunos = await mediator.Send(new ObterTodosAlunosNaTurmaQuery(int.Parse(turmaFechamento.CodigoTurma)));
 
@@ -278,6 +283,8 @@ namespace SME.SGP.Dominio.Servicos
             var diasAlteracao = DateTime.Today.DayOfYear - fechamentoTurmaDisciplina.CriadoEm.Date.DayOfYear;
             var acimaDiasPermitidosAlteracao = parametroDiasAlteracao != null && diasAlteracao > int.Parse(parametroDiasAlteracao);
             var alunosComNotaAlterada = "";
+            
+            
 
             unitOfWork.IniciarTransacao();
             try
@@ -325,9 +332,7 @@ namespace SME.SGP.Dominio.Servicos
 
                             if (!emAprovacao && semFechamentoNota)
                             {
-                                await SalvarHistoricoNotaFechamentoNovo(fechamentoNota.Id, null,
-                                    fechamentoNota.Nota, null, 
-                                    fechamentoNota.ConceitoId);
+                                await SalvarHistoricoNotaFechamentoNovo(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId);
                             }
                         }
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
@@ -541,7 +546,7 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento)
+        private async Task<IEnumerable<FechamentoAluno>> CarregarFechamentoAlunoENota(long fechamentoTurmaDisciplinaId, IEnumerable<FechamentoNotaDto> fechamentoNotasDto, Usuario usuarioLogado, ParametrosSistema parametroAlteracaoNotaFechamento, TipoNota tipoNotaOuConceito)
         {
             var fechamentoAlunos = new List<FechamentoAluno>();
             int indiceFechamentoAntigo = -1;
@@ -578,7 +583,7 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            await SalvarHistoricoNotaFechamentoNovo(notaFechamento.Id, notaFechamento.Nota,
+                            await SalvarHistoricoNotaFechamentoNovo(notaFechamento.Id, tipoNotaOuConceito, notaFechamento.Nota,
                                 fechamentoNotaDto.Nota, notaFechamento.ConceitoId, 
                                 fechamentoNotaDto.ConceitoId);
                             
@@ -616,9 +621,9 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
         
-        private async Task SalvarHistoricoNotaFechamentoNovo(long fechamentoNotaId, double? notaAnterior, double? notaAtual, long? conceitoIdAnterior, long? conceitoIdAtual)
+        private async Task SalvarHistoricoNotaFechamentoNovo(long fechamentoNotaId, TipoNota tipoNota, double? notaAnterior, double? notaAtual, long? conceitoIdAnterior, long? conceitoIdAtual)
         {
-            if (notaAnterior.HasValue || notaAtual.HasValue)
+            if (tipoNota == TipoNota.Nota)
             {
                 if (notaAtual != notaAnterior)
                     await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, notaAtual,fechamentoNotaId));

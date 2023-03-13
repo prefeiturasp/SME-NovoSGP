@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SME.SGP.Dominio.Entidades;
 using Xunit;
 
 namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
@@ -51,6 +52,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery, bool>), typeof(ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterAlunosEolPorTurmaQuery, IEnumerable<AlunoPorTurmaResposta>>), typeof(ObterAlunosEolPorTurmaQueryHandlerFake), ServiceLifetime.Scoped));
             services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ConsolidacaoNotaAlunoCommand, bool>), typeof(ConsolidacaoNotaAlunoCommandHandlerFake), ServiceLifetime.Scoped));
+            services.Replace(new ServiceDescriptor(typeof(IRequestHandler<ObterComponentesCurricularesEOLPorTurmasCodigoQuery, IEnumerable<ComponenteCurricularDto>>),
+                typeof(ServicosFakes.ObterComponentesCurricularesEOLPorTurmasCodigoQueryHandlerFake), ServiceLifetime.Scoped));
         }
 
         protected class FiltroFechamentoNotaDto
@@ -93,6 +96,153 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoBimestre
 
             await CriarSintese();
             await CrieConceitoValores();
+            
+            await CriarCiclo();
+            await CriarNotasTipoEParametros(filtroFechamentoNota.ConsiderarAnoAnterior);
+        }
+        
+        private async Task CriarNotasTipoEParametros(bool consideraAnoAnterior = false)
+        {
+            var dataBase = consideraAnoAnterior ? new DateTime(DateTimeExtension.HorarioBrasilia().AddYears(-1).Year, 01, 01) : new DateTime(DateTimeExtension.HorarioBrasilia().Year, 01, 01);
+
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = dataBase,
+                TipoNota = TipoNota.Nota,
+                Descricao = NOTA,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaTipoValor()
+            {
+                Ativo = true,
+                InicioVigencia = dataBase,
+                TipoNota = TipoNota.Conceito,
+                Descricao = CONCEITO,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+            
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 1,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 2,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 3,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 4,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 5,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 6,
+                TipoNotaId = 2,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 7,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaConceitoCicloParametro()
+            {
+                CicloId = 8,
+                TipoNotaId = 1,
+                QtdMinimaAvalicoes = 1,
+                PercentualAlerta = 50,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
+
+            await InserirNaBase(new NotaParametro()
+            {
+                Minima = 0,
+                Media = 5,
+                Maxima = 10,
+                Incremento = 0.5,
+                Ativo = true,
+                InicioVigencia = dataBase,
+                CriadoEm = DateTime.Now,
+                CriadoPor = SISTEMA_NOME,
+                CriadoRF = SISTEMA_CODIGO_RF
+            });
         }
 
         protected async Task<NegocioException> ExecutarComandosFechamentoTurmaDisciplinaComExcecao(IEnumerable<FechamentoTurmaDisciplinaDto> fechamentoTurma)
