@@ -1,12 +1,7 @@
-﻿using Npgsql;
-using NpgsqlTypes;
-using SME.SGP.Dominio;
+﻿using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using SME.SGP.Infra.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Dados.Repositorios
@@ -30,48 +25,10 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.QueryFirstOrDefaultAsync<double>(sql, new { turmaFechamentoId, disciplinaId, codigoAluno });
         }
-        public Task<bool> SalvarListaNotaConceito(IEnumerable<NotaConceito> entidade, Usuario criadoPor)
+        public async Task<bool> SalvarNotaConceito(NotaConceito entidade)
         {
-
-            var lancaNota = entidade.First().Nota.HasValue;
-
-            var sql = @$"copy notas_conceito (
-                                atividade_avaliativa,
-	                            aluno_id,
-	                            {(lancaNota ? "nota" : "conceito")},
-	                            tipo_nota,
-	                            criado_por,
-	                            criado_rf,
-	                            criado_em,
-	                            disciplina_id,
-	                            status_gsa)
-                       from
-                       stdin (FORMAT binary)";
-            using (var writer = ((NpgsqlConnection)database.Conexao).BeginBinaryImport(sql))
-            {
-                foreach (var item in entidade)
-                {
-
-                    writer.StartRow();
-                    writer.Write(item.AtividadeAvaliativaID, NpgsqlDbType.Bigint);
-                    writer.Write(item.AlunoId, NpgsqlDbType.Varchar);
-
-                    if (lancaNota)
-                        writer.Write((double)item.Nota, NpgsqlDbType.Numeric);
-                    else
-                        writer.Write((long)item.ConceitoId, NpgsqlDbType.Bigint);
-
-                    writer.Write((long)item.TipoNota, NpgsqlDbType.Bigint);
-                    writer.Write(item.CriadoPor ?? criadoPor.Nome);
-                    writer.Write(item.CriadoRF ?? criadoPor.Login);
-                    writer.Write(item.CriadoEm);
-                    writer.Write(item.DisciplinaId, NpgsqlDbType.Varchar);
-                    writer.Write((int)item.StatusGsa, NpgsqlDbType.Integer);
-                }
-                writer.Complete();
-            }
-
-            return Task.FromResult(true);
+           var retorno = await SalvarAsync(entidade);
+            return retorno != 0;
         }
     }
 }
