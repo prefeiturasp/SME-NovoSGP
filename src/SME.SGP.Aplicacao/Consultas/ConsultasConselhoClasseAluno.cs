@@ -413,7 +413,7 @@ namespace SME.SGP.Aplicacao
 
                     foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome).ToList())
                     {
-                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                        var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
                         var dataFim = periodoEscolar?.PeriodoFim ?? periodoFim;
 
@@ -430,7 +430,7 @@ namespace SME.SGP.Aplicacao
 
 
                         if (frequenciasAlunoParaTratar == null || !frequenciasAlunoParaTratar.Any())
-                            frequenciaAluno = new FrequenciaAluno { DisciplinaId = disciplina.Id.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
+                            frequenciaAluno = new FrequenciaAluno() { DisciplinaId = disciplina.CodigoComponenteCurricular.ToString(), TurmaId = disciplinaEol.TurmaCodigo };
                         else if (frequenciasAlunoParaTratar.Count() == 1)
                         {
                             frequenciaAluno = frequenciasAlunoParaTratar.FirstOrDefault();
