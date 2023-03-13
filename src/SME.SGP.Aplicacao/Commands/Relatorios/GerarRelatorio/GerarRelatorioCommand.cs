@@ -17,7 +17,7 @@ namespace SME.SGP.Aplicacao
             TipoRelatorio = tipoRelatorio;
             Filtros = filtros;
             IdUsuarioLogado = usuario.Id;
-            UsuarioLogadoRf = usuario.CodigoRf;
+            UsuarioLogadoRf = usuario.ObterCodigoRfLogin();
             Formato = formato;
             PerfilUsuario = usuario.PerfilAtual.ToString();
             RotaRelatorio = rotaRelatorio;
