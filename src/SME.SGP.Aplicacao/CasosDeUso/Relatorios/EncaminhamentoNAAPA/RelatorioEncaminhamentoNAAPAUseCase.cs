@@ -20,7 +20,9 @@ namespace SME.SGP.Aplicacao
         {
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             param.UsuarioNome = usuarioLogado.Nome;
-            param.UsuarioRf = usuarioLogado.CodigoRf;
+            param.UsuarioRf =  usuarioLogado.CodigoRf;
+            if (string.IsNullOrEmpty(param.UsuarioRf))
+                param.UsuarioRf = usuarioLogado.Login;
 
             if (usuarioLogado == null)
                 throw new NegocioException(MensagemNegocioComuns.NAO_FOI_POSSIVEL_LOCALIZAR_USUARIO);
