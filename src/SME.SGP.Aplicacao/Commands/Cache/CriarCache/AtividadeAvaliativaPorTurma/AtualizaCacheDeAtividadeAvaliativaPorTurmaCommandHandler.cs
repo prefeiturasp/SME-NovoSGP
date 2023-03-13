@@ -33,19 +33,14 @@ namespace SME.SGP.Aplicacao
                 foreach (var excluir in request.EntidadesExcluir)
                     atividadeAvaliativas.Remove(excluir);
 
-            if (request.EntidadesSalvar.Count() > 0)
-                foreach (var inserir in request.EntidadesSalvar)
-                {
-                    var notaConceitoNovaAluno = await repositorioNotasConceitos.ObterNotasPorAtividadeIdCodigoAluno(inserir.AtividadeAvaliativaID, inserir.AlunoId);
-                    inserir.Id = notaConceitoNovaAluno.Id;
-                    atividadeAvaliativas.Add(inserir);
-                }
-                    
+            foreach (var inserir in request.EntidadesSalvar)
+            {
+                atividadeAvaliativas.Add(inserir);
+            }
 
-            if (request.EntidadesAlterar.Count() > 0)
-                foreach (var alterar in request.EntidadesAlterar)
-                {
-                    var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
+            foreach (var alterar in request.EntidadesAlterar)
+            {
+                var atividade = atividadeAvaliativas.Find(atividade => atividade.Id == alterar.Id);
 
                     if (atividade != null)
                     {

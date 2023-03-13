@@ -186,7 +186,7 @@ namespace SME.SGP.Dominio
                     await mediator.Send(new RemoverNotaConceitoCommand(entidade));
 
                 if (notaConceitoParaInserir.Any())
-                    await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir, criadoPor));
+                    await mediator.Send(new SalvarListaNotaConceitoCommand(notaConceitoParaInserir));
 
                 foreach (var notaConceito in notaConceitoParaAtualizar)
                     repositorioNotasConceitos.Salvar(notaConceito);
