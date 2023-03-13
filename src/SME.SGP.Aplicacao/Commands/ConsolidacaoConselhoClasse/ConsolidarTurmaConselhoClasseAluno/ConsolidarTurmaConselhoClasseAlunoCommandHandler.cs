@@ -105,7 +105,7 @@ namespace SME.SGP.Aplicacao
 
                         foreach (var disciplina in componentes.Where(d => d.LancaNota).OrderBy(g => g.Nome))
                         {
-                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.Id);
+                            var disciplinaEol = disciplinasDaTurmaEol.FirstOrDefault(d => d.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular);
 
                             if (disciplinaEol.Regencia)
                             {
