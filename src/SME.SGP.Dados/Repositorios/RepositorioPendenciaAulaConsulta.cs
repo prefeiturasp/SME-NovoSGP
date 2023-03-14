@@ -143,7 +143,7 @@ namespace SME.SGP.Dados.Repositorios
         public async Task<IEnumerable<long>> TrazerAulasComPendenciasDiarioBordo(string componenteCurricularId, string professorRf,
             bool ehGestor, string codigoTurma, int anoLetivo)
         {
-            var disciplinaId = Convert.ToInt32(componenteCurricularId);
+            var disciplinaId = Convert.ToInt64(componenteCurricularId);
 
             var sqlQuery = new StringBuilder(@"select distinct aula_id
                                                 from pendencia_diario_bordo pdb

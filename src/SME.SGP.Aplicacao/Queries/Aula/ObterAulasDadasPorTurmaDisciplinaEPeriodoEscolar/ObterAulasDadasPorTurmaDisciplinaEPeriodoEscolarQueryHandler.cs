@@ -16,8 +16,6 @@ namespace SME.SGP.Aplicacao
         }
 
         public async Task<int> Handle(ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolarQuery request, CancellationToken cancellationToken)
-          =>  await repositorioAula.ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(request.TurmaCodigo, request.ComponenteCurricularId, request.TipoCalendarioId, request.PeriodosEscolaresIds);
-        
-           
+          =>  await repositorioAula.ObterAulasDadasPorTurmaDisciplinaEPeriodoEscolar(request.TurmaCodigo, request.ComponentesCurricularesId, request.TipoCalendarioId, request.PeriodosEscolaresIds, request.Professor);
     }
 }

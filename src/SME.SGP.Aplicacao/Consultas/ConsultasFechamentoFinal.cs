@@ -253,7 +253,7 @@ namespace SME.SGP.Aplicacao
             var frequenciaAluno = await mediator.Send(new ObterFrequenciaGeralAlunoPorTurmaEComponenteQuery(aluno.CodigoAluno, turma.CodigoTurma, filtros.DisciplinaCodigo.ToString()));
 
             var existeFrequenciaComponenteCurricular = await repositorioFrequenciaAlunoDisciplinaPeriodo.ExisteFrequenciaRegistradaPorTurmaComponenteCurricularEBimestres(turma.CodigoTurma,
-                filtros.DisciplinaCodigo.ToString(), periodosEscolares.Select(c => c.Id).ToArray());
+               new string[] { filtros.DisciplinaCodigo.ToString() }, periodosEscolares.Select(c => c.Id).ToArray());
 
             var percentualFrequencia = frequenciaAluno?.PercentualFrequencia ?? 0;
 

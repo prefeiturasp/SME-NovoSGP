@@ -80,10 +80,10 @@ namespace SME.SGP.Aplicacao
                 .Send(new ObterAlunosComAnotacaoNaAulaQuery(aula.Id));
 
             var frequenciaAlunosRegistrada = await mediator
-                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, long.Parse(aula.DisciplinaId), periodoEscolar.Id));
+                .Send(new ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(turma, new long[] { long.Parse(aula.DisciplinaId) }, periodoEscolar.Id));
 
             var turmaPossuiFrequenciaRegistrada = await mediator
-                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, aula.DisciplinaId, periodoEscolar.Id));
+                .Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { aula.DisciplinaId }, periodoEscolar.Id));
 
             var alunosCondicaoFrequencia = Enumerable.Empty<AlunoPorTurmaResposta>();
 

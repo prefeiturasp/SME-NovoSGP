@@ -42,5 +42,7 @@ namespace SME.SGP.Aplicacao.Integracoes.Respostas
 
         [JsonProperty("nomeComponenteInfantil")]
         public string NomeComponenteInfantil { get; internal set; }
+        [JsonIgnore]
+        public string Professor { get; set; }
     }
 }
