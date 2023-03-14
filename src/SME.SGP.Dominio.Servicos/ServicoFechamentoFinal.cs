@@ -104,10 +104,11 @@ namespace SME.SGP.Dominio.Servicos
                                 var fechamentoNota = CarregarNota(notaDto, fechamentoAluno);
 
                                 var semFechamentoNota = (fechamentoNota.Id == 0);
+                                var ehAprovacaoSemFechamentoNota = emAprovacao && semFechamentoNota;
                                 
                                 //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                                 //   deve gerar o registro do fechamento da nota inicial.
-                                if (!emAprovacao || (emAprovacao && semFechamentoNota))
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
                                 {
                                     double? notaAnterior = null;
                                     long? conceitoIdAnterior = null;
@@ -133,8 +134,14 @@ namespace SME.SGP.Dominio.Servicos
                                     
                                     if (!emAprovacao)
                                         await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
+                                    
+                                    var fechamentoNotaClone = fechamentoNota.Clone();
+                                    fechamentoNotaClone.Nota = notaDto.Nota;
+                                    fechamentoNotaClone.ConceitoId = notaDto.ConceitoId;
+                                    fechamentosNotasCache[fechamentoAluno].Add(fechamentoNotaClone);
 
-                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                    if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                        ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
                                 }
 
                                 if (emAprovacao)
@@ -327,7 +334,7 @@ namespace SME.SGP.Dominio.Servicos
         private async Task PersistirNotasFinaisNoCache(List<FechamentoNotaAlunoAprovacaoDto> notasFinais, FechamentoNota fechamentoNota,
             string codigoAluno, string disciplinaId, string codigoTurma, bool emAprovacao)
         {
-            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId);
+            var notaFinalAluno = notasFinais.FirstOrDefault(c => c.AlunoCodigo == codigoAluno && c.ComponenteCurricularId == fechamentoNota.DisciplinaId && c.Bimestre is 0 or null);
 
             if (notaFinalAluno == null) {
                 notasFinais.Add(new FechamentoNotaAlunoAprovacaoDto

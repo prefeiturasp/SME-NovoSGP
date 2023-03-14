@@ -127,7 +127,7 @@ namespace SME.SGP.Dados.Repositorios
             const string query = @"select ft.turma_id as TurmaId, pe.bimestre as Bimestre, 
                                 fa.aluno_codigo as CodigoAluno, fn.nota as NotaAnterior, ftd.id as FechamentoTurmaDisciplinaId,
                                 fn.conceito_id as ConceitoAnteriorId, coalesce(cc.descricao_infantil, cc.descricao_sgp, cc.descricao) as ComponenteCurricularDescricao, 
-                                cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
+                                cc.eh_regencia as ComponenteCurricularEhRegencia, wanf.criado_rf as UsuarioSolicitanteRf, wanf.*, fn.*, fa.*, ftd.*, ft.* from wf_aprovacao_nota_fechamento wanf 
                             inner join fechamento_nota fn on fn.id = wanf.fechamento_nota_id 
                             inner join fechamento_aluno fa on fa.id = fn.fechamento_aluno_id 
                             inner join fechamento_turma_disciplina ftd on ftd.id = fa.fechamento_turma_disciplina_id 

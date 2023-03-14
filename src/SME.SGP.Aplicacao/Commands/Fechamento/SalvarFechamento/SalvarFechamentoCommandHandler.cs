@@ -137,16 +137,17 @@ namespace SME.SGP.Aplicacao
                             // Regra de não reprovação em 2020
                             if (turma.AnoLetivo == 2020)
                                 ValidarNotasFechamento2020(fechamentoNota);
-                            
-                            var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new 
-                                { 
+
+                            var notaConceitoAprovacaoAluno = fechamentoTurma.NotaConceitoAlunos.Select(a => new
+                                {
                                     a.Nota,
                                     a.ConceitoId,
-                                    a.NotaAnterior, 
-                                    a.ConceitoIdAnterior, 
-                                    a.CodigoAluno
+                                    a.NotaAnterior,
+                                    a.ConceitoIdAnterior,
+                                    a.CodigoAluno,
+                                    a.DisciplinaId
                                 })
-                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo);                            
+                                .FirstOrDefault(x => x.CodigoAluno == fechamentoAluno.AlunoCodigo && x.DisciplinaId == fechamentoNota.DisciplinaId);                            
                             
                             var semFechamentoNota = (fechamentoNota.Id == 0);
                             

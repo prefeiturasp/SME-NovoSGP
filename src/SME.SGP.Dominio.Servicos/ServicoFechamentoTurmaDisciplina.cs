@@ -353,8 +353,8 @@ namespace SME.SGP.Dominio.Servicos
                 }
 
                 await EnviarNotasWfAprovacao(usuarioLogado);
-
                 unitOfWork.PersistirTransacao();
+
 
                 await PersistirCache(turma, entidadeDto.Bimestre, fechamentoAlunos.ToList());
 
@@ -604,22 +604,6 @@ namespace SME.SGP.Dominio.Servicos
 
             return fechamentoAlunos;
         }
-
-        private async Task SalvarHistoricoNotaFechamento(FechamentoNota notaFechamento, FechamentoNotaDto fechamentoNotaDto)
-        {
-            if (!notaFechamento.ConceitoId.HasValue)
-            {
-                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
-                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota, fechamentoNotaDto.Nota,
-                        notaFechamento.Id));
-            }
-            else
-            {
-                if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
-                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId,
-                        fechamentoNotaDto.ConceitoId, notaFechamento.Id));
-            }
-        }
         
         private async Task SalvarHistoricoNotaFechamentoNovo(long fechamentoNotaId, TipoNota tipoNota, double? notaAnterior, double? notaAtual, long? conceitoIdAnterior, long? conceitoIdAtual)
         {
@@ -690,6 +674,17 @@ namespace SME.SGP.Dominio.Servicos
                   Nota = fechamentoNotaDto.Nota,
                   ConceitoId = fechamentoNotaDto.ConceitoId,
                   SinteseId = fechamentoNotaDto.SinteseId
+              };
+
+        private FechamentoNotaDto MapearParaEntidade(FechamentoNota fechamentoNota)
+            => fechamentoNota == null ? null :
+              new FechamentoNotaDto()
+              {
+                  Id = fechamentoNota.Id,
+                  DisciplinaId = fechamentoNota.DisciplinaId,
+                  Nota = fechamentoNota.Nota,
+                  ConceitoId = fechamentoNota.ConceitoId,
+                  SinteseId = fechamentoNota.SinteseId
               };
 
         private FechamentoTurmaDisciplina MapearParaEntidade(long id, FechamentoTurmaDisciplinaDto fechamentoDto)

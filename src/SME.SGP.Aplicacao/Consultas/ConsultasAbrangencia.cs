@@ -76,12 +76,12 @@ namespace SME.SGP.Aplicacao
             return anosLetivos.Distinct().ToList();
         }
 
-        public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico)
+        public async Task<IEnumerable<OpcaoDropdownDto>> ObterAnosTurmasPorUeModalidade(string codigoUe, Modalidade modalidade, bool consideraHistorico,int? anoLetivo)
         {
             var login = servicoUsuario.ObterLoginAtual();
             var perfil = servicoUsuario.ObterPerfilAtual();
 
-            var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico);
+            var retorno = await repositorioAbrangencia.ObterAnosTurmasPorCodigoUeModalidade(login, perfil, codigoUe, modalidade, consideraHistorico,anoLetivo);
 
             if (retorno != null && retorno.Any())
                 return TransformarAnosEmOpcoesDropdownDto(retorno.OrderBy(q => q), modalidade);
