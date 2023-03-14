@@ -221,7 +221,7 @@ namespace SME.SGP.Dados.Repositorios
                     ccn.conceito_id as ConceitoId,
                     ccn.nota as Nota,
                     cca.aluno_codigo as AlunoCodigo,
-                    t.turma_id as TurmaCodigo,
+                    t.turma_id as TurmaCodigo
                   from fechamento_turma ft
                   left join periodo_escolar pe on pe.id = ft.periodo_escolar_id 
                  inner join turma t on t.id = ft.turma_id 
