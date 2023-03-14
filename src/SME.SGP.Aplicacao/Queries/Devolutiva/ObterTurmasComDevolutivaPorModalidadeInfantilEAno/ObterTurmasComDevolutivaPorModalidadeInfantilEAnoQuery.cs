@@ -7,7 +7,7 @@ namespace SME.SGP.Aplicacao
 {
     public class ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery : IRequest<IEnumerable<DevolutivaTurmaDTO>>
     {
-        public ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(int anoLetivo, long ueId)
+        public ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(int anoLetivo, long ueId = 0)
         {
             AnoLetivo = anoLetivo;
             UeId = ueId;
