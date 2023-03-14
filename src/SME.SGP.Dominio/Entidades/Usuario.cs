@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio
             else
             {
                 if (EhProfessorCj())
-                    return aulas.Where(a => a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => a.ProfessorRf == CodigoRf && a.AulaCJ);
                 else
                 {
                     return (from a in aulas

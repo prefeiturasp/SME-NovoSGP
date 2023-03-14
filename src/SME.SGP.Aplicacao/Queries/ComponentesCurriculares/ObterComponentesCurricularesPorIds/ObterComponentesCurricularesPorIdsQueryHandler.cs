@@ -4,6 +4,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -93,6 +94,17 @@ namespace SME.SGP.Aplicacao
             }
 
             return disciplinasRetorno;
+        }
+
+        private async Task<Usuario> RetornarUsuario()
+        {
+            try
+            {
+               return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
