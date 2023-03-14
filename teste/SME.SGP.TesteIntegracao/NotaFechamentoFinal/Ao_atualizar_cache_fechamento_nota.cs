@@ -58,7 +58,8 @@ namespace SME.SGP.TesteIntegracao.NotaFechamentoFinal
             await mediator.Send(new AtualizarCacheFechamentoNotaCommand(
                                                 fechamentoNota,
                                                 CODIGO_ALUNO_1,
-                                                TURMA_CODIGO_1));
+                                                TURMA_CODIGO_1,
+                                                COMPONENTE_CURRICULAR_PORTUGUES_ID_138));
 
             var fechamentosNotas = await mediator.Send(new ObterPorFechamentosTurmaQuery(new long[] { FECHAMENTO_TURMA_DISCIPLINA_ID_1 }, TURMA_CODIGO_1, COMPONENTE_CURRICULAR_PORTUGUES_ID_138.ToString()));
             fechamentosNotas.ShouldNotBeNull();

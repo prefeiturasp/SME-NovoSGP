@@ -282,7 +282,8 @@ namespace SME.SGP.Dominio.Servicos
             await mediator.Send(new AtualizarCacheFechamentoNotaCommand(
                                         fechamentoNota,
                                         notaEmAprovacao.CodigoAluno,
-                                        await mediator.Send(new ObterTurmaCodigoPorIdQuery(notaEmAprovacao.TurmaId))));
+                                        await mediator.Send(new ObterTurmaCodigoPorIdQuery(notaEmAprovacao.TurmaId)),
+                                        notaEmAprovacao.FechamentoNota.FechamentoAluno.FechamentoTurmaDisciplina.DisciplinaId));
 
             var chaveCacheNotaBimestre = string.Format(NomeChaveCache.CHAVE_FECHAMENTO_NOTA_TURMA_PERIODO_COMPONENTE,
                                             notaEmAprovacao.TurmaId,
