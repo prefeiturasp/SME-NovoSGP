@@ -406,7 +406,7 @@ namespace SME.SGP.Aplicacao
             disciplinasEol.ToList().ForEach(async d =>
             {
                 d.Professor = professoresTitulares
-                    .SingleOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular)).ProfessorRf;
+                    .SingleOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
 
                 if (!string.IsNullOrWhiteSpace(d.Professor))
                 {
