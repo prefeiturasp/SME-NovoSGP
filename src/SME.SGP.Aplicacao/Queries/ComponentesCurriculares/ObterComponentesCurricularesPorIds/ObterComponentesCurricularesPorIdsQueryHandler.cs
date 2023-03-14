@@ -65,7 +65,7 @@ namespace SME.SGP.Aplicacao
             } catch(Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter usuario obter componentes curriculares por ids Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Usuario, ex.Message));
-                return null;
+                throw;
             }
         }
     }
