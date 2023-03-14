@@ -122,13 +122,11 @@ namespace SME.SGP.Aplicacao
                 fechamentoTurmaDisciplina.FechamentoTurmaId = fechamentoTurmaId;
 
                 var fechamentoTurmaDisciplinaId = await repositorioFechamentoTurmaDisciplina.SalvarAsync(fechamentoTurmaDisciplina);
-                var fechamentosNotasCache = new Dictionary<FechamentoAluno, List<FechamentoNota>>();
 
                 foreach (var fechamentoAluno in fechamentoAlunos)
                 {
                     fechamentoAluno.FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId;
                     await repositorioFechamentoAluno.SalvarAsync(fechamentoAluno);
-                    fechamentosNotasCache.Add(fechamentoAluno, new List<FechamentoNota>());
 
                     foreach (var fechamentoNota in fechamentoAluno.FechamentoNotas)
                     {
@@ -175,8 +173,6 @@ namespace SME.SGP.Aplicacao
 
                                 await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                                 
-                                fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
-	
                                 if (!emAprovacao)
                                     await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
 
