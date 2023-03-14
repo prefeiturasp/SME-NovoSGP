@@ -21,5 +21,6 @@ namespace SME.SGP.Infra
         public long GrupoMatrizId { get; set; }
         public string GrupoMatrizNome { get; set; }
         public string TurmaCodigo { get; set; }
+        public string Professor { get; set; }
     }
 }

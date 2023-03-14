@@ -41,14 +41,14 @@ namespace SME.SGP.Aplicacao
 
             unitOfWork.IniciarTransacao();
             var listaDescricao = new List<PlanoAnualTerritorioSaberResumidoDto>();
-            var usuarioAtual = servicoUsuario.ObterUsuarioLogado().Result;
+            var usuarioAtual = await servicoUsuario.ObterUsuarioLogado();
+
             if (string.IsNullOrWhiteSpace(usuarioAtual.CodigoRf))
-            {
                 throw new NegocioException("Não foi possível obter o RF do usuário.");
-            }
+
             foreach (var bimestrePlanoAnual in planoAnualTerritorioSaberDto.Bimestres)
             {
-                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value);
+                PlanoAnualTerritorioSaber planoAnualTerritorioSaber = await ObterPlanoAnualTerritorioSaberSimplificado(planoAnualTerritorioSaberDto, bimestrePlanoAnual.Bimestre.Value, usuarioAtual.EhProfessor() ? usuarioAtual.CodigoRf : null);
                 if (planoAnualTerritorioSaber != null)
                 {
                     if (usuarioAtual.PerfilAtual == Perfis.PERFIL_PROFESSOR && !servicoUsuario.PodePersistirTurmaDisciplina(usuarioAtual.CodigoRf, planoAnualTerritorioSaberDto.TurmaId.ToString(), planoAnualTerritorioSaberDto.TerritorioExperienciaId.ToString(), DateTime.Now).Result)
@@ -87,13 +87,14 @@ namespace SME.SGP.Aplicacao
                                             {string.Join(", ", bimestresDescricaoVazia.Select(b => $"{b.Bimestre}º"))} bimestre");
         }
 
-        private async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre)
+        private async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificado(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, int bimestre, string professor = null)
         {
             return await repositorioPlanoAnualTerritorioSaber.ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(planoAnualTerritorioSaberDto.AnoLetivo.Value,
                                                                                                       planoAnualTerritorioSaberDto.EscolaId,
                                                                                                       planoAnualTerritorioSaberDto.TurmaId.Value,
                                                                                                       bimestre,
-                                                                                                      planoAnualTerritorioSaberDto.TerritorioExperienciaId);
+                                                                                                      planoAnualTerritorioSaberDto.TerritorioExperienciaId,
+                                                                                                      professor);
         }
         private async Task<PlanoAnualTerritorioSaber> MapearParaDominio(PlanoAnualTerritorioSaberDto planoAnualTerritorioSaberDto, PlanoAnualTerritorioSaber planoAnualTerritorioSaber, int bimestre, string desenvolvimento, string reflexao)
         {
