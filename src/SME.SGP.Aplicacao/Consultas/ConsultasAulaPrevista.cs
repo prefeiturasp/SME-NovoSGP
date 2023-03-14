@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
                 var componenteCorrespondente = componentesProfessor.SingleOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
-                codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente.Codigo;
+                codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
             }
             else if (usuarioLogado.EhProfessorCj())
             {
