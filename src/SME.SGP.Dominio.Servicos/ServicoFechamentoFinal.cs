@@ -130,8 +130,6 @@ namespace SME.SGP.Dominio.Servicos
 
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
-                                    fechamentosNotasCache[fechamentoAluno].Add(fechamentoNota);
-                                    
                                     if (!emAprovacao)
                                         await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
                                     
