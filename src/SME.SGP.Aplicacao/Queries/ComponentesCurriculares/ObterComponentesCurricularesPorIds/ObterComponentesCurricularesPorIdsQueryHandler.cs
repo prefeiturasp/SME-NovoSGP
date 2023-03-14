@@ -53,7 +53,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var id in request.Ids)
                 {
                     var disciplinaCorreposdente = disciplinasUsuario
-                        .SingleOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));                    
+                        .SingleOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));                           
 
                     if (disciplinaCorreposdente != null)
                     {
@@ -82,7 +82,12 @@ namespace SME.SGP.Aplicacao
                             .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 
                         if (disciplina != null)
+                        {
+                            disciplina.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+
                             disciplinasRetorno.Add(disciplina);
+                        }
                     }
                 }
             }

@@ -9,6 +9,7 @@ using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 
 namespace SME.SGP.Aplicacao
@@ -98,42 +99,17 @@ namespace SME.SGP.Aplicacao
 
             if (usuarioLogado.EhProfessorCj())
             {
-                var disciplinas = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
-                var componenteTerritorio = disciplinas.Any(a => a.TerritorioSaber);
-
-                var componentesEol = await mediator
-                    .Send(new ObterComponentesCurricularesPorIdsQuery(disciplinas.Select(x => x.CodigoComponenteCurricular).ToArray(), componenteTerritorio, turma.CodigoTurma));
-
-                if (disciplinas.Any() || disciplinas != null)
-                {
-                    foreach (var componente in componentesEol)
-                    {
-                        disciplinasEol.Add(new DisciplinaResposta
-                        {
-                            CodigoComponenteCurricular = componente.CodigoComponenteCurricular,
-                            Id = componente.Id,
-                            Compartilhada = componente.Compartilhada,
-                            CodigoComponenteCurricularPai = componente.CdComponenteCurricularPai,
-                            CodigoComponenteTerritorioSaber = componente.TerritorioSaber ? componente.CodigoComponenteCurricular : null,
-                            Nome = componente.Nome,
-                            Regencia = componente.Regencia,
-                            RegistroFrequencia = componente.RegistraFrequencia,
-                            TerritorioSaber = componente.TerritorioSaber,
-                            LancaNota = componente.LancaNota,
-                            TurmaCodigo = componente.TurmaCodigo,
-                            NomeComponenteInfantil = componente.NomeComponenteInfantil
-                        });
-                    }
-
-                    disciplinas = disciplinasEol.OrderBy(x => x.Nome);
-                }
+                var disciplinasAtibuicaoCj = await ObterDisciplinasPerfilCJ(codigoTurma, usuarioLogado.Login);
 
                 var componentesCurricularesAtribuicaoEol = await mediator
                     .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
 
                 foreach (var componenteAtual in componentesCurricularesAtribuicaoEol)
                 {
-                    disciplinas = disciplinas.Append(new DisciplinaResposta()
+                    var componenteTerritorio = componenteAtual.TerritorioSaber ? 
+                        await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteAtual.CodigoComponenteTerritorioSaber)) : null;
+
+                    disciplinasAtibuicaoCj = disciplinasAtibuicaoCj.Append(new DisciplinaResposta()
                     {
                         CodigoComponenteCurricular = componenteAtual.Codigo,
                         Compartilhada = componenteAtual.Compartilhada,
@@ -141,14 +117,14 @@ namespace SME.SGP.Aplicacao
                         CodigoComponenteTerritorioSaber = componenteAtual.CodigoComponenteTerritorioSaber,
                         Nome = componenteAtual.Descricao,
                         Regencia = componenteAtual.Regencia,
-                        RegistroFrequencia = componenteAtual.RegistraFrequencia,
+                        RegistroFrequencia = componenteTerritorio?.RegistraFrequencia ?? componenteAtual.RegistraFrequencia,
                         TerritorioSaber = componenteAtual.TerritorioSaber,
                         LancaNota = componenteAtual.LancaNota,
                         TurmaCodigo = componenteAtual.TurmaCodigo
                     });
                 }
 
-                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinas?.DistinctBy(s => s.Nome).OrderBy(s => s.Nome) : disciplinas.OrderBy(s => s.Nome);
+                var disciplinasEolTratadas = realizarAgrupamentoComponente ? disciplinasAtibuicaoCj?.DistinctBy(s => (s.Nome, s.Professor)).OrderBy(s => s.Nome) : disciplinasAtibuicaoCj.OrderBy(s => s.Nome);
 
                 disciplinasDto = MapearParaDto(disciplinasEolTratadas, turmaPrograma, turma.EnsinoEspecial)?.OrderBy(c => c.Nome)?.ToList();
             }
@@ -222,13 +198,14 @@ namespace SME.SGP.Aplicacao
         private async Task<long[]> ObterDisciplinasAtribuicaoCJParaTurma(string codigoTurma, List<ComponenteCurricularEol> componentesCurriculares, long[] idsDisciplinas)
         {
             var atribuicoesCJTurma = await ObterDisciplinasPerfilCJ(codigoTurma, null);
-            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ?  (from a in atribuicoesCJTurma
-                                                where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
-                                                select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
-                                               .Where(a => a.HasValue)
-                                               .Select(a => a.Value)
-                                               .Distinct()
-                                               .ToArray() : new long[] { };
+            var codigosDisciplinasAtribuicao = atribuicoesCJTurma != null && atribuicoesCJTurma.Any() ? 
+                (from a in atribuicoesCJTurma
+                 where !idsDisciplinas.Any(id => a.CodigoComponenteCurricular == id || a.CodigoComponenteTerritorioSaber == id)
+                 select a.TerritorioSaber ? a.CodigoComponenteCurricular : a.CodigoComponenteTerritorioSaber)
+                .Where(a => a.HasValue)
+                .Select(a => a.Value)
+                .Distinct()
+                .ToArray() : new long[] { };
 
             if (codigosDisciplinasAtribuicao.Any())
             {
@@ -415,12 +392,34 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaResposta>> ObterDisciplinasPerfilCJ(string codigoTurma, string login)
         {
-            var atribuicoes = await repositorioAtribuicaoCJ.ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
+            var atribuicoes = await repositorioAtribuicaoCJ
+                .ObterPorFiltros(null, codigoTurma, string.Empty, 0, login, string.Empty, true);
 
             if (atribuicoes == null || !atribuicoes.Any())
                 return null;
 
-            var disciplinasEol = await repositorioComponenteCurricular.ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+            var disciplinasEol = await repositorioComponenteCurricular
+                .ObterDisciplinasPorIds(atribuicoes.Select(a => a.DisciplinaId).Distinct().ToArray());
+
+            var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
+
+            disciplinasEol.ToList().ForEach(async d =>
+            {
+                d.Professor = professoresTitulares
+                    .SingleOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular)).ProfessorRf;
+
+                if (!string.IsNullOrWhiteSpace(d.Professor))
+                {
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR));
+                    var componenteCorrepondente = componentesProfessor.SingleOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
+                    if (componenteCorrepondente != null)
+                    {
+                        d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
+                        d.CodigoTerritorioSaber = componenteCorrepondente.CodigoComponenteTerritorioSaber;
+                        d.Nome = componenteCorrepondente.Descricao;                        
+                    }
+                }
+            });
 
             return TransformarListaDisciplinaEolParaRetornoDto(disciplinasEol);
         }
@@ -540,7 +539,8 @@ namespace SME.SGP.Aplicacao
             LancaNota = disciplinaEol.LancaNota,
             NomeComponenteInfantil = disciplinaEol.NomeComponenteInfantil,
             Id = disciplinaEol.Id,
-            TerritorioSaber = disciplinaEol.TerritorioSaber
+            TerritorioSaber = disciplinaEol.TerritorioSaber,
+            Professor = disciplinaEol.Professor
         };
 
         private List<DisciplinaDto> MapearParaDto(IEnumerable<DisciplinaResposta> disciplinas, bool turmaPrograma = false, bool ensinoEspecial = false)
@@ -557,7 +557,7 @@ namespace SME.SGP.Aplicacao
 
         private DisciplinaDto MapearParaDto(DisciplinaResposta disciplina, bool turmaPrograma = false, bool ensinoEspecial = false) => new DisciplinaDto()
         {
-            Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue ? disciplina.CodigoComponenteTerritorioSaber.Value : disciplina.CodigoComponenteCurricular,
+            Id = disciplina.TerritorioSaber && disciplina.CodigoComponenteTerritorioSaber.HasValue ? disciplina.CodigoComponenteTerritorioSaber.Value : (disciplina.Id > 0 ? disciplina.Id : disciplina.CodigoComponenteCurricular),
             CdComponenteCurricularPai = disciplina.CodigoComponenteCurricularPai,
             CodigoComponenteCurricular = disciplina.CodigoComponenteCurricular,
             Nome = disciplina.Nome,
@@ -574,9 +574,7 @@ namespace SME.SGP.Aplicacao
         private IEnumerable<DisciplinaResposta> TransformarListaDisciplinaEolParaRetornoDto(IEnumerable<DisciplinaDto> disciplinasEol)
         {
             foreach (var disciplinaEol in disciplinasEol)
-            {
                 yield return MapearDisciplinaResposta(disciplinaEol);
-            }
         }
 
         private async Task<IEnumerable<DisciplinaDto>> TratarRetornoDisciplinasPlanejamento(IEnumerable<DisciplinaDto> disciplinas, long codigoDisciplina, bool regencia, string codigoTurma = "", bool CJ = false)
