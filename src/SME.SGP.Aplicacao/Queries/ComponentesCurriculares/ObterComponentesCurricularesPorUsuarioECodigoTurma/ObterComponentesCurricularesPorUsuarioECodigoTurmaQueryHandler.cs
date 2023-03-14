@@ -48,7 +48,10 @@ namespace SME.SGP.Aplicacao
 
         private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil)
         {
-            var componentesSgp = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol.Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : a.Codigo).ToArray()));
+            var componentesSgp = await mediator
+                .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
+                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray()));
+
             return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }
 
@@ -68,7 +71,8 @@ namespace SME.SGP.Aplicacao
         {
             foreach (var componenteSgp in componentesSgp)
             {
-                var componenteEol = componentesCurricularesEol.FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : c.Codigo));
+                var componenteEol = componentesCurricularesEol
+                    .FirstOrDefault(c => componenteSgp.Id == (c.TerritorioSaber ? c.CodigoComponenteTerritorioSaber : (c.Regencia && c.CodigoComponenteCurricularPai.HasValue && c.CodigoComponenteCurricularPai.Value > 0 ? c.CodigoComponenteCurricularPai.Value : c.Codigo)));
 
                 if (componenteEol != null)
                 {

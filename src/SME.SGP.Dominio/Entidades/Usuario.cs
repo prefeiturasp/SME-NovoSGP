@@ -48,7 +48,7 @@ namespace SME.SGP.Dominio
             else
             {
                 if (EhProfessorCj())
-                    return aulas.Where(a => a.ProfessorRf == CodigoRf);
+                    return aulas.Where(a => a.ProfessorRf == CodigoRf && a.AulaCJ);
                 else
                     return aulas.Where(a => (componentesCurricularesProfessor.Any(c => c.codigo.Equals(a.DisciplinaId) || c.codigoTerritorioSaber.Equals(a.DisciplinaId)) || a.ProfessorRf == CodigoRf));
             }
@@ -147,7 +147,7 @@ namespace SME.SGP.Dominio
         public bool PossuiPerfilGestorEscolar()
             => Perfis.Any(p => p.CodigoPerfil == Dominio.Perfis.PERFIL_AD || p.CodigoPerfil == Dominio.Perfis.PERFIL_CP || p.CodigoPerfil == Dominio.Perfis.PERFIL_DIRETOR);
 
-        private bool EhCP()
+        public bool EhCP()
             => PerfilAtual == Dominio.Perfis.PERFIL_CP;
 
         private bool EhAD()
