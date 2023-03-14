@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
             if (periodoEscolar == null)
                 throw new NegocioException("Período escolar não localizado.");           
 
-            var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.Id : long.Parse(aulaDto.DisciplinaId)));
+            var planejamentoAnualPeriodoId = await mediator.Send(new ExistePlanejamentoAnualParaTurmaPeriodoEComponenteQuery(filtro.TurmaId, periodoEscolar.Id, disciplinaDto != null ? disciplinaDto.CodigoComponenteCurricular : long.Parse(aulaDto.DisciplinaId)));
             
             if (planejamentoAnualPeriodoId == 0 
                 && periodoEscolar.TipoCalendario.AnoLetivo.Equals(DateTime.Now.Year) 

@@ -3,6 +3,7 @@ using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -25,31 +26,26 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
-
-            if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
-            {                
-                var listaDisciplinas = new List<DisciplinaDto>();
-
-                var disciplinasAgrupadas = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
-
-                var disciplinasUsuario = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                
-                foreach (var disciplina in disciplinasAgrupadas)
-                {
-                    var disciplinaCorrespondente = disciplinasUsuario
-                        .SingleOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
-
-                    disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
-                    listaDisciplinas.Add(disciplina);
-                }
-
-                return listaDisciplinas;
+            var listaDisciplinas = new List<DisciplinaDto>();
+            var disciplinasAgrupadas = await servicoEol.ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
+            foreach (var disciplina in disciplinasAgrupadas)
+            {
+                disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+                listaDisciplinas.Add(disciplina);
             }
-            else
-                return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
+
+            return listaDisciplinas;
+        }
+
+        private async Task<Usuario> RetornarUsuario()
+        {
+            try
+            {
+               return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } catch(Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
