@@ -36,7 +36,7 @@ namespace SME.SGP.Aplicacao
 
         private async Task<List<FechamentoNotaAlunoAprovacaoDto>> ObterFechamentosNotasDoCache(AtualizarCacheFechamentoNotaCommand request)
         {
-            var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(request.FechamentoNota.DisciplinaId.ToString(), request.CodigoTurma);
+            var nomeChaveCache = ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma);
 
             return await repositorioCache.ObterObjetoAsync<List<FechamentoNotaAlunoAprovacaoDto>>(nomeChaveCache);
         }
@@ -73,7 +73,7 @@ namespace SME.SGP.Aplicacao
                 notaFinalAluno.EmAprovacao = request.EmAprovacao;
             }
 
-            await SalvarCache(ObterChaveFechamentoNotaFinalComponenteTurma(request.FechamentoNota.DisciplinaId.ToString(), request.CodigoTurma), notasFinais);
+            await SalvarCache(ObterChaveFechamentoNotaFinalComponenteTurma(request.DisciplinaId.ToString(), request.CodigoTurma), notasFinais);
         }
 
         private async Task PersistirNotaConceitoBimestreNoCache(

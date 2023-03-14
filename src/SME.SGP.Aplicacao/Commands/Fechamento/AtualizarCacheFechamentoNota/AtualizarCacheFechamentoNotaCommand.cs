@@ -10,13 +10,15 @@ namespace SME.SGP.Aplicacao
         public AtualizarCacheFechamentoNotaCommand(
                             FechamentoNota fechamentoNota, 
                             string codigoAluno, 
-                            string codigoTurma, 
+                            string codigoTurma,
+                            long disciplinaId,
                             bool emAprovacao = false,
                             ConselhoClasseAlunosNotaPorFechamentoIdDto conselhosClasseAlunos = null)
         {
             FechamentoNota = fechamentoNota;
             CodigoAluno = codigoAluno;
             CodigoTurma = codigoTurma;
+            DisciplinaId = disciplinaId;
             EmAprovacao = emAprovacao;
             ConselhosClasseAlunos = conselhosClasseAlunos;
         }
@@ -24,6 +26,7 @@ namespace SME.SGP.Aplicacao
         public FechamentoNota FechamentoNota { get; set; }
         public string CodigoAluno { get; set; }
         public string CodigoTurma { get; set; }
+        public long DisciplinaId { get; set; }
         public bool EmAprovacao { get; set; }
         public ConselhoClasseAlunosNotaPorFechamentoIdDto ConselhosClasseAlunos;
     }
