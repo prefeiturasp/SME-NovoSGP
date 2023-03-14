@@ -25,7 +25,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDevolutivas
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterCodigoTurmaInfantilPorAnoUseCase>();
 
-            var jsonMensagem = JsonSerializer.Serialize(new FiltroCodigoTurmaInfantilPorAnoDto(2022));
+            var jsonMensagem = JsonSerializer.Serialize(new FiltroCodigoTurmaInfantilPorAnoDto(2022,1));
 
             var retorno = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 
@@ -37,7 +37,7 @@ namespace SME.SGP.TesteIntegracao.ConsolidacaoDevolutivas
             await CriarDadosBasicos();
             var useCase = ServiceProvider.GetService<IObterCodigoTurmaInfantilPorAnoUseCase>();
 
-            var jsonMensagem = JsonSerializer.Serialize(new FiltroCodigoTurmaInfantilPorAnoDto(2021));
+            var jsonMensagem = JsonSerializer.Serialize(new FiltroCodigoTurmaInfantilPorAnoDto(2021,1));
 
             var retorno = await useCase.Executar(new MensagemRabbit(jsonMensagem));
 

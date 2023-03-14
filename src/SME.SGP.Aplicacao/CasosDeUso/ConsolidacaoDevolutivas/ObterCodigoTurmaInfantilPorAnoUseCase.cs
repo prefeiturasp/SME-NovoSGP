@@ -20,7 +20,7 @@ namespace SME.SGP.Aplicacao
             try
             {
                 var filtro = param.ObterObjetoMensagem<FiltroCodigoTurmaInfantilPorAnoDto>();
-                var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(filtro.AnoAtual));
+                var turmasInfantil = await mediator.Send(new ObterTurmasComDevolutivaPorModalidadeInfantilEAnoQuery(filtro.AnoAtual,filtro.UeId));
 
                 if (turmasInfantil.Count() > 0)
                 {
