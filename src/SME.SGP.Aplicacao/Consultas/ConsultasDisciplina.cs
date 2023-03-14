@@ -411,7 +411,7 @@ namespace SME.SGP.Aplicacao
                 if (!string.IsNullOrWhiteSpace(d.Professor))
                 {
                     var componentesProfessor = mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR)).Result;
-                    var componenteCorrepondente = componentesProfessor.SingleOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
+                    var componenteCorrepondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
                     if (componenteCorrepondente != null)
                     {
                         d.CodigoComponenteCurricular = componenteCorrepondente.Codigo;
