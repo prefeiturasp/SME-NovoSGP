@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
             if (filtro.ComponenteCurricularId.HasValue)
             {
-                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.ComponenteCurricularId.Value }));
+                var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { filtro.ComponenteCurricularId.Value }, codigoTurma: aulaDto.TurmaId));
                 disciplinaDto = disciplinasRetorno.SingleOrDefault();
             }
 

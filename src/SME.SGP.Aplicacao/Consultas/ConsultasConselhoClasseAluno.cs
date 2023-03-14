@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
             if (disciplinas == null || !disciplinas.Any())
                 return null;
 
-            disciplinas = (await MapearLancaNotaFrequenciaSgp(disciplinas)).ToList();
+            disciplinas = (await MapearLancaNotaFrequenciaSgp(disciplinas, codigoTurma)).ToList();
 
             var gruposMatrizes = disciplinas.Where(x => !x.LancaNota && x.GrupoMatriz != null)
                                             .GroupBy(c => new { Id = c.GrupoMatriz?.Id, Nome = c.GrupoMatriz?.Nome });
@@ -167,10 +167,10 @@ namespace SME.SGP.Aplicacao
             return retorno;
         }
 
-        private async Task<IEnumerable<DisciplinaResposta>> MapearLancaNotaFrequenciaSgp(IEnumerable<DisciplinaResposta> disciplinasEol)
+        private async Task<IEnumerable<DisciplinaResposta>> MapearLancaNotaFrequenciaSgp(IEnumerable<DisciplinaResposta> disciplinasEol, string codigoTurma)
         {
             var disciplinasCodigo = disciplinasEol.Select(x => x.CodigoComponenteCurricular).Distinct().ToArray();
-            var disciplinasSgp = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo))).ToList();
+            var disciplinasSgp = (await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(disciplinasCodigo, codigoTurma: codigoTurma))).ToList();
 
             return disciplinasEol.Select(disciplina => MapearLancaNotaFrequenciaSgp(disciplina, disciplinasSgp.FirstOrDefault(disciplinaSgp => 
                                                                                                                               disciplinaSgp.CodigoComponenteCurricular == disciplina.CodigoComponenteCurricular)));
