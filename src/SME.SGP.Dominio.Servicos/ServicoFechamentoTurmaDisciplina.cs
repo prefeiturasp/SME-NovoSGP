@@ -631,17 +631,6 @@ namespace SME.SGP.Dominio.Servicos
             if (notasEnvioWfAprovacao.Any())
                 await mediator.Send(new EnviarNotasFechamentoParaAprovacaoCommand(notasEnvioWfAprovacao, usuarioLogado));
         }
-        
-        private FechamentoNotaDto MapearParaEntidade(FechamentoNota fechamentoNota)
-            => fechamentoNota == null ? null :
-                new FechamentoNotaDto()
-                {
-                    Id = fechamentoNota.Id,
-                    DisciplinaId = fechamentoNota.DisciplinaId,
-                    Nota = fechamentoNota.Nota,
-                    ConceitoId = fechamentoNota.ConceitoId,
-                    SinteseId = fechamentoNota.SinteseId
-                };
 
         private bool EnviarWfAprovacao(Usuario usuarioLogado)
         {
