@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularCodigo }, codigoTurma: turma.CodigoTurma));
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularCodigo }));
             if (!componentesCurriculares.Any())
                 throw new NegocioException("Não foi possível localizar dados do componente curricular selecionado.");
 
