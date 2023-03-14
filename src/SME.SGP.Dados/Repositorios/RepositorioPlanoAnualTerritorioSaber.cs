@@ -36,7 +36,7 @@ namespace SME.SGP.Dados.Repositorios
             return await database.Conexao.QueryFirstOrDefaultAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, escolaId, turmaId = Convert.ToInt32(turmaId), bimestre, territorioExperienciaId });
         }
 
-        public async Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long territorioExperienciaId)
+        public async Task<IEnumerable<PlanoAnualTerritorioSaberCompletoDto>> ObterPlanoAnualTerritorioSaberCompletoPorAnoUEETurma(int ano, string ueId, string turmaId, long territorioExperienciaId, string professor = null)
         {
             StringBuilder query = new StringBuilder();
 
@@ -49,13 +49,15 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("	and pa.escola_id = @ueId");
             query.AppendLine("	and pa.turma_id = @turmaId");
             query.AppendLine("	and pa.territorio_experiencia_id = @territorioExperienciaId");
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine("and pa.criado_rf = @professor");
             query.AppendLine("group by");
             query.AppendLine("	pa.id");
 
-            return await database.Conexao.QueryAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId });
+            return await database.Conexao.QueryAsync<PlanoAnualTerritorioSaberCompletoDto>(query.ToString(), new { ano, ueId, turmaId = int.Parse(turmaId), territorioExperienciaId, professor });
         }
 
-        public async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId)
+        public async Task<PlanoAnualTerritorioSaber> ObterPlanoAnualTerritorioSaberSimplificadoPorAnoEscolaBimestreETurma(int ano, string escolaId, long turmaId, int bimestre, long territorioExperienciaId, string professor = null)
         {
             StringBuilder query = new StringBuilder();
 
@@ -69,6 +71,8 @@ namespace SME.SGP.Dados.Repositorios
             query.AppendLine("bimestre = @bimestre and");
             query.AppendLine("turma_id = @turmaId and");
             query.AppendLine("territorio_experiencia_id = @territorioExperienciaId");
+            if (!string.IsNullOrWhiteSpace(professor))
+                query.AppendLine(" and criado_rf = @professor");
 
             return (await database.Conexao.QueryAsync<PlanoAnualTerritorioSaber>(query.ToString(),
                 new
@@ -77,7 +81,8 @@ namespace SME.SGP.Dados.Repositorios
                     escolaId,
                     turmaId,
                     bimestre,
-                    territorioExperienciaId
+                    territorioExperienciaId,
+                    professor
                 })).SingleOrDefault();
         }
     }

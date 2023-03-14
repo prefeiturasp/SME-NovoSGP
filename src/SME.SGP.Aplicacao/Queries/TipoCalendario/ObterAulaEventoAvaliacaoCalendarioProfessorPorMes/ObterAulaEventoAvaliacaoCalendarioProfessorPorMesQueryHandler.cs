@@ -30,12 +30,15 @@ namespace SME.SGP.Aplicacao
             var turma = await mediator.Send(new ObterTurmaPorCodigoQuery(request.TurmaCodigo));
             var tipoCalendarioId = await mediator.Send(new ObterTipoCalendarioIdPorTurmaQuery(turma));
             var periodoFechamento = await mediator.Send(new ObterPeriodoFechamentoPorCalendarioIdQuery(tipoCalendarioId));
-
             var usuarioLogado = await servicoUsuario.ObterUsuarioLogado();
-            var componentesCurriculares = await servicoEol.ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
 
-            var componentesCurricularesId = componentesCurriculares?.Select(x => x.Codigo).ToArray();
-            
+            var componentesCurriculares = await servicoEol
+                .ObterComponentesCurricularesPorCodigoTurmaLoginEPerfil(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual);
+
+            var componentesCurricularesId = componentesCurriculares?
+                .Select(x => x.TerritorioSaber && x.CodigoComponenteTerritorioSaber > 0 ? x.CodigoComponenteTerritorioSaber : x.Codigo)
+                .ToArray();
+
             for (int i = 1; i < qntDiasMes + 1; i++)
             {
                 var eventoAula = new EventoAulaDiaDto() { Dia = i };
@@ -53,7 +56,7 @@ namespace SME.SGP.Aplicacao
                         }
                     }
                     else if (dataMes >= item.InicioDoFechamento && dataMes <= item.FinalDoFechamento)
-                    { 
+                    {
                         eventoAula.TemEvento = true;
                         break;
                     }
@@ -70,7 +73,6 @@ namespace SME.SGP.Aplicacao
 
                     if (eventoAula.TemAula || eventoAula.TemAulaCJ)
                     {
-
                         var avaliacoesDoDia = request.Avaliacoes.Where(a => a.DataAvaliacao.Day == i);
                         var componentesCurricularesDoDia = aulasDoDia.Select(a => a.DisciplinaId);
                         if (avaliacoesDoDia.Any())
@@ -84,7 +86,6 @@ namespace SME.SGP.Aplicacao
                             if (temAvaliacaoComComponente.Any())
                                 eventoAula.TemAvaliacao = true;
                         }
-
                     }
 
                     var aulasId = aulasDoDia.Select(a => a.Id).ToArray();

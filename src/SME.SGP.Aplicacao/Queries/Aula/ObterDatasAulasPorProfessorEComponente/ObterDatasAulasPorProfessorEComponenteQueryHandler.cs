@@ -32,42 +32,35 @@ namespace SME.SGP.Aplicacao
             var periodosEscolares = await ObterPeriodosEscolares(tipoCalendarioId);
             var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
             var componenteCurricularId = long.Parse(request.ComponenteCurricularCodigo);
-            var componenteCurricular = await mediator.Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularId));
-            IList<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+
             IEnumerable<ComponenteCurricularEol> componentesCurricularesEolProfessor = Enumerable.Empty<ComponenteCurricularEol>();
 
-            if (!usuarioLogado.EhProfessorCj())
-                componentesCurricularesEolProfessor = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
-                                                                                  usuarioLogado.CodigoRf,
-                                                                                  usuarioLogado.PerfilAtual,
-                                                                                  usuarioLogado.EhProfessorInfantilOuCjInfantil()));
-            
-            if (usuarioLogado.EhProfessorCj())
-            {
-                var componentesCurricularesDoProfessorCJ = await mediator
-                   .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+            componentesCurricularesEolProfessor = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.TurmaCodigo,
+                                                                              usuarioLogado.CodigoRf,
+                                                                              usuarioLogado.PerfilAtual,
+                                                                              usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
-                if (componentesCurricularesDoProfessorCJ.Any())
-                {
-                    var dadosComponentes = await mediator.Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
-                    if (dadosComponentes.Any())
-                    {
-                        componentesCurricularesDoProfessorCj = dadosComponentes
-                            .Select(d => (d.CodigoComponenteCurricular.ToString(), d.CdComponenteCurricularPai.ToString(), d.TerritorioSaber 
-                                ? d.CodigoComponenteCurricular.ToString() : "0")).ToArray();
-                    }
-                }
-            }
+            var componenteCurricularCorrespondente = componentesCurricularesEolProfessor
+                .SingleOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+
+            var componenteCurricular = await mediator
+                .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente != null && componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber > 0 ? componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber : componenteCurricularId));
+
+            List<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj = new List<(string, string, string)>();
+
+            if (usuarioLogado.EhProfessorCj())
+                await DefinirComponentesProfessorCJ(turma, usuarioLogado, componentesCurricularesDoProfessorCj);
 
             var componenteCorrespondente = (!usuarioLogado.EhProfessorCj() && usuarioLogado.PerfilAtual == Perfis.PERFIL_CJ) && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
                     ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == request.ComponenteCurricularCodigo || cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString())
                     : new ComponenteCurricularEol
                     {
-                        Codigo = long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0,
-                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault(),
-                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault()
+                        Codigo = componenteCurricularCorrespondente?.Codigo ?? (long.TryParse(request.ComponenteCurricularCodigo, out long codigo) ? codigo : 0),
+                        CodigoComponenteCurricularPai = componentesCurricularesDoProfessorCj.Any() ? componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoComponentePai, out long codigoPai) ? codigoPai : 0).FirstOrDefault() : componenteCurricularCorrespondente?.CodigoComponenteCurricularPai ?? 0,
+                        CodigoComponenteTerritorioSaber = componentesCurricularesDoProfessorCj.Any() ? componentesCurricularesDoProfessorCj.Select(c => long.TryParse(c.codigoTerritorioSaber, out long codigoTerritorio) ? codigoTerritorio : 0).FirstOrDefault() : componenteCurricularCorrespondente?.CodigoComponenteTerritorioSaber ?? 0
                     };
+
 
             var codigoComponentes = new[] { componenteCorrespondente.Regencia ? componenteCorrespondente.CodigoComponenteCurricularPai.ToString() : componenteCorrespondente.Codigo.ToString() };
             if (componenteCorrespondente.CodigoComponenteTerritorioSaber > 0)
@@ -118,6 +111,37 @@ namespace SME.SGP.Aplicacao
                 });
         }
 
+        private async Task DefinirComponentesProfessorCJ(Turma turma, Usuario usuarioLogado, List<(string codigo, string codigoComponentePai, string codigoTerritorioSaber)> componentesCurricularesDoProfessorCj)
+        {
+            var componentesCurricularesDoProfessorCJ = await mediator
+               .Send(new ObterComponentesCurricularesDoProfessorCJNaTurmaQuery(usuarioLogado.Login));
+
+            if (componentesCurricularesDoProfessorCJ.Any())
+            {
+                var dadosComponentes = await mediator
+                    .Send(new ObterDisciplinasPorIdsQuery(componentesCurricularesDoProfessorCJ.Select(c => c.DisciplinaId).ToArray()));
+
+                var professores = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(turma.CodigoTurma));
+
+                dadosComponentes.ToList().ForEach(async dc =>
+                {
+                    var professor = dc.TerritorioSaber ? professores.SingleOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
+                    if (professor != null)
+                    {
+                        var componentesProfessorAtrelado = await mediator
+                            .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+
+                        var componenteProfessorAtreladoEquivalente = componentesProfessorAtrelado
+                            .SingleOrDefault(c => c.CodigoComponenteTerritorioSaber.Equals(dc.CodigoComponenteCurricular));
+
+                        componentesCurricularesDoProfessorCj
+                            .Add((dc.CodigoComponenteCurricular.ToString(), dc.CdComponenteCurricularPai?.ToString(), componenteProfessorAtreladoEquivalente?.Codigo.ToString() ?? dc.CodigoComponenteCurricular.ToString()));
+                    }
+                    else
+                        componentesCurricularesDoProfessorCj.Add((dc.CodigoComponenteCurricular.ToString(), dc.CdComponenteCurricularPai?.ToString(), dc.TerritorioSaber ? dc.CodigoComponenteCurricular.ToString() : "0"));
+                });
+            }
+        }
 
         public async Task<bool> VerificaCJPodeEditarRegistroTitular(int anoLetivo)
         {
