@@ -280,6 +280,13 @@ namespace SME.SGP.Dados.Repositorios
 
             return await database.Conexao.QueryAsync<ComponenteCurricularSimplesDto>(query, new { ids }, queryName: "ObterComponentesSimplesPorIds");
         }
+
+        public async Task<bool> VerificaComponenteEhRegencia(long id)
+        {
+            var query = @"select eh_territorio from componente_curricular where id = @id";
+
+            return await database.Conexao.QueryFirstOrDefaultAsync<bool>(query, new { id });
+        }
     }
 }
 
