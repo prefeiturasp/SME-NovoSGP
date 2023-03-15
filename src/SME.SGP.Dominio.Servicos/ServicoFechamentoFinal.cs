@@ -130,7 +130,7 @@ namespace SME.SGP.Dominio.Servicos
                                     await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
 
                                 if (!emAprovacao)
-                                    await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
+                                    await SalvarHistoricoNotaFechamento(fechamentoNota, tipoNota.TipoNota, usuarioLogado.CodigoRf, usuarioLogado.Nome, notaAnterior, conceitoIdAnterior);
                                     
                                 var fechamentoNotaClone = fechamentoNota.Clone();
                                 fechamentoNotaClone.Nota = notaDto.Nota;
@@ -197,15 +197,15 @@ namespace SME.SGP.Dominio.Servicos
             }
         }
 
-        private async Task SalvarHistoricoNotaFechamentoNovo(FechamentoNota fechamentoNota, TipoNota tipoNota,double? notaAnterior, long? conceitoIdAnterior)
+        private async Task SalvarHistoricoNotaFechamento(FechamentoNota fechamentoNota, TipoNota tipoNota, string criadoRf, string criadoPor,double? notaAnterior, long? conceitoIdAnterior)
         {
             if (tipoNota == TipoNota.Nota)
             {
                 if (fechamentoNota.Nota.GetValueOrDefault().CompareTo(notaAnterior) != 0)
-                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, fechamentoNota.Nota, fechamentoNota.Id));
+                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, fechamentoNota.Nota, fechamentoNota.Id, criadoRF:criadoRf, criadoPor:criadoPor));
             }
             else if (fechamentoNota.ConceitoId.GetValueOrDefault().CompareTo(conceitoIdAnterior) != 0)
-                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id));
+                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior, fechamentoNota.ConceitoId,fechamentoNota.Id, criadoRF:criadoRf, criadoPor:criadoPor));
         }
 
         private async Task AtualizarCache(FechamentoTurmaDisciplina fechamentoFinal, Turma turma, bool emAprovacao, Dictionary<FechamentoAluno,List<FechamentoNota>> fechamentosNotasCache)

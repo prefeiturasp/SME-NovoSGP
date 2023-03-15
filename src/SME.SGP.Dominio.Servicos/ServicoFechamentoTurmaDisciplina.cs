@@ -332,7 +332,7 @@ namespace SME.SGP.Dominio.Servicos
 
                             if (!emAprovacao && semFechamentoNota)
                             {
-                                await SalvarHistoricoNotaFechamentoNovo(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId);
+                                await SalvarHistoricoNotaFechamento(fechamentoNota.Id, tipoNotaOuConceito.TipoNota,null,fechamentoNota.Nota, null,fechamentoNota.ConceitoId,usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             }
                         }
                         ConsolidacaoNotasAlunos(periodoEscolar.Bimestre, consolidacaoNotasAlunos, turmaFechamento, fechamentoAluno.AlunoCodigo, fechamentoNota);
@@ -583,9 +583,10 @@ namespace SME.SGP.Dominio.Servicos
                         }
                         else
                         {
-                            await SalvarHistoricoNotaFechamentoNovo(notaFechamento.Id, tipoNotaOuConceito, notaFechamento.Nota,
-                                fechamentoNotaDto.Nota, notaFechamento.ConceitoId, 
-                                fechamentoNotaDto.ConceitoId);
+                            await SalvarHistoricoNotaFechamento(notaFechamento.Id, tipoNotaOuConceito,
+                                notaFechamento.Nota,
+                                fechamentoNotaDto.Nota, notaFechamento.ConceitoId,
+                                fechamentoNotaDto.ConceitoId, usuarioLogado.CodigoRf, usuarioLogado.Nome);
                             
                             notaFechamento.Nota = fechamentoNotaDto.Nota;
                             notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
@@ -605,17 +606,17 @@ namespace SME.SGP.Dominio.Servicos
             return fechamentoAlunos;
         }
         
-        private async Task SalvarHistoricoNotaFechamentoNovo(long fechamentoNotaId, TipoNota tipoNota, double? notaAnterior, double? notaAtual, long? conceitoIdAnterior, long? conceitoIdAtual)
+        private async Task SalvarHistoricoNotaFechamento(long fechamentoNotaId, TipoNota tipoNota, double? notaAnterior, double? notaAtual, long? conceitoIdAnterior, long? conceitoIdAtual, string criadoRf, string criadoPor)
         {
             if (tipoNota == TipoNota.Nota)
             {
                 if (notaAtual != notaAnterior)
-                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, notaAtual,fechamentoNotaId));
+                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaAnterior, notaAtual,fechamentoNotaId,criadoRF:criadoRf, criadoPor:criadoPor));
             }
             else
             {
                 if (conceitoIdAtual != conceitoIdAnterior)
-                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior,conceitoIdAtual, fechamentoNotaId));
+                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(conceitoIdAnterior,conceitoIdAtual, fechamentoNotaId,criadoRF:criadoRf, criadoPor:criadoPor));
             }
         }
 
