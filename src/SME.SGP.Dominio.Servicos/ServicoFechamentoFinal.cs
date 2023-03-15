@@ -108,40 +108,38 @@ namespace SME.SGP.Dominio.Servicos
                                 
                                 //-> Caso não estiver em aprovação ou estiver em aprovação e não houver qualquer lançamento de nota de fechamento,
                                 //   deve gerar o registro do fechamento da nota inicial.
-                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                double? notaAnterior = null;
+                                long? conceitoIdAnterior = null;
+
+                                if (!emAprovacao)
                                 {
-                                    double? notaAnterior = null;
-                                    long? conceitoIdAnterior = null;
-                                    
-                                    if (!emAprovacao)
+                                    if (!semFechamentoNota)
                                     {
-                                        if (!semFechamentoNota)
-                                        {
-                                            notaAnterior = fechamentoNota.Nota;
-                                            conceitoIdAnterior = fechamentoNota.ConceitoId;
-                                        }
-                                        
-                                        fechamentoNota.Nota = notaDto.Nota;
-                                        fechamentoNota.ConceitoId = notaDto.ConceitoId;
+                                        notaAnterior = fechamentoNota.Nota;
+                                        conceitoIdAnterior = fechamentoNota.ConceitoId;
                                     }
-
-                                    fechamentoNota.SinteseId = notaDto.SinteseId;
-                                    fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
-
-                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
-
-                                    if (!emAprovacao)
-                                        await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
-                                    
-                                    var fechamentoNotaClone = fechamentoNota.Clone();
-                                    fechamentoNotaClone.Nota = notaDto.Nota;
-                                    fechamentoNotaClone.ConceitoId = notaDto.ConceitoId;
-                                    fechamentosNotasCache[fechamentoAluno].Add(fechamentoNotaClone);
-
-                                    if (!emAprovacao || ehAprovacaoSemFechamentoNota)
-                                        ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                        
+                                    fechamentoNota.Nota = notaDto.Nota;
+                                    fechamentoNota.ConceitoId = notaDto.ConceitoId;
                                 }
 
+                                fechamentoNota.SinteseId = notaDto.SinteseId;
+                                fechamentoNota.DisciplinaId = notaDto.ComponenteCurricularCodigo;
+
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
+
+                                if (!emAprovacao)
+                                    await SalvarHistoricoNotaFechamentoNovo(fechamentoNota, tipoNota.TipoNota, notaAnterior, conceitoIdAnterior);
+                                    
+                                var fechamentoNotaClone = fechamentoNota.Clone();
+                                fechamentoNotaClone.Nota = notaDto.Nota;
+                                fechamentoNotaClone.ConceitoId = notaDto.ConceitoId;
+                                fechamentosNotasCache[fechamentoAluno].Add(fechamentoNotaClone);
+
+                                if (!emAprovacao || ehAprovacaoSemFechamentoNota)
+                                    ConsolidacaoNotasAlunos(consolidacaoNotasAlunos, turma, fechamentoAluno.AlunoCodigo, fechamentoNota);
+                                
                                 if (emAprovacao)
                                     AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, notaDto, fechamentoAluno.AlunoCodigo);
                             }
