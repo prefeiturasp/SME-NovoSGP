@@ -99,7 +99,7 @@ namespace SME.SGP.Aplicacao
                 : disciplinasEol.FirstOrDefault();
 
             // reprocessar do fechamento de componente sem nota deve atualizar a sintise de frequencia
-            if (fechamentoTurma.ComponenteSemNota && fechamentoTurmaDisciplina.Id > 0)//aqui
+            if (fechamentoTurma.ComponenteSemNota && fechamentoTurmaDisciplina.Id > 0)
                 fechamentoAlunos = await AtualizaSinteseAlunos(fechamentoTurmaDisciplina.Id, periodoEscolar.PeriodoFim, disciplina, turma.AnoLetivo, turma.CodigoTurma);
             else
                 fechamentoAlunos = await CarregarFechamentoAlunoENota(fechamentoTurmaDisciplina.Id, fechamentoTurma.NotaConceitoAlunos, usuarioLogado, parametroAlteracaoNotaFechamento, turma.AnoLetivo);
