@@ -53,8 +53,8 @@ namespace SME.SGP.Aplicacao
                 }
             }
 
-            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && componentesCurricularesEolProfessor.Any(x => x.Regencia)
-                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId || cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString() || cp.Codigo.ToString() == aula.DisciplinaId)
+            var componenteCorrespondente = !usuarioLogado.EhProfessorCj() && componentesCurricularesEolProfessor != null && (componentesCurricularesEolProfessor.Any(x => x.Regencia) || usuarioLogado.EhProfessor())
+                    ? componentesCurricularesEolProfessor.FirstOrDefault(cp => cp.CodigoComponenteCurricularPai.ToString() == aula.DisciplinaId ||(componenteCurricular != null && cp.Codigo.ToString() == componenteCurricular.CdComponenteCurricularPai.ToString()) ||    cp.Codigo.ToString() == aula.DisciplinaId)
                     : new ComponenteCurricularEol
                     {
                         Codigo = long.TryParse(aula.DisciplinaId, out long codigo) ? codigo : 0,
