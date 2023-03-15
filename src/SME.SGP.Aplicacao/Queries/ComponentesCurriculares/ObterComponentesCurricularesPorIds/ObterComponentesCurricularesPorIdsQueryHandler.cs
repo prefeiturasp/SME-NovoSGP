@@ -67,17 +67,6 @@ namespace SME.SGP.Aplicacao
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter usuario obter componentes curriculares por ids Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Usuario, ex.Message));
                 throw;
             }
-        }
-
-        private async Task<Usuario> RetornarUsuario()
-        {
-            try
-            {
-               return await mediator.Send(new ObterUsuarioLogadoQuery());
-            } catch(Exception ex)
-            {
-                return null;
-            }
-        }
+        }       
     }
 }
