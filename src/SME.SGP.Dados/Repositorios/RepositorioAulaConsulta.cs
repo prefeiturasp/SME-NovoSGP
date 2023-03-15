@@ -1059,7 +1059,7 @@ namespace SME.SGP.Dados.Repositorios
 	                             group by a.id) x";
 
             var parametros = new { turmaCodigo, componentesCurricularesId = componentesCurricularesId.Select(cc => cc.ToString()).ToArray(), tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList(), professor };
-            return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(sql, parametros) ?? default;
         }
 
         public async Task<int> ObterAulasDadasPorTurmaEPeriodoEscolar(long turmaId, long tipoCalendarioId, IEnumerable<long> periodosEscolaresIds)
@@ -1084,7 +1084,7 @@ namespace SME.SGP.Dados.Repositorios
 	                                and pe.id = any(@periodosEscolaresIds)";
 
             var parametros = new { turmaId, tipoCalendarioId, periodosEscolaresIds = periodosEscolaresIds.ToList() };
-            return await database.Conexao.QuerySingleOrDefaultAsync<int?>(sql, parametros) ?? default;
+            return await database.Conexao.QueryFirstOrDefaultAsync<int?>(sql, parametros) ?? default;
         }
 
         public async Task<IEnumerable<Aula>> ObterAulasExcluidasComDiarioDeBordoAtivos(string codigoTurma, long tipoCalendarioId)
