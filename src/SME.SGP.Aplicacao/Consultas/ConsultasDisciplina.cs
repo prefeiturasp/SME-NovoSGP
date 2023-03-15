@@ -403,14 +403,14 @@ namespace SME.SGP.Aplicacao
 
             var professoresTitulares = await mediator.Send(new ObterProfessoresTitularesDisciplinasEolQuery(codigoTurma));
 
-            disciplinasEol.ToList().ForEach(async d =>
+            disciplinasEol.ToList().ForEach(d =>
             {
                 d.Professor = professoresTitulares
                     .FirstOrDefault(pt => pt.DisciplinasId.Contains(d.CodigoComponenteCurricular))?.ProfessorRf;
 
                 if (!string.IsNullOrWhiteSpace(d.Professor))
                 {
-                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR));
+                    var componentesProfessor = mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(codigoTurma, d.Professor, Perfis.PERFIL_PROFESSOR)).Result;
                     var componenteCorrepondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(d.CodigoComponenteCurricular));
                     if (componenteCorrepondente != null)
                     {
