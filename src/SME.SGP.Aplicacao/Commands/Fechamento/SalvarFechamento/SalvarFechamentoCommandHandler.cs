@@ -263,7 +263,7 @@ namespace SME.SGP.Aplicacao
                 var auditoriaFechamentoNotaConceitoTurma = (AuditoriaPersistenciaFechamentoNotaConceitoTurmaDto)fechamentoTurmaDisciplina;
                 auditoriaFechamentoNotaConceitoTurma.EmAprovacao = notasEmAprovacao.Any();
 
-                if (parametroAlteracaoNotaFechamento.Ativo && turma.AnoLetivo < DateTimeExtension.HorarioBrasilia().Year)
+                if (emAprovacao)
                     auditoriaFechamentoNotaConceitoTurma.MensagemConsistencia = $"{tipoNota.TipoNota.Name()} registrados com sucesso. Em até 24 horas será enviado para aprovação e será considerado válido após a aprovação do último nível.";         
                 else
                     auditoriaFechamentoNotaConceitoTurma.MensagemConsistencia = $" {tipoNota.TipoNota.Name()} registrados com sucesso.";
