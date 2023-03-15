@@ -38,15 +38,13 @@ namespace SME.SGP.Aplicacao
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
             {
-                var listaDisciplinas = new List<DisciplinaDto>();
-
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var disciplinaCorrespondente = disciplinasUsuario
                         .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
                     disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
-                    listaDisciplinas.Add(disciplina);
+                    disciplinasRetorno.Add(disciplina);
                 }
             }
             else
