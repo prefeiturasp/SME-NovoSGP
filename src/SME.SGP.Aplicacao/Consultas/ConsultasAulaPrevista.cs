@@ -62,18 +62,18 @@ namespace SME.SGP.Aplicacao
             if (usuarioLogado.EhProfessor())
             {
                 var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                var componenteCorrespondente = componentesProfessor.SingleOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                 codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
             }
             else if (usuarioLogado.EhProfessorCj())
             {
                 var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                var professor = professores.SingleOrDefault(p => p.DisciplinasId.Contains(long.Parse(disciplinaId)));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(disciplinaId)));
                 if (professor != null)
                 {
                     rf = professor.ProfessorRf;
                     var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                    var componenteProfessorAtrelado = componentesProfessor.SingleOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
+                    var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
                     codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
                 }
             }

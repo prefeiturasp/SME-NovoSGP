@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
                                                                               usuarioLogado.EhProfessorInfantilOuCjInfantil()));
 
             var componenteCurricularCorrespondente = componentesCurricularesEolProfessor
-                .SingleOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
+                .FirstOrDefault(cp => cp.Codigo.Equals(componenteCurricularId) || cp.CodigoComponenteTerritorioSaber.Equals(componenteCurricularId));
 
             var componenteCurricular = await mediator
                 .Send(new ObterComponenteCurricularPorIdQuery(componenteCurricularCorrespondente != null && componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber > 0 ? componenteCurricularCorrespondente.CodigoComponenteTerritorioSaber : componenteCurricularId));
@@ -125,14 +125,14 @@ namespace SME.SGP.Aplicacao
 
                 dadosComponentes.ToList().ForEach(async dc =>
                 {
-                    var professor = dc.TerritorioSaber ? professores.SingleOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
+                    var professor = dc.TerritorioSaber ? professores.FirstOrDefault(p => p.DisciplinasId.Contains(dc.CodigoComponenteCurricular)) : null;
                     if (professor != null)
                     {
                         var componentesProfessorAtrelado = await mediator
                             .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
 
                         var componenteProfessorAtreladoEquivalente = componentesProfessorAtrelado
-                            .SingleOrDefault(c => c.CodigoComponenteTerritorioSaber.Equals(dc.CodigoComponenteCurricular));
+                            .FirstOrDefault(c => c.CodigoComponenteTerritorioSaber.Equals(dc.CodigoComponenteCurricular));
 
                         componentesCurricularesDoProfessorCj
                             .Add((dc.CodigoComponenteCurricular.ToString(), dc.CdComponenteCurricularPai?.ToString(), componenteProfessorAtreladoEquivalente?.Codigo.ToString() ?? dc.CodigoComponenteCurricular.ToString()));

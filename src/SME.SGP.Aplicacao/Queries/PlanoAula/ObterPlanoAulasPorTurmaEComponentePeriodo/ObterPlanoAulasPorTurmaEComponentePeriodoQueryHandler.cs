@@ -63,7 +63,7 @@ namespace SME.SGP.Aplicacao
             if (!string.IsNullOrEmpty(ComponenteCurricularId))
             {
                 var disciplinasRetorno = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { long.Parse(ComponenteCurricularId) }, codigoTurma: turma.CodigoTurma));
-                disciplinaDto = disciplinasRetorno.SingleOrDefault();
+                disciplinaDto = disciplinasRetorno.FirstOrDefault();
             }
 
             foreach (var periodoEscolar in periodosEscolaresAulasInicioFim)

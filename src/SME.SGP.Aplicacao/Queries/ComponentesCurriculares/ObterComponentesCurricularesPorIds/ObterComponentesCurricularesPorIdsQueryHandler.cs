@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using MimeKit.Encodings;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
 using SME.SGP.Dominio.Enumerados;
@@ -29,44 +28,85 @@ namespace SME.SGP.Aplicacao
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
             var usuarioLogado = await RetornarUsuario();
-            if (usuarioLogado == null)
-              return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
+            var disciplinasRetorno = new List<DisciplinaDto>();
+
+            var disciplinasUsuario = await mediator
+                .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+
+            var disciplinasAgrupadas = await servicoEol
+                    .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);            
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
-            {                
+            {
                 var listaDisciplinas = new List<DisciplinaDto>();
 
-                var disciplinasAgrupadas = await servicoEol
-                    .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);
-
-                var disciplinasUsuario = await mediator
-                    .Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(request.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var disciplinaCorrespondente = disciplinasUsuario
-                        .SingleOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
+                        .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
                     disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
                     listaDisciplinas.Add(disciplina);
                 }
-
-                return listaDisciplinas;
             }
             else
-                return await repositorioComponenteCurricular.ObterDisciplinasPorIds(request.Ids);
+            {
+                foreach (var id in request.Ids)
+                {
+                    var disciplinaCorreposdente = disciplinasUsuario
+                        .FirstOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));
+
+                    if (disciplinaCorreposdente != null)
+                    {
+                        var registraFrequencia = await mediator
+                            .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorreposdente != null && disciplinaCorreposdente.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorreposdente.CodigoComponenteTerritorioSaber : disciplinaCorreposdente.Codigo));
+
+                        disciplinasRetorno.Add(new DisciplinaDto()
+                        {
+                            Id = disciplinaCorreposdente.CodigoComponenteTerritorioSaber,
+                            CodigoComponenteCurricular = disciplinaCorreposdente.Codigo,
+                            CdComponenteCurricularPai = disciplinaCorreposdente.CodigoComponenteCurricularPai,
+                            Compartilhada = disciplinaCorreposdente.Compartilhada,
+                            Nome = disciplinaCorreposdente.Descricao,
+                            NomeComponenteInfantil = disciplinaCorreposdente.Descricao,
+                            PossuiObjetivos = disciplinaCorreposdente.PossuiObjetivos,
+                            Regencia = disciplinaCorreposdente.Regencia,
+                            RegistraFrequencia = registraFrequencia,
+                            TerritorioSaber = disciplinaCorreposdente.TerritorioSaber,
+                            LancaNota = disciplinaCorreposdente.LancaNota,
+                            TurmaCodigo = disciplinaCorreposdente.TurmaCodigo
+                        });
+                    }
+                    else
+                    {
+                        var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
+                            .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
+
+                        if (disciplina != null)
+                        {
+                            disciplina.RegistraFrequencia = await mediator
+                                .Send(new ObterComponenteRegistraFrequenciaQuery(disciplina.CodigoComponenteCurricular));
+
+                            disciplinasRetorno.Add(disciplina);
+                        }
+                    }
+                }
+            }
+
+            return disciplinasRetorno;
         }
 
         private async Task<Usuario> RetornarUsuario()
         {
             try
             {
-               return await mediator.Send(new ObterUsuarioLogadoQuery());
-            } catch(Exception ex)
+                return await mediator.Send(new ObterUsuarioLogadoQuery());
+            }
+            catch (Exception ex)
             {
                 await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter usuario obter componentes curriculares por ids Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Usuario, ex.Message));
                 throw;
             }
-        }       
+        }
     }
 }
