@@ -224,17 +224,17 @@ namespace SME.SGP.Aplicacao
                     if (usuarioLogado.EhProfessor())
                     {
                         var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
-                        var componenteCorrespondente = componentesProfessor.SingleOrDefault(cp => cp.Codigo.Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
+                        var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
                         codigoTerritorioRelacionado = componenteCorrespondente != null && componenteCorrespondente.Codigo.Equals(disciplinaId) ? componenteCorrespondente.CodigoComponenteTerritorioSaber.ToString() : componenteCorrespondente?.Codigo.ToString();
                     }
                     else
                     {
                         var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
-                        var professor = professores.SingleOrDefault(p => p.DisciplinasId.Contains(disciplinaId));
+                        var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(disciplinaId));
                         if (professor != null) 
                         {
                             var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
-                            var componenteProfessorCorrespondente = componentesProfessor.SingleOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
+                            var componenteProfessorCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.Equals(disciplinaId));
                             codigoTerritorioRelacionado = componenteProfessorCorrespondente?.Codigo.ToString();
                         }
                     }                    

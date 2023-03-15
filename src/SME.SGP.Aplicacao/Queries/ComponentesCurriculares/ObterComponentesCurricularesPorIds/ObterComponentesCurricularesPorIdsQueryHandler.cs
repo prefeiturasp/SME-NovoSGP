@@ -41,7 +41,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var disciplinaCorrespondente = disciplinasUsuario
-                        .SingleOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
+                        .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
                     disciplina.RegistraFrequencia = await mediator
                         .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
@@ -54,7 +54,7 @@ namespace SME.SGP.Aplicacao
                 foreach (var id in request.Ids)
                 {
                     var disciplinaCorreposdente = disciplinasUsuario
-                        .SingleOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));                           
+                        .FirstOrDefault(d => d.Codigo.Equals(id) || d.CodigoComponenteTerritorioSaber.Equals(id));                           
 
                     if (disciplinaCorreposdente != null)
                     {
@@ -79,7 +79,7 @@ namespace SME.SGP.Aplicacao
                     }
                     else
                     {
-                        var disciplina = disciplinasAgrupadas.SingleOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
+                        var disciplina = disciplinasAgrupadas.FirstOrDefault(da => da.CodigoComponenteCurricular.Equals(id)) ?? (await repositorioComponenteCurricular
                             .ObterDisciplinasPorIds(new long[] { id })).FirstOrDefault();
 
                         if (disciplina != null)
