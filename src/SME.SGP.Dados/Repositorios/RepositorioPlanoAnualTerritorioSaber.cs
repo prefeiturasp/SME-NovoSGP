@@ -83,7 +83,7 @@ namespace SME.SGP.Dados.Repositorios
                     bimestre,
                     territorioExperienciaId,
                     professor
-                })).SingleOrDefault();
+                })).FirstOrDefault();
         }
     }
 }

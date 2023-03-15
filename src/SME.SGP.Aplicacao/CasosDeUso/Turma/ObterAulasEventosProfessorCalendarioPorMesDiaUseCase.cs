@@ -135,7 +135,7 @@ namespace SME.SGP.Aplicacao
                                                  select (long.Parse(c.codigo), (long?)long.Parse(c.codigoTerritorioSaber))).Distinct().ToList() :
                                                  aulasParaVisualizar
                                                     .Select(a => (long.Parse(a.DisciplinaId), componentesCurricularesEolProfessor
-                                                        .SingleOrDefault(cp => cp.Codigo.ToString() == a.DisciplinaId)?.CodigoComponenteTerritorioSaber ?? (long?)0))
+                                                        .FirstOrDefault(cp => cp.Codigo.ToString() == a.DisciplinaId)?.CodigoComponenteTerritorioSaber ?? (long?)0))
                                                             .ToList();
 
                     componentesCurriculares = await mediator
