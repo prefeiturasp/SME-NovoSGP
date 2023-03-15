@@ -163,13 +163,22 @@ namespace SME.SGP.Aplicacao
                                         notaAnterior = fechamentoNota.Nota;
                                         conceitoIdAnterior = fechamentoNota.ConceitoId;
                                     }
-		
-                                    fechamentoNota.Nota = notaConceitoAprovacaoAluno.Nota;
-                                    fechamentoNota.ConceitoId = notaConceitoAprovacaoAluno.ConceitoId;
+
+                                    if (notaConceitoAprovacaoAluno != null)
+                                    {
+                                        fechamentoNota.Nota = notaConceitoAprovacaoAluno.Nota;
+                                        fechamentoNota.ConceitoId = notaConceitoAprovacaoAluno.ConceitoId;
+                                    }
                                 }
 
                                 fechamentoNota.FechamentoAlunoId = fechamentoAluno.Id;
                                 fechamentoNota.FechamentoAluno = fechamentoAluno;
+
+                                if (emAprovacao && semFechamentoNota)
+                                {
+                                    fechamentoNota.Nota = null;
+                                    fechamentoNota.ConceitoId = null;
+                                }
 
                                 await repositorioFechamentoNota.SalvarAsync(fechamentoNota);
                                 
@@ -182,9 +191,10 @@ namespace SME.SGP.Aplicacao
                             if (!emAprovacao)
                                 continue;
 
-                            AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo,
-                                notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.NotaAnterior,
-                                notaConceitoAprovacaoAluno?.ConceitoId, notaConceitoAprovacaoAluno?.ConceitoIdAnterior);
+                            if (notaConceitoAprovacaoAluno != null)
+                                AdicionaAprovacaoNota(notasEmAprovacao, fechamentoNota, fechamentoAluno.AlunoCodigo,
+                                    notaConceitoAprovacaoAluno?.Nota, notaConceitoAprovacaoAluno?.NotaAnterior,
+                                    notaConceitoAprovacaoAluno?.ConceitoId, notaConceitoAprovacaoAluno?.ConceitoIdAnterior);
                         }
                         catch (NegocioException e)
                         {
@@ -566,7 +576,10 @@ namespace SME.SGP.Aplicacao
                 var fechamentoAluno = fechamentoAlunos.FirstOrDefault(c => c.AlunoCodigo == agrupamentoNotasAluno.Key);
 
                 if (fechamentoAluno == null)
+                {
                     fechamentoAluno = new FechamentoAluno() { AlunoCodigo = agrupamentoNotasAluno.Key, FechamentoTurmaDisciplinaId = fechamentoTurmaDisciplinaId };
+                    indiceFechamentoAntigo = -1;
+                }
                 else
                     indiceFechamentoAntigo = fechamentoAlunos.IndexOf(fechamentoAluno);
 
@@ -576,17 +589,6 @@ namespace SME.SGP.Aplicacao
 
                     if (notaFechamento != null)
                     {
-                        if (!notaFechamento.ConceitoId.HasValue)
-                        {
-                            if (fechamentoNotaDto.Nota != notaFechamento.Nota)
-                                await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota, fechamentoNotaDto.Nota, notaFechamento.Id));
-                        }
-                        else
-                        {
-                            if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
-                                await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId, fechamentoNotaDto.ConceitoId, notaFechamento.Id));
-                        }
-
                         if (EnviarWfAprovacao(usuarioLogado, turmaAnoLetivo) && parametroAlteracaoNotaFechamento.Ativo)
                         {
                             fechamentoNotaDto.Id = notaFechamento.Id;
@@ -595,6 +597,17 @@ namespace SME.SGP.Aplicacao
                         }
                         else
                         {
+                            if (!notaFechamento.ConceitoId.HasValue)
+                            {
+                                if (fechamentoNotaDto.Nota != notaFechamento.Nota)
+                                    await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(notaFechamento.Nota, fechamentoNotaDto.Nota, notaFechamento.Id));
+                            }
+                            else
+                            {
+                                if (fechamentoNotaDto.ConceitoId != notaFechamento.ConceitoId)
+                                    await mediator.Send(new SalvarHistoricoConceitoFechamentoCommand(notaFechamento.ConceitoId, fechamentoNotaDto.ConceitoId, notaFechamento.Id));
+                            }
+
                             notaFechamento.Nota = fechamentoNotaDto.Nota;
                             notaFechamento.ConceitoId = fechamentoNotaDto.ConceitoId;
                             notaFechamento.SinteseId = fechamentoNotaDto.SinteseId;
