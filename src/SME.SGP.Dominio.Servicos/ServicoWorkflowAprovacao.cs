@@ -166,7 +166,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.AlteracaoNotaFechamento)
                 {
-                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
+                    await AprovarAlteracaoNotaFechamento(codigoDaNotificacao, workflow.Id, workflow.TurmaId, ObterUsuarioWf(workflow.CriadoRF, workflow.AlteradoRF), ObterUsuarioWf(workflow.CriadoPor, workflow.AlteradoPor));
                 }
                 else if (workflow.Tipo == WorkflowAprovacaoTipo.RegistroItinerancia)
                 {
@@ -181,6 +181,11 @@ namespace SME.SGP.Dominio.Servicos
                     await AprovarAlteracaoParecerConclusivo(workflow.Id, workflow.TurmaId, workflow.CriadoRF, workflow.CriadoPor);
                 }
             }
+        }
+
+        private static string ObterUsuarioWf(string criado, string alterado)
+        {
+            return string.IsNullOrEmpty(alterado) ? criado : alterado;
         }
 
         private async Task ReprovarRegistroDeItinerancia(long workFlowId, string motivo)
