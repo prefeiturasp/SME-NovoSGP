@@ -68,5 +68,16 @@ namespace SME.SGP.Aplicacao
                 throw;
             }
         }
+
+        private async Task<Usuario> RetornarUsuario()
+        {
+            try
+            {
+               return await mediator.Send(new ObterUsuarioLogadoQuery());
+            } catch(Exception ex)
+            {
+                return null;
+            }
+        }
     }
 }
