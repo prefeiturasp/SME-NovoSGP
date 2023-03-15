@@ -220,13 +220,17 @@ namespace SME.SGP.Dominio.Servicos
             var notasEmAprovacao = await ObterNotasEmAprovacao(workFlowId);
             if (notasEmAprovacao != null && notasEmAprovacao.Any())
             {
-                await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId);
+                var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
+                
+                var notaTipoValor = await mediator.Send(new ObterNotaTipoValorPorTurmaIdQuery(turma.Id, turma.TipoTurma));
+                
+                await AtualizarNotasFechamento(notasEmAprovacao, criadoRF, criadoPor, workFlowId, notaTipoValor.TipoNota);
 
-                await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turmaCodigo);
+                await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turma);
             }
         }
 
-        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId)
+        private async Task AtualizarNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, string criadoRF, string criadoPor, long workFlowId,TipoNota tipoNota)
         {
             var fechamentoAluno = notasEmAprovacao.First().FechamentoNota.FechamentoAluno;
             var fechamentoTurmaDisciplinaId = fechamentoAluno.FechamentoTurmaDisciplinaId;
@@ -238,9 +242,9 @@ namespace SME.SGP.Dominio.Servicos
             {
                 var fechamentoNota = notaEmAprovacao.FechamentoNota;
 
-                if (notaEmAprovacao.WfAprovacao.Nota.HasValue)
+                if (tipoNota == TipoNota.Nota)
                 {
-                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota && fechamentoNota.Nota.HasValue)
+                    if (notaEmAprovacao.WfAprovacao.Nota != fechamentoNota.Nota)
                         await mediator.Send(new SalvarHistoricoNotaFechamentoCommand(fechamentoNota.Nota, notaEmAprovacao.WfAprovacao.Nota, notaEmAprovacao.WfAprovacao.FechamentoNotaId, criadoRF, criadoPor, workFlowId));
 
                     fechamentoNota.Nota = notaEmAprovacao.WfAprovacao.Nota;
@@ -556,10 +560,9 @@ namespace SME.SGP.Dominio.Servicos
             return nivel.Cargo;
         }
 
-        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, long codigoDaNotificacao, string turmaCodigo, bool aprovada = true, string justificativa = "")
+        private async Task NotificarAprovacaoNotasFechamento(IEnumerable<WfAprovacaoNotaFechamentoTurmaDto> notasEmAprovacao, long codigoDaNotificacao, Turma turma, bool aprovada = true, string justificativa = "")
         {
             await ExcluirWfNotasFechamento(notasEmAprovacao);
-            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(turmaCodigo);
 
             int? bimestre = notasEmAprovacao.First().Bimestre;
             var notaConceitoTitulo = notasEmAprovacao.First().WfAprovacao.ConceitoId.HasValue ? "conceito(s)" : "nota(s)";
@@ -936,9 +939,12 @@ namespace SME.SGP.Dominio.Servicos
         private async Task TrataReprovacaoAlteracaoNotaFechamento(WorkflowAprovacao workflow, long codigoDaNotificacao, string motivo)
         {
             var notasEmAprovacao = await ObterNotasEmAprovacao(workflow.Id);
-
+            
             await AtualizarNotasFechamento(notasEmAprovacao);
-            await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, workflow.TurmaId, false, motivo);
+            
+            var turma = await repositorioTurma.ObterTurmaComUeEDrePorCodigo(workflow.TurmaId);
+            
+            await NotificarAprovacaoNotasFechamento(notasEmAprovacao, codigoDaNotificacao, turma, false, motivo);
         }
 
         private async Task<IEnumerable<WfAprovacaoNotaFechamentoTurmaDto>> ObterNotasEmAprovacao(long workflowId)
