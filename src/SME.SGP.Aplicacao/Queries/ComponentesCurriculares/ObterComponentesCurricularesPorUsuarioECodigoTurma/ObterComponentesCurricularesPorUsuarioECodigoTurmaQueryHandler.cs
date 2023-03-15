@@ -1,12 +1,10 @@
 ﻿using MediatR;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
-using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,16 +39,16 @@ namespace SME.SGP.Aplicacao
             if (componentesCurricularesEol == null || !componentesCurricularesEol.Any())
                 return null;
 
-            return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol, obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil))?
+            return (await ObterComponentesCurricularesRepositorioSgp(componentesCurricularesEol, obterTurma.ModalidadeCodigo == Modalidade.EducacaoInfantil, codigoTurma: turmaCodigo))?
                 .OrderBy(c => c.Nome)?.ToList();
 
         }
 
-        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil)
+        private async Task<IEnumerable<DisciplinaNomeDto>> ObterComponentesCurricularesRepositorioSgp(IEnumerable<ComponenteCurricularEol> componentesCurricularesEol, bool ehEducacaoInfatil, string codigoTurma)
         {
             var componentesSgp = await mediator
                 .Send(new ObterComponentesCurricularesPorIdsQuery(componentesCurricularesEol
-                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray()));
+                    .Select(a => a.TerritorioSaber ? a.CodigoComponenteTerritorioSaber : (a.Regencia && a.CodigoComponenteCurricularPai.HasValue && a.CodigoComponenteCurricularPai.Value > 0 ? a.CodigoComponenteCurricularPai.Value : a.Codigo)).ToArray(), codigoTurma: codigoTurma));
 
             return MapearParaComponenteNomeDto(componentesSgp, componentesCurricularesEol, ehEducacaoInfatil);
         }

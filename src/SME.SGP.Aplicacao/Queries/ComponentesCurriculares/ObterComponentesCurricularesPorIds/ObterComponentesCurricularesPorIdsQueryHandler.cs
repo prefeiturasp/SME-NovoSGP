@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using MimeKit.Encodings;
 using SME.SGP.Aplicacao.Integracoes;
 using SME.SGP.Dominio;
+using SME.SGP.Dominio.Enumerados;
 using SME.SGP.Dominio.Interfaces;
 using SME.SGP.Infra;
 using System;
@@ -27,7 +27,7 @@ namespace SME.SGP.Aplicacao
 
         public async Task<IEnumerable<DisciplinaDto>> Handle(ObterComponentesCurricularesPorIdsQuery request, CancellationToken cancellationToken)
         {
-            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var usuarioLogado = await RetornarUsuario();
             var disciplinasRetorno = new List<DisciplinaDto>();
 
             var disciplinasUsuario = await mediator
@@ -37,15 +37,13 @@ namespace SME.SGP.Aplicacao
                     .ObterDisciplinasPorIdsAgrupadas(request.Ids, request.CodigoTurma);            
 
             if (request.PossuiTerritorio.HasValue && request.PossuiTerritorio.Value && !usuarioLogado.EhProfessorCj())
-            {   
+            {
                 foreach (var disciplina in disciplinasAgrupadas)
                 {
                     var disciplinaCorrespondente = disciplinasUsuario
                         .FirstOrDefault(du => du.Codigo.Equals(disciplina.CodigoComponenteCurricular) || du.CodigoComponenteTerritorioSaber.Equals(disciplina.CodigoComponenteCurricular));
 
-                    disciplina.RegistraFrequencia = await mediator
-                        .Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
-
+                    disciplina.RegistraFrequencia = await mediator.Send(new ObterComponenteRegistraFrequenciaQuery(disciplinaCorrespondente?.CodigoComponenteTerritorioSaber > 0 ? disciplinaCorrespondente.CodigoComponenteTerritorioSaber : disciplina.CodigoComponenteCurricular));
                     disciplinasRetorno.Add(disciplina);
                 }
             }
@@ -102,10 +100,12 @@ namespace SME.SGP.Aplicacao
         {
             try
             {
-               return await mediator.Send(new ObterUsuarioLogadoQuery());
-            } catch(Exception ex)
+                return await mediator.Send(new ObterUsuarioLogadoQuery());
+            }
+            catch (Exception ex)
             {
-                return null;
+                await mediator.Send(new SalvarLogViaRabbitCommand($"Erro ao obter usuario obter componentes curriculares por ids Motivo: {ex.Message}", LogNivel.Critico, LogContexto.Usuario, ex.Message));
+                throw;
             }
         }
     }
