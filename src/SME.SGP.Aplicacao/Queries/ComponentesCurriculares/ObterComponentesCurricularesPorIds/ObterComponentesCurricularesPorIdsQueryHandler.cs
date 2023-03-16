@@ -73,8 +73,8 @@ namespace SME.SGP.Aplicacao
                             TerritorioSaber = disciplinaCorrespondente.TerritorioSaber,
                             LancaNota = disciplinaCorrespondente.LancaNota,
                             TurmaCodigo = disciplinaCorrespondente.TurmaCodigo,
-                            GrupoMatrizId = disciplinaCorrespondente.GrupoMatriz.Id,
-                            GrupoMatrizNome = disciplinaCorrespondente.GrupoMatriz.Nome
+                            GrupoMatrizId = disciplinaCorrespondente.GrupoMatriz?.Id ?? 0,
+                            GrupoMatrizNome = disciplinaCorrespondente.GrupoMatriz?.Nome ?? ""
                         });
                     }
                     else
