@@ -187,8 +187,13 @@ namespace SME.SGP.Aplicacao
                         throw new NegocioException("É necessário informar o componente curricular");
                     var disciplina = await ObterDisciplina(Convert.ToInt32(filtro.DisciplinasId[0]));
                     var usuario = await servicoUsuario.ObterUsuarioLogado();
+
+                    var regenteAtual = !usuario.EhProfessorCj() && !usuario.EhGestorEscolar()
+                    ? await mediator.Send(new ObterUsuarioPossuiPermissaoNaTurmaEDisciplinaQuery(disciplina.Id, filtro.TurmaId.ToString(), DateTime.Now.Date, usuario))
+                    : true;
+
                     DateTime dataAvaliacao = filtro.DataAvaliacao.Date;
-                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
+                    var aula = await repositorioAula.ObterAulas(filtro.TurmaId.ToString(), null, regenteAtual ? string.Empty : usuario.CodigoRf, dataAvaliacao, filtro.DisciplinasId, usuario.EhProfessorCj());
 
                     //verificar se tem para essa atividade
                     if (!aula.Any())
