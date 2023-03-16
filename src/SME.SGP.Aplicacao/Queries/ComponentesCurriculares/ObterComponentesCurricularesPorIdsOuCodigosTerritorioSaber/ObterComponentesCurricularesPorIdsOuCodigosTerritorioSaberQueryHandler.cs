@@ -54,9 +54,9 @@ namespace SME.SGP.Aplicacao
 
                 request.CodigoComponentes
                     .Where(cc => !disciplinasAgrupadas.Select(d => d.CodigoComponenteCurricular).Contains(cc.codigo) && cc.codigoTerritorioSaber.Equals(0))
-                    .ToList().ForEach(async cc =>
+                    .ToList().ForEach(cc =>
                     {
-                        var componente = await repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { cc.codigo });
+                        var componente = repositorioComponenteCurricular.ObterDisciplinasPorIds(new long[] { cc.codigo }).Result;
                         listaDisciplinas.Add(componente.First());
                     });
 
