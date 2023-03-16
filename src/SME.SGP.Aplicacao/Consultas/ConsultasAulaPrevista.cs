@@ -53,11 +53,34 @@ namespace SME.SGP.Aplicacao
         public async Task<AulasPrevistasDadasAuditoriaDto> ObterAulaPrevistaDada(Modalidade modalidade, string turmaId, string disciplinaId, int semestre = 0)
         {
             var turma = await ObterTurma(turmaId);
-
             var tipoCalendario = await ObterTipoCalendarioPorTurmaAnoLetivo(turma.AnoLetivo, turma.ModalidadeCodigo, semestre);
-
             var totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId));
-            var aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
+            var usuarioLogado = await mediator.Send(new ObterUsuarioLogadoQuery());
+            var codigoTerritorioCorrespondente = (long?)null;
+            var rf = usuarioLogado.CodigoRf;
+
+            if (usuarioLogado.EhProfessor())
+            {
+                var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, usuarioLogado.Login, usuarioLogado.PerfilAtual));
+                var componenteCorrespondente = componentesProfessor.FirstOrDefault(cp => cp.Codigo.ToString().Equals(disciplinaId) || cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
+                codigoTerritorioCorrespondente = componenteCorrespondente != null && componenteCorrespondente.TerritorioSaber && componenteCorrespondente.Codigo.ToString().Equals(disciplinaId) ? componenteCorrespondente?.CodigoComponenteTerritorioSaber : componenteCorrespondente?.Codigo;
+            }
+            else if (usuarioLogado.EhProfessorCj())
+            {
+                var professores = await mediator.Send(new ObterProfessoresTitularesPorTurmaIdQuery(turma.Id));
+                var professor = professores.FirstOrDefault(p => p.DisciplinasId.Contains(long.Parse(disciplinaId)));
+                if (professor != null)
+                {
+                    rf = professor.ProfessorRf;
+                    var componentesProfessor = await mediator.Send(new ObterComponentesCurricularesDoProfessorNaTurmaQuery(turma.CodigoTurma, professor.ProfessorRf, Perfis.PERFIL_PROFESSOR));
+                    var componenteProfessorAtrelado = componentesProfessor.FirstOrDefault(cp => cp.CodigoComponenteTerritorioSaber.ToString().Equals(disciplinaId));
+                    codigoTerritorioCorrespondente = componenteProfessorAtrelado?.Codigo ?? null;
+                }
+            }
+
+            var aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
+                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(rf) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
+                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
             if (disciplinaId.Equals(CODIGO_DISCIPLINA_INGLES) && aulaPrevista == null)
             {
@@ -77,7 +100,9 @@ namespace SME.SGP.Aplicacao
             else
             {
                 totalAulasPrevistas = await mediator.Send(new ObterAulasPrevistasPorCodigoUeQuery(turma.UeId, false));
-                aulaPrevista = totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
+                aulaPrevista = codigoTerritorioCorrespondente.HasValue ?
+                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.CriadoRF.Equals(usuarioLogado.CriadoRF) && (x.DisciplinaId == disciplinaId || x.DisciplinaId == codigoTerritorioCorrespondente.Value.ToString())) :
+                    totalAulasPrevistas.FirstOrDefault(x => x.TipoCalendarioId == tipoCalendario.Id && x.TurmaId == turma.CodigoTurma && x.DisciplinaId == disciplinaId);
 
                 if (aulaPrevista == null)
                 {
@@ -109,7 +134,7 @@ namespace SME.SGP.Aplicacao
 
         private AulasPrevistasDadasAuditoriaDto MapearMensagens(AulasPrevistasDadasAuditoriaDto aulaPrevistaDto)
         {
-            if(aulaPrevistaDto.AulasPrevistasPorBimestre != null)
+            if (aulaPrevistaDto.AulasPrevistasPorBimestre != null)
             {
                 foreach (var aula in aulaPrevistaDto.AulasPrevistasPorBimestre)
                 {
@@ -155,7 +180,7 @@ namespace SME.SGP.Aplicacao
                     Inicio = x.Inicio,
                     Fim = x.Fim,
                     Previstas = new AulasPrevistasDto() { Quantidade = x.Previstas },
-                    Reposicoes = x.LancaFrequencia || x.Reposicoes !=0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
+                    Reposicoes = x.LancaFrequencia || x.Reposicoes != 0 ? x.Reposicoes : x.ReposicoesSemFrequencia,
                     PodeEditar = periodosAbertos != null ? periodosAbertos.FirstOrDefault(p => p.Bimestre == x.Bimestre).Aberto : false
                 }).ToList()
             };

@@ -17,7 +17,11 @@ namespace SME.SGP.Aplicacao
 
         public async Task<bool> Handle(SalvarListaNotaConceitoCommand request, CancellationToken cancellationToken)
         {
-            return await repositorioNotasConceitos.SalvarListaNotaConceito(request.ListaNotasConceitos,request.CriadoPor);
+            foreach (var notaConceito in request.ListaNotasConceitos)
+            {
+                await repositorioNotasConceitos.SalvarNotaConceito(notaConceito);
+            }
+            return true;
         }
     }
 }

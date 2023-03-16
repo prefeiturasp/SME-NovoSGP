@@ -64,7 +64,7 @@ namespace SME.SGP.Dados.Repositorios
             return (await database.Conexao.QueryAsync<AulaPrevistaBimestreQuantidade>(query.ToString(), new { tipoCalendarioId, turmaId, disciplinaId }));
         }
 
-        public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string disciplinaId, int? bimestre)
+        public async Task<IEnumerable<AulaPrevistaBimestre>> ObterAulasPrevistasPorTurmaTipoCalendarioDisciplina(long tipoCalendarioId, string turmaId, string[] disciplinasId, int? bimestre, string codigoRf = null)
         {
             var sql = @"select
                             apb.*
@@ -76,14 +76,15 @@ namespace SME.SGP.Dados.Repositorios
                         where
                             ap.tipo_calendario_id = @tipoCalendarioId and
                             ap.turma_id = @turmaId and
-                            ap.disciplina_id = @disciplinaId ";
+                            ap.disciplina_id = any(@disciplinasId) ";
 
             if (bimestre != null)
-            {
                 sql += " and apb.bimestre = @bimestre";
-            }
 
-            var parametros = new { tipoCalendarioId, turmaId, disciplinaId, bimestre };
+            if (!string.IsNullOrWhiteSpace(codigoRf))
+                sql += " and ap.criado_rf = @codigoRf";
+
+            var parametros = new { tipoCalendarioId, turmaId, disciplinasId, bimestre, codigoRf };
             return await database.Conexao.QueryAsync<AulaPrevistaBimestre>(sql, parametros);
         }
 

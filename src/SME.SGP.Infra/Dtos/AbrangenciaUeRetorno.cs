@@ -22,6 +22,6 @@ namespace SME.SGP.Dto
                                   TipoEscola == TipoEscola.CECI || TipoEscola == TipoEscola.CEMEI ||
                                   TipoEscola == TipoEscola.CEUCEMEI || TipoEscola == TipoEscola.CEIDIRET ||
                                   TipoEscola == TipoEscola.CEIINDIR || TipoEscola == TipoEscola.CRPCONV  || 
-                                  TipoEscola == TipoEscola.EMEIPFOM;
+                                  TipoEscola == TipoEscola.CEUCEI || TipoEscola == TipoEscola.EMEIPFOM;
     }
 }

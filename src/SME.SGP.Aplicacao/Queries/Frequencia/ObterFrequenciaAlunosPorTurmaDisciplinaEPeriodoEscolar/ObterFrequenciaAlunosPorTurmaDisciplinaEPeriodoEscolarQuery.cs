@@ -8,25 +8,29 @@ namespace SME.SGP.Aplicacao
     public class ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery : IRequest<IEnumerable<FrequenciaAluno>>
     {
         public Turma Turma { get; set; }
-        public long ComponenteCurricularId { get; set; }
+        public long[] ComponentesCurricularesId { get; set; }
         public IEnumerable<long> PeriodosEscolaresIds { get; set; }
+        public string Professor { get; set; }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long componenteCurricularId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, string professor = null)
         {
             Turma = turma;
-            ComponenteCurricularId = componenteCurricularId;
+            ComponentesCurricularesId = componentesCurricularesId;
+            Professor = professor;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long componenteCurricularId, IEnumerable<long> periodosEscolaresIds)
-            :this(turma, componenteCurricularId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, IEnumerable<long> periodosEscolaresIds, string professor = null)
+            :this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = periodosEscolaresIds;
+            Professor = professor;
         }
 
-        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long componenteCurricularId, long periodoEscolarId)
-            : this(turma, componenteCurricularId)
+        public ObterFrequenciaAlunosPorTurmaDisciplinaEPeriodoEscolarQuery(Turma turma, long[] componentesCurricularesId, long periodoEscolarId, string professor = null)
+            : this(turma, componentesCurricularesId)
         {
             PeriodosEscolaresIds = new List<long> { periodoEscolarId };
+            Professor = professor;
         }
     }
 
@@ -38,7 +42,7 @@ namespace SME.SGP.Aplicacao
                 .NotEmpty()
                 .WithMessage("A turma deve ser informada para consulta das frequências dos alunos.");
 
-            RuleFor(x => x.ComponenteCurricularId)
+            RuleFor(x => x.ComponentesCurricularesId)
                 .NotEmpty()
                 .WithMessage("O componente curricular deve ser informado para consulta das frequências dos alunos.");
 

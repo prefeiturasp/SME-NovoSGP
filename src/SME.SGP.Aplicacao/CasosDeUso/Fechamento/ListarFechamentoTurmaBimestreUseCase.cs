@@ -42,7 +42,7 @@ namespace SME.SGP.Aplicacao
             if (periodosEscolares == null || !periodosEscolares.Any())
                 throw new NegocioException("Não foi encontrado período Escolar para a modalidade informada.");
 
-            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularCodigo }));
+            var componentesCurriculares = await mediator.Send(new ObterComponentesCurricularesPorIdsQuery(new long[] { componenteCurricularCodigo }, codigoTurma: turmaCodigo));
             if (!componentesCurriculares.Any())
                 throw new NegocioException("Não foi possível localizar dados do componente curricular selecionado.");
 
@@ -110,7 +110,7 @@ namespace SME.SGP.Aplicacao
                                                       .OrderBy(a => a.NomeAluno)
                                                       .ThenBy(a => a.NomeValido());
 
-                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, componenteCurricularCodigo.ToString(), bimestreDoPeriodo.Id));
+                var turmaPossuiFrequenciaRegistrada = await mediator.Send(new ExisteFrequenciaRegistradaPorTurmaComponenteCurricularQuery(turma.CodigoTurma, new string[] { componenteCurricularCodigo.ToString() }, bimestreDoPeriodo.Id));
 
                 fechamentoNotaConceitoTurma.Alunos = await RetornaListagemAlunosFechamentoBimestreEspecifico(alunosValidosComOrdenacao, fechamentosTurma, periodoAtual, turma,
                                                            componenteCurricularCodigo.ToString(), turmaPossuiFrequenciaRegistrada, componenteCurricularSelecionado, disciplinasRegencia,
