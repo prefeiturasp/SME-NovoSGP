@@ -12,18 +12,21 @@ namespace SME.SGP.Aplicacao
         public ValidarComponentesDoProfessorCommand(Usuario usuario,
                                                     string turmaCodigo,
                                                     long componenteCurricularCodigo,
-                                                    DateTime data)
+                                                    DateTime data,
+                                                    long? codigoTerritorioSaber = null)
         {
             Usuario = usuario;
             TurmaCodigo = turmaCodigo;
             ComponenteCurricularCodigo = componenteCurricularCodigo;
             Data = data;
+            CodigoTerritorioSaber = codigoTerritorioSaber;
         }
 
         public Usuario Usuario { get; set; }
         public string TurmaCodigo { get; set; }
         public long ComponenteCurricularCodigo { get; set; }
         public DateTime Data { get; set; }
+        public long? CodigoTerritorioSaber { get; set; }
     }
 
     public class ValidarComponentesDoProfessorCommandValidator: AbstractValidator<ValidarComponentesDoProfessorCommand>

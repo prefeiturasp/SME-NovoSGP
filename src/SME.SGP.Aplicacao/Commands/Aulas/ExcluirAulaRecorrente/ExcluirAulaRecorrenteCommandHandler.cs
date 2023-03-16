@@ -148,7 +148,13 @@ namespace SME.SGP.Aplicacao
             if (await mediator.Send(new AulaPossuiAvaliacaoQuery(aula, usuario.CodigoRf)))
                 throw new NegocioException("Aula com avaliação vinculada. Para excluir esta aula primeiro deverá ser excluída a avaliação.");
 
-            await ValidarComponentesDoProfessor(aula.TurmaId, long.Parse(aula.DisciplinaId), aula.DataAula, usuario);
+            var codigoComponenteVerificacao = long.Parse(aula.DisciplinaId);
+            var componenteDefinicaoParaCjEmCasoTerritorio = usuario.EhProfessorCj() ? 
+                await mediator.Send(new DefinirComponenteCurricularParaAulaQuery(aula.TurmaId, codigoComponenteVerificacao, usuario)) : default;
+            if (componenteDefinicaoParaCjEmCasoTerritorio != default && componenteDefinicaoParaCjEmCasoTerritorio.codigoTerritorio.HasValue)
+                codigoComponenteVerificacao = componenteDefinicaoParaCjEmCasoTerritorio.codigoTerritorio.Value;
+
+            await ValidarComponentesDoProfessor(aula.TurmaId, codigoComponenteVerificacao, aula.DataAula, usuario);
 
             if (aula.WorkflowAprovacaoId.HasValue)
                 await PulicaFilaSgp(RotasRabbitSgp.WorkflowAprovacaoExcluir, aula.WorkflowAprovacaoId.Value, usuario);
