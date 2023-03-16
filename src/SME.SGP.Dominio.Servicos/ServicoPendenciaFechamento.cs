@@ -137,7 +137,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     foreach (var usuarioCp in usuariosPendencias)
                     {
-                        foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
+                        foreach (var aula in registrosAulasSemFrequencia.OrderByDescending(x => x.DataAula))
                         {
                             mensagem.AppendLine($"CP {usuarioCp.usuario.CodigoRf} - {usuarioCp.usuario.Nome}, dia {aula.DataAula.ToString("dd/MM/yyyy")}.<br>");
                             mensagemHtml.Append($"<tr><td>{aula.DataAula.ToString("dd/MM/yyyy")}</td><td>{usuarioCp.usuario.Nome} - {usuarioCp.usuario.CodigoRf}</td></tr>");
@@ -149,7 +149,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    foreach (var aula in registrosAulasSemFrequencia.OrderBy(x => x.DataAula))
+                    foreach (var aula in registrosAulasSemFrequencia.OrderByDescending(x => x.DataAula))
                     {
                         var professor = usuariosPendencias
                             .FirstOrDefault(c => c.usuario.CodigoRf == aula.ProfessorRf && professoresTitularesDaTurma.Any(p=> p == c.usuario.CodigoRf)).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(aula.TurmaId) && up.disciplinaId == aula.DisciplinaId).usuario;
@@ -263,7 +263,7 @@ namespace SME.SGP.Dominio.Servicos
                 {
                     foreach (var usuarioCp in usuariosPendencias)
                     {
-                        foreach (var aula in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
+                        foreach (var aula in registrosAvaliacoesSemNotaParaNenhumAluno.OrderByDescending(x => x.DataAvaliacao))
                         {
                             mensagem.AppendLine($"CP {usuarioCp.usuario.CodigoRf} - {usuarioCp.usuario.Nome}, dia {aula.DataAvaliacao.ToString("dd/MM/yyyy")}.<br>");
                             mensagemHtml.Append($"<tr><td>{aula.DataAvaliacao.ToString("dd/MM/yyyy")}</td><td>{usuarioCp.usuario.Nome} - {usuarioCp.usuario.CodigoRf}</td></tr>");
@@ -275,7 +275,7 @@ namespace SME.SGP.Dominio.Servicos
                 }
                 else
                 {
-                    foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderBy(x => x.DataAvaliacao))
+                    foreach (var avaliacao in registrosAvaliacoesSemNotaParaNenhumAluno.OrderByDescending(x => x.DataAvaliacao))
                     {
                         var professor = usuariosPendencias
                             .FirstOrDefault(c => c.usuario.CodigoRf == avaliacao.ProfessorRf).usuario ?? usuariosPendencias.First(up => up.turmaCodigo.Equals(avaliacao.TurmaId) && up.disciplinaId == avaliacao.Disciplinas.First().DisciplinaId).usuario;
